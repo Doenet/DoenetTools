@@ -1,0 +1,164 @@
+body{
+    background-color: rgb(246, 248, 255);
+    padding: 0;
+    margin: 0;
+    font-family: 'Droid Serif','Georgia', 'Times New Roman', 'Times', 'serif';
+}
+.homeContainer{
+    display:grid;
+    grid-template-columns: 120px 130px auto 140px;
+    grid-template-rows: 60px auto;
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+
+.homeHeading{
+    background-color: rgb(116, 182, 213);
+    padding: 6px;
+    grid-column: 1 / span 4;
+    grid-row: 1 / 2;
+}
+
+.homeLeftNav{
+    background-color: rgb(228, 228, 228);
+    padding: 6px;
+    grid-column: 1 / 2;
+    grid-row: 2 /  3;
+}
+.homeActiveSection{
+    /* background-color: rgb(243, 0, 0); */
+    grid-column: 2 / span 3;
+    grid-row: 2 / 3;
+    padding: 5px;
+}
+.homeTitle{
+    display:flex;
+    flex-direction: column;
+    grid-column: 3 / 4;
+    grid-row: 1 / 2;
+}
+
+.homeUsername{
+    display:flex;
+    flex-direction: column;
+    grid-column: 4 / 5;
+    grid-row: 1 / 2;
+}
+
+.homeMainMenuItem{
+    padding: 5px;
+    border-bottom: 1px solid rgb(110, 110, 110);
+    cursor: pointer;
+}
+.homeMainMenuItem:hover{
+    background-color: rgb(173, 173, 173);
+}
+
+
+#grades {
+  border-spacing: 0;
+  border-collapse: separate;
+  width: 807px;
+  margin: 10px;
+}
+
+#grades td {
+    padding: 7px;
+    text-align: left;
+    
+}
+/* #grades .typeDataRow :hover{
+    background-color: brown;
+} */
+
+#grades .typeSubTotalDataRow td {
+    border-bottom-color: rgb(179, 178, 178);
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    text-align: center;
+}
+#grades .typeSubTotalDataRow td:first-child {
+    text-align: left;
+}
+ 
+
+#grades .typeDataRow td {
+    border-bottom-color: rgb(179, 178, 178);
+    border-bottom-style: dashed;
+    border-bottom-width: 1px;
+    text-align: center;
+
+}
+#grades .typeDataRow td:first-child {
+    text-align: left;
+}
+#grades .assignmentLink {
+    color:rgb(102, 0, 102);
+    cursor: pointer;
+
+}
+#grades .assignmentLink:hover {
+    text-decoration: underline;
+}
+/* #grades .typeDataRow td {
+    text-align: center;
+} */
+
+
+#grades th {
+    padding: 7px;
+    text-align: left;
+    border-bottom-color: rgb(184, 184, 184);
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+}
+.colHeadingsRow {
+    background-color: rgb(224, 224, 224);
+    font-weight: bold;
+    color: rgb(0,0,0);
+    font-size: 14px;
+    line-height: 21px;
+    /* border-color: rgb(204, 204, 204); */
+}
+
+#grades .colTotalRow {
+    background-color: rgb(224, 224, 224);
+    font-weight: bold;
+    color: rgb(0,0,0);
+    font-size: 14px;
+    line-height: 21px;
+}
+#grades .colTotalRow td {
+    text-align: center;
+    border-bottom: 1px solid rgb(184, 184, 184);
+
+}
+#grades .colTotalRow td:first-child {
+    text-align: left;
+}
+
+
+.typeHeadingRow {
+    background-color: rgb(240, 240, 240);
+    border-bottom-color: rgb(179, 178, 178);
+    border-bottom-style: dashed;
+    border-bottom-width: 1px;
+
+    color: rgb(51, 51, 51);
+    font-size: 14px;
+    line-height: 21px;
+    padding: 10px 7px 10px 7px;
+    text-align: left;
+    font-weight: bold;
+    
+}
+
+  /* tr:hover{
+    background-color: #d9fbff;
+    */
+
+
+
+
