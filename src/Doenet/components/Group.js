@@ -51,18 +51,15 @@ export default class Group extends CompositeComponent {
       }
     }
 
-    if(args.init) {
-      this.serializedReplacements = this.createSerializedReplacements();
-    }
   }
 
-  createSerializedReplacements() {
+  static createSerializedReplacements({component}) {
 
-    let serializedChildrenCopy = this.activeChildren.map(
+    let serializedChildrenCopy = component.activeChildren.map(
       x => x.serialize({forReference: true})
     );
 
-    if(this.state.hide) {
+    if(component.state.hide) {
       for(let child of serializedChildrenCopy) {
         if(child.state === undefined) {
           child.state = {};
@@ -71,18 +68,18 @@ export default class Group extends CompositeComponent {
       }
     }
 
-    return postProcessRef({serializedComponents: serializedChildrenCopy, componentName: this.componentName});
+    return {replacements: postProcessRef({serializedComponents: serializedChildrenCopy, componentName: component.componentName}) };
 
   }
 
-  calculateReplacementChanges(componentChanges) {
+  static calculateReplacementChanges({component, componentChanges, components}) {
     let replacementChanges = processChangesForReplacements({
       componentChanges: componentChanges,
-      componentName: this.componentName,
-      downstreamDependencies: this.downstreamDependencies,
-      components: this.components
+      componentName: component.componentName,
+      downstreamDependencies: component.downstreamDependencies,
+      components
     })
-    // console.log(`replacementChanges for group ${this.componentName}`);
+    // console.log(`replacementChanges for group ${component.componentName}`);
     // console.log(replacementChanges);
     return replacementChanges;
   }

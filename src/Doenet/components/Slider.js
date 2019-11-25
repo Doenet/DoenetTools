@@ -298,7 +298,7 @@ export default class Slider extends BaseComponent {
   allowDownstreamUpdates(status) {
     // since can't change via parents, 
     // only non-initial change can be due to reference
-    return(status.initialChange === true || this.state.modifybyreference === true);
+    return(status.initialChange === true || this.state.modifyIndirectly === true);
   }
 
   get variablesUpdatableDownstream() {

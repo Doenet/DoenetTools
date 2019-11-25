@@ -1,5 +1,4 @@
 import MathComponent from '../Math';
-import me from 'math-expressions';
 
 export default class MathOperator extends MathComponent {
   static componentType = "_mathoperator";

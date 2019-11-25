@@ -22,7 +22,6 @@ class DoenetHeader extends Component {
       "Course" : "/course/",
       "Documentation" : "/docs/",
       "Editor" : "/editor/",
-      "Gradebook": "/gradebook/",
     }
 
     this.username = "";

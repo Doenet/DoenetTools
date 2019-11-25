@@ -5,7 +5,7 @@ import {enumerateSelectionCombinations} from '../utils/enumeration';
 export default class SelectFromSequence extends Sequence {
   static componentType = "selectfromsequence";
 
-  static childrenToAssignNames = [];
+  static assignNamesToReplacements = true;
 
   // static selectedVariantVariable = "selectedValues";
 
@@ -116,6 +116,13 @@ export default class SelectFromSequence extends Sequence {
     // if make it this far, will make selection
     this.state.madeSelection = true;
 
+    if(args.init) {
+      // if it is first time through, replacements will be directly created by core
+      // (without going through calculateReplacementChanges)
+      // so need to set the fact that createdReplacements
+      this.state.createdReplacements = true;
+    }
+
     if(this.state.numbertoselect < 1) {
       this.state.selectedValues = [];
       return;
@@ -124,7 +131,7 @@ export default class SelectFromSequence extends Sequence {
 
     //TODO: NAMESPACES SHOULD BE IN CORE 
     // determine the namespace of the select
-    let selectAlias = this.doenetAttributes.componentAlias;
+    let selectAlias = this.doenetAttributes.componentName;
     if(selectAlias !== undefined) {
       if(this.doenetAttributes.newNamespace === true) {
         this.state.selectNamespace = selectAlias + "/";
@@ -156,7 +163,7 @@ export default class SelectFromSequence extends Sequence {
 
     if(numberUniqueRequired > this.state.count) {
       throw Error("Cannot select " + numberUniqueRequired + 
-      " values from a sequence of length " + this.state.count + ' (' + this.componentName +')');
+      " values from a sequence of length " + this.state.count);
     }
 
     // if desiredIndices is specfied, use those
@@ -450,55 +457,53 @@ export default class SelectFromSequence extends Sequence {
 
   }
 
-  createSerializedReplacements() {
+  static createSerializedReplacements({component}) {
 
-    if(!this.state.madeSelection || Object.keys(this.unresolvedState).length > 0 ||
-        this.state.unresolvedDependenceChain !== undefined) {
-      return [];
-    }else {
-      this.state.createdReplacements = true;
+    if(!component.state.madeSelection || Object.keys(component.unresolvedState).length > 0 ||
+        component.state.unresolvedDependenceChain !== undefined) {
+      return {replacements: []};
     }
 
     let replacements = [];
 
-    let assignNames = this.doenetAttributes.assignNames;
+    let assignNames = component.doenetAttributes.assignNames;
 
-    for(let [ind, value] of this.state.selectedValues.entries()) {
+    for(let [ind, value] of component.state.selectedValues.entries()) {
       let name;
 
       if(assignNames !== undefined && ind < assignNames.length) {
         name = assignNames[ind];
       }else {
         // if nothing specified, create an obscure name
-        name = "_" + this.componentName + "_" + ind;
+        name = "_" + component.componentName + "_" + ind;
       }
     
       // prepend select's namespace
-      if(this.state.selectNamespace !== undefined) {
-        name = this.state.selectNamespace + name;
+      if(component.state.selectNamespace !== undefined) {
+        name = component.state.selectNamespace + name;
       }
 
       // if selectfromsequence is specified to be hidden
       // then replacements should be hidden as well
       let state = {value: value};
-      if(this.state.hide) {
+      if(component.state.hide) {
         state.hide = true;
       }
 
       replacements.push({
-        componentType: this.state.type,
-        doenetAttributes: {componentAlias: name},
+        componentType: component.state.type,
+        doenetAttributes: {componentName: name},
         state: state
       });
     }
 
-    return replacements;
+    return {replacements};
   }
 
-  calculateReplacementChanges(componentChanges) {
+  static calculateReplacementChanges({component, componentChanges}) {
 
-    if(!this.state.madeSelection || Object.keys(this.unresolvedState).length > 0 ||
-        this.state.unresolvedDependenceChain !== undefined || this.state.createdReplacements) {
+    if(!component.state.madeSelection || Object.keys(component.unresolvedState).length > 0 ||
+        component.state.unresolvedDependenceChain !== undefined || component.state.createdReplacements) {
       return [];
     }
 
@@ -509,8 +514,16 @@ export default class SelectFromSequence extends Sequence {
       changeTopLevelReplacements: true,
       firstReplacementInd: 0,
       numberReplacementsToReplace: 0,
-      serializedReplacements: this.createSerializedReplacements(),
+      serializedReplacements: this.createSerializedReplacements({component}).replacements,
     };
+    replacementChanges.push(replacementInstruction);
+    
+    replacementInstruction = {
+      changeType: "updateStateVariables",
+      component: component,
+      stateChanges: {createdReplacements: true},
+      allowChangeToNonEssential: true,
+    }
     replacementChanges.push(replacementInstruction);
 
     return replacementChanges;

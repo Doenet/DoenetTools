@@ -706,8 +706,8 @@ export default class ODESystem extends InlineComponent {
             let message = "For chunksize " + this.state.chunksize
               + " and tolerance " + this.state.tolerance
               + ", odesystem"
-            if(this.doenetAttributes.componentAlias !== undefined) {
-              message += " (" + this.doenetAttributes.componentAlias + ")"
+            if(this.doenetAttributes.componentName !== undefined) {
+              message += " (" + this.doenetAttributes.componentName + ")"
             }
             message += " hit maxiterations (" + this.state.maxIterations
               + ") at t = " + this.state.maxPossibleTime

@@ -5,14 +5,11 @@ import { getVariantsForDescendants } from '../utils/variants';
 import { deepClone } from '../utils/deepFunctions';
 
 export default class Select extends CompositeComponent {
-  constructor(args) {
-    super(args);
-
-    this.serializedReplacements = this.createSerializedReplacements();
-  }
   static componentType = "select";
 
   static assignNamesToAllChildrenExcept = Object.keys(Select.createPropertiesObject({}));
+
+  static createsVariants = true;
 
   // static selectedVariantVariable = "selectedIndices";
 
@@ -113,6 +110,13 @@ export default class Select extends CompositeComponent {
     // if make it this far, will make selection
     this.state.madeSelection = true;
 
+    if(args.init) {
+      // if it is first time through, replacements will be directly created by core
+      // (without going through calculateReplacementChanges)
+      // so need to set the fact that createdReplacements
+      this.state.createdReplacements = true;
+    }
+
     if (this.state.numbertoselect < 1) {
       this.state.selectedValues = [];
       return;
@@ -164,7 +168,7 @@ export default class Select extends CompositeComponent {
 
     //TODO: NAMESPACES SHOULD BE IN CORE
     // determine the namespace of the select
-    let selectAlias = this.doenetAttributes.componentAlias;
+    let selectAlias = this.doenetAttributes.componentName;
     if (selectAlias !== undefined) {
       if (this.doenetAttributes.newNamespace === true) {
         this.state.selectNamespace = selectAlias + "/";
@@ -354,9 +358,9 @@ export default class Select extends CompositeComponent {
     // determine the original namespace of the child when it was created
     let childNamespace, internalChildAlias;
 
-    if (serializedComponent.doenetAttributes.componentAlias !== undefined) {
+    if (serializedComponent.doenetAttributes.componentName !== undefined) {
 
-      childNamespace = serializedComponent.doenetAttributes.componentAlias + "/";
+      childNamespace = serializedComponent.doenetAttributes.componentName + "/";
 
       internalChildAlias = serializedComponent.doenetAttributes.originalName;
       if (internalChildAlias === undefined) {
@@ -383,7 +387,7 @@ export default class Select extends CompositeComponent {
       if (child.componentType === "string" || child.doenetAttributes === undefined) {
         continue;  // can't give alias to string or component without alias
       }
-      let alias = child.doenetAttributes.componentAlias;
+      let alias = child.doenetAttributes.componentName;
       if (alias === undefined) {
         continue;
       }
@@ -440,15 +444,15 @@ export default class Select extends CompositeComponent {
 
       let childrenInsideNamedGrandchild = insideNamedGrandchild;
 
-      let componentAlias;
+      let componentName;
       if (component.doenetAttributes !== undefined) {
-        componentAlias = component.doenetAttributes.componentAlias;
+        componentName = component.doenetAttributes.componentName;
       }
 
       // if component has an alias,
       // determine alias ending after originalNamespace is removed
-      if (componentAlias !== undefined) {
-        let componentAliasEnding = componentAlias;
+      if (componentName !== undefined) {
+        let componentNameEnding = componentName;
 
         // if inside a named grandchild that already had a new namespace
         // then delete the entire grandchild name from the alias
@@ -460,8 +464,8 @@ export default class Select extends CompositeComponent {
           let namedOne = namedGrandchildrenAliases[insideNamedGrandchild].component;
           if (namedOne.doenetAttributes.alreadyHadNewNamespace) {
             let deleteNamespace = insideNamedGrandchild + '/';
-            if (componentAlias.substring(0, deleteNamespace.length) === deleteNamespace) {
-              componentAliasEnding = componentAlias.substring(deleteNamespace.length);
+            if (componentName.substring(0, deleteNamespace.length) === deleteNamespace) {
+              componentNameEnding = componentName.substring(deleteNamespace.length);
               deletedNamedGrandchildFromAliasEnding = true;
             }
           }
@@ -470,21 +474,21 @@ export default class Select extends CompositeComponent {
         // If an alias begins with the original namespace,
         // delete that portion of the alias
         if (!deletedNamedGrandchildFromAliasEnding) {
-          if (componentAlias.substring(0, originalNamespace.length) === originalNamespace) {
-            componentAliasEnding = componentAlias.substring(originalNamespace.length);
+          if (componentName.substring(0, originalNamespace.length) === originalNamespace) {
+            componentNameEnding = componentName.substring(originalNamespace.length);
           }
         }
 
         // record both the new ending of the alias
         // and the component itself
-        aliasesFound[componentAlias] = {
-          componentAliasEnding: componentAliasEnding,
+        aliasesFound[componentName] = {
+          componentNameEnding: componentNameEnding,
           component: component,
           insideNamedGrandchild: insideNamedGrandchild,
         }
 
-        if (componentAlias in namedGrandchildrenAliases) {
-          childrenInsideNamedGrandchild = componentAlias;
+        if (componentName in namedGrandchildrenAliases) {
+          childrenInsideNamedGrandchild = componentName;
 
           // if component has assignnames attribute,
           // then we need to record the aliases it created
@@ -493,7 +497,7 @@ export default class Select extends CompositeComponent {
             let names = flattenDeep(assignNames);
             let aliasNamespace;
             if (component.doenetAttributes.alreadyHadNewNamespace) {
-              aliasNamespace = componentAlias + "/";
+              aliasNamespace = componentName + "/";
             } else {
               aliasNamespace = originalNamespace;
             }
@@ -504,8 +508,8 @@ export default class Select extends CompositeComponent {
               // as we simply want to change referenes to this alias
               // but there is no component's alias to change
               aliasesFound[originalAlias] = {
-                componentAliasEnding: name,
-                insideNamedGrandchild: componentAlias,
+                componentNameEnding: name,
+                insideNamedGrandchild: componentName,
               }
             }
           }
@@ -617,30 +621,28 @@ export default class Select extends CompositeComponent {
 
   }
 
-  createSerializedReplacements() {
+  static createSerializedReplacements({ component, unproxiedState }) {
 
-    if (!this.state.madeSelection || Object.keys(this.unresolvedState).length > 0 ||
-      this.state.unresolvedDependenceChain !== undefined) {
-      return [];
-    } else {
-      this.state.createdReplacements = true;
+    if (!component.state.madeSelection || Object.keys(component.unresolvedState).length > 0 ||
+      component.state.unresolvedDependenceChain !== undefined) {
+      return { replacements: [] };
     }
 
     let replacements = [];
 
-    for (let [replacementNumber, childIndex] of this.state.selectedIndices.entries()) {
+    for (let [replacementNumber, childIndex] of component.state.selectedIndices.entries()) {
       replacements.push(this.createReplacementForChild({
-        replacementNumber: replacementNumber,
-        childIndex: childIndex
+        component, replacementNumber,
+        childIndex, unproxiedState,
       }))
     }
 
     // if subvariants were specified, add those the corresponding descendants
-    if (this.variants && this.variants.desiredVariant !== undefined) {
+    if (component.variants && component.variants.desiredVariant !== undefined) {
 
-      let desiredVariant = this.variants.desiredVariant;
+      let desiredVariant = component.variants.desiredVariant;
       if (desiredVariant !== undefined && desiredVariant.subvariants !== undefined &&
-        this.variants.descendantVariantComponents !== undefined) {
+        component.variants.descendantVariantComponents !== undefined) {
 
         // collect descendantVariantComponents that would be in select
         // if it just had the selected indicies
@@ -667,26 +669,26 @@ export default class Select extends CompositeComponent {
 
     // console.log("replacements")
     // console.log(JSON.parse(JSON.stringify(replacements)));
-    return replacements;
+    return {replacements};
   }
 
-  createReplacementForChild({ replacementNumber, childIndex }) {
+  static createReplacementForChild({ component, replacementNumber, childIndex, unproxiedState }) {
 
-    let serializedChild = this.state.childrenToSelect[childIndex];
+    let serializedChild = unproxiedState.childrenToSelect[childIndex];
 
-    let originalChildNamespace = serializedChild.doenetAttributes.componentAlias;
+    let originalChildNamespace = serializedChild.doenetAttributes.componentName;
     let originalChildNamespaceLength;
     if (originalChildNamespace !== undefined) {
       originalChildNamespace += "/";
       originalChildNamespaceLength = originalChildNamespace.length;
     }
 
-    let childResults = this.state.childResults[childIndex];
+    let childResults = unproxiedState.childResults[childIndex];
 
     let childName;
     let grandchildrenNames = [];
 
-    let assignNames = this.doenetAttributes.assignNames;
+    let assignNames = component.doenetAttributes.assignNames;
 
     if (assignNames !== undefined && replacementNumber < assignNames.length) {
       if (Array.isArray(assignNames[replacementNumber])) {
@@ -697,7 +699,7 @@ export default class Select extends CompositeComponent {
     }
 
     // create an obscure name for components that cannot be reffed
-    let namespaceForNonReffable = "_" + this.componentName + "_" + replacementNumber
+    let namespaceForNonReffable = "_" + component.componentName + "_" + replacementNumber
     if (childName === undefined) {
       // if nothing specified, child itself has obscure name
       childName = namespaceForNonReffable;
@@ -705,10 +707,10 @@ export default class Select extends CompositeComponent {
     namespaceForNonReffable += "/";
 
     // prepend select's namespace
-    if (this.state.selectNamespace !== undefined) {
-      childName = this.state.selectNamespace + childName;
-      grandchildrenNames = grandchildrenNames.map(x => this.state.selectNamespace + x);
-      namespaceForNonReffable = this.state.selectNamespace + namespaceForNonReffable;
+    if (component.state.selectNamespace !== undefined) {
+      childName = component.state.selectNamespace + childName;
+      grandchildrenNames = grandchildrenNames.map(x => component.state.selectNamespace + x);
+      namespaceForNonReffable = component.state.selectNamespace + namespaceForNonReffable;
     }
 
     let newNamespace = childName + "/";
@@ -716,13 +718,12 @@ export default class Select extends CompositeComponent {
 
 
     // give child the alias of childname
-    serializedChild.doenetAttributes.componentAlias = childName;
+    serializedChild.doenetAttributes.componentName = childName;
 
     // for each alias found, change it to the new namespace
-    // by prepending the childname to the componentAliasEnding
+    // by prepending the childname to the componentNameEnding
     for (let originalAlias in childResults.aliasesFound) {
       let aliasObject = childResults.aliasesFound[originalAlias];
-      let component = aliasObject.component;
       let insideNamedGrandchild = aliasObject.insideNamedGrandchild;
       let namedGrandchildObj = childResults.namedGrandchildrenAliases[originalAlias];
       let newAlias;
@@ -731,24 +732,24 @@ export default class Select extends CompositeComponent {
       } else if (insideNamedGrandchild !== undefined) {
         let index = childResults.namedGrandchildrenAliases[insideNamedGrandchild].index;
         let grandChildNamespace = grandchildrenNames[index] + '/';
-        if (aliasObject.componentAliasEnding.substring(0, 1) === '_') {
+        if (aliasObject.componentNameEnding.substring(0, 1) === '_') {
           // since we aren't renumbering component names
           // make component without an author name non-reffable
           // If we want to make it reffable, we should renumber all components
           // inside named grandchildren
-          newAlias = grandChildNamespace + '__' + aliasObject.componentAliasEnding
+          newAlias = grandChildNamespace + '__' + aliasObject.componentNameEnding
         } else {
-          newAlias = grandChildNamespace + aliasObject.componentAliasEnding
+          newAlias = grandChildNamespace + aliasObject.componentNameEnding
         }
       } else {
-        newAlias = newNamespace + aliasObject.componentAliasEnding;
+        newAlias = newNamespace + aliasObject.componentNameEnding;
       }
 
       // it is possible component was not defined
       // because alias may have come from assignnames
       // in which case we only want to change references to the new alias
-      if (component !== undefined) {
-        component.doenetAttributes.componentAlias = newAlias;
+      if (aliasObject.component !== undefined) {
+        aliasObject.component.doenetAttributes.componentName = newAlias;
       }
 
       // change any references to this component to the new alias
@@ -803,7 +804,7 @@ export default class Select extends CompositeComponent {
 
     let childWithSubstitutions = deepClone(serializedChild);
 
-    if (this.state.hide) {
+    if (component.state.hide) {
       if (childWithSubstitutions.state === undefined) {
         childWithSubstitutions.state = {};
       }
@@ -826,10 +827,10 @@ export default class Select extends CompositeComponent {
 
   }
 
-  calculateReplacementChanges(componentChanges) {
+  static calculateReplacementChanges({component, unproxiedState }) {
 
-    if (!this.state.madeSelection || Object.keys(this.unresolvedState).length > 0 ||
-      this.state.unresolvedDependenceChain !== undefined || this.state.createdReplacements) {
+    if (!component.state.madeSelection || Object.keys(component.unresolvedState).length > 0 ||
+      component.state.unresolvedDependenceChain !== undefined || component.state.createdReplacements) {
       return [];
     }
 
@@ -840,8 +841,16 @@ export default class Select extends CompositeComponent {
       changeTopLevelReplacements: true,
       firstReplacementInd: 0,
       numberReplacementsToReplace: 0,
-      serializedReplacements: this.createSerializedReplacements(),
+      serializedReplacements: this.createSerializedReplacements({component, unproxiedState}).replacements,
     };
+    replacementChanges.push(replacementInstruction);
+
+    replacementInstruction = {
+      changeType: "updateStateVariables",
+      component: component,
+      stateChanges: {createdReplacements: true},
+      allowChangeToNonEssential: true,
+    }
     replacementChanges.push(replacementInstruction);
 
     return replacementChanges;
@@ -925,7 +934,7 @@ export default class Select extends CompositeComponent {
       } else if (componentType === "selectweight") {
         // uniquevariants disabled if have a child with selectweight specified
         return { succes: false }
-      } else if (componentType !== "hide" && componentType !== "modifybyreference") {
+      } else if (componentType !== "hide" && componentType !== "modifyIndirectly") {
         if (componentType === "string") {
           stringChild = child;
         }

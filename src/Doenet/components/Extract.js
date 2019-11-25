@@ -124,7 +124,6 @@ export default class Extract extends CompositeComponent {
       this.unresolvedState.sourceComponents = true;
       this.state.sourceComponents = [];
       this.state.previousSources = [];
-      this.serializedReplacements = [];
       return;
     }
 
@@ -144,7 +143,6 @@ export default class Extract extends CompositeComponent {
         this.state.sourceComponents = childInds.map(x => this.activeChildren[x]);
       }else {
         this.state.sourceComponents = [];
-        this.serializedReplacements = [];
         return;
       }
         
@@ -165,7 +163,6 @@ export default class Extract extends CompositeComponent {
       if(this.state.childnumberChild.unresolvedState.number) {
         this.unresolvedState.sourceComponents = true;
         this.state.sourceComponents = [];
-        this.serializedReplacements = [];
         return;
       }
       // don't bother checking for changes in childnumber, just set it
@@ -237,8 +234,8 @@ export default class Extract extends CompositeComponent {
             message += " (" + propChildState.authorProp + ")"
           }
           message += " from " + source.componentType;
-          if(source.doenetAttributes.componentAlias !== undefined) {
-            message += " (" + source.doenetAttributes.componentAlias + ")";
+          if(source.doenetAttributes.componentName !== undefined) {
+            message += " (" + source.doenetAttributes.componentName + ")";
           }
           console.warn(message);
           this.unresolvedState.stateForSource = true;
@@ -257,10 +254,6 @@ export default class Extract extends CompositeComponent {
       // add state of source for any state values that
       // correspond to properties
       this.copyPropertiesFromSources(true, sourceNum);
-    }
-
-    if(args.init) {
-      this.serializedReplacements = this.createSerializedReplacements();
     }
 
   }
@@ -302,7 +295,7 @@ export default class Extract extends CompositeComponent {
     // check if any properties have been added explicitly in extract tag
     // and add those to state
     // (Currently, only possibilities are the properties from basecomponent:
-    // hide, modifybyreference, and fixed)
+    // hide, modifyIndirectly, and fixed)
     for(let item in this.state) {
       if(this._state[item].isProperty && !this._state[item].usedDefault) {
         stateForSource.properties[item] = this.state[item];
@@ -310,104 +303,108 @@ export default class Extract extends CompositeComponent {
     }
   }
 
-  createSerializedReplacements() {
+  static createSerializedReplacements({component, components}) {
 
+    if(Object.keys(component.unresolvedState).length > 0) {
+      return {replacements: [] };
+    }
+    
     let replacements = [];
 
-    this.state.numReplacementsBySource = [];
+    let numReplacementsBySource = [];
 
-    for(let sourceNum=0; sourceNum < this.state.sourceComponents.length; sourceNum++) {
-      if(this.state.sourceComponents[sourceNum] !== undefined) {
-        let sourceReplacements = this.createReplacementForSource(sourceNum);
-        this.state.numReplacementsBySource[sourceNum] = sourceReplacements.length;
+    for(let sourceNum=0; sourceNum < component.state.sourceComponents.length; sourceNum++) {
+      if(component.state.sourceComponents[sourceNum] !== undefined) {
+        let sourceReplacements = this.createReplacementForSource({component,sourceNum, components});
+        numReplacementsBySource[sourceNum] = sourceReplacements.length;
         replacements.push(...sourceReplacements);
       }else {
-        this.state.numReplacementsBySource[sourceNum] = 0;
+        numReplacementsBySource[sourceNum] = 0;
       }
     }
 
-    return replacements;
+    return {replacements, stateVariableChanges: {numReplacementsBySource}};
 
   }
 
-  createReplacementForSource(sourceNum) {
-    let stateForSource = this.state.stateForSource[sourceNum];
+  static createReplacementForSource({component, sourceNum, components}) {
+    let stateForSource = component.state.stateForSource[sourceNum];
     
     let additionalDepProperties = {
-      extractComponentName: this.componentName,
+      extractComponentName: component.componentName,
     }
 
     // add properties copied from source
     let additionalProperties = stateForSource.properties;
 
-    return this.state.propChild.createSerializedReplacements({
+    return component.state.propChild.constructor.createSerializedReplacements({
+      component: component.state.propChild,
       propData: stateForSource.propData, 
       additionalProperties: additionalProperties,
       additionalDepProperties: additionalDepProperties,
+      components,
     });
 
   }
 
-  calculateReplacementChanges(componentChanges) {
+  static calculateReplacementChanges({component, components}) {
 
-    // TODO: directly changing this.state.numReplacementsBySource
-    // Probably shouldn't do that here
-
-    // console.log(`calculating replacement changes for ${this.componentName}`);
+    // console.log(`calculating replacement changes for ${component.componentName}`);
+    // console.log(component.state.numReplacementsBySource);
 
     let replacementChanges = [];
 
     let numReplacementsSoFar = 0;
-    let numPrevNumReplacements = 0;
-    let numDeletedSoFar = 0;
+
+    let numReplacementsBySource = [];
 
     // cumulative sum: https://stackoverflow.com/a/44081700
-    let replacementIndexBySource = [0, ...this.state.numReplacementsBySource];
+    let replacementIndexBySource = [0, ...component.state.numReplacementsBySource];
     replacementIndexBySource = replacementIndexBySource.reduce(
       (a, x, i) => [...a, x + (a[i-1] || 0)], []); 
 
 
-    let maxSourceLength = Math.max(this.state.sourceComponents.length, this.state.previousSources.length);
+    let maxSourceLength = Math.max(component.state.sourceComponents.length, component.state.previousSources.length);
 
     for(let sourceNum=0; sourceNum < maxSourceLength; sourceNum++) {
-      let source = this.state.sourceComponents[sourceNum];
+      let source = component.state.sourceComponents[sourceNum];
       if(source === undefined) {
-        if(this.state.numReplacementsBySource[sourceNum] > 0) {
+        if(component.state.numReplacementsBySource[sourceNum] > 0) {
           let replacementInstruction = {
             changeType: "delete",
             changeTopLevelReplacements: true,
             firstReplacementInd: numReplacementsSoFar,
-            numberReplacementsToDelete: this.state.numReplacementsBySource[sourceNum],
+            numberReplacementsToDelete: component.state.numReplacementsBySource[sourceNum],
           }
 
           replacementChanges.push(replacementInstruction);
 
-          // TODO: change state variable here?
-          this.state.numReplacementsBySource[sourceNum] = 0;
+          numReplacementsBySource[sourceNum] = 0;
         }
         continue;
       }
 
-      let prevSource = this.state.previousSources[sourceNum];
+      let prevSource = component.state.previousSources[sourceNum];
 
       // check if source has changed
       if(prevSource=== undefined || source.componentName !== prevSource.componentName) {
 
         let prevNumReplacements = 0;
         if(prevSource !== undefined) {
-          prevNumReplacements = this.state.numReplacementsBySource[sourceNum];
+          prevNumReplacements = component.state.numReplacementsBySource[sourceNum];
         }
         let results = this.recreateReplacements({
+          component,
           sourceNum: sourceNum,
           numReplacementsSoFar: numReplacementsSoFar,
           prevNumReplacements: prevNumReplacements,
-          replacementChanges: replacementChanges
+          replacementChanges: replacementChanges,
+          components,
         });
 
         numReplacementsSoFar += results.numReplacements;
 
-        // TODO: change state variable here?
-        this.state.numReplacementsBySource[sourceNum] = results.numReplacements;
+        numReplacementsBySource[sourceNum] = results.numReplacements;
 
         continue;
       }
@@ -420,21 +417,23 @@ export default class Extract extends CompositeComponent {
       // don't change replacements unless
       // the number of components or their component types changed
       results = this.recreateReplacements({
+        component,
         sourceNum: sourceNum,
         numReplacementsSoFar: numReplacementsSoFar,
-        prevNumReplacements: this.state.numReplacementsBySource[sourceNum],
-        replacementChanges: testReplacementChanges
+        prevNumReplacements: component.state.numReplacementsBySource[sourceNum],
+        replacementChanges: testReplacementChanges,
+        components,
       });
 
       let changeInstruction = testReplacementChanges[testReplacementChanges.length-1];
       let newSerializedReplacements = changeInstruction.serializedReplacements;
 
-      if(newSerializedReplacements.length !== this.state.numReplacementsBySource[sourceNum]) {
+      if(newSerializedReplacements.length !== component.state.numReplacementsBySource[sourceNum]) {
         redoReplacements = true;
       }else {
         for(let ind=0; ind < newSerializedReplacements.length; ind++) {
           if(newSerializedReplacements[ind].componentType !== 
-            this.replacements[numReplacementsSoFar+ind].componentType) {
+            component.replacements[numReplacementsSoFar+ind].componentType) {
             redoReplacements=true;
             break;
           }
@@ -446,23 +445,34 @@ export default class Extract extends CompositeComponent {
         replacementChanges.push(...testReplacementChanges);
         numReplacementsSoFar += results.numReplacements;
 
-        // TODO: change state variable here?
-        this.state.numReplacementsBySource[sourceNum] = results.numReplacements;
+        numReplacementsBySource[sourceNum] = results.numReplacements;
       }else {
-        numReplacementsSoFar += this.state.numReplacementsBySource[sourceNum];
+        numReplacementsSoFar += component.state.numReplacementsBySource[sourceNum];
+        numReplacementsBySource[sourceNum] = component.state.numReplacementsBySource[sourceNum];
       }
 
     }
+
+    let replacementInstruction = {
+      changeType: "updateStateVariables",
+      component: component,
+      stateChanges: {numReplacementsBySource},
+      allowChangeToNonEssential: true,
+    }
+
+    // console.log(replacementInstruction);
+
+    replacementChanges.push(replacementInstruction);
 
     return replacementChanges;
 
   }
 
-  recreateReplacements({sourceNum, numReplacementsSoFar, prevNumReplacements, replacementChanges}) {
+  static recreateReplacements({component, sourceNum, numReplacementsSoFar, prevNumReplacements, replacementChanges, components}) {
     if (prevNumReplacements > 0) {
       // give instructions to move dependency to new source
-      let prevSource = this.state.previousSources[sourceNum];
-      let newSource = this.state.sourceComponents[sourceNum];
+      let prevSource = component.state.previousSources[sourceNum];
+      let newSource = component.state.sourceComponents[sourceNum];
       if (prevSource !== undefined) {
         if(prevSource.componentName !== newSource.componentName) {
           let replacementInstruction = {
@@ -471,7 +481,7 @@ export default class Extract extends CompositeComponent {
             oldComponentName: prevSource.componentName,
             newComponentName: newSource.componentName,
             dependencyType: "reference",
-            otherAttributes: { shadowed: true, prop: this.state.propChild.componentName}
+            otherAttributes: { shadowed: true, prop: component.state.propChild.componentName}
           };
           replacementChanges.push(replacementInstruction);
         }
@@ -483,12 +493,12 @@ export default class Extract extends CompositeComponent {
           dependencyDirection: "downstream",
           newComponentName: newSource.componentName,
           dependencyType: "reference",
-          otherAttributes: { shadowed: true, prop: this.state.propChild.componentName}
+          otherAttributes: { shadowed: true, prop: component.state.propChild.componentName}
         };
         replacementChanges.push(replacementInstruction);
       }
     }
-    let newSerializedChildren = this.createReplacementForSource(sourceNum);
+    let newSerializedChildren = this.createReplacementForSource({component, sourceNum, components});
 
     let replacementInstruction = {
       changeType: "add",

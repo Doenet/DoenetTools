@@ -665,7 +665,7 @@ export default class Circle extends Curve {
 
   allowDownstreamUpdates(status) {
     if(!((status.initialChange === true && this.state.draggable === true) ||
-      (status.initialChange !== true && this.state.modifybyreference === true))) {
+      (status.initialChange !== true && this.state.modifyIndirectly === true))) {
         return false;
     }
 

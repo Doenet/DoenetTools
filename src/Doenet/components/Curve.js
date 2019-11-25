@@ -765,7 +765,7 @@ export default class Curve extends GraphicalComponent {
           // check to see if got functionComponent directly from state
           // (which would happen if a function were adapted into a curve)
           if(this.state.functionComponentName !== undefined) {
-            this.state.functionComponent = this.components[this.state.functionComponentName];
+            this.state.functionComponent = this.downstreamDependencies[this.state.functionComponentName].downstreamComponent;
             this.state.curveType = "function";
             this.state.parameterizationMin = 0;
             this.state.parameterizationMax = 1;
@@ -922,7 +922,7 @@ export default class Curve extends GraphicalComponent {
         // no function children or through
         // check to see if got functionComponent directly from state
         // (which would happen if a function were adapted into a curve)
-        if(this.state.functionComponentName !== undefined) {
+        if(this.state.functionComponent !== undefined) {
           this.state.f = this.state.functionComponent.returnNumericF();
         }
       }
@@ -1922,7 +1922,7 @@ export default class Curve extends GraphicalComponent {
 
   allowDownstreamUpdates(status) {
     if(!((status.initialChange === true && this.state.draggable === true) ||
-      (status.initialChange !== true && this.state.modifybyreference === true))) {
+      (status.initialChange !== true && this.state.modifyIndirectly === true))) {
         return false;
     }
 

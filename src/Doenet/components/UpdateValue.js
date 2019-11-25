@@ -1,105 +1,126 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class UpdateValue extends BlockComponent {
+  constructor(args) {
+    super(args);
+    this.updateValue = this.updateValue.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    );
+  }
   static componentType = "updatevalue";
 
-  static createPropertiesObject({standardComponentTypes}) {
+  static createPropertiesObject({ standardComponentTypes }) {
     let properties = super.createPropertiesObject({
       standardComponentTypes: standardComponentTypes
     });
     // properties.width = {default: 300};
     // properties.height = {default: 50};
-    properties.label = {default: "update value"};
-    
+    properties.label = { default: "update value" };
+
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
     let childLogic = super.returnChildLogic({
       standardComponentTypes: standardComponentTypes,
       allComponentClasses: allComponentClasses,
       components: components,
     });
 
-    let ExactlyOneMathTarget = childLogic.newLeaf({
-      name: "ExactlyOneMathTarget",
+    let exactlyOneMathTarget = childLogic.newLeaf({
+      name: "exactlyOneMathTarget",
       componentType: 'mathtarget',
       number: 1,
     });
 
-    let ExactlyOneNewMathValue = childLogic.newLeaf({
-      name: "ExactlyOneNewMathValue",
+    let exactlyOneNewMathValue = childLogic.newLeaf({
+      name: "exactlyOneNewMathValue",
       componentType: 'newmathvalue',
       number: 1,
     });
 
     childLogic.newOperator({
-      name: "UpdateValueLogic",
+      name: "updateValueLogic",
       operator: 'and',
-      propositions: [ExactlyOneMathTarget, ExactlyOneNewMathValue],
+      propositions: [exactlyOneMathTarget, exactlyOneNewMathValue],
       setAsBase: true,
     });
 
     return childLogic;
   }
 
-  updateState(args={}) {
-    if(args.init) {
-      this.updateValue = this.updateValue.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      );
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.targetedMathName = {
+      returnDependencies: () => ({
+        mathTarget: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneMathTarget",
+          variableNames: ["mathChildName"]
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            targetedMathName: dependencyValues.mathTarget[0].stateValues.mathChildName
+          }
+        };
+      },
     }
 
-    super.updateState(args);
-
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.mathTargetChild = true;
-      return;
+    stateVariableDefinitions.newMathValue = {
+      returnDependencies: () => ({
+        newMathValueChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneNewMathValue",
+          variableNames: ["value"]
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            newMathValue: dependencyValues.newMathValueChild[0].stateValues.value
+          }
+        };
+      },
     }
 
-    delete this.unresolvedState.mathTargetChild;
+    return stateVariableDefinitions;
 
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-
-      const mathTargetInd = this.childLogic.returnMatches('ExactlyOneMathTarget')[0];
-      const newMathInd = this.childLogic.returnMatches('ExactlyOneNewMathValue')[0];
-      
-      this.state.mathTargetChild = this.activeChildren[mathTargetInd];
-      this.state.newMathInd = this.activeChildren[newMathInd];
-    }
   }
 
-  updateValue({}) {
+
+  updateValue({ }) {
     this.requestUpdate({
       updateType: "updateValue",
       updateInstructions: [{
-        componentName: this.state.mathTargetChild.state.mathChild.componentName,
-        variableUpdates: {
-          value: {changes: this.state.newMathInd.state.value},
-        }
+        componentName: this.stateValues.targetedMathName,
+        stateVariable: "value",
+        value: this.stateValues.newMathValue,
       }]
     });
-    
+
   }
 
-  initializeRenderer({}){
-    if(this.renderer !== undefined) {
+  initializeRenderer({ }) {
+    if (this.renderer !== undefined) {
       return;
     }
-    
+
     const actions = {
       updateValue: this.updateValue,
     }
-    
+
     this.renderer = new this.availableRenderers.updatevalue({
       actions: actions,
       key: this.componentName,
       // width: this.state.width,
       // height: this.state.height,
-      label: this.state.label,
+      label: this.stateValues.label,
     });
   }
 

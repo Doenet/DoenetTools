@@ -243,12 +243,13 @@ export default class Table extends BaseComponent {
       // (don't check if unresolved, since care most about efficiency for
       // case where there are no unresolved cells)
       for(let cellName in this.state.cellNameToRowCol) {
-        let child = this.components[cellName];
+        let rowcol = this.state.cellNameToRowCol[cellName];
+        let child = this.state.cellComponents[rowcol.row][rowcol.col];
+
         if(trackChanges.getVariableChanges({
           component: child, variable: "text"
         })){
 
-          let rowcol = this.state.cellNameToRowCol[cellName];
           this.state.cells[rowcol.row][rowcol.col] = child.state.text;
 
           // for now, just recreate all points found in cells
@@ -342,10 +343,6 @@ export default class Table extends BaseComponent {
         }
       }
     }
-
-    // round in case weren't integers
-    numrows = Math.round(numrows);
-    numcolumns = Math.round(numcolumns);
 
     // set state variables to new size
     this.state.numrows = numrows;
@@ -709,7 +706,7 @@ export default class Table extends BaseComponent {
   allowDownstreamUpdates(status) {
     // since can't change via parents, 
     // only non-initial change can be due to reference
-    return(status.initialChange === true || this.state.modifybyreference === true);
+    return(status.initialChange === true || this.state.modifyIndirectly === true);
   }
 
   get variablesUpdatableDownstream() {

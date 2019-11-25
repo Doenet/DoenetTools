@@ -3,11 +3,14 @@ import BaseComponent from './abstract/BaseComponent';
 export default class RefTarget extends BaseComponent {
   static componentType = "reftarget";
 
+  static takesComponentName = true;
+  static stateVariableForTakingComponentName = 'refTargetName';
+
   static createPropertiesObject() {
     return {};
-  } 
+  }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
     let childLogic = super.returnChildLogic({
       standardComponentTypes: standardComponentTypes,
       allComponentClasses: allComponentClasses,
@@ -25,61 +28,56 @@ export default class RefTarget extends BaseComponent {
     return childLogic;
   }
 
-  updateState(args = {}) {
-    super.updateState(args);
+  static returnStateVariableDefinitions() {
 
-    // since we don't allow child to change
-    // if child logic isn't satisfied right away, it never will be
-    if(!this.childLogicSatisfied) {
-      throw Error("Cannot create a refTarget. Can only have one string child.")
-    }
+    let stateVariableDefinitions = {};
 
-    if(args.init) {
-      if(this._state.refTargetName === undefined) {
-        this._state.refTargetName = {};
-      }
-      
-      this._state.refTarget = {trackChanges: true};
-  
-      // get ref target name
-      let stringMatch = this.childLogic.returnMatches("atMostOneString")
-      if(stringMatch.length === 1) {
-        this.state.refTargetName = this.activeChildren[stringMatch[0]].state.value;
-      }else {
-        if(this._state.refTargetName.essential !== true) {
-          throw Error("refTarget must be defined by either value or children");
+    stateVariableDefinitions.refTargetName = {
+      returnDependencies: () => ({
+        stringChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneString",
+          variableNames: ["value"],
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.stringChild.length === 0) {
+          return {
+            useEssentialOrDefaultValue: {
+              refTargetName: { variablesToCheck: "refTargetName" }
+            }
+          }
         }
-      }
-    }
+        return { newValues: { refTargetName: dependencyValues.stringChild[0].stateValues.value } }
+      },
+    };
 
-    let success = this.resolveReference();
+    stateVariableDefinitions.refTarget = {
+      stateVariablesDeterminingDependencies: ["refTargetName"],
+      returnDependencies: ({ stateValues }) => ({
+        refTargetComponent: {
+          dependencyType: "componentIdentity",
+          componentName: stateValues.refTargetName,
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { refTarget: dependencyValues.refTargetComponent } }
+      },
+    };
 
-    if(success) {
-      // successfully resolved target
-      // so indicate there is nothing unresolved in state
-      delete this.unresolvedState.refTarget;
-      delete this.unresolvedDependencies;
-    }else {
-      this.unresolvedState.refTarget = true;
-      this.unresolvedDependencies = {[this.state.refTargetName]: true};
-    }
-
-  }
-
-  resolveReference() {
-
-    this.state.refTarget = this.components[this.state.refTargetName];
-    if(this.state.refTarget === undefined) {
-      return false;
-    }
-
-    if(this.state.refTarget.isShadow === "true") {
-      throw Error("Invalid reference.  Cannot reference shadow child " + this.state.refTarget.componentName);
-    }
-
-    return true;
+    return stateVariableDefinitions;
 
   }
 
+
+  useChildrenForReference = false;
+
+  get stateVariablesForReference() {
+    return ["refTargetName"];
+  }
+
+  returnSerializeInstructions() {
+    return { skipChildren: true, stateVariables: ["refTargetName"] };
+  }
 
 }

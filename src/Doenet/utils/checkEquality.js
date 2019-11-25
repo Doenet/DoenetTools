@@ -75,7 +75,7 @@ export default function checkEquality({
       x = me.fromAst(x);
     }
 
-    x = x.normalize_function_names().normalize_applied_functions();
+    x = x.normalize_function_names().normalize_applied_functions();;
 
     if (simplify === "none") {
       if (allowederrorinnumbers > 0) {

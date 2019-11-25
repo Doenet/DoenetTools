@@ -14,7 +14,11 @@ export function deepClone(obj, BaseComponent, hash) {
   if(obj instanceof me.class) {
     return obj.copy();
   }
-  
+
+  if(hash === undefined) {
+    hash = new WeakMap();
+  }
+
   if(Array.isArray(obj)) {
     return [... obj.map(x => deepClone(x, BaseComponent, hash))]
   }
@@ -24,9 +28,6 @@ export function deepClone(obj, BaseComponent, hash) {
     return {};
   }
 
-  if(hash === undefined) {
-    hash = new WeakMap();
-  }
 
   if (hash.has(obj)) return hash.get(obj); // Cyclic reference
   try { // Try to run constructor (without arguments, as we don't know them)

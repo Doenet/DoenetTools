@@ -954,7 +954,7 @@ export default class Line extends GraphicalComponent {
 
   allowDownstreamUpdates(status) {
     return ((status.initialChange === true && this.state.draggable === true) ||
-      (status.initialChange !== true && this.state.modifybyreference === true));
+      (status.initialChange !== true && this.state.modifyIndirectly === true));
   }
 
   get variablesUpdatableDownstream() {

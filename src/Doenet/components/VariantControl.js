@@ -3,6 +3,8 @@ import BaseComponent from './abstract/BaseComponent';
 export default class VariantControl extends BaseComponent {
   static componentType = "variantcontrol";
 
+  static createsVariants = true;
+
   static createPropertiesObject({standardComponentTypes}) {
     let properties = super.createPropertiesObject({
       standardComponentTypes: standardComponentTypes

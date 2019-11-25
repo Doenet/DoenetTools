@@ -3,12 +3,9 @@ import BlockComponent from './abstract/BlockComponent';
 export default class Graph extends BlockComponent {
   constructor(args){
     super(args);
-    this.state.graphicalComponents = [];
     this.returnRenderersInGraph = this.returnRenderersInGraph.bind(this);
   }
   static componentType = "graph";
-
-  static alwaysContinueUpstreamUpdates = true;
 
   static createPropertiesObject({standardComponentTypes}) {
     let properties = super.createPropertiesObject({
@@ -38,7 +35,7 @@ export default class Graph extends BlockComponent {
       // add <curve> around strings, as long as they don't have points
       let curveChildren = [];
       for(let child of activeChildrenMatched) {
-        if(child.state.value.includes(",")) {
+        if(child.stateValues.value.includes(",")) {
           return {success: false};
         }
         curveChildren.push({
@@ -92,25 +89,25 @@ export default class Graph extends BlockComponent {
       key: this.componentName,
       returnRenderersInGraph: this.returnRenderersInGraph,
       graphRenderComponents: this.graphRenderComponents,
-      width: parseInt(this.state.width),
-      height: parseInt(this.state.height),
-      xmin: this.state.xmin,
-      xmax: this.state.xmax,
-      ymin: this.state.ymin,
-      ymax: this.state.ymax,
-      displayaxes: this.state.displayaxes,
-      xlabel: this.state.xlabel,
-      ylabel: this.state.ylabel,
+      width: parseInt(this.stateValues.width),
+      height: parseInt(this.stateValues.height),
+      xmin: this.stateValues.xmin,
+      xmax: this.stateValues.xmax,
+      ymin: this.stateValues.ymin,
+      ymax: this.stateValues.ymax,
+      displayaxes: this.stateValues.displayaxes,
+      xlabel: this.stateValues.xlabel,
+      ylabel: this.stateValues.ylabel,
     });
   }
 
   updateRenderer() {
     if(this.renderer !== undefined) {
       this.renderer.resizeBoard({
-        xmin: this.state.xmin,
-        xmax: this.state.xmax,
-        ymin: this.state.ymin,
-        ymax: this.state.ymax,
+        xmin: this.stateValues.xmin,
+        xmax: this.stateValues.xmax,
+        ymin: this.stateValues.ymin,
+        ymax: this.stateValues.ymax,
       })
     }
   }

@@ -258,7 +258,7 @@ export default class Choiceinput extends Input {
         this.state.choiceChildrenComponentNames = this.state.choiceChildren.map(v => v.componentName);
       } else if(this.state.choiceChildren === undefined){
         // in case started with choiceChildrenComponentNames in essential state
-        this.state.choiceChildren = this.state.choiceChildrenComponentNames.map(x => this.components[x]);
+        this.state.choiceChildren = this.state.choiceChildrenComponentNames.map(x => this.allChildren[x].component);
       }
 
       if (actuallyHaveNewChoices) {
@@ -329,29 +329,29 @@ export default class Choiceinput extends Input {
       delete this.unresolvedState.includeCheckWork;
       delete this.unresolvedDependencies;
 
-      if (this.ancestorsWhoGathered === undefined) {
+      // if (this.ancestorsWhoGathered === undefined) {
         //mathinput not inside an answer component
         this.state.includeCheckWork = false;
-      } else {
-        this.state.answerAncestor = undefined;
-        for (let componentName of this.ancestorsWhoGathered) {
-          if (this.components[componentName].componentType === "answer") {
-            this.state.answerAncestor = this.components[componentName];
-            break;
-          }
-        }
-        if (this.state.answerAncestor === undefined) {
-          //mathinput not inside an answer component
-          this.state.includeCheckWork = false;
-        } else {
-          this.state.allAwardsJustSubmitted = this.state.answerAncestor.state.allAwardsJustSubmitted;
-          if (this.state.answerAncestor.state.delegateCheckWork) {
-            this.state.includeCheckWork = true;
-          } else {
-            this.state.includeCheckWork = false;
-          }
-        }
-      }
+      // } else {
+      //   this.state.answerAncestor = undefined;
+      //   for (let componentName of this.ancestorsWhoGathered) {
+      //     if (this.components[componentName].componentType === "answer") {
+      //       this.state.answerAncestor = this.components[componentName];
+      //       break;
+      //     }
+      //   }
+      //   if (this.state.answerAncestor === undefined) {
+      //     //mathinput not inside an answer component
+      //     this.state.includeCheckWork = false;
+      //   } else {
+      //     this.state.allAwardsJustSubmitted = this.state.answerAncestor.state.allAwardsJustSubmitted;
+      //     if (this.state.answerAncestor.state.delegateCheckWork) {
+      //       this.state.includeCheckWork = true;
+      //     } else {
+      //       this.state.includeCheckWork = false;
+      //     }
+      //   }
+      // }
     }
     this.state.valueHasBeenValidated = false;
 
@@ -403,7 +403,7 @@ export default class Choiceinput extends Input {
   allowDownstreamUpdates(status) {
     // since can't change via parents, 
     // only non-initial change can be due to reference
-    return (status.initialChange === true || this.state.modifybyreference === true);
+    return (status.initialChange === true || this.state.modifyIndirectly === true);
   }
 
   get variablesUpdatableDownstream() {

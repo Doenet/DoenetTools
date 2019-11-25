@@ -1,5 +1,6 @@
 import BooleanComponent from './Boolean';
 import NumberComponent from './Number';
+import Integer from './Integer';
 import TextComponent from './Text';
 import MathComponent from './Math';
 import TextFromSingleStringChild from './abstract/TextFromSingleStringChild';
@@ -24,8 +25,8 @@ export class Draggable extends BooleanComponent {
   static componentType = "draggable";
 }
 
-export class ModifyByReference extends BooleanComponent {
-  static componentType = "modifybyreference";
+export class modifyIndirectly extends BooleanComponent {
+  static componentType = "modifyIndirectly";
 }
 
 export class Fixed extends BooleanComponent {
@@ -36,7 +37,7 @@ export class Label extends TextComponent {
   static componentType = "label";
 }
 
-export class ChildNumber extends NumberComponent {
+export class ChildNumber extends Integer {
   static componentType = "childnumber";
 }
 
@@ -208,11 +209,11 @@ export class Step extends MathComponent {
   static componentType = "step";
 }
 
-export class NumRows extends NumberComponent {
+export class NumRows extends Integer {
   static componentType = "numrows";
 }
 
-export class NumColumns extends NumberComponent {
+export class NumColumns extends Integer {
   static componentType = "numcolumns";
 }
 
@@ -364,7 +365,7 @@ export class Variant extends TextFromSingleStringChild {
   static componentType = "variant";
 }
 
-export class NVariants extends NumberComponent {
+export class NVariants extends Integer {
   static componentType = "nvariants";
 }
 
@@ -376,7 +377,7 @@ export class Seed extends TextFromSingleStringChild {
   static componentType = "seed";
 }
 
-export class NumberToSelect extends NumberComponent {
+export class NumberToSelect extends Integer {
   static componentType = "numbertoselect";
 }
 
@@ -384,7 +385,7 @@ export class WithReplacement extends BooleanComponent {
   static componentType = "withreplacement";
 }
 
-export class DisplayDigits extends NumberComponent {
+export class DisplayDigits extends Integer {
   static componentType = "displaydigits";
 }
 
@@ -424,7 +425,7 @@ export class AnimationInterval extends NumberComponent {
   static componentType = "animationinterval";
 }
 
-export class InitialSelectedIndex extends NumberComponent {
+export class InitialSelectedIndex extends Integer {
   static componentType = "initialselectedindex";
 }
 
@@ -444,7 +445,7 @@ export class Z extends MathComponent {
   static componentType = "z";
 }
 
-export class Layer extends NumberComponent {
+export class Layer extends Integer {
   static componentType = "layer";
 }
 
@@ -480,7 +481,7 @@ export class Tolerance extends NumberComponent {
   static componentType = "tolerance";
 }
 
-export class MaxIterations extends NumberComponent {
+export class MaxIterations extends Integer {
   static componentType = "maxiterations";
 }
 
@@ -488,7 +489,7 @@ export class Unbiased extends BooleanComponent {
   static componentType = "unbiased";
 }
 
-export class NumberOfSamples extends NumberComponent {
+export class NumberOfSamples extends Integer {
   static componentType = "numberofsamples";
 }
 
@@ -516,11 +517,11 @@ export class MaxIndex extends MathComponent {
   static componentType = "maxindex";
 }
 
-export class NumberDecimals extends NumberComponent {
+export class NumberDecimals extends Integer {
   static componentType = "numberdecimals";
 }
 
-export class NumberDigits extends NumberComponent {
+export class NumberDigits extends Integer {
   static componentType = "numberdigits";
 }
 
@@ -608,7 +609,7 @@ export class AllowedErrorIsAbsolute extends BooleanComponent {
   static componentType = "allowederrorisabsolute";
 }
 
-export class NSignErrorsMatched extends NumberComponent {
+export class NSignErrorsMatched extends Integer {
   static componentType = "nsignerrorsmatched";
 }
 
@@ -640,7 +641,7 @@ export class PluralForm extends TextComponent {
   static componentType = "pluralform";
 }
 
-export class BasedOnMumber extends NumberComponent {
+export class BasedOnNumber extends NumberComponent {
   static componentType = "basedonnumber";
 }
 
@@ -662,10 +663,6 @@ export class ShowLabel extends BooleanComponent {
 
 export class MergeMathLists extends BooleanComponent {
   static componentType = "mergemathlists";
-}
-
-export class AdditionalContent extends ComponentWithAnyChildren {
-  static componentType = "additionalcontent";
 }
 
 export class AttractThreshold extends NumberComponent {

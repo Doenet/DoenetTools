@@ -1962,9 +1962,35 @@ export default class Function extends InlineComponent {
       return;
     }
 
+    let newState = {
+      functionComponentName: this.componentName
+    };
+
+
+    let downstreamStateVariables = [];
+    let upstreamStateVariables = [];
+
+    // copy any properties that match the adapter
+    // add them both to newState and to dependency state variables
+    let adapterClass = this.allComponentClasses.curve;
+    let availableClassProperties = adapterClass.createPropertiesObject({
+      standardComponentTypes: this.standardComponentTypes
+    });
+
+    for (let item in availableClassProperties) {
+      if (item in this._state) {
+        newState[item] = this.state[item];
+        downstreamStateVariables.push(item);
+        upstreamStateVariables.push(item);
+      }
+    }
+
     let downDep = {
       dependencyType: "adapter",
       adapter: "curve",
+      downstreamStateVariables: downstreamStateVariables,
+      upstreamStateVariables: upstreamStateVariables,
+      includeDownstreamComponent: true,
     }
 
     // TODO: if unresolved, should pass unresolvedState to curve
@@ -1974,7 +2000,7 @@ export default class Function extends InlineComponent {
       downstreamDependencies: {
         [this.componentName]: downDep
       },
-      state: { functionComponentName: this.componentName }
+      state: newState,
     };
 
   }

@@ -8,53 +8,54 @@ export default class StringComponent extends InlineComponent {
   }
 
 
-  allowDownstreamUpdates() {
-    return true;
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.value = {
+      returnDependencies: () => ({}),
+      defaultValue: "",
+      definition: function () {
+        return {
+          useEssentialOrDefaultValue: {
+            value: { variablesToCheck: "value" }
+          }
+        }
+      },
+      inverseDefinition: function ({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "value",
+            value: desiredStateVariableValues.value
+          }]
+        };
+      }
+    }
+
+    return stateVariableDefinitions;
+
   }
 
-  get variablesUpdatableDownstream() {
+  get stateVariablesForReference() {
     return ["value"];
   }
 
-
-  calculateDownstreamChanges({stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate, dryRun}) {
-
-    let newStateVariables = {value: stateVariablesToUpdate.value};
-
-    let shadowedResult = this.updateShadowSources({
-      newStateVariables: newStateVariables,
-      dependenciesToUpdate: dependenciesToUpdate,
-      dryRun: dryRun
-    });
-    let shadowedStateVariables = shadowedResult.shadowedStateVariables;
-    let isReplacement = shadowedResult.isReplacement;
-
-    // if didn't update a downstream referenceShadow
-    // then this we're at the bottom
-    if(dryRun !== true && !shadowedStateVariables.has("value") && !isReplacement) {
-      stateVariableChangesToSave.value = stateVariablesToUpdate.value;
-    }
-
-    return true;
-
-  }
-
-  initializeRenderer({}){
-    if(this.renderer !== undefined) {
+  initializeRenderer({ }) {
+    if (this.renderer !== undefined) {
       this.updateRenderer();
       return;
     }
-    
+
     this.renderer = new this.availableRenderers.text({
       key: this.componentName,
-      text: this.state.value,
+      text: this.stateValues.value,
       suppressKeyRender: true,
     });
   }
 
   updateRenderer() {
-    this.renderer.updateText(this.state.value);
+    this.renderer.updateText(this.stateValues.value);
   }
 
 }

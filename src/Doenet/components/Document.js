@@ -4,6 +4,8 @@ import {getVariantsForDescendants} from '../utils/variants';
 export default class Document extends BaseComponent {
   static componentType = "document";
 
+  static createsVariants = true;
+  
   static createPropertiesObject() {
     return {title: {default: "", componentType: "text"}};
   }
@@ -40,6 +42,14 @@ export default class Document extends BaseComponent {
     return childLogic;
   }
 
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    return stateVariableDefinitions;
+  }
 
   updateState(args={}) {
     if(args.init) {
@@ -188,6 +198,7 @@ export default class Document extends BaseComponent {
   }
 
   calculateScoredItemNumberOfContainer(component) {
+    console.warn('calculateScoreItemNumberOfContainer no longer works without ancestor components')
     let ancestors = [...component.ancestors.slice(0, -1).reverse(), component];
     let scoredComponent;
     let scoredItemNumber;
@@ -289,17 +300,17 @@ export default class Document extends BaseComponent {
     if(this.renderer === undefined) {
       this.renderer = new this.availableRenderers.section({
         key: this.componentName,
-        title: this.state.title,
+        title: this.stateValues.title,
         level: 0,
-        viewedSolution: this.state.viewedSolution,
+        // viewedSolution: this.state.viewedSolution,
       });
     }
   }
 
   updateRenderer(){
     this.renderer.updateSection({
-      title: this.state.title,
-      viewedSolution: this.state.viewedSolution,
+      title: this.stateValues.title,
+      // viewedSolution: this.state.viewedSolution,
     });
   }
 

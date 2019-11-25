@@ -234,7 +234,7 @@ export default class Cell extends BaseComponent {
   adapters = ["text", "math", "number"];
 
   allowDownstreamUpdates(status) {
-    return(status.initialChange === true || this.state.modifybyreference === true);
+    return(status.initialChange === true || this.state.modifyIndirectly === true);
   }
 
   get variablesUpdatableDownstream() {

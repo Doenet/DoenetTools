@@ -91,6 +91,7 @@ body{
 .category-content-wrapper {
   display:flex;
   flex-direction: row;
+  background-color: rosybrown;
   margin: 2em 3em;
 }
 .category-content-text {
@@ -136,9 +137,7 @@ body{
   margin: 2em;
   margin-bottom: 30px;
 }
-.section-text h1:first-child{
-  margin-top: 80px;
-}
+
 .section-text p{
   margin: 0 auto;
   width: 60%;
@@ -175,46 +174,18 @@ body{
 }
 
 .tab-content-container {
-  display: flex;
-  flex-wrap: wrap;
-  width: 60%;
+  width: 80vh;
   background-color: #fff;  
 }
 
 .tab-content-wrapper {
-  color: black;
-  font-size: 3vh;
-  margin: 0.1em;
-  width: 49%;
-  
+  display:block;
+  width: 100%;
+  min-height: 50vh;
 }
-.tab-content-head{
-  margin-top: 10px;
-  margin-bottom: 10px;
-  color:green;
-
-}
-
-
-
 .tab-content-text {
-  color: slategrey;
+  color: black;
   display: block;
-  width: 83%;
-  margin-bottom: 30px;
-  font-size: 16px;
-font-size-adjust: none;
-font-stretch: 100%;
-font-style: normal;
-font-variant: normal;
-font-variant-alternates: normal;
-font-variant-caps: normal;
-font-variant-east-asian: normal;
-font-variant-ligatures: normal;
-font-variant-numeric: normal;
-font-variant-position: normal;
-font-variation-settings: normal;
-font-weight: 300;
 }
 
 .tab {
@@ -223,11 +194,10 @@ font-weight: 300;
   border-left: 2px solid #e5e8ed;
   display: block;
   padding: 17px 10px 17px 30px;
-  font-size: 17px;
+  font-size: 16px;
   line-height: 100%;
   background-color: #fff;
   transition: 0.5s;
- 
 }
 
 .active-tab, .tab:hover {
@@ -339,7 +309,6 @@ font-weight: 300;
 
   .section-text h1 {
     font-size: 22px;
-  
   }
   
   .section-text p{
@@ -372,7 +341,7 @@ font-weight: 300;
   .tab-content-text {
     color: #fff;
     float: left;
-    
+    /* width: 20px; */
     margin-right: 15px;
 
 

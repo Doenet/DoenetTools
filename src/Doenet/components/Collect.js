@@ -8,6 +8,8 @@ export default class Collect extends CompositeComponent {
 
   static alwaysContinueUpstreamUpdates = true;
 
+  static takesComponentName = true;
+
   static createPropertiesObject({standardComponentTypes}) {
     let properties = super.createPropertiesObject({
       standardComponentTypes: standardComponentTypes
@@ -180,6 +182,7 @@ export default class Collect extends CompositeComponent {
 
       this.state.componentClassesToCollect = [];
       this.state.collectedComponents = [];
+      this.state.numReplacementsByCollected = [];
 
     }
 
@@ -189,7 +192,6 @@ export default class Collect extends CompositeComponent {
       this.unresolvedState.originalRefTarget = true;
       this.unresolvedState.refTarget = true;
       this.unresolvedDependencies = true;
-      this.serializedReplacements = [];
       return;
     }
 
@@ -223,7 +225,6 @@ export default class Collect extends CompositeComponent {
       this.unresolvedState.refTarget = true;
       this.unresolvedDependencies = {[this.state.refTargetChild.componentName]: true};
       this.state.originalRefTargetName = this.state.refTargetChild.state.refTargetName;
-      this.serializedReplacements = [];
       return;
     }
 
@@ -250,7 +251,6 @@ export default class Collect extends CompositeComponent {
       if(this.state.childnumberChild.unresolvedState.number) {
         this.unresolvedState.refTarget = true;
         this.state.refTarget = undefined;
-        this.serializedReplacements = [];
         return;
       }
       // don't bother checking for changes in childnumber, just set it
@@ -276,7 +276,7 @@ export default class Collect extends CompositeComponent {
     }
 
     if(this.state.refTarget === undefined) {
-      this.serializedReplacements = [];
+      this.state.collectedComponents = [];
       return;
     }
 
@@ -284,8 +284,8 @@ export default class Collect extends CompositeComponent {
 
     if(refTarget.componentName === this.componentName) {
       let message = "Circular reference from " + this.componentName
-      // if(this.doenetAttributes.componentAlias) {
-      //   message += " (" + this.doenetAttributes.componentAlias + ")";
+      // if(this.doenetAttributes.componentName) {
+      //   message += " (" + this.doenetAttributes.componentName + ")";
       // }
       message += " to itself."
       throw Error(message);
@@ -311,7 +311,7 @@ export default class Collect extends CompositeComponent {
     }
 
     if(this.state.componentClassesToCollect.length === 0) {
-      this.serializedReplacements = [];
+      this.state.collectedComponents = [];
       return;
     }
 
@@ -350,8 +350,8 @@ export default class Collect extends CompositeComponent {
               message += " (" + propChildState.authorProp + ")"
             }
             message += " from " + component.componentType;
-            if(component.doenetAttributes.componentAlias !== undefined) {
-              message += " (" + component.doenetAttributes.componentAlias + ")";
+            if(component.doenetAttributes.componentName !== undefined) {
+              message += " (" + component.doenetAttributes.componentName + ")";
             }
             console.warn(message);
           }
@@ -408,7 +408,6 @@ export default class Collect extends CompositeComponent {
         if(this.state.refTarget !== undefined) {
           this.downstreamDependencies[this.state.refTarget.componentName] = {
             dependencyType: "reference",
-            component: this.state.refTarget,
           }
         }
       }
@@ -449,10 +448,6 @@ export default class Collect extends CompositeComponent {
         }
       }
 
-    }
-
-    if(args.init) {
-      this.serializedReplacements = this.createSerializedReplacements();
     }
 
   }
@@ -580,9 +575,7 @@ export default class Collect extends CompositeComponent {
         // of the one component, we need to serialize its replacements
         // (as a group) instead of serializing the ref to the outside component
 
-        let originalRefTargetAncestornames = this.state.originalRefTarget.ancestors.map(x=>x.componentName);
-
-        if(!originalRefTargetAncestornames.includes(oneComponentBeingSaved)) {
+        if(!this.state.originalRefTarget.ancestors.includes(oneComponentBeingSaved)) {
           useReplacements = true;
         }
        }
@@ -640,47 +633,53 @@ export default class Collect extends CompositeComponent {
   }
 
 
-  createSerializedReplacements() {
+  static createSerializedReplacements({component, components}) {
+
+    if(Object.keys(component.unresolvedState).length > 0) {
+      return {replacements: [] };
+    }
 
     let replacements = [];
 
-    this.state.numReplacementsByCollected = [];
+    let numReplacementsByCollected = [];
 
-    for(let collectedNum=0; collectedNum < this.state.collectedComponents.length; collectedNum++) {
-      if(this.state.collectedComponents[collectedNum] !== undefined) {
-        let collectedReplacements = this.createReplacementForCollected(collectedNum);
-        this.state.numReplacementsByCollected[collectedNum] = collectedReplacements.length;
+    for(let collectedNum=0; collectedNum < component.state.collectedComponents.length; collectedNum++) {
+      if(component.state.collectedComponents[collectedNum] !== undefined) {
+        let collectedReplacements = this.createReplacementForCollected({component, collectedNum, components});
+        numReplacementsByCollected[collectedNum] = collectedReplacements.length;
         replacements.push(...collectedReplacements);
       }else {
-        this.state.numReplacementsByCollected[collectedNum] = 0;
+        numReplacementsByCollected[collectedNum] = 0;
       }
     }
 
-    return replacements;
+    return {replacements, stateVariableChanges: {numReplacementsByCollected}};
 
   }
 
 
-  createReplacementForCollected(collectedNum) {
-    let stateForCollected = this.state.stateForCollected[collectedNum];
+  static createReplacementForCollected({component, collectedNum, components}) {
+    let stateForCollected = component.state.stateForCollected[collectedNum];
     
     let additionalDepProperties = {
-      collectComponentName: this.componentName,
+      collectComponentName: component.componentName,
     }
 
 
-    if(this.state.propChild !== undefined) {
+    if(component.state.propChild !== undefined) {
 
-      return this.state.propChild.createSerializedReplacements({
+      return component.state.propChild.constructor.createSerializedReplacements({
+        component: component.state.propChild,
         propData: stateForCollected.propData, 
         additionalProperties: stateForCollected.properties,
         additionalDepProperties: additionalDepProperties,
+        components,
       });
     }
 
     // if creating reference directly from the target component,
     // create a serialized copy of the entire component
-    let collectedComponent = this.state.collectedComponents[collectedNum];
+    let collectedComponent = component.state.collectedComponents[collectedNum];
     let serializedCopy = collectedComponent.serialize({forReference: true});
 
     if(!Array.isArray(serializedCopy)) {
@@ -691,26 +690,26 @@ export default class Collect extends CompositeComponent {
       Object.assign(serializedCopy[0].state, stateForCollected.properties);
     }
 
-    return postProcessRef({serializedComponents: serializedCopy, componentName: this.componentName});
+    return postProcessRef({serializedComponents: serializedCopy, componentName: component.componentName});
 
   }
 
-  calculateReplacementChanges(componentChanges) {
+  static calculateReplacementChanges({component, componentChanges, components}) {
 
-    // console.log("Calculating replacement changes for " + this.componentName);
+    // console.log("Calculating replacement changes for " + component.componentName);
     let replacementChanges = [];
 
     // if there are no children in location of childnumber
     // or prop doesn't currently refer to a target
     // or didn't collect any components
     // delete the replacements (if they currently exist)
-    if(this.state.refTarget === undefined || this.state.collectedComponents.length===0) {
-      if(this.replacements.length > 0) {
+    if(component.state.refTarget === undefined || component.state.collectedComponents.length===0) {
+      if(component.replacements.length > 0) {
         let replacementInstruction = {
           changeType: "delete",
           changeTopLevelReplacements: true,
           firstReplacementInd: 0,
-          numberReplacementsToDelete: this.replacements.length,
+          numberReplacementsToDelete: component.replacements.length,
         }
 
         replacementChanges.push(replacementInstruction);
@@ -721,11 +720,11 @@ export default class Collect extends CompositeComponent {
     }
 
     // check if refTarget has changed or previously had no collected components
-    if(this.state.previousRefTarget === undefined ||
-      this.state.refTarget.componentName !== this.state.previousRefTarget.componentName ||
-      this.state.previousCollectedComponents.length===0) {
+    if(component.state.previousRefTarget === undefined ||
+      component.state.refTarget.componentName !== component.state.previousRefTarget.componentName ||
+      component.state.previousCollectedComponents.length===0) {
 
-      this.recreateAllReplacements(replacementChanges);
+      this.recreateAllReplacements({component, replacementChanges, components});
 
       return replacementChanges;
     }
@@ -734,14 +733,14 @@ export default class Collect extends CompositeComponent {
     // attempt to match the collected components
 
     // initialize as having all previous components deleted and current components created
-    let originOfCurrent = this.state.collectedComponents.map(_x=>({create: true}));
-    let destinationOfPrevious = this.state.previousCollectedComponents.map(_x=>({delete: true}));
+    let originOfCurrent = component.state.collectedComponents.map(_x=>({create: true}));
+    let destinationOfPrevious = component.state.previousCollectedComponents.map(_x=>({delete: true}));
 
     let lastPrevInd = -1;
-    for(let indCur = 0; indCur < this.state.collectedComponents.length; indCur++) {
-      let componentName = this.state.collectedComponents[indCur].componentName;
-      for(let indPrev = lastPrevInd+1; indPrev < this.state.previousCollectedComponents.length; indPrev++) {
-        if(this.state.previousCollectedComponents[indPrev].componentName === componentName) {
+    for(let indCur = 0; indCur < component.state.collectedComponents.length; indCur++) {
+      let componentName = component.state.collectedComponents[indCur].componentName;
+      for(let indPrev = lastPrevInd+1; indPrev < component.state.previousCollectedComponents.length; indPrev++) {
+        if(component.state.previousCollectedComponents[indPrev].componentName === componentName) {
           originOfCurrent[indCur] = {create: false, fromPrevious: indPrev};
           destinationOfPrevious[indPrev] = {delete: false, toCurrent: indCur};
           lastPrevInd = indPrev;
@@ -752,7 +751,7 @@ export default class Collect extends CompositeComponent {
 
     // cumulative sum: https://stackoverflow.com/a/44081700
     // include extra index so keep track of replacements in last index
-    let replacementIndexByCollected = [0, ...this.state.numReplacementsByCollected];
+    let replacementIndexByCollected = [0, ...component.state.numReplacementsByCollected];
     replacementIndexByCollected = replacementIndexByCollected.reduce(
       (a, x, i) => [...a, x + (a[i-1] || 0)], []); 
 
@@ -761,7 +760,7 @@ export default class Collect extends CompositeComponent {
     // specify delete instructions
     for(let ind=0; ind < destinationOfPrevious.length; ind++) {
       if(destinationOfPrevious[ind].delete) {
-        let numToDelete = this.state.numReplacementsByCollected[ind];
+        let numToDelete = component.state.numReplacementsByCollected[ind];
         if(numToDelete > 0) {
           let replacementInstruction = {
             changeType: "delete",
@@ -784,12 +783,12 @@ export default class Collect extends CompositeComponent {
     let numReplacementsSoFar = 0;
     
     // specify add or instructions
-    // let lastReplacementInd = this.replacements.length;
+    // let lastReplacementInd = component.replacements.length;
     for(let collectedNum=0; collectedNum < originOfCurrent.length; collectedNum++) {
       if(originOfCurrent[collectedNum].create) {
 
         // create new 
-        let newSerializedReplacements = this.createReplacementForCollected(collectedNum);
+        let newSerializedReplacements = this.createReplacementForCollected({component, collectedNum, components});
         let numToAdd = newSerializedReplacements.length;
         newNumReplacementsByCollected[collectedNum] = numToAdd;
 
@@ -810,11 +809,11 @@ export default class Collect extends CompositeComponent {
           replacementInstruction = {
             changeType: "addDependency",
             dependencyDirection: "downstream",
-            newComponentName: this.state.collectedComponents[collectedNum].componentName,
+            newComponentName: component.state.collectedComponents[collectedNum].componentName,
             dependencyType: "reference",
             otherAttributes: { shadowed: true }
           };
-          if (this.state.propChild === undefined) {
+          if (component.state.propChild === undefined) {
             replacementInstruction.recurseToChildren = true;
           }
           // changesByInd[numReplacementsSoFar].push(replacementInstruction);
@@ -830,10 +829,10 @@ export default class Collect extends CompositeComponent {
         let prevCollectedNum = originOfCurrent[collectedNum].fromPrevious;
         // lastReplacementInd = replacementIndexByCollected[prevCollectedNum];
 
-        let prevNumReplacements = this.state.numReplacementsByCollected[prevCollectedNum];
+        let prevNumReplacements = component.state.numReplacementsByCollected[prevCollectedNum];
 
         // if ref determined by prop
-        if(this.state.propChild !== undefined) {
+        if(component.state.propChild !== undefined) {
           let redoReplacements = false;
           let testReplacementChanges = [];
           let results;
@@ -841,10 +840,12 @@ export default class Collect extends CompositeComponent {
           // don't change replacements unless
           // the number of components or their component types changed
           results = this.recreateReplacements({
+            component,
             collectedNum: collectedNum,
             numReplacementsSoFar: numReplacementsSoFar,
             prevNumReplacements: prevNumReplacements,
-            replacementChanges: testReplacementChanges
+            replacementChanges: testReplacementChanges,
+            components,
           });
 
 
@@ -856,7 +857,7 @@ export default class Collect extends CompositeComponent {
           }else {
             for(let ind=0; ind < newSerializedReplacements.length; ind++) {
               if(newSerializedReplacements[ind].componentType !== 
-                this.replacements[replacementIndexByCollected[collectedNum]+ind].componentType) {
+                component.replacements[replacementIndexByCollected[collectedNum]+ind].componentType) {
                 redoReplacements=true;
                 break;
               }
@@ -880,16 +881,16 @@ export default class Collect extends CompositeComponent {
           // ref not determined by a prop
 
           // filter out downstream dependencies just for this collected component
-          let collecteDownstream = this.getReferenceFromCollected(
-            this.state.collectedComponents[collectedNum]
+          let collecteDownstream = component.getReferenceFromCollected(
+            component.state.collectedComponents[collectedNum]
           );
 
           // look for changes that are in downstream dependencies
           let additionalReplacementChanges = processChangesForReplacements({
             componentChanges: componentChanges,
-            componentName: this.componentName,
+            componentName: component.componentName,
             downstreamDependencies: collecteDownstream,
-            components: this.components
+            components: components
           })
 
           // changesByInd[numReplacementsSoFar].push(...additionalReplacementChanges);
@@ -914,8 +915,13 @@ export default class Collect extends CompositeComponent {
       }
     }
 
-    // TODO: shouldn't change state variable here?
-    this.state.numReplacementsByCollected = newNumReplacementsByCollected;
+    let replacementInstruction = {
+      changeType: "updateStateVariables",
+      component: component,
+      stateChanges: {numReplacementsByCollected: newNumReplacementsByCollected},
+      allowChangeToNonEssential: true,
+    }
+    replacementChanges.push(replacementInstruction);
 
 
     return replacementChanges;
@@ -941,19 +947,19 @@ export default class Collect extends CompositeComponent {
     return collectedDeps;
   }
 
-  recreateAllReplacements(replacementChanges) {
-    if (this.state.previousRefTarget !== undefined) {
-      if(this.state.previousRefTarget.componentName !== this.state.refTarget.componentName) {
+  static recreateAllReplacements({component, replacementChanges, components}) {
+    if (component.state.previousRefTarget !== undefined) {
+      if(component.state.previousRefTarget.componentName !== component.state.refTarget.componentName) {
         let replacementInstruction = {
           changeType: "moveDependency",
           dependencyDirection: "downstream",
-          oldComponentName: this.state.previousRefTarget.componentName,
-          newComponentName: this.state.refTarget.componentName,
+          oldComponentName: component.state.previousRefTarget.componentName,
+          newComponentName: component.state.refTarget.componentName,
           dependencyType: "reference",
           otherAttributes: { shadowed: true }
         };
-        if (this.state.propChild !== undefined) {
-          replacementInstruction.otherAttributes.prop = this.state.propChild.componentName;
+        if (component.state.propChild !== undefined) {
+          replacementInstruction.otherAttributes.prop = component.state.propChild.componentName;
         }
         replacementChanges.push(replacementInstruction);
       }
@@ -963,39 +969,47 @@ export default class Collect extends CompositeComponent {
       let replacementInstruction = {
         changeType: "addDependency",
         dependencyDirection: "downstream",
-        newComponentName: this.state.refTarget.componentName,
+        newComponentName: component.state.refTarget.componentName,
         dependencyType: "reference",
         otherAttributes: { shadowed: true }
       };
-      if (this.state.propChild !== undefined) {
-        replacementInstruction.otherAttributes.prop = this.state.propChild.componentName;
+      if (component.state.propChild !== undefined) {
+        replacementInstruction.otherAttributes.prop = component.state.propChild.componentName;
       }
       replacementChanges.push(replacementInstruction);
     }
 
-    let newSerializedChildren = this.createSerializedReplacements();
+    let results = this.createSerializedReplacements({component, components});
 
     let replacementInstruction = {
       changeType: "add",
       changeTopLevelReplacements: true,
       firstReplacementInd: 0,
-      numberReplacementsToReplace: this.replacements.length,
-      serializedReplacements: newSerializedChildren,
+      numberReplacementsToReplace: component.replacements.length,
+      serializedReplacements: results.replacements,
     };
     replacementChanges.push(replacementInstruction);
 
-    for(let collectedNum=0; collectedNum < this.state.collectedComponents.length; collectedNum++) {
+    replacementInstruction = {
+      changeType: "updateStateVariables",
+      component: component,
+      stateChanges: results.stateVariableChanges,
+      allowChangeToNonEssential: true,
+    }
+    replacementChanges.push(replacementInstruction);
+
+    for(let collectedNum=0; collectedNum < component.state.collectedComponents.length; collectedNum++) {
       replacementInstruction = {
         changeType: "addDependency",
         dependencyDirection: "downstream",
-        newComponentName: this.state.collectedComponents[collectedNum].componentName,
+        newComponentName: component.state.collectedComponents[collectedNum].componentName,
         dependencyType: "reference",
         otherAttributes: { shadowed: true }
       };
-      if(this.state.propChild === undefined) {
+      if(component.state.propChild === undefined) {
         replacementInstruction.recurseToChildren = true;
       } else {
-        replacementInstruction.otherAttributes.prop = this.state.propChild.componentName;
+        replacementInstruction.otherAttributes.prop = component.state.propChild.componentName;
       }
       replacementChanges.push(replacementInstruction);
     }
@@ -1003,9 +1017,9 @@ export default class Collect extends CompositeComponent {
   }
 
 
-  recreateReplacements({collectedNum, numReplacementsSoFar, prevNumReplacements, replacementChanges}) {
+  static recreateReplacements({component, collectedNum, numReplacementsSoFar, prevNumReplacements, replacementChanges, components}) {
  
-    let newSerializedChildren = this.createReplacementForCollected(collectedNum);
+    let newSerializedChildren = this.createReplacementForCollected({component, collectedNum, components});
 
     let replacementInstruction = {
       changeType: "add",

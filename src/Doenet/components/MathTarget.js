@@ -11,7 +11,7 @@ export default class MathTarget extends BaseComponent {
     });
 
     childLogic.newLeaf({
-      name: "ExactlyOneMath",
+      name: "exactlyOneMath",
       componentType: 'math',
       number: 1,
       setAsBase: true
@@ -19,6 +19,32 @@ export default class MathTarget extends BaseComponent {
 
     return childLogic;
   }
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.mathChildName = {
+      returnDependencies: () => ({
+        mathChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneMath",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            mathChildName: dependencyValues.mathChild[0].componentName
+          }
+        };
+      },
+    }
+
+    return stateVariableDefinitions;
+
+  }
+
 
   updateState(args={}) {
     super.updateState(args);
