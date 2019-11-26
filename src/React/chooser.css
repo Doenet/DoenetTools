@@ -378,65 +378,9 @@ input[type=number]::-webkit-outer-spin-button {
 #contentList{
   grid-column: 2 / 3;
   grid-row: 2 / 3;
-  display: flex;
-  align-content: flex-start;
-  flex-wrap: wrap;
-  padding-right: 15px;
-  margin-right: 5px;
-  height: 100%;
-  overflow-y: scroll;
-  padding-bottom: 20px;
 }
 
-#contentList::-webkit-scrollbar, .infoPanel::-webkit-scrollbar {
-	width: 8px;
-	background-color: #F5F5F5;
-}
-
-#contentList::-webkit-scrollbar-thumb, .infoPanel::-webkit-scrollbar-thumb {
-	background-color: #919191;
-}
-
-#browser {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-#browser th {  
-  padding: 12px 15px;
-  text-align: left;
-  color: rgb(75, 75, 75);
-  border-bottom: 1px solid #cdcdcd;
-}
-
-#browser td {
-  text-align: left;
-  padding: 13px 15px;
-  border-bottom: 1px solid #ddd;
-  font-size: 13px;
-  cursor: pointer;
-  box-sizing: border-box;
-  user-select: none;
-}
-
-.browserDataRow:hover {
-  background-color: #ebf3ff;
-}
-
-.browserSelectedRow {
-  background-color: #e6efff;
-}
-
-.browserSelectedRow td {
-  color: #2675ff;
-  border-bottom: none !important;
-}
-
-.browserItemName {
-  font-weight: 700;
-}
-
-.addContentButtonWrapper, .addContentToCourseButtonWrapper, .removeContentButtonWrapper {
+.addContentToCourseButtonWrapper {
   position: absolute;
   width: 20px;
   height: 20px;
@@ -447,15 +391,6 @@ input[type=number]::-webkit-outer-spin-button {
   border: none;
   background: none;
   cursor:pointer;
-}
-
-.addContentButtonWrapper {
-  top: -2px;
-  left: -25px;
-}
-
-.removeContentButtonWrapper {
-  right: -10px;
 }
 
 .addContentToCourseButtonWrapper {
@@ -472,141 +407,11 @@ input[type=number]::-webkit-outer-spin-button {
   color: #6f6f6f;
 }
 
-.removeContentButton {
-  font-size: 16px;
-  color: #ff0000;
-  transition: 0.2s;
-}
-
-.removeContentButtonWrapper:hover .removeContentButton {
-  color: #b50000;
-}
-
-.addContentButtonInfo {
-  display: none;
-  position: absolute;
-  top: 25px;
-  left: 0px;
-  font-size: 11px;
-  padding: 1px 4px;
-  color: #fff;
-  background: #7b7b7b;
-  white-space: nowrap;
-}
-
-.addContentButtonWrapper:hover .addContentButtonInfo {
-  display: block;
-}
-
-/* #contextPanel{
-  grid-column: 1 / 2;
-  grid-row: 3 / 4;
-  overflow: scroll; 
-}  */
-
-.infoPanel {
+#branchBrowser {
   display: block;
   grid-row: 2 / 3;
-  grid-column: 3 / 4;
-  width: 100%;
-  height: 100%;
+  grid-column: 2 / 4;
   flex-wrap: wrap;
-  overflow-y: scroll;
-  border-left: 1px solid #cdcdcd;
-  padding-bottom: 20px;
-}
-
-.infoPanelTitle {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: left;
-  padding: 25px 20px;
-  border-bottom: 1px solid #cdcdcd;
-  line-height: 1.3;
-}
-
-.infoPanelItemIcon {
-  display: inline;
-  font-size: 17px;
-  color: #8c8c8c;
-}
-
-.infoPanelTitle span {
-  display: inline;
-  font-size: 23px;
-  margin-left: 10px;
-}
-
-.infoPanelPreview {
-  height: 30vh;
-  border-bottom: 1px solid #cdcdcd;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: rgb(191, 191, 191);
-}
-
-.infoPanelDetails {
-  padding: 25px 20px;
-}
-
-#infoPanelDetailsTable {
-  width: 100%;
-}
-
-#infoPanelDetailsTable td {
-  vertical-align: top;
-  text-align: left;
-  font-size: 14px;
-  line-height: 25px;
-}
-
-.itemDetailsKey {
-  width: 10em;
-  color: #5f6368;
-}
-
-.itemDetailsValue {
-  width: auto;
-  color: #202124;
-  padding-right: 20px;
-}
-
-#editContentButtonContainer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;;
-  width: 100%;
-  margin: 20px 0px;
-}
-
-#editContentButton {
-  box-shadow: 0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149);
-  align-items: center;
-  justify-content: space-around;;
-  background-color: #fff;
-  background-image: none;
-  border: 1px solid transparent;
-  border-radius: 24px;
-  color: #606467;
-  display: inline-flex;
-  font-weight: 700;
-  font-size: 14px;
-  height: 48px;
-  line-height: 22px;
-  margin-right: 20px;
-  min-width: 120px;
-  padding: 0px 26px 0px 6px;
-  text-transform: none;
-  cursor: pointer;
-}
-
-#editContentButton:hover {
-  box-shadow: 0 1px 3px 0 rgba(60,64,67,0.302), 0 4px 8px 3px rgba(60,64,67,0.149);
-  background-color: #f8f9fa;
-  outline: none;
 }
 
 @media only screen and (max-width: 375px) {

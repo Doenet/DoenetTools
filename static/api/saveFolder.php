@@ -21,12 +21,12 @@ WHERE folderId = '$folderId'
 ";
 $result = $conn->query($sql); 
 if ($result->num_rows < 1){
-  //No previous information on this folder so store it
+  //No previous information on this folder so store new folder
   $sql = "
   INSERT INTO folder
   (folderId,title ,parentId, creationDate)
   VALUES
-  ('$folderId','$title','$parentId' ,NOW())
+  ('$folderId','$title','root' ,NOW())
   ";
   $result = $conn->query($sql); 
 }
@@ -38,7 +38,7 @@ for ($i = 0; $i < $number_children; $i++) {
   $sql = "
   SELECT id
   FROM folder_content
-  WHERE childId = '$childId' AND folderId='$folderId'
+  WHERE childId = '$childId'
   ";
   $result = $conn->query($sql); 
   if ($result->num_rows < 1 && $operationType == "insert"){
@@ -50,15 +50,34 @@ for ($i = 0; $i < $number_children; $i++) {
     ('$folderId','$childId' ,'$childType', NOW())
     ";
     $result = $conn->query($sql); 
+
+    if ($childType === "folder") {
+      // update parentId of folder
+      $sql = "
+      UPDATE folder
+      SET parentId='$folderId'
+      WHERE folderId='$childId'
+      ";
+      $result = $conn->query($sql); 
+    }
   } else if ($result->num_rows > 0 && $operationType == "insert") {
-    // Readd if previously removed
+    // Update parent link if child already exist
     $sql = "
     UPDATE folder_content
-    SET removedFlag=0,
-    timestamp=NOW()
-    WHERE childId='$childId' AND folderId='$folderId'
+    SET folderId='$folderId'
+    WHERE childId='$childId'
     ";
     $result = $conn->query($sql); 
+
+    if ($childType === "folder") {
+      // update parentId of folder
+      $sql = "
+      UPDATE folder
+      SET parentId='$folderId'
+      WHERE folderId='$childId'
+      ";
+      $result = $conn->query($sql); 
+    }
 
   } else if ($result->num_rows > 0 && $operationType == "remove") {
     // Update content to have removedFlag=1 (remove from folder)
