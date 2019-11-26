@@ -41,7 +41,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
             }
           } else {
             // have a single non-string child.
-            // Don't match sugar: child will be matched by exactlyOneChild.
+            // Don't match sugar: child will be matched by atMostOneChild.
             return { success: false };
           }
         } else {
@@ -52,7 +52,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
 
 
       // if already have a single child of the correct type
-      // don't match sugar: child will be matched by exactlyOneChild.
+      // don't match sugar: child will be matched by atMostOneChild.
       if (activeChildrenMatched.length === 1 && activeChildrenMatched[0].componentType === selectedType) {
         return { success: false }
       }
@@ -98,22 +98,22 @@ export default class ComponentWithSelectableType extends BaseComponent {
           variableName: "type",
         }
       },
-      affectedBySugar: ["exactlyOneChild"],
+      affectedBySugar: ["atMostOneChild"],
       replacementFunction: addType,
     });
 
-    let exactlyOneChild = childLogic.newLeaf({
-      name: 'exactlyOneChild',
+    let atMostOneChild = childLogic.newLeaf({
+      name: 'atMostOneChild',
       componentType: "_base",
       excludeComponentTypes: ["_composite"],
-      comparison: 'exactly',
+      comparison: 'atMost',
       number: 1,
     });
 
     childLogic.newOperator({
       name: "sugarXorSelectedType",
       operator: "xor",
-      propositions: [anythingAsSugar, exactlyOneChild],
+      propositions: [anythingAsSugar, atMostOneChild],
       setAsBase: true,
     })
 
@@ -127,16 +127,21 @@ export default class ComponentWithSelectableType extends BaseComponent {
     stateVariableDefinitions.value = {
       public: true,
       returnDependencies: () => ({
-        exactlyOneChild: {
+        atMostOneChild: {
           dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneChild",
+          childLogicName: "atMostOneChild",
           variableNames: ["value"],
         },
       }),
       definition({ dependencyValues }) {
+        if (dependencyValues.atMostOneChild.length === 0) {
+          return {
+            newValues: { value: undefined }
+          }
+        }
         return {
-          newValues: { value: dependencyValues.exactlyOneChild[0].stateValues.value },
-          setComponentType: dependencyValues.exactlyOneChild[0].componentType,
+          newValues: { value: dependencyValues.atMostOneChild[0].stateValues.value },
+          setComponentType: dependencyValues.atMostOneChild[0].componentType,
         };
       }
     }
@@ -145,20 +150,29 @@ export default class ComponentWithSelectableType extends BaseComponent {
       public: true,
       componentType: "text",
       returnDependencies: () => ({
-        exactlyOneChild: {
+        atMostOneChild: {
           dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneChild",
+          childLogicName: "atMostOneChild",
           variableNames: ["value"],
         },
       }),
       definition({ dependencyValues }) {
+        if (dependencyValues.atMostOneChild.length === 0) {
+          return { newValues: { selectedType: undefined } }
+        }
         return {
-          newValues: { selectedType: dependencyValues.exactlyOneChild[0].componentType }
+          newValues: { selectedType: dependencyValues.atMostOneChild[0].componentType }
         };
       }
     }
 
     return stateVariableDefinitions;
+  }
+
+  useChildrenForReference = false;
+
+  get stateVariablesForReference() {
+    return ["value", "selectedType"];
   }
 
 }

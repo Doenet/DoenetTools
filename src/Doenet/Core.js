@@ -6,6 +6,7 @@ import Numerics from './Numerics';
 import MersenneTwister from 'mersenne-twister';
 import me from 'math-expressions';
 import * as serializeFunctions from './utils/serializedStateProcessing';
+import { deepClone } from './utils/deepFunctions';
 
 // string to componentClass: componentTypes["string"].class
 // componentClass to string: componentClass.componentType
@@ -136,8 +137,6 @@ export default class Core {
   }
 
   setUpVariants(serializedState) {
-
-    // TODO: make sure this works for new core setup
 
     let variantComponents = serializeFunctions.gatherVariantComponents({
       serializedState,
@@ -557,11 +556,82 @@ export default class Core {
 
     if (serializedChildren !== undefined) {
 
-      if (componentClass.keepChildrenSerialized) {
+      let setUpVariant = false;
+      let variantControlInd;
+      let variantControlChild;
+
+      if (componentClass.alwaysSetUpVariant || componentClass.setUpVariantIfVariantControlChild) {
+        // look for variantControl child
+        for (let [ind, child] of serializedChildren.entries()) {
+          if (child.componentType === "variantcontrol" || (
+            child.createdComponent && components[child.componentName].componentType === "variantcontrol"
+          )) {
+            variantControlInd = ind;
+            variantControlChild = child;
+            break;
+          }
+        }
+
+        if (variantControlInd || componentClass.alwaysSetUpVariant) {
+          setUpVariant = true;
+        }
+      }
+
+      if (setUpVariant) {
+
+        if (variantControlInd !== undefined) {
+          // if have desired variant value or index
+          // add that information to variantControl child
+          let desiredVariant = serializedComponent.variants.desiredVariant;
+          if (desiredVariant !== undefined) {
+            if (desiredVariant.index !== undefined) {
+              variantControlChild.variants.desiredVariantNumber = desiredVariant.index;
+            } else if (desiredVariant.value !== undefined) {
+              variantControlChild.variants.desiredVariant = desiredVariant.value;
+            }
+          }
+
+          if (serializedComponent.variants.uniquevariants) {
+            sharedParameters.numberOfVariants = serializedComponent.variants.numberOfVariants;
+          }
+
+          // create variant control child
+          let childrenResult = this.createIsolatedComponentsSub({
+            serializedState: [variantControlChild],
+            parentName: componentName,
+            applySugar, applyAdapters, shadow,
+          });
+
+          definingChildren[variantControlInd] = childrenResult.components[0];
+
+        }
+
+        componentClass.setUpVariant({
+          serializedComponent,
+          sharedParameters,
+          definingChildrenSoFar: definingChildren,
+          allComponentClasses: this.allComponentClasses,
+        });
+
+        let indicesToCreate = [...serializedChildren.keys()].filter(v => v !== variantControlInd);
+        let childrenToCreate = serializedChildren.filter((v, i) => i !== variantControlInd);
+
+        let childrenResult = this.createIsolatedComponentsSub({
+          serializedState: childrenToCreate,
+          parentName: componentName,
+          applySugar, applyAdapters, shadow,
+        });
+
+        for (let [createInd, locationInd] of indicesToCreate.entries()) {
+          definingChildren[locationInd] = childrenResult.components[createInd];
+        }
+
+      } else if (componentClass.keepChildrenSerialized) {
         let childrenAddressed = new Set([]);
 
         let keepSerializedInds = componentClass.keepChildrenSerialized({
-          serializedComponent
+          serializedComponent,
+          allComponentClasses: this.allComponentClasses,
         });
 
         for (let ind of keepSerializedInds) {
@@ -570,7 +640,7 @@ export default class Core {
               + ": child repeated");
           }
           childrenAddressed.add(Number(ind));
-          childrenToRemainSerialized[ind] = serializedChildren[ind];
+          childrenToRemainSerialized.push(serializedChildren[ind]);
         }
 
         // create any remaining children
@@ -904,7 +974,33 @@ export default class Core {
 
   expandCompositeComponent({ component }) {
 
+    let readyToExpand;
+    if (!("readyToExpandWhenResolved" in component.state)) {
+      throw Error(`Could not evaluate state variable readyToExpandWhenResolved of composite ${component.componentName}`);
+    }
+
+    readyToExpand = component.state.readyToExpandWhenResolved.isResolved
+    if (!readyToExpand) {
+      return { success: false };
+    }
+
     console.log(`expanding composite ${component.componentName}`);
+
+    let shadowedComposite;
+
+    if (component.shadows) {
+      shadowedComposite = this._components[component.shadows.componentName];
+
+      if (!shadowedComposite.isExpanded) {
+        let result = this.expandCompositeComponent({
+          component: shadowedComposite
+        });
+        if (!result.success) {
+          return { sucess: false, readyToExpand: true };
+        }
+      }
+
+    }
 
     // TODO: verify this works and understand what it does
     if (component.stateValues.stateVariablesRequested) {
@@ -955,6 +1051,9 @@ export default class Core {
       getComponentOrReplacementNames: this.getComponentOrReplacementNames,
     });
 
+    // console.log(`expand result for ${component.componentName}`)
+    // console.log(result);
+
     if (result.replacements) {
       let serializedReplacements = result.replacements;
 
@@ -964,7 +1063,28 @@ export default class Core {
         // as they may have particular state variables values saved
         serializedReplacements = component.serializedReplacements;
         delete component.serializedReplacements;
+      } else if (component.shadows) {
+        // if shadowing a composite but don't have serializedReplacements
+        // it means that the shadowed composite wasn't expanded at the time
+        // when shadowing component was created.
+        // serialize shadowed composite's replacements
+        serializedReplacements = shadowedComposite.replacements.map(x => x.serialize({ forReference: true }))
       }
+
+      if (component.shadows) {
+        // add shadow dependencies from composite's shadows
+        // to the shadows of the shadowed composite
+
+        let refComponentName = component.shadows.refComponentName;
+        let shadowedComposite = this._components[component.shadows.componentName];
+
+        this.addShadowDependencies({
+          serializedComponents: serializedReplacements,
+          shadowedComponents: shadowedComposite.replacements,
+          refComponentName,
+        })
+      }
+
       this.createAndSetReplacements({
         component,
         serializedReplacements,
@@ -978,7 +1098,29 @@ export default class Core {
         // before creating
         serializedReplacementsFromComponent = component.serializedReplacements;
         delete component.serializedReplacements;
+      } else if (component.shadows) {
+        // if shadowing a composite but don't have serializedReplacements
+        // it means that the shadowed composite wasn't expanded at the time
+        // when shadowing component was created.
+        // serialize shadowed composite's replacements
+        serializedReplacementsFromComponent = shadowedComposite.replacements.map(x => x.serialize({ forReference: true }))
       }
+
+      if (component.shadows) {
+        // add shadow dependencies from composite's shadows
+        // to the shadows of the shadowed composite
+
+        let refComponentName = component.shadows.refComponentName;
+        let shadowedComposite = this._components[component.shadows.componentName];
+
+        this.addShadowDependencies({
+          serializedComponents: serializedReplacementsFromComponent,
+          shadowedComponents: shadowedComposite.replacements,
+          refComponentName,
+        })
+
+      }
+
       this.createAndSetReplacementsWithInstructions({
         component,
         replacementsWithInstructions: result.replacementsWithInstructions,
@@ -988,6 +1130,35 @@ export default class Core {
       throw Error(`Invalid createSerializedReplacements of ${component.componentName}`);
     }
     return { success: true };
+  }
+
+  addShadowDependencies({ serializedComponents, shadowedComponents, refComponentName }) {
+
+    for (let [ind, serializedComp] of serializedComponents.entries()) {
+      let shadowedComp = shadowedComponents[ind];
+
+      if (!shadowedComp) {
+        throw Error(`Didn't find shadowed component.  How do we handle this?`);
+      }
+
+      if (!serializedComp.downstreamDependencies) {
+        serializedComp.downstreamDependencies = {};
+      }
+      serializedComp.downstreamDependencies[shadowedComp.componentName] = {
+        dependencyType: "referenceShadow",
+        refComponentName
+      }
+
+      if (serializedComp.children &&
+        !(shadowedComp.serializedChildren && shadowedComp.serializedChildren.length > 0)
+      ) {
+        this.addShadowDependencies({
+          serializedComponents: serializedComp.children,
+          shadowedComponents: shadowedComp.definingChildren,
+          refComponentName
+        })
+      }
+    }
   }
 
   createAndSetReplacements({ component, serializedReplacements }) {
@@ -1062,10 +1233,10 @@ export default class Core {
           this.parameterStack.parameters[pName].push(instruction.value);
         }
         else if (instruction.operation === "assignNamespace") {
-          if (serializedReplacementsFromComponent) {
-            // skip assigning namespace if already have serialized replacements from component
-            continue;
-          }
+          // if (serializedReplacementsFromComponent) {
+          //   // skip assigning namespace if already have serialized replacements from component
+          //   continue;
+          // }
 
           // make a deep copy to get rid of the readonly proxy
           // TODO: test if deepClone is faster
@@ -1073,31 +1244,7 @@ export default class Core {
           let namespace = instruction.namespace;
 
           if (namespace === undefined) {
-            // create unique namespace
-            if (component.doenetAttributes.newNamespace) {
-              let lastUniqueInd = this.uniqueIdCounts[component.componentName];
-              if (lastUniqueInd) {
-                lastUniqueInd++;
-              } else {
-                lastUniqueInd = 1;
-              }
-              this.uniqueIdCounts[component.componentName] = lastUniqueInd;
-              namespace = `_unique_${lastUniqueInd}`;
-
-            } else {
-              // if component is not creating a new namespace
-              // create a unique namespace from the component name
-              let componentNameEnding = component.componentName.substring(component.componentName.lastIndexOf('/') + 1);
-              let lastUniqueInd = this.uniqueIdCounts[component.componentName];
-              if (lastUniqueInd) {
-                lastUniqueInd++;
-              } else {
-                lastUniqueInd = 1;
-              }
-              this.uniqueIdCounts[component.componentName] = lastUniqueInd;
-
-              namespace = `${componentNameEnding}[${lastUniqueInd}]`;
-            }
+            namespace = this.createNewUniqueName(component);
           }
 
           let namespacePieces = component.componentName.split('/');
@@ -1109,7 +1256,7 @@ export default class Core {
           let namespaceStack = namespacePieces.map(x => ({
             namespace: x,
             componentCounts: {},
-            nameUsed: {}
+            namesUsed: {}
           }));
 
           if (!(component.componentName[0] === '/')) {
@@ -1117,11 +1264,93 @@ export default class Core {
             // still add a namespace for the root namespace at the beginning
             namespaceStack.splice(0, 0, {
               componentCounts: {},
-              nameUsed: {},
+              namesUsed: {},
               namespace: ""
             })
           }
           namespaceStack.push({ namespace: namespace, componentCounts: {}, namesUsed: {} });
+
+          serializeFunctions.createComponentNames({
+            serializedState: replacementsToAdd,
+            namespaceStack,
+            componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
+            allComponentClasses: this.allComponentClasses
+          });
+        }
+        else if (instruction.operation === "assignName") {
+          // if (serializedReplacementsFromComponent) {
+          //   // skip assigning namespace if already have serialized replacements from component
+          //   continue;
+          // }
+
+          if (replacementsToAdd.length !== 1) {
+            throw Error(`Cannot assign name to replacements when not exactly one replacement`)
+          }
+
+          // make a deep copy to get rid of the readonly proxy
+          // TODO: test if deepClone is faster
+          replacementsToAdd = JSON.parse(JSON.stringify(replacementsToAdd));
+          let name = instruction.name;
+
+          if (name === undefined) {
+            name = this.createNewUniqueName(component);
+          }
+
+          let theReplacement = replacementsToAdd[0];
+
+          if (Array.isArray(name)) {
+            // if name is an array, then it refers to names of the grandchildren
+
+            let nameForChild = this.createNewUniqueName(component);
+            if (!theReplacement.doenetAttributes) {
+              theReplacement.doenetAttributes = {}
+            }
+            theReplacement.doenetAttributes.prescribedName = nameForChild;
+            delete theReplacement.doenetAttributes.newNamespace;
+
+            if (theReplacement.children !== undefined) {
+              for (let [ind, grandchild] of theReplacement.children.entries()) {
+                let nameForGrandchild = name[ind];
+                if (nameForGrandchild === undefined) {
+                  nameForGrandchild = this.createNewUniqueName(component);
+                }
+                if (!grandchild.doenetAttributes) {
+                  grandchild.doenetAttributes = {}
+                }
+                grandchild.doenetAttributes.prescribedName = nameForGrandchild;
+                grandchild.doenetAttributes.newNamespace = true;
+              }
+            }
+
+          } else {
+            if (!theReplacement.doenetAttributes) {
+              theReplacement.doenetAttributes = {}
+            }
+            theReplacement.doenetAttributes.prescribedName = name;
+            theReplacement.doenetAttributes.newNamespace = true;
+          }
+
+          let namespacePieces = component.componentName.split('/');
+
+          if (!component.doenetAttributes.newNamespace) {
+            namespacePieces.pop();
+          }
+
+          let namespaceStack = namespacePieces.map(x => ({
+            namespace: x,
+            componentCounts: {},
+            namesUsed: {}
+          }));
+
+          if (!(component.componentName[0] === '/')) {
+            // if componentName doesn't begin with a /
+            // still add a namespace for the root namespace at the beginning
+            namespaceStack.splice(0, 0, {
+              componentCounts: {},
+              namesUsed: {},
+              namespace: ""
+            })
+          }
 
           serializeFunctions.createComponentNames({
             serializedState: replacementsToAdd,
@@ -1150,6 +1379,35 @@ export default class Core {
     return replacements;
   }
 
+  createNewUniqueName(component) {
+    if (component.doenetAttributes.newNamespace) {
+      let lastUniqueInd = this.uniqueIdCounts[component.componentName];
+      if (lastUniqueInd) {
+        lastUniqueInd++;
+      }
+      else {
+        lastUniqueInd = 1;
+      }
+      this.uniqueIdCounts[component.componentName] = lastUniqueInd;
+      name = `_unique_${lastUniqueInd}`;
+    }
+    else {
+      // if component is not creating a new name
+      // create a unique name from the component name
+      let componentNameEnding = component.componentName.substring(component.componentName.lastIndexOf('/') + 1);
+      let lastUniqueInd = this.uniqueIdCounts[component.componentName];
+      if (lastUniqueInd) {
+        lastUniqueInd++;
+      }
+      else {
+        lastUniqueInd = 1;
+      }
+      this.uniqueIdCounts[component.componentName] = lastUniqueInd;
+      name = `${componentNameEnding}[${lastUniqueInd}]`;
+    }
+    return name;
+  }
+
   replaceCompositeChildren(component) {
     // if composite is not directly matched by any childLogic leaf
     // then replace the composite with its replacements,
@@ -1172,15 +1430,6 @@ export default class Core {
 
         // expand composite if it isn't already
         if (!child.isExpanded || child.needToDryRunExpansion) {
-          let readyToExpand;
-          if (!("readyToExpand" in child.state)) {
-            throw Error(`Could not evaluate state variable readyToExpand of composite ${child.componentName}`);
-          }
-          readyToExpand = child.state.readyToExpand.isResolved && child.state.readyToExpand.value
-          if (!readyToExpand) {
-            compositeChildNotReadyToExpand = true;
-            continue;
-          }
 
           let expandResult = this.expandCompositeComponent({
             component: child,
@@ -1188,6 +1437,10 @@ export default class Core {
           });
 
           if (!expandResult.success) {
+            if (expandResult.readyToExpand) {
+              throw Error(`expand result of ${child.componentName} was not a success even though ready to expand.`);
+            }
+
             compositeChildNotReadyToExpand = true;
             continue;
           }
@@ -1858,6 +2111,29 @@ export default class Core {
 
     }
 
+    let foundReadyToExpand = false;
+    if ('readyToExpandWhenResolved' in stateVariableDefinitions) {
+      // if shadowing a composite
+      // make readyToExpandWhenResolved depend on the same variable
+      // of the refTarget also being resolved
+
+      foundReadyToExpand = true;
+
+      let stateDef = stateVariableDefinitions.readyToExpandWhenResolved;
+      let originalReturnDependencies = stateDef.returnDependencies;
+
+      stateDef.returnDependencies = function (args) {
+        let dependencies = originalReturnDependencies(args);
+        dependencies.targetReadyToExpandWhenResolved = {
+          dependencyType: "componentStateVariable",
+          componentName: redefineDependencies.refTargetName,
+          variableName: "readyToExpandWhenResolved"
+        }
+        return dependencies;
+      }
+
+    }
+
     let stateVariablesToShadow = refTargetComponent.stateVariablesForReference;
     if (!stateVariablesToShadow) {
       stateVariablesToShadow = [];
@@ -1889,11 +2165,20 @@ export default class Core {
       let stateDef = stateVariableDefinitions[varName];
 
       delete stateDef.additionalStateVariablesDefined;
+      let originalReturnDependencies = stateDef.returnDependencies;
 
-      stateDef.returnDependencies = function ({ arrayKeys }) {
+      stateDef.returnDependencies = function (args) {
         let dependencies = {};
-        if (arrayKeys) {
-          for (let key of arrayKeys) {
+        if (foundReadyToExpand) {
+          // even though won't use original dependencies
+          // if found a readyToExpandWhenResolved
+          // keep original dependencies so that readyToExpandWhenResolved
+          // won't be resolved until all its dependent variables are resolved
+          dependencies = originalReturnDependencies(args);
+        }
+
+        if (args.arrayKeys) {
+          for (let key of args.arrayKeys) {
             dependencies[key] = {
               dependencyType: "componentStateVariable",
               componentName: redefineDependencies.refTargetName,
@@ -2399,6 +2684,9 @@ export default class Core {
         upstreamComponentName: component.componentName,
         upstreamVariableName: stateVariable,
       };
+      if (dep.doNotProxy) {
+        newDep.doNotProxy = true;
+      }
 
       if (dep.dependencyType === "childStateVariables") {
         let activeChildrenIndices = component.childLogic.returnMatches(dep.childLogicName);
@@ -2575,7 +2863,11 @@ export default class Core {
       else if (dep.dependencyType === "value") {
         newDep.value = dep.value;
       }
+      else if (dep.dependencyType === "potentialEssentialVariable") {
+        newDep.variableName = dep.variableName;
+      }
       else if (dep.dependencyType !== "serializedChildren"
+        && dep.dependencyType !== "variants"
       ) {
         throw Error(`Unrecognized dependency type ${dep.dependencyType}`);
       }
@@ -2931,7 +3223,7 @@ export default class Core {
         if (!(varName in component.state)) {
           throw Error(`Definition of state variable ${stateVariable} of ${component.componentName} set alwaysShadow for ${varName}, which isn't a state variable.`);
         }
-        if (!(varName in result.newValues || varName in useEssentialOrDefaultValue)) {
+        if (!(varName in receivedValue)) {
           throw Error(`Definition of state variable ${stateVariable} of ${component.componentName} set alwaysShadow for ${varName}, but didn't set its value.`);
         }
         component.state[varName].alwaysShadow = true;
@@ -3077,6 +3369,8 @@ export default class Core {
     for (let depName in downDeps) {
       let dep = downDeps[depName];
 
+      let value;
+
       if (dep.dependencyType === "childStateVariables" ||
         dep.dependencyType === "childIdentity") {
 
@@ -3117,7 +3411,7 @@ export default class Core {
 
         delete dep.valuesChanged;
 
-        dependencyValues[dep.dependencyName] = newDep;
+        value = newDep;
         if (Object.keys(newChanges).length > 0) {
           changes[dep.dependencyName] = newChanges;
         }
@@ -3126,8 +3420,7 @@ export default class Core {
         dep.dependencyType === "componentStateVariable" ||
         dep.dependencyType === "parentStateVariable") {
         let depComponent = this.components[dep.downstreamComponentName];
-        dependencyValues[dep.dependencyName] =
-          depComponent.state[dep.downstreamVariableName].value;
+        value = depComponent.state[dep.downstreamVariableName].value;
 
         if (dep.valueChanged) {
           changes[dep.dependencyName] = { valueChanged: true };
@@ -3139,11 +3432,11 @@ export default class Core {
         // } else if (dep.dependencyType === "previouslyCalculatedStateVariable") {
         //   let depComponent = this.components[dep.downstreamComponentName];
         //   // return value only if it happen to have a previous value around
-        //   dependencyValues[dep.dependencyName] = {
+        //   value = {
         //     value: depComponent._calculatedStateValues[dep.downstreamVariableNameForPrevious],
         //   }
       } else if (dep.dependencyType === "stateVariableResolved") {
-        dependencyValues[dep.dependencyName] = true;
+        value = true;
         if (dep.valueChanged) {
           changes[dep.dependencyName] = { valueChanged: true };
           dep.valueChanged = false;
@@ -3152,8 +3445,7 @@ export default class Core {
         let depComponent = this.components[dep.downstreamComponentName];
         // call getter to make sure component type is set
         depComponent.state[dep.downstreamVariableName].value;
-        dependencyValues[dep.dependencyName] =
-          depComponent.state[dep.downstreamVariableName].componentType;
+        value = depComponent.state[dep.downstreamVariableName].componentType;
         if (dep.valueChanged) {
           changes[dep.dependencyName] = { valueChanged: true };
           dep.valueChanged = false;
@@ -3162,7 +3454,7 @@ export default class Core {
       else if (dep.dependencyType === "componentIdentity") {
 
         let depComponent = this.components[dep.downstreamComponentName];
-        dependencyValues[dep.dependencyName] = {
+        value = {
           componentName: depComponent.componentName,
           componentType: depComponent.componentType,
         };
@@ -3177,7 +3469,7 @@ export default class Core {
       //   let replacements = this.getComponentOrReplacements(depComponent);
       //   let replacementNames = replacements.map(x => x.componentName);
       //   let replacementClasses = replacements.map(x => this.allComponentClasses[x.componentType]);
-      //   dependencyValues[dep.dependencyName] = {
+      //   value = {
       //     replacementNames,
       //     replacementClasses,
       //   };
@@ -3185,20 +3477,36 @@ export default class Core {
       // }
 
       else if (dep.dependencyType === "doenetAttribute") {
-        dependencyValues[dep.dependencyName] = component.doenetAttributes[dep.attributeName];
+        value = component.doenetAttributes[dep.attributeName];
       }
       else if (dep.dependencyType === "value") {
-        dependencyValues[dep.dependencyName] = dep.value;
+        value = dep.value;
       }
       else if (dep.dependencyType === "serializedChildren") {
-        dependencyValues[dep.dependencyName] = component.serializedChildren;
+        value = component.serializedChildren;
+      }
+      else if (dep.dependencyType === "variants") {
+        value = component.variants;
+      }
+      else if (dep.dependencyType === "potentialEssentialVariable") {
+        if (component.potentialEssentialState) {
+          value = component.potentialEssentialState[dep.variableName];
+        } else {
+          value = undefined;
+        }
       }
       else {
         throw Error(`unrecognized dependency type ${dep.dependencyType}`);
       }
+
+      if (!dep.doNotProxy && value !== null && typeof value === 'object') {
+        value = new Proxy(value, readOnlyProxyHandler)
+      }
+
+      dependencyValues[dep.dependencyName] = value;
     }
     return {
-      dependencyValues: new Proxy(dependencyValues, readOnlyProxyHandler),
+      dependencyValues,
       changes, usedDefault,
     }
   }
@@ -3212,12 +3520,12 @@ export default class Core {
     if (component instanceof this.allComponentClasses._composite) {
       if (!component.isExpanded) {
         let readyToExpand;
-        if (!("readyToExpand" in component.state)) {
-          throw Error(`Could not evaluate state variable readyToExpand of composite ${componentName}`);
+        if (!("readyToExpandWhenResolved" in component.state)) {
+          throw Error(`Could not evaluate state variable readyToExpandWhenResolved of composite ${componentName}`);
         }
-        readyToExpand = component.state.readyToExpand.isResolved && component.state.readyToExpand.value
+        readyToExpand = component.state.readyToExpandWhenResolved.isResolved
         if (!readyToExpand) {
-          throw Error(`State variable readyToExpand of composite ${componentName} is not resolved or false`);
+          throw Error(`State variable readyToExpandWhenResolved of composite ${componentName} is not resolved`);
         }
 
         let expandResult = this.expandCompositeComponent({
@@ -3452,7 +3760,7 @@ export default class Core {
           // attempt to resolve this arrayEntry
 
           let varEnding = stateVariable.substring(arrayEntryPrefix.length);
-          if(varEnding === "") {
+          if (varEnding === "") {
             continue;
           }
 
@@ -3605,9 +3913,8 @@ export default class Core {
                 //   }
                 // }
 
-                if (dep.stateVariable === "readyToExpand" &&
-                  depComponent instanceof this._allComponentClasses['_composite'] &&
-                  depComponent.state.readyToExpand.value) {
+                if (dep.stateVariable === "readyToExpandWhenResolved" &&
+                  depComponent instanceof this._allComponentClasses['_composite']) {
 
                   let parent = this._components[depComponent.parent];
                   let newChildrenResult;
@@ -4117,14 +4424,15 @@ export default class Core {
   markStateVariableAndUpstreamDependentsStale({ component, varName }) {
 
     let componentsTouched = [component.componentName];
+    let stateVarObj = component.state[varName];
 
     // if don't have a getter set, then need to save old value
     // and put getter back in place to get a new value next time it is requested
-    if (!Object.getOwnPropertyDescriptor(component.state[varName], 'value').get) {
-      component.state[varName]._previousValue = component.state[varName].value;
-      delete component.state[varName].value;
+    if (!(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)) {
+      stateVarObj._previousValue = stateVarObj.value;
+      delete stateVarObj.value;
       let getStateVar = this.getStateVariableValue;
-      Object.defineProperty(component.state[varName], 'value', { get: () => getStateVar({ component, stateVariable: varName }), configurable: true });
+      Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component, stateVariable: varName }), configurable: true });
 
       let additionalComponentsTouched = this.markUpstreamDependentsStale({ component, varName });
       componentsTouched.push(...additionalComponentsTouched);
@@ -4225,7 +4533,7 @@ export default class Core {
 
           // if don't have a getter set, then need to save old value
           // and put getter back in place to get a new value next time it is requested
-          if (!Object.getOwnPropertyDescriptor(upVar, 'value').get) {
+          if (!(Object.getOwnPropertyDescriptor(upVar, 'value').get || upVar.immutable)) {
             upVar._previousValue = upVar.value;
             delete upVar.value;
             Object.defineProperty(upVar, 'value', { get: () => getStateVar({ component: upDepComponent, stateVariable: upVarName }), configurable: true });
@@ -4719,20 +5027,73 @@ export default class Core {
 
         if (change.serializedReplacements) {
 
+          let serializedReplacements = change.serializedReplacements;
+
+          if (component.shadows) {
+            if (!change.changeTopLevelReplacements) {
+              throw Error(`Haven't implemented non-top level change in replacements for shadowed composite`);
+            }
+
+            // rather than using serializedReplacements
+            // serialize the corresponding replacements of the shadowed composite
+            // and add shadow dependencies
+            let shadowedComposite = this._components[component.shadows.componentName];
+            let firstIndex = change.firstReplacementInd;
+            let lastIndex = firstIndex + serializedReplacements.length;
+            let replacementsToShadow = shadowedComposite.replacements
+              .filter((v, i) => i >= firstIndex && i < lastIndex);
+
+            serializedReplacements = replacementsToShadow.map(x => x.serialize({ forReference: true }));
+
+            let refComponentName = component.shadows.refComponentName;
+
+            this.addShadowDependencies({
+              serializedComponents: serializedReplacements,
+              shadowedComponents: replacementsToShadow,
+              refComponentName,
+            });
+
+          }
+
           let createResult = this.createIsolatedComponentsSub({
-            serializedState: change.serializedReplacements,
+            serializedState: serializedReplacements,
             applySugar: true,
             parentName: component.componentName
           });
           newComponents = createResult.components;
+
         } else if (change.replacementsWithInstructions) {
+
+          let serializedReplacementsFromComponent;
+
+          if (component.shadows) {
+
+            let nReplacements = change.replacementsWithInstructions.reduce((a, c) => a + c.replacements.length, 0);
+            let shadowedComposite = this._components[component.shadows.componentName];
+            let firstIndex = change.firstReplacementInd;
+            let lastIndex = firstIndex + nReplacements;
+            let replacementsToShadow = shadowedComposite.replacements
+              .filter((v, i) => i >= firstIndex && i < lastIndex);
+
+            serializedReplacementsFromComponent = replacementsToShadow.map(x => x.serialize({ forReference: true }));
+
+            let refComponentName = component.shadows.refComponentName;
+
+            this.addShadowDependencies({
+              serializedComponents: serializedReplacementsFromComponent,
+              shadowedComponents: replacementsToShadow,
+              refComponentName,
+            })
+          }
+
           newComponents = this.processReplacementsWithInstructions({
             replacementsWithInstructions: change.replacementsWithInstructions,
+            serializedReplacementsFromComponent,
             component,
           })
 
         } else {
-          throw Error(`Invald replacement change.`)
+          throw Error(`Invalid replacement change.`)
         }
 
 

@@ -3,7 +3,7 @@ import InlineComponent from './abstract/InlineComponent';
 export default class Variants extends InlineComponent {
   static componentType = "variants";
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
     let childLogic = super.returnChildLogic({
       standardComponentTypes: standardComponentTypes,
       allComponentClasses: allComponentClasses,
@@ -17,11 +17,11 @@ export default class Variants extends InlineComponent {
       number: 0
     });
 
-    let breakStringIntoVariantsByCommas = function({activeChildrenMatched}) {
+    let breakStringIntoVariantsByCommas = function ({ activeChildrenMatched }) {
       let stringChild = activeChildrenMatched[0];
-      let newChildren = stringChild.state.value.split(",").map(x=> ({
+      let newChildren = stringChild.stateValues.value.split(",").map(x => ({
         componentType: "variant",
-        state: {value: x.trim()}
+        state: { value: x.trim() }
       }));
       return {
         success: true,
@@ -29,74 +29,63 @@ export default class Variants extends InlineComponent {
         toDelete: [stringChild.componentName],
       }
     }
-    
+
     let exactlyOneString = childLogic.newLeaf({
       name: "exactlyOneString",
       componentType: 'string',
       number: 1,
       isSugar: true,
+      affectedBySugar: ["atLeastZeroVariants"],
       replacementFunction: breakStringIntoVariantsByCommas,
     });
-    
+
     childLogic.newOperator({
       name: "VariantsXorSugar",
       operator: 'xor',
-      propositions: [exactlyOneString,atLeastZeroVariants],
+      propositions: [exactlyOneString, atLeastZeroVariants],
       setAsBase: true,
     });
 
     return childLogic;
   }
 
-  updateState(args={}) {
-    if(args.init === true) {
-      this.makePublicStateVariableArray({
-        variableName: "variants",
-        componentType: "variant",
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "variant",
-        arrayVariableName: "variants",
-      });
-      this.makePublicStateVariable({
-        variableName: "nvariants",
-        componentType: "number",
-      })
-    }
 
-    super.updateState(args);
-    
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.variants = true;
-      this.unresolvedState.nvariants = true;
-      return;
-    }
+  static returnStateVariableDefinitions() {
 
-    delete this.unresolvedState.variants;
-    delete this.unresolvedState.nvariants;
+    let stateVariableDefinitions = {};
 
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-      let variantChildrenInds = this.childLogic.returnMatches("atLeastZeroVariants");
-      if(variantChildrenInds.length > 0) {
-        this.state.variantChildren = variantChildrenInds.map(x => this.activeChildren[x]);
-        this.state.nvariants = this.state.variantChildren.length;
-      }else {
-        delete this.state.variantChildren;
-        this.state.nvariants = 0;
+    stateVariableDefinitions.variants = {
+      public: true,
+      componentType: "variant",
+      isArray: true,
+      entryPrefixes: ["variant"],
+      returnDependencies: () => ({
+        variantChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroVariants",
+          variableNames: ["value"],
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { variants: dependencyValues.variantChildren.map(x => x.stateValues.value.toLowerCase()) } }
       }
     }
 
-    if(this.state.variantChildren) {
-      if(childrenChanged || this.state.variantChildren.some(x=>trackChanges.getVariableChanges({
-          component: x, variable: "value"}))) {
-        this.state.variants = this.state.variantChildren.map(x => x.state.value);
+    stateVariableDefinitions.nVariants = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        variants: {
+          dependencyType: "stateVariable",
+          variableName: "variants"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { nVariants: dependencyValues.variants.length } }
       }
-    }else {
-      this.state.variants = [];
     }
 
+    return stateVariableDefinitions;
   }
+
 }

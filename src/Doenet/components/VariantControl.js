@@ -5,13 +5,13 @@ export default class VariantControl extends BaseComponent {
 
   static createsVariants = true;
 
-  static createPropertiesObject({standardComponentTypes}) {
+  static createPropertiesObject({ standardComponentTypes }) {
     let properties = super.createPropertiesObject({
       standardComponentTypes: standardComponentTypes
     });
-    properties.nvariants = {default: 100};
-    properties.uniquevariants = {default: false};
-    
+    properties.nVariants = { default: 100 };
+    properties.uniqueVariants = { default: false };
+
     // base component has variants as a property
     // but want to treat variants separately here
     delete properties.variants;
@@ -19,7 +19,7 @@ export default class VariantControl extends BaseComponent {
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
     let childLogic = super.returnChildLogic({
       standardComponentTypes: standardComponentTypes,
       allComponentClasses: allComponentClasses,
@@ -51,219 +51,355 @@ export default class VariantControl extends BaseComponent {
   }
 
 
-  updateState(args={}) {
-    if(args.init) {
-      this.makePublicStateVariableArray({
-        variableName: "seeds",
-        componentType: "seed",
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "seed",
-        arrayVariableName: "seeds",
-      });
-      this.makePublicStateVariableArray({
-        variableName: "variants",
-        componentType: "variant",
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "variant",
-        arrayVariableName: "variants",
-      });
-      this.makePublicStateVariable({
-        variableName: "selectedVariantNumber",
-        componentType: "number",
-      });
-      this.makePublicStateVariable({
-        variableName: "selectedVariant",
-        componentType: "text",
-      });
+  static returnStateVariableDefinitions() {
 
-      // bind this to getRng so won't have read-only proxy
-      this.getRng = this.getRng.bind(this);
-    }
+    let stateVariableDefinitions = {};
 
+    stateVariableDefinitions.nVariantsSpecified = {
+      returnDependencies: ({ sharedParameters }) => ({
+        uniqueVariants: {
+          dependencyType: "stateVariable",
+          variableName: "uniqueVariants"
+        },
+        numberOfVariantsFromSharedParameters: {
+          dependencyType: "value",
+          value: sharedParameters.numberOfVariantsFromSharedParameters,
+        },
+        nVariants: {
+          dependencyType: "stateVariable",
+          variableName: "nVariants"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
 
-    // variantControl doesn't update,
-    // so run update only until variant is selected
-    if(this.state.variantSelected) {
-      return;
-    }
+        let nVariantsSpecified = dependencyValues.nVariants;
 
-    super.updateState(args);
+        if (nVariantsSpecified < 1) {
+          nVariantsSpecified = 1;
+        }
 
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.seeds = true;
-      this.unresolvedState.variants = true;
-      this.unresolvedState.selectedVariantNumber = true;
-      this.unresolvedState.selectedVariant = true;
-      return;
-    }
-
-    delete this.unresolvedState.seeds;
-    delete this.unresolvedState.variants;
-    delete this.unresolvedState.selectedVariantNumber;
-    delete this.unresolvedState.selectedVariant;
-
-    // if get this far, variant will be selected
-    this.state.variantSelected = true;
-
-    this.state.nvariants = Math.round(this.state.nvariants);
-    if(this.state.nvariants < 1) {
-      this.state.nvariants = 1;
-    }
-
-    // if have unique variants, then shared parameters
-    // should may an override for the number of variants
-    if(this.state.uniquevariants) {
-      if(this.sharedParameters.numberOfVariants !== undefined) {
-        this.state.nvariants = this.sharedParameters.numberOfVariants;
-      }else {
-        console.log("Restricting to unique variants was not successful")
-      }
-    }
-
-    let variantsInd = this.childLogic.returnMatches("atMostOneVariants");
-    if(variantsInd.length ===1) {
-      this.state.variantsChild = this.activeChildren[variantsInd[0]];
-      this.state.variants = this.state.variantsChild.state.variants.map(x => x.toLowerCase());
-    }else {
-      this.state.variants = [];
-    }
-
-    // if fewer variants specified that nvariants, find additional variants
-    // try variants, n, n+1, ...., nvariants, (converted to letters)
-    // except skipping variants that are already in original variants
-    let variantNumber = this.state.variants.length;
-    let variantValue = variantNumber-1;
-    let variantString;
-    let originalVariants = [...this.state.variants];
-    while(variantNumber < this.state.nvariants) {
-      variantNumber++;
-      variantValue++;
-      variantString = numberToLowercaseLetters(variantValue);
-      while(originalVariants.includes(variantString)) {
-        variantValue++;
-        variantString = numberToLowercaseLetters(variantValue);
-      }
-      this.state.variants.push(variantString);
-    }
-
-
-    // determine how variant will be selected.
-    // Use the first of these options that is available
-    // 1. if selectedVariantNumber is an essential state variable
-    //    then use that variantNumber
-    // 2. if variants.desiredVariantNumber is defined and is a valid index,
-    //    then use that for variantNumber
-    // 3. if variants.desiredVariant is defined and is a valid variant
-    //    then use the variantNumber corresponding to that value
-    // 4. else, random generate variantNumber
-
-
-    if(this._state.selectedVariantNumber.essential !== true) {
-      let variantFound = false;
-      // no essential state variable, so try to find desiredVariant
-      if(this.variants !== undefined) {
-        if(this.variants.desiredVariantNumber !== undefined) {
-          let desiredVariantNumber = Number(this.variants.desiredVariantNumber);
-          if(!Number.isInteger(desiredVariantNumber)) {
-            throw Error("Variant number " + this.variants.desiredVariantNumber + " must be an integer");
-          }else {
-            this.state.selectedVariantNumber = desiredVariantNumber % this.state.nvariants;
-            if(this.state.selectedVariantNumber < 0) {
-              this.state.selectedVariantNumber += this.state.nvariants;
-            }
-            variantFound = true;
+        // if have unique variants, then shared parameters
+        // should be an override for the number of variants
+        if (dependencyValues.uniqueVariants) {
+          if (dependencyValues.numberOfVariantsFromSharedParameters !== undefined) {
+            nVariantsSpecified = dependencyValues.numberOfVariantsFromSharedParameters;
+          } else {
+            console.log("Restricting to unique variants was not successful")
           }
         }
-        if(!variantFound && this.variants.desiredVariant !== undefined) {
-          if(typeof this.variants.desiredVariant === "string") {
-            // want case insensitive test, so convert to lower case
-            let originalLowerCaseVariants = originalVariants.map(x => x.toLowerCase());
-            let lowerCaseVariants = [...originalLowerCaseVariants, ...this.state.variants.slice(originalLowerCaseVariants.length)];
-            let desiredNumber = lowerCaseVariants.indexOf(this.variants.desiredVariant.toLowerCase());
-            if(desiredNumber !== -1) {
-              this.state.selectedVariantNumber = desiredNumber;
-              variantFound = true;
+
+        return { newValues: { nVariantsSpecified } };
+      }
+    }
+
+    stateVariableDefinitions.seeds = {
+      public: true,
+      componentType: "seed",
+      isArray: true,
+      entryPrefixes: ["seed"],
+      returnDependencies: () => ({
+        seedsChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneSeeds",
+          variableNames: ["seeds"],
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        let seeds = [];
+        if (dependencyValues.seedsChild.length === 1) {
+          seeds = dependencyValues.seedsChild[0].stateValues.seeds;
+        }
+        return { newValues: { seeds } }
+      }
+    }
+
+    stateVariableDefinitions.originalVariants = {
+      returnDependencies: () => ({
+        variantsChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneVariants",
+          variableNames: ["variants"],
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        let originalVariants = [];
+        if (dependencyValues.variantsChild.length === 1) {
+          originalVariants = dependencyValues.variantsChild[0].stateValues.variants;
+        }
+        return { newValues: { originalVariants } }
+      }
+    }
+
+    stateVariableDefinitions.variants = {
+      public: true,
+      componentType: "variant",
+      isArray: true,
+      entryPrefixes: ["variant"],
+      returnDependencies: () => ({
+        originalVariants: {
+          dependencyType: "stateVariable",
+          variableName: "originalVariants"
+        },
+        nVariantsSpecified: {
+          dependencyType: "stateVariable",
+          variableName: "nVariantsSpecified"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        // if fewer variants specified than nVariantsSpecified, find additional variants
+        // try variants, n, n+1, ...., nVariantsSpecified, (converted to letters)
+        // except skipping variants that are already in original variants
+        let variants = [...dependencyValues.originalVariants];
+        let variantNumber = variants.length;
+        let variantValue = variantNumber - 1;
+        let variantString;
+        while (variantNumber < dependencyValues.nVariantsSpecified) {
+          variantNumber++;
+          variantValue++;
+          variantString = numberToLowercaseLetters(variantValue);
+          while (dependencyValues.originalVariants.includes(variantString)) {
+            variantValue++;
+            variantString = numberToLowercaseLetters(variantValue);
+          }
+          variants.push(variantString);
+        }
+
+        return { newValues: { variants } }
+      }
+    }
+
+
+    stateVariableDefinitions.selectedVariantNumber = {
+      public: true,
+      componentType: "number",
+      immutable: true,
+      returnDependencies: ({ sharedParameters }) => ({
+        essentialSelectedVariantNumber: {
+          dependencyType: "potentialEssentialVariable",
+          variableName: "selectedVariantNumber",
+        },
+        variantsObject: {
+          dependencyType: "variants",
+        },
+        originalVariants: {
+          dependencyType: "stateVariable",
+          variableName: "originalVariants"
+        },
+        variants: {
+          dependencyType: "stateVariable",
+          variableName: "variants"
+        },
+        nVariantsSpecified: {
+          dependencyType: "stateVariable",
+          variableName: "nVariantsSpecified"
+        },
+        hashStringToInteger: {
+          dependencyType: "value",
+          value: sharedParameters.hashStringToInteger,
+        },
+        selectRng: {
+          dependencyType: "value",
+          value: sharedParameters.selectRng,
+          doNotProxy: true,
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        // determine how variant will be selected.
+        // Use the first of these options that is available
+        // 1. if selectedVariantNumber is an essential state variable
+        //    then use that variantNumber
+        // 2. if variants.desiredVariantNumber is defined and is a valid index,
+        //    then use that for variantNumber
+        // 3. if variants.desiredVariant is defined and is a valid variant
+        //    then use the variantNumber corresponding to that value
+        // 4. else, random generate variantNumber
+
+        if (dependencyValues.essentialSelectedVariantNumber !== undefined) {
+          return {
+            makeEssential: ["selectedVariantNumber"],
+            newValues: {
+              selectedVariantNumber: dependencyValues.essentialSelectedVariantNumber
             }
           }
-          if(!variantFound) {
-            console.log("Variant " + this.variants.desiredVariant + " is not valid, convert to variant index");
-            this.state.selectedVariantNumber = Math.abs(
-              this.sharedParameters.hashStringToInteger(
-                JSON.stringify(this.variants.desiredVariant)
+        }
+
+        // no essential state variable, so try to find desiredVariant
+        if (dependencyValues.variantsObject !== undefined) {
+          if (dependencyValues.variantsObject.desiredVariantNumber !== undefined) {
+            let desiredVariantNumber = Number(dependencyValues.variantsObject.desiredVariantNumber);
+            if (!Number.isInteger(desiredVariantNumber)) {
+              throw Error("Variant number " + dependencyValues.variantsObject.desiredVariantNumber + " must be an integer");
+            } else {
+              let selectedVariantNumber = desiredVariantNumber % dependencyValues.nVariantsSpecified;
+              if (selectedVariantNumber < 0) {
+                selectedVariantNumber += dependencyValues.nVariantsSpecified;
+              }
+              return {
+                makeEssential: ["selectedVariantNumber"],
+                newValues: { selectedVariantNumber }
+              }
+            }
+          }
+          if (dependencyValues.variantsObject.desiredVariant !== undefined) {
+            if (typeof dependencyValues.variantsObject.desiredVariant === "string") {
+              // want case insensitive test, so convert to lower case
+              // treat originalVariants separately so don't have to lower case
+              // remaining variants, which are alread lowercase
+              let originalLowerCaseVariants = dependencyValues.originalVariants.map(x => x.toLowerCase());
+              let lowerCaseVariants = [...originalLowerCaseVariants, ...dependencyValues.variants.slice(originalLowerCaseVariants.length)];
+              let desiredNumber = lowerCaseVariants.indexOf(dependencyValues.variantsObject.desiredVariant.toLowerCase());
+              if (desiredNumber !== -1) {
+                return {
+                  makeEssential: ["selectedVariantNumber"],
+                  newValues: { selectedVariantNumber: desiredNumber }
+                }
+              }
+            }
+            console.log("Variant " + dependencyValues.variantsObject.desiredVariant + " is not valid, convert to variant index");
+            let selectedVariantNumber = Math.abs(
+              dependencyValues.hashStringToInteger(
+                JSON.stringify(dependencyValues.variantsObject.desiredVariant)
               )
-              % this.state.nvariants
+              % dependencyValues.nVariantsSpecified
             );
-            variantFound = true;
+            return {
+              makeEssential: ["selectedVariantNumber"],
+              newValues: { selectedVariantNumber }
+            }
           }
         }
-      }
-      if(!variantFound) {
+
         // randomly pick variant number using random number generator
         // from shared parameters
 
         // random number in [0, 1)
-        let rand = this.sharedParameters.selectRng.random();
+        let rand = dependencyValues.selectRng.random();
         // random integer from 0 to nvariants-1
-        this.state.selectedVariantNumber = Math.floor(rand*this.state.nvariants);
+        let selectedVariantNumber = Math.floor(rand * dependencyValues.nVariantsSpecified);
+
+
+        return {
+          makeEssential: ["selectedVariantNumber"],
+          newValues: { selectedVariantNumber }
+        }
+
       }
     }
 
-    // set information about selected variant as essential
-    // so don't reselect if regenerate
-    this._state.selectedVariantNumber.essential = true;
-
-    this.state.selectedVariant = this.state.variants[this.state.selectedVariantNumber];
-
-    let seedsInd = this.childLogic.returnMatches("atMostOneSeeds");
-    if(seedsInd.length === 1) {
-      this.state.seedsChild = this.activeChildren[seedsInd[0]];
-      this.state.seeds = this.state.seedsChild.state.seeds;
-    }
-
-    if(this.state.selectedVariantNumber < this.state.seeds.length) {
-      this.state.selectedSeed = this.state.seeds[this.state.selectedVariantNumber];
-    }else {
-      // if fewer seeds than selectedVariantNumber, find additional seeds
-      // try seeds, n+1, n+2, ...., selectedVariantNumber
-      // except skipping seeds that are already in original seeds
-      let seedNumber = this.state.seeds.length-1;
-      let seedValue = seedNumber+1;
-      let seedString;
-      while(seedNumber < this.state.selectedVariantNumber) {
-        seedNumber++;
-        seedValue++;
-        seedString = seedValue.toString();
-        while(this.state.seeds.includes(seedString)) {
-          seedValue++;
-          seedString = seedValue.toString();
+    stateVariableDefinitions.selectedVariant = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        variants: {
+          dependencyType: "stateVariable",
+          variableName: "variants"
+        },
+        selectedVariantNumber: {
+          dependencyType: "stateVariable",
+          variableName: "selectedVariantNumber",
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            selectedVariant:
+              dependencyValues.variants[dependencyValues.selectedVariantNumber]
+          }
         }
       }
-      this.state.selectedSeed = seedString;
     }
 
-    this.state.convertedSeed = this.sharedParameters.hashStringToInteger(
-      this.state.selectedSeed
-    );
-    this.state.selectRng = new this.sharedParameters.rngClass(this.state.convertedSeed);
+    stateVariableDefinitions.selectedSeed = {
+      returnDependencies: () => ({
+        selectedVariantNumber: {
+          dependencyType: "stateVariable",
+          variableName: "selectedVariantNumber",
+        },
+        seeds: {
+          dependencyType: "stateVariable",
+          variableName: "seeds"
+        },
 
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.selectedVariantNumber < dependencyValues.seeds.length) {
+          return { newValues: { selectedSeed: dependencyValues.seeds[dependencyValues.selectedVariantNumber] } }
+        }
+
+        // if fewer seeds than selectedVariantNumber, find additional seeds
+        // try seeds, n+1, n+2, ...., selectedVariantNumber
+        // except skipping seeds that are already in original seeds
+        let seedNumber = dependencyValues.seeds.length - 1;
+        let seedValue = seedNumber + 1;
+        let seedString;
+        while (seedNumber < dependencyValues.selectedVariantNumber) {
+          seedNumber++;
+          seedValue++;
+          seedString = seedValue.toString();
+          while (dependencyValues.seeds.includes(seedString)) {
+            seedValue++;
+            seedString = seedValue.toString();
+          }
+        }
+        return { newValues: { selectedSeed: seedString } }
+
+      }
+    }
+
+    stateVariableDefinitions.convertedSeed = {
+      returnDependencies: ({ sharedParameters }) => ({
+        selectedSeed: {
+          dependencyType: "stateVariable",
+          variableName: "selectedSeed"
+        },
+        hashStringToInteger: {
+          dependencyType: "value",
+          value: sharedParameters.hashStringToInteger,
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          convertedSeed: dependencyValues.hashStringToInteger(dependencyValues.selectedSeed)
+        }
+      })
+    }
+
+
+    stateVariableDefinitions.selectRng = {
+      returnDependencies: ({ sharedParameters }) => ({
+        convertedSeed: {
+          dependencyType: "stateVariable",
+          variableName: "convertedSeed",
+        },
+        rngClass: {
+          dependencyType: "value",
+          value: sharedParameters.rngClass,
+          doNotProxy: true,
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          selectRng: new dependencyValues.rngClass(dependencyValues.convertedSeed)
+        }
+      })
+    }
+
+    return stateVariableDefinitions;
   }
 
-  getRng() {
-    return this.state.selectRng;
-  }
 }
 
-function numberToLowercaseLetters(number){
+function numberToLowercaseLetters(number) {
   let letters = "";
-  while(true) {  
+  while (true) {
     let nextNum = number % 26;
     letters = String.fromCharCode(97 + nextNum) + letters;
-    if(number < 26) {
+    if (number < 26) {
       break;
     }
-    number = Math.floor(number/26)-1;
+    number = Math.floor(number / 26) - 1;
   }
   return letters;
 }

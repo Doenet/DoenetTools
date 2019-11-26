@@ -20,7 +20,7 @@ export default class CompositeComponent extends BaseComponent {
 
     let serializedState = super.serialize(parameters);
 
-    if (this.replacements === undefined || parameters.forReference) {
+    if (this.replacements === undefined) {
       return serializedState;
     }
 

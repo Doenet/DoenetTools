@@ -22,35 +22,34 @@ export default class Group extends CompositeComponent {
     return childLogic;
   }
 
-  updateState(args={}) {
-    let trackChanges = this.currentTracker.trackChanges;
 
-    super.updateState(args);
 
-    // child logic always satisfied
+  static returnStateVariableDefinitions() {
 
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
+    let stateVariableDefinitions = {};
 
-    
-    if(childrenChanged) {
-      for(let childName in this.allChildren) {
-        let child = this.allChildren[childName].component;
-        if(!child.componentIsAProperty) {
-          // add dependencies once without recursive to set as base reference
-          this.addReferenceDependencies({
-            target: child,
-            shadowed: true
-          });
-          // run second time recursive to get descendants
-          this.addReferenceDependencies({
-            target: child,
-            recursive: true,
-            shadowed: true
-          });
+    stateVariableDefinitions.readyToExpandWhenResolved = {
+      returnDependencies: () => ({}),
+      definition: function () {
+        return { newValues: { readyToExpandWhenResolved: true } };
+      },
+    };
+
+    // we aren't going to bother to calculate the replacement classes of group
+    // Is there any reason we'd need them?
+    // Need a reasonable error if ref a prop of a group
+    stateVariableDefinitions.replacementClasses = {
+      additionalStateVariablesDefined: ["nonCompositeReplacementClasses"],
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          replacementClasses: undefined,
+          nonCompositeReplacementClasses: undefined,
         }
-      }
+      })
     }
 
+    return stateVariableDefinitions;
   }
 
   static createSerializedReplacements({component}) {
@@ -59,7 +58,7 @@ export default class Group extends CompositeComponent {
       x => x.serialize({forReference: true})
     );
 
-    if(component.state.hide) {
+    if(component.stateValues.hide) {
       for(let child of serializedChildrenCopy) {
         if(child.state === undefined) {
           child.state = {};
@@ -73,6 +72,9 @@ export default class Group extends CompositeComponent {
   }
 
   static calculateReplacementChanges({component, componentChanges, components}) {
+
+    return [];
+
     let replacementChanges = processChangesForReplacements({
       componentChanges: componentChanges,
       componentName: component.componentName,

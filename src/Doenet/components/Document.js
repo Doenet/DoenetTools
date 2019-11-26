@@ -5,6 +5,8 @@ export default class Document extends BaseComponent {
   static componentType = "document";
 
   static createsVariants = true;
+
+  static alwaysSetUpVariant = true;
   
   static createPropertiesObject() {
     return {title: {default: "", componentType: "text"}};
@@ -318,45 +320,6 @@ export default class Document extends BaseComponent {
     this.childrenWhoRender = this.activeChildren.map(x => x.componentName);
   }
 
-  static previewSerializedComponent({serializedComponent, sharedParameters, components}) {
-    if(serializedComponent.children === undefined) {
-      [];
-    }
-    
-    let variantControlInd;
-    let variantControlChild;
-    for(let [ind,child] of serializedComponent.children.entries()) {
-      if(child.componentType === "variantcontrol") {
-        variantControlInd = ind;
-        variantControlChild = child;
-        break;
-      }
-    }
-
-    let creationInstructions = [];
-
-    if(variantControlInd !== undefined) {
-      // if have desired variant value or index
-      // add that information to variantControl child
-      let desiredVariant = serializedComponent.variants.desiredVariant;
-      if(desiredVariant !== undefined) {
-        if(desiredVariant.index !== undefined) {
-          variantControlChild.variants.desiredVariantNumber = desiredVariant.index;
-        }else if(desiredVariant.value !== undefined) {
-          variantControlChild.variants.desiredVariant = desiredVariant.value;
-        }
-      }
-      creationInstructions.push({createChildren: [variantControlInd]});
-      if(serializedComponent.variants.uniquevariants) {
-        sharedParameters.numberOfVariants = serializedComponent.variants.numberOfVariants;
-      }
-    }
-    creationInstructions.push({callMethod: "setUpVariant"})
-
-    return creationInstructions;
-
-  }
-
   static setUpVariant({serializedComponent, sharedParameters, definingChildrenSoFar,
     allComponentClasses}) {
 
@@ -446,10 +409,10 @@ export default class Document extends BaseComponent {
    
     }else {
       // get parameters from variant control child
-      sharedParameters.variant = variantcontrolChild.state.selectedVariant;
-      sharedParameters.variantNumber = variantcontrolChild.state.selectedVariantNumber;
-      sharedParameters.selectRng = variantcontrolChild.getRng();
-      sharedParameters.allPossibleVariants = variantcontrolChild.state.variants;
+      sharedParameters.variant = variantcontrolChild.state.selectedVariant.value;
+      sharedParameters.variantNumber = variantcontrolChild.state.selectedVariantNumber.value;
+      sharedParameters.selectRng = variantcontrolChild.state.selectRng.value;
+      sharedParameters.allPossibleVariants = variantcontrolChild.state.variants.value;
       // console.log("Selected seed: " + variantcontrolChild.state.selectedSeed);
     }
 

@@ -32,9 +32,9 @@ describe('Mathinput Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['+', 'x', 1]);
-      expect(components['/_ref1'].replacements[0].state.value.tree).eqls(['+', 'x', 1]);
-      expect(components['/_mathinput2'].state.value.tree).to.eq('\uFF3F');
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 1]);
+      expect(components['/_ref1'].replacements[0].stateValues.value.tree).eqls(['+', 'x', 1]);
+      expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
     });
 
 
@@ -55,9 +55,9 @@ describe('Mathinput Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['+', 'x', 1]);
-      expect(components.__mathinput1.state.value.tree).eqls(['+', 'x', 1]);
-      expect(components['/_mathinput2'].state.value.tree).to.eq('\uFF3F');
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 1]);
+      expect(components.__mathinput1.stateValues.value.tree).eqls(['+', 'x', 1]);
+      expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
     });
 
 
@@ -78,9 +78,9 @@ describe('Mathinput Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['+', 'x', 12]);
-      expect(components.__mathinput1.state.value.tree).eqls(['+', 'x', 12]);
-      expect(components['/_mathinput2'].state.value.tree).to.eq('\uFF3F');
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 12]);
+      expect(components.__mathinput1.stateValues.value.tree).eqls(['+', 'x', 12]);
+      expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
     });
 
 
@@ -102,9 +102,9 @@ describe('Mathinput Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['+', 'x', 12]);
-      expect(components.__mathinput1.state.value.tree).eqls(['+', 'x', 12]);
-      expect(components['/_mathinput2'].state.value.tree).to.eq('\uFF3F');
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 12]);
+      expect(components.__mathinput1.stateValues.value.tree).eqls(['+', 'x', 12]);
+      expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
     });
 
 
@@ -124,9 +124,9 @@ describe('Mathinput Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['+', 'x', 'y']);
-      expect(components.__mathinput1.state.value.tree).eqls(['+', 'x', 'y']);
-      expect(components['/_mathinput2'].state.value.tree).to.eq('\uFF3F');
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 'y']);
+      expect(components.__mathinput1.stateValues.value.tree).eqls(['+', 'x', 'y']);
+      expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
     });
 
 
@@ -147,9 +147,9 @@ describe('Mathinput Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['+', 'x', 'y']);
-      expect(components.__mathinput1.state.value.tree).eqls(['+', 'x', 'y']);
-      expect(components['/_mathinput2'].state.value.tree).to.eq('\uFF3F');
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 'y']);
+      expect(components.__mathinput1.stateValues.value.tree).eqls(['+', 'x', 'y']);
+      expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
     });
 
 
@@ -171,9 +171,9 @@ describe('Mathinput Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['+', 'x', 'y']);
-      expect(components.__mathinput1.state.value.tree).eqls(['+', 'x', 'y']);
-      expect(components['/_mathinput2'].state.value.tree).eqls(['*', 'p', 'q']);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 'y']);
+      expect(components.__mathinput1.stateValues.value.tree).eqls(['+', 'x', 'y']);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['*', 'p', 'q']);
     });
 
 
@@ -194,9 +194,9 @@ describe('Mathinput Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['+', 'x', 'y']);
-      expect(components.__mathinput1.state.value.tree).eqls(['+', 'x', 'y']);
-      expect(components['/_mathinput2'].state.value.tree).eqls(['*', 'p', 'q']);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 'y']);
+      expect(components.__mathinput1.stateValues.value.tree).eqls(['+', 'x', 'y']);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['*', 'p', 'q']);
     });
 
 
@@ -217,9 +217,9 @@ describe('Mathinput Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['*', 'a', 'b', 'c']);
-      expect(components.__mathinput1.state.value.tree).eqls(['*', 'a', 'b', 'c']);
-      expect(components['/_mathinput2'].state.value.tree).eqls(['*', 'p', 'q']);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
+      expect(components.__mathinput1.stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['*', 'p', 'q']);
     });
 
     // type abc in mathinput 1
@@ -239,9 +239,9 @@ describe('Mathinput Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['*', 'a', 'b', 'c']);
-      expect(components.__mathinput1.state.value.tree).eqls(['*', 'a', 'b', 'c']);
-      expect(components['/_mathinput2'].state.value.tree).eqls(['*', 'p', 'q']);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
+      expect(components.__mathinput1.stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['*', 'p', 'q']);
     });
 
 
@@ -262,9 +262,9 @@ describe('Mathinput Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['*', 'a', 'b', 'c']);
-      expect(components.__mathinput1.state.value.tree).eqls(['*', 'a', 'b', 'c']);
-      expect(components['/_mathinput2'].state.value.tree).eqls(['*', 'p', 'q']);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
+      expect(components.__mathinput1.stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['*', 'p', 'q']);
     });
 
 
@@ -285,9 +285,9 @@ describe('Mathinput Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['*', 'a', 'b', 'c']);
-      expect(components.__mathinput1.state.value.tree).eqls(['*', 'a', 'b', 'c']);
-      expect(components['/_mathinput2'].state.value.tree).eqls(['/', 'u', 'v']);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
+      expect(components.__mathinput1.stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['/', 'u', 'v']);
     });
 
 
@@ -306,9 +306,9 @@ describe('Mathinput Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['*', 'a', 'b', 'c', 'd']);
-      expect(components.__mathinput1.state.value.tree).eqls(['*', 'a', 'b', 'c', 'd']);
-      expect(components['/_mathinput2'].state.value.tree).eqls(['/', 'u', 'v']);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'a', 'b', 'c', 'd']);
+      expect(components.__mathinput1.stateValues.value.tree).eqls(['*', 'a', 'b', 'c', 'd']);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['/', 'u', 'v']);
     });
 
 
@@ -328,9 +328,9 @@ describe('Mathinput Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['*', 'a', 'b', 'c', 'd']);
-      expect(components.__mathinput1.state.value.tree).eqls(['*', 'a', 'b', 'c', 'd']);
-      expect(components['/_mathinput2'].state.value.tree).eqls(['/', 'u', 'v']);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'a', 'b', 'c', 'd']);
+      expect(components.__mathinput1.stateValues.value.tree).eqls(['*', 'a', 'b', 'c', 'd']);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['/', 'u', 'v']);
     });
 
 
@@ -349,9 +349,9 @@ describe('Mathinput Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).to.eq('\uFF3F');
-      expect(components.__mathinput1.state.value.tree).to.eq('\uFF3F');
-      expect(components['/_mathinput2'].state.value.tree).eqls(['/', 'u', 'v']);
+      expect(components['/_mathinput1'].stateValues.value.tree).to.eq('\uFF3F');
+      expect(components.__mathinput1.stateValues.value.tree).to.eq('\uFF3F');
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['/', 'u', 'v']);
     });
 
 
@@ -378,8 +378,8 @@ describe('Mathinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['+', 1, ['*', 2, 'x']]);
-      expect(components['/_math1'].state.value.tree).eqls(['+', 1, ['*', 2, 'x']]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x']]);
+      expect(components['/_math1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x']]);
     });
 
     cy.log('enter new values')
@@ -394,9 +394,9 @@ describe('Mathinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['*', 'x', 'y']);
-      expect(components['/_math1'].state.value.tree).eqls(['*', 'x', 'y']);
-      expect(components['__mathinput1'].state.value.tree).eqls(['*', 'x', 'y']);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'x', 'y']);
+      expect(components['/_math1'].stateValues.value.tree).eqls(['*', 'x', 'y']);
+      expect(components['__mathinput1'].stateValues.value.tree).eqls(['*', 'x', 'y']);
     });
 
     cy.log('enter new values in referenced')
@@ -411,9 +411,9 @@ describe('Mathinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['*', 'q', 'r']);
-      expect(components['/_math1'].state.value.tree).eqls(['*', 'q', 'r']);
-      expect(components['__mathinput1'].state.value.tree).eqls(['*', 'q', 'r']);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'q', 'r']);
+      expect(components['/_math1'].stateValues.value.tree).eqls(['*', 'q', 'r']);
+      expect(components['__mathinput1'].stateValues.value.tree).eqls(['*', 'q', 'r']);
     });
 
 
@@ -439,25 +439,25 @@ describe('Mathinput Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <p>Original math: <math>1+<math>3x</math></math></p>
+    <p>Original math: <math simplify>1+<math>3x</math></math></p>
     <p>Mathinput based on math: <mathinput><ref>_math1</ref></mathinput></p>
     <p>Reffed mathinput: <ref>_mathinput1</ref></p>
     `}, "*");
     });
 
-    cy.get('#\\/_mathinput1_input').should('have.value', '1 + 3 x');
-    cy.get('#__mathinput1_input').should('have.value', '1 + 3 x');
+    cy.get('#\\/_mathinput1_input').should('have.value', '3 x + 1');
+    cy.get('#__mathinput1_input').should('have.value', '3 x + 1');
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1+3x')
+      expect(text.trim()).equal('3x+1')
     });
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['+', 1, ['*', 3, 'x']]);
-      expect(components['__mathinput1'].state.value.tree).eqls(['+', 1, ['*', 3, 'x']]);
-      expect(components['/_math1'].state.value.tree).eqls(['+', 1, ['*', 3, 'x']]);
-      expect(components['/_math2'].state.value.tree).eqls(['*', 3, 'x']);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', ['*', 3, 'x'], 1]);
+      expect(components['__mathinput1'].stateValues.value.tree).eqls(['+', ['*', 3, 'x'], 1]);
+      expect(components['/_math1'].stateValues.value.tree).eqls(['+', ['*', 3, 'x'], 1]);
+      expect(components['/_math2'].stateValues.value.tree).eqls(['*', 3, 'x']);
     });
 
 
@@ -473,10 +473,10 @@ describe('Mathinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['*', 'x', 'y']);
-      expect(components['__mathinput1'].state.value.tree).eqls(['*', 'x', 'y']);
-      expect(components['/_math1'].state.value.tree).eqls(['*', 'x', 'y']);
-      expect(components['/_math2'].state.value.tree).eqls(['+', ['*', 'x', 'y'], -1]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'x', 'y']);
+      expect(components['__mathinput1'].stateValues.value.tree).eqls(['*', 'x', 'y']);
+      expect(components['/_math1'].stateValues.value.tree).eqls(['*', 'x', 'y']);
+      expect(components['/_math2'].stateValues.value.tree).eqls(['+', ['*', 'x', 'y'], -1]);
     });
 
 
@@ -492,10 +492,10 @@ describe('Mathinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['*', 'q', 'r']);
-      expect(components['__mathinput1'].state.value.tree).eqls(['*', 'q', 'r']);
-      expect(components['/_math1'].state.value.tree).eqls(['*', 'q', 'r']);
-      expect(components['/_math2'].state.value.tree).eqls(['+', ['*', 'q', 'r'], -1]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'q', 'r']);
+      expect(components['__mathinput1'].stateValues.value.tree).eqls(['*', 'q', 'r']);
+      expect(components['/_math1'].stateValues.value.tree).eqls(['*', 'q', 'r']);
+      expect(components['/_math2'].stateValues.value.tree).eqls(['+', ['*', 'q', 'r'], -1]);
     });
 
 
@@ -518,9 +518,9 @@ describe('Mathinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
-      expect(components['/_math1'].state.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
-      expect(components['__mathinput1'].state.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(components['/_math1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(components['__mathinput1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
     });
 
     cy.log('enter new values, but they revert')
@@ -535,9 +535,9 @@ describe('Mathinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
-      expect(components['/_math1'].state.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
-      expect(components['__mathinput1'].state.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(components['/_math1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(components['__mathinput1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
     });
 
 
@@ -553,9 +553,9 @@ describe('Mathinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_mathinput1'].state.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
-      expect(components['/_math1'].state.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
-      expect(components['__mathinput1'].state.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(components['/_math1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+      expect(components['__mathinput1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
     });
 
 

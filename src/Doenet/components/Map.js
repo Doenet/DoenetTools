@@ -142,7 +142,7 @@ export default class Map extends CompositeComponent {
       }
     }
 
-    stateVariableDefinitions.readyToExpand = {
+    stateVariableDefinitions.readyToExpandWhenResolved = {
 
       returnDependencies: () => ({
         validBehavior: {
@@ -153,7 +153,7 @@ export default class Map extends CompositeComponent {
       definition: function () {
         // even with invalid behavior, still ready to expand
         // (it will just expand with zero replacements)
-        return { newValues: { readyToExpand: true } };
+        return { newValues: { readyToExpandWhenResolved: true } };
       },
     };
 
@@ -163,7 +163,7 @@ export default class Map extends CompositeComponent {
     stateVariableDefinitions.replacementClasses = {
       additionalStateVariablesDefined: ["nonCompositeReplacementClasses"],
       returnDependencies: () => ({}),
-      definition: () => ({ 
+      definition: () => ({
         newValues: {
           replacementClasses: undefined,
           nonCompositeReplacementClasses: undefined,
@@ -514,7 +514,7 @@ export default class Map extends CompositeComponent {
           } else {
             withheldNames = [];
           }
-          withheldNames = [lrp.substitutionsChildNames[ind].slice(currentMinNIterates), ...withheldNames];
+          withheldNames = new Set([...lrp.substitutionsChildNames[ind].slice(currentMinNIterates), ...withheldNames]);
 
           withheldSubstitutionChildNames[ind] = withheldNames;
 

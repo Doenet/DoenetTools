@@ -492,6 +492,10 @@ export default class Sequence extends CompositeComponent {
 
         }
 
+        if (!Number.isInteger(count) || count < 0) {
+          count = 0;
+        }
+
         return { newValues: { from, step, count, exclude } };
       },
     };
@@ -520,7 +524,7 @@ export default class Sequence extends CompositeComponent {
       }
     }
 
-    stateVariableDefinitions.readyToExpand = {
+    stateVariableDefinitions.readyToExpandWhenResolved = {
 
       returnDependencies: () => ({
         from: {
@@ -547,7 +551,7 @@ export default class Sequence extends CompositeComponent {
       definition: function () {
         // even with invalid sequence, still ready to expand
         // (it will just expand with zero replacements)
-        return { newValues: { readyToExpand: true } };
+        return { newValues: { readyToExpandWhenResolved: true } };
       },
     };
 

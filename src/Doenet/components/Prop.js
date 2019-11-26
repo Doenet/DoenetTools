@@ -168,8 +168,6 @@ export default class Prop extends BaseComponent {
       }
     }
 
-    stateVariableDefinitions.propComponentTypes = stateVariableDefinitions.propVariableObjs;
-
     return stateVariableDefinitions;
   }
 

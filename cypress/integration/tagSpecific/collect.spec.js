@@ -1167,10 +1167,10 @@ describe('Collect Tag Tests',function() {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text','a');
 
-    cy.get('#\\/p_3e > input:nth-of-type(1)').clear().type('x{enter}');
+    cy.get('#\\/p_3e div:nth-of-type(1) input').clear().type('x{enter}');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(1)').should('have.value', 'x');
+    cy.get('#\\/p_original div:nth-of-type(1) input').should('have.value', 'x');
 
     cy.get('#\\/p_1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
     cy.get('#\\/p_1a > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
@@ -1186,23 +1186,23 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
     cy.get('#\\/p_2e > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(1)').should('have.value', 'x');
-    cy.get('#\\/p_3a > input:nth-of-type(1)').should('have.value', 'x');
-    cy.get('#\\/p_3b > input:nth-of-type(1)').should('have.value', 'x');
-    cy.get('#\\/p_3c > input:nth-of-type(1)').should('have.value', 'x');
-    cy.get('#\\/p_3d > input:nth-of-type(1)').should('have.value', 'x');
-    cy.get('#\\/p_3e > input:nth-of-type(1)').should('have.value', 'x');
+    cy.get('#\\/p_3 > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3a > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3b > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3c > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3d > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3e > div:nth-of-type(1) input').should('have.value', 'x');
 
 
     cy.get('#\\/n_input').clear().type("5{enter}")
 
-    cy.get('#\\/p_original > input:nth-of-type(2)').clear().type('y').blur();
-    cy.get('#\\/p_original > input:nth-of-type(3)').clear().type('z').blur();
-    cy.get('#\\/p_original > input:nth-of-type(4)').clear().type('u').blur();
-    cy.get('#\\/p_original > input:nth-of-type(5)').clear().type('v').blur();
+    cy.get('#\\/p_original > div:nth-of-type(2) input').clear().type('y').blur();
+    cy.get('#\\/p_original > div:nth-of-type(3) input').clear().type('z').blur();
+    cy.get('#\\/p_original > div:nth-of-type(4) input').clear().type('u').blur();
+    cy.get('#\\/p_original > div:nth-of-type(5) input').clear().type('v').blur();
 
 
-    cy.get('#\\/p_original > input:nth-of-type(1)').should('have.value', 'x');
+    cy.get('#\\/p_original > div:nth-of-type(1) input').should('have.value', 'x');
     
     cy.get('#\\/p_1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
     cy.get('#\\/p_1a > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
@@ -1218,15 +1218,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
     cy.get('#\\/p_2e > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(1)').should('have.value', 'x');
-    cy.get('#\\/p_3a > input:nth-of-type(1)').should('have.value', 'x');
-    cy.get('#\\/p_3b > input:nth-of-type(1)').should('have.value', 'x');
-    cy.get('#\\/p_3c > input:nth-of-type(1)').should('have.value', 'x');
-    cy.get('#\\/p_3d > input:nth-of-type(1)').should('have.value', 'x');
-    cy.get('#\\/p_3e > input:nth-of-type(1)').should('have.value', 'x');
+    cy.get('#\\/p_3 > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3a > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3b > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3c > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3d > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3e > div:nth-of-type(1) input').should('have.value', 'x');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(2)').should('have.value', 'y');
+    cy.get('#\\/p_original > div:nth-of-type(2) input').should('have.value', 'y');
 
     cy.get('#\\/p_1 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
     cy.get('#\\/p_1a > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
@@ -1242,15 +1242,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
     cy.get('#\\/p_2e > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(2)').should('have.value', 'y');
-    cy.get('#\\/p_3a > input:nth-of-type(2)').should('have.value', 'y');
-    cy.get('#\\/p_3b > input:nth-of-type(2)').should('have.value', 'y');
-    cy.get('#\\/p_3c > input:nth-of-type(2)').should('have.value', 'y');
-    cy.get('#\\/p_3d > input:nth-of-type(2)').should('have.value', 'y');
-    cy.get('#\\/p_3e > input:nth-of-type(2)').should('have.value', 'y');
+    cy.get('#\\/p_3 > div:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3a > div:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3b > div:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3c > div:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3d > div:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3e > div:nth-of-type(2) input').should('have.value', 'y');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(3)').should('have.value', 'z');
+    cy.get('#\\/p_original > div:nth-of-type(3) input').should('have.value', 'z');
 
     cy.get('#\\/p_1 > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
     cy.get('#\\/p_1a > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
@@ -1266,15 +1266,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
     cy.get('#\\/p_2e > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(3)').should('have.value', 'z');
-    cy.get('#\\/p_3a > input:nth-of-type(3)').should('have.value', 'z');
-    cy.get('#\\/p_3b > input:nth-of-type(3)').should('have.value', 'z');
-    cy.get('#\\/p_3c > input:nth-of-type(3)').should('have.value', 'z');
-    cy.get('#\\/p_3d > input:nth-of-type(3)').should('have.value', 'z');
-    cy.get('#\\/p_3e > input:nth-of-type(3)').should('have.value', 'z');
+    cy.get('#\\/p_3 > div:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3a > div:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3b > div:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3c > div:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3d > div:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3e > div:nth-of-type(3) input').should('have.value', 'z');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(4)').should('have.value', 'u');
+    cy.get('#\\/p_original > div:nth-of-type(4) input').should('have.value', 'u');
 
     cy.get('#\\/p_1 > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
     cy.get('#\\/p_1a > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
@@ -1290,15 +1290,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
     cy.get('#\\/p_2e > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(4)').should('have.value', 'u');
-    cy.get('#\\/p_3a > input:nth-of-type(4)').should('have.value', 'u');
-    cy.get('#\\/p_3b > input:nth-of-type(4)').should('have.value', 'u');
-    cy.get('#\\/p_3c > input:nth-of-type(4)').should('have.value', 'u');
-    cy.get('#\\/p_3d > input:nth-of-type(4)').should('have.value', 'u');
-    cy.get('#\\/p_3e > input:nth-of-type(4)').should('have.value', 'u');
+    cy.get('#\\/p_3 > div:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3a > div:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3b > div:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3c > div:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3d > div:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3e > div:nth-of-type(4) input').should('have.value', 'u');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(5)').should('have.value', 'v');
+    cy.get('#\\/p_original > div:nth-of-type(5) input').should('have.value', 'v');
 
     cy.get('#\\/p_1 > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
     cy.get('#\\/p_1a > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
@@ -1314,12 +1314,12 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
     cy.get('#\\/p_2e > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(5)').should('have.value', 'v');
-    cy.get('#\\/p_3a > input:nth-of-type(5)').should('have.value', 'v');
-    cy.get('#\\/p_3b > input:nth-of-type(5)').should('have.value', 'v');
-    cy.get('#\\/p_3c > input:nth-of-type(5)').should('have.value', 'v');
-    cy.get('#\\/p_3d > input:nth-of-type(5)').should('have.value', 'v');
-    cy.get('#\\/p_3e > input:nth-of-type(5)').should('have.value', 'v');
+    cy.get('#\\/p_3 > div:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3a > div:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3b > div:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3c > div:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3d > div:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3e > div:nth-of-type(5) input').should('have.value', 'v');
 
 
 
@@ -1329,7 +1329,7 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/n_input').clear().type("2{enter}");
 
 
-    cy.get('#\\/p_original > input:nth-of-type(1)').should('have.value', 'x');
+    cy.get('#\\/p_original > div:nth-of-type(1) input').should('have.value', 'x');
 
     cy.get('#\\/p_1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
     cy.get('#\\/p_1a > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
@@ -1345,15 +1345,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
     cy.get('#\\/p_2e > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('x')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(1)').should('have.value', 'x');
-    cy.get('#\\/p_3a > input:nth-of-type(1)').should('have.value', 'x');
-    cy.get('#\\/p_3b > input:nth-of-type(1)').should('have.value', 'x');
-    cy.get('#\\/p_3c > input:nth-of-type(1)').should('have.value', 'x');
-    cy.get('#\\/p_3d > input:nth-of-type(1)').should('have.value', 'x');
-    cy.get('#\\/p_3e > input:nth-of-type(1)').should('have.value', 'x');
+    cy.get('#\\/p_3 > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3a > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3b > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3c > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3d > div:nth-of-type(1) input').should('have.value', 'x');
+    cy.get('#\\/p_3e > div:nth-of-type(1) input').should('have.value', 'x');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(2)').should('have.value', 'y');
+    cy.get('#\\/p_original > div:nth-of-type(2) input').should('have.value', 'y');
 
     cy.get('#\\/p_1 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
     cy.get('#\\/p_1a > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
@@ -1369,20 +1369,20 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
     cy.get('#\\/p_2e > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('y')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(2)').should('have.value', 'y');
-    cy.get('#\\/p_3a > input:nth-of-type(2)').should('have.value', 'y');
-    cy.get('#\\/p_3b > input:nth-of-type(2)').should('have.value', 'y');
-    cy.get('#\\/p_3c > input:nth-of-type(2)').should('have.value', 'y');
-    cy.get('#\\/p_3d > input:nth-of-type(2)').should('have.value', 'y');
-    cy.get('#\\/p_3e > input:nth-of-type(2)').should('have.value', 'y');
+    cy.get('#\\/p_3 > div:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3a > div:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3b > div:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3c > div:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3d > div:nth-of-type(2) input').should('have.value', 'y');
+    cy.get('#\\/p_3e > div:nth-of-type(2) input').should('have.value', 'y');
 
 
 
-    cy.get('#\\/p_3 > input:nth-of-type(1)').clear().type('a{enter}');
-    cy.get('#\\/p_3a > input:nth-of-type(2)').clear().type('b{enter}');
+    cy.get('#\\/p_3 > div:nth-of-type(1) input').clear().type('a{enter}');
+    cy.get('#\\/p_3a > div:nth-of-type(2) input').clear().type('b{enter}');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(1)').should('have.value', 'a');
+    cy.get('#\\/p_original > div:nth-of-type(1) input').should('have.value', 'a');
 
     cy.get('#\\/p_1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
     cy.get('#\\/p_1a > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
@@ -1398,15 +1398,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
     cy.get('#\\/p_2e > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(1)').should('have.value', 'a');
-    cy.get('#\\/p_3a > input:nth-of-type(1)').should('have.value', 'a');
-    cy.get('#\\/p_3b > input:nth-of-type(1)').should('have.value', 'a');
-    cy.get('#\\/p_3c > input:nth-of-type(1)').should('have.value', 'a');
-    cy.get('#\\/p_3d > input:nth-of-type(1)').should('have.value', 'a');
-    cy.get('#\\/p_3e > input:nth-of-type(1)').should('have.value', 'a');
+    cy.get('#\\/p_3 > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3a > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3b > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3c > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3d > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3e > div:nth-of-type(1) input').should('have.value', 'a');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(2)').should('have.value', 'b');
+    cy.get('#\\/p_original > div:nth-of-type(2) input').should('have.value', 'b');
 
     cy.get('#\\/p_1 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
     cy.get('#\\/p_1a > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
@@ -1422,19 +1422,19 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
     cy.get('#\\/p_2e > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(2)').should('have.value', 'b');
-    cy.get('#\\/p_3a > input:nth-of-type(2)').should('have.value', 'b');
-    cy.get('#\\/p_3b > input:nth-of-type(2)').should('have.value', 'b');
-    cy.get('#\\/p_3c > input:nth-of-type(2)').should('have.value', 'b');
-    cy.get('#\\/p_3d > input:nth-of-type(2)').should('have.value', 'b');
-    cy.get('#\\/p_3e > input:nth-of-type(2)').should('have.value', 'b');
+    cy.get('#\\/p_3 > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3a > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3b > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3c > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3d > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3e > div:nth-of-type(2) input').should('have.value', 'b');
 
 
 
     cy.get('#\\/n_input').clear().type("5{enter}");
 
 
-    cy.get('#\\/p_original > input:nth-of-type(1)').should('have.value', 'a');
+    cy.get('#\\/p_original > div:nth-of-type(1) input').should('have.value', 'a');
 
     cy.get('#\\/p_1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
     cy.get('#\\/p_1a > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
@@ -1450,15 +1450,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
     cy.get('#\\/p_2e > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(1)').should('have.value', 'a');
-    cy.get('#\\/p_3a > input:nth-of-type(1)').should('have.value', 'a');
-    cy.get('#\\/p_3b > input:nth-of-type(1)').should('have.value', 'a');
-    cy.get('#\\/p_3c > input:nth-of-type(1)').should('have.value', 'a');
-    cy.get('#\\/p_3d > input:nth-of-type(1)').should('have.value', 'a');
-    cy.get('#\\/p_3e > input:nth-of-type(1)').should('have.value', 'a');
+    cy.get('#\\/p_3 > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3a > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3b > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3c > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3d > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3e > div:nth-of-type(1) input').should('have.value', 'a');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(2)').should('have.value', 'b');
+    cy.get('#\\/p_original > div:nth-of-type(2) input').should('have.value', 'b');
 
     cy.get('#\\/p_1 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
     cy.get('#\\/p_1a > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
@@ -1474,15 +1474,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
     cy.get('#\\/p_2e > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(2)').should('have.value', 'b');
-    cy.get('#\\/p_3a > input:nth-of-type(2)').should('have.value', 'b');
-    cy.get('#\\/p_3b > input:nth-of-type(2)').should('have.value', 'b');
-    cy.get('#\\/p_3c > input:nth-of-type(2)').should('have.value', 'b');
-    cy.get('#\\/p_3d > input:nth-of-type(2)').should('have.value', 'b');
-    cy.get('#\\/p_3e > input:nth-of-type(2)').should('have.value', 'b');
+    cy.get('#\\/p_3 > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3a > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3b > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3c > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3d > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3e > div:nth-of-type(2) input').should('have.value', 'b');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(3)').should('have.value', 'z');
+    cy.get('#\\/p_original > div:nth-of-type(3) input').should('have.value', 'z');
 
     cy.get('#\\/p_1 > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
     cy.get('#\\/p_1a > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
@@ -1498,15 +1498,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
     cy.get('#\\/p_2e > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('z')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(3)').should('have.value', 'z');
-    cy.get('#\\/p_3a > input:nth-of-type(3)').should('have.value', 'z');
-    cy.get('#\\/p_3b > input:nth-of-type(3)').should('have.value', 'z');
-    cy.get('#\\/p_3c > input:nth-of-type(3)').should('have.value', 'z');
-    cy.get('#\\/p_3d > input:nth-of-type(3)').should('have.value', 'z');
-    cy.get('#\\/p_3e > input:nth-of-type(3)').should('have.value', 'z');
+    cy.get('#\\/p_3 > div:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3a > div:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3b > div:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3c > div:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3d > div:nth-of-type(3) input').should('have.value', 'z');
+    cy.get('#\\/p_3e > div:nth-of-type(3) input').should('have.value', 'z');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(4)').should('have.value', 'u');
+    cy.get('#\\/p_original > div:nth-of-type(4) input').should('have.value', 'u');
 
     cy.get('#\\/p_1 > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
     cy.get('#\\/p_1a > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
@@ -1522,15 +1522,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
     cy.get('#\\/p_2e > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('u')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(4)').should('have.value', 'u');
-    cy.get('#\\/p_3a > input:nth-of-type(4)').should('have.value', 'u');
-    cy.get('#\\/p_3b > input:nth-of-type(4)').should('have.value', 'u');
-    cy.get('#\\/p_3c > input:nth-of-type(4)').should('have.value', 'u');
-    cy.get('#\\/p_3d > input:nth-of-type(4)').should('have.value', 'u');
-    cy.get('#\\/p_3e > input:nth-of-type(4)').should('have.value', 'u');
+    cy.get('#\\/p_3 > div:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3a > div:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3b > div:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3c > div:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3d > div:nth-of-type(4) input').should('have.value', 'u');
+    cy.get('#\\/p_3e > div:nth-of-type(4) input').should('have.value', 'u');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(5)').should('have.value', 'v');
+    cy.get('#\\/p_original > div:nth-of-type(5) input').should('have.value', 'v');
 
     cy.get('#\\/p_1 > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
     cy.get('#\\/p_1a > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
@@ -1546,21 +1546,21 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
     cy.get('#\\/p_2e > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('v')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(5)').should('have.value', 'v');
-    cy.get('#\\/p_3a > input:nth-of-type(5)').should('have.value', 'v');
-    cy.get('#\\/p_3b > input:nth-of-type(5)').should('have.value', 'v');
-    cy.get('#\\/p_3c > input:nth-of-type(5)').should('have.value', 'v');
-    cy.get('#\\/p_3d > input:nth-of-type(5)').should('have.value', 'v');
-    cy.get('#\\/p_3e > input:nth-of-type(5)').should('have.value', 'v');
+    cy.get('#\\/p_3 > div:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3a > div:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3b > div:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3c > div:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3d > div:nth-of-type(5) input').should('have.value', 'v');
+    cy.get('#\\/p_3e > div:nth-of-type(5) input').should('have.value', 'v');
 
 
 
-    cy.get('#\\/p_3b > input:nth-of-type(3)').clear().type('c{enter}');
-    cy.get('#\\/p_3c > input:nth-of-type(4)').clear().type('d{enter}');
-    cy.get('#\\/p_3d > input:nth-of-type(5)').clear().type('e{enter}');
+    cy.get('#\\/p_3b > div:nth-of-type(3) input').clear().type('c{enter}');
+    cy.get('#\\/p_3c > div:nth-of-type(4) input').clear().type('d{enter}');
+    cy.get('#\\/p_3d > div:nth-of-type(5) input').clear().type('e{enter}');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(1)').should('have.value', 'a');
+    cy.get('#\\/p_original > div:nth-of-type(1) input').should('have.value', 'a');
 
     cy.get('#\\/p_1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
     cy.get('#\\/p_1a > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
@@ -1576,15 +1576,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
     cy.get('#\\/p_2e > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('a')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(1)').should('have.value', 'a');
-    cy.get('#\\/p_3a > input:nth-of-type(1)').should('have.value', 'a');
-    cy.get('#\\/p_3b > input:nth-of-type(1)').should('have.value', 'a');
-    cy.get('#\\/p_3c > input:nth-of-type(1)').should('have.value', 'a');
-    cy.get('#\\/p_3d > input:nth-of-type(1)').should('have.value', 'a');
-    cy.get('#\\/p_3e > input:nth-of-type(1)').should('have.value', 'a');
+    cy.get('#\\/p_3 > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3a > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3b > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3c > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3d > div:nth-of-type(1) input').should('have.value', 'a');
+    cy.get('#\\/p_3e > div:nth-of-type(1) input').should('have.value', 'a');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(2)').should('have.value', 'b');
+    cy.get('#\\/p_original > div:nth-of-type(2) input').should('have.value', 'b');
 
     cy.get('#\\/p_1 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
     cy.get('#\\/p_1a > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
@@ -1600,15 +1600,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
     cy.get('#\\/p_2e > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('b')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(2)').should('have.value', 'b');
-    cy.get('#\\/p_3a > input:nth-of-type(2)').should('have.value', 'b');
-    cy.get('#\\/p_3b > input:nth-of-type(2)').should('have.value', 'b');
-    cy.get('#\\/p_3c > input:nth-of-type(2)').should('have.value', 'b');
-    cy.get('#\\/p_3d > input:nth-of-type(2)').should('have.value', 'b');
-    cy.get('#\\/p_3e > input:nth-of-type(2)').should('have.value', 'b');
+    cy.get('#\\/p_3 > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3a > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3b > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3c > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3d > div:nth-of-type(2) input').should('have.value', 'b');
+    cy.get('#\\/p_3e > div:nth-of-type(2) input').should('have.value', 'b');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(3)').should('have.value', 'c');
+    cy.get('#\\/p_original > div:nth-of-type(3) input').should('have.value', 'c');
 
     cy.get('#\\/p_1 > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('c')})
     cy.get('#\\/p_1a > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('c')})
@@ -1624,15 +1624,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('c')})
     cy.get('#\\/p_2e > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('c')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(3)').should('have.value', 'c');
-    cy.get('#\\/p_3a > input:nth-of-type(3)').should('have.value', 'c');
-    cy.get('#\\/p_3b > input:nth-of-type(3)').should('have.value', 'c');
-    cy.get('#\\/p_3c > input:nth-of-type(3)').should('have.value', 'c');
-    cy.get('#\\/p_3d > input:nth-of-type(3)').should('have.value', 'c');
-    cy.get('#\\/p_3e > input:nth-of-type(3)').should('have.value', 'c');
+    cy.get('#\\/p_3 > div:nth-of-type(3) input').should('have.value', 'c');
+    cy.get('#\\/p_3a > div:nth-of-type(3) input').should('have.value', 'c');
+    cy.get('#\\/p_3b > div:nth-of-type(3) input').should('have.value', 'c');
+    cy.get('#\\/p_3c > div:nth-of-type(3) input').should('have.value', 'c');
+    cy.get('#\\/p_3d > div:nth-of-type(3) input').should('have.value', 'c');
+    cy.get('#\\/p_3e > div:nth-of-type(3) input').should('have.value', 'c');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(4)').should('have.value', 'd');
+    cy.get('#\\/p_original > div:nth-of-type(4) input').should('have.value', 'd');
 
     cy.get('#\\/p_1 > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('d')})
     cy.get('#\\/p_1a > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('d')})
@@ -1648,15 +1648,15 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('d')})
     cy.get('#\\/p_2e > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('d')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(4)').should('have.value', 'd');
-    cy.get('#\\/p_3a > input:nth-of-type(4)').should('have.value', 'd');
-    cy.get('#\\/p_3b > input:nth-of-type(4)').should('have.value', 'd');
-    cy.get('#\\/p_3c > input:nth-of-type(4)').should('have.value', 'd');
-    cy.get('#\\/p_3d > input:nth-of-type(4)').should('have.value', 'd');
-    cy.get('#\\/p_3e > input:nth-of-type(4)').should('have.value', 'd');
+    cy.get('#\\/p_3 > div:nth-of-type(4) input').should('have.value', 'd');
+    cy.get('#\\/p_3a > div:nth-of-type(4) input').should('have.value', 'd');
+    cy.get('#\\/p_3b > div:nth-of-type(4) input').should('have.value', 'd');
+    cy.get('#\\/p_3c > div:nth-of-type(4) input').should('have.value', 'd');
+    cy.get('#\\/p_3d > div:nth-of-type(4) input').should('have.value', 'd');
+    cy.get('#\\/p_3e > div:nth-of-type(4) input').should('have.value', 'd');
 
 
-    cy.get('#\\/p_original > input:nth-of-type(5)').should('have.value', 'e');
+    cy.get('#\\/p_original > div:nth-of-type(5) input').should('have.value', 'e');
 
     cy.get('#\\/p_1 > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('e')})
     cy.get('#\\/p_1a > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('e')})
@@ -1672,12 +1672,12 @@ describe('Collect Tag Tests',function() {
     cy.get('#\\/p_2d > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('e')})
     cy.get('#\\/p_2e > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => {expect(text.trim()).equal('e')})
 
-    cy.get('#\\/p_3 > input:nth-of-type(5)').should('have.value', 'e');
-    cy.get('#\\/p_3a > input:nth-of-type(5)').should('have.value', 'e');
-    cy.get('#\\/p_3b > input:nth-of-type(5)').should('have.value', 'e');
-    cy.get('#\\/p_3c > input:nth-of-type(5)').should('have.value', 'e');
-    cy.get('#\\/p_3d > input:nth-of-type(5)').should('have.value', 'e');
-    cy.get('#\\/p_3e > input:nth-of-type(5)').should('have.value', 'e');
+    cy.get('#\\/p_3 > div:nth-of-type(5) input').should('have.value', 'e');
+    cy.get('#\\/p_3a > div:nth-of-type(5) input').should('have.value', 'e');
+    cy.get('#\\/p_3b > div:nth-of-type(5) input').should('have.value', 'e');
+    cy.get('#\\/p_3c > div:nth-of-type(5) input').should('have.value', 'e');
+    cy.get('#\\/p_3d > div:nth-of-type(5) input').should('have.value', 'e');
+    cy.get('#\\/p_3e > div:nth-of-type(5) input').should('have.value', 'e');
 
 
 

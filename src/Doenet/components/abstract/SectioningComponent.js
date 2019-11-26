@@ -4,6 +4,8 @@ import {getVariantsForDescendants} from '../../utils/variants';
 export default class SectioningComponent extends BlockComponent {
   static componentType = "_sectioningcomponent";
 
+  setUpVariantIfVariantControlChild = true;
+
   static createPropertiesObject({standardComponentTypes}) {
     let properties = super.createPropertiesObject({
       standardComponentTypes: standardComponentTypes
@@ -33,6 +35,27 @@ export default class SectioningComponent extends BlockComponent {
     });
 
     return childLogic;
+  }
+
+  // TODO: component has not yet been completely converted
+  // Just added some state variables so basic function works
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.containerTag = {
+      returnDependencies: () => ({}),
+      definition: () => ({newValues: {containerTag: "section"}})
+    }
+
+    stateVariableDefinitions.viewedSolution = {
+      returnDependencies: () => ({}),
+      definition: () => ({newValues: {viewedSolution: false}})
+    }
+
+    return stateVariableDefinitions;
   }
 
   updateState(args={}) {
@@ -122,18 +145,18 @@ export default class SectioningComponent extends BlockComponent {
     if(this.renderer === undefined) {
       this.renderer = new this.availableRenderers.section({
         key: this.componentName,
-        title: this.state.title,
-        level: this.state.level,
-        containerTag: this.state.containerTag,
-        viewedSolution: this.state.viewedSolution,
+        title: this.stateValues.title,
+        level: this.stateValues.level,
+        containerTag: this.stateValues.containerTag,
+        viewedSolution: this.stateValues.viewedSolution,
       });
     }
   }
 
   updateRenderer(){
     this.renderer.updateSection({
-      title: this.state.title,
-      viewedSolution: this.state.viewedSolution,
+      title: this.stateValues.title,
+      viewedSolution: this.stateValues.viewedSolution,
     });
   }
 
@@ -151,51 +174,6 @@ export default class SectioningComponent extends BlockComponent {
     }];
   }
 
-  static previewSerializedComponent({serializedComponent, sharedParameters, components}) {
-    if(serializedComponent.children === undefined) {
-      return [];
-    }
-    
-    let variantControlInd;
-    let variantControlChild
-    for(let [ind,child] of serializedComponent.children.entries()) {
-      if(child.componentType === "variantcontrol" || (
-        child.createdComponent && components[child.componentName].componentType === "variantcontrol"
-      )) {
-        variantControlInd = ind;
-        variantControlChild = child;
-        break;
-      }
-    }
-
-    if(variantControlInd === undefined) {
-      return [];
-    }
-
-    // have a variant control child, so this section has its own variants
-
-    // if have desired variant value or index
-    // add that information to variantControl child
-    let desiredVariant = serializedComponent.variants.desiredVariant;
-    if(desiredVariant !== undefined) {
-      if(desiredVariant.index !== undefined) {
-        variantControlChild.variants.desiredVariantNumber = desiredVariant.index;
-      }else if(desiredVariant.value !== undefined) {
-        variantControlChild.variants.desiredVariant = desiredVariant.value;
-      }
-    }
-
-    let creationInstructions = [];
-    creationInstructions.push({createChildren: [variantControlInd]});
-    if(serializedComponent.variants.uniquevariants) {
-      sharedParameters.numberOfVariants = serializedComponent.variants.numberOfVariants;
-    }
-    
-    creationInstructions.push({callMethod: "setUpVariant"})
-
-    return creationInstructions;
-
-  }
 
   static setUpVariant({serializedComponent, sharedParameters, definingChildrenSoFar,
     allComponentClasses}) {
@@ -206,10 +184,10 @@ export default class SectioningComponent extends BlockComponent {
         break;
       }
     }
-    sharedParameters.variant = variantcontrolChild.state.selectedVariant;
-    sharedParameters.variantNumber = variantcontrolChild.state.selectedVariantNumber;
-    sharedParameters.selectRng = variantcontrolChild.getRng();
-    sharedParameters.allPossibleVariants = variantcontrolChild.state.variants;
+    sharedParameters.variant = variantcontrolChild.state.selectedVariant.value;
+    sharedParameters.variantNumber = variantcontrolChild.state.selectedVariantNumber.value;
+    sharedParameters.selectRng = variantcontrolChild.state.selectRng.value;
+    sharedParameters.allPossibleVariants = variantcontrolChild.state.variants.value;
 
     // console.log("****Variant for sectioning component****")
     // console.log("Selected seed: " + variantcontrolChild.state.selectedSeed);
