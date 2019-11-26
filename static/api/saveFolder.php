@@ -80,14 +80,24 @@ for ($i = 0; $i < $number_children; $i++) {
     }
 
   } else if ($result->num_rows > 0 && $operationType == "remove") {
-    // Update content to have removedFlag=1 (remove from folder)
+    // move content out of folder to upper directory
     $sql = "
     UPDATE folder_content
-    SET removedFlag=1,
+    SET folderId='$parentId',
     timestamp=NOW()
-    WHERE childId='$childId' AND folderId='$folderId'
+    WHERE childId='$childId'
     ";
     $result = $conn->query($sql); 
+
+    if ($childType === "folder") {
+      // update parentId of folder
+      $sql = "
+      UPDATE folder
+      SET parentId='$parentId'
+      WHERE folderId='$childId'
+      ";
+      $result = $conn->query($sql); 
+    }
   }
 }
 

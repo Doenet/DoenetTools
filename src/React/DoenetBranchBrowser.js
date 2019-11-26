@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 axios.defaults.withCredentials = true;
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faFileAlt, faFolder, faMinusCircle, faArrowUp, 
-  faArrowDown, faDotCircle, faEdit} from '@fortawesome/free-solid-svg-icons';
+import { faFileAlt, faFolder, faArrowUp, 
+  faArrowDown, faDotCircle, faEdit, faArrowRight} from '@fortawesome/free-solid-svg-icons';
 import "./branchBrowser.css";
 
 
@@ -92,7 +92,7 @@ class DoenetBranchBrowser extends Component {
 
   handleRemoveContentFromCurrentFolder() {
     let folderId = this.peekDirectoryStack();
-    this.props.removeContentFromFolder(this.state.selectedItems, folderId);
+    this.props.removeContentFromFolder(this.state.selectedItems, this.state.selectedItemsType, folderId);
   }
 
   handleRemoveContentFromCourse() {
@@ -227,7 +227,8 @@ class DoenetBranchBrowser extends Component {
       // in root directory
       // only show contentId whose parentId is null
       this.contentList = this.contentList.filter(branchId => {
-        return this.props.allContentInfo[branchId].parentId === null;
+        return (this.props.allContentInfo[branchId].parentId === null) ||
+               (this.props.allContentInfo[branchId].parentId === "root");
       })
     }
 
@@ -588,8 +589,9 @@ class File extends React.Component {
           <div style={{"position":"relative"}}>
             {this.props.showRemoveItemIcon && 
             <div className="removeContentButtonWrapper">
-              <FontAwesomeIcon icon={faMinusCircle} className="removeContentButton" 
+              <FontAwesomeIcon icon={faArrowRight} className="removeContentButton" 
               onClick={() => this.props.handleRemoveContent(this.props.branchId)}/>
+              <div className="removeContentButtonInfo"><span>Move out folder</span></div>
             </div>}
             <span>{this.props.publishDate}</span>
           </div>          
@@ -615,9 +617,9 @@ class Folder extends React.Component {
           <div style={{"position":"relative"}}>
             {this.props.showAddItemIcon && 
             <div className="addContentButtonWrapper">
-              <FontAwesomeIcon icon={faPlus} className="addContentButton" 
+              <FontAwesomeIcon icon={faArrowRight} className="addContentButton" 
               onClick={() => this.props.handleAddContentToFolder(this.props.folderId)}/>
-              <div className="addContentButtonInfo"><span>Add to Folder</span></div>
+              <div className="addContentButtonInfo"><span>Move to Folder</span></div>
             </div>}
             <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
             <span>{this.props.title}</span>
@@ -630,8 +632,9 @@ class Folder extends React.Component {
           <div style={{"position":"relative"}}>
             {this.props.showRemoveItemIcon && 
             <div className="removeContentButtonWrapper">
-              <FontAwesomeIcon icon={faMinusCircle} className="removeContentButton" 
+              <FontAwesomeIcon icon={faArrowRight} className="removeContentButton" 
               onClick={() => this.props.handleRemoveContent(this.props.folderId)}/>
+              <div className="removeContentButtonInfo"><span>Move out folder</span></div>
             </div>}
             <span>{this.props.publishDate}</span>
           </div>          

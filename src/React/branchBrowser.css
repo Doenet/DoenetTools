@@ -118,7 +118,7 @@ tbody::-webkit-scrollbar-thumb {
 }
 
 .removeContentButtonWrapper {
-  right: -10px;
+  right: 0px;
 }
 
 .addContentToCourseButtonWrapper {
@@ -145,7 +145,7 @@ tbody::-webkit-scrollbar-thumb {
   color: #b50000;
 }
 
-.addContentButtonInfo {
+.addContentButtonInfo, .removeContentButtonInfo {
   display: none;
   position: absolute;
   top: 25px;
@@ -157,10 +157,14 @@ tbody::-webkit-scrollbar-thumb {
   white-space: nowrap;
 }
 
-.addContentButtonWrapper:hover .addContentButtonInfo {
+.addContentButtonWrapper:hover .addContentButtonInfo,
+.removeContentButtonWrapper:hover .removeContentButtonInfo {
   display: block;
 }
 
+.removeContentButtonInfo {
+  left: -35px;
+}
 
 /*** Info Panel ***/
 

@@ -396,6 +396,7 @@ class DoenetChooser extends Component {
       childContent: childContent,
       childType: childType,
       operationType: operationType,
+      parentId: this.folderInfo[folderId].parentId
     }
     axios.post(url, data)
     .then((resp) => {
@@ -455,10 +456,10 @@ class DoenetChooser extends Component {
     });
   }
 
-  removeContentFromFolder(childId, folderId) {
+  removeContentFromFolder(childId, childType, folderId) {
     let operationType = "remove";
     let title = this.folderInfo[folderId];
-    this.saveFolder(folderId, title, childId, [], operationType ,(folderId) => {
+    this.saveFolder(folderId, title, childId, childType, operationType ,(folderId) => {
       this.loadAllFolders();
       this.loadAllContentBranches();
     });
