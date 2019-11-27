@@ -5490,149 +5490,163 @@ export default class Core {
     return null;
   }
 
-  requestUpdate({ updateType, updateInstructions, saveSerializedState = true }) {
-    let getStateVar = this.getStateVariableValue;
+  requestUpdate({ updateType, updateInstructions, saveSerializedState }) {
 
     let returnValue = { success: true };
 
-    let saveSerializedStateImmediately = false;
-
     if (updateType === "updateValue") {
       let componentsTouched = [];
-      let newValues = {};
+      let newStateVariableValues = {};
       let workspace = {};
 
       for (let instruction of updateInstructions) {
 
         let additionalChanges = this.requestComponentChanges({ instruction, workspace });
         componentsTouched.push(...additionalChanges.componentsTouched);
-        for (let cName in additionalChanges.newValues) {
-          if (!newValues[cName]) {
-            newValues[cName] = {};
+        for (let cName in additionalChanges.newStateVariableValues) {
+          if (!newStateVariableValues[cName]) {
+            newStateVariableValues[cName] = {};
           }
-          Object.assign(newValues[cName], additionalChanges.newValues[cName]);
+          Object.assign(newStateVariableValues[cName], additionalChanges.newStateVariableValues[cName]);
         }
       }
 
-      for (let cName in newValues) {
-        let comp = this._components[cName];
-        let nvs = newValues[cName];
-        for (let vName in nvs) {
-
-          if (vName[0] === "_") {
-            // have an array where set specific keys
-            let newValueInfo = nvs[vName];
-            let arrayVarObj = comp.state[newValueInfo.stateVariable];
-            arrayVarObj.setArrayValue({
-              value: newValueInfo.value,
-              arrayKey: newValueInfo.arrayKey
-            });
-
-            for (let arrayVarName of arrayVarObj.allVarNamesThatIncludeArrayKey(newValueInfo.arrayKey)) {
-              if (comp.state[arrayVarName]) {
-                // arrayVarName might not actually be a state variable created in comp
-
-                // delete value before assigning new value to remove any getter
-                delete comp.state[arrayVarName].value;
-                if (arrayVarName === arrayVarObj.arrayVarNameFromArrayKey(newValueInfo.arrayKey)) {
-                  // this is the variable that corresponds exactly to the value set
-                  // so can just give it the new value
-                  comp.state[arrayVarName].value = newValueInfo.value;
-                } else {
-                  // this variable presumably includes other array keys
-                  // so just put a getter on
-                  Object.defineProperty(comp.state[arrayVarName], 'value', { get: () => getStateVar({ component: comp, stateVariable: arrayVarName }), configurable: true });
-
-                }
-                let additionalComponentsTouched = this.markUpstreamDependentsStale({
-                  component: comp, varName: arrayVarName
-                });
-
-                componentsTouched.push(...additionalComponentsTouched);
-
-              }
-            }
-
-          } else {
-
-            comp.state[vName]._previousValue = comp.state[vName].value;
-
-            // delete value before assigning new value to remove any getter
-            delete comp.state[vName].value;
-            comp.state[vName].value = nvs[vName];
-
-            let additionalComponentsTouched = this.markUpstreamDependentsStale({
-              component: comp, varName: vName
-            });
-
-            componentsTouched.push(...additionalComponentsTouched);
-          }
-        }
+      if (this.externalFunctions.stateVariablesUpdated) {
+        // TODO: make this call asynchronous
+        this.externalFunctions.stateVariablesUpdated({ newStateVariableValues });
       }
 
+      this.executeUpdateStateVariables({ newStateVariableValues, componentsTouched, saveSerializedState });
 
-      // get unique list of components touched
-      componentsTouched = new Set(componentsTouched);
-
-      // calculate any replacement changes on composites touched
-      let componentChanges = []; // TODO: what to do with componentChanges?
-
-
-      let additionalComponentsTouched = [...componentsTouched];
-
-      while (additionalComponentsTouched.length > 0) {
-
-        let newTouched = [];
-        for (let cName of additionalComponentsTouched) {
-          if (this._components[cName] instanceof this.allComponentClasses._composite) {
-            let result = this.updateCompositeReplacements({
-              component: this._components[cName],
-              componentChanges
-            });
-            if (result.componentsTouched) {
-              newTouched.push(...result.componentsTouched);
-            }
-          }
-        }
-        newTouched = new Set(newTouched);
-
-        additionalComponentsTouched = [];
-
-        for (let cName of newTouched) {
-          if (!componentsTouched.has(cName)) {
-            componentsTouched.add(cName);
-            additionalComponentsTouched.push(cName);
-          }
-        }
-      }
-
-
-      // TODO: figure out sourceOfUpdate
-      let sourceOfUpdate;
-
-      this.updateRenderers({
-        componentNames: componentsTouched,
-        sourceOfUpdate,
-        recurseToChildren: false,
-      })
-
-      this.finishUpdate();
-
-      console.log("**** Components after updateValue");
-      console.log(this._components);
-
-      // TODO: should not use '/_document1' in below references to document
-      // as the code will break if someone named the document tag
-
-      if (sourceOfUpdate !== undefined && sourceOfUpdate.instructionsByComponent !== undefined) {
-        let updateKeys = Object.keys(sourceOfUpdate.instructionsByComponent);
-        if (updateKeys.length === 1 && updateKeys[0] === "/_document1") {
-          saveSerializedStateImmediately = true;
-        }
-      }
     }
     else if (updateType === "updateRendererOnly") {
       this.update({ doenetTags: this._renderComponents });
+    }
+
+    return returnValue;
+  }
+
+  executeUpdateStateVariables({ newStateVariableValues, componentsTouched, saveSerializedState = true }) {
+
+    let getStateVar = this.getStateVariableValue;
+
+    let saveSerializedStateImmediately = false;
+
+    if (componentsTouched === undefined) {
+      componentsTouched = Object.keys(newStateVariableValues);
+    }
+
+    for (let cName in newStateVariableValues) {
+      let comp = this._components[cName];
+      let newComponentStateVariables = newStateVariableValues[cName];
+
+      for (let vName in newComponentStateVariables) {
+        if (vName[0] === "_") {
+          // have an array where set specific keys
+          let newValueInfo = newComponentStateVariables[vName];
+          let arrayVarObj = comp.state[newValueInfo.stateVariable];
+          arrayVarObj.setArrayValue({
+            value: newValueInfo.value,
+            arrayKey: newValueInfo.arrayKey
+          });
+
+          for (let arrayVarName of arrayVarObj.allVarNamesThatIncludeArrayKey(newValueInfo.arrayKey)) {
+            if (comp.state[arrayVarName]) {
+              // arrayVarName might not actually be a state variable created in comp
+
+              // delete value before assigning new value to remove any getter
+              delete comp.state[arrayVarName].value;
+              if (arrayVarName === arrayVarObj.arrayVarNameFromArrayKey(newValueInfo.arrayKey)) {
+                // this is the variable that corresponds exactly to the value set
+                // so can just give it the new value
+                comp.state[arrayVarName].value = newValueInfo.value;
+              }
+              else {
+                // this variable presumably includes other array keys
+                // so just put a getter on
+                Object.defineProperty(comp.state[arrayVarName], 'value', { get: () => getStateVar({ component: comp, stateVariable: arrayVarName }), configurable: true });
+              }
+
+              let additionalComponentsTouched = this.markUpstreamDependentsStale({
+                component: comp, varName: arrayVarName
+              });
+
+              componentsTouched.push(...additionalComponentsTouched);
+            }
+          }
+        }
+        else {
+          comp.state[vName]._previousValue = comp.state[vName].value;
+
+          // delete value before assigning new value to remove any getter
+          delete comp.state[vName].value;
+          comp.state[vName].value = newComponentStateVariables[vName];
+
+          let additionalComponentsTouched = this.markUpstreamDependentsStale({
+            component: comp, varName: vName
+          });
+
+          componentsTouched.push(...additionalComponentsTouched);
+        }
+      }
+    }
+
+    // get unique list of components touched
+    componentsTouched = new Set(componentsTouched);
+
+    // calculate any replacement changes on composites touched
+    let componentChanges = []; // TODO: what to do with componentChanges?
+
+    let additionalComponentsTouched = [...componentsTouched];
+
+    while (additionalComponentsTouched.length > 0) {
+      let newTouched = [];
+      for (let cName of additionalComponentsTouched) {
+        if (this._components[cName] instanceof this.allComponentClasses._composite) {
+          let result = this.updateCompositeReplacements({
+            component: this._components[cName],
+            componentChanges
+          });
+          if (result.componentsTouched) {
+            newTouched.push(...result.componentsTouched);
+          }
+        }
+      }
+
+      newTouched = new Set(newTouched);
+
+      additionalComponentsTouched = [];
+
+      for (let cName of newTouched) {
+        if (!componentsTouched.has(cName)) {
+          componentsTouched.add(cName);
+          additionalComponentsTouched.push(cName);
+        }
+      }
+    }
+
+    // TODO: figure out sourceOfUpdate
+    let sourceOfUpdate;
+
+    this.updateRenderers({
+      componentNames: componentsTouched,
+      sourceOfUpdate,
+      recurseToChildren: false,
+    });
+
+    this.finishUpdate();
+
+    console.log("**** Components after updateValue");
+    console.log(this._components);
+
+    // TODO: should not use '/_document1' in below references to document
+    // as the code will break if someone named the document tag
+
+    if (sourceOfUpdate !== undefined && sourceOfUpdate.instructionsByComponent !== undefined) {
+      let updateKeys = Object.keys(sourceOfUpdate.instructionsByComponent);
+      if (updateKeys.length === 1 && updateKeys[0] === "/_document1") {
+        saveSerializedStateImmediately = true;
+      }
     }
 
     if (saveSerializedState) {
@@ -5647,7 +5661,6 @@ export default class Core {
       }
     }
 
-    return returnValue;
   }
 
   requestComponentChanges({ instruction, initialChange = true, workspace }) {
@@ -5696,28 +5709,28 @@ export default class Core {
     let origStateVarObj = component.state[originalStateVariable];
 
     let componentsTouched = [component.componentName];
-    let newValues = {};
+    let newStateVariableValues = {};
 
     if (!origStateVarObj.inverseDefinition) {
       console.warn(`Cannot change state variable ${stateVariable} of ${component.componentName} as it doesn't have an inverse definition`);
-      return { newValues, componentsTouched };
+      return { newStateVariableValues, componentsTouched };
     }
 
     if (component.stateValues.fixed) {
       console.log(`Changing ${stateVariable} of ${component.componentName} did not succeed because fixed is true.`);
-      return { newValues, componentsTouched };
+      return { newStateVariableValues, componentsTouched };
     }
 
     if (!(initialChange || component.stateValues.modifyIndirectly !== false)) {
       console.log(`Changing ${stateVariable} of ${component.componentName} did not succeed because modifyIndirectly is false.`);
-      return { newValues, componentsTouched };
+      return { newStateVariableValues, componentsTouched };
     }
 
     let inverseResult = origStateVarObj.inverseDefinition(inverseDefinitionArgs);
 
     if (!inverseResult.success) {
       console.log(`Changing ${stateVariable} of ${component.componentName} did not succeed.`);
-      return { newValues, componentsTouched };
+      return { newStateVariableValues, componentsTouched };
     }
 
     // console.log("inverseResult");
@@ -5735,17 +5748,17 @@ export default class Core {
         //   throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: can't set its value if it is not essential.`);
         // }
 
-        if (!newValues[component.componentName]) {
-          newValues[component.componentName] = {};
+        if (!newStateVariableValues[component.componentName]) {
+          newStateVariableValues[component.componentName] = {};
         }
         if ("arrayKey" in newInstruction) {
-          newValues[component.componentName]['_' + newInstruction.setStateVariable + '_' + newInstruction.arrayKey] = {
+          newStateVariableValues[component.componentName]['_' + newInstruction.setStateVariable + '_' + newInstruction.arrayKey] = {
             stateVariable: newInstruction.setStateVariable,
             arrayKey: newInstruction.arrayKey,
             value: newInstruction.value
           }
         } else {
-          newValues[component.componentName][newInstruction.setStateVariable] = newInstruction.value;
+          newStateVariableValues[component.componentName][newInstruction.setStateVariable] = newInstruction.value;
         }
 
       } else if (newInstruction.setDependency) {
@@ -5771,11 +5784,11 @@ export default class Core {
             instruction: inst, initialChange: false, workspace,
           });
           componentsTouched.push(...additionalChanges.componentsTouched);
-          for (let cName in additionalChanges.newValues) {
-            if (!newValues[cName]) {
-              newValues[cName] = {};
+          for (let cName in additionalChanges.newStateVariableValues) {
+            if (!newStateVariableValues[cName]) {
+              newStateVariableValues[cName] = {};
             }
-            Object.assign(newValues[cName], additionalChanges.newValues[cName]);
+            Object.assign(newStateVariableValues[cName], additionalChanges.newStateVariableValues[cName]);
           }
         } else if (dep.dependencyType = "componentStateVariable") {
           let inst = {
@@ -5787,11 +5800,11 @@ export default class Core {
             instruction: inst, initialChange: false, workspace
           });
           componentsTouched.push(...additionalChanges.componentsTouched);
-          for (let cName in additionalChanges.newValues) {
-            if (!newValues[cName]) {
-              newValues[cName] = {};
+          for (let cName in additionalChanges.newStateVariableValues) {
+            if (!newStateVariableValues[cName]) {
+              newStateVariableValues[cName] = {};
             }
-            Object.assign(newValues[cName], additionalChanges.newValues[cName]);
+            Object.assign(newStateVariableValues[cName], additionalChanges.newStateVariableValues[cName]);
           }
         } else {
           throw Error(`unimplemented dependency type ${dep.dependencyType} in requestComponentChanges`)
@@ -5847,7 +5860,7 @@ export default class Core {
       }
     }
 
-    return { newValues, componentsTouched };
+    return { newStateVariableValues, componentsTouched };
   }
 
   getDeferredStateVariable({ component, stateVariable, upstreamComponent, upstreamStateVariable, dependencyValues, inverseDefinition }) {
