@@ -500,30 +500,6 @@ export default class Sequence extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.replacementClasses = {
-      additionalStateVariablesDefined: ["nonCompositeReplacementClasses"],
-      returnDependencies: () => ({
-        count: {
-          dependencyType: "stateVariable",
-          variableName: "count",
-        },
-        selectedType: {
-          dependencyType: "stateVariable",
-          variableName: "selectedType",
-        },
-      }),
-      definition: function ({ dependencyValues, componentInfoObjects }) {
-        let entryClass = componentInfoObjects.allComponentClasses[dependencyValues.selectedType];
-        let replacementClasses = Array(dependencyValues.count).fill(entryClass);
-        return {
-          newValues: {
-            replacementClasses,
-            nonCompositeReplacementClasses: replacementClasses
-          }
-        };
-      }
-    }
-
     stateVariableDefinitions.readyToExpandWhenResolved = {
 
       returnDependencies: () => ({

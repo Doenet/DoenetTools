@@ -2553,19 +2553,19 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
+    <text>a</text>
     <select assignnames="(a,b,c,d)">
     <group>
-      Option 1: <math name="h"><math name="w">x</math><math>y</math></math>
-      <ref>w</ref>
-      <ref>h</ref>
-      <ref>_math3</ref>
+      Option 1: <math name="h"><math name="w">x</math><math>y</math></math>,
+      <math simplify><math name="q">z</math> + 2<ref name="v">q</ref></math>,
+      <ref>../a/w</ref>,
+      <ref>../b/q</ref>
     </group>
     <group>
-      Option 2: <math name="h"><math name="w">u</math><math>v</math></math>
-      <ref>w</ref>
-      <ref>h</ref>
-      <ref>_math3</ref>
+      Option 2: <math name="h"><math name="w">u</math><math>v</math></math>,
+      <math simplify><math name="q">t</math> + 2<ref name="v">q</ref></math>,
+      <ref>../a/w</ref>,
+      <ref>../b/q</ref>
     </group>
     </select>
     
@@ -2575,30 +2575,31 @@ describe('Select Tag Tests', function () {
     <p><ref name="c2">c</ref></p>
     <p><ref name="d2">d</ref></p>
     
-    <p>Ref named child of grandchild</p>
+    <p>Ref named children of grandchild</p>
     <p><ref name="w2">a/w</ref></p>
+    <p><ref name="v2">b/v</ref></p>
     
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     let options = {
       "Option 1:": {
         a: "x y",
-        b: "x",
-        c: "x y",
-        d: "y",
+        b: "3 z",
+        c: "x",
+        d: "z",
+        v: "z",
         w: "x",
       },
       "Option 2:": {
         a: "u v",
-        b: "u",
-        c: "u v",
-        d: "v",
+        b: "3 t",
+        c: "u",
+        d: "t",
+        v: "t",
         w: "u",
       },
     }
@@ -2617,14 +2618,16 @@ describe('Select Tag Tests', function () {
 
       let a2 = components['/a2'].replacements[0].stateValues.value.toString();
       let b2 = components['/b2'].replacements[0].stateValues.value.toString();
-      let c2 = components['/c2'].replacements[0].stateValues.value.toString();
-      let d2 = components['/d2'].replacements[0].stateValues.value.toString();
+      let c2 = components['/c2'].replacements[0].replacements[0].stateValues.value.toString();
+      let d2 = components['/d2'].replacements[0].replacements[0].stateValues.value.toString();
+      let v2 = components['/v2'].replacements[0].replacements[0].stateValues.value.toString();
       let w2 = components['/w2'].replacements[0].stateValues.value.toString();
 
       expect(a2).eq(option.a);
       expect(b2).eq(option.b);
       expect(c2).eq(option.c);
       expect(d2).eq(option.d);
+      expect(v2).eq(option.v);
       expect(w2).eq(option.w);
 
     })
@@ -2634,19 +2637,19 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
+    <text>a</text>
     <select assignnames="(a,b,c,d)">
     <group>
-      Option 1: <math name="h" newnamespace><math name="w">x</math><math>y</math></math>
-      <ref>h/w</ref>
-      <ref>h</ref>
-      <ref>h/_math2</ref>
+      Option 1: <math name="h" newnamespace><math name="w">x</math><math>y</math></math>,
+      <math simplify newnamespace name="a"><math name="q">z</math> + 2<ref name="v">q</ref></math>,
+      <ref>../a/w</ref>,
+      <ref>../b/q</ref>
     </group>
     <group>
-      Option 2: <math name="h" newnamespace><math name="w">u</math><math>v</math></math>
-      <ref>h/w</ref>
-      <ref>h</ref>
-      <ref>h/_math2</ref>
+      Option 2: <math name="h" newnamespace><math name="w">u</math><math>v</math></math>,
+      <math simplify newnamespace name="a"><math name="q">t</math> + 2<ref name="v">q</ref></math>,
+      <ref>../a/w</ref>,
+      <ref>../b/q</ref>
     </group>
     </select>
     
@@ -2656,30 +2659,30 @@ describe('Select Tag Tests', function () {
     <p><ref name="c2">c</ref></p>
     <p><ref name="d2">d</ref></p>
     
-    <p>Ref named child of grandchild</p>
+    <p>Ref named children of grandchild</p>
     <p><ref name="w2">a/w</ref></p>
+    <p><ref name="v2">b/v</ref></p>
     
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     let options = {
       "Option 1:": {
         a: "x y",
-        b: "x",
-        c: "x y",
-        d: "y",
+        b: "3 z",
+        c: "x",
+        d: "z",
+        v: "z",
         w: "x",
       },
       "Option 2:": {
         a: "u v",
-        b: "u",
-        c: "u v",
-        d: "v",
+        b: "3 t",
+        c: "u",
+        d: "t",
+        v: "t",
         w: "u",
       },
     }
@@ -2698,90 +2701,17 @@ describe('Select Tag Tests', function () {
 
       let a2 = components['/a2'].replacements[0].stateValues.value.toString();
       let b2 = components['/b2'].replacements[0].stateValues.value.toString();
-      let c2 = components['/c2'].replacements[0].stateValues.value.toString();
-      let d2 = components['/d2'].replacements[0].stateValues.value.toString();
+      let c2 = components['/c2'].replacements[0].replacements[0].stateValues.value.toString();
+      let d2 = components['/d2'].replacements[0].replacements[0].stateValues.value.toString();
+      let v2 = components['/v2'].replacements[0].replacements[0].stateValues.value.toString();
       let w2 = components['/w2'].replacements[0].stateValues.value.toString();
 
       expect(a2).eq(option.a);
       expect(b2).eq(option.b);
       expect(c2).eq(option.c);
       expect(d2).eq(option.d);
+      expect(v2).eq(option.v);
       expect(w2).eq(option.w);
-
-    })
-  });
-
-  it("select of a map of a select", () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetCode: `
-    <math>1</math>
-    <p><aslist>
-    <select assignnames="j,k,l" numbertoselect="3" withreplacement>
-    <map assignnamespaces="a,b">
-      <template>
-        <select assignnames="(p,q),(r,s)" numbertoselect="2">
-          <group><math><subsref/>^2</math><math><subsref/>^6</math></group>
-          <group><math><subsref/>^3</math><math><subsref/>^7</math></group>
-          <group><math><subsref/>^4</math><math><subsref/>^8</math></group>
-          <group><math><subsref/>^5</math><math><subsref/>^9</math></group>
-        </select>
-      </template>
-      <substitutions>
-        <math>x</math><math>y</math>
-      </substitutions>
-    </map>
-    <map assignnamespaces="a,b">
-      <template>
-        <select assignnames="(p,q),(r,s)" numbertoselect="2">
-          <group><math><subsref/>2</math><math><subsref/>6</math></group>
-          <group><math><subsref/>3</math><math><subsref/>7</math></group>
-          <group><math><subsref/>4</math><math><subsref/>8</math></group>
-          <group><math><subsref/>5</math><math><subsref/>9</math></group>
-        </select>
-      </template>
-      <substitutions>
-        <math>u</math><math>v</math>
-      </substitutions>
-    </map>
-    </select>
-    </aslist></p>
-
-    <p>Ref whole select again</p>
-    <p><aslist><ref name="s2">_select1</ref></aslist></p>
-
-    `}, "*");
-    });
-
-    // NOTE: include this separately without references as it is a case
-    // where the number of failures in update loop temporarily increases
-
-    // to wait for page to load
-    cy.wait(2000);// TODO: need something better than this
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let theList = components['/_select1'].replacements.reduce((a, c) =>
-        [...a, ...c.replacements.reduce((a, c) =>
-          [...a, ...c.replacements.reduce((a, c) =>
-            [...a, ...c.activeChildren.map(x => x.stateValues.value.toString())]
-            , [])]
-          , [])]
-        , [])
-
-      let theList2 = components['/s2'].replacements[0].replacements.reduce((a, c) =>
-        [...a, ...c.replacements.reduce((a, c) =>
-          [...a, ...c.replacements.reduce((a, c) =>
-            [...a, ...c.activeChildren.map(x => x.stateValues.value.toString())]
-            , [])]
-          , [])]
-        , [])
-
-      expect(theList2).eqls(theList);
 
     })
   });
@@ -2790,8 +2720,8 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
-    <p><aslist>
+    <text>a</text>
+    <p><aslist name="list1">
     <select assignnames="j,k,l" numbertoselect="3" withreplacement>
     <map assignnamespaces="a,b">
       <template>
@@ -2823,15 +2753,17 @@ describe('Select Tag Tests', function () {
     </aslist></p>
 
     <p>Ref whole select again</p>
-    <p><aslist><ref name="s2">_select1</ref></aslist></p>
+    <p><aslist name="list2"><ref name="s2">_select1</ref></aslist></p>
 
     <p>Ref individual selections</p>
-    <p><aslist><ref name="j2">j</ref></aslist></p>
-    <p><aslist><ref name="k2">k</ref></aslist></p>
-    <p><aslist><ref name="l2">l</ref></aslist></p>
+    <p><aslist name="list3">
+    <ref name="j2">j</ref>
+    <ref name="k2">k</ref>
+    <ref name="l2">l</ref>
+    </aslist></p>
 
     <p>Ref individual pieces</p>
-    <p><aslist>
+    <p><aslist name="list4">
     <ref name="p1">j/a/p</ref><ref name="p2">j/a/q</ref><ref name="p3">j/a/r</ref><ref name="p4">j/a/s</ref><ref name="p5">j/b/p</ref><ref name="p6">j/b/q</ref><ref name="p7">j/b/r</ref><ref name="p8">j/b/s</ref>
     <ref name="p9">k/a/p</ref><ref name="p10">k/a/q</ref><ref name="p11">k/a/r</ref><ref name="p12">k/a/s</ref><ref name="p13">k/b/p</ref><ref name="p14">k/b/q</ref><ref name="p15">k/b/r</ref><ref name="p16">k/b/s</ref>
     <ref name="p17">l/a/p</ref><ref name="p18">l/a/q</ref><ref name="p19">l/a/r</ref><ref name="p20">l/a/s</ref><ref name="p21">l/b/p</ref><ref name="p22">l/b/q</ref><ref name="p23">l/b/r</ref><ref name="p24">l/b/s</ref>
@@ -2839,59 +2771,22 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.wait(2000);// TODO: need something better than this
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let theList = components['/_select1'].replacements.reduce((a, c) =>
-        [...a, ...c.replacements.reduce((a, c) =>
-          [...a, ...c.replacements.reduce((a, c) =>
-            [...a, ...c.activeChildren.map(x => x.stateValues.value.toString())]
-            , [])]
-          , [])]
-        , [])
+      let theList1 = components['/list1'].activeChildren.map(x => x.stateValues.value.toString())
+      let theList2 = components['/list2'].activeChildren.map(x => x.stateValues.value.toString())
+      let theList3 = components['/list3'].activeChildren.map(x => x.stateValues.value.toString())
 
-      let theList2 = components['/s2'].replacements[0].replacements.reduce((a, c) =>
-        [...a, ...c.replacements.reduce((a, c) =>
-          [...a, ...c.replacements.reduce((a, c) =>
-            [...a, ...c.activeChildren.map(x => x.stateValues.value.toString())]
-            , [])]
-          , [])]
-        , [])
-
-      expect(theList2).eqls(theList);
-
-      let sublistA = components['/j2'].replacements[0].replacements.reduce((a, c) =>
-        [...a, ...c.replacements.reduce((a, c) =>
-          [...a, ...c.activeChildren.map(x => x.stateValues.value.toString())]
-          , [])]
-        , []);
-
-      let sublistB = components['/k2'].replacements[0].replacements.reduce((a, c) =>
-        [...a, ...c.replacements.reduce((a, c) =>
-          [...a, ...c.activeChildren.map(x => x.stateValues.value.toString())]
-          , [])]
-        , []);
-
-      let sublistC = components['/l2'].replacements[0].replacements.reduce((a, c) =>
-        [...a, ...c.replacements.reduce((a, c) =>
-          [...a, ...c.activeChildren.map(x => x.stateValues.value.toString())]
-          , [])]
-        , []);
-
-      let theList3 = [...sublistA, ...sublistB, ...sublistC]
-
-
-      expect(theList3).eqls(theList);
+      expect(theList2).eqls(theList1);
+      expect(theList3).eqls(theList1);
 
       let theList4 = [...Array(24).keys()].map(i => components['/p' + (i + 1)].replacements[0].stateValues.value.toString());
 
-      expect(theList4).eqls(theList);
+      expect(theList4).eqls(theList1);
 
     })
   });
@@ -2900,8 +2795,8 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
-    <p><aslist>
+    <text>a</text>
+    <p><aslist name="list1">
     <select name="s" newnamespace assignnames="j,k,l" numbertoselect="3" withreplacement>
     <map name="m" newnamespace assignnamespaces="a,b">
       <template>
@@ -2933,15 +2828,17 @@ describe('Select Tag Tests', function () {
     </aslist></p>
 
     <p>Ref whole select again</p>
-    <p><aslist><ref name="s2">s</ref></aslist></p>
+    <p><aslist name="list2"><ref name="s2">s</ref></aslist></p>
 
     <p>Ref individual selections</p>
-    <p><aslist><ref name="j2">s/j</ref></aslist></p>
-    <p><aslist><ref name="k2">s/k</ref></aslist></p>
-    <p><aslist><ref name="l2">s/l</ref></aslist></p>
+    <p><aslist name="list3">
+    <ref name="j2">s/j</ref>
+    <ref name="k2">s/k</ref>
+    <ref name="l2">s/l</ref>
+    </aslist></p>
 
     <p>Ref individual pieces</p>
-    <p><aslist>
+    <p><aslist name="list4">
     <ref name="p1">s/j/a/v/p</ref><ref name="p2">s/j/a/v/q</ref><ref name="p3">s/j/a/v/r</ref><ref name="p4">s/j/a/v/s</ref><ref name="p5">s/j/b/v/p</ref><ref name="p6">s/j/b/v/q</ref><ref name="p7">s/j/b/v/r</ref><ref name="p8">s/j/b/v/s</ref>
     <ref name="p9">s/k/a/v/p</ref><ref name="p10">s/k/a/v/q</ref><ref name="p11">s/k/a/v/r</ref><ref name="p12">s/k/a/v/s</ref><ref name="p13">s/k/b/v/p</ref><ref name="p14">s/k/b/v/q</ref><ref name="p15">s/k/b/v/r</ref><ref name="p16">s/k/b/v/s</ref>
     <ref name="p17">s/l/a/v/p</ref><ref name="p18">s/l/a/v/q</ref><ref name="p19">s/l/a/v/r</ref><ref name="p20">s/l/a/v/s</ref><ref name="p21">s/l/b/v/p</ref><ref name="p22">s/l/b/v/q</ref><ref name="p23">s/l/b/v/r</ref><ref name="p24">s/l/b/v/s</ref>
@@ -2949,61 +2846,22 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.wait(2000);// TODO: need something better than this
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let theList = components['/s'].replacements.reduce((a, c) =>
-        [...a, ...c.replacements.reduce((a, c) =>
-          [...a, ...c.replacements.reduce((a, c) =>
-            [...a, ...c.activeChildren.map(x => x.stateValues.value.toString())]
-            , [])]
-          , [])]
-        , [])
+      let theList1 = components['/list1'].activeChildren.map(x => x.stateValues.value.toString())
+      let theList2 = components['/list2'].activeChildren.map(x => x.stateValues.value.toString())
+      let theList3 = components['/list3'].activeChildren.map(x => x.stateValues.value.toString())
 
-
-      let theList2 = components['/s2'].replacements[0].replacements.reduce((a, c) =>
-        [...a, ...c.replacements.reduce((a, c) =>
-          [...a, ...c.replacements.reduce((a, c) =>
-            [...a, ...c.activeChildren.map(x => x.stateValues.value.toString())]
-            , [])]
-          , [])]
-        , [])
-
-      expect(theList2).eqls(theList);
-
-
-      let sublistA = components['/j2'].replacements[0].replacements.reduce((a, c) =>
-        [...a, ...c.replacements.reduce((a, c) =>
-          [...a, ...c.activeChildren.map(x => x.stateValues.value.toString())]
-          , [])]
-        , []);
-
-      let sublistB = components['/k2'].replacements[0].replacements.reduce((a, c) =>
-        [...a, ...c.replacements.reduce((a, c) =>
-          [...a, ...c.activeChildren.map(x => x.stateValues.value.toString())]
-          , [])]
-        , []);
-
-      let sublistC = components['/l2'].replacements[0].replacements.reduce((a, c) =>
-        [...a, ...c.replacements.reduce((a, c) =>
-          [...a, ...c.activeChildren.map(x => x.stateValues.value.toString())]
-          , [])]
-        , []);
-
-      let theList3 = [...sublistA, ...sublistB, ...sublistC]
-
-
-      expect(theList3).eqls(theList);
+      expect(theList2).eqls(theList1);
+      expect(theList3).eqls(theList1);
 
       let theList4 = [...Array(24).keys()].map(i => components['/p' + (i + 1)].replacements[0].stateValues.value.toString());
 
-      expect(theList4).eqls(theList);
+      expect(theList4).eqls(theList1);
 
     })
   });
@@ -3012,6 +2870,7 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
+  <text>a</text>
   <p><aslist>
     <select name="s1" assignnames="X1, y1, z1" withReplacement>
       <numberToSelect><ref prop="numberToSelect">s2</ref></numberToSelect>
@@ -3033,18 +2892,16 @@ describe('Select Tag Tests', function () {
   <p> 
     <ref name="n2">n3</ref>
     <ref name="n">num1</ref>
-    <number name="num1"><ref>n2</ref>+<ref>num2</ref></number>
-    <number name="num2"><ref>n3</ref>+<ref>num3</ref></number>
+    <math name="num1"><ref>n2</ref>+<ref>num2</ref></math>
+    <math name="num2"><ref>n3</ref>+<ref>num3</ref></math>
     <ref name="n3">num3</ref>
     <number name="num3">1</number>
   </p>
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.get('#\\/num1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -3117,7 +2974,7 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('select with hide will hide name grandchildren replacements', () => {
+  it('select with hide will hide named grandchildren replacements', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `

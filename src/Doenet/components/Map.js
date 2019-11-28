@@ -157,20 +157,6 @@ export default class Map extends CompositeComponent {
       },
     };
 
-    // we aren't going to bother to calculate the replacement classes of map
-    // Is there any reason we'd need them?
-    // Need a reasonable error if ref a prop of a map
-    stateVariableDefinitions.replacementClasses = {
-      additionalStateVariablesDefined: ["nonCompositeReplacementClasses"],
-      returnDependencies: () => ({}),
-      definition: () => ({
-        newValues: {
-          replacementClasses: undefined,
-          nonCompositeReplacementClasses: undefined,
-        }
-      })
-    }
-
     return stateVariableDefinitions;
 
   }
@@ -584,6 +570,8 @@ export default class Map extends CompositeComponent {
   }
 
   static determineNumberOfUniqueVariants({ serializedComponent }) {
+    // TODO: if template has only one unique variant
+    // could treat as a normal component
     return { success: false };
   }
 }

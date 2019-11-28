@@ -1,5 +1,4 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import { normalizeSerializedRef } from './Ref';
 import { enumerateSelectionCombinations, enumerateCombinations } from '../utils/enumeration';
 import { getVariantsForDescendants } from '../utils/variants';
 import { deepClone } from '../utils/deepFunctions';
@@ -136,7 +135,6 @@ export default class Select extends CompositeComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        console.log(dependencyValues.allPossibleVariants)
 
         // deepClone remove readonly proxy
         let childrenToSelect = deepClone(dependencyValues.serializedChildren);
@@ -182,9 +180,6 @@ export default class Select extends CompositeComponent {
               + numberToSelect);
           }
         }
-
-        console.log("availableVariants")
-        console.log(availableVariants)
 
         if (Object.keys(availableVariants).length > 0) {
           // if have at least one variant specified,
@@ -410,20 +405,6 @@ export default class Select extends CompositeComponent {
       })
     }
 
-    // we aren't going to bother to calculate the replacement classes of select
-    // Is there any reason we'd need them?
-    // Need a reasonable error if ref a prop of a select
-    stateVariableDefinitions.replacementClasses = {
-      additionalStateVariablesDefined: ["nonCompositeReplacementClasses"],
-      returnDependencies: () => ({}),
-      definition: () => ({
-        newValues: {
-          replacementClasses: undefined,
-          nonCompositeReplacementClasses: undefined,
-        }
-      })
-    }
-
     return stateVariableDefinitions;
   }
 
@@ -460,7 +441,6 @@ export default class Select extends CompositeComponent {
     let replacementsWithInstructions = [];
 
     for (let [replacementNumber, childIndex] of component.stateValues.selectedIndices.entries()) {
-      // TODO: grandchild names
 
       let name;
       let assignNames = component.doenetAttributes.assignNames;
@@ -472,9 +452,44 @@ export default class Select extends CompositeComponent {
         name
       }
 
+      let serializedChild = component.stateValues.childrenToSelect[childIndex];
+
+      if (component.stateValues.hide) {
+        // if select is hidden, then make each of its replacements hidden
+
+        // shallow copy of child and then its state so that can modify state
+        serializedChild = Object.assign({}, serializedChild);
+        if (serializedChild.state) {
+          serializedChild.state = Object.assign({}, serializedChild.state);
+        } else {
+          serializedChild.state = {};
+        }
+
+        serializedChild.state.hide = true;
+
+        // if assigning names to grandchild, then hide those as well
+        // so that refs of those will be hidden, for consistency
+        // Make shallow copies as necessary so that can modify
+        if (Array.isArray(name)) {
+          if (serializedChild.children) {
+            serializedChild.children = [...serializedChild.children];
+            for (let [ind, grandchild] of serializedChild.children.entries()) {
+              grandchild = Object.assign({}, grandchild);
+              if (grandchild.state) {
+                grandchild.state = Object.assign({}, grandchild.state);
+              } else {
+                grandchild.state = {};
+              }
+              grandchild.state.hide = true;
+              serializedChild.children[ind] = grandchild;
+            }
+          }
+        }
+      }
+
       replacementsWithInstructions.push({
         instructions: [instruction],
-        replacements: [component.stateValues.childrenToSelect[childIndex]]
+        replacements: [serializedChild]
       })
     }
 
@@ -512,7 +527,6 @@ export default class Select extends CompositeComponent {
         }
       }
     }
-
 
     return { replacementsWithInstructions };
   }

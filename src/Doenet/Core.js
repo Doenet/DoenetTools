@@ -34,7 +34,7 @@ export default class Core {
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
     this.setUpStateVariableDependencies = this.setUpStateVariableDependencies.bind(this);
-    this.getComponentOrReplacementNames = this.getComponentOrReplacementNames.bind(this);
+    this.getComponentNamesForProp = this.getComponentNamesForProp.bind(this);
 
     this.update = update;
     this._standardComponentTypes = ComponentTypes.createComponentTypes();
@@ -1004,7 +1004,7 @@ export default class Core {
 
     // TODO: verify this works and understand what it does
     if (component.stateValues.stateVariablesRequested) {
-      let componentOrReplacementNames = this.getComponentOrReplacementNames(component.stateValues.stateVariablesRequested[0].componentOrReplacementOf);
+      let componentOrReplacementNames = this.getComponentNamesForProp(component.stateValues.stateVariablesRequested[0].componentOrReplacementOf);
       for (let [index, stateVarInfo] of component.stateValues.stateVariablesRequested.entries()) {
         let targetComponent = this._components[componentOrReplacementNames[index]];
         let targetVarObj = targetComponent.state[stateVarInfo.stateVariable];
@@ -1048,7 +1048,7 @@ export default class Core {
       component,
       components: this.components,
       workspace: component.replacementsWorkspace,
-      getComponentOrReplacementNames: this.getComponentOrReplacementNames,
+      getComponentNamesForProp: this.getComponentNamesForProp,
     });
 
     // console.log(`expand result for ${component.componentName}`)
@@ -1309,7 +1309,12 @@ export default class Core {
             delete theReplacement.doenetAttributes.newNamespace;
 
             if (theReplacement.children !== undefined) {
-              for (let [ind, grandchild] of theReplacement.children.entries()) {
+              let ind = -1;
+              for (let grandchild of theReplacement.children) {
+                if (grandchild.componentType === "string") {
+                  continue;
+                }
+                ind++;
                 let nameForGrandchild = name[ind];
                 if (nameForGrandchild === undefined) {
                   nameForGrandchild = this.createNewUniqueName(component);
@@ -3511,13 +3516,15 @@ export default class Core {
     }
   }
 
-  getComponentOrReplacementNames(componentName) {
+  getComponentNamesForProp(componentName) {
     let component = this._components[componentName];
     if (!component) {
       return [];
     }
 
-    if (component instanceof this.allComponentClasses._composite) {
+    if (component instanceof this.allComponentClasses._composite
+      && component.constructor.refPropOfReplacements
+    ) {
       if (!component.isExpanded) {
         let readyToExpand;
         if (!("readyToExpandWhenResolved" in component.state)) {
@@ -3538,7 +3545,7 @@ export default class Core {
       }
       let replacementNames = [];
       for (let replacement of component.replacements) {
-        replacementNames.push(...this.getComponentOrReplacementNames(replacement.componentName));
+        replacementNames.push(...this.getComponentNamesForProp(replacement.componentName));
       }
       return replacementNames;
     } else {

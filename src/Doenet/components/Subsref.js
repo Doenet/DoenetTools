@@ -4,6 +4,8 @@ import { postProcessRef } from './Ref';
 export default class Subsref extends CompositeComponent {
   static componentType = "subsref";
 
+  static refPropOfReplacements = true;
+
   static createPropertiesObject({ standardComponentTypes }) {
     let properties = super.createPropertiesObject({
       standardComponentTypes: standardComponentTypes
@@ -122,8 +124,7 @@ export default class Subsref extends CompositeComponent {
     };
 
 
-    stateVariableDefinitions.replacementClasses = {
-      additionalStateVariablesDefined: ["nonCompositeReplacementClasses"],
+    stateVariableDefinitions.replacementClassesForProp = {
       returnDependencies: () => ({
         targetSubs: {
           dependencyType: "stateVariable",
@@ -131,11 +132,9 @@ export default class Subsref extends CompositeComponent {
         }
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
-        let replacementClasses = [componentInfoObjects.allComponentClasses[dependencyValues.targetSubs.componentType]];
         return {
           newValues: {
-            replacementClasses,
-            nonCompositeReplacementClasses: replacementClasses,
+            replacementClassesForProp: [componentInfoObjects.allComponentClasses[dependencyValues.targetSubs.componentType]],
           }
         };
       },

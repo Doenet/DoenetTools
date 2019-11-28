@@ -4,6 +4,8 @@ import Ref from './Ref';
 export default class Subsindex extends CompositeComponent {
   static componentType = "subsindex";
 
+  static refPropOfReplacements = true;
+
   static createPropertiesObject({ standardComponentTypes }) {
     let properties = super.createPropertiesObject({
       standardComponentTypes: standardComponentTypes
@@ -91,16 +93,13 @@ export default class Subsindex extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.replacementClasses = {
-      additionalStateVariablesDefined: ["nonCompositeReplacementClasses"],
+    stateVariableDefinitions.replacementClassesForProp = {
       returnDependencies: () => ({
       }),
       definition: function ({ componentInfoObjects }) {
-        let replacementClasses = [componentInfoObjects.allComponentClasses.number];
         return {
           newValues: {
-            replacementClasses,
-            nonCompositeReplacementClasses: replacementClasses,
+            replacementClassesForProp: [componentInfoObjects.allComponentClasses.number],
           }
         };
       },

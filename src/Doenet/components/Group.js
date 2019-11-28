@@ -35,20 +35,6 @@ export default class Group extends CompositeComponent {
       },
     };
 
-    // we aren't going to bother to calculate the replacement classes of group
-    // Is there any reason we'd need them?
-    // Need a reasonable error if ref a prop of a group
-    stateVariableDefinitions.replacementClasses = {
-      additionalStateVariablesDefined: ["nonCompositeReplacementClasses"],
-      returnDependencies: () => ({}),
-      definition: () => ({
-        newValues: {
-          replacementClasses: undefined,
-          nonCompositeReplacementClasses: undefined,
-        }
-      })
-    }
-
     return stateVariableDefinitions;
   }
 
