@@ -28,6 +28,36 @@ class DoenetBranchBrowser extends Component {
       sortOrderAsc: "ASC"
     }
 
+    this.teamMockData = [
+    {
+      id: 1,
+      teamId: 1,
+      teamName: "Team A",
+      username: "chuck017",
+      owner: 1
+    },
+    {
+      id: 2,
+      teamId: 1,
+      teamName: "Team A",
+      username: "leex0052",
+      owner: 0
+    },
+    {
+      id: 3,
+      teamId: 2,
+      teamName: "Team B",
+      username: "char0042",
+      owner: 1
+    },
+    {
+      id: 4,
+      teamId: 2,
+      teamName: "Team B",
+      username: "le000043",
+      owner: 1
+    }]
+
     // handle null props
     this.hideAddRemoveButtons = this.disableEditing = this.props.addContentToFolder === null
                      || this.props.removeContentFromFolder === null;
@@ -56,7 +86,7 @@ class DoenetBranchBrowser extends Component {
     for (let i =0; i < this.state.selectedItemsType.length; i++) {
       if (this.state.selectedItemsType[i] === "folder") {
         // flatten folders to get all content
-        allSelectedContent = allSelectedContent.concat(this.flattenFolder(this.state.selectedItems[i], []));
+        allSelectedContent = allSelectedContent.concat(this.flattenFolder(this.state.selectedItems[i]));
       } else {
         allSelectedContent.push({
           branchId: this.state.selectedItems[i],
@@ -68,14 +98,11 @@ class DoenetBranchBrowser extends Component {
     return allSelectedContent;
   }
 
-  flattenFolder(folderId, exploredFolders) {
+  flattenFolder(folderId) {
     let itemIds = [];
     let childFolder = this.props.allFolderInfo[folderId].childFolder;
     childFolder.forEach((childFolderId) => {
-      if (!exploredFolders.includes(childFolderId)) {
-        exploredFolders.push(childFolderId);
-        itemIds = itemIds.concat(this.flattenFolder(childFolderId, exploredFolders));
-      }        
+      itemIds = itemIds.concat(this.flattenFolder(childFolderId));
     })
     this.props.allFolderInfo[folderId].childContent.forEach((childContentBranchId) => {
       itemIds.push({
@@ -116,22 +143,18 @@ class DoenetBranchBrowser extends Component {
       </div>
     );
 
-    let exploredFolders = [];
     // add items in directoryStack if any
     this.state.directoryStack.forEach((folderId) => {
       let folderTitle = this.props.allFolderInfo[folderId].title;
 
-      if (!exploredFolders.includes(folderId)) {
-        directoryList.push(
-          <div 
-          onClick={() => this.jumpToDirectory(folderId)} 
-          key={"breadcrumb"+folderId}
-          data-cy={"breadcrumb"+folderId}>
-            <label>{folderTitle}</label>
-          </div>
-        );
-        exploredFolders.push(folderId);
-      }
+      directoryList.push(
+        <div 
+        onClick={() => this.jumpToDirectory(folderId)} 
+        key={"breadcrumb"+folderId}
+        data-cy={"breadcrumb"+folderId}>
+          <label>{folderTitle}</label>
+        </div>
+      );
     });
 
     this.breadcrumb = <Breadcrumb separator='>'>
