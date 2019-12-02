@@ -146,17 +146,13 @@ class DoenetChooser extends Component {
         toolbarTitle = this.courseInfo[this.state.selectedCourse].courseCode + ' - '
         + this.courseInfo[this.state.selectedCourse].courseName;
       }
-      // TODO: check if in any folder, true then append (> folderName)
-      // if (this.state.currentDirectory !== null) {
-      //   toolbarTitle += " > " + this.folderInfo[this.state.currentDirectory].title;
-      // }
     } else if (this.state.activeSection === "add_course") {
       toolbarTitle = "Add New Course";
     }
 
     this.topToolbar = <React.Fragment>
       <div id="topToolbar">
-        {/* <span>{ toolbarTitle }</span> */}
+        <span>{ toolbarTitle }</span>
       </div>
     </React.Fragment>
   }
