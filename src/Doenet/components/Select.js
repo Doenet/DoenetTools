@@ -89,7 +89,6 @@ export default class Select extends CompositeComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        // filter out any empty slots from property children that were removed
         return { newValues: { variants: dependencyValues.variants } };
       },
     };
@@ -440,10 +439,11 @@ export default class Select extends CompositeComponent {
 
     let replacementsWithInstructions = [];
 
+    let assignNames = component.doenetAttributes.assignNames;
+
     for (let [replacementNumber, childIndex] of component.stateValues.selectedIndices.entries()) {
 
       let name;
-      let assignNames = component.doenetAttributes.assignNames;
       if (assignNames !== undefined) {
         name = assignNames[replacementNumber];
       }
@@ -531,7 +531,7 @@ export default class Select extends CompositeComponent {
     return { replacementsWithInstructions };
   }
 
-  static calculateReplacementChanges({ component, unproxiedState }) {
+  static calculateReplacementChanges() {
 
     return [];
 

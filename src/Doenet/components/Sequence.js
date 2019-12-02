@@ -467,17 +467,17 @@ export default class Sequence extends CompositeComponent {
           // then convert to numbers
           if (from !== undefined) {
             if (typeof from === "string") {
-              from = componentConstructor.lettersToNumber(from);
+              from = lettersToNumber(from);
             }
           }
           if (to !== undefined) {
             if (typeof to === "string") {
-              to = componentConstructor.lettersToNumber(to);
+              to = lettersToNumber(to);
             }
           }
           for (let [index, value] of exclude.entries()) {
             if (typeof value === "string") {
-              exclude[index] = componentConstructor.lettersToNumber(value)
+              exclude[index] = lettersToNumber(value)
             }
           }
         }
@@ -702,7 +702,7 @@ export default class Sequence extends CompositeComponent {
       }
 
       if (component.stateValues.selectedType === "letters") {
-        componentValue = this.numberToLetters(componentValue, component.stateValues.lowercase);
+        componentValue = numberToLetters(componentValue, component.stateValues.lowercase);
       }
 
       let serializedComponent = {
@@ -850,7 +850,7 @@ export default class Sequence extends CompositeComponent {
             }
           }
           if (component.stateValues.selectedType === "letters") {
-            componentValue = this.numberToLetters(componentValue, component.stateValues.lowercase);
+            componentValue = numberToLetters(componentValue, component.stateValues.lowercase);
           }
           let replacementInstruction = {
             changeType: "updateStateVariables",
@@ -876,7 +876,7 @@ export default class Sequence extends CompositeComponent {
             }
           }
           if (component.stateValues.selectedType === "letters") {
-            componentValue = this.numberToLetters(componentValue, component.stateValues.lowercase);
+            componentValue = numberToLetters(componentValue, component.stateValues.lowercase);
           }
 
           let serializedComponent = {
@@ -909,41 +909,42 @@ export default class Sequence extends CompositeComponent {
 
   }
 
-  static lettersToNumber(letters) {
-    letters = letters.toUpperCase();
+}
 
-    let number = 0,
-      len = letters.length,
-      pos = len;
-    while ((pos -= 1) > -1) {
-      let numForLetter = letters.charCodeAt(pos) - 64;
-      if (numForLetter < 1 || numForLetter > 26) {
-        console.log("Cannot convert " + letters + " to a number");
-        return undefined;
-      }
-      number += numForLetter * Math.pow(26, len - 1 - pos);
+
+export function lettersToNumber(letters) {
+  letters = letters.toUpperCase();
+
+  let number = 0,
+    len = letters.length,
+    pos = len;
+  while ((pos -= 1) > -1) {
+    let numForLetter = letters.charCodeAt(pos) - 64;
+    if (numForLetter < 1 || numForLetter > 26) {
+      console.log("Cannot convert " + letters + " to a number");
+      return undefined;
     }
-    return number;
+    number += numForLetter * Math.pow(26, len - 1 - pos);
   }
+  return number;
+}
 
-  static numberToLetters(number, lowercase) {
-    number--;
-    let offset = 65;
-    if (lowercase) {
-      offset = 97;
-    }
-    let letters = "";
-    while (true) {
-      let nextNum = number % 26;
-      letters = String.fromCharCode(offset + nextNum) + letters;
-      if (number < 26) {
-        break;
-      }
-      number = Math.floor(number / 26) - 1;
-    }
-    return letters;
+export function numberToLetters(number, lowercase) {
+  number--;
+  let offset = 65;
+  if (lowercase) {
+    offset = 97;
   }
-
+  let letters = "";
+  while (true) {
+    let nextNum = number % 26;
+    letters = String.fromCharCode(offset + nextNum) + letters;
+    if (number < 26) {
+      break;
+    }
+    number = Math.floor(number / 26) - 1;
+  }
+  return letters;
 }
 
 

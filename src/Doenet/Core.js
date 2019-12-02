@@ -1240,7 +1240,7 @@ export default class Core {
 
           // make a deep copy to get rid of the readonly proxy
           // TODO: test if deepClone is faster
-          replacementsToAdd = JSON.parse(JSON.stringify(replacementsToAdd));
+          replacementsToAdd = JSON.parse(JSON.stringify(replacementsToAdd), me.reviver);
           let namespace = instruction.namespace;
 
           if (namespace === undefined) {
@@ -1289,7 +1289,7 @@ export default class Core {
 
           // make a deep copy to get rid of the readonly proxy
           // TODO: test if deepClone is faster
-          replacementsToAdd = JSON.parse(JSON.stringify(replacementsToAdd));
+          replacementsToAdd = JSON.parse(JSON.stringify(replacementsToAdd), me.reviver);
           let name = instruction.name;
 
           if (name === undefined) {

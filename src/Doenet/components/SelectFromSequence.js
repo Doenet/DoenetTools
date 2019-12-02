@@ -1,6 +1,7 @@
 import Sequence from './Sequence';
 import me from 'math-expressions';
-import {enumerateSelectionCombinations} from '../utils/enumeration';
+import { enumerateSelectionCombinations } from '../utils/enumeration';
+import { numberToLetters, lettersToNumber } from './Sequence';
 
 export default class SelectFromSequence extends Sequence {
   static componentType = "selectfromsequence";
@@ -9,17 +10,17 @@ export default class SelectFromSequence extends Sequence {
 
   // static selectedVariantVariable = "selectedValues";
 
-  static createPropertiesObject({standardComponentTypes}) {
+  static createPropertiesObject({ standardComponentTypes }) {
     let properties = super.createPropertiesObject({
       standardComponentTypes: standardComponentTypes
     });
-    properties.numbertoselect = {default: 1};
-    properties.withreplacement = {default: false};
-    properties.sortresults = {default: false};
+    properties.numberToSelect = { default: 1 };
+    properties.withReplacement = { default: false };
+    properties.sortResults = { default: false };
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
+  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
     let childLogic = super.returnChildLogic({
       standardComponentTypes: standardComponentTypes,
       allComponentClasses: allComponentClasses,
@@ -38,7 +39,7 @@ export default class SelectFromSequence extends Sequence {
     childLogic.newOperator({
       name: "selectFromSequenceLogic",
       operator: 'and',
-      propositions: [sequenceBase,atLeastZeroExcludeCombinations],
+      propositions: [sequenceBase, atLeastZeroExcludeCombinations],
       setAsBase: true,
     });
 
@@ -46,591 +47,266 @@ export default class SelectFromSequence extends Sequence {
 
   }
 
-  updateState(args={}) {
+  static returnStateVariableDefinitions() {
 
-    if(args.init) {
-      this.state.createdReplacements = false;
-      if(this.state.excludedcombinations === undefined) {
-        this.state.excludedcombinations = [];
-      }
-    }
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    // component is not reselected
-    // so run update only until selection is made
-    if(this.state.madeSelection) {
-      return;
-    }
-
-    super.updateState(args);
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-      let excludeCombinationInds = this.childLogic.returnMatches("atLeastZeroExcludeCombinations");
-      if(excludeCombinationInds.length > 0) {
-        this.state.excludeCombinationChildren = excludeCombinationInds.map(x => this.activeChildren[x]);
-      }else {
-        delete this.state.excludeCombinationChildren;
-      }
-    }
-
-    delete this.unresolvedState.excludedcombinations;
-
-    if(this.state.excludeCombinationChildren) {
-      if(this.state.excludeCombinationChildren.some(x=>x.unresolvedState.value)) {
-        this.unresolvedState.excludedcombinations = true;
-      }else if(childrenChanged || this.state.excludeCombinationChildren.some(
-          x=> trackChanges.getVariableChanges({
-          component: x, variable: "values"}))) {
-        this.state.excludedcombinations = this.state.excludeCombinationChildren.map(x=>x.state.values);
-      }
-    }
-
-    delete this.unresolvedState.selectedValues;
-
-    if(!this.childLogicSatisfied || Object.keys(this.unresolvedState).length > 0 ||
-        this.state.unresolvedDependenceChain !== undefined) {
-      this.unresolvedState.selectedValues = true;
-      this.state.previousNumbertoselect = this.state.numbertoselect;
-      this.state.previousWithreplacement = this.state.withreplacement;
-      this.unresolvedDependencies = {};
-      this.unresolvedState.excludedcombinations = true;
-      return
-    }
-
-    if(this.compositeDescendant && (
-      this.state.previousNumbertoselect !== this.state.numbertoselect ||
-      this.state.previousWithreplacement !== this.state.withreplacement ||
-      !this.currentTracker.trackChanges.allowSelectExpands)
-    ) {
-      this.unresolvedState.selectedValues = true;
-      this.state.previousNumbertoselect = this.state.numbertoselect;
-      this.state.previousWithreplacement = this.state.withreplacement;
-      this.unresolvedDependencies = {};
-      return
-    }
-
-    delete this.unresolvedDependencies;
-
-    // if make it this far, will make selection
-    this.state.madeSelection = true;
-
-    if(args.init) {
-      // if it is first time through, replacements will be directly created by core
-      // (without going through calculateReplacementChanges)
-      // so need to set the fact that createdReplacements
-      this.state.createdReplacements = true;
-    }
-
-    if(this.state.numbertoselect < 1) {
-      this.state.selectedValues = [];
-      return;
-    }
-
-
-    //TODO: NAMESPACES SHOULD BE IN CORE 
-    // determine the namespace of the select
-    let selectAlias = this.doenetAttributes.componentName;
-    if(selectAlias !== undefined) {
-      if(this.doenetAttributes.newNamespace === true) {
-        this.state.selectNamespace = selectAlias + "/";
-      }else {
-        //Grab everything from the begining up to and including the slash
-        this.state.selectNamespace = selectAlias.substring(0, selectAlias.lastIndexOf('/')+1);
-      }
-    }
-    
-    this.state.numbertoselect = Math.round(this.state.numbertoselect);
-
-    if(this.state.selectedValues === undefined) {
-      this.state.selectedValues = [];
-    }
-
-    // if already have selected values, then they must have been
-    // passed in at the beginning.  Just use those values.
-    if(this.state.selectedValues.length > 0) {
-      return;
-    }
-
-    // make selected values essential so that they are saved
-    this._state.selectedValues.essential = true;
-
-    let numberUniqueRequired = 1;
-    if(!this.state.withreplacement) {
-      numberUniqueRequired = this.state.numbertoselect;
-    }
-
-    if(numberUniqueRequired > this.state.count) {
-      throw Error("Cannot select " + numberUniqueRequired + 
-      " values from a sequence of length " + this.state.count);
-    }
-
-    // if desiredIndices is specfied, use those
-    if(this.variants && this.variants.desiredVariant !== undefined) {
-      let desiredIndices = this.variants.desiredVariant.indices;
-      if(desiredIndices !== undefined) {
-        if(desiredIndices.length !== this.state.numbertoselect) {
-          throw Error("Number of indices specified for select must match number to select");
+    stateVariableDefinitions.excludedCombinations = {
+      returnDependencies: () => ({
+        excludeCombinationChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroExcludeCombinations",
+          variableNames: ["values"]
         }
-        desiredIndices = desiredIndices.map(Number);
-        if(!desiredIndices.every(Number.isInteger)) {
-          throw Error("All indices specified for select must be integers");
-        }
-        let n = this.state.count;
-        desiredIndices = desiredIndices.map(x => ((x % n) + n) % n);
-
-        // assume excluded combination until show doesn't match
-        let isExcludedCombination = true;
-
-        for(let index of desiredIndices) {
-          let componentValue = this.state.from;
-          if(index > 0) {
-            if(this.state.type === "math") {
-              componentValue = componentValue.add(this.state.step.multiply(me.fromAst(index))).expand().simplify();
-            } else {
-              componentValue += this.state.step*index;
-            }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues:
+          {
+            excludedCombinations:
+              dependencyValues.excludeCombinationChildren.map(x => x.stateValues.values)
           }
-
-          if(this.state.type === "letters") {
-            componentValue = this.constructor.numberToLetters(componentValue, this.state.lowercase);
-          }
-
-          // throw error if asked for an excluded value
-          if(this.state.type === "math") {
-            if(this.state.exclude.some(x => x.equals(componentValue))) {
-              throw Error("Specified index of selectfromsequence that was excluded")
-            }
-          }else {
-            if(this.state.exclude.includes(componentValue)) {
-              throw Error("Specified index of selectfromsequence that was excluded")
-            }
-          }
-
-          // check if matches the corresponding component of an excluded combination
-          let matchedExcludedCombinationIndex = false
-          if(this.state.type === "math") {
-            if(this.state.excludedcombinations.some(x => [x,index].equals(componentValue))) {
-              matchedExcludedCombinationIndex = true;
-            }
-          }else {
-            if(this.state.excludedcombinations.some(x => x[index] === componentValue)) {
-              matchedExcludedCombinationIndex = true;
-            }
-          }
-          
-          if(!matchedExcludedCombinationIndex) {
-            isExcludedCombination = false;
-          }
-
-          this.state.selectedValues.push(componentValue);
-        }
-
-        if(isExcludedCombination) {
-          throw Error("Specified indices of selectfromsequence that was an excluded combination")
-        }
-
-        return;
-      }
-    }
-
-    let numberCombinationsExcluded =this.state.excludedcombinations.length;
-
-    if(numberCombinationsExcluded === 0) {
-      this.state.selectedValues = this.constructor.selectValues({
-        stateObj: this.state,
-        numberUniqueRequired: numberUniqueRequired,
-        numberToSelect: this.state.numbertoselect,
-        withReplacement: this.state.withreplacement,
-        rng: this.sharedParameters.selectRng,
-      });
-
-    }else {
-
-      let numberPossibilities = this.state.count-this.state.exclude.length;
-
-      if(this.state.withreplacement) {
-        numberPossibilities = Math.pow(numberPossibilities, this.state.numbertoselect);
-      } else {
-        let n = numberPossibilities;
-        for(let i=1; i< this.state.numbertoselect; i++) {
-          numberPossibilities *= n-i;
         }
       }
-      
-      // console.log(`numberPossibilities: ${numberPossibilities}`)
+    }
 
-      if(numberCombinationsExcluded > 0.7*numberPossibilities) {
-        throw Error("Excluded over 70% of combinations in selectFromSequence");
-      }
+    stateVariableDefinitions.variants = {
+      returnDependencies: () => ({
+        variants: {
+          dependencyType: "variants",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { variants: dependencyValues.variants } };
+      },
+    };
 
-      // with 200 chances with at least 70% success,
-      // prob of failure less than 10^(-30)
-      let foundValidCombination = false;
-      for(let sampnum =0; sampnum < 200; sampnum++) {
+    stateVariableDefinitions.selectedValues = {
+      immutable: true,
+      returnDependencies: ({ sharedParameters }) => ({
+        essentialSelectedValues: {
+          dependencyType: "potentialEssentialVariable",
+          variableName: "selectedValues",
+        },
+        numberToSelect: {
+          dependencyType: "stateVariable",
+          variableName: "numberToSelect",
+        },
+        withReplacement: {
+          dependencyType: "stateVariable",
+          variableName: "withReplacement"
+        },
+        count: {
+          dependencyType: "stateVariable",
+          variableName: "count"
+        },
+        from: {
+          dependencyType: "stateVariable",
+          variableName: "from"
+        },
+        step: {
+          dependencyType: "stateVariable",
+          variableName: "step"
+        },
+        exclude: {
+          dependencyType: "stateVariable",
+          variableName: "exclude"
+        },
+        excludedCombinations: {
+          dependencyType: "stateVariable",
+          variableName: "excludedCombinations"
+        },
+        selectedType: {
+          dependencyType: "stateVariable",
+          variableName: "selectedType"
+        },
+        lowercase: {
+          dependencyType: "stateVariable",
+          variableName: "lowercase"
+        },
+        sortResults: {
+          dependencyType: "stateVariable",
+          variableName: "sortResults"
+        },
+        variants: {
+          dependencyType: "stateVariable",
+          variableName: "variants"
+        },
+        selectRng: {
+          dependencyType: "value",
+          value: sharedParameters.selectRng,
+          doNotProxy: true,
+        },
 
-        this.state.selectedValues = this.constructor.selectValues({
-          stateObj: this.state,
-          numberUniqueRequired: numberUniqueRequired,
-          numberToSelect: this.state.numbertoselect,
-          withReplacement: this.state.withreplacement,
-          rng: this.sharedParameters.selectRng,
-        });
 
-        // try again if hit excluded combination
-        if(this.state.type === "math") {
-          if(this.state.excludedcombinations.some(x => x.every((v,i) => v.equals(this.state.selectedValues[i])))) {
-            continue;
-          }
-        }else {
-          if(this.state.excludedcombinations.some(x => x.every((v,i) => v === this.state.selectedValues[i]))) {
-            continue;
-          }
-        }
+      }),
+      definition: makeSelection,
+    }
 
-        foundValidCombination = true;
-        break;
+    let originalReturnDependencies = stateVariableDefinitions.readyToExpandWhenResolved.returnDependencies;
+    stateVariableDefinitions.readyToExpandWhenResolved.returnDependencies = function () {
+      let deps = originalReturnDependencies();
 
-      }
+      deps.selectedValues = {
+        dependencyType: "stateVariable",
+        variableName: "selectedValues"
+      };
 
-      if(!foundValidCombination) {
-        // this won't happen, as occurs with prob < 10^(-30)
-        throw Error("By extremely unlikely fluke, couldn't select combination of random values");
-      }
+      return deps;
 
     }
 
-    if(this.state.sortresults) {
-      if(this.state.type === "number") {
-        this.state.selectedValues.sort((a,b) => a-b);
-      } else if(this.state.type === 'letters') {
-        // sort according to their numerical value, not as words
-        let numericalValues = this.state.selectedValues.map(this.constructor.lettersToNumber);
-        numericalValues.sort((a,b) => a-b);
-        this.state.selectedValues = numericalValues.map(x => this.constructor.numberToLetters(x, this.state.lowercase))
-      }
-
-      // don't sort type math
-    }
-
+    return stateVariableDefinitions;
   }
 
-  static selectValues({stateObj, numberUniqueRequired=1, numberToSelect=1, 
-    withReplacement=false, rng}) {
+  static createSerializedReplacements({ component }) {
 
-    let selectedValues = [];
-
-    if(stateObj.exclude.length  + numberUniqueRequired < 0.5*stateObj.count) {
-      // the simplest case where the likelihood of getting excluded is less than 50%
-      // just randomly select from all possibilities
-      // and use rejection method to resample if an excluded is hit
-
-      let selectedIndices = [];
-
-      for(let ind =0; ind < numberToSelect; ind++) {
-
-        // with 100 chances with at least 50% success,
-        // prob of failure less than 10^(-30)
-        let foundValid = false;
-        let componentValue;
-        let selectedIndex;
-        for(let sampnum =0; sampnum < 100; sampnum++) {
-
-          // random number in [0, 1)
-          let rand = rng.random();
-          // random integer from 0 to count-1
-          selectedIndex = Math.floor(rand*stateObj.count);
-
-          if(!withReplacement && 
-            selectedIndices.includes(selectedIndex)) {
-            continue;
-          }
-
-          componentValue = stateObj.from;
-          if(selectedIndex > 0) {
-            if(stateObj.type === "math") {
-              componentValue = componentValue.add(stateObj.step.multiply(me.fromAst(selectedIndex))).expand().simplify();
-            } else {
-              componentValue += stateObj.step*selectedIndex;
-            }
-          }
-    
-          // try again if hit excluded value
-          if(stateObj.type === "math") {
-            if(stateObj.exclude.some(x => x.equals(componentValue))) {
-              continue;
-            }
-          }else {
-            if(stateObj.exclude.includes(componentValue)) {
-              continue;
-            }
-          }
-
-          foundValid = true;
-          break;
-        }
-  
-        if(!foundValid) {
-          // this won't happen, as occurs with prob < 10^(-30)
-          throw Error("By extremely unlikely fluke, couldn't select random value");
-        }
-
-        if(stateObj.type === "letters") {
-          componentValue = this.numberToLetters(componentValue, stateObj.lowercase);
-        }
-        selectedValues.push(componentValue);
-        selectedIndices.push(selectedIndex);
-      }
-
-      return selectedValues;
-
-    }
-
-    // for cases when a large fraction might be excluded
-    // we will generate the list of possible values and pick from those
-
-    let possibleValues = [];
-
-    for(let ind=0; ind < stateObj.count; ind++) {
-      let componentValue = stateObj.from;
-      if(ind > 0) {
-        if(stateObj.type === "math") {
-          componentValue = componentValue.add(stateObj.step.multiply(me.fromAst(ind))).expand().simplify();
-        } else {
-          componentValue += stateObj.step*ind;
-        }
-      }
-
-      if(stateObj.type === "math") {
-        if(stateObj.exclude.some(x => x.equals(componentValue))) {
-          continue;
-        }
-      }else {
-        if(stateObj.exclude.includes(componentValue)) {
-          continue;
-        }
-      }
-
-      if(stateObj.type === "letters") {
-        componentValue = this.numberToLetters(componentValue, stateObj.lowercase);
-      }
-
-      possibleValues.push(componentValue);
-
-    }
-
-    let numPossibleValues = possibleValues.length;
-
-    if(numberUniqueRequired > numPossibleValues) {
-      throw Error("Cannot select " + numberUniqueRequired + 
-        " unique values from sequence of length " + numPossibleValues);
-    }
-
-    if(numberUniqueRequired === 1) {
-
-      for(let ind =0; ind < numberToSelect; ind++) {
-
-        // random number in [0, 1)
-        let rand = rng.random();
-        // random integer from 0 to numPossibleValues-1
-        let selectedIndex = Math.floor(rand*numPossibleValues);
-
-        selectedValues.push(possibleValues[selectedIndex]);
-      }
-
-      return selectedValues;
-
-    }
-
-    // need to select more than one value without replacement
-    // shuffle array and choose first elements
-    // https://stackoverflow.com/a/12646864
-    for (let i = possibleValues.length - 1; i > 0; i--) {
-      const rand = rng.random();
-      const j = Math.floor(rand * (i + 1));
-      [possibleValues[i], possibleValues[j]] = [possibleValues[j], possibleValues[i]];
-    }
-
-    selectedValues = possibleValues.slice(0, numberToSelect)
-    return selectedValues;
-
-  }
-
-  static createSerializedReplacements({component}) {
-
-    if(!component.state.madeSelection || Object.keys(component.unresolvedState).length > 0 ||
-        component.state.unresolvedDependenceChain !== undefined) {
-      return {replacements: []};
-    }
-
-    let replacements = [];
+    let replacementsWithInstructions = [];
 
     let assignNames = component.doenetAttributes.assignNames;
 
-    for(let [ind, value] of component.state.selectedValues.entries()) {
-      let name;
+    for (let [ind, value] of component.stateValues.selectedValues.entries()) {
 
-      if(assignNames !== undefined && ind < assignNames.length) {
+      let name;
+      if (assignNames !== undefined) {
         name = assignNames[ind];
-      }else {
-        // if nothing specified, create an obscure name
-        name = "_" + component.componentName + "_" + ind;
       }
-    
-      // prepend select's namespace
-      if(component.state.selectNamespace !== undefined) {
-        name = component.state.selectNamespace + name;
+      let instruction = {
+        operation: "assignName",
+        name
       }
 
       // if selectfromsequence is specified to be hidden
       // then replacements should be hidden as well
-      let state = {value: value};
-      if(component.state.hide) {
+      let state = { value: value };
+      if (component.stateValues.hide) {
         state.hide = true;
       }
 
-      replacements.push({
-        componentType: component.state.type,
-        doenetAttributes: {componentName: name},
-        state: state
+      let serializedReplacement = {
+        componentType: component.stateValues.selectedType,
+        state
+      };
+
+
+      replacementsWithInstructions.push({
+        instructions: [instruction],
+        replacements: [serializedReplacement]
       });
+
     }
 
-    return {replacements};
-  }
-
-  static calculateReplacementChanges({component, componentChanges}) {
-
-    if(!component.state.madeSelection || Object.keys(component.unresolvedState).length > 0 ||
-        component.state.unresolvedDependenceChain !== undefined || component.state.createdReplacements) {
-      return [];
-    }
-
-    let replacementChanges = [];
-
-    let replacementInstruction = {
-      changeType: "add",
-      changeTopLevelReplacements: true,
-      firstReplacementInd: 0,
-      numberReplacementsToReplace: 0,
-      serializedReplacements: this.createSerializedReplacements({component}).replacements,
-    };
-    replacementChanges.push(replacementInstruction);
-    
-    replacementInstruction = {
-      changeType: "updateStateVariables",
-      component: component,
-      stateChanges: {createdReplacements: true},
-      allowChangeToNonEssential: true,
-    }
-    replacementChanges.push(replacementInstruction);
-
-    return replacementChanges;
+    return { replacementsWithInstructions };
 
   }
 
-  static determineNumberOfUniqueVariants({serializedComponent}) {
-    let numbertoselect=1, withreplacement = false;
-    if(serializedComponent.state !== undefined) {
-      if(serializedComponent.state.numbertoselect !== undefined) {
-        numbertoselect = serializedComponent.state.numbertoselect;
+  static calculateReplacementChanges() {
+
+    return [];
+
+  }
+
+  static determineNumberOfUniqueVariants({ serializedComponent }) {
+    let numberToSelect = 1, withReplacement = false;
+    if (serializedComponent.state !== undefined) {
+      if (serializedComponent.state.numberToSelect !== undefined) {
+        numberToSelect = serializedComponent.state.numberToSelect;
       }
-      if(serializedComponent.state.withreplacement !== undefined) {
-        withreplacement = serializedComponent.state.withreplacement;
+      if (serializedComponent.state.withReplacement !== undefined) {
+        withReplacement = serializedComponent.state.withReplacement;
       }
-      if(serializedComponent.state.type !== undefined) {
+      if (serializedComponent.state.type !== undefined) {
         sequenceType = serializedComponent.state.type;
       }
     }
-    if(serializedComponent.children === undefined) {
-      return {succes: false}
+    if (serializedComponent.children === undefined) {
+      return { succes: false }
     }
-    
+
     let stringChild;
     let sequencePars = {};
     let excludes = [];
-    for(let child of serializedComponent.children) {
+    for (let child of serializedComponent.children) {
       let componentType = child.componentType;
-      if(componentType === "numbertoselect") {
-        // calculate numbertoselect only if has its value set directly 
+      if (componentType === "numberToSelect") {
+        // calculate numberToSelect only if has its value set directly 
         // or if has a child that is a string
         let foundValid = false;
-        if(child.state !== undefined && child.state.value !== undefined) {
-          numbertoselect = Math.round(Number(child.state.value));
+        if (child.state !== undefined && child.state.value !== undefined) {
+          numberToSelect = Math.round(Number(child.state.value));
           foundValid = true;
         }
         // children overwrite state
-        if(child.children !== undefined) {
-          for(let grandchild of child.children) {
-            if(grandchild.componentType === "string") {
-              numbertoselect = Math.round(Number(grandchild.state.value));
+        if (child.children !== undefined) {
+          for (let grandchild of child.children) {
+            if (grandchild.componentType === "string") {
+              numberToSelect = Math.round(Number(grandchild.state.value));
               foundValid = true;
               break;
             }
           }
         }
-        if(!foundValid) {
-          return {success: false}
+        if (!foundValid) {
+          return { success: false }
         }
-      }else if(componentType === "withreplacement") {
-        // calculate withreplacement only if has its implicitValue or value set directly 
+      } else if (componentType === "withReplacement") {
+        // calculate withReplacement only if has its implicitValue or value set directly 
         // or if has a child that is a string
         let foundValid = false;
-        if(child.state !== undefined) {
-          if(child.state.implicitValue !== undefined) {
-            withreplacement = child.state.implicitValue;
+        if (child.state !== undefined) {
+          if (child.state.implicitValue !== undefined) {
+            withReplacement = child.state.implicitValue;
             foundValid = true;
           }
-          if(child.state.value !== undefined) {
-            withreplacement = child.state.value;
+          if (child.state.value !== undefined) {
+            withReplacement = child.state.value;
             foundValid = true;
           }
         }
         // children overwrite state
-        if(child.children !== undefined) {
-          for(let grandchild of child.children) {
-            if(grandchild.componentType === "string") {
+        if (child.children !== undefined) {
+          for (let grandchild of child.children) {
+            if (grandchild.componentType === "string") {
               foundValid = true;
-              if(["true","t"].includes(grandchild.state.value.trim().toLowerCase())) {
-                withreplacement = true;
-              }else {
-                withreplacement = false;
+              if (["true", "t"].includes(grandchild.state.value.trim().toLowerCase())) {
+                withReplacement = true;
+              } else {
+                withReplacement = false;
               }
               break;
             }
           }
         }
-        if(!foundValid) {
-          return {success: false}
+        if (!foundValid) {
+          return { success: false }
         }
-      }else if(["type", "to", "from", "step", "count"].includes(componentType)) {
+      } else if (["type", "to", "from", "step", "count"].includes(componentType)) {
         // calculate sequencePars only if has its value set directly 
         // or if has a child that is a string
         let foundValid = false;
-        if(child.state !== undefined && child.state.value !== undefined) {
+        if (child.state !== undefined && child.state.value !== undefined) {
           sequencePars[componentType] = child.state.value;
           foundValid = true;
         }
         // children overwrite state
-        if(child.children !== undefined) {
-          for(let grandchild of child.children) {
-            if(grandchild.componentType === "string") {
+        if (child.children !== undefined) {
+          for (let grandchild of child.children) {
+            if (grandchild.componentType === "string") {
               sequencePars[componentType] = grandchild.state.value;
               foundValid = true;
               break;
             }
           }
         }
-        if(!foundValid) {
-          return {success: false}
+        if (!foundValid) {
+          return { success: false }
         }
-      }else if(componentType === "exclude") {
+      } else if (componentType === "exclude") {
         // calculate exclude if has a string child
         let foundValid = false;
-        if(child.children !== undefined) {
-          for(let grandchild of child.children) {
-            if(grandchild.componentType === "string") {
+        if (child.children !== undefined) {
+          for (let grandchild of child.children) {
+            if (grandchild.componentType === "string") {
               foundValid = true;
               let stringPieces = grandchild.state.value.split(",").map(x => x.trim());
               excludes.push(...stringPieces);
@@ -638,77 +314,77 @@ export default class SelectFromSequence extends Sequence {
             }
           }
         }
-        if(!foundValid) {
-          return {success: false}
+        if (!foundValid) {
+          return { success: false }
         }
 
-      }else if(componentType === "string") {
+      } else if (componentType === "string") {
         stringChild = child;
       }
     }
 
-    if(stringChild !== undefined) {
-      if(sequencePars.to !== undefined || sequencePars.from !== undefined) {
-        return {success: false}
+    if (stringChild !== undefined) {
+      if (sequencePars.to !== undefined || sequencePars.from !== undefined) {
+        return { success: false }
       }
       let stringPieces = stringChild.state.value.split(",");
-      if(stringPieces.length === 1) {
+      if (stringPieces.length === 1) {
         sequencePars.to = stringPieces[0].trim();
-      }else if(stringPieces.length === 2) {
+      } else if (stringPieces.length === 2) {
         sequencePars.from = stringPieces[0].trim();
         sequencePars.to = stringPieces[1].trim();
-      }else {
-        return {success: false}
+      } else {
+        return { success: false }
       }
     }
 
-    for(let par of ["to", "from", "step"]) {
-      if(sequencePars[par] !== undefined) {
-        if(sequencePars.type === "math") {
-          if(typeof sequencePars[par] === "string") {
+    for (let par of ["to", "from", "step"]) {
+      if (sequencePars[par] !== undefined) {
+        if (sequencePars.type === "math") {
+          if (typeof sequencePars[par] === "string") {
             sequencePars[par] = me.fromText(sequencePars[par]);
-          }else if(sequencePars[par].tree === undefined) {
-            return {success: false}
+          } else if (sequencePars[par].tree === undefined) {
+            return { success: false }
           }
-        }else if(sequencePars.type === "letters" && par !== "step") {
-          sequencePars[par] = this.lettersToNumber(sequencePars[par]);
-          if(sequencePars[par] === undefined) {
-            return {success: false}
+        } else if (sequencePars.type === "letters" && par !== "step") {
+          sequencePars[par] = lettersToNumber(sequencePars[par]);
+          if (sequencePars[par] === undefined) {
+            return { success: false }
           }
-        }else {
+        } else {
           sequencePars[par] = Number(sequencePars[par]);
-          if(!Number.isFinite(sequencePars[par])) {
-            return {success: false}
+          if (!Number.isFinite(sequencePars[par])) {
+            return { success: false }
           }
         }
       }
     }
 
-    if(sequencePars.count !== undefined) {
-      if(typeof sequencePars.count === "string") {
+    if (sequencePars.count !== undefined) {
+      if (typeof sequencePars.count === "string") {
         sequencePars.count = Number(sequencePars.count);
       }
-      if(!Number.isInteger(sequencePars.count) || sequencePars.count < 0) {
-        return {success: false}
+      if (!Number.isInteger(sequencePars.count) || sequencePars.count < 0) {
+        return { success: false }
       }
     }
 
-    for(let [ind, exc] of excludes.entries()) {
-      if(sequencePars.type === "math") {
-        if(typeof exc === "string") {
+    for (let [ind, exc] of excludes.entries()) {
+      if (sequencePars.type === "math") {
+        if (typeof exc === "string") {
           exc = me.fromText(exc);
-        }else if(exc.tree === undefined) {
-          return {success: false}
+        } else if (exc.tree === undefined) {
+          return { success: false }
         }
-      }else if(sequencePars.type === "letters" && par !== "step") {
-        exc = this.lettersToNumber(exc);
-        if(exc === undefined) {
-          return {success: false}
+      } else if (sequencePars.type === "letters" && par !== "step") {
+        exc = lettersToNumber(exc);
+        if (exc === undefined) {
+          return { success: false }
         }
-      }else {
+      } else {
         exc = Number(exc);
-        if(!Number.isFinite(exc)) {
-          return {success: false}
+        if (!Number.isFinite(exc)) {
+          return { success: false }
         }
       }
       excludes[ind] = exc;
@@ -718,19 +394,19 @@ export default class SelectFromSequence extends Sequence {
 
     let nOptions = sequencePars.count;
     let excludeIndices = [];
-    if(excludes.length > 0) {
-      if(sequencePars.type !== math) {
+    if (excludes.length > 0) {
+      if (sequencePars.selectedType !== math) {
         excludes.sort();
-        excludes = excludes.filter((x,ind,a) => x != a[ind-1]);
-        for(let item of excludes) {
-          if(item < sequencePars.from) {
+        excludes = excludes.filter((x, ind, a) => x != a[ind - 1]);
+        for (let item of excludes) {
+          if (item < sequencePars.from) {
             continue;
           }
-          let ind = (item-sequencePars.from)/sequencePars.step;
-          if(ind > sequencePars.count-1+1E-10) {
+          let ind = (item - sequencePars.from) / sequencePars.step;
+          if (ind > sequencePars.count - 1 + 1E-10) {
             break;
           }
-          if(Math.abs(ind-Math.round(ind)) < 1E-10) {
+          if (Math.abs(ind - Math.round(ind)) < 1E-10) {
             nOptions--;
             excludeIndices.push(ind);
           }
@@ -738,19 +414,19 @@ export default class SelectFromSequence extends Sequence {
       }
     }
 
-    if(nOptions <=0) {
-      return {success: false}
+    if (nOptions <= 0) {
+      return { success: false }
     }
 
     let uniqueVariantData = {
       excludeIndices: excludeIndices,
       nOptions: nOptions,
-      numbertoselect: numbertoselect,
-      withreplacement: withreplacement,
+      numberToSelect: numberToSelect,
+      withReplacement: withReplacement,
     }
 
-    if(withreplacement || numbertoselect === 1) {
-      let numberOfVariants = Math.pow(nOptions, numbertoselect);
+    if (withReplacement || numberToSelect === 1) {
+      let numberOfVariants = Math.pow(nOptions, numberToSelect);
       return {
         success: true,
         numberOfVariants: numberOfVariants,
@@ -759,61 +435,395 @@ export default class SelectFromSequence extends Sequence {
     }
 
     let numberOfVariants = nOptions;
-    for(let n=nOptions-1; n > nOptions-numbertoselect; n--) {
-      numberOfVariants *=n;
+    for (let n = nOptions - 1; n > nOptions - numberToSelect; n--) {
+      numberOfVariants *= n;
     }
     return {
       success: true,
       numberOfVariants: numberOfVariants,
       uniqueVariantData: uniqueVariantData
     }
- 
+
   }
 
-  static getUniqueVariant({serializedComponent, variantNumber}) {
+  static getUniqueVariant({ serializedComponent, variantNumber }) {
 
-    if(serializedComponent.variants === undefined) {
-      return {succes: false}
+    if (serializedComponent.variants === undefined) {
+      return { succes: false }
     }
     let numberOfVariants = serializedComponent.variants.numberOfVariants;
-    if(numberOfVariants === undefined) {
-      return {success: false}
+    if (numberOfVariants === undefined) {
+      return { success: false }
     }
 
-    if(!Number.isInteger(variantNumber) || variantNumber < 0 || variantNumber >= numberOfVariants) {
-      return {success: false}
+    if (!Number.isInteger(variantNumber) || variantNumber < 0 || variantNumber >= numberOfVariants) {
+      return { success: false }
     }
 
     let uniqueVariantData = serializedComponent.variants.uniqueVariantData;
     let excludeIndices = uniqueVariantData.excludeIndices;
     let nOptions = uniqueVariantData.nOptions;
-    let numbertoselect = uniqueVariantData.numbertoselect;
-    let withreplacement = uniqueVariantData.withreplacement;
+    let numberToSelect = uniqueVariantData.numberToSelect;
+    let withReplacement = uniqueVariantData.withReplacement;
 
-    let getSingleIndex = function(num) {
+    let getSingleIndex = function (num) {
       let ind = num;
-      for(let excludeInd of excludeIndices) {
-        if(ind === excludeInd) {
+      for (let excludeInd of excludeIndices) {
+        if (ind === excludeInd) {
           ind++;
         }
       }
       return ind;
     }
 
-    if(numbertoselect === 1) {
-      return {success: true, desiredVariant: {indices: [getSingleIndex(variantNumber)]}}
+    if (numberToSelect === 1) {
+      return { success: true, desiredVariant: { indices: [getSingleIndex(variantNumber)] } }
     }
 
     let numbers = enumerateSelectionCombinations({
-      numberOfIndices: numbertoselect,
+      numberOfIndices: numberToSelect,
       numberOfOptions: nOptions,
-      maxNumber: variantNumber+1,
-      withReplacement: withreplacement,
+      maxNumber: variantNumber + 1,
+      withReplacement: withReplacement,
     })[variantNumber];
     let indices = numbers.map(getSingleIndex)
-    return {success: true, desiredVariant: {indices: indices}}
+    return { success: true, desiredVariant: { indices: indices } }
 
   }
 
+
+}
+
+
+function makeSelection({ dependencyValues }) {
+
+  if (dependencyValues.essentialSelectedValues !== undefined) {
+    return {
+      makeEssential: ["selectedValues"],
+      newValues: {
+        selectedValues: dependencyValues.essentialSelectedValues
+      }
+    }
+  }
+
+  if (dependencyValues.numberToSelect < 1) {
+    return {
+      makeEssential: ["selectedValues"],
+      newValues: {
+        selectedValues: [],
+      }
+    }
+  }
+
+  let numberUniqueRequired = 1;
+  if (!dependencyValues.withReplacement) {
+    numberUniqueRequired = dependencyValues.numberToSelect;
+  }
+
+  if (numberUniqueRequired > dependencyValues.count) {
+    throw Error("Cannot select " + numberUniqueRequired +
+      " values from a sequence of length " + dependencyValues.count);
+  }
+
+  // if desiredIndices is specfied, use those
+  if (dependencyValues.variants && dependencyValues.variants.desiredVariant !== undefined) {
+    let desiredIndices = dependencyValues.variants.desiredVariant.indices;
+    if (desiredIndices !== undefined) {
+      if (desiredIndices.length !== dependencyValues.numberToSelect) {
+        throw Error("Number of indices specified for select must match number to select");
+      }
+      desiredIndices = desiredIndices.map(Number);
+      if (!desiredIndices.every(Number.isInteger)) {
+        throw Error("All indices specified for select must be integers");
+      }
+      let n = dependencyValues.count;
+      desiredIndices = desiredIndices.map(x => ((x % n) + n) % n);
+
+      // assume that we have an excluded combination 
+      // until we determine that we aren't matching an excluded combination
+      let isExcludedCombination = true;
+
+      let selectedValues = [];
+      for (let index of desiredIndices) {
+        let componentValue = dependencyValues.from;
+        if (index > 0) {
+          if (dependencyValues.selectedType === "math") {
+            componentValue = componentValue.add(dependencyValues.step.multiply(me.fromAst(index))).expand().simplify();
+          } else {
+            componentValue += dependencyValues.step * index;
+          }
+        }
+
+        if (dependencyValues.selectedType === "letters") {
+          componentValue = numberToLetters(componentValue, dependencyValues.lowercase);
+        }
+
+        // throw error if asked for an excluded value
+        if (dependencyValues.selectedType === "math") {
+          if (dependencyValues.exclude.some(x => x.equals(componentValue))) {
+            throw Error("Specified index of selectfromsequence that was excluded")
+          }
+        } else {
+          if (dependencyValues.exclude.includes(componentValue)) {
+            throw Error("Specified index of selectfromsequence that was excluded")
+          }
+        }
+
+        // check if matches the corresponding component of an excluded combination
+        let matchedExcludedCombinationIndex = false
+        if (dependencyValues.selectedType === "math") {
+          if (dependencyValues.excludedCombinations.some(x => [x, index].equals(componentValue))) {
+            matchedExcludedCombinationIndex = true;
+          }
+        } else {
+          if (dependencyValues.excludedCombinations.some(x => x[index] === componentValue)) {
+            matchedExcludedCombinationIndex = true;
+          }
+        }
+
+        if (!matchedExcludedCombinationIndex) {
+          isExcludedCombination = false;
+        }
+
+        selectedValues.push(componentValue);
+      }
+
+      if (isExcludedCombination) {
+        throw Error("Specified indices of selectfromsequence that was an excluded combination")
+      }
+
+      return {
+        makeEssential: ["selectedValues"],
+        newValues: { selectedValues }
+      }
+    }
+  }
+
+  let numberCombinationsExcluded = dependencyValues.excludedCombinations.length;
+
+  let selectedValues;
+
+  if (numberCombinationsExcluded === 0) {
+    selectedValues = selectValues({
+      stateValues: dependencyValues,
+      numberUniqueRequired: numberUniqueRequired,
+      numberToSelect: dependencyValues.numberToSelect,
+      withReplacement: dependencyValues.withReplacement,
+      rng: dependencyValues.selectRng,
+    });
+
+  } else {
+
+    let numberPossibilities = dependencyValues.count - dependencyValues.exclude.length;
+
+    if (dependencyValues.withReplacement) {
+      numberPossibilities = Math.pow(numberPossibilities, dependencyValues.numberToSelect);
+    } else {
+      let n = numberPossibilities;
+      for (let i = 1; i < dependencyValues.numberToSelect; i++) {
+        numberPossibilities *= n - i;
+      }
+    }
+
+    // console.log(`numberPossibilities: ${numberPossibilities}`)
+
+    if (numberCombinationsExcluded > 0.7 * numberPossibilities) {
+      throw Error("Excluded over 70% of combinations in selectFromSequence");
+    }
+
+    // with 200 chances with at least 70% success,
+    // prob of failure less than 10^(-30)
+    let foundValidCombination = false;
+    for (let sampnum = 0; sampnum < 200; sampnum++) {
+
+      selectedValues = selectValues({
+        stateValues: dependencyValues,
+        numberUniqueRequired: numberUniqueRequired,
+        numberToSelect: dependencyValues.numberToSelect,
+        withReplacement: dependencyValues.withReplacement,
+        rng: dependencyValues.selectRng,
+      });
+
+      // try again if hit excluded combination
+      if (dependencyValues.selectedType === "math") {
+        if (dependencyValues.excludedCombinations.some(x => x.every((v, i) => v.equals(selectedValues[i])))) {
+          continue;
+        }
+      } else {
+        if (dependencyValues.excludedCombinations.some(x => x.every((v, i) => v === selectedValues[i]))) {
+          continue;
+        }
+      }
+
+      foundValidCombination = true;
+      break;
+
+    }
+
+    if (!foundValidCombination) {
+      // this won't happen, as occurs with prob < 10^(-30)
+      throw Error("By extremely unlikely fluke, couldn't select combination of random values");
+    }
+
+  }
+
+  if (dependencyValues.sortResults) {
+    if (dependencyValues.selectedType === "number") {
+      selectedValues.sort((a, b) => a - b);
+    } else if (dependencyValues.selectedType === 'letters') {
+      // sort according to their numerical value, not as words
+      let numericalValues = selectedValues.map(lettersToNumber);
+      numericalValues.sort((a, b) => a - b);
+      selectedValues = numericalValues.map(x => numberToLetters(x, dependencyValues.lowercase))
+    }
+
+    // don't sort selectedType math
+  }
+
+  return {
+    makeEssential: ["selectedValues"],
+    newValues: { selectedValues }
+  }
+
+}
+
+
+function selectValues({ stateValues, numberUniqueRequired = 1, numberToSelect = 1,
+  withReplacement = false, rng }) {
+
+  let selectedValues = [];
+
+  if (stateValues.exclude.length + numberUniqueRequired < 0.5 * stateValues.count) {
+    // the simplest case where the likelihood of getting excluded is less than 50%
+    // just randomly select from all possibilities
+    // and use rejection method to resample if an excluded is hit
+
+    let selectedIndices = [];
+
+    for (let ind = 0; ind < numberToSelect; ind++) {
+
+      // with 100 chances with at least 50% success,
+      // prob of failure less than 10^(-30)
+      let foundValid = false;
+      let componentValue;
+      let selectedIndex;
+      for (let sampnum = 0; sampnum < 100; sampnum++) {
+
+        // random number in [0, 1)
+        let rand = rng.random();
+        // random integer from 0 to count-1
+        selectedIndex = Math.floor(rand * stateValues.count);
+
+        if (!withReplacement && selectedIndices.includes(selectedIndex)) {
+          continue;
+        }
+
+        componentValue = stateValues.from;
+        if (selectedIndex > 0) {
+          if (stateValues.selectedType === "math") {
+            componentValue = componentValue.add(stateValues.step.multiply(me.fromAst(selectedIndex))).expand().simplify();
+          } else {
+            componentValue += stateValues.step * selectedIndex;
+          }
+        }
+
+        // try again if hit excluded value
+        if (stateValues.selectedType === "math") {
+          if (stateValues.exclude.some(x => x.equals(componentValue))) {
+            continue;
+          }
+        } else {
+          if (stateValues.exclude.includes(componentValue)) {
+            continue;
+          }
+        }
+
+        foundValid = true;
+        break;
+      }
+
+      if (!foundValid) {
+        // this won't happen, as occurs with prob < 10^(-30)
+        throw Error("By extremely unlikely fluke, couldn't select random value");
+      }
+
+      if (stateValues.selectedType === "letters") {
+        componentValue = numberToLetters(componentValue, stateValues.lowercase);
+      }
+      selectedValues.push(componentValue);
+      selectedIndices.push(selectedIndex);
+    }
+
+    return selectedValues;
+
+  }
+
+  // for cases when a large fraction might be excluded
+  // we will generate the list of possible values and pick from those
+
+  let possibleValues = [];
+
+  for (let ind = 0; ind < stateValues.count; ind++) {
+    let componentValue = stateValues.from;
+    if (ind > 0) {
+      if (stateValues.selectedType === "math") {
+        componentValue = componentValue.add(stateValues.step.multiply(me.fromAst(ind))).expand().simplify();
+      } else {
+        componentValue += stateValues.step * ind;
+      }
+    }
+
+    if (stateValues.selectedType === "math") {
+      if (stateValues.exclude.some(x => x.equals(componentValue))) {
+        continue;
+      }
+    } else {
+      if (stateValues.exclude.includes(componentValue)) {
+        continue;
+      }
+    }
+
+    if (stateValues.selectedType === "letters") {
+      componentValue = numberToLetters(componentValue, stateValues.lowercase);
+    }
+
+    possibleValues.push(componentValue);
+
+  }
+
+  let numPossibleValues = possibleValues.length;
+
+  if (numberUniqueRequired > numPossibleValues) {
+    throw Error("Cannot select " + numberUniqueRequired +
+      " unique values from sequence of length " + numPossibleValues);
+  }
+
+  if (numberUniqueRequired === 1) {
+
+    for (let ind = 0; ind < numberToSelect; ind++) {
+
+      // random number in [0, 1)
+      let rand = rng.random();
+      // random integer from 0 to numPossibleValues-1
+      let selectedIndex = Math.floor(rand * numPossibleValues);
+
+      selectedValues.push(possibleValues[selectedIndex]);
+    }
+
+    return selectedValues;
+
+  }
+
+  // need to select more than one value without replacement
+  // shuffle array and choose first elements
+  // https://stackoverflow.com/a/12646864
+  for (let i = possibleValues.length - 1; i > 0; i--) {
+    const rand = rng.random();
+    const j = Math.floor(rand * (i + 1));
+    [possibleValues[i], possibleValues[j]] = [possibleValues[j], possibleValues[i]];
+  }
+
+  selectedValues = possibleValues.slice(0, numberToSelect)
+  return selectedValues;
 
 }
