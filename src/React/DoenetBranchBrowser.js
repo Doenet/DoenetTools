@@ -165,19 +165,8 @@ class DoenetBranchBrowser extends Component {
   buildFolderItems() {
     this.folderItems = [];
     this.folderList = this.props.folderList;
-      // show items in current directory
-    if (this.state.directoryStack.length !== 0) {
-      let folderId = this.peekDirectoryStack();
-      this.folderList = this.props.allFolderInfo[folderId].childFolder;
-    } else {
-      // in root directory
-      // only show folders whose parentId is root
-      this.folderList = this.folderList.filter(folderId => {
-        return this.props.allFolderInfo[folderId].parentId === "root";
-      })
-    }
-
     this.sortFolders();
+    
     this.tableIndex = 0;
     // create table row items to be rendered in chooser
     for (let folderId of this.folderList){
@@ -240,21 +229,7 @@ class DoenetBranchBrowser extends Component {
   
   buildContentItems(){
     this.contentItems = [];
-
     this.contentList = this.props.contentList;
-    // show items in current directory
-    if (this.state.directoryStack.length !== 0) {
-      let folderId = this.peekDirectoryStack();
-      this.contentList = this.props.allFolderInfo[folderId].childContent;
-    } else {
-      // in root directory
-      // only show contentId whose parentId is null
-      this.contentList = this.contentList.filter(branchId => {
-        return (this.props.allContentInfo[branchId].parentId === null) ||
-               (this.props.allContentInfo[branchId].parentId === "root");
-      })
-    }
-
     this.sortContent();
 
     // build files

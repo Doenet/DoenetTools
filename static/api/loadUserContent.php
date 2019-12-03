@@ -33,7 +33,8 @@ if ($folderId === "root") {
     c.removedFlag as removedFlag
     FROM content AS c
     LEFT JOIN folder_content fc ON fc.childId = c.branchId
-    WHERE fc.folderId='$folderId' AND fc.childType='content'
+    WHERE fc.folderId='$folderId' AND fc.childType='content' AND c.removedFlag=0
+    ORDER BY c.branchId, c.timestamp DESC
   ";
 }
 

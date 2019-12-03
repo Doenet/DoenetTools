@@ -30,8 +30,8 @@ class DoenetChooser extends Component {
     };
 
 
-    this.loadAllContentBranches();
-    this.loadAllFolders();
+    this.loadUserContentBranches();
+    this.loadUserFolders();
     this.loadAllCourses();
 
     this.branches_loaded = false;
@@ -172,7 +172,7 @@ class DoenetChooser extends Component {
       branchId:newBranchId,
       publish:true
     }, (branchId) => {
-      this.loadAllContentBranches(() => {
+      this.loadUserContentBranches(() => {
         if (branchId in this.branchId_info) {
           // successfully created new document
           // if not in base dir, add document to current folder
@@ -230,10 +230,17 @@ class DoenetChooser extends Component {
     });
   }
 
-  loadAllContentBranches(callback=(()=>{})) {
-    const loadBranchesUrl='/api/loadAllBranches.php';
+  loadUserContentBranches(callback=(()=>{})) {
+
+    let currentFolderId = this.state.directoryStack.length === 0 ?
+                            "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
+
+    const data={folderId: currentFolderId};
+    const payload = {params: data};
+
+    const loadBranchesUrl='/api/loadUserContent.php';
     
-    axios.get(loadBranchesUrl,{})
+    axios.get(loadBranchesUrl, payload)
     .then(resp=>{
       this.branchId_info = resp.data.branchId_info;
       this.sort_order = this.publishDate_sort_order = resp.data.sort_order;
@@ -405,14 +412,17 @@ class DoenetChooser extends Component {
     })
   }
 
-  loadAllFolders(callback=(()=>{})) {
-    const loadAllFoldersUrl='/api/loadAllFolders.php';
-    const data={}
-    const payload = {params: data}
+  loadUserFolders(callback=(()=>{})) {
+    let currentFolderId = this.state.directoryStack.length === 0 ?
+                            "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
+
+    const loadUserFoldersUrl='/api/loadUserFolders.php';
+    const data={folderId: currentFolderId};
+    const payload = {params: data};
     
-    axios.get(loadAllFoldersUrl,payload)
+    axios.get(loadUserFoldersUrl,payload)
     .then(resp=>{
-      this.folderInfo = resp.data.folderInfo;
+      this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
       this.folderIds = resp.data.folderIds;
       this.folders_loaded = true;
       callback();
@@ -423,7 +433,7 @@ class DoenetChooser extends Component {
   addNewFolder(title) {
     let folderId = nanoid();
     this.saveFolder(folderId, title, [], [], "insert", () => {
-      this.loadAllFolders(() => {
+      this.loadUserFolders(() => {
         if (this.folderIds.includes(folderId)) {
           // successfully created new folder
           // if not in base dir, add folder to current folder
@@ -449,8 +459,8 @@ class DoenetChooser extends Component {
     let operationType = "insert";
     let title = this.folderInfo[folderId];
     this.saveFolder(folderId, title, childId, childType, operationType ,(folderId) => {
-      this.loadAllFolders();
-      this.loadAllContentBranches();
+      this.loadUserFolders();
+      this.loadUserContentBranches();
     });
   }
 
@@ -458,8 +468,8 @@ class DoenetChooser extends Component {
     let operationType = "remove";
     let title = this.folderInfo[folderId];
     this.saveFolder(folderId, title, childId, childType, operationType ,(folderId) => {
-      this.loadAllFolders();
-      this.loadAllContentBranches();
+      this.loadUserFolders();
+      this.loadUserContentBranches();
     });
   }
 
@@ -493,9 +503,13 @@ class DoenetChooser extends Component {
   }
 
   updateDirectoryStack(directoryStack) {
+    this.folders_loaded = false;
+    this.branches_loaded = false;
     this.setState({
       directoryStack: directoryStack
     })
+    this.loadUserFolders();
+    this.loadUserContentBranches();
   }
 
   getAllSelectedItems = () => {
