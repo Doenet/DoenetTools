@@ -384,7 +384,9 @@ class DoenetChooser extends Component {
   }
 
   saveFolder(folderId, title, childContent, childType, operationType, callback=(()=>{})) {
-    // saveFolder.php
+    
+    // check if new folder
+    let parentId = this.folderInfo[folderId] ? this.folderInfo[folderId].parentId : "root";
     const url='/api/saveFolder.php';
     const data={
       title: title,
@@ -392,7 +394,7 @@ class DoenetChooser extends Component {
       childContent: childContent,
       childType: childType,
       operationType: operationType,
-      parentId: this.folderInfo[folderId].parentId
+      parentId: parentId
     }
     axios.post(url, data)
     .then((resp) => {
@@ -465,7 +467,8 @@ class DoenetChooser extends Component {
     // TODO: let user input folder title
     let num = 1;
     let title = "New Folder " + num; 
-    while (Object.values(this.folderInfo).filter(folder => folder.title.includes(title)).length != 0) {
+    while (Object.values(this.folderInfo).filter(folder => 
+      folder.title && folder.title.includes(title)).length != 0) {
       num++;
       title = "New Folder " + num; 
     }
