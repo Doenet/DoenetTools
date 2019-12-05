@@ -3,13 +3,9 @@ import ComponentWithSelectableType from './ComponentWithSelectableType';
 export default class ComponentListWithSelectableType extends ComponentWithSelectableType {
   static componentType = "_componentlistwithselectabletype";
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components,
-    sharedParameters }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
+    let standardComponentClasses = args.standardComponentClasses;
 
     childLogic.deleteAllLogic();
 
@@ -90,7 +86,7 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
         return { success: false }
       }
 
-      if (!(selectedType in standardComponentTypes)) {
+      if (!(selectedType in standardComponentClasses)) {
         // if didn't get a valid type and component is string
         // set to selected type to text
         if (activeChildrenMatched.length === 1 && activeChildrenMatched[0].componentType === "string") {

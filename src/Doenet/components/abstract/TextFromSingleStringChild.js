@@ -3,12 +3,8 @@ import Text from '../Text';
 export default class TextFromSingleStringChild extends Text {
   static componentType = "_textfromsinglestringchild";
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.deleteAllLogic();
 

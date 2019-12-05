@@ -4,22 +4,16 @@ import me from 'math-expressions';
 export default class Function extends InlineComponent {
   static componentType = "function";
 
-  static createPropertiesObject({ standardComponentTypes }) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.variable = { default: me.fromAst("x") };
     properties.xscale = { default: 1 };
     properties.yscale = { default: 1 };
     return properties;
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let addFormula = function ({ activeChildrenMatched }) {
       // add <formula> around math
@@ -1974,7 +1968,7 @@ export default class Function extends InlineComponent {
     // add them both to newState and to dependency state variables
     let adapterClass = this.allComponentClasses.curve;
     let availableClassProperties = adapterClass.createPropertiesObject({
-      standardComponentTypes: this.standardComponentTypes
+      standardComponentClasses: this.standardComponentClasses
     });
 
     for (let item in availableClassProperties) {

@@ -4,12 +4,8 @@ import {replaceIncompleteProp} from './commonsugar/createprop';
 export default class Extract extends CompositeComponent {
   static componentType = "extract";
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let anythingForSugar = childLogic.newLeaf({
       name: 'anythingForSugar',
@@ -222,7 +218,7 @@ export default class Extract extends CompositeComponent {
 
       let result = this.state.propChild.validateProp({
         component: source,
-        standardComponentTypes: this.standardComponentTypes,
+        standardComponentClasses: this.standardComponentClasses,
       })
 
       if(result.success !== true) {

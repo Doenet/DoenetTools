@@ -9,20 +9,15 @@ export default class ComponentWithSelectableType extends BaseComponent {
     sharedParameters.defaultToPrescribedParameters = false;
   }
 
-  static createPropertiesObject({ standardComponentTypes }) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.type = { default: undefined };
     return properties;
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
+    let standardComponentClasses = args.standardComponentClasses;
 
     function addType({ activeChildrenMatched, dependencyValues }) {
 
@@ -57,7 +52,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
         return { success: false }
       }
 
-      if (!(selectedType in standardComponentTypes)) {
+      if (!(selectedType in standardComponentClasses)) {
         // if didn't get a valid type and component is string
         // set to selected type to text
         if (activeChildrenMatched.length === 1 && activeChildrenMatched[0].componentType === "string") {

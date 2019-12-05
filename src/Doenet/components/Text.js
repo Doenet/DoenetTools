@@ -5,12 +5,8 @@ export default class Text extends InlineComponent {
 
   static includeBlankStringChildren = true;
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroStrings = childLogic.newLeaf({
       name: "atLeastZeroStrings",

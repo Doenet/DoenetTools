@@ -3,10 +3,8 @@ import Input from './abstract/Input';
 export default class Choiceinput extends Input {
   static componentType = "choiceinput";
 
-  static createPropertiesObject({ standardComponentTypes }) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.selectmultiple = { default: false };
     properties.assignpartialcredit = { default: false };
     properties.inline = { default: false };
@@ -14,12 +12,8 @@ export default class Choiceinput extends Input {
     return properties;
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
       name: "atLeastZeroChoices",

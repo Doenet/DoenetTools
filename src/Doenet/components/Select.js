@@ -51,10 +51,8 @@ export default class Select extends CompositeComponent {
 
   }
 
-  static createPropertiesObject({ standardComponentTypes }) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.numberToSelect = { default: 1 };
     properties.withReplacement = { default: false };
     return properties;

@@ -4,10 +4,8 @@ import me from 'math-expressions';
 export default class AnimateFromSequence extends Sequence {
   static componentType = "animatefromsequence";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.animationOn = {default: false};
     properties.animationMode = {default: "increase"};
     properties.animationInterval = {default: 1000};

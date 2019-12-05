@@ -47,10 +47,8 @@ export default class MathList extends InlineComponent {
 
   }
   
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.simplify = {default: 'none'};
     properties.unordered = {default: false};
     properties.maximumnumber = {default: undefined};
@@ -59,12 +57,8 @@ export default class MathList extends InlineComponent {
   }
 
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroMaths = childLogic.newLeaf({
       name: "atLeastZeroMaths",

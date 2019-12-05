@@ -11,7 +11,7 @@ import * as ComponentTypes  from './src/Doenet/ComponentTypes';
 // }
 
 // function createComponentFile() {
-//   let standardComponentTypes = ComponentTypes.createComponentTypes();
+//   let standardComponentClasses = ComponentTypes.createComponentTypes();
 //   let allComponentClasses = ComponentTypes.allComponentClasses();
 
 //   for (ComponentClass in allComponentClasses) {

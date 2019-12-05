@@ -62,11 +62,8 @@ export default class Ref extends CompositeComponent {
 
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components, allPossibleProperties }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes, allComponentClasses,
-      allPossibleProperties, components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let addRefTarget = function ({ activeChildrenMatched }) {
       // add <reftarget> around string
@@ -232,7 +229,7 @@ export default class Ref extends CompositeComponent {
     //     },
     //   }),
     //   defaultValue: undefined,
-    //   definition: function ({ contentId, serializedStateForContentId }, { allComponentClasses, componentTypesTakingComponentNames, standardComponentTypes, componentTypesCreatingVariants }) {
+    //   definition: function ({ contentId, serializedStateForContentId }, { allComponentClasses, componentTypesTakingComponentNames, standardComponentClasses, componentTypesCreatingVariants }) {
     //     if (contentId.value === undefined) {
     //       return { useEssentialOrDefaultValue: { serializedContent: "serializedContent" } }
     //     }
@@ -250,7 +247,7 @@ export default class Ref extends CompositeComponent {
     //     let serializedState = JSON.parse(JSON.stringify(serializedStateForContentId.value));
     //     serializedState = serializeFunctions.scrapeOffAllDoumentRelated(serializedState);
 
-    //     serializeFunctions.createComponentsFromProps(serializedState, standardComponentTypes);
+    //     serializeFunctions.createComponentsFromProps(serializedState, standardComponentClasses);
 
     //     serializeFunctions.createComponentNames({ serializedState, componentTypesTakingComponentNames, allComponentClasses });
 
@@ -557,7 +554,7 @@ export default class Ref extends CompositeComponent {
 
         for (let targetClass of replacementClasses) {
           let propertiesObject = targetClass.createPropertiesObject({
-            standardComponentTypes: componentInfoObjects.standardComponentTypes,
+            standardComponentClasses: componentInfoObjects.standardComponentClasses,
             allPossibleProperties: componentInfoObjects.allPossibleProperties
           });
 
@@ -687,7 +684,7 @@ export default class Ref extends CompositeComponent {
 
       let result = this.state.propChild.validateProp({
         component: refTarget,
-        standardComponentTypes: this.standardComponentTypes,
+        standardComponentClasses: this.standardComponentClasses,
       })
 
       if (result.success !== true) {
@@ -764,13 +761,13 @@ export default class Ref extends CompositeComponent {
       if (rtForProperties instanceof this.allComponentClasses.string) {
         // if string (which doesn't have properties), use base component
         this.state.availableClassProperties = this.allComponentClasses._base.createPropertiesObject({
-          standardComponentTypes: this.standardComponentTypes
+          standardComponentClasses: this.standardComponentClasses
         });
       } else {
-        let replacementClassForProperties = this.standardComponentTypes[rtForProperties.componentType];
+        let replacementClassForProperties = this.standardComponentClasses[rtForProperties.componentType];
 
-        this.state.availableClassProperties = replacementClassForProperties.class.createPropertiesObject({
-          standardComponentTypes: this.standardComponentTypes
+        this.state.availableClassProperties = replacementClassForProperties.createPropertiesObject({
+          standardComponentClasses: this.standardComponentClasses
         });
       }
     }
@@ -837,11 +834,11 @@ export default class Ref extends CompositeComponent {
       return;
     }
 
-    let serializedState = serializeFunctions.doenetMLToSerializedState({ doenetML: newDoenetMLs[0], standardComponentTypes: this.standardComponentTypes, allComponentClasses: this.allComponentClasses });
+    let serializedState = serializeFunctions.doenetMLToSerializedState({ doenetML: newDoenetMLs[0], standardComponentClasses: this.standardComponentClasses, allComponentClasses: this.allComponentClasses });
 
     serializedState = serializeFunctions.scrapeOffAllDoumentRelated(serializedState);
 
-    serializeFunctions.createComponentsFromProps(serializedState, this.standardComponentTypes);
+    serializeFunctions.createComponentsFromProps(serializedState, this.standardComponentClasses);
 
     serializeFunctions.createComponentNames({ serializedState, componentTypesTakingComponentNames: this.componentTypesTakingComponentNames, allComponentClasses: this.allComponentClasses });
 

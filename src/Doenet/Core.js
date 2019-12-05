@@ -5,12 +5,13 @@ import availableRenderers from './AvailableRenderers';
 import Numerics from './Numerics';
 import MersenneTwister from 'mersenne-twister';
 import me from 'math-expressions';
+import { createUniqueName } from './utils/naming';
 import * as serializeFunctions from './utils/serializedStateProcessing';
 import { deepClone } from './utils/deepFunctions';
 
-// string to componentClass: componentTypes["string"].class
+// string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
-// validTags: Object.keys(componentTypes);
+// validTags: Object.keys(this.standardComponentClasses);
 
 
 export default class Core {
@@ -37,7 +38,7 @@ export default class Core {
     this.getComponentNamesForProp = this.getComponentNamesForProp.bind(this);
 
     this.update = update;
-    this._standardComponentTypes = ComponentTypes.createComponentTypes();
+    this._standardComponentClasses = ComponentTypes.standardComponentClasses();
     this._allComponentClasses = ComponentTypes.allComponentClasses();
     this._componentTypesTakingComponentNames = ComponentTypes.componentTypesTakingComponentNames();
     this._componentTypesCreatingVariants = ComponentTypes.componentTypesCreatingVariants();
@@ -45,7 +46,7 @@ export default class Core {
     this._allPossibleProperties = this.createAllPossibleProperties();
 
     this.componentInfoObjects = {
-      standardComponentTypes: this.standardComponentTypes,
+      standardComponentClasses: this.standardComponentClasses,
       allComponentClasses: this.allComponentClasses,
       componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
       componentTypesCreatingVariants: this.componentTypesCreatingVariants,
@@ -56,8 +57,6 @@ export default class Core {
     this.lastAnimationID = 0;
     this.requestedVariant = requestedVariant;
     this.postConstructionCallBack = postConstructionCallBack;
-
-    this.uniqueIdCounts = {};
 
     // console.time('serialize doenetML');
 
@@ -183,11 +182,11 @@ export default class Core {
 
       let serializedState = serializeFunctions.doenetMLToSerializedState({
         doenetML,
-        standardComponentTypes: this.standardComponentTypes,
+        standardComponentClasses: this.standardComponentClasses,
         allComponentClasses: this.allComponentClasses,
       });
 
-      serializeFunctions.createComponentsFromProps(serializedState, this.standardComponentTypes);
+      serializeFunctions.createComponentsFromProps(serializedState, this.standardComponentClasses);
 
       serializedStates.push(serializedState);
 
@@ -473,9 +472,9 @@ export default class Core {
 
       let componentClass;
       try {
-        componentClass = this.standardComponentTypes[serializedComponent.componentType].class;
+        componentClass = this.standardComponentClasses[serializedComponent.componentType];
       } catch (e) {
-        if (this.standardComponentTypes[serializedComponent.componentType] === undefined) {
+        if (this.standardComponentClasses[serializedComponent.componentType] === undefined) {
           throw Error("Cannot create component of type " + serializedComponent.componentType);
         }
         throw e;
@@ -488,11 +487,7 @@ export default class Core {
         componentName = serializedComponent.doenetAttributes.componentName;
       }
       if (componentName === undefined) {
-        // no component alias, so generate automatic name
-        // get name for component as: __componentType + componentIndex
-        // increment maxIndex on standardComponentTypes before assigning to componentIndex
-        let componentIndex = ++this._standardComponentTypes[serializedComponent.componentType].maxIndex;
-        componentName = '__' + serializedComponent.componentType + componentIndex;
+        componentName = createUniqueName(serializedComponent.componentType)
       }
 
       let createResult = this.createChildrenThenComponent({
@@ -681,7 +676,7 @@ export default class Core {
 
 
     let childLogic = componentClass.returnChildLogic({
-      standardComponentTypes: this.standardComponentTypes,
+      standardComponentClasses: this.standardComponentClasses,
       allComponentClasses: this.allComponentClasses,
       components: this.components,
       allPossibleProperties: this.allPossibleProperties,
@@ -721,7 +716,7 @@ export default class Core {
       stateVariableDefinitions,
       serializedChildren: childrenToRemainSerialized,
       serializedState: serializedComponent,
-      standardComponentTypes: this.standardComponentTypes,
+      standardComponentClasses: this.standardComponentClasses,
       allComponentClasses: this.allComponentClasses,
       allPossibleProperties: this.allPossibleProperties,
       componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
@@ -838,7 +833,7 @@ export default class Core {
   propagateAncestorProps({ componentClass, componentName, sharedParameters }) {
 
     let propertyObject = componentClass.createPropertiesObject({
-      standardComponentTypes: this.standardComponentTypes,
+      standardComponentClasses: this.standardComponentClasses,
       allPossibleProperties: this.allPossibleProperties
     });
 
@@ -1244,7 +1239,7 @@ export default class Core {
           let namespace = instruction.namespace;
 
           if (namespace === undefined) {
-            namespace = this.createNewUniqueName(component);
+            namespace = createUniqueName(component.componentType);
           }
 
           let namespacePieces = component.componentName.split('/');
@@ -1293,7 +1288,7 @@ export default class Core {
           let name = instruction.name;
 
           if (name === undefined) {
-            name = this.createNewUniqueName(component);
+            name = createUniqueName(component.componentType);
           }
 
           let theReplacement = replacementsToAdd[0];
@@ -1301,7 +1296,7 @@ export default class Core {
           if (Array.isArray(name)) {
             // if name is an array, then it refers to names of the grandchildren
 
-            let nameForChild = this.createNewUniqueName(component);
+            let nameForChild = createUniqueName(component.componentType);
             if (!theReplacement.doenetAttributes) {
               theReplacement.doenetAttributes = {}
             }
@@ -1317,7 +1312,7 @@ export default class Core {
                 ind++;
                 let nameForGrandchild = name[ind];
                 if (nameForGrandchild === undefined) {
-                  nameForGrandchild = this.createNewUniqueName(component);
+                  nameForGrandchild = createUniqueName(component.componentType);
                 }
                 if (!grandchild.doenetAttributes) {
                   grandchild.doenetAttributes = {}
@@ -1384,34 +1379,7 @@ export default class Core {
     return replacements;
   }
 
-  createNewUniqueName(component) {
-    if (component.doenetAttributes.newNamespace) {
-      let lastUniqueInd = this.uniqueIdCounts[component.componentName];
-      if (lastUniqueInd) {
-        lastUniqueInd++;
-      }
-      else {
-        lastUniqueInd = 1;
-      }
-      this.uniqueIdCounts[component.componentName] = lastUniqueInd;
-      name = `_unique_${lastUniqueInd}`;
-    }
-    else {
-      // if component is not creating a new name
-      // create a unique name from the component name
-      let componentNameEnding = component.componentName.substring(component.componentName.lastIndexOf('/') + 1);
-      let lastUniqueInd = this.uniqueIdCounts[component.componentName];
-      if (lastUniqueInd) {
-        lastUniqueInd++;
-      }
-      else {
-        lastUniqueInd = 1;
-      }
-      this.uniqueIdCounts[component.componentName] = lastUniqueInd;
-      name = `${componentNameEnding}[${lastUniqueInd}]`;
-    }
-    return name;
-  }
+
 
   replaceCompositeChildren(component) {
     // if composite is not directly matched by any childLogic leaf
@@ -5432,11 +5400,11 @@ export default class Core {
     component.replacementsToWithhold = change.replacementsToWithhold;
   }
 
-  get standardComponentTypes() {
-    return new Proxy(this._standardComponentTypes, readOnlyProxyHandler);
+  get standardComponentClasses() {
+    return new Proxy(this._standardComponentClasses, readOnlyProxyHandler);
   }
 
-  set standardComponentTypes(value) {
+  set standardComponentClasses(value) {
     return null;
   }
 
@@ -5478,10 +5446,10 @@ export default class Core {
       let componentClass = this.allComponentClasses[componentType];
 
       let properties = componentClass.createPropertiesObject({
-        standardComponentTypes: this.standardComponentTypes
+        standardComponentClasses: this.standardComponentClasses
       });
       for (let propertyName in properties) {
-        if (propertyName.toLowerCase() in this.standardComponentTypes) {
+        if (propertyName.toLowerCase() in this.standardComponentClasses) {
           allPossibleProperties.add(propertyName);
         }
       }

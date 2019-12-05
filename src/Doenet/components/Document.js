@@ -12,12 +12,8 @@ export default class Document extends BaseComponent {
     return {title: {default: "", componentType: "text"}};
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let atMostOneMeta = childLogic.newLeaf({
       name: "atMostOneMeta",

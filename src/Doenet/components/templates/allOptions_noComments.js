@@ -37,11 +37,9 @@ export class NewComponentClass extends InheritedComponentClass {
     //updates the value of the state variable if the child changes
     //makes the state variable public state variable with componentType:childNameHere
     //flagged isProperty = true
-    static createPropertiesObject({standardComponentTypes}) {
-      let properties = super.createPropertiesObject({
-        standardComponentTypes: standardComponentTypes
-      });
-  
+    static createPropertiesObject(args) {
+      let properties = super.createPropertiesObject(args);
+    
       properties.componentTypeName1 = {default: 1}; 
       properties.componentTypeName2 = {default: "one"}; 
 
@@ -104,12 +102,8 @@ export class NewComponentClass extends InheritedComponentClass {
     //                       default:false
     // replacementFunction (see newLeaf above)
     //
-    static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-      let childLogic = super.returnChildLogic({
-        standardComponentTypes: standardComponentTypes,
-        allComponentClasses: allComponentClasses,
-        components: components,
-      });
+    static returnChildLogic (args) {
+      let childLogic = super.returnChildLogic(args);
   
       let atLeastZeroStrings = childLogic.newLeaf({
         name: "atLeastZeroStrings",

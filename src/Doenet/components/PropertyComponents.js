@@ -63,10 +63,8 @@ export class PossiblePoints extends NumberComponent {
 
 export class Through extends PointListComponent {
   static componentType = "through"
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.slope = {default: undefined};
     return properties;
   }
@@ -82,10 +80,8 @@ export class Vertices extends PointListComponent {
 
 export class Head extends Point {
   static componentType = "head"
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.hide = {default: true};
     return properties;
   }
@@ -93,10 +89,8 @@ export class Head extends Point {
 
 export class Tail extends Point {
   static componentType = "tail"
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.hide = {default: true};
     return properties;
   }
@@ -108,10 +102,8 @@ export class Displacement extends Vector {
 
 export class Center extends Point {
   static componentType = "center"
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.hide = {default: true};
     return properties;
   }

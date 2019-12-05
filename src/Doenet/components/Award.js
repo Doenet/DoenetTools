@@ -249,12 +249,8 @@ export default class Award extends BaseComponent {
     };
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let exactlyOneIf = childLogic.newLeaf({
       name: "exactlyOneIf",

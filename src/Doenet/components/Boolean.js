@@ -4,12 +4,8 @@ export default class BooleanComponent extends InlineComponent {
   static componentType = "boolean";
 
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroStrings = childLogic.newLeaf({
       name: "atLeastZeroStrings",

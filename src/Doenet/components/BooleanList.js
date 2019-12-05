@@ -3,21 +3,15 @@ import InlineComponent from './abstract/InlineComponent';
 export default class BooleanList extends InlineComponent {
   static componentType = "booleanlist";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.unordered = {default: false};
     properties.maximumnumber = {default: undefined};
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroBooleans = childLogic.newLeaf({
       name: "atLeastZeroBooleans",

@@ -3,10 +3,8 @@ import BlockComponent from './abstract/BlockComponent';
 export default class Video extends BlockComponent {
   static componentType = "video";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.width = {default: 500};
     properties.height = {default: 500};
     properties.youtube = {default: undefined};

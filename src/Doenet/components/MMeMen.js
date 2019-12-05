@@ -4,12 +4,8 @@ import me from 'math-expressions';
 export class M extends InlineComponent {
   static componentType = "m";
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroStrings = childLogic.newLeaf({
       name: "atLeastZeroStrings",

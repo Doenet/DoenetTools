@@ -9,10 +9,8 @@ export default class UpdateValue extends BlockComponent {
   }
   static componentType = "updatevalue";
 
-  static createPropertiesObject({ standardComponentTypes }) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     // properties.width = {default: 300};
     // properties.height = {default: 50};
     properties.label = { default: "update value" };
@@ -20,12 +18,8 @@ export default class UpdateValue extends BlockComponent {
     return properties;
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let exactlyOneMathTarget = childLogic.newLeaf({
       name: "exactlyOneMathTarget",

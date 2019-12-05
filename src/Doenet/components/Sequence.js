@@ -9,20 +9,15 @@ export default class Sequence extends CompositeComponent {
     sharedParameters.defaultToPrescribedParameters = true;
   }
 
-  static createPropertiesObject({ standardComponentTypes }) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.type = { default: undefined, propagateToDescendants: true };
     return properties;
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
+    let standardComponentClasses = args.standardComponentClasses;
 
     function fromToAsString({ activeChildrenMatched, dependencyValues }) {
 
@@ -45,7 +40,7 @@ export default class Sequence extends CompositeComponent {
         }
       }
 
-      if (!(newType in standardComponentTypes)) {
+      if (!(newType in standardComponentClasses)) {
         // if didn't get a valid type, sugar fails
         return { success: false }
       }

@@ -15,10 +15,8 @@ export class Mean extends NumberBaseOperatorOrNumber {
 export class Variance extends NumberBaseOperatorOrNumber {
   static componentType = "variance";
 
-  static createPropertiesObject({ standardComponentTypes }) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.unbiased = { default: false };
     return properties;
   }

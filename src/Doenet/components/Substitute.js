@@ -78,10 +78,8 @@ export default class Substitute extends CompositeComponent {
   }
 
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.type = {default: undefined};
 
     // properties for math
@@ -97,13 +95,8 @@ export default class Substitute extends CompositeComponent {
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
-
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let breakStringIntoChildren = function({activeChildrenMatched, sharedParameters}) {
       // know it a string

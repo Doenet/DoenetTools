@@ -17,15 +17,10 @@ export default class NumberBaseOperatorOrNumber extends NumberComponent {
   }
 
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components,
-    sharedParameters }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
-    if (sharedParameters.defaultToPrescribedParameters) {
+    if (args.sharedParameters.defaultToPrescribedParameters) {
       // if prescribed parameter, behaves just as a number component
       return childLogic;
 

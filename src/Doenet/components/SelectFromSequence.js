@@ -10,22 +10,16 @@ export default class SelectFromSequence extends Sequence {
 
   // static selectedVariantVariable = "selectedValues";
 
-  static createPropertiesObject({ standardComponentTypes }) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.numberToSelect = { default: 1 };
     properties.withReplacement = { default: false };
     properties.sortResults = { default: false };
     return properties;
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let sequenceBase = childLogic.baseLogic;
 

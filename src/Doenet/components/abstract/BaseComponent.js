@@ -10,7 +10,7 @@ export default class BaseComponent {
     definingChildren,
     serializedChildren, childLogic,
     stateVariableDefinitions,
-    standardComponentTypes, allComponentClasses, allPossibleProperties,
+    standardComponentClasses, allComponentClasses, allPossibleProperties,
     componentTypesTakingComponentNames, componentTypesCreatingVariants,
     shadow, requestUpdate, availableRenderers,
     allRenderComponents, graphRenderComponents,
@@ -38,7 +38,7 @@ export default class BaseComponent {
     this.parentName = parentName;
 
     this.componentType = this.constructor.componentType;
-    this.standardComponentTypes = standardComponentTypes;
+    this.standardComponentClasses = standardComponentClasses;
     this.allComponentClasses = allComponentClasses;
     this.componentTypesTakingComponentNames = componentTypesTakingComponentNames;
     this.componentTypesCreatingVariants = componentTypesCreatingVariants;
@@ -122,7 +122,7 @@ export default class BaseComponent {
     return this.childLogic.logicResult.success;
   }
 
-  static createPropertiesObject({ standardComponentTypes, allPossibleProperties }) {
+  static createPropertiesObject() {
 
     return {
       hide: { default: false },
@@ -132,15 +132,15 @@ export default class BaseComponent {
     };
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components, allPossibleProperties }) {
+  static returnChildLogic({ standardComponentClasses, allComponentClasses, components, allPossibleProperties }) {
     let childLogic = new ChildLogicClass({
       parentComponentType: this.componentType,
       properties: this.createPropertiesObject({
-        standardComponentTypes, allPossibleProperties,
+        standardComponentClasses, allPossibleProperties,
       }),
-      allComponentClasses: allComponentClasses,
-      standardComponentTypes: standardComponentTypes,
-      components: components,
+      allComponentClasses,
+      standardComponentClasses,
+      components,
     });
 
     return childLogic;
@@ -150,8 +150,8 @@ export default class BaseComponent {
     return {};
   }
 
-  static returnStateVariableInfo({ onlyPublic = false, standardComponentTypes, allPossibleProperties }) {
-    let propertyObject = this.createPropertiesObject({ standardComponentTypes, allPossibleProperties });
+  static returnStateVariableInfo({ onlyPublic = false, standardComponentClasses, allPossibleProperties }) {
+    let propertyObject = this.createPropertiesObject({ standardComponentClasses, allPossibleProperties });
 
     let stateVariableDescriptions = {};
     for (let varName in propertyObject) {
@@ -1050,7 +1050,7 @@ export default class BaseComponent {
     // add them both to newState and to dependency state variables
     let adapterClass = this.allComponentClasses[adapterComponentType];
     let availableClassProperties = adapterClass.createPropertiesObject({
-      standardComponentTypes: this.standardComponentTypes,
+      standardComponentClasses: this.standardComponentClasses,
       allPossibleProperties: this.allPossibleProperties,
     });
 

@@ -5,10 +5,8 @@ export default class VariantControl extends BaseComponent {
 
   static createsVariants = true;
 
-  static createPropertiesObject({ standardComponentTypes }) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.nVariants = { default: 100 };
     properties.uniqueVariants = { default: false };
 
@@ -19,12 +17,8 @@ export default class VariantControl extends BaseComponent {
     return properties;
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let atMostOneSeeds = childLogic.newLeaf({
       name: 'atMostOneSeeds',

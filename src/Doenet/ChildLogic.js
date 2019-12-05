@@ -1,10 +1,10 @@
 export default class childLogic {
   constructor({ properties, parentComponentType,
-    allComponentClasses, standardComponentTypes, components }) {
+    allComponentClasses, standardComponentClasses, components }) {
     this.logicComponents = {};
     this.parentComponentType = parentComponentType;
     this.allComponentClasses = allComponentClasses;
-    this.standardComponentTypes = standardComponentTypes;
+    this.standardComponentClasses = standardComponentClasses;
     this.components = components;
     this.setProperties(properties);
   }
@@ -34,7 +34,7 @@ export default class childLogic {
           allowSpillover: false,
           parentComponentType: this.parentComponentType,
           allComponentClasses: this.allComponentClasses,
-          standardComponentTypes: this.standardComponentTypes,
+          standardComponentClasses: this.standardComponentClasses,
           components: this.components,
         });
       } else {
@@ -46,7 +46,7 @@ export default class childLogic {
           allowSpillover: false,
           parentComponentType: this.parentComponentType,
           allComponentClasses: this.allComponentClasses,
-          standardComponentTypes: this.standardComponentTypes,
+          standardComponentClasses: this.standardComponentClasses,
           components: this.components,
         });
       }
@@ -64,7 +64,7 @@ export default class childLogic {
         propositions: propertyPropositions,
         parentComponentType: this.parentComponentType,
         allComponentClasses: this.allComponentClasses,
-        standardComponentTypes: this.standardComponentTypes,
+        standardComponentClasses: this.standardComponentClasses,
         components: this.components,
       });
       this.logicComponents[name] = this.propertyLogic;
@@ -82,7 +82,7 @@ export default class childLogic {
           propositions: [this.propertyLogic, this.baseLogic],
           parentComponentType: this.parentComponentType,
           allComponentClasses: this.allComponentClasses,
-          standardComponentTypes: this.standardComponentTypes,
+          standardComponentClasses: this.standardComponentClasses,
           components: this.components,
         });
         this.logicComponents[name] = this.propertyAndBaseLogic;
@@ -136,7 +136,7 @@ export default class childLogic {
       replacementFunction, allowSpillover,
       parentComponentType: this.parentComponentType,
       allComponentClasses: this.allComponentClasses,
-      standardComponentTypes: this.standardComponentTypes,
+      standardComponentClasses: this.standardComponentClasses,
       components: this.components,
     });
 
@@ -183,7 +183,7 @@ export default class childLogic {
       allowSpillover,
       parentComponentType: this.parentComponentType,
       allComponentClasses: this.allComponentClasses,
-      standardComponentTypes: this.standardComponentTypes,
+      standardComponentClasses: this.standardComponentClasses,
       components: this.components,
     });
 
@@ -805,7 +805,7 @@ export default class childLogic {
       if (component.componentType === undefined) {
         return false;
       }
-      if (this.standardComponentTypes[component.componentType.toLowerCase()] === undefined) {
+      if (this.standardComponentClasses[component.componentType.toLowerCase()] === undefined) {
         return false;
       }
       if (component.children !== undefined) {
@@ -823,11 +823,11 @@ export default class childLogic {
 }
 
 class ChildLogicBase {
-  constructor({ name, parentComponentType, allComponentClasses, standardComponentTypes, components }) {
+  constructor({ name, parentComponentType, allComponentClasses, standardComponentClasses, components }) {
     this.name = name;
     this.parentComponentType = parentComponentType.toLowerCase();
     this.allComponentClasses = allComponentClasses;
-    this.standardComponentTypes = standardComponentTypes;
+    this.standardComponentClasses = standardComponentClasses;
     this.components = components;
   }
 
@@ -853,7 +853,7 @@ class ChildLogicLeaf extends ChildLogicBase {
     allowSpillover = true,
     parentComponentType,
     allComponentClasses,
-    standardComponentTypes,
+    standardComponentClasses,
     components,
   }) {
 
@@ -861,7 +861,7 @@ class ChildLogicLeaf extends ChildLogicBase {
       name: name,
       parentComponentType: parentComponentType,
       allComponentClasses: allComponentClasses,
-      standardComponentTypes: standardComponentTypes,
+      standardComponentClasses: standardComponentClasses,
       components: components
     })
 
@@ -1066,7 +1066,7 @@ class ChildLogicOperator extends ChildLogicBase {
     allowSpillover = true,
     parentComponentType,
     allComponentClasses,
-    standardComponentTypes,
+    standardComponentClasses,
     components,
   }) {
 
@@ -1074,7 +1074,7 @@ class ChildLogicOperator extends ChildLogicBase {
       name: name,
       parentComponentType: parentComponentType,
       allComponentClasses: allComponentClasses,
-      standardComponentTypes: standardComponentTypes,
+      standardComponentClasses: standardComponentClasses,
       components: components,
     })
 

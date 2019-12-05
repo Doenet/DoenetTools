@@ -7,10 +7,8 @@ export default class Graph extends BlockComponent {
   }
   static componentType = "graph";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.xmin = {default: -10};
     properties.xmax = {default: 10};
     properties.ymin = {default: -10};
@@ -23,13 +21,8 @@ export default class Graph extends BlockComponent {
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
-
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let addCurve = function({activeChildrenMatched}) {
       // add <curve> around strings, as long as they don't have points

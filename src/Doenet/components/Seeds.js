@@ -3,12 +3,8 @@ import InlineComponent from './abstract/InlineComponent';
 export default class Seeds extends InlineComponent {
   static componentType = "seeds";
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroSeeds = childLogic.newLeaf({
       name: "atLeastZeroSeeds",

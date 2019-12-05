@@ -4,10 +4,8 @@ import me from 'math-expressions';
 export default class Table extends BaseComponent {
   static componentType = "table";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.width = {default: '400px'};
     properties.height = {default: undefined};
     properties.numrows = {default: 4};
@@ -16,13 +14,9 @@ export default class Table extends BaseComponent {
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
-    
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
+  
     let zeroOrMoreCells = childLogic.newLeaf({
       name: "zeroOrMoreCells",
       componentType: 'cell',

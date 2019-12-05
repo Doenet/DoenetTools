@@ -33,10 +33,8 @@ export class Product extends MathBaseOperator {
 export class ClampNumber extends MathBaseOperatorOneInput {
   static componentType = "clampnumber";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.lowervalue = {default: 0};
     properties.uppervalue = {default: 1};
     return properties;
@@ -67,10 +65,8 @@ export class ClampNumber extends MathBaseOperatorOneInput {
 export class WrapNumberPeriodic extends MathBaseOperatorOneInput {
   static componentType = "wrapnumberperiodic";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.lowervalue = {default: 0};
     properties.uppervalue = {default: 1};
     return properties;
@@ -121,10 +117,8 @@ export class WrapNumberPeriodic extends MathBaseOperatorOneInput {
 export class Round extends MathBaseOperatorOneInput {
   static componentType = "round";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.numberdecimals = {default: 0};
     properties.numberdigits = {default: undefined};
     return properties;
@@ -282,10 +276,8 @@ export class Abs extends MathBaseOperatorOneInput {
 export class Derivative extends MathBaseOperatorOneInput {
   static componentType = "derivative";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.variable = {default: me.fromAst('x')};
     return properties;
   }

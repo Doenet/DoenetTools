@@ -3,12 +3,8 @@ import BaseComponent from './abstract/BaseComponent';
 export default class Substitutions extends BaseComponent {
   static componentType = "substitutions";
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
       name: 'AtLeastZeroChildren',

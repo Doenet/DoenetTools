@@ -4,22 +4,16 @@ import me from 'math-expressions';
 export default class NumberComponent extends InlineComponent {
   static componentType = "number";
 
-  static createPropertiesObject({ standardComponentTypes }) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.displayDigits = { default: 10 };
     properties.displaySmallAsZero = { default: false };
     properties.renderMode = { default: "text" };
     return properties;
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let atMostOneString = childLogic.newLeaf({
       name: "atMostOneString",

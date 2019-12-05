@@ -6,10 +6,8 @@ export default class MathComponent extends InlineComponent {
   static componentType = "math";
 
 
-  static createPropertiesObject({ standardComponentTypes }) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.format = { default: "text", validValues: new Set(["text", "latex"]) };
     properties.simplify = { default: "none", toLowerCase: true, valueTransformations: { "": "full", "true": "full" } };
     properties.expand = { default: false };
@@ -22,12 +20,8 @@ export default class MathComponent extends InlineComponent {
     return properties;
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroStrings = childLogic.newLeaf({
       name: "atLeastZeroStrings",

@@ -4,12 +4,8 @@ import { textFromComponent } from '../utils/text';
 export default class AsList extends InlineComponent {
   static componentType = "aslist";
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
       name: "atLeastZeroInline",

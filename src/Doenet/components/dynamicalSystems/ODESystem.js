@@ -4,10 +4,8 @@ import me from 'math-expressions';
 export default class ODESystem extends InlineComponent {
   static componentType = "odesystem";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.independentvariable = {default: me.fromAst('t')};
     properties.initialindependentvariablevalue = {default: me.fromAst(0)};
     properties.displaydigits = {default: 14};
@@ -19,12 +17,8 @@ export default class ODESystem extends InlineComponent {
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.deleteAllLogic();
 

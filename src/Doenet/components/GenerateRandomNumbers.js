@@ -9,10 +9,8 @@ export default class GenerateRandomNumbers extends CompositeComponent {
 
   static previewSerializedComponent = RandomNumber.previewSerializedComponent;
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = RandomNumber.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
 
     properties.numberOfSamples = {default: 1};
     properties.withreplacement = {default: false};  //used only for discrete

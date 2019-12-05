@@ -171,10 +171,8 @@ export default class Answer extends InlineComponent {
 
   }
 
-  static createPropertiesObject({ standardComponentTypes }) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.weight = { default: 1 };
     properties.inline = { default: false };
     properties.type = { default: "math" };
@@ -185,13 +183,8 @@ export default class Answer extends InlineComponent {
     return properties;
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components,
-    sharedParameters }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     function determineType() {
       let typeChild = sharedParameters.typeChild;

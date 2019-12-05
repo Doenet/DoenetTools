@@ -973,17 +973,24 @@ describe('Sequence Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     cy.log("Round when displaying to show 10ths correctly")
-    for (let i = 0; i < 11; i++) {
-      cy.get('#__number' + (i + 3)).invoke('text').then((text) => {
-        expect(text.trim()).equal((i / 10).toString());
-      })
-    }
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let replacements = components['/_sequence1'].replacements;
+
+      for (let i = 0; i < 11; i++) {
+        cy.get('#' + replacements[i].componentName).invoke('text').then((text) => {
+          expect(text.trim()).equal((i / 10).toString());
+        })
+      }
+    });
 
     cy.log("Don't round internaly")
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
+      let replacements = components['/_sequence1'].replacements;
+
       for (let i = 0; i < 11; i++) {
-        expect(components['__number' + (i + 3)].stateValues.value).eq(0.1 * i);
+        expect(replacements[i].stateValues.value).eq(0.1 * i);
       }
     })
   });
@@ -1004,16 +1011,20 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    for (let i = 0; i < 9; i++) {
-      cy.get('#__min' + (i + 1)).invoke('text').then((text) => {
-        expect(text.trim()).equal((i + 5).toString());
-      })
-    }
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
+      let replacements = components['/_sequence1'].replacements;
       for (let i = 0; i < 9; i++) {
-        expect(components['__min' + (i + 1)].stateValues.value).eq(i + 5);
+        cy.get('#' + replacements[i].componentName).invoke('text').then((text) => {
+          expect(text.trim()).equal((i + 5).toString());
+        })
+      }
+    })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let replacements = components['/_sequence1'].replacements;
+      for (let i = 0; i < 9; i++) {
+        expect(replacements[i].stateValues.value).eq(i + 5);
       }
     })
   });

@@ -266,23 +266,23 @@ const componentTypeArrayExtended = [
   InlineRenderInlineChildren,
 ];
 
-export function createComponentTypes() {
-  const componentTypes = {};
+export function standardComponentClasses() {
+  const componentClasses = {};
   for (let ct of componentTypeArray) {
     let newComponentType = ct.componentType;
     if (newComponentType === undefined) {
       throw Error("Cannot create component as componentType is undefined for class " + ct)
     }
     newComponentType = newComponentType.toLowerCase();
-    if (newComponentType in componentTypes) {
+    if (newComponentType in componentClasses) {
       throw Error("component type " + newComponentType + " defined in two classes");
     }
     if (!(/[a-z]/.test(newComponentType.substring(0, 1)))) {
       throw Error("Invalid component type " + newComponentType + ". Component types must begin with a letter.");
     }
-    componentTypes[newComponentType] = { maxIndex: 0, class: ct };
+    componentClasses[newComponentType] = ct;
   }
-  return componentTypes;
+  return componentClasses;
 }
 
 export function allComponentClasses() {

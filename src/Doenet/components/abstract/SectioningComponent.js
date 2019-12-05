@@ -6,10 +6,8 @@ export default class SectioningComponent extends BlockComponent {
 
   setUpVariantIfVariantControlChild = true;
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.title = {default: "", componentType: "text"};
     properties.aggregatescores = {default: false};
     properties.weight = {default: 1};
@@ -19,12 +17,8 @@ export default class SectioningComponent extends BlockComponent {
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
       name: 'anything',

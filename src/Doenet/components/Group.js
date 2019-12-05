@@ -4,12 +4,8 @@ import {postProcessRef, processChangesForReplacements} from './Ref';
 export default class Group extends CompositeComponent {
   static componentType = "group";
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
       name: 'anything',

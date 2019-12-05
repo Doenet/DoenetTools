@@ -6,10 +6,8 @@ export default class Cellblock extends BaseComponent {
 
   static alwaysContinueUpstreamUpdates = true;
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
 
     properties.rownum = {default: undefined};
     properties.colnum = {default: undefined};
@@ -17,13 +15,9 @@ export default class Cellblock extends BaseComponent {
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
-    
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
+
     let zeroOrMoreCells = childLogic.newLeaf({
       name: "zeroOrMoreCells",
       componentType: 'cell',

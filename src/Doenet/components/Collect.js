@@ -10,20 +10,14 @@ export default class Collect extends CompositeComponent {
 
   static takesComponentName = true;
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.maximumnumber = {default: undefined};
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let addRefTarget = function({activeChildrenMatched}) {
       // add <reftarget> around string
@@ -339,7 +333,7 @@ export default class Collect extends CompositeComponent {
 
         let result = this.state.propChild.validateProp({
           component: component,
-          standardComponentTypes: this.standardComponentTypes,
+          standardComponentClasses: this.standardComponentClasses,
         })
 
         if(result.success !== true) {
@@ -384,10 +378,10 @@ export default class Collect extends CompositeComponent {
           }
           rtForProperties = rtForProperties.replacements[0];
         }
-        let replacementClassForProperties = this.standardComponentTypes[rtForProperties.componentType];
+        let replacementClassForProperties = this.standardComponentClasses[rtForProperties.componentType];
 
-        stateForCollected.availableClassProperties = replacementClassForProperties.class.createPropertiesObject({
-          standardComponentTypes: this.standardComponentTypes
+        stateForCollected.availableClassProperties = replacementClassForProperties.createPropertiesObject({
+          standardComponentClasses: this.standardComponentClasses
         });
       }
     }

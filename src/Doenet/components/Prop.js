@@ -3,12 +3,8 @@ import BaseComponent from './abstract/BaseComponent';
 export default class Prop extends BaseComponent {
   static componentType = "prop";
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
       name: "exactlyOneString",
@@ -74,14 +70,14 @@ export default class Prop extends BaseComponent {
 
         let authorPropValid = true;
 
-        let standardComponentTypes = componentInfoObjects.standardComponentTypes;
+        let standardComponentClasses = componentInfoObjects.standardComponentClasses;
         let allPossibleProperties = componentInfoObjects.allPossibleProperties;
 
         // just pick first class
         // TODO: should we check more if there are more?
         for (let targetClass of dependencyValues.effectiveTargetClasses) {
 
-          let publicStateVariablesInfo = targetClass.returnStateVariableInfo({ onlyPublic: true, standardComponentTypes, allPossibleProperties });
+          let publicStateVariablesInfo = targetClass.returnStateVariableInfo({ onlyPublic: true, standardComponentClasses, allPossibleProperties });
           let stateVarDescrip = publicStateVariablesInfo.stateVariableDescriptions;
 
           // console.log("publicStateVariablesInfo")
@@ -172,7 +168,7 @@ export default class Prop extends BaseComponent {
   }
 
 
-  // validateProp({ component, standardComponentTypes }) {
+  // validateProp({ component, standardComponentClasses }) {
 
   //   // replace refs and extacts with replacement, if have only one replacement
   //   while ((component.componentType === "ref" || component.componentType === "extract") &&
@@ -191,7 +187,7 @@ export default class Prop extends BaseComponent {
   //     }
 
   //     let availableClassProperties = this.allComponentClasses.number.createPropertiesObject({
-  //       standardComponentTypes: standardComponentTypes
+  //       standardComponentClasses: standardComponentClasses
   //     });
 
   //     return {
@@ -247,13 +243,13 @@ export default class Prop extends BaseComponent {
   //   // verify componentType only in case that have one replacement component
   //   if (numReplacements === 1) {
   //     // see if can set replacement component type to match
-  //     let replacementClass = standardComponentTypes[componentType];
+  //     let replacementClass = standardComponentClasses[componentType];
   //     if (replacementClass === undefined) {
   //       return { success: false, error: true };
   //     }
   //     // available properties are those from replacement componentType
-  //     availableClassProperties = replacementClass.class.createPropertiesObject({
-  //       standardComponentTypes: standardComponentTypes
+  //     availableClassProperties = replacementClass.createPropertiesObject({
+  //       standardComponentClasses: standardComponentClasses
   //     });
   //   }
 
