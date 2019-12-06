@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faFolder, faArrowUp, 
   faArrowDown, faDotCircle, faEdit, faArrowRight, faSpinner} from '@fortawesome/free-solid-svg-icons';
 import "./branchBrowser.css";
-import { debounce } from 'lodash';
 
 class DoenetBranchBrowser extends Component {
   static defaultProps = {
@@ -49,7 +48,6 @@ class DoenetBranchBrowser extends Component {
     this.updateSortOrder = this.updateSortOrder.bind(this);
     this.sortContent = this.sortContent.bind(this);
     this.sortFolders = this.sortFolders.bind(this);
-    this.triggerLoadContent = this.triggerLoadContent.bind(this);
   }
 
   getAllSelectedItems() {
@@ -467,14 +465,6 @@ class DoenetBranchBrowser extends Component {
     }
   }
 
-  handleScroll = (e) => {
-    const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
-    if (bottom) { 
-      console.log("TEST") 
-      
-    }
-  }
-
   render() {
 
     if (this.props.loading){
@@ -494,7 +484,7 @@ class DoenetBranchBrowser extends Component {
           <div id="contentList">
             {this.breadcrumb}
             <table id="browser">
-              <tbody onScroll={this.handleScroll}>
+              <tbody>
                 <tr className="browserHeadingsRow" key="browserHeadingsRow">
                   <th 
                   className={this.state.sortBy === "title" ? "browserItemName browserSelectedHeading" : "browserItemName"}
