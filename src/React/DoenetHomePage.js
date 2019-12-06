@@ -17,6 +17,8 @@ import {  faHandHoldingUsd as handHoldingUsd} from '@fortawesome/free-solid-svg-
 import {  faChalkboard as chalkboard} from '@fortawesome/free-solid-svg-icons';
 import {  faSearch as Search} from '@fortawesome/free-solid-svg-icons';
 
+import logo from '../media/Doenet_Logo_Frontpage.png';
+
 
 
 
@@ -233,28 +235,58 @@ class DoenetHomePage extends Component {
         <p style={{color: "red"}}>{this.state.error && this.state.error.toString()}</p>
         </React.Fragment>);
     }
-
+    //this opens up the activity with collaboration open (then they can close it if they want)
+  //   <ul>
+  //   <li><b>Date</b> January 8th, 2020</li>
+  //   <li><b>Location</b> Vincent Hall Room 20, University of Minnesota</li>
+  //   <li><b>Agenda</b> TBA</li>
+  // </ul>
+  // Contact us section info@doenet.org
+  // Discussions page zoom hangout discussions@doenet.org
+  // Try it out section.  indexedDB Stored Editor - one doc . Documentation
     return (
       <React.Fragment>
+        <div className="homepage-stripes-container">
            
             <div className="heading-banner">
-              <div className="heading-banner-text">
-                <h1 className="heading-title">DOENET</h1>
-                <p className="heading-subtitle">The Distributed Open Education Network</p>
-              </div>
+                <img src={logo} />
             </div>
-            <div className="Features">
-         
-              
 
-              <div className="container">
+              <div className="cloud-color section">
                 <div className="section-text">
-                  <h1 className="section-headline">Create, Assign and Store Content</h1>
+                  <h1 className="section-headline">The Distributed Open Education Network</h1>
                   <p>The Distributed Open Education Network (Doenet) that is, at its core, a mechanism for measuring and
                      sharing student interactions with web pages and storing anonymized data in an open distributed data warehouse.  
                      The Doenet platform will include tools for authoring interactive educational content, conducting educational 
                      research using the content, and discovering the most effective content based on the research results. </p>
                 </div>
+              </div> 
+
+              <div className="chocolate-color section">
+                <div className="section-text">
+                  <h1 className="section-headline">Multiuser Demonstration</h1>
+                  <p>Multiple users can collaborate on any content written in Doenet.  Collaboration is started by clicking 
+                    on the "Start Collaboration" button at the top of interactive content.    </p>
+                    <p>Click below to start demo collaboration activity</p>
+                    <button disabled>Start Activity</button> (coming soon)
+                </div>
+              </div> 
+
+              <div className="shadow-color section">
+                <div className="section-text">
+                  <h1 className="section-headline">Doenet Discussions</h1>
+                  <p>Anyone is welcome to come to our discussion groups!  We usually meet the second Wednesday of every month to 
+                    discuss the progress of the Doenet project, answer questions and discuss educational technology.
+                  </p>
+                  <div style={{width:"400px",}}>
+                    <a href="/discussion">Next Discussion January 8th, 2020</a>
+                 
+                  </div>
+                  
+                </div>
+              </div> 
+
+              {/* <div className="cloud-color-section">
                 <div className="Flex-container">
                   <div className="tabs-container">
                     <ul>
@@ -272,21 +304,20 @@ class DoenetHomePage extends Component {
                     <TabContent tabContent={this.getTabContent(this.state.activeTab)} />
                   </div>
               </div>
-            </div>
-            
-              
+            </div> */}
               
              
-            </div>
+           
             <div className="footer">
-              <div className="footer-grid-column">
-                <div className="footer-logo-container">
-
-                  <p>2019 Doenet. All rights reserved.</p>
-                </div>
-                </div>
-                </div>
-
+              <div className="footer-logo-container">
+                <p> 
+                  <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+                    <img alt="Creative Commons License" style={{borderWidth:0}} src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
+                    <br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+                    </p>
+              </div>
+            </div>
+        </div>
       </React.Fragment>);
   }
 }
