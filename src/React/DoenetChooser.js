@@ -7,7 +7,7 @@ import "./chooser.css";
 import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown, 
-  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder,} 
+  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSpinner} 
   from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
@@ -539,9 +539,11 @@ class DoenetChooser extends Component {
 
   render(){
 
-    if (!this.branches_loaded || !this.courses_loaded 
-      || !this.folders_loaded){
-      return <p>Loading...</p>
+    if (!this.courses_loaded){
+      return <div style={{display:"flex",justifyContent:"center",alignItems:"center", height:"100vh"}}>
+                <FontAwesomeIcon style={{animation: `spin 1.5s linear infinite, spinnerColor 2s linear infinite`, 
+                                         fontSize:"35px"}} icon={faSpinner}/>
+             </div>
     }
 
     this.buildCourseList();
@@ -568,12 +570,13 @@ class DoenetChooser extends Component {
 
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
+          loading={!this.folders_loaded && !this.branches_loaded}
           allContentInfo={this.branchId_info}
           allFolderInfo={this.folderInfo}
           folderList={folderList}
           contentList={contentList}
           ref={this.browser}                                      // optional
-          key={"browser"+this.updateNumber}
+          key={"browser"+this.updateNumber}                       // optional
           selectedDrive={this.state.selectedDrive}                // optional
           selectedCourse={this.state.selectedCourse}              // optional
           allCourseInfo={this.courseInfo}                         // optional
