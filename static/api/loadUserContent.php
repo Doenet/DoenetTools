@@ -16,7 +16,8 @@ if ($folderId === "root") {
     c.title as title,
     c.contentId as contentId,
     c.timestamp as publishDate,
-    c.removedFlag as removedFlag
+    c.removedFlag as removedFlag,
+    c.draft as draft
     FROM content AS c
     LEFT JOIN user_content uc ON uc.branchId = c.branchId
     WHERE 
@@ -30,7 +31,8 @@ if ($folderId === "root") {
     c.title as title,
     c.contentId as contentId,
     c.timestamp as publishDate,
-    c.removedFlag as removedFlag
+    c.removedFlag as removedFlag,
+    c.draft as draft
     FROM content AS c
     LEFT JOIN folder_content fc ON fc.childId = c.branchId
     WHERE fc.folderId='$folderId' AND fc.childType='content' AND c.removedFlag=0

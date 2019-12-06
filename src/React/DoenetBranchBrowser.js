@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faFolder, faArrowUp, 
   faArrowDown, faDotCircle, faEdit, faArrowRight, faSpinner} from '@fortawesome/free-solid-svg-icons';
 import "./branchBrowser.css";
-
+import { debounce } from 'lodash';
 
 class DoenetBranchBrowser extends Component {
   static defaultProps = {
@@ -28,36 +28,6 @@ class DoenetBranchBrowser extends Component {
       sortOrderAsc: "ASC"
     }
 
-    this.teamMockData = [
-    {
-      id: 1,
-      teamId: 1,
-      teamName: "Team A",
-      username: "chuck017",
-      owner: 1
-    },
-    {
-      id: 2,
-      teamId: 1,
-      teamName: "Team A",
-      username: "leex0052",
-      owner: 0
-    },
-    {
-      id: 3,
-      teamId: 2,
-      teamName: "Team B",
-      username: "char0042",
-      owner: 1
-    },
-    {
-      id: 4,
-      teamId: 2,
-      teamName: "Team B",
-      username: "le000043",
-      owner: 1
-    }]
-
     // handle null props
     this.hideAddRemoveButtons = this.disableEditing = this.props.addContentToFolder === null
                      || this.props.removeContentFromFolder === null;
@@ -79,6 +49,7 @@ class DoenetBranchBrowser extends Component {
     this.updateSortOrder = this.updateSortOrder.bind(this);
     this.sortContent = this.sortContent.bind(this);
     this.sortFolders = this.sortFolders.bind(this);
+    this.triggerLoadContent = this.triggerLoadContent.bind(this);
   }
 
   getAllSelectedItems() {
@@ -496,6 +467,14 @@ class DoenetBranchBrowser extends Component {
     }
   }
 
+  handleScroll = (e) => {
+    const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+    if (bottom) { 
+      console.log("TEST") 
+      
+    }
+  }
+
   render() {
 
     if (this.props.loading){
@@ -515,7 +494,7 @@ class DoenetBranchBrowser extends Component {
           <div id="contentList">
             {this.breadcrumb}
             <table id="browser">
-              <tbody>
+              <tbody onScroll={this.handleScroll}>
                 <tr className="browserHeadingsRow" key="browserHeadingsRow">
                   <th 
                   className={this.state.sortBy === "title" ? "browserItemName browserSelectedHeading" : "browserItemName"}
