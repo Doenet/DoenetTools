@@ -15,16 +15,18 @@ if ($folderId === "root") {
     f.folderId as folderId,
     f.title as title,
     f.parentId as parentId,
-    f.creationDate as creationDate
-    FROM folder_access AS fa
-    LEFT JOIN folder f ON fa.folderId = f.folderId
-    WHERE fa.username='$remoteuser'
+    f.creationDate as creationDate,
+    f.isRepo as isRepo
+    FROM repo_access AS ra
+    LEFT JOIN folder f ON ra.repoId = f.folderId
+    WHERE ra.username='$remoteuser'
     UNION
     SELECT 
     f.folderId as folderId,
     f.title as title,
     f.parentId as parentId,
-    f.creationDate as creationDate
+    f.creationDate as creationDate,
+    f.isRepo as isRepo
     FROM user_folders AS uf
     LEFT JOIN folder f ON uf.folderId = f.folderId
     WHERE uf.username='$remoteuser'
@@ -52,7 +54,8 @@ if ($result->num_rows > 0){
     $folder_info_arr[$row["folderId"]] = array(
           "title" => $row["title"],
           "publishDate" => $row["creationDate"],
-          "parentId" => $row["parentId"]
+          "parentId" => $row["parentId"],
+          "isRepo" => ($row["isRepo"] == 1)
     );
   }
 }

@@ -449,7 +449,7 @@ class DoenetChooser extends Component {
     let currentFolderId = this.state.directoryStack.length === 0 ?
                             "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
 
-    const loadUserFoldersUrl='/api/loadUserFolders.php';
+    const loadUserFoldersUrl='/api/loadUserFoldersAndRepo.php';
     const data={folderId: currentFolderId};
     const payload = {params: data};
     

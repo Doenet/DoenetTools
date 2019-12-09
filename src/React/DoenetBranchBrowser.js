@@ -145,6 +145,7 @@ class DoenetBranchBrowser extends Component {
       let publishDate = this.props.allFolderInfo[folderId].publishDate;
       let childContent = this.props.allFolderInfo[folderId].childContent;
       let childFolder = this.props.allFolderInfo[folderId].childFolder;
+      let isRepo = this.props.allFolderInfo[folderId].isRepo;
       let classes = this.state.selectedItems.includes(folderId) ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
       
@@ -185,6 +186,7 @@ class DoenetBranchBrowser extends Component {
           childContent={childContent}
           childFolder={childFolder}
           folderId={folderId}
+          isRepo={isRepo}
           classes={classes}
           key={"folder" + folderId}
           tableIndex={this.tableIndex++}
@@ -447,11 +449,15 @@ class DoenetBranchBrowser extends Component {
       if (this.state.sortBy === "publishedDate") {
         this.folderList.sort(
           (a,b) => { 
-            return new Date(this.props.allFolderInfo[a].publishDate) - new Date(this.props.allFolderInfo[b].publishDate)}
-        );
+            if (this.props.allFolderInfo[a].isRepo && !this.props.allFolderInfo[b].isRepo) return -1;
+            if (!this.props.allFolderInfo[a].isRepo && this.props.allFolderInfo[b].isRepo) return 1;
+            return (new Date(this.props.allFolderInfo[a].publishDate) - new Date(this.props.allFolderInfo[b].publishDate))
+          });
       } else if (this.state.sortBy === "title") {
         this.folderList.sort(
           (a,b) => { 
+            if (this.props.allFolderInfo[a].isRepo && !this.props.allFolderInfo[b].isRepo) return -1;
+            if (!this.props.allFolderInfo[a].isRepo && this.props.allFolderInfo[b].isRepo) return 1;
             return (this.props.allFolderInfo[a].title.localeCompare(this.props.allFolderInfo[b].title));}
         );
       }
@@ -459,11 +465,15 @@ class DoenetBranchBrowser extends Component {
       if (this.state.sortBy === "publishedDate") {
         this.folderList.sort(
           (b,a) => { 
+            if (this.props.allFolderInfo[a].isRepo && !this.props.allFolderInfo[b].isRepo) return 1;
+            if (!this.props.allFolderInfo[a].isRepo && this.props.allFolderInfo[b].isRepo) return -1;
             return new Date(this.props.allFolderInfo[a].publishDate) - new Date(this.props.allFolderInfo[b].publishDate)}
         );
       } else if (this.state.sortBy === "title") {
         this.folderList.sort(
           (b,a) => { 
+            if (this.props.allFolderInfo[a].isRepo && !this.props.allFolderInfo[b].isRepo) return 1;
+            if (!this.props.allFolderInfo[a].isRepo && this.props.allFolderInfo[b].isRepo) return -1;
             return (this.props.allFolderInfo[a].title.localeCompare(this.props.allFolderInfo[b].title));}
         );
       }
@@ -601,7 +611,10 @@ class Folder extends React.Component {
               onClick={() => this.props.handleAddContentToFolder(this.props.folderId)}/>
               <div className="addContentButtonInfo"><span>Move to Folder</span></div>
             </div>}
+            {this.props.isRepo ? 
+            <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/> :
             <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
+            }
             <span>{this.props.title}</span>
           </div>          
         </td>
