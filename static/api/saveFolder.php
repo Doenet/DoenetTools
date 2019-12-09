@@ -26,7 +26,7 @@ if ($result->num_rows < 1){
   INSERT INTO folder
   (folderId,title ,parentId, creationDate)
   VALUES
-  ('$folderId','$title','root' ,NOW())
+  ('$folderId','$title','$parentId' ,NOW())
   ";
   $result = $conn->query($sql); 
 }

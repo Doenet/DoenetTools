@@ -84,11 +84,13 @@ class DoenetBranchBrowser extends Component {
 
   handleAddContentToFolder(folderId) {
     this.props.addContentToFolder(this.state.selectedItems, this.state.selectedItemsType, folderId);
+    this.setState({selectedItems: [], selectedItemType: []});
   }
 
   handleRemoveContentFromCurrentFolder() {
     let folderId = this.peekDirectoryStack();
     this.props.removeContentFromFolder(this.state.selectedItems, this.state.selectedItemsType, folderId);
+    this.setState({selectedItems: [], selectedItemType: []});
   }
 
   handleRemoveContentFromCourse() {
@@ -372,6 +374,7 @@ class DoenetBranchBrowser extends Component {
 
   openFolder(folderId) {
     this.pushDirectoryStack(folderId);
+    this.setState({selectedItems: [], selectedItemType: []});
     if (this.props.updateDirectoryStack !== null) {
       this.props.updateDirectoryStack(this.state.directoryStack);
     }
@@ -379,6 +382,7 @@ class DoenetBranchBrowser extends Component {
 
   upOneDirectory() {
     this.popDirectoryStack();
+    this.setState({selectedItems: [], selectedItemType: []});
     if (this.props.updateDirectoryStack !== null) {
       this.props.updateDirectoryStack(this.state.directoryStack);
     }
@@ -386,6 +390,7 @@ class DoenetBranchBrowser extends Component {
 
   jumpToDirectory(folderId) {
     // pop all items after folderId
+    this.setState({selectedItems: [], selectedItemType: []});
     while (this.state.directoryStack.length > 0 && this.peekDirectoryStack() !== folderId) {
       this.upOneDirectory();      
     }
