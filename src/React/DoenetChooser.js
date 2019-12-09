@@ -341,6 +341,26 @@ class DoenetChooser extends Component {
     });
   }
 
+  loadCourseContent(courseId, callback=(()=>{})) {
+    const loadCoursesUrl='/api/loadCourseContent.php';
+    const data={
+      courseId: courseId
+    }
+    const payload = {
+      params: data
+    }
+
+    axios.get(loadCoursesUrl,payload)
+    .then(resp=>{
+      this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchInfo);
+      this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
+      this.folders_loaded = true;
+      this.branches_loaded = true;
+      callback();
+      this.forceUpdate();
+    });
+  }
+
   saveCourseContent(courseId, itemIds, itemTypes, operationType, callback=(()=>{})) {
     const url='/api/saveCourseContent.php';
     const data={
@@ -359,19 +379,29 @@ class DoenetChooser extends Component {
   }
 
   selectDrive(drive, courseId=null) {
-    this.setState({
-      selectedItems: [],
-      selectedItemsType: [],
-      activeSection: "chooser",
-      selectedDrive: drive,
-      selectedCourse: courseId,
-      directoryStack: []}, () => {
-        this.loadUserContentBranches();
-        this.loadUserFolders();
-      });
     if (drive === "Courses") {
+      this.setState({
+        selectedItems: [],
+        selectedItemsType: [],
+        activeSection: "chooser",
+        selectedDrive: drive,
+        selectedCourse: courseId,
+        directoryStack: []});
+      this.folders_loaded = false;
+      this.branches_loaded = false;
       this.updateIndexedDBCourseContent(courseId);
-    }    
+      this.loadCourseContent(courseId);
+    } else {
+      this.setState({
+        selectedItems: [],
+        selectedItemsType: [],
+        activeSection: "chooser",
+        selectedDrive: drive,
+        directoryStack: []}, () => {
+          this.loadUserContentBranches();
+          this.loadUserFolders();
+      });
+    }
     this.updateNumber++;
   }
 
