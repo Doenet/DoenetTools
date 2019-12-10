@@ -22,9 +22,9 @@ if ($operationType == "insert") {
   if ($result->num_rows < 1){
     $sql = "
     INSERT INTO repo_access
-    (username, teamId, repoId, owner)
+    (username, teamId, repoId, timestamp, owner)
     VALUES
-    ('$remoteuser', '1', '$repoId', '$owner')
+    ('$remoteuser', '1', '$repoId', NOW(), '$owner')
     ";
     $result = $conn->query($sql);
   } else {
