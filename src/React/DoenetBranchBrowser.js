@@ -83,7 +83,20 @@ class DoenetBranchBrowser extends Component {
   }
 
   handleAddContentToFolder(folderId) {
-    this.props.addContentToFolder(this.state.selectedItems, this.state.selectedItemsType, folderId);
+    let selectedItemsWithoutRepo = [];
+    let selectedItemsTypeWithoutRepo = [];
+    
+    this.state.selectedItems.forEach((itemId, index) => {
+      if (this.state.selectedItemsType[index] == "content") {
+        selectedItemsWithoutRepo.push(itemId);
+        selectedItemsTypeWithoutRepo.push("content");
+      } else if (!this.props.allFolderInfo[itemId].isRepo) {
+        selectedItemsWithoutRepo.push(itemId);
+        selectedItemsTypeWithoutRepo.push("folder");
+      }
+    }); 
+    
+    this.props.addContentToFolder(selectedItemsWithoutRepo, selectedItemsTypeWithoutRepo, folderId);
     this.setState({selectedItems: [], selectedItemType: []});
   }
 
