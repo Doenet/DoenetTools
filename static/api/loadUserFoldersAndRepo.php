@@ -19,7 +19,7 @@ if ($folderId === "root") {
     f.isRepo as isRepo
     FROM repo_access AS ra
     LEFT JOIN folder f ON ra.repoId = f.folderId
-    WHERE ra.username='$remoteuser'
+    WHERE ra.username='$remoteuser' AND ra.removedFlag=0
     UNION
     SELECT 
     f.folderId as folderId,

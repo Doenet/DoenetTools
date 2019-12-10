@@ -31,7 +31,7 @@ class DoenetChooser extends Component {
 
 
     this.loadUserContentBranches();
-    this.loadUserFolders();
+    this.loadUserFoldersAndRepo();
     this.loadAllCourses();
 
     this.branches_loaded = false;
@@ -51,6 +51,8 @@ class DoenetChooser extends Component {
     this.handleNewCourseCreated = this.handleNewCourseCreated.bind(this);
     this.handleNewFolder = this.handleNewFolder.bind(this);
     this.addNewFolder = this.addNewFolder.bind(this);
+    this.handleNewRepo = this.handleNewRepo.bind(this);
+    this.addNewRepo = this.addNewRepo.bind(this);
     this.addContentToFolder = this.addContentToFolder.bind(this);
     this.removeContentFromFolder = this.removeContentFromFolder.bind(this);
     this.addContentToCourse = this.addContentToCourse.bind(this);
@@ -59,6 +61,7 @@ class DoenetChooser extends Component {
     this.updateDirectoryStack = this.updateDirectoryStack.bind(this);
     this.jumpToDirectory = this.jumpToDirectory.bind(this);
     this.saveUserContent = this.saveUserContent.bind(this);
+    this.modifyRepoAccess = this.modifyRepoAccess.bind(this);
   }
 
 
@@ -104,6 +107,10 @@ class DoenetChooser extends Component {
                   <div className="newContentButtonMenuItem" onClick={this.handleNewFolder} data-cy="newFolderButton">
                     <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#a7a7a7", "marginRight":"18px"}}/>
                     <span>Folder</span>
+                  </div>
+                  <div className="newContentButtonMenuItem" onClick={this.handleNewRepo} data-cy="newRepoButton">
+                    <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#3aac90", "marginRight":"18px"}}/>
+                    <span>Repository</span>
                   </div>
                 </div>
                 <div className="newContentButtonMenuSection">
@@ -399,7 +406,7 @@ class DoenetChooser extends Component {
         selectedDrive: drive,
         directoryStack: []}, () => {
           this.loadUserContentBranches();
-          this.loadUserFolders();
+          this.loadUserFoldersAndRepo();
       });
     }
     this.updateNumber++;
@@ -422,7 +429,7 @@ class DoenetChooser extends Component {
     });
   }
 
-  saveFolder(folderId, title, childContent, childType, operationType, callback=(()=>{})) {
+  saveFolder(folderId, title, childContent, childType, operationType, isRepo, callback=(()=>{})) {
     // check if new folder
     let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
     let parentId = this.folderInfo[folderId] ? this.folderInfo[folderId].parentId : currentFolderId;
@@ -433,7 +440,8 @@ class DoenetChooser extends Component {
       childContent: childContent,
       childType: childType,
       operationType: operationType,
-      parentId: parentId
+      parentId: parentId,
+      isRepo: isRepo
     }
     axios.post(url, data)
     .then((resp) => {
@@ -444,16 +452,16 @@ class DoenetChooser extends Component {
     })
   }
 
-  loadUserFolders(callback=(()=>{})) {
+  loadUserFoldersAndRepo(callback=(()=>{})) {
     this.folders_loaded = false;
     let currentFolderId = this.state.directoryStack.length === 0 ?
                             "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
 
-    const loadUserFoldersUrl='/api/loadUserFoldersAndRepo.php';
+    const loadUserFoldersAndRepoUrl='/api/loadUserFoldersAndRepo.php';
     const data={folderId: currentFolderId};
     const payload = {params: data};
     
-    axios.get(loadUserFoldersUrl,payload)
+    axios.get(loadUserFoldersAndRepoUrl,payload)
     .then(resp=>{
       this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
       this.folderIds = resp.data.folderIds;
@@ -465,15 +473,15 @@ class DoenetChooser extends Component {
 
   addNewFolder(title) {
     let folderId = nanoid();
-    this.saveFolder(folderId, title, [], [], "insert", () => {
-      this.loadUserFolders(() => {
+    this.saveFolder(folderId, title, [], [], "insert", false, () => {
+      this.loadUserFoldersAndRepo(() => {
         // if not in base dir, add folder to current folder
         if (this.state.directoryStack.length !== 0) {
           let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
           this.addContentToFolder([folderId], ["folder"], currentFolderId);
         } else {
           this.saveUserContent([folderId], ["folder"], "insert", () => {  // add to user root
-            this.loadUserFolders();
+            this.loadUserFoldersAndRepo();
             this.loadUserContentBranches();
             // set as selected 
             this.setState({
@@ -492,11 +500,12 @@ class DoenetChooser extends Component {
   addContentToFolder(childId, childType, folderId) {
     let operationType = "insert";
     let title = this.folderInfo[folderId];
+    let isRepo = this.folderInfo[folderId].isRepo;
     if (this.folderInfo[folderId].parentId == "root") {
       this.saveUserContent(childId, childType, "remove");
     }
-    this.saveFolder(folderId, title, childId, childType, operationType ,(folderId) => {
-      this.loadUserFolders();
+    this.saveFolder(folderId, title, childId, childType, operationType, isRepo, (folderId) => {
+      this.loadUserFoldersAndRepo();
       this.loadUserContentBranches();
     });
   }
@@ -504,11 +513,12 @@ class DoenetChooser extends Component {
   removeContentFromFolder(childId, childType, folderId) {
     let operationType = "remove";
     let title = this.folderInfo[folderId];
+    let isRepo = this.folderInfo[folderId].isRepo;
     if (this.folderInfo[folderId].parentId == "root") {
       this.saveUserContent(childId, childType, "insert");
     }
-    this.saveFolder(folderId, title, childId, childType, operationType ,(folderId) => {
-      this.loadUserFolders();
+    this.saveFolder(folderId, title, childId, childType, operationType, isRepo, (folderId) => {
+      this.loadUserFoldersAndRepo();
       this.loadUserContentBranches();
     });
   }
@@ -541,6 +551,46 @@ class DoenetChooser extends Component {
     this.addNewFolder(title);
   }
 
+  handleNewRepo() {
+    // TODO: let user input repo title
+    let title = "New Repository" 
+    this.addNewRepo(title);
+  }
+
+  addNewRepo(title) {
+    let folderId = nanoid();
+    this.saveFolder(folderId, title, [], [], "insert", true, () => {
+      this.modifyRepoAccess(folderId, "insert", true, () => {  // add user to repo_access
+        this.loadUserFoldersAndRepo();
+        this.loadUserContentBranches();
+        // set as selected 
+        this.setState({
+          selectedItems: [folderId],
+          selectedItemsType: ["folder"],
+          activeSection: "chooser",
+          selectedDrive: "Content",
+        });
+        this.updateNumber++;
+      });  
+    })
+  }
+
+  modifyRepoAccess(folderId, operationType, owner=false, callback=(()=>{})) {
+    const url='/api/modifyRepoAccess.php';
+    const data={
+      repoId: folderId,
+      operationType: operationType,
+      owner: owner
+    }
+    axios.post(url, data)
+    .then(resp => {
+      callback();
+    })
+    .catch(function (error) {
+      this.setState({error:error});
+    })
+  }
+
   jumpToDirectory(directoryData) {
     this.setState({
       directoryStack: directoryData,
@@ -564,7 +614,7 @@ class DoenetChooser extends Component {
     this.setState({
       directoryStack: directoryStack
     })
-    this.loadUserFolders();
+    this.loadUserFoldersAndRepo();
     this.loadUserContentBranches();
   }
 
