@@ -7,10 +7,11 @@ import "./chooser.css";
 import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown, 
-  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSpinner} 
+  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder} 
   from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
+import SpinningLoader from './SpinningLoader';
 
 
 class DoenetChooser extends Component {
@@ -474,26 +475,24 @@ class DoenetChooser extends Component {
   addNewFolder(title) {
     let folderId = nanoid();
     this.saveFolder(folderId, title, [], [], "insert", false, () => {
-      this.loadUserFoldersAndRepo(() => {
-        // if not in base dir, add folder to current folder
-        if (this.state.directoryStack.length !== 0) {
-          let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
-          this.addContentToFolder([folderId], ["folder"], currentFolderId);
-        } else {
-          this.saveUserContent([folderId], ["folder"], "insert", () => {  // add to user root
-            this.loadUserFoldersAndRepo();
-            this.loadUserContentBranches();
-            // set as selected 
-            this.setState({
-              selectedItems: [folderId],
-              selectedItemsType: ["folder"],
-              activeSection: "chooser",
-              selectedDrive: "Content",
-            });
-            this.updateNumber++;
-          });  
-        }
-      });
+      // if not in base dir, add folder to current folder
+      if (this.state.directoryStack.length !== 0) {
+        let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
+        this.addContentToFolder([folderId], ["folder"], currentFolderId);
+      } else {
+        this.saveUserContent([folderId], ["folder"], "insert", () => {  // add to user root
+          this.loadUserFoldersAndRepo();
+          this.loadUserContentBranches();
+          // set as selected 
+          this.setState({
+            selectedItems: [folderId],
+            selectedItemsType: ["folder"],
+            activeSection: "chooser",
+            selectedDrive: "Content",
+          });
+          this.updateNumber++;
+        });  
+      }
     });
   }
 
@@ -647,8 +646,7 @@ class DoenetChooser extends Component {
 
     if (!this.courses_loaded){
       return <div style={{display:"flex",justifyContent:"center",alignItems:"center", height:"100vh"}}>
-                <FontAwesomeIcon style={{animation: `spin 1.5s linear infinite, spinnerColor 2s linear infinite`, 
-                                         fontSize:"35px"}} icon={faSpinner}/>
+                <SpinningLoader/>
              </div>
     }
 

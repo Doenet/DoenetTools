@@ -3,8 +3,9 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faFolder, faArrowUp, 
-  faArrowDown, faDotCircle, faEdit, faArrowRight, faSpinner} from '@fortawesome/free-solid-svg-icons';
+  faArrowDown, faDotCircle, faEdit, faArrowRight} from '@fortawesome/free-solid-svg-icons';
 import "./branchBrowser.css";
+import SpinningLoader from './SpinningLoader';
 
 class DoenetBranchBrowser extends Component {
   static defaultProps = {
@@ -496,10 +497,7 @@ class DoenetBranchBrowser extends Component {
   render() {
 
     if (this.props.loading){
-      return <div id="branchBrowser" style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
-        <FontAwesomeIcon style={{animation: `spin 1.5s linear infinite, spinnerColor 2s linear infinite`, 
-                                fontSize:"35px"}} icon={faSpinner}/>
-      </div>
+      return <SpinningLoader/>
     }
 
     this.buildBreadcrumb();
