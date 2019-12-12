@@ -1,0 +1,15 @@
+{
+  "contentSeeds" : {
+      "branchId": ["testContentBranchId"],
+      "contentId": ["testContentContentId"],
+      "title": ["testContent"],
+      "doenetML": [
+        "<title>Test Content</title>"
+      ]
+  },
+  "folderSeeds" : {
+      "folderId": ["testFolderId1", "testFolderId2"],
+      "title": ["testFolder1", "testFolder2"],
+      "parentId": ["root", "testFolderId1"] 
+  }
+}

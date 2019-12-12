@@ -7,19 +7,28 @@ describe('DoenetChooser tests', function () {
   2. check if document title is changed based on the title input
   */
   beforeEach(() => {
-    cy.visit('/chooser')
+    cy.fixture('chooserSeed').then((seed) => {
+      this.seed = seed;
+      cy.request('POST', 'api/cleanupChooser.php', this.seed).then((response) => {
+        cy.log(response);
+        cy.request('POST', 'api/setupChooser.php', this.seed).then((response) => {
+          cy.log(response);
+          cy.visit('/chooser')
+        })
+      })
+    })
   })
 
   it('chooser item click test', function() {
     // item should be selected when clicked
-    cy.get(':nth-child(2) > .browserItemName').click();
-    cy.get(':nth-child(2) > .browserItemName').parent().should('have.class', 'browserSelectedRow');
+    cy.get('[data-cy=testContentBranchId]').click();
+    cy.get('[data-cy=testContentBranchId]').should('have.class', 'browserSelectedRow');;
   });
 
   it('info panel test', function() {
     // info panel should display selected item information
-    cy.get(':nth-child(2) > .browserItemName').click();
-    cy.get('.browserSelectedRow > .browserItemName > span').invoke('text')
+    cy.get('[data-cy=testContentBranchId]').click();
+    cy.get('[data-cy=testContentBranchId] > .browserItemName > span').invoke('text')
     .then((text1) => {
       cy.get('.infoPanelTitle > span').invoke('text').then((text2) => {
         expect(text1).eq(text2);
@@ -62,5 +71,55 @@ describe('DoenetChooser tests', function () {
 
     // info panel should display created course info
     cy.get('.infoPanelTitle > span').contains("TestCypressCourseName");
+  });
+
+  it('folder navigation', function() {
+    // double click should open up folder
+    cy.get('[data-cy=testFolderId2]').should('not.be.visible');
+    cy.get('[data-cy=testFolderId1]').dblclick();
+    cy.get('[data-cy=breadcrumbtestFolderId1]').should('be.visible');
+    cy.get('[data-cy=breadcrumbtestFolderId2]').should('not.be.visible');
+    cy.get('[data-cy=testFolderId2]').dblclick();
+    cy.get('[data-cy=breadcrumbtestFolderId2]').should('be.visible');
+
+    // double click on ... should go up to parent directory
+    cy.get('[data-cy=upOneDirectory]').dblclick();
+    cy.get('[data-cy=breadcrumbtestFolderId1]').should('be.visible');
+
+    // jumping through breadcrumb
+    cy.get('[data-cy=testFolderId2]').dblclick();
+    cy.get('[data-cy=breadcrumbtestFolderId1]').click();
+    cy.get('[data-cy=breadcrumbtestFolderId1]').should('be.visible');
+    cy.get('[data-cy=breadcrumbtestFolderId2]').should('not.be.visible');
+    
+    cy.get('[data-cy=breadcrumbbase]').dblclick();
+    cy.get('[data-cy=breadcrumbtestFolderId1]').should('not.be.visible');
+    cy.get('[data-cy=breadcrumbtestFolderId2]').should('not.be.visible');
+  });
+
+  it('moving folders and content', function() {
+    // moving content into folder
+    cy.get('[data-cy=testContentBranchId]').click();
+    cy.get('[data-cy=testFolderId1] > .browserItemName > [style="position: relative;"] > .addContentButtonWrapper').click();
+    cy.get('[data-cy=testContentBranchId]').should('not.be.visible');
+    cy.get('[data-cy=testFolderId1]').dblclick();
+    cy.get('[data-cy=testContentBranchId]').should('be.visible');
+
+    // moving content out of folder
+    cy.get('[data-cy=testContentBranchId]').click();
+    cy.get('.removeContentButtonWrapper').click();
+    cy.get('[data-cy=testContentBranchId]').should('not.be.visible');
+    cy.get('[data-cy=upOneDirectory]').dblclick();
+    cy.get('[data-cy=testContentBranchId]').click();
+    cy.get('[data-cy=testContentBranchId] > .browserItemName').should('be.visible');
+
+    // moving folder out of a folder
+    cy.get('[data-cy=testFolderId2]').should('not.be.visible');
+    cy.get('[data-cy=testFolderId1]').dblclick();
+    cy.get('[data-cy=testFolderId2]').click();
+    cy.get('.removeContentButtonWrapper').click();
+    cy.get('[data-cy=testFolderId2]').should('not.be.visible');
+    cy.get('[data-cy=upOneDirectory]').dblclick();
+    cy.get('[data-cy=testFolderId2]').should('be.visible');
   });
 })

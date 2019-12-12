@@ -7,8 +7,10 @@ import "./chooser.css";
 import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown, 
-  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faCopy, faFolder,
-  faMinusCircle} from '@fortawesome/free-solid-svg-icons';
+  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder,} 
+  from '@fortawesome/free-solid-svg-icons';
+import IndexedDB from '../services/IndexedDB';
+import DoenetBranchBrowser from './DoenetBranchBrowser';
 
 
 class DoenetChooser extends Component {
@@ -27,22 +29,16 @@ class DoenetChooser extends Component {
       directoryStack: [],
     };
 
-    const loadBranchesUrl='/api/loadAllBranches.php';
-    
-    axios.get(loadBranchesUrl,{})
-    .then(resp=>{
-      this.branchId_info = resp.data.branchId_info;
-      this.sort_order = this.publishDate_sort_order = resp.data.sort_order;
-      this.branches_loaded = true;
-      this.forceUpdate();
-    });
 
+    this.loadAllContentBranches();
     this.loadAllFolders();
     this.loadAllCourses();
 
     this.branches_loaded = false;
     this.courses_loaded = false;
-    this.folders_loaded =false;
+    this.folders_loaded = false;
+
+    this.updateNumber = 0;
 
     this.browser = React.createRef();
 
@@ -51,6 +47,7 @@ class DoenetChooser extends Component {
     this.getContentId = this.getContentId.bind(this);
     this.toggleAddCourseMenu = this.toggleAddCourseMenu.bind(this);
     this.saveCourse = this.saveCourse.bind(this);
+    this.selectDrive = this.selectDrive.bind(this);
     this.handleNewCourseCreated = this.handleNewCourseCreated.bind(this);
     this.handleNewFolder = this.handleNewFolder.bind(this);
     this.addNewFolder = this.addNewFolder.bind(this);
@@ -59,7 +56,10 @@ class DoenetChooser extends Component {
     this.addContentToCourse = this.addContentToCourse.bind(this);
     this.removeContentFromCourse = this.removeContentFromCourse.bind(this);
     this.updateSelectedItems = this.updateSelectedItems.bind(this);
+    this.updateDirectoryStack = this.updateDirectoryStack.bind(this);
+    this.jumpToDirectory = this.jumpToDirectory.bind(this);
   }
+
 
   buildCourseList() {
     this.courseList = [];
@@ -70,21 +70,16 @@ class DoenetChooser extends Component {
                       "leftNavPanelMenuItem activeLeftNavPanelMenuItem": "leftNavPanelMenuItem";
       this.courseList.push(
         <li className={classes} 
-            key={courseCode}
+            key={"course" + courseId}
             style={{"padding":"6px 1px 6px 5px","width": "90%"}}
-            onClick={() => {
-              this.setState({
-                selectedItems: [],
-                selectedItemsType: [],
-                activeSection: "chooser",
-                selectedDrive: "Courses",
-                selectedCourse: courseId})}}>
+            onClick={() => this.selectDrive("Courses", courseId)}>
             <FontAwesomeIcon className="menuDoughnutIcon" icon={faDotCircle}/>
             <span>{courseCode}</span>
             {this.state.selectedItems.length !== 0 &&
             <div className="addContentToCourseButtonWrapper">
-              <FontAwesomeIcon icon={faPlus} className="addContentButton" 
-              onClick={() => this.addContentToCourse(courseId, this.state.selectedItems, this.state.selectedItemsType)}/>
+              {this.state.selectedDrive !== "Courses" && 
+                <FontAwesomeIcon icon={faPlus} className="addContentButton"
+                onClick={() => this.addContentToCourse(courseId, this.state.selectedItems, this.state.selectedItemsType)}/>}
             </div>}
         </li>
       );
@@ -122,12 +117,7 @@ class DoenetChooser extends Component {
         <div id="leftNavPanelMenu">
           <div className={"Content" === this.state.selectedDrive ? 
                     "leftNavPanelMenuItem activeLeftNavPanelMenuItem": "leftNavPanelMenuItem"} 
-            onClick={() => {
-              this.setState({
-                selectedItems: [],
-                selectedDrive: "Content",
-                activeSection: "chooser",
-                directoryStack: []})}}>
+            onClick={() => {this.selectDrive("Content")}}>
             <FontAwesomeIcon className="menuDoughnutIcon" icon={faDotCircle}/>
             <span>Content</span>
           </div>
@@ -145,119 +135,6 @@ class DoenetChooser extends Component {
     </React.Fragment>
   }
 
-  buildInfoPanel() {
-    let itemTitle = "";
-    let itemType = "";
-    let itemDetails = {};
-    let selectedItemId = "";
-    let selectedItemType = "";
-    // get all data needed to populate info panel
-    if (this.state.selectedItems.length === 0) {
-      // handle when no file selected, show folder/drive info
-      if (this.state.selectedDrive === "Courses") {
-        let courseId = this.state.selectedCourse;
-        let courseName = this.courseInfo[courseId].courseName;
-        let courseCode = this.courseInfo[courseId].courseCode;
-        let term = this.courseInfo[courseId].term;
-        let description = this.courseInfo[courseId].description;
-        let department = this.courseInfo[courseId].department;
-        let section = this.courseInfo[courseId].section;
-
-        itemTitle = courseName;
-        itemType = "Drive";
-        itemDetails = {
-          "Owner" : "Me",
-          "Course Code" : courseCode,
-          "Term": term,
-          "Department": department,
-          "Section": section,
-          "Description": description, 
-        }; 
-      } else {
-        itemTitle = "Content";
-        itemType = "Drive";
-        itemDetails = {
-          "Owner" : "Me",
-          "Modified" : "Today",
-          "Published" : "Today",
-        };
-      }
-    } else {
-      // if file selected, show selectedFile/Folder info
-      selectedItemId = this.state.selectedItems[this.state.selectedItems.length - 1];
-      selectedItemType = this.state.selectedItemsType[this.state.selectedItemsType.length - 1];
-      let itemInfoSource = this.branchId_info;
-      if (selectedItemType === "folder") {
-        itemInfoSource = this.folderInfo;
-      }
-      
-      itemTitle = itemInfoSource[selectedItemId].title;  
-      let pubDate = itemInfoSource[selectedItemId].publishDate; 
-
-      itemDetails = {
-        "Location" : "Content",
-        "Owner" : "Me",
-        "Published" : pubDate,
-        "Related content" : ["-r2N80PgcHTX4233vX90Q", "ah5klZOjgjMpP24-WPsET", "pfDEeDobZ6y9MR9PpWkeY"]
-      };
-    }
-    
-    this.infoPanel = <React.Fragment>
-      <div className="infoPanel">
-        <div className="infoPanelTitle">
-          <div className="infoPanelItemIcon">
-            {selectedItemType === "content" ? 
-              <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3D6EC9"}}/> :
-              selectedItemType === "folder" ?
-              <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373"}}/> :
-              <FontAwesomeIcon icon={faDotCircle} style={{"fontSize":"18px", "color":"#737373"}}/>}
-          </div>
-          <span>{ itemTitle }</span>
-        </div>
-        <div className="infoPanelPreview">
-          <span>Preview</span>
-          <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"100px", "color":"#bfbfbf"}}/>
-        </div>
-        <div className="infoPanelDetails">
-          <table id="infoPanelDetailsTable">
-            <tbody>
-              {Object.keys(itemDetails).map(itemDetailsKey => {
-                // populate table with selected item info / drive info  
-                let itemDetailsValue = itemDetails[itemDetailsKey];
-                // check if item has related content
-                if (itemDetailsKey == "Related content") {
-                  // flatten out and format related content
-                  itemDetailsValue = [];
-                  itemDetails[itemDetailsKey].map(relatedItemBranchID => {
-                    let relatedItemTitle = this.branchId_info[relatedItemBranchID].title;
-                    itemDetailsValue.push(
-                      <div style={{"display":"block"}} key={"relatedItem" + relatedItemBranchID}>
-                        <a href={`/editor?branchId=${relatedItemBranchID}`}>{ relatedItemTitle }</a>
-                      </div>                      
-                    ); 
-                  });
-                }
-                return (
-                <tr key={"contentDetailsItem" + itemDetailsKey}>
-                  <td className="itemDetailsKey">{ itemDetailsKey }</td>
-                  <td className="itemDetailsValue">{ itemDetailsValue }</td>
-                </tr>)
-              })}
-            </tbody>
-          </table>
-          {selectedItemId && selectedItemType === "content" && 
-          <div id="editContentButtonContainer">
-            <div id="editContentButton" data-cy="editContentButton"
-            onClick={()=> {window.location.href=`/editor?branchId=${selectedItemId}`}}>
-              <FontAwesomeIcon icon={faEdit} style={{"fontSize":"25px", "color":"#43aa90"}}/>
-              <span>Edit</span>
-            </div>
-          </div> }
-        </div>
-      </div>
-    </React.Fragment>
-  }
-
   buildTopToolbar() {
     let toolbarTitle = "";
 
@@ -269,10 +146,6 @@ class DoenetChooser extends Component {
         toolbarTitle = this.courseInfo[this.state.selectedCourse].courseCode + ' - '
         + this.courseInfo[this.state.selectedCourse].courseName;
       }
-      // TODO: check if in any folder, true then append (> folderName)
-      // if (this.state.currentDirectory !== null) {
-      //   toolbarTitle += " > " + this.folderInfo[this.state.currentDirectory].title;
-      // }
     } else if (this.state.activeSection === "add_course") {
       toolbarTitle = "Add New Course";
     }
@@ -286,7 +159,6 @@ class DoenetChooser extends Component {
 
   handleNewDocument(){
     let newBranchId = nanoid();
-    // check if documentName already exists, true then append (1)?
     let num = 1;
     let title = "Untitled Document " + num; 
     while (Object.values(this.branchId_info).filter(content => content.title.includes(title)).length != 0) {
@@ -300,19 +172,22 @@ class DoenetChooser extends Component {
       branchId:newBranchId,
       publish:true
     }, (branchId) => {
-      const loadBranchesUrl='/api/loadAllBranches.php';
-      axios.get(loadBranchesUrl,{})
-      .then((resp) => {
-        // reload branches from database
-        this.branchId_info = resp.data.branchId_info;
-        this.sort_order = this.publishDate_sort_order = resp.data.sort_order;
+      this.loadAllContentBranches(() => {
         if (branchId in this.branchId_info) {
-          // successfully created new document, set as selected and redirect to editor
-          this.setState({selectedItems: [branchId], selectedItemType: ["content"]});
+          // successfully created new document
+          // if not in base dir, add document to current folder
+          if (this.state.directoryStack.length !== 0) {
+            let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
+            this.addContentToFolder([branchId], ["content"], currentFolderId);
+          }
+        
+          // set as selected and redirect to /editor 
+          this.selectDrive("Content");
+          this.setState({selectedItems: [branchId], selectedItemsType: ["content"]});
           window.location.href=`/editor?branchId=${branchId}`;
+          this.forceUpdate();   
         }
-        this.forceUpdate();
-      });
+      })
     });
   }
 
@@ -352,6 +227,19 @@ class DoenetChooser extends Component {
         // TODO: Show warning message, failed to create course
         
       }
+    });
+  }
+
+  loadAllContentBranches(callback=(()=>{})) {
+    const loadBranchesUrl='/api/loadAllBranches.php';
+    
+    axios.get(loadBranchesUrl,{})
+    .then(resp=>{
+      this.branchId_info = resp.data.branchId_info;
+      this.sort_order = this.publishDate_sort_order = resp.data.sort_order;
+      this.branches_loaded = true;
+      callback();
+      this.forceUpdate();
     });
   }
 
@@ -463,24 +351,42 @@ class DoenetChooser extends Component {
     })
   }
 
+  selectDrive(drive, courseId=null) {
+    this.setState({
+      selectedItems: [],
+      selectedItemsType: [],
+      activeSection: "chooser",
+      selectedDrive: drive,
+      selectedCourse: courseId,
+      directoryStack: []});
+    this.updateNumber++;  
+    if (drive === "Courses") {
+      this.updateIndexedDBCourseContent(courseId);
+    }
+    this.updateNumber++;
+  }
+
   addContentToCourse(courseId, itemIds, itemTypes) {
     let operationType = "insert";
     this.saveCourseContent(courseId, itemIds, itemTypes, operationType ,(courseId) => {
-      this.loadAllCourses();
+      this.loadAllCourses(() => {
+        this.selectDrive("Courses", courseId);
+      });
     });
   }
 
-  removeContentFromCourse(itemId) {
+  removeContentFromCourse(itemIds) {
     let operationType = "remove";
     let courseId = this.state.selectedCourse;
-    itemId = [itemId];
-    this.saveCourseContent(courseId, "", itemId, [], operationType ,(courseId) => {
+    this.saveCourseContent(courseId, itemIds, [], operationType ,(courseId) => {
       this.loadAllCourses();
     });
   }
 
   saveFolder(folderId, title, childContent, childType, operationType, callback=(()=>{})) {
-    // saveFolder.php
+    
+    // check if new folder
+    let parentId = this.folderInfo[folderId] ? this.folderInfo[folderId].parentId : "root";
     const url='/api/saveFolder.php';
     const data={
       title: title,
@@ -488,6 +394,7 @@ class DoenetChooser extends Component {
       childContent: childContent,
       childType: childType,
       operationType: operationType,
+      parentId: parentId
     }
     axios.post(url, data)
     .then((resp) => {
@@ -515,14 +422,24 @@ class DoenetChooser extends Component {
 
   addNewFolder(title) {
     let folderId = nanoid();
-    this.saveFolder(folderId, title, [], (folderId) => {
+    this.saveFolder(folderId, title, [], [], "insert", () => {
       this.loadAllFolders(() => {
         if (this.folderIds.includes(folderId)) {
-          // successfully created new folder, set as selected
+          // successfully created new folder
+          // if not in base dir, add folder to current folder
+          if (this.state.directoryStack.length !== 0) {
+            let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
+            this.addContentToFolder([folderId], ["folder"], currentFolderId);
+          }
+
+          // set as selected 
           this.setState({
             selectedItems: [folderId],
-            selectedItemsType: ["folder"]
+            selectedItemsType: ["folder"],
+            activeSection: "chooser",
+            selectedDrive: "Content",
           });
+          this.updateNumber++;
         }
       });
     });
@@ -533,14 +450,16 @@ class DoenetChooser extends Component {
     let title = this.folderInfo[folderId];
     this.saveFolder(folderId, title, childId, childType, operationType ,(folderId) => {
       this.loadAllFolders();
+      this.loadAllContentBranches();
     });
   }
 
-  removeContentFromFolder(childId, folderId) {
+  removeContentFromFolder(childId, childType, folderId) {
     let operationType = "remove";
     let title = this.folderInfo[folderId];
-    this.saveFolder(folderId, title, childId, [], operationType ,(folderId) => {
+    this.saveFolder(folderId, title, childId, childType, operationType ,(folderId) => {
       this.loadAllFolders();
+      this.loadAllContentBranches();
     });
   }
 
@@ -548,11 +467,22 @@ class DoenetChooser extends Component {
     // TODO: let user input folder title
     let num = 1;
     let title = "New Folder " + num; 
-    while (Object.values(this.folderInfo).filter(folder => folder.title.includes(title)).length != 0) {
+    while (Object.values(this.folderInfo).filter(folder => 
+      folder.title && folder.title.includes(title)).length != 0) {
       num++;
       title = "New Folder " + num; 
     }
     this.addNewFolder(title);
+  }
+
+  jumpToDirectory(directoryData) {
+    this.setState({
+      directoryStack: directoryData,
+      selectedItems: directoryData,
+      selectedItemsType: ["folder"],
+    })
+    this.updateNumber++;
+    // TODO: update location bar
   }
 
   updateSelectedItems(selectedItems, selectedItemsType) {
@@ -562,8 +492,35 @@ class DoenetChooser extends Component {
     })
   }
 
+  updateDirectoryStack(directoryStack) {
+    this.setState({
+      directoryStack: directoryStack
+    })
+  }
+
   getAllSelectedItems = () => {
     this.browser.current.getAllSelectedItems();
+  }
+
+  updateIndexedDBCourseContent(courseId) {
+    // create a new database object
+    let indexedDB = new IndexedDB(); 
+
+    // open a connection to the database
+    indexedDB.openDB((result) => {
+      // update current course content
+      indexedDB.insert("course_content_store", { 
+        courseId: courseId,
+        courseContent: this.courseInfo[courseId].content,
+        courseFolders: this.courseInfo[courseId].folders,
+      });
+
+      // update last selected course
+      indexedDB.insert("tool_state_store", { 
+        toolName: "chooser",
+        lastSelectedCourse: courseId,
+      });
+    });
   }
 
   render(){
@@ -575,7 +532,6 @@ class DoenetChooser extends Component {
 
     this.buildCourseList();
     this.buildLeftNavPanel();
-    this.buildInfoPanel();
     this.buildTopToolbar();
 
     // setup mainSection to be chooser / NewCourseForm
@@ -596,433 +552,37 @@ class DoenetChooser extends Component {
         contentList = this.courseInfo[this.state.selectedCourse].content;
       }
 
-      // hide folders based on directory
-      if (this.state.directoryStack.length !== 0) {
-        let folderId = this.peekDirectoryStack();
-        contentList = this.folderInfo[folderId].childContent;
-        folderList = this.folderInfo[folderId].childFolder;
-      }
-      
       this.mainSection = <React.Fragment>
-        <Browser
-          ref={this.browser}  
+        <DoenetBranchBrowser
           allContentInfo={this.branchId_info}
           allFolderInfo={this.folderInfo}
           folderList={folderList}
           contentList={contentList}
-          updateSelectedItems={this.updateSelectedItems}
-          selectedDrive={this.state.selectedDrive}
-          addContentToFolder={this.addContentToFolder}
-          removeContentFromFolder={this.removeContentFromFolder}/>
-        {this.infoPanel}
+          ref={this.browser}                                      // optional
+          key={"browser"+this.updateNumber}
+          selectedDrive={this.state.selectedDrive}                // optional
+          selectedCourse={this.state.selectedCourse}              // optional
+          allCourseInfo={this.courseInfo}                         // optional
+          updateSelectedItems={this.updateSelectedItems}          // optional
+          updateDirectoryStack={this.updateDirectoryStack}        // optional
+          addContentToFolder={this.addContentToFolder}            // optional
+          removeContentFromCourse={this.removeContentFromCourse}  // optional
+          removeContentFromFolder={this.removeContentFromFolder}  // optional                  
+          directoryData={this.state.directoryStack}               // optional
+          selectedItems={this.state.selectedItems}                // optional
+          selectedItemsType={this.state.selectedItemsType}        // optional
+        />
       </React.Fragment>
     }
 
     return (<React.Fragment>
       <DoenetHeader toolTitle="Chooser" headingTitle={"Choose Branches"} />
       <div id="chooserContainer">
-      {/* <button onClick={this.getAllSelectedItems}>Click</button> */}
         { this.leftNavPanel }
         { this.topToolbar }
         { this.mainSection }     
       </div>
     </React.Fragment>);
-  }
-}
-
-class Browser extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      directoryStack: [],
-      selectedItems: [],
-      selectedItemsType: [],
-    }
-
-    // handle null props
-    this.hideAddRemoveButtons = this.props.addContentToFolder === null
-                     || this.props.removeContentFromFolder === null
-                     || this.props.selectedDrive === null;
-                     
-    this.handleAddContentToFolder = this.handleAddContentToFolder.bind(this);
-    this.handleRemoveContentFromCurrentFolder = this.handleRemoveContentFromCurrentFolder.bind(this);
-    this.handleContentItemClick = this.handleContentItemClick.bind(this);
-    this.handleContentItemDoubleClick = this.handleContentItemDoubleClick.bind(this);
-    this.handleFolderDoubleClick = this.handleFolderDoubleClick.bind(this);
-    this.upOneDirectory = this.upOneDirectory.bind(this);
-    this.openFolder = this.openFolder.bind(this);
-    this.pushDirectoryStack = this.pushDirectoryStack.bind(this);
-    this.popDirectoryStack = this.popDirectoryStack.bind(this);
-    this.peekDirectoryStack = this.peekDirectoryStack.bind(this);
-    this.getAllSelectedItems = this.getAllSelectedItems.bind(this);
-    this.flattenFolder = this.flattenFolder.bind(this);
-  }
-
-  getAllSelectedItems() {
-    // let itemIds = [];
-    // for (let i =0; i < this.state.selectedItemsType.length; i++) {
-    //   if (this.state.selectedItemsType[i] === "folder") {
-    //     // flatten folders to get all content
-    //     itemIds.concat(this.flattenFolder(this.state.selectedItems[i]));
-    //   } else {
-    //     itemIds.push(this.state.selectedItems[i]);
-    //   }
-    // }
-    // return itemIds;
-    let selectedItems = {
-      selectedContent: [],
-      selectedFolders: []
-    }
-
-    this.state.selectedItems.forEach((itemId, i) => {
-      if (this.state.selectedItemsType[i] === "folder") {
-        selectedItems.selectedFolders.push(itemId);
-      } else {
-        selectedItems.selectedContent.push(itemId);
-      }
-    })
-    return selectedItems;
-  }
-
-  flattenFolder(folderId) {
-    let itemIds = [];
-    let childFolder = this.props.allFolderInfo[folderId].childFolder;
-    childFolder.forEach((childFolderId) => {
-      itemIds.concat(this.flattenFolder(childFolderId));
-    })
-    this.props.allFolderInfo[folderId].childContent.forEach((childContentId) => {
-      itemIds.push(childContentId);
-    })
-    return itemIds;
-  }
-
-  handleAddContentToFolder(folderId) {
-    this.props.addContentToFolder(this.state.selectedItems, this.state.selectedItemsType, folderId);
-  }
-
-  handleRemoveContentFromCurrentFolder() {
-    let folderId = this.peekDirectoryStack();
-    this.props.removeContentFromFolder(this.state.selectedItems, folderId);
-  }
-
-  buildFolderItems() {
-    this.folderItems = [];
-    this.folderList = this.props.folderList;
-      // show items in current directory
-    if (this.state.directoryStack.length !== 0) {
-      let folderId = this.peekDirectoryStack();
-      this.folderList = this.props.allFolderInfo[folderId].childFolder;
-    }
-
-    this.tableIndex = 0;
-    // create table row items to be rendered in chooser
-    for (let folderId of this.folderList){
-      let title = this.props.allFolderInfo[folderId].title;
-      let publishDate = this.props.allFolderInfo[folderId].publishDate;
-      let childContent = this.props.allFolderInfo[folderId].childContent;
-      let childFolder = this.props.allFolderInfo[folderId].childFolder;
-      let classes = this.state.selectedItems.includes(folderId) ?
-                      "browserDataRow browserSelectedRow": "browserDataRow";
-      let notInBaseDirOfContent = true;
-      if (this.props.selectedDrive === "Content") {
-        // disable remove content in base dir when in mycontent
-        notInBaseDirOfContent = this.state.directoryStack.length !== 0;
-      }
-      this.folderItems.push(
-        <Folder      
-          onClick={this.handleContentItemClick}
-          onDoubleClick={this.openFolder}
-          title={title}
-          publishDate={publishDate}
-          childContent={childContent}
-          childFolder={childFolder}
-          folderId={folderId}
-          classes={classes}
-          key={"folder" + folderId}
-          tableIndex={this.tableIndex++}
-          showAddItemIcon={!this.hideAddRemoveButtons &&
-                          this.state.selectedItems.length !== 0 &&
-                          !this.state.selectedItems.includes(folderId) &&
-                          !this.state.selectedItems.includes(this.state.directoryStack[this.state.directoryStack.length - 1])}
-          showRemoveItemIcon={!this.hideAddRemoveButtons && 
-                              notInBaseDirOfContent &&
-                              this.state.selectedItems.length !== 0 &&
-                              this.state.selectedItems.includes(folderId)}
-          handleAddContentToFolder={this.handleAddContentToFolder}
-          handleRemoveContentFromCurrentFolder={this.handleRemoveContentFromCurrentFolder}/>
-      );
-    }
-  }
-  
-  buildContentItems(){
-    this.contentItems = [];
-
-    this.contentList = this.props.contentList;
-    // show items in current directory
-    if (this.state.directoryStack.length !== 0) {
-      let folderId = this.peekDirectoryStack();
-      this.contentList = this.props.allFolderInfo[folderId].childContent;
-    }
-
-    // build files
-    for (let branchId of this.contentList){
-      let title = this.props.allContentInfo[branchId].title;
-      let publishDate = this.props.allContentInfo[branchId].publishDate;
-      let classes = this.state.selectedItems.includes(branchId) ?
-                      "browserDataRow browserSelectedRow": "browserDataRow";
-      
-      let notInBaseDirOfContent = true;
-      if (this.props.selectedDrive === "Content") {
-        // disable remove content in base dir when in mycontent
-        notInBaseDirOfContent = this.state.directoryStack.length !== 0;
-      }
-
-      // create table row items to be rendered in chooser
-      this.contentItems.push(
-        <File
-        branchId={branchId}
-        classes={classes}
-        onClick={this.handleContentItemClick}
-        onDoubleClick={this.handleContentItemDoubleClick}
-        title={title}
-        publishDate={publishDate}
-        key={"contentItem" + branchId}
-        tableIndex={this.tableIndex++}
-        showRemoveItemIcon={!this.hideAddRemoveButtons && 
-                            notInBaseDirOfContent &&
-                            this.state.selectedItems.length !== 0 &&
-                            this.state.selectedItems.includes(branchId)}
-        handleRemoveContentFromCurrentFolder={this.handleRemoveContentFromCurrentFolder}/>
-      );
-    }
-  }
-
-  handleContentItemClick (itemId, type, tableIndex) {
-    // show content/folder info on infoPanel
-    // check for keystroke
-    if (window.event.ctrlKey || window.event.metaKey) {
-      let currentSelectedItems = this.state.selectedItems;
-      let currentSelectedItemsType = this.state.selectedItemsType;
-      let index = currentSelectedItems.indexOf(itemId);
-      if (index > -1) {
-        currentSelectedItems.splice(index, 1);
-        currentSelectedItemsType.splice(index, 1);
-      } else {
-        currentSelectedItems.push(itemId);
-        currentSelectedItemsType.push(type);
-      }
-
-      this.setState({
-        selectedItems: currentSelectedItems,
-        selectedItemsType: currentSelectedItemsType
-      });
-      
-      if (this.props.updateSelectedItems !== null) {
-        this.props.updateSelectedItems(currentSelectedItems, currentSelectedItemsType);
-      }
-    } else if (window.event.shiftKey) {
-      let currentSelectedItems = this.state.selectedItems;
-      let currentSelectedItemsType = this.state.selectedItemsType;
-      
-      let allTableItems = this.props.folderList.concat(this.props.contentList);
-
-      // if no previous items selected
-      if (currentSelectedItems.length === 0) {
-        // select current item
-        this.setState({
-          selectedItems: [itemId],
-          selectedItemsType: [type]
-        });
-
-        if (this.props.updateSelectedItems !== null) {
-          this.props.updateSelectedItems([itemId], [type]);
-        }
-        return;
-      }
-      
-      // get lastSelectedItemIndex, currentSelectedItemIndex
-      let lastSelectedItemIndex = allTableItems.indexOf(currentSelectedItems[currentSelectedItems.length - 1]);
-      let currentSelectedItemIndex = tableIndex;
-
-      // maintain last < current order
-      if (currentSelectedItemIndex < lastSelectedItemIndex) {
-        let temp = lastSelectedItemIndex;
-        lastSelectedItemIndex = currentSelectedItemIndex;
-        currentSelectedItemIndex = temp;
-      }
-
-      // select all items between last and current
-      while (lastSelectedItemIndex <= currentSelectedItemIndex) {
-        // get id and type of item to be selected
-        let currentItemId = allTableItems[lastSelectedItemIndex];
-        let currentItemType = "content";
-        if (this.props.allContentInfo[currentItemId] === undefined) currentItemType = "folder";
-
-        // check if already inside, if true then continue
-        if (!currentSelectedItems.includes(currentItemId)) {
-          currentSelectedItems.push(currentItemId);
-          currentSelectedItemsType.push(currentItemType);
-        }
-        lastSelectedItemIndex++;
-      }
-    
-      this.setState({
-        selectedItems: currentSelectedItems,
-        selectedItemsType: currentSelectedItemsType
-      });
-
-      if (this.props.updateSelectedItems !== null) {
-        this.props.updateSelectedItems(currentSelectedItems, currentSelectedItemsType);
-      }
-    } else {
-      this.setState({
-        selectedItems: [itemId],
-        selectedItemsType: [type]
-      });
-
-      if (this.props.updateSelectedItems !== null) {
-        this.props.updateSelectedItems([itemId], [type]);
-      }
-    }    
-  }
-
-  handleContentItemDoubleClick(branchId) {
-    // redirect to editor
-    window.location.href=`/editor?branchId=${branchId}`;
-    this.props.updateSelectedItemss(itemId, type);
-  }
-
-  handleFolderDoubleClick(folderId) {
-    this.setState({
-      currentDirectory: folderId
-    });
-  }
-
-  pushDirectoryStack(folderId) {
-    let directoryStack = this.state.directoryStack;
-    directoryStack.push(folderId);
-    this.setState({
-      directoryStack: directoryStack
-    }); 
-  }
-
-  popDirectoryStack() {
-    let directoryStack = this.state.directoryStack;
-    directoryStack.pop();
-    this.setState({
-      directoryStack: directoryStack
-    });
-  }
-
-  peekDirectoryStack() {
-    return this.state.directoryStack[this.state.directoryStack.length - 1];
-  }
-
-  openFolder(folderId) {
-    this.pushDirectoryStack(folderId);
-  }
-
-  upOneDirectory() {
-    this.popDirectoryStack();
-  }
-
-  render() {
-    this.buildFolderItems();
-    this.buildContentItems();
-
-    return(
-      <div id="contentList">
-      <table id="browser">
-        <tbody>
-          <tr className="browserHeadingsRow" key="browserHeadingsRow">
-            <th style={{width:"70%"}}>Name</th>
-            <th style={{width:"30%"}}>Published Date</th>
-          </tr>
-          {this.state.directoryStack.length !== 0 &&
-          <tr
-          className="browserDataRow"
-          onDoubleClick={this.upOneDirectory}>
-            <td className="browserItemName">
-              <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
-              <span>{"..."}</span>
-            </td>
-            <td className="pubishedDate"></td>
-          </tr>}
-          {this.folderItems}
-          {this.contentItems}
-        </tbody>
-      </table>
-    </div>
-    );
-  }
-}
-
-class File extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return(
-      <tr
-      className={this.props.classes}
-      onClick={() => this.props.onClick(this.props.branchId, "content", this.props.tableIndex)}
-      onDoubleClick={() => this.props.onDoubleClick(this.props.branchId)}>
-        <td className="browserItemName">
-          <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3D6EC9", "margin": "0px 15px"}}/>
-          <span>{this.props.title}</span>
-        </td>
-        <td className="pubishedDate">
-          <div style={{"position":"relative"}}>
-            {this.props.showRemoveItemIcon && 
-            <div className="removeContentButtonWrapper">
-              <FontAwesomeIcon icon={faMinusCircle} className="removeContentButton" 
-              onClick={() => this.props.handleRemoveContentFromCurrentFolder(this.props.branchId)}/>
-            </div>}
-            <span>{this.props.publishDate}</span>
-          </div>          
-        </td>
-      </tr>
-    );
-  }
-}
-
-class Folder extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return(
-      <tr
-      className={this.props.classes}
-      onClick={() => this.props.onClick(this.props.folderId, "folder", this.props.tableIndex)}
-      onDoubleClick={() => this.props.onDoubleClick(this.props.folderId)}>
-        <td className="browserItemName">
-          <div style={{"position":"relative"}}>
-            {this.props.showAddItemIcon && 
-            <div className="addContentButtonWrapper">
-              <FontAwesomeIcon icon={faPlus} className="addContentButton" 
-              onClick={() => this.props.handleAddContentToFolder(this.props.folderId)}/>
-              <div className="addContentButtonInfo"><span>Add to Folder</span></div>
-            </div>}
-            <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
-            <span>{this.props.title}</span>
-          </div>          
-        </td>
-        <td className="pubishedDate">
-          <div style={{"position":"relative"}}>
-            {this.props.showRemoveItemIcon && 
-            <div className="removeContentButtonWrapper">
-              <FontAwesomeIcon icon={faMinusCircle} className="removeContentButton" 
-              onClick={() => this.props.handleRemoveContentFromCurrentFolder(this.props.folderId)}/>
-            </div>}
-            <span>{this.props.publishDate}</span>
-          </div>          
-        </td>
-      </tr>
-    );
   }
 }
 
@@ -1123,7 +683,7 @@ class NewCourseForm extends React.Component {
             </div>
             <div className="newCourseFormGroup-4">
               <label className="newCourseFormLabel">SECTION</label>
-              <input className="newCourseFormInput" required type="number" name="section" 
+              <input className="newCourseFormInput" type="number" name="section" 
               placeholder="00000" onChange={this.handleChange} data-cy="newCourseFormSectionInput"/>
             </div>
           </div>          
@@ -1146,7 +706,7 @@ class NewCourseForm extends React.Component {
           </div> 
           <div className="newCourseFormGroup-12">
             <label className="newCourseFormLabel">DESCRIPTION</label>
-            <textarea className="newCourseFormInput" required type="text" name="description" 
+            <textarea className="newCourseFormInput" type="text" name="description" 
               placeholder="Official course description here" onChange={this.handleChange} data-cy="newCourseFormDescInput"/>
           </div>
           <div className="newCourseFormGroup-12">
@@ -1272,7 +832,7 @@ class AccordionSection extends Component {
 
     return (
       <div style={{ "width":"100%","height":"100%", "cursor":'pointer'}}>
-        <div onClick={onClick}>
+        <div onClick={onClick} data-cy="coursesAccordion"> 
           {isOpen? <FontAwesomeIcon className="menuTwirlIcon" icon={faCaretDown}/> :
           <FontAwesomeIcon className="menuTwirlIcon" icon={faCaretRight}/>}
           {label}
