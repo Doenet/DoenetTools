@@ -209,7 +209,8 @@ class DoenetBranchBrowser extends Component {
           showRemoveItemIcon={showRemoveItemIcon}
           handleRemoveContent={this.props.selectedDrive === "Content" ? 
                               this.handleRemoveContentFromCurrentFolder :
-                              this.handleRemoveContentFromCourse}/>
+                              this.handleRemoveContentFromCourse}
+          renameFolder={this.props.renameFolder}/>
       );
     }
   }
@@ -497,7 +498,9 @@ class DoenetBranchBrowser extends Component {
   render() {
 
     if (this.props.loading){
-      return <SpinningLoader/>
+      return <div id="branchBrowser" style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
+              <SpinningLoader/>
+             </div>
     }
 
     this.buildBreadcrumb();
@@ -605,6 +608,33 @@ class File extends React.Component {
 class Folder extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      title: this.props.title
+    }
+    this.previousTitle = this.props.title;
+
+    this.handleTitleChange = this.handleTitleChange.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+  }
+
+  handleTitleChange(e) {
+    if (e.target.textContent == "") return;
+    
+    if (e.target.textContent !== this.state.title) {
+      this.props.renameFolder(this.props.folderId, e.target.textContent);
+      this.setState({
+        title: e.target.textContent
+      });
+    }
+  }
+
+  handleKeyPress(e) {
+    if (e.keyCode == 13) {  
+      event.preventDefault(); 
+      event.stopPropagation();
+      e.target.blur();  // calls handleTitleChange automatically
+    } 
   }
 
   render() {
@@ -626,7 +656,12 @@ class Folder extends React.Component {
             <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/> :
             <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
             }
-            <span>{this.props.title}</span>
+            <span
+            contentEditable="true"
+            onKeyDown={(e) => {this.handleKeyPress(e)}}
+            onBlur={(e) => this.handleTitleChange(e)}
+            suppressContentEditableWarning={true}
+            >{this.state.title}</span>
           </div>          
         </td>
         <td className="draftDate">

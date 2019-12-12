@@ -30,6 +30,15 @@ if ($result->num_rows < 1){
   ('$folderId','$title','$parentId' ,NOW(), '$isRepo')
   ";
   $result = $conn->query($sql); 
+} else {
+  // update folder
+  $sql = "
+  UPDATE folder
+  SET title='$title',
+      parentId='$parentId'
+  WHERE folderId='$folderId'
+  ";
+  $result = $conn->query($sql); 
 }
 
 for ($i = 0; $i < $number_children; $i++) {

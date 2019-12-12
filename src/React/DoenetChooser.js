@@ -63,6 +63,7 @@ class DoenetChooser extends Component {
     this.jumpToDirectory = this.jumpToDirectory.bind(this);
     this.saveUserContent = this.saveUserContent.bind(this);
     this.modifyRepoAccess = this.modifyRepoAccess.bind(this);
+    this.renameFolder = this.renameFolder.bind(this);
   }
 
 
@@ -522,6 +523,12 @@ class DoenetChooser extends Component {
     });
   }
 
+  renameFolder(folderId, newTitle) {
+    this.saveFolder(folderId, newTitle, [], [], "", this.folderInfo[folderId].isRepo, () => {
+      this.loadUserFoldersAndRepo();
+    });
+  }
+
   saveUserContent(childIds, childType, operationType, callback=(()=>{})) {
     const url='/api/saveUserContent.php';
     const data={
@@ -691,6 +698,7 @@ class DoenetChooser extends Component {
           directoryData={this.state.directoryStack}               // optional
           selectedItems={this.state.selectedItems}                // optional
           selectedItemsType={this.state.selectedItemsType}        // optional
+          renameFolder={this.renameFolder}                        // optional
         />
       </React.Fragment>
     }
