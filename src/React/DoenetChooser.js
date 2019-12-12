@@ -7,10 +7,11 @@ import "./chooser.css";
 import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown, 
-  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder,} 
+  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder} 
   from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
+import SpinningLoader from './SpinningLoader';
 
 
 class DoenetChooser extends Component {
@@ -30,8 +31,8 @@ class DoenetChooser extends Component {
     };
 
 
-    this.loadAllContentBranches();
-    this.loadAllFolders();
+    this.loadUserContentBranches();
+    this.loadUserFoldersAndRepo();
     this.loadAllCourses();
 
     this.branches_loaded = false;
@@ -51,6 +52,8 @@ class DoenetChooser extends Component {
     this.handleNewCourseCreated = this.handleNewCourseCreated.bind(this);
     this.handleNewFolder = this.handleNewFolder.bind(this);
     this.addNewFolder = this.addNewFolder.bind(this);
+    this.handleNewRepo = this.handleNewRepo.bind(this);
+    this.addNewRepo = this.addNewRepo.bind(this);
     this.addContentToFolder = this.addContentToFolder.bind(this);
     this.removeContentFromFolder = this.removeContentFromFolder.bind(this);
     this.addContentToCourse = this.addContentToCourse.bind(this);
@@ -58,6 +61,8 @@ class DoenetChooser extends Component {
     this.updateSelectedItems = this.updateSelectedItems.bind(this);
     this.updateDirectoryStack = this.updateDirectoryStack.bind(this);
     this.jumpToDirectory = this.jumpToDirectory.bind(this);
+    this.saveUserContent = this.saveUserContent.bind(this);
+    this.modifyRepoAccess = this.modifyRepoAccess.bind(this);
   }
 
 
@@ -103,6 +108,10 @@ class DoenetChooser extends Component {
                   <div className="newContentButtonMenuItem" onClick={this.handleNewFolder} data-cy="newFolderButton">
                     <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#a7a7a7", "marginRight":"18px"}}/>
                     <span>Folder</span>
+                  </div>
+                  <div className="newContentButtonMenuItem" onClick={this.handleNewRepo} data-cy="newRepoButton">
+                    <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#3aac90", "marginRight":"18px"}}/>
+                    <span>Repository</span>
                   </div>
                 </div>
                 <div className="newContentButtonMenuSection">
@@ -172,21 +181,19 @@ class DoenetChooser extends Component {
       branchId:newBranchId,
       publish:true
     }, (branchId) => {
-      this.loadAllContentBranches(() => {
-        if (branchId in this.branchId_info) {
-          // successfully created new document
-          // if not in base dir, add document to current folder
-          if (this.state.directoryStack.length !== 0) {
-            let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
-            this.addContentToFolder([branchId], ["content"], currentFolderId);
-          }
-        
-          // set as selected and redirect to /editor 
-          this.selectDrive("Content");
-          this.setState({selectedItems: [branchId], selectedItemsType: ["content"]});
-          window.location.href=`/editor?branchId=${branchId}`;
-          this.forceUpdate();   
+      this.loadUserContentBranches(() => {
+        // if not in base dir, add document to current folder
+        if (this.state.directoryStack.length !== 0) {
+          let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
+          this.addContentToFolder([branchId], ["content"], currentFolderId);
+        } else {
+          this.saveUserContent([branchId], ["content"], "insert"); // add to user root
         }
+      
+        // set as selected and redirect to /editor 
+        this.selectDrive("Content");
+        window.location.href=`/editor?branchId=${branchId}`;
+        this.forceUpdate();   
       })
     });
   }
@@ -230,13 +237,21 @@ class DoenetChooser extends Component {
     });
   }
 
-  loadAllContentBranches(callback=(()=>{})) {
-    const loadBranchesUrl='/api/loadAllBranches.php';
+  loadUserContentBranches(callback=(()=>{})) {
+    this.branches_loaded = false;
+
+    let currentFolderId = this.state.directoryStack.length === 0 ?
+                            "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
+
+    const data={folderId: currentFolderId};
+    const payload = {params: data};
+
+    const loadBranchesUrl='/api/loadUserContent.php';
     
-    axios.get(loadBranchesUrl,{})
+    axios.get(loadBranchesUrl, payload)
     .then(resp=>{
-      this.branchId_info = resp.data.branchId_info;
-      this.sort_order = this.publishDate_sort_order = resp.data.sort_order;
+      this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchId_info);
+      this.sort_order = resp.data.sort_order;
       this.branches_loaded = true;
       callback();
       this.forceUpdate();
@@ -334,6 +349,26 @@ class DoenetChooser extends Component {
     });
   }
 
+  loadCourseContent(courseId, callback=(()=>{})) {
+    const loadCoursesUrl='/api/loadCourseContent.php';
+    const data={
+      courseId: courseId
+    }
+    const payload = {
+      params: data
+    }
+
+    axios.get(loadCoursesUrl,payload)
+    .then(resp=>{
+      this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchInfo);
+      this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
+      this.folders_loaded = true;
+      this.branches_loaded = true;
+      callback();
+      this.forceUpdate();
+    });
+  }
+
   saveCourseContent(courseId, itemIds, itemTypes, operationType, callback=(()=>{})) {
     const url='/api/saveCourseContent.php';
     const data={
@@ -352,16 +387,28 @@ class DoenetChooser extends Component {
   }
 
   selectDrive(drive, courseId=null) {
-    this.setState({
-      selectedItems: [],
-      selectedItemsType: [],
-      activeSection: "chooser",
-      selectedDrive: drive,
-      selectedCourse: courseId,
-      directoryStack: []});
-    this.updateNumber++;  
     if (drive === "Courses") {
+      this.setState({
+        selectedItems: [],
+        selectedItemsType: [],
+        activeSection: "chooser",
+        selectedDrive: drive,
+        selectedCourse: courseId,
+        directoryStack: []});
+      this.folders_loaded = false;
+      this.branches_loaded = false;
       this.updateIndexedDBCourseContent(courseId);
+      this.loadCourseContent(courseId);
+    } else {
+      this.setState({
+        selectedItems: [],
+        selectedItemsType: [],
+        activeSection: "chooser",
+        selectedDrive: drive,
+        directoryStack: []}, () => {
+          this.loadUserContentBranches();
+          this.loadUserFoldersAndRepo();
+      });
     }
     this.updateNumber++;
   }
@@ -383,10 +430,12 @@ class DoenetChooser extends Component {
     });
   }
 
-  saveFolder(folderId, title, childContent, childType, operationType, callback=(()=>{})) {
-    
+  saveFolder(folderId, title, childContent, childType, operationType, isRepo, callback=(()=>{})) {
     // check if new folder
-    let parentId = this.folderInfo[folderId] ? this.folderInfo[folderId].parentId : "root";
+    let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
+    let parentId = this.folderInfo[folderId] ? this.folderInfo[folderId].parentId : currentFolderId;
+    if (isRepo) parentId = "root";  // repo always at root
+
     const url='/api/saveFolder.php';
     const data={
       title: title,
@@ -394,7 +443,8 @@ class DoenetChooser extends Component {
       childContent: childContent,
       childType: childType,
       operationType: operationType,
-      parentId: parentId
+      parentId: parentId,
+      isRepo: isRepo
     }
     axios.post(url, data)
     .then((resp) => {
@@ -405,62 +455,89 @@ class DoenetChooser extends Component {
     })
   }
 
-  loadAllFolders(callback=(()=>{})) {
-    const loadAllFoldersUrl='/api/loadAllFolders.php';
-    const data={}
-    const payload = {params: data}
+  loadUserFoldersAndRepo(callback=(()=>{})) {
+    this.folders_loaded = false;
+    let currentFolderId = this.state.directoryStack.length === 0 ?
+                            "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
+
+    const loadUserFoldersAndRepoUrl='/api/loadUserFoldersAndRepo.php';
+    const data={folderId: currentFolderId};
+    const payload = {params: data};
     
-    axios.get(loadAllFoldersUrl,payload)
+    axios.get(loadUserFoldersAndRepoUrl,payload)
     .then(resp=>{
-      this.folderInfo = resp.data.folderInfo;
+      this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
       this.folderIds = resp.data.folderIds;
       this.folders_loaded = true;
       callback();
+      this.updateNumber++;
       this.forceUpdate();
     });
   }
 
   addNewFolder(title) {
     let folderId = nanoid();
-    this.saveFolder(folderId, title, [], [], "insert", () => {
-      this.loadAllFolders(() => {
-        if (this.folderIds.includes(folderId)) {
-          // successfully created new folder
-          // if not in base dir, add folder to current folder
-          if (this.state.directoryStack.length !== 0) {
-            let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
-            this.addContentToFolder([folderId], ["folder"], currentFolderId);
-          }
-
-          // set as selected 
+    this.saveFolder(folderId, title, [], [], "insert", false, () => {
+      // if not in base dir, add folder to current folder
+      if (this.state.directoryStack.length !== 0) {
+        let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
+        this.addContentToFolder([folderId], ["folder"], currentFolderId);
+      } else {
+        this.saveUserContent([folderId], ["folder"], "insert", () => {  // add to user root
           this.setState({
             selectedItems: [folderId],
             selectedItemsType: ["folder"],
             activeSection: "chooser",
             selectedDrive: "Content",
+          }, () => {
+            this.loadUserFoldersAndRepo();
+            this.loadUserContentBranches();
           });
-          this.updateNumber++;
-        }
-      });
+        });  
+      }
     });
   }
 
   addContentToFolder(childId, childType, folderId) {
     let operationType = "insert";
     let title = this.folderInfo[folderId];
-    this.saveFolder(folderId, title, childId, childType, operationType ,(folderId) => {
-      this.loadAllFolders();
-      this.loadAllContentBranches();
+    let isRepo = this.folderInfo[folderId].isRepo;
+    if (this.folderInfo[folderId].parentId == "root") {
+      this.saveUserContent(childId, childType, "remove");
+    }
+    this.saveFolder(folderId, title, childId, childType, operationType, isRepo, (folderId) => {
+      this.loadUserFoldersAndRepo();
+      this.loadUserContentBranches();
     });
   }
 
   removeContentFromFolder(childId, childType, folderId) {
     let operationType = "remove";
     let title = this.folderInfo[folderId];
-    this.saveFolder(folderId, title, childId, childType, operationType ,(folderId) => {
-      this.loadAllFolders();
-      this.loadAllContentBranches();
+    let isRepo = this.folderInfo[folderId].isRepo;
+    if (this.folderInfo[folderId].parentId == "root") {
+      this.saveUserContent(childId, childType, "insert");
+    }
+    this.saveFolder(folderId, title, childId, childType, operationType, isRepo, (folderId) => {
+      this.loadUserFoldersAndRepo();
+      this.loadUserContentBranches();
     });
+  }
+
+  saveUserContent(childIds, childType, operationType, callback=(()=>{})) {
+    const url='/api/saveUserContent.php';
+    const data={
+      childIds: childIds,
+      childType: childType,
+      operationType: operationType
+    }
+    axios.post(url, data)
+    .then(resp => {
+      callback();
+    })
+    .catch(function (error) {
+      this.setState({error:error});
+    })
   }
 
   handleNewFolder() {
@@ -475,14 +552,52 @@ class DoenetChooser extends Component {
     this.addNewFolder(title);
   }
 
+  handleNewRepo() {
+    // TODO: let user input repo title
+    let title = "New Repository" 
+    this.addNewRepo(title);
+  }
+
+  addNewRepo(title) {
+    let folderId = nanoid();
+    this.saveFolder(folderId, title, [], [], "insert", true, () => {
+      this.modifyRepoAccess(folderId, "insert", true, () => {  // add user to repo_access
+        this.setState({
+          directoryStack: [],
+          selectedItems: [folderId],
+          selectedItemsType: ["folder"],
+          activeSection: "chooser",
+          selectedDrive: "Content"
+        }, () => {
+          this.loadUserFoldersAndRepo();
+          this.loadUserContentBranches();
+        });
+      });  
+    })
+  }
+
+  modifyRepoAccess(folderId, operationType, owner=false, callback=(()=>{})) {
+    const url='/api/modifyRepoAccess.php';
+    const data={
+      repoId: folderId,
+      operationType: operationType,
+      owner: owner
+    }
+    axios.post(url, data)
+    .then(resp => {
+      callback();
+    })
+    .catch(function (error) {
+      this.setState({error:error});
+    })
+  }
+
   jumpToDirectory(directoryData) {
     this.setState({
       directoryStack: directoryData,
       selectedItems: directoryData,
       selectedItemsType: ["folder"],
     })
-    this.updateNumber++;
-    // TODO: update location bar
   }
 
   updateSelectedItems(selectedItems, selectedItemsType) {
@@ -493,9 +608,13 @@ class DoenetChooser extends Component {
   }
 
   updateDirectoryStack(directoryStack) {
+    this.folders_loaded = false;
+    this.branches_loaded = false;
     this.setState({
       directoryStack: directoryStack
     })
+    this.loadUserFoldersAndRepo();
+    this.loadUserContentBranches();
   }
 
   getAllSelectedItems = () => {
@@ -525,9 +644,10 @@ class DoenetChooser extends Component {
 
   render(){
 
-    if (!this.branches_loaded || !this.courses_loaded 
-      || !this.folders_loaded){
-      return <p>Loading...</p>
+    if (!this.courses_loaded){
+      return <div style={{display:"flex",justifyContent:"center",alignItems:"center", height:"100vh"}}>
+                <SpinningLoader/>
+             </div>
     }
 
     this.buildCourseList();
@@ -551,15 +671,15 @@ class DoenetChooser extends Component {
         folderList = this.courseInfo[this.state.selectedCourse].folders;
         contentList = this.courseInfo[this.state.selectedCourse].content;
       }
-
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
+          loading={!this.folders_loaded && !this.branches_loaded}
           allContentInfo={this.branchId_info}
           allFolderInfo={this.folderInfo}
           folderList={folderList}
           contentList={contentList}
           ref={this.browser}                                      // optional
-          key={"browser"+this.updateNumber}
+          key={"browser"+this.updateNumber}                       // optional
           selectedDrive={this.state.selectedDrive}                // optional
           selectedCourse={this.state.selectedCourse}              // optional
           allCourseInfo={this.courseInfo}                         // optional

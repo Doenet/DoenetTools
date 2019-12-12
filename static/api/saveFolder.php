@@ -10,6 +10,7 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 $title =  mysqli_real_escape_string($conn,$_POST["title"]);
 $folderId = mysqli_real_escape_string($conn,$_POST["folderId"]);
 $parentId = mysqli_real_escape_string($conn,$_POST["parentId"]);
+$isRepo = (mysqli_real_escape_string($conn,$_POST["isRepo"]) == true) ? 1 : 0;
 $number_children = count($_POST["childContent"]);
 $operationType =  mysqli_real_escape_string($conn,$_POST["operationType"]);
 
@@ -24,9 +25,9 @@ if ($result->num_rows < 1){
   //No previous information on this folder so store new folder
   $sql = "
   INSERT INTO folder
-  (folderId,title ,parentId, creationDate)
+  (folderId,title ,parentId, creationDate, isRepo)
   VALUES
-  ('$folderId','$title','root' ,NOW())
+  ('$folderId','$title','$parentId' ,NOW(), '$isRepo')
   ";
   $result = $conn->query($sql); 
 }

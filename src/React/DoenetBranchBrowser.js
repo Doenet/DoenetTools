@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faFolder, faArrowUp, 
   faArrowDown, faDotCircle, faEdit, faArrowRight} from '@fortawesome/free-solid-svg-icons';
 import "./branchBrowser.css";
-
+import SpinningLoader from './SpinningLoader';
 
 class DoenetBranchBrowser extends Component {
   static defaultProps = {
@@ -27,36 +27,6 @@ class DoenetBranchBrowser extends Component {
       sortBy: "title",
       sortOrderAsc: "ASC"
     }
-
-    this.teamMockData = [
-    {
-      id: 1,
-      teamId: 1,
-      teamName: "Team A",
-      username: "chuck017",
-      owner: 1
-    },
-    {
-      id: 2,
-      teamId: 1,
-      teamName: "Team A",
-      username: "leex0052",
-      owner: 0
-    },
-    {
-      id: 3,
-      teamId: 2,
-      teamName: "Team B",
-      username: "char0042",
-      owner: 1
-    },
-    {
-      id: 4,
-      teamId: 2,
-      teamName: "Team B",
-      username: "le000043",
-      owner: 1
-    }]
 
     // handle null props
     this.hideAddRemoveButtons = this.disableEditing = this.props.addContentToFolder === null
@@ -114,12 +84,27 @@ class DoenetBranchBrowser extends Component {
   }
 
   handleAddContentToFolder(folderId) {
-    this.props.addContentToFolder(this.state.selectedItems, this.state.selectedItemsType, folderId);
+    let selectedItemsWithoutRepo = [];
+    let selectedItemsTypeWithoutRepo = [];
+    
+    this.state.selectedItems.forEach((itemId, index) => {
+      if (this.state.selectedItemsType[index] == "content") {
+        selectedItemsWithoutRepo.push(itemId);
+        selectedItemsTypeWithoutRepo.push("content");
+      } else if (!this.props.allFolderInfo[itemId].isRepo) {
+        selectedItemsWithoutRepo.push(itemId);
+        selectedItemsTypeWithoutRepo.push("folder");
+      }
+    }); 
+    
+    this.props.addContentToFolder(selectedItemsWithoutRepo, selectedItemsTypeWithoutRepo, folderId);
+    this.setState({selectedItems: [], selectedItemType: []});
   }
 
   handleRemoveContentFromCurrentFolder() {
     let folderId = this.peekDirectoryStack();
     this.props.removeContentFromFolder(this.state.selectedItems, this.state.selectedItemsType, folderId);
+    this.setState({selectedItems: [], selectedItemType: []});
   }
 
   handleRemoveContentFromCourse() {
@@ -165,19 +150,8 @@ class DoenetBranchBrowser extends Component {
   buildFolderItems() {
     this.folderItems = [];
     this.folderList = this.props.folderList;
-      // show items in current directory
-    if (this.state.directoryStack.length !== 0) {
-      let folderId = this.peekDirectoryStack();
-      this.folderList = this.props.allFolderInfo[folderId].childFolder;
-    } else {
-      // in root directory
-      // only show folders whose parentId is root
-      this.folderList = this.folderList.filter(folderId => {
-        return this.props.allFolderInfo[folderId].parentId === "root";
-      })
-    }
-
     this.sortFolders();
+    
     this.tableIndex = 0;
     // create table row items to be rendered in chooser
     for (let folderId of this.folderList){
@@ -185,6 +159,7 @@ class DoenetBranchBrowser extends Component {
       let publishDate = this.props.allFolderInfo[folderId].publishDate;
       let childContent = this.props.allFolderInfo[folderId].childContent;
       let childFolder = this.props.allFolderInfo[folderId].childFolder;
+      let isRepo = this.props.allFolderInfo[folderId].isRepo;
       let classes = this.state.selectedItems.includes(folderId) ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
       
@@ -225,6 +200,7 @@ class DoenetBranchBrowser extends Component {
           childContent={childContent}
           childFolder={childFolder}
           folderId={folderId}
+          isRepo={isRepo}
           classes={classes}
           key={"folder" + folderId}
           tableIndex={this.tableIndex++}
@@ -240,21 +216,7 @@ class DoenetBranchBrowser extends Component {
   
   buildContentItems(){
     this.contentItems = [];
-
     this.contentList = this.props.contentList;
-    // show items in current directory
-    if (this.state.directoryStack.length !== 0) {
-      let folderId = this.peekDirectoryStack();
-      this.contentList = this.props.allFolderInfo[folderId].childContent;
-    } else {
-      // in root directory
-      // only show contentId whose parentId is null
-      this.contentList = this.contentList.filter(branchId => {
-        return (this.props.allContentInfo[branchId].parentId === null) ||
-               (this.props.allContentInfo[branchId].parentId === "root");
-      })
-    }
-
     this.sortContent();
 
     // build files
@@ -428,6 +390,7 @@ class DoenetBranchBrowser extends Component {
 
   openFolder(folderId) {
     this.pushDirectoryStack(folderId);
+    this.setState({selectedItems: [], selectedItemType: []});
     if (this.props.updateDirectoryStack !== null) {
       this.props.updateDirectoryStack(this.state.directoryStack);
     }
@@ -435,6 +398,7 @@ class DoenetBranchBrowser extends Component {
 
   upOneDirectory() {
     this.popDirectoryStack();
+    this.setState({selectedItems: [], selectedItemType: []});
     if (this.props.updateDirectoryStack !== null) {
       this.props.updateDirectoryStack(this.state.directoryStack);
     }
@@ -442,6 +406,7 @@ class DoenetBranchBrowser extends Component {
 
   jumpToDirectory(folderId) {
     // pop all items after folderId
+    this.setState({selectedItems: [], selectedItemType: []});
     while (this.state.directoryStack.length > 0 && this.peekDirectoryStack() !== folderId) {
       this.upOneDirectory();      
     }
@@ -498,11 +463,15 @@ class DoenetBranchBrowser extends Component {
       if (this.state.sortBy === "publishedDate") {
         this.folderList.sort(
           (a,b) => { 
-            return new Date(this.props.allFolderInfo[a].publishDate) - new Date(this.props.allFolderInfo[b].publishDate)}
-        );
+            if (this.props.allFolderInfo[a].isRepo && !this.props.allFolderInfo[b].isRepo) return -1;
+            if (!this.props.allFolderInfo[a].isRepo && this.props.allFolderInfo[b].isRepo) return 1;
+            return (new Date(this.props.allFolderInfo[a].publishDate) - new Date(this.props.allFolderInfo[b].publishDate))
+          });
       } else if (this.state.sortBy === "title") {
         this.folderList.sort(
           (a,b) => { 
+            if (this.props.allFolderInfo[a].isRepo && !this.props.allFolderInfo[b].isRepo) return -1;
+            if (!this.props.allFolderInfo[a].isRepo && this.props.allFolderInfo[b].isRepo) return 1;
             return (this.props.allFolderInfo[a].title.localeCompare(this.props.allFolderInfo[b].title));}
         );
       }
@@ -510,11 +479,15 @@ class DoenetBranchBrowser extends Component {
       if (this.state.sortBy === "publishedDate") {
         this.folderList.sort(
           (b,a) => { 
+            if (this.props.allFolderInfo[a].isRepo && !this.props.allFolderInfo[b].isRepo) return 1;
+            if (!this.props.allFolderInfo[a].isRepo && this.props.allFolderInfo[b].isRepo) return -1;
             return new Date(this.props.allFolderInfo[a].publishDate) - new Date(this.props.allFolderInfo[b].publishDate)}
         );
       } else if (this.state.sortBy === "title") {
         this.folderList.sort(
           (b,a) => { 
+            if (this.props.allFolderInfo[a].isRepo && !this.props.allFolderInfo[b].isRepo) return 1;
+            if (!this.props.allFolderInfo[a].isRepo && this.props.allFolderInfo[b].isRepo) return -1;
             return (this.props.allFolderInfo[a].title.localeCompare(this.props.allFolderInfo[b].title));}
         );
       }
@@ -522,6 +495,11 @@ class DoenetBranchBrowser extends Component {
   }
 
   render() {
+
+    if (this.props.loading){
+      return <SpinningLoader/>
+    }
+
     this.buildBreadcrumb();
     this.buildFolderItems();
     this.buildContentItems();
@@ -644,7 +622,10 @@ class Folder extends React.Component {
               onClick={() => this.props.handleAddContentToFolder(this.props.folderId)}/>
               <div className="addContentButtonInfo"><span>Move to Folder</span></div>
             </div>}
+            {this.props.isRepo ? 
+            <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/> :
             <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
+            }
             <span>{this.props.title}</span>
           </div>          
         </td>
