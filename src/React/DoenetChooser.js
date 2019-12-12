@@ -470,6 +470,7 @@ class DoenetChooser extends Component {
       this.folderIds = resp.data.folderIds;
       this.folders_loaded = true;
       callback();
+      this.updateNumber++;
       this.forceUpdate();
     });
   }
@@ -670,8 +671,6 @@ class DoenetChooser extends Component {
         folderList = this.courseInfo[this.state.selectedCourse].folders;
         contentList = this.courseInfo[this.state.selectedCourse].content;
       }
-      console.log(this.folderInfo);
-      console.log(this.updateNumber);
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
           loading={!this.folders_loaded && !this.branches_loaded}
