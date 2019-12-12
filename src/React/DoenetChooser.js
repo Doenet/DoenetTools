@@ -434,6 +434,8 @@ class DoenetChooser extends Component {
     // check if new folder
     let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
     let parentId = this.folderInfo[folderId] ? this.folderInfo[folderId].parentId : currentFolderId;
+    if (isRepo) parentId = "root";  // repo always at root
+
     const url='/api/saveFolder.php';
     const data={
       title: title,
@@ -481,16 +483,15 @@ class DoenetChooser extends Component {
         this.addContentToFolder([folderId], ["folder"], currentFolderId);
       } else {
         this.saveUserContent([folderId], ["folder"], "insert", () => {  // add to user root
-          this.loadUserFoldersAndRepo();
-          this.loadUserContentBranches();
-          // set as selected 
           this.setState({
             selectedItems: [folderId],
             selectedItemsType: ["folder"],
             activeSection: "chooser",
             selectedDrive: "Content",
+          }, () => {
+            this.loadUserFoldersAndRepo();
+            this.loadUserContentBranches();
           });
-          this.updateNumber++;
         });  
       }
     });
@@ -560,16 +561,16 @@ class DoenetChooser extends Component {
     let folderId = nanoid();
     this.saveFolder(folderId, title, [], [], "insert", true, () => {
       this.modifyRepoAccess(folderId, "insert", true, () => {  // add user to repo_access
-        this.loadUserFoldersAndRepo();
-        this.loadUserContentBranches();
-        // set as selected 
         this.setState({
+          directoryStack: [],
           selectedItems: [folderId],
           selectedItemsType: ["folder"],
           activeSection: "chooser",
-          selectedDrive: "Content",
+          selectedDrive: "Content"
+        }, () => {
+          this.loadUserFoldersAndRepo();
+          this.loadUserContentBranches();
         });
-        this.updateNumber++;
       });  
     })
   }
@@ -596,8 +597,6 @@ class DoenetChooser extends Component {
       selectedItems: directoryData,
       selectedItemsType: ["folder"],
     })
-    this.updateNumber++;
-    // TODO: update location bar
   }
 
   updateSelectedItems(selectedItems, selectedItemsType) {
@@ -671,6 +670,8 @@ class DoenetChooser extends Component {
         folderList = this.courseInfo[this.state.selectedCourse].folders;
         contentList = this.courseInfo[this.state.selectedCourse].content;
       }
+      console.log(this.folderInfo);
+      console.log(this.updateNumber);
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
           loading={!this.folders_loaded && !this.branches_loaded}
