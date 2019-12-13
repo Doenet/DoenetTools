@@ -501,7 +501,7 @@ class DoenetChooser extends Component {
 
   addContentToFolder(childId, childType, folderId) {
     let operationType = "insert";
-    let title = this.folderInfo[folderId];
+    let title = this.folderInfo[folderId].title;
     let isRepo = this.folderInfo[folderId].isRepo;
     if (this.folderInfo[folderId].parentId == "root") {
       this.saveUserContent(childId, childType, "remove");
@@ -514,7 +514,7 @@ class DoenetChooser extends Component {
 
   removeContentFromFolder(childId, childType, folderId) {
     let operationType = "remove";
-    let title = this.folderInfo[folderId];
+    let title = this.folderInfo[folderId].title;
     let isRepo = this.folderInfo[folderId].isRepo;
     if (this.folderInfo[folderId].parentId == "root") {
       this.saveUserContent(childId, childType, "insert");
