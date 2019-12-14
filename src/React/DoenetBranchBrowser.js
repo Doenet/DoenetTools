@@ -563,6 +563,7 @@ class DoenetBranchBrowser extends Component {
             allContentInfo={this.props.allContentInfo}
             allCourseInfo={this.props.allCourseInfo}
             disableEditing={this.disableEditing}
+            openEditCourseForm={this.props.openEditCourseForm}
           />
         </div>
       </React.Fragment>
@@ -784,6 +785,15 @@ class InfoPanel extends Component {
           {this.infoPanelDetails}
         </tbody>
       </table>
+      {this.props.selectedDrive === "Courses" &&
+      <div id="editContentButtonContainer">
+        <div id="editContentButton" data-cy="editContentButton"
+        onClick={this.props.openEditCourseForm}>
+          <FontAwesomeIcon icon={faEdit} style={{"fontSize":"20px", "color":"#43aa90"}}/>
+          <span>Edit</span>
+        </div>
+      </div> 
+      }
     </React.Fragment>
   }
 
