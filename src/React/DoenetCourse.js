@@ -22,7 +22,7 @@ import {
   Link,
   // Redirect,
 } from "react-router-dom";
-import queryString from 'query-string'
+// import queryString from 'query-string'
 // import { useParams } from "react-router";
 import '../imports/doenet.css'
 
@@ -882,7 +882,7 @@ class DoenetCourse extends Component {
     // console.log(this.props.location)
     // console.log(values.filter) // "top"
     // console.log(values.origin) // "im"
-    const queryString = require('query-string');
+    // const queryString = require('query-string');
 
     // console.log(location.search);
     // const parsed = queryString.parse(location.search);
