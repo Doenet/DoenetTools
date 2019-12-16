@@ -1708,7 +1708,6 @@ export default class Core {
     //  add state variable definitions from component class
     let newDefinitions = componentClass.returnStateVariableDefinitions({
       propertyNames: Object.keys(stateVariableDefinitions),
-      sharedParameters: this.parameterStack.parameters,
     });
 
     for (let varName in newDefinitions) {

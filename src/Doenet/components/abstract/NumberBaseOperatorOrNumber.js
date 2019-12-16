@@ -17,7 +17,7 @@ export default class NumberBaseOperatorOrNumber extends NumberComponent {
   }
 
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     if (args.sharedParameters.defaultToPrescribedParameters) {
@@ -70,41 +70,49 @@ export default class NumberBaseOperatorOrNumber extends NumberComponent {
 
 
 
-  static returnStateVariableDefinitions({ sharedParameters }) {
+  static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = super.returnStateVariableDefinitions({ sharedParameters });
-
-    if (sharedParameters.defaultToPrescribedParameters) {
-      // if prescribed parameter, behaves just as a number component
-      return stateVariableDefinitions;
-    }
-
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
     let componentClass = this;
 
-    stateVariableDefinitions.value = {
-      public: true,
-      componentType: this.componentType,
-      returnDependencies: () => ({
-        atLeastZeroNumbers: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroNumbers",
-          variableNames: ["value"],
-        },
-      }),
-      defaultValue: NaN,
-      definition: function ({ dependencyValues }) {
+    let originalReturnDependencies = stateVariableDefinitions.value.returnDependencies;
+
+    stateVariableDefinitions.value.returnDependencies = function ({ sharedParameters }) {
+      if (sharedParameters.defaultToPrescribedParameters) {
+        return originalReturnDependencies({ sharedParameters });
+      } else {
+        return {
+          atLeastZeroNumbers: {
+            dependencyType: "childStateVariables",
+            childLogicName: "atLeastZeroNumbers",
+            variableNames: ["value"],
+          },
+        }
+      }
+    }
+
+    let originalDefinition = stateVariableDefinitions.value.definition;
+    stateVariableDefinitions.value.definition = function ({ dependencyValues }) {
+      if ("numberChild" in dependencyValues) {
+        return originalDefinition({ dependencyValues });
+      } else {
         if (dependencyValues.atLeastZeroNumbers.length === 0) {
           return { useEssentialOrDefaultValue: { value: { variablesToCheck: ["value"] } } }
         }
-
         let numbers = dependencyValues.atLeastZeroNumbers.map(x => x.stateValues.value);
         return { newValues: { value: componentClass.applyNumberOperator(numbers, dependencyValues) } };
+      }
+    }
 
-      },
-      inverseDefinition: function () {
+    let originalInverseDefinition = stateVariableDefinitions.value.inverseDefinition;
+    stateVariableDefinitions.value.inverseDefinition = function (args) {
+      if("numberChild" in args.dependencyValues) {
+        return originalInverseDefinition(args);
+      } else {
         return { success: false };
       }
-    };
+    }
+
 
     stateVariableDefinitions.canBeModified = {
       returnDependencies: () => ({}),

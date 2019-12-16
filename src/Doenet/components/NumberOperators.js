@@ -21,26 +21,22 @@ export class Variance extends NumberBaseOperatorOrNumber {
     return properties;
   }
 
-  static returnStateVariableDefinitions({ sharedParameters }) {
+  static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = super.returnStateVariableDefinitions({ sharedParameters });
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    if (sharedParameters.defaultToPrescribedParameters) {
-      // if prescribed parameter, behaves just as a number component
-      return stateVariableDefinitions;
-    }
+    let originalReturnDependencies = stateVariableDefinitions.value.returnDependencies;
 
-    stateVariableDefinitions.value.returnDependencies = () => ({
-      atLeastZeroNumbers: {
-        dependencyType: "childStateVariables",
-        childLogicName: "atLeastZeroNumbers",
-        variableNames: ["value"],
-      },
-      unbiased: {
-        dependencyType: "stateVariable",
-        variableName: "unbiased",
+    stateVariableDefinitions.value.returnDependencies = function ({ sharedParameters }) {
+      let deps = originalReturnDependencies({ sharedParameters });
+      if (!sharedParameters.defaultToPrescribedParameters) {
+        deps.unbiased = {
+          dependencyType: "stateVariable",
+          variableName: "unbiased",
+        }
       }
-    });
+      return deps;
+    }
 
     return stateVariableDefinitions;
 
@@ -107,9 +103,9 @@ export class Mod extends NumberBaseOperatorOrNumber {
   static componentType = "mod";
 
   static applyNumberOperator(numbers) {
-    if(numbers.length !== 2) {
+    if (numbers.length !== 2) {
       return NaN;
     }
-    return me.math.mod(numbers[0],numbers[1]);
+    return me.math.mod(numbers[0], numbers[1]);
   }
 }
