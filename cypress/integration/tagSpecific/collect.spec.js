@@ -4,7 +4,7 @@ describe('Collect Tag Tests',function() {
     cy.visit('/test')
   })
 
-  it('collect points from graphs',() => {
+  it.only('collect points from graphs',() => {
     cy.window().then((win) => { win.postMessage({doenetCode: `
     <text>a</text>
     <panel>
@@ -24,14 +24,14 @@ describe('Collect Tag Tests',function() {
     </panel>
 
     <graph>
-      <collect components="point" name="points">_panel1</collect>
+      <collect componentTypes="point" name="points">_panel1</collect>
     </graph>
 
-    <p>Coordinates of points: <collect components="point" prop="coords" name="coords">_panel1</collect></p>
-    <p><m>x</m>-coordinates of points: <aslist><collect components="point" prop="x" name="xs">_graph3</collect></aslist></p>
+    <p>Coordinates of points: <collect componentTypes="point" prop="coords" name="coords">_panel1</collect></p>
+    <p><m>x</m>-coordinates of points: <aslist><collect componentTypes="point" prop="x" name="xs">_graph3</collect></aslist></p>
     <p><m>x</m>-coordinates of points via a ref: <aslist><ref name="xs2">xs</ref></aslist></p>
     <p><m>x</m>-coordinates of points via extract: <aslist><extract prop="x" name="xs3"><ref name="points2">points</ref></extract></aslist></p>
-    <p>Average of <m>y</m>-coordinates of points: <mean name="mean"><collect components="point" prop="y" name="ys">_graph3</collect></mean></p>
+    <p>Average of <m>y</m>-coordinates of points: <mean name="mean"><collect componentTypes="point" prop="y" name="ys">_graph3</collect></mean></p>
     `},"*");
     });
   

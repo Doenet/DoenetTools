@@ -1,7 +1,7 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Graph extends BlockComponent {
-  constructor(args){
+  constructor(args) {
     super(args);
     this.returnRenderersInGraph = this.returnRenderersInGraph.bind(this);
   }
@@ -9,27 +9,27 @@ export default class Graph extends BlockComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.xmin = {default: -10};
-    properties.xmax = {default: 10};
-    properties.ymin = {default: -10};
-    properties.ymax = {default: 10};
-    properties.width = {default: 300};
-    properties.height = {default: 300};
-    properties.displayaxes = {default: true};
-    properties.xlabel = {default: ""};  
-    properties.ylabel = {default: ""};  
+    properties.xmin = { default: -10 };
+    properties.xmax = { default: 10 };
+    properties.ymin = { default: -10 };
+    properties.ymax = { default: 10 };
+    properties.width = { default: 300 };
+    properties.height = { default: 300 };
+    properties.displayaxes = { default: true };
+    properties.xlabel = { default: "" };
+    properties.ylabel = { default: "" };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addCurve = function({activeChildrenMatched}) {
+    let addCurve = function ({ activeChildrenMatched }) {
       // add <curve> around strings, as long as they don't have points
       let curveChildren = [];
-      for(let child of activeChildrenMatched) {
-        if(child.stateValues.value.includes(",")) {
-          return {success: false};
+      for (let child of activeChildrenMatched) {
+        if (child.stateValues.value.includes(",")) {
+          return { success: false };
         }
         curveChildren.push({
           createdComponent: true,
@@ -65,22 +65,43 @@ export default class Graph extends BlockComponent {
       propositions: [AtLeastOneString, AtLeastZeroGraphical],
       setAsBase: true,
     })
-    
+
     return childLogic;
   }
 
-  get descendantSearchClasses() {
-    return ["_graphical"];
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.graphicalDescendants = {
+
+      returnDependencies: () => ({
+        descendants: {
+          dependencyType: "descendantIdentity",
+          componentTypes: ["_graphical"]
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            graphicalDescendants: dependencyValues.descendants
+          }
+        }
+      },
+    };
+
+    return stateVariableDefinitions;
   }
 
-  initializeRenderer({}){
-    if(this.renderer !== undefined) {
+  initializeRenderer({ }) {
+    if (this.renderer !== undefined) {
       this.updateRenderer();
       return;
     }
     this.renderer = new this.availableRenderers.graph2d({
       key: this.componentName,
       returnRenderersInGraph: this.returnRenderersInGraph,
+      // TODO: lost graphRenderComponents: is used in graph renderer!
       graphRenderComponents: this.graphRenderComponents,
       width: parseInt(this.stateValues.width),
       height: parseInt(this.stateValues.height),
@@ -95,7 +116,7 @@ export default class Graph extends BlockComponent {
   }
 
   updateRenderer() {
-    if(this.renderer !== undefined) {
+    if (this.renderer !== undefined) {
       this.renderer.resizeBoard({
         xmin: this.stateValues.xmin,
         xmax: this.stateValues.xmax,
@@ -105,14 +126,14 @@ export default class Graph extends BlockComponent {
     }
   }
 
-  updateChildrenWhoRender(){
+  updateChildrenWhoRender() {
     this.childrenWhoRender = this.activeChildren.map(x => x.componentName);
   }
 
   returnRenderersInGraph() {
     let graphicalRenderers = {};
 
-    for(let component of this.descendantsFound._graphical) {
+    for (let component of this.stateValues.graphicalDescendants) {
       let componentRenderer = this.allRenderComponents[component.componentName];
       // could be undefined if no renderer present
       graphicalRenderers[component.componentName] = componentRenderer;

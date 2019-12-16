@@ -171,7 +171,7 @@ export default class Table extends BaseComponent {
     }
 
     if(childrenChanged || changeUnresolveResult.possibleCellIdentityChange) {
-      // if identities of any cell descendent may have changed,
+      // if identities of any cell descendant may have changed,
       // then rebuild cell structures from children
 
       // array of cell components (children) by row and column

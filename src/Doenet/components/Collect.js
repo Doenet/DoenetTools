@@ -1,32 +1,31 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import {replaceIncompleteProp} from './commonsugar/createprop';
-import {postProcessRef, processChangesForReplacements} from './Ref';
+import { postProcessRef, refReplacementFromProp, processChangesForReplacements } from './Ref';
 
 
 export default class Collect extends CompositeComponent {
   static componentType = "collect";
 
-  static alwaysContinueUpstreamUpdates = true;
-
   static takesComponentName = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.maximumnumber = {default: undefined};
+    properties.maximumNumber = { default: undefined };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addRefTarget = function({activeChildrenMatched}) {
+    let addRefTarget = function ({ activeChildrenMatched }) {
       // add <reftarget> around string
       return {
         success: true,
-        newChildren: [{ componentType: "reftarget", children: [{
-          createdComponent: true,
-          componentName: activeChildrenMatched[0].componentName
-        }]}],
+        newChildren: [{
+          componentType: "reftarget", children: [{
+            createdComponent: true,
+            componentName: activeChildrenMatched[0].componentName
+          }]
+        }],
       }
     }
 
@@ -35,8 +34,8 @@ export default class Collect extends CompositeComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
+      affectedBySugar: ["exactlyOneRefTarget"],
       replacementFunction: addRefTarget,
-      repeatSugar: true,
     });
 
     let atMostOnePropForString = childLogic.newLeaf({
@@ -46,16 +45,9 @@ export default class Collect extends CompositeComponent {
       number: 1,
     });
 
-    let atMostOneChildnumberForString = childLogic.newLeaf({
-      name: 'atMostOneChildnumberForString',
-      componentType: 'childnumber',
-      comparison: 'atMost',
-      number: 1,
-    });
-
-    let exactlyOneComponentsForString = childLogic.newLeaf({
-      name: "exactlyOneComponentsForString",
-      componentType: "components",
+    let exactlyOneComponentTypesForString = childLogic.newLeaf({
+      name: "exactlyOneComponentTypesForString",
+      componentType: "componentTypes",
       number: 1,
     })
 
@@ -64,54 +56,9 @@ export default class Collect extends CompositeComponent {
       propositions: [
         exactlyOneString,
         atMostOnePropForString,
-        atMostOneChildnumberForString,
-        exactlyOneComponentsForString,
+        exactlyOneComponentTypesForString,
       ],
       operator: 'and',
-    })
-
-    let exactlyOneRefTargetForSugar = childLogic.newLeaf({
-      name: 'exactlyOneRefTargetForSugar',
-      componentType: 'reftarget',
-      number: 1,
-    });
-
-    let atMostOneChildnumberForSugar = childLogic.newLeaf({
-      name: 'atMostOneChildnumberForSugar',
-      componentType: 'childnumber',
-      comparison: 'atMost',
-      number: 1,
-    });
-
-    let exactlyOneComponentsForSugar = childLogic.newLeaf({
-      name: "exactlyOneComponentsForSugar",
-      componentType: "components",
-      number: 1,
-    })
-
-    let propIsIncomplete = function(child) {
-      return (child.state.incomplete === true);
-    }
-
-    let exactlyOneIncompleteProp = childLogic.newLeaf({
-      name: "exactlyOneIncompleteProp",
-      componentType: 'prop',
-      number: 1,
-      condition: propIsIncomplete,
-    });
-
-    let refTargetAndIncompleteProp = childLogic.newOperator({
-      name: "refTargetAndIncompleteProp",
-      operator: "and",
-      propositions: [
-        exactlyOneIncompleteProp,
-        atMostOneChildnumberForSugar,
-        exactlyOneRefTargetForSugar,
-        exactlyOneComponentsForSugar
-      ],
-      isSugar: true,
-      replacementFunction: replaceIncompleteProp,
-      separateSugarInputs: true,
     })
 
     let exactlyOneRefTarget = childLogic.newLeaf({
@@ -120,29 +67,17 @@ export default class Collect extends CompositeComponent {
       number: 1,
     });
 
-    let atMostOneChildnumber = childLogic.newLeaf({
-      name: 'atMostOneChildnumber',
-      componentType: 'childnumber',
-      comparison: 'atMost',
-      number: 1,
-    });
-
-    let exactlyOneComponents = childLogic.newLeaf({
-      name: "exactlyOneComponents",
-      componentType: "components",
+    let exactlyOneComponentTypes = childLogic.newLeaf({
+      name: "exactlyOneComponentTypes",
+      componentType: "componentTypes",
       number: 1,
     })
 
-    let propIsComplete = function(child) {
-      return (child.state.incomplete !== true);
-    }
-
-    let atMostOneCompleteProp = childLogic.newLeaf({
-      name: "atMostOneCompleteProp",
+    let atMostOneProp = childLogic.newLeaf({
+      name: "atMostOneProp",
       componentType: 'prop',
       comparison: 'atMost',
       number: 1,
-      condition: propIsComplete,
     });
 
     let refTargetWithOptionalProp = childLogic.newOperator({
@@ -150,545 +85,316 @@ export default class Collect extends CompositeComponent {
       operator: "and",
       propositions: [
         exactlyOneRefTarget,
-        atMostOneCompleteProp,
-        atMostOneChildnumber,
-        exactlyOneComponents,
+        atMostOneProp,
+        exactlyOneComponentTypes,
       ]
     });
 
     childLogic.newOperator({
       name: "refTargetPropXorSugar",
       operator: "xor",
-      propositions: [refTargetAndIncompleteProp, refTargetWithOptionalProp, stringWithOptionalProp],
+      propositions: [refTargetWithOptionalProp, stringWithOptionalProp],
       setAsBase: true,
     })
 
     return childLogic;
   }
 
-  updateState(args={}) {
-    if(args.init) {
-      this._state.refTarget = {trackChanges: true};
-      if(this._state.childnumber === undefined) {
-        this._state.childnumber = {};
-      }
-      this._state.childnumber.trackChanges = true;
 
-      this.state.componentClassesToCollect = [];
-      this.state.collectedComponents = [];
-      this.state.numReplacementsByCollected = [];
+  static returnStateVariableDefinitions() {
 
-    }
+    let stateVariableDefinitions = {};
 
-    super.updateState(args);
-
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.originalRefTarget = true;
-      this.unresolvedState.refTarget = true;
-      this.unresolvedDependencies = true;
-      return;
-    }
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-      let exactlyOneRefTarget = this.childLogic.returnMatches("exactlyOneRefTarget");
-      this.state.refTargetChild = this.activeChildren[exactlyOneRefTarget[0]];
-
-      let atMostOneChildnumber = this.childLogic.returnMatches("atMostOneChildnumber");
-      if(atMostOneChildnumber.length === 1) {
-        this.state.childnumberChild = this.activeChildren[atMostOneChildnumber[0]];
-      }else {
-        delete this.state.childnumberChild;
-      }
-
-      let atMostOneCompleteProp = this.childLogic.returnMatches("atMostOneCompleteProp");
-      if(atMostOneCompleteProp.length === 1) {
-        this.state.propChild = this.activeChildren[atMostOneCompleteProp[0]];
-      }else {
-        delete this.state.propChild;
-      }
-
-      let exactlyOneComponents = this.childLogic.returnMatches("exactlyOneComponents");
-      this.state.componentsChild = this.activeChildren[exactlyOneComponents[0]];
-    }
-
-    if(this.state.refTargetChild.unresolvedState.refTarget) {
-      this.unresolvedState.originalRefTarget = true;
-      this.unresolvedState.refTarget = true;
-      this.unresolvedDependencies = {[this.state.refTargetChild.componentName]: true};
-      this.state.originalRefTargetName = this.state.refTargetChild.state.refTargetName;
-      return;
-    }
-
-    if(childrenChanged || trackChanges.getVariableChanges({
-        component: this.state.refTargetChild, variable: "refTarget"})) {
-
-      this.state.originalRefTarget = this.state.refTargetChild.state.refTarget;
-      this.state.originalRefTargetName = this.state.refTargetChild.state.refTargetName;
-      delete this.unresolvedState.originalRefTarget;
-      delete this.unresolvedState.refTarget;
-      delete this.unresolvedDependencies;
-
-      // add original reference dependencies
-      this.addReferenceDependencies({target: this.state.originalRefTarget});
-
-    }
-
-    this.state.previousRefTarget = this.state.refTarget;
-    this.state.previousCollectedComponents = [...this.state.collectedComponents];
-
-    // if childnumber is specified, determine new refTarget
-    // it might be undefined if childnumber is not a valid value
-    if(this.state.childnumberChild) {
-      if(this.state.childnumberChild.unresolvedState.number) {
-        this.unresolvedState.refTarget = true;
-        this.state.refTarget = undefined;
-        return;
-      }
-      // don't bother checking for changes in childnumber, just set it
-      this.state.childnumber = this.state.childnumberChild.state.number;
-    }else if(this.state.childnumber !== undefined && !this._state.childnumber.essential) {
-      delete this.state.childnumber;
-    }
-    
-    let childnumber = this.state.childnumber;
-
-    if(childnumber !== undefined) {
-      this.state.refTarget = undefined;
-
-      // replace refTarget with child if childnumber set
-      let childIndex = childnumber-1;
-      if(!Number.isInteger(childIndex) || childIndex < 0) {
-        console.log("Invalid child number");
-      } else if(childIndex < this.state.originalRefTarget.activeChildren.length) {
-        this.state.refTarget = this.state.originalRefTarget.activeChildren[childIndex];
-      }
-    }else {
-      this.state.refTarget = this.state.originalRefTarget;
-    }
-
-    if(this.state.refTarget === undefined) {
-      this.state.collectedComponents = [];
-      return;
-    }
-
-    let refTarget = this.state.refTarget;
-
-    if(refTarget.componentName === this.componentName) {
-      let message = "Circular reference from " + this.componentName
-      // if(this.doenetAttributes.componentName) {
-      //   message += " (" + this.doenetAttributes.componentName + ")";
-      // }
-      message += " to itself."
-      throw Error(message);
-    }
-
-    if(childrenChanged || this.state.componentTypesToCollect === undefined ||
-      trackChanges.getVariableChanges({
-      component: this.state.componentsChild, variable: "texts"
-    })) {
-
-      this.state.componentTypesToCollect = this.state.componentsChild.state.texts;
-
-      this.state.componentClassesToCollect = [];
-      for(let ct of this.state.componentTypesToCollect) {
-        let cClass = this.allComponentClasses[ct];
-        if(cClass === undefined) {
-          let message = "Cannot collect component type " + ct + ". Class not found.";
-          console.warn(message);
-        }else {
-          this.state.componentClassesToCollect.push(cClass);
-        }
-      }
-    }
-
-    if(this.state.componentClassesToCollect.length === 0) {
-      this.state.collectedComponents = [];
-      return;
-    }
-
-    this.state.collectedComponents = this.collectComponentDescendants(this.state.refTarget);
-
-    if(this.state.maximumnumber !== undefined && this.state.collectedComponents.length > this.state.maximumnumber) {
-      let maxnum = Math.max(0,Math.floor(this.state.maximumnumber));
-      this.state.collectedComponents = this.state.collectedComponents.slice(0,maxnum)
-    }
-    
-    this.state.stateForCollected = [];
-
-    // check if find target state variable from prop
-    if(this.state.propChild) {
-
-      this.state.originalCollectedComponents = [...this.state.collectedComponents];
-      this.state.collectedComponents =[];
-      
-      delete this.unresolvedState.collectedComponents;
-      delete this.unresolvedDependencies;
-
-      for(let [index,component] of this.state.originalCollectedComponents.entries()) {
-
-        let stateForCollected = this.state.stateForCollected[index] = {};
-
-        let result = this.state.propChild.validateProp({
-          component: component,
-          standardComponentClasses: this.standardComponentClasses,
-        })
-
-        if(result.success !== true) {
-          if(result.error === true) {
-            let propChildState = this.state.propChild.state;
-            let message = "Cannot collect prop " + propChildState.variableName;
-            if(propChildState.authorProp !== undefined) {
-              message += " (" + propChildState.authorProp + ")"
+    stateVariableDefinitions.refTarget = {
+      returnDependencies: () => ({
+        refTargetChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneRefTarget",
+          variableNames: ["refTarget"],
+        },
+      }),
+      defaultValue: undefined,
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.refTargetChild.length === 0) {
+          return {
+            useEssentialOrDefaultValue: {
+              refTarget: { variablesToCheck: "refTarget" }
             }
-            message += " from " + component.componentType;
-            if(component.doenetAttributes.componentName !== undefined) {
-              message += " (" + component.doenetAttributes.componentName + ")";
-            }
-            console.warn(message);
-          }
-
-          if(result.unresolved) {
-            this.unresolvedState.collectedComponents = true;
-            this.unresolvedDependencies = {[this.state.refTargetChild.componentName]: {props: [this.state.propChild]}};
-          }
-          continue;
-        }
-
-        this.state.collectedComponents.push(component);
-
-        stateForCollected.propData = result.propData;
-        stateForCollected.availableClassProperties = result.availableClassProperties;
-      }
-    }else {
-      // no prop
-      // available properties are those from replacement componentType
-      // except that, if it is a composite with at least one replacement
-      // we get properties from the class of the first replacement
-      for(let [index,component] of this.state.collectedComponents.entries()) {
-
-        let stateForCollected = this.state.stateForCollected[index] = {};
-
-        let rtForProperties = component;
-        while(rtForProperties instanceof this.allComponentClasses._composite) {
-          if(rtForProperties.replacements.length === 0) {
-            break;
-          }
-          rtForProperties = rtForProperties.replacements[0];
-        }
-        let replacementClassForProperties = this.standardComponentClasses[rtForProperties.componentType];
-
-        stateForCollected.availableClassProperties = replacementClassForProperties.createPropertiesObject({
-          standardComponentClasses: this.standardComponentClasses
-        });
-      }
-    }
-
-    for(let componentNumber in this.state.collectedComponents) {
-      // add state of component for any state values that
-      // correspond to properties
-      this.copyPropertiesFromComponent(componentNumber);
-
-    }
-
-    if(trackChanges.getVariableChanges({component: this, variable: "childnumber"})) {
-
-      // if used a childnumber, change dependency of originalRefTarget to denote childnumber
-      // and add a dependency to the new refTarget
-      if(this.state.childnumber !== undefined) {
-        this.downstreamDependencies[this.state.originalRefTarget.componentName].childnumber = this.state.childnumber;
-        if(this.state.refTarget !== undefined) {
-          this.downstreamDependencies[this.state.refTarget.componentName] = {
-            dependencyType: "reference",
           }
         }
-      }
-    }
+        return { newValues: { refTarget: dependencyValues.refTargetChild[0].stateValues.refTarget } }
+      },
+    };
 
+    stateVariableDefinitions.refTargetName = {
+      returnDependencies: () => ({
+        refTarget: {
+          dependencyType: "stateVariable",
+          variableName: "refTarget",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { refTargetName: dependencyValues.refTarget.componentName } }
+      },
+    };
 
-    if(trackChanges.getVariableChanges({component: this, variable: "refTarget"})) {
-
-      this.state.downstreamDependenciesByCollected = {};
-
-      if(this.state.refTarget !== undefined) {
-        if(this.state.propChild === undefined) {
-          // if didn't use a prop, then add downstream dependencies
-          // to all active descendants (since recursive==true) of the collected components
-          // and indicate they will be shadowed.
-          // (won't recurse when descendants not shadowed because use state variables for references)
-          for(let component of this.state.collectedComponents) {
-            this.addReferenceDependencies({
-              target: component,
-              recursive: true,
-              shadowed: true,
-            });
-          }
-        }else {
-          // if used prop, add downstream dependencies to ref target
-          // and all collected components
-          // and show that used a prop
-          this.downstreamDependencies[this.state.originalRefTarget.componentName].prop = this.state.propChild.componentName;
-          if(this.state.refTarget !== this.state.originalRefTarget) {
-            this.addReferenceDependencies({target: this.state.refTarget});
-            this.downstreamDependencies[this.state.refTarget.componentName].prop = this.state.propChild.componentName;
-          }
-          for(let component of this.state.collectedComponents) {
-            this.addReferenceDependencies({target: component});
-            this.downstreamDependencies[component.componentName].prop = this.state.propChild.componentName;
-            delete this.downstreamDependencies[component.componentName].baseReference;
-          }
-        }
-      }
-
-    }
-
-  }
-
-
-  collectComponentDescendants(component, init=true) {
-
-    if(component.inactive) {
-      return [];
-    }
-
-    if(!init && this.state.componentClassesToCollect.some(x => component instanceof x)) {
-      return [component];
-    }
-
-    let componentList = [];
-    let childrenAddressed = new Set();
-
-    if(component instanceof this.allComponentClasses['_composite']) {
-
-      // no need to check replacements unless it is initial component,
-      // as replacements will be children of parent
-      if(init) {
-        for(let replacement of component.replacements) {
-          // don't need to check if replacement is withheld, as it will be inactive
-          componentList.push(...this.collectComponentDescendants(replacement,false));
-        }
-      }
-    }else {
-
-      // collect children only if not a composite
-
-      // to match order, first add activeChildren in order
-      for(let child of component.activeChildren) {
-        componentList.push(...this.collectComponentDescendants(child, false));
-        childrenAddressed.add(child.componentName);
-      }
-
-      // next add any defining children not added, in order
-      for(let child of component.definingChildren) {
-        if(!childrenAddressed.has(child.componentName)) {
-          componentList.push(...this.collectComponentDescendants(child, false));
-          childrenAddressed.add(child.componentName);
-        }
-      }
-
-      // add any children that aren't active or definining
-      for(let childName in component.allChildren) {
-        if(!childrenAddressed.has(childName)) {
-          let child = component.allChildren[childName].component;
-          componentList.push(...this.collectComponentDescendants(child, false));
-        }
-      }
-    }
-
-    return componentList;
-
-  }
-
-
-  // Look in collected component for property state variables.
-  // If those properties haven't expectly been specified 
-  // as an attribute of the <collect> tag,
-  // then add those properties to the state for this source
-  // Rationale: When creating the serialized replacement for the component
-  // we will add these properties to the seralized replacement
-  copyPropertiesFromComponent(componentNumber) {
-    let stateForCollected = this.state.stateForCollected[componentNumber]
-    stateForCollected.properties = {};
-
-    for(let item in stateForCollected.availableClassProperties) {
-
-      // don't copy prop
-      if(item === "prop") {
-        continue;
-      }
-
-      let propertyInCollected = this.state.collectedComponents[componentNumber]._state[item];
-
-      // don't copy a state variable from target than isn't a property
-      if(propertyInCollected !== undefined && propertyInCollected.isProperty !== true) {
-        continue;
-      }
-
-      // if a property is specified by own children or via essential state variable
-      // then it shouldn't be overwritten from collected component
-      let propertyInCollect = this._state[item];
-      if(propertyInCollect !== undefined) {
-        if(propertyInCollect.essential && !propertyInCollect.usedDefault) {
-          stateForCollected.properties[item] = this.state[item];
-          continue;
-        }
-        let childLogicResult = this.childLogic.returnMatches('_property_' + item);
-        if(childLogicResult !== undefined && childLogicResult.length === 1) {
-          stateForCollected.properties[item] = this.state[item];
-          continue;
-        }
-      }
-
-      if(propertyInCollected !== undefined) {
-        stateForCollected.properties[item] = propertyInCollected.value;
-        // TODO: what if item is unresolved in collected component?
-        // Is there a way to mark it unresolved or will that be taken care
-        // of in component creation?
-      }else {
-        if(stateForCollected.availableClassProperties[item].default !== undefined) {
-          // assign default value if available and not defined elsewhere
-          stateForCollected.properties[item] = stateForCollected.availableClassProperties[item].default;
-        }
-      }
-    }
-  }
-
-
-  serialize(parameters = {}) {
-
-    let useReplacements = this.state.contentIdChild || this.state.useReplacementsWhenSerialize;
-
-    if(parameters.forReference !== true && parameters.savingJustOneComponent) {
-      let oneComponentBeingSaved = parameters.savingJustOneComponent;
-
-      if(oneComponentBeingSaved !== undefined) {
-        // We're saving a single component (and its descendants).
-        // If we have a ref to a component that isn't a descendant
-        // of the one component, we need to serialize its replacements
-        // (as a group) instead of serializing the ref to the outside component
-
-        if(!this.state.originalRefTarget.ancestors.includes(oneComponentBeingSaved)) {
-          useReplacements = true;
-        }
-       }
-    }
-
-    if(useReplacements) {
-
-      // TODO: make useful comment here
-
-      // when serializing a reference to contentId
-      // serialize non-withheld replacements
-      // rather than component itself
-      let serializedState = [];
-      let nReplacementsToSerialize = this.replacements.length;
-      if(this.replacementsToWithhold !== undefined) {
-        nReplacementsToSerialize -= this.replacementsToWithhold;
-      }
-      for(let ind = 0; ind < nReplacementsToSerialize; ind++) {
-        let serializedComponent = this.replacements[ind].serialize(parameters);
-        if(Array.isArray(serializedComponent)) {
-          serializedState.push(...serializedComponent);
-        }else {
-          serializedState.push(serializedComponent);
-        }
-  
-      }
-      
-      if(parameters.forReference !== true) {
-        serializedState = [{
-          componentType: 'group',
-          children: serializedState,
-          doenetAttributes: Object.assign({}, this.doenetAttributes),
-        }]
-      }else {
-        // TODO: determine if this check is necessary
-        if(serializedState.length === 1) {
-          return serializedState[0]
+    stateVariableDefinitions.useProp = {
+      returnDependencies: () => ({
+        propChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "atMostOneProp",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.propChild.length === 0) {
+          return {
+            newValues: { useProp: false }
+          };
         } else {
-          return serializedState;
+          return {
+            newValues: { useProp: true }
+          };
         }
       }
-
-      return serializedState;
-
-
-    } else {
-
-      let serializedState = super.serialize(parameters);
-
-      // record component name of refTarget
-      serializedState.refTargetComponentName = this.state.originalRefTargetName;
-
-      return serializedState;
     }
+
+    stateVariableDefinitions.componentTypesToCollect = {
+      returnDependencies: () => ({
+        componentTypesChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneComponentTypes",
+          variableNames: ["texts"],
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            componentTypesToCollect: dependencyValues.componentTypesChild[0].stateValues.texts
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.componentClassesToCollect = {
+      returnDependencies: () => ({
+        componentTypesToCollect: {
+          dependencyType: "stateVariable",
+          variableName: "componentTypesToCollect",
+        }
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+
+        let componentClassesToCollect = [];
+        for (let ct of dependencyValues.componentTypesToCollect) {
+          let cClass = componentInfoObjects.allComponentClasses[ct];
+          if (cClass === undefined) {
+            let message = "Cannot collect component type " + ct + ". Component type not found.";
+            console.warn(message);
+          } else {
+            componentClassesToCollect.push(cClass);
+          }
+        }
+
+        return { newValues: { componentClassesToCollect } }
+
+      }
+    }
+
+    stateVariableDefinitions.collectedComponents = {
+      stateVariablesDeterminingDependencies: ["componentTypesToCollect", "refTargetName"],
+      returnDependencies: ({ stateValues }) => ({
+        descendants: {
+          dependencyType: "componentDescendantIdentity",
+          ancestorName: stateValues.refTargetName,
+          componentTypes: stateValues.componentTypesToCollect,
+          useReplacementsForComposites: true,
+          includeNonActiveChildren: true,
+        },
+        maximumNumber: {
+          dependencyType: "stateVariable",
+          variableName: "maximumNumber"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let collectedComponents = dependencyValues.descendants;
+
+        if (dependencyValues.maximumNumber !== undefined && collectedComponents.length > dependencyValues.maximumNumber) {
+          let maxnum = Math.max(0, Math.floor(dependencyValues.maximumNumber));
+          collectedComponents = collectedComponents.slice(0, maxnum)
+        }
+
+        return {
+          newValues: { collectedComponents }
+        }
+
+      }
+    }
+
+
+
+    stateVariableDefinitions.effectiveTargetClasses = {
+      returnDependencies: () => ({
+        collectedComponents: {
+          dependencyType: "stateVariable",
+          variableName: "collectedComponents",
+        }
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let effectiveTargetClasses = dependencyValues.collectedComponents
+          .map(x => componentInfoObjects.allComponentClasses[x.componentType]);
+        return {
+          newValues: { effectiveTargetClasses }
+        };
+      },
+    };
+
+    stateVariableDefinitions.replacementClasses = {
+      additionalStateVariablesDefined: ["propVariableObjs", "stateVariablesRequested", "validProp"],
+      returnDependencies: () => ({
+        effectiveTargetClasses: {
+          dependencyType: "stateVariable",
+          variableName: "effectiveTargetClasses",
+        },
+        collectedComponents: {
+          dependencyType: "stateVariable",
+          variableName: "collectedComponents",
+        },
+        propChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneProp",
+          variableNames: ["propVariableObjs", "propComponentTypes"],
+        },
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        if (dependencyValues.propChild.length === 0) {
+          return {
+            newValues: {
+              replacementClasses: dependencyValues.effectiveTargetClasses,
+              propVariableObjs: undefined,
+              stateVariablesRequested: undefined,
+              validProp: undefined,
+            }
+          };
+        }
+
+        let propVariableObjs = dependencyValues.propChild[0].stateValues.propVariableObjs;
+        let propComponentTypes = dependencyValues.propChild[0].stateValues.propComponentTypes;
+
+        let validProp = true;
+
+        let replacementClasses = [];
+
+        if (propComponentTypes === undefined) {
+          validProp = false;
+        } else {
+          for (let propComponentType of propComponentTypes) {
+            if (propComponentType === undefined) {
+              console.warn(`Have not implemented case of collect of prop with undefined component type`)
+              validProp = false;
+              replacementClasses.push(undefined);
+            } else {
+              replacementClasses.push(componentInfoObjects.allComponentClasses[propComponentType.toLowerCase()]);
+            }
+          }
+        }
+
+        if (!validProp) {
+          return {
+            newValues: {
+              replacementClasses: undefined,
+              propVariableObjs,
+              stateVariablesRequested: undefined,
+              validProp,
+            }
+          };
+        }
+
+        let stateVariablesRequested = [];
+
+        for (let [index, propVariableObj] of propVariableObjs.entries()) {
+          stateVariablesRequested.push({
+            componentOrReplacementOf: dependencyValues.collectedComponents[index].componentName,
+            stateVariable: propVariableObj.varName,
+          })
+        }
+        return {
+          newValues: {
+            replacementClasses: replacementClasses,
+            propVariableObjs,
+            stateVariablesRequested,
+            validProp,
+          }
+        };
+
+      }
+    }
+
+
+    stateVariableDefinitions.readyToExpandWhenResolved = {
+      returnDependencies: () => ({
+        collectedComponents: {
+          dependencyType: "stateVariable",
+          variableName: "replacementClasses"
+        }
+      }),
+      definition: () => ({
+        newValues: { readyToExpandWhenResolved: true }
+      })
+    }
+
+    return stateVariableDefinitions;
+
   }
 
 
-  static createSerializedReplacements({component, components}) {
 
-    if(Object.keys(component.unresolvedState).length > 0) {
-      return {replacements: [] };
+  static createSerializedReplacements({ component, components, getComponentNamesForProp, workspace }) {
+
+
+    if (component.stateValues.refTarget === undefined) {
+      return { replacements: [] };
     }
 
     let replacements = [];
 
     let numReplacementsByCollected = [];
 
-    for(let collectedNum=0; collectedNum < component.state.collectedComponents.length; collectedNum++) {
-      if(component.state.collectedComponents[collectedNum] !== undefined) {
-        let collectedReplacements = this.createReplacementForCollected({component, collectedNum, components});
+    for (let collectedNum = 0; collectedNum < component.stateValues.collectedComponents.length; collectedNum++) {
+      if (component.stateValues.collectedComponents[collectedNum] !== undefined) {
+        let collectedReplacements = this.createReplacementForCollected({ component, collectedNum, components, getComponentNamesForProp });
         numReplacementsByCollected[collectedNum] = collectedReplacements.length;
         replacements.push(...collectedReplacements);
-      }else {
+      } else {
         numReplacementsByCollected[collectedNum] = 0;
       }
     }
 
-    return {replacements, stateVariableChanges: {numReplacementsByCollected}};
+    workspace.numReplacementsByCollected = numReplacementsByCollected;
+
+    return { replacements };
 
   }
 
 
-  static createReplacementForCollected({component, collectedNum, components}) {
-    let stateForCollected = component.state.stateForCollected[collectedNum];
-    
-    let additionalDepProperties = {
-      collectComponentName: component.componentName,
+  static createReplacementForCollected({ component, collectedNum, components, getComponentNamesForProp }) {
+
+    if (component.stateValues.useProp) {
+
+      let componentOrReplacementNames = getComponentNamesForProp(component.stateValues.collectedComponents[collectedNum].componentName);
+
+      return refReplacementFromProp({ component, components, componentOrReplacementNames });
     }
 
+    let target = components[component.stateValues.collectedComponents[collectedNum].componentName];
 
-    if(component.state.propChild !== undefined) {
+    let serializedCopy = [target.serialize({ forReference: true })];
 
-      return component.state.propChild.constructor.createSerializedReplacements({
-        component: component.state.propChild,
-        propData: stateForCollected.propData, 
-        additionalProperties: stateForCollected.properties,
-        additionalDepProperties: additionalDepProperties,
-        components,
-      });
-    }
-
-    // if creating reference directly from the target component,
-    // create a serialized copy of the entire component
-    let collectedComponent = component.state.collectedComponents[collectedNum];
-    let serializedCopy = collectedComponent.serialize({forReference: true});
-
-    if(!Array.isArray(serializedCopy)) {
-      serializedCopy = [serializedCopy];
-    }
-    
-    if(serializedCopy.length === 1) {
-      Object.assign(serializedCopy[0].state, stateForCollected.properties);
-    }
-
-    return postProcessRef({serializedComponents: serializedCopy, componentName: component.componentName});
+    return postProcessRef({ serializedComponents: serializedCopy, componentName: component.componentName });
 
   }
 
-  static calculateReplacementChanges({component, componentChanges, components}) {
+  static calculateReplacementChanges({ component, componentChanges, components }) {
 
     // console.log("Calculating replacement changes for " + component.componentName);
     let replacementChanges = [];
@@ -697,8 +403,8 @@ export default class Collect extends CompositeComponent {
     // or prop doesn't currently refer to a target
     // or didn't collect any components
     // delete the replacements (if they currently exist)
-    if(component.state.refTarget === undefined || component.state.collectedComponents.length===0) {
-      if(component.replacements.length > 0) {
+    if (component.state.refTarget === undefined || component.state.collectedComponents.length === 0) {
+      if (component.replacements.length > 0) {
         let replacementInstruction = {
           changeType: "delete",
           changeTopLevelReplacements: true,
@@ -714,11 +420,11 @@ export default class Collect extends CompositeComponent {
     }
 
     // check if refTarget has changed or previously had no collected components
-    if(component.state.previousRefTarget === undefined ||
+    if (component.state.previousRefTarget === undefined ||
       component.state.refTarget.componentName !== component.state.previousRefTarget.componentName ||
-      component.state.previousCollectedComponents.length===0) {
+      component.state.previousCollectedComponents.length === 0) {
 
-      this.recreateAllReplacements({component, replacementChanges, components});
+      this.recreateAllReplacements({ component, replacementChanges, components });
 
       return replacementChanges;
     }
@@ -727,16 +433,16 @@ export default class Collect extends CompositeComponent {
     // attempt to match the collected components
 
     // initialize as having all previous components deleted and current components created
-    let originOfCurrent = component.state.collectedComponents.map(_x=>({create: true}));
-    let destinationOfPrevious = component.state.previousCollectedComponents.map(_x=>({delete: true}));
+    let originOfCurrent = component.state.collectedComponents.map(_x => ({ create: true }));
+    let destinationOfPrevious = component.state.previousCollectedComponents.map(_x => ({ delete: true }));
 
     let lastPrevInd = -1;
-    for(let indCur = 0; indCur < component.state.collectedComponents.length; indCur++) {
+    for (let indCur = 0; indCur < component.state.collectedComponents.length; indCur++) {
       let componentName = component.state.collectedComponents[indCur].componentName;
-      for(let indPrev = lastPrevInd+1; indPrev < component.state.previousCollectedComponents.length; indPrev++) {
-        if(component.state.previousCollectedComponents[indPrev].componentName === componentName) {
-          originOfCurrent[indCur] = {create: false, fromPrevious: indPrev};
-          destinationOfPrevious[indPrev] = {delete: false, toCurrent: indCur};
+      for (let indPrev = lastPrevInd + 1; indPrev < component.state.previousCollectedComponents.length; indPrev++) {
+        if (component.state.previousCollectedComponents[indPrev].componentName === componentName) {
+          originOfCurrent[indCur] = { create: false, fromPrevious: indPrev };
+          destinationOfPrevious[indPrev] = { delete: false, toCurrent: indCur };
           lastPrevInd = indPrev;
           break;
         }
@@ -747,25 +453,25 @@ export default class Collect extends CompositeComponent {
     // include extra index so keep track of replacements in last index
     let replacementIndexByCollected = [0, ...component.state.numReplacementsByCollected];
     replacementIndexByCollected = replacementIndexByCollected.reduce(
-      (a, x, i) => [...a, x + (a[i-1] || 0)], []); 
+      (a, x, i) => [...a, x + (a[i - 1] || 0)], []);
 
     let numDeletedSoFar = 0;
     let numIndicesDeleted = 0;
     // specify delete instructions
-    for(let ind=0; ind < destinationOfPrevious.length; ind++) {
-      if(destinationOfPrevious[ind].delete) {
+    for (let ind = 0; ind < destinationOfPrevious.length; ind++) {
+      if (destinationOfPrevious[ind].delete) {
         let numToDelete = component.state.numReplacementsByCollected[ind];
-        if(numToDelete > 0) {
+        if (numToDelete > 0) {
           let replacementInstruction = {
             changeType: "delete",
             changeTopLevelReplacements: true,
-            firstReplacementInd: replacementIndexByCollected[ind-numIndicesDeleted]-numDeletedSoFar,
+            firstReplacementInd: replacementIndexByCollected[ind - numIndicesDeleted] - numDeletedSoFar,
             numberReplacementsToDelete: numToDelete,
           }
           numDeletedSoFar += numToDelete;
           replacementChanges.push(replacementInstruction);
         }
-        replacementIndexByCollected.splice(ind-numIndicesDeleted,1);
+        replacementIndexByCollected.splice(ind - numIndicesDeleted, 1);
         numIndicesDeleted++;
 
       }
@@ -775,18 +481,18 @@ export default class Collect extends CompositeComponent {
     let newNumReplacementsByCollected = [];
 
     let numReplacementsSoFar = 0;
-    
+
     // specify add or instructions
     // let lastReplacementInd = component.replacements.length;
-    for(let collectedNum=0; collectedNum < originOfCurrent.length; collectedNum++) {
-      if(originOfCurrent[collectedNum].create) {
+    for (let collectedNum = 0; collectedNum < originOfCurrent.length; collectedNum++) {
+      if (originOfCurrent[collectedNum].create) {
 
         // create new 
-        let newSerializedReplacements = this.createReplacementForCollected({component, collectedNum, components});
+        let newSerializedReplacements = this.createReplacementForCollected({ component, collectedNum, components });
         let numToAdd = newSerializedReplacements.length;
         newNumReplacementsByCollected[collectedNum] = numToAdd;
 
-        if(numToAdd > 0) {
+        if (numToAdd > 0) {
           let replacementInstruction = {
             changeType: "add",
             changeTopLevelReplacements: true,
@@ -818,7 +524,7 @@ export default class Collect extends CompositeComponent {
           replacementIndexByCollected.splice(collectedNum, 0, 0);
 
         }
-      }else {
+      } else {
         // will create any earlier current at index of this replacement index
         let prevCollectedNum = originOfCurrent[collectedNum].fromPrevious;
         // lastReplacementInd = replacementIndexByCollected[prevCollectedNum];
@@ -826,7 +532,7 @@ export default class Collect extends CompositeComponent {
         let prevNumReplacements = component.state.numReplacementsByCollected[prevCollectedNum];
 
         // if ref determined by prop
-        if(component.state.propChild !== undefined) {
+        if (component.state.propChild !== undefined) {
           let redoReplacements = false;
           let testReplacementChanges = [];
           let results;
@@ -843,28 +549,28 @@ export default class Collect extends CompositeComponent {
           });
 
 
-          let changeInstruction = testReplacementChanges[testReplacementChanges.length-1];
+          let changeInstruction = testReplacementChanges[testReplacementChanges.length - 1];
           let newSerializedReplacements = changeInstruction.serializedReplacements;
 
-          if(newSerializedReplacements.length !== prevNumReplacements) {
+          if (newSerializedReplacements.length !== prevNumReplacements) {
             redoReplacements = true;
-          }else {
-            for(let ind=0; ind < newSerializedReplacements.length; ind++) {
-              if(newSerializedReplacements[ind].componentType !== 
-                component.replacements[replacementIndexByCollected[collectedNum]+ind].componentType) {
-                redoReplacements=true;
+          } else {
+            for (let ind = 0; ind < newSerializedReplacements.length; ind++) {
+              if (newSerializedReplacements[ind].componentType !==
+                component.replacements[replacementIndexByCollected[collectedNum] + ind].componentType) {
+                redoReplacements = true;
                 break;
               }
             }
           }
 
-          if(redoReplacements) {
+          if (redoReplacements) {
             // changesByInd[numReplacementsSoFar].push(...testReplacementChanges);
             replacementChanges.push(...testReplacementChanges);
 
             newNumReplacementsByCollected[collectedNum] = results.numReplacements;
             numReplacementsSoFar += results.numReplacements;
-          }else {
+          } else {
             newNumReplacementsByCollected[collectedNum] = prevNumReplacements;
             numReplacementsSoFar += prevNumReplacements;
 
@@ -893,13 +599,13 @@ export default class Collect extends CompositeComponent {
           newNumReplacementsByCollected[collectedNum] = prevNumReplacements;
           numReplacementsSoFar += prevNumReplacements;
 
-          for(let change of additionalReplacementChanges) {
-            if(change.changeTopLevelReplacements) {
-              if(change.changeType === "add") {
+          for (let change of additionalReplacementChanges) {
+            if (change.changeTopLevelReplacements) {
+              if (change.changeType === "add") {
                 let numReplacementsAdded = change.serializedReplacements.length - change.numberReplacementsToReplace;
                 newNumReplacementsByCollected[collectedNum] += numReplacementsAdded;
                 numReplacementsSoFar += numReplacementsAdded;
-              }else if(change.changeType === "delete") {
+              } else if (change.changeType === "delete") {
                 newNumReplacementsByCollected[collectedNum] -= change.numberReplacementsToDelete;
                 numReplacementsSoFar -= change.numberReplacementsToDelete;
               }
@@ -912,7 +618,7 @@ export default class Collect extends CompositeComponent {
     let replacementInstruction = {
       changeType: "updateStateVariables",
       component: component,
-      stateChanges: {numReplacementsByCollected: newNumReplacementsByCollected},
+      stateChanges: { numReplacementsByCollected: newNumReplacementsByCollected },
       allowChangeToNonEssential: true,
     }
     replacementChanges.push(replacementInstruction);
@@ -926,14 +632,14 @@ export default class Collect extends CompositeComponent {
     let collectedDeps = {};
 
     let thisDep = this.downstreamDependencies[component.componentName];
-    if(thisDep === undefined) {
+    if (thisDep === undefined) {
       return {};
     }
 
     collectedDeps[component.componentName] = thisDep;
 
-    if(!(component instanceof this.allComponentClasses['_composite'])) {
-      for(let child of component.definingChildren) {
+    if (!(component instanceof this.allComponentClasses['_composite'])) {
+      for (let child of component.definingChildren) {
         Object.assign(collectedDeps, this.getReferenceFromCollected(child));
       }
     }
@@ -941,9 +647,9 @@ export default class Collect extends CompositeComponent {
     return collectedDeps;
   }
 
-  static recreateAllReplacements({component, replacementChanges, components}) {
+  static recreateAllReplacements({ component, replacementChanges, components }) {
     if (component.state.previousRefTarget !== undefined) {
-      if(component.state.previousRefTarget.componentName !== component.state.refTarget.componentName) {
+      if (component.state.previousRefTarget.componentName !== component.state.refTarget.componentName) {
         let replacementInstruction = {
           changeType: "moveDependency",
           dependencyDirection: "downstream",
@@ -973,7 +679,7 @@ export default class Collect extends CompositeComponent {
       replacementChanges.push(replacementInstruction);
     }
 
-    let results = this.createSerializedReplacements({component, components});
+    let results = this.createSerializedReplacements({ component, components });
 
     let replacementInstruction = {
       changeType: "add",
@@ -992,7 +698,7 @@ export default class Collect extends CompositeComponent {
     }
     replacementChanges.push(replacementInstruction);
 
-    for(let collectedNum=0; collectedNum < component.state.collectedComponents.length; collectedNum++) {
+    for (let collectedNum = 0; collectedNum < component.state.collectedComponents.length; collectedNum++) {
       replacementInstruction = {
         changeType: "addDependency",
         dependencyDirection: "downstream",
@@ -1000,7 +706,7 @@ export default class Collect extends CompositeComponent {
         dependencyType: "reference",
         otherAttributes: { shadowed: true }
       };
-      if(component.state.propChild === undefined) {
+      if (component.state.propChild === undefined) {
         replacementInstruction.recurseToChildren = true;
       } else {
         replacementInstruction.otherAttributes.prop = component.state.propChild.componentName;
@@ -1011,9 +717,9 @@ export default class Collect extends CompositeComponent {
   }
 
 
-  static recreateReplacements({component, collectedNum, numReplacementsSoFar, prevNumReplacements, replacementChanges, components}) {
- 
-    let newSerializedChildren = this.createReplacementForCollected({component, collectedNum, components});
+  static recreateReplacements({ component, collectedNum, numReplacementsSoFar, prevNumReplacements, replacementChanges, components }) {
+
+    let newSerializedChildren = this.createReplacementForCollected({ component, collectedNum, components });
 
     let replacementInstruction = {
       changeType: "add",
@@ -1024,7 +730,7 @@ export default class Collect extends CompositeComponent {
     };
     replacementChanges.push(replacementInstruction);
 
-    return {numReplacements: newSerializedChildren.length}
+    return { numReplacements: newSerializedChildren.length }
   }
 
 }

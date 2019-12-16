@@ -5,12 +5,12 @@ export default class BooleanList extends InlineComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.unordered = {default: false};
-    properties.maximumnumber = {default: undefined};
+    properties.unordered = { default: false };
+    properties.maximumNumber = { default: undefined };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroBooleans = childLogic.newLeaf({
@@ -27,11 +27,11 @@ export default class BooleanList extends InlineComponent {
       number: 0
     });
 
-    let breakStringIntoBooleansByCommas = function({activeChildrenMatched}) {
+    let breakStringIntoBooleansByCommas = function ({ activeChildrenMatched }) {
       let stringChild = activeChildrenMatched[0];
-      let newChildren = stringChild.state.value.split(",").map(x=> ({
+      let newChildren = stringChild.stateValues.value.split(",").map(x => ({
         componentType: "boolean",
-        state: {value: ["true","t"].includes(x.trim().toLowerCase())}
+        state: { value: ["true", "t"].includes(x.trim().toLowerCase()) }
       }));
       return {
         success: true,
@@ -39,15 +39,16 @@ export default class BooleanList extends InlineComponent {
         toDelete: [stringChild.componentName],
       }
     }
-    
+
     let exactlyOneString = childLogic.newLeaf({
       name: "exactlyOneString",
       componentType: 'string',
       number: 1,
       isSugar: true,
+      affectedBySugar: ["atLeastZeroBooleans"],
       replacementFunction: breakStringIntoBooleansByCommas,
     });
-    
+
     let booleanAndBooleanLists = childLogic.newOperator({
       name: "booleanAndBooleanLists",
       operator: "and",
@@ -64,73 +65,95 @@ export default class BooleanList extends InlineComponent {
     return childLogic;
   }
 
-  updateState(args={}) {
-    if(args.init === true) {
-      this.makePublicStateVariableArray({
-        variableName: "booleans",
-        componentType: "boolean",
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "boolean",
-        arrayVariableName: "booleans",
-      });
-      this.makePublicStateVariable({
-        variableName: "ncomponents",
-        componentType: "number",
-      })
-    }
 
-    super.updateState(args);
+  static returnStateVariableDefinitions() {
 
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.booleans = true;
-      this.unresolvedState.ncomponents = true;
-      return;
-    }
+    let stateVariableDefinitions = {};
 
-    delete this.unresolvedState.booleans;
-    delete this.unresolvedState.ncomponents;
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if (childrenChanged) {
-      let booleanAndBooleanlistChildrenInds = this.childLogic.returnMatches("booleanAndBooleanLists");
-      this.state.booleanAndBooleanlistChildren = booleanAndBooleanlistChildrenInds.map(x => this.activeChildren[x]);
-      let booleanChildrenInds = this.childLogic.returnMatches("atLeastZeroBooleans");
-      this.state.booleanChildren = booleanChildrenInds.map(x => this.activeChildren[x]);
-      let booleanlistChildrenInds = this.childLogic.returnMatches("atLeastZeroBooleanlists");
-      this.state.booleanlistChildren = booleanlistChildrenInds.map(x => this.activeChildren[x]);
-
-    }
-
-    if (this.state.booleanChildren.some(x => x.unresolvedState.value) ||
-      this.state.booleanlistChildren.some(x => x.unresolvedState.booleans)
-    ) {
-      this.unresolvedState.booleans = true;
-      this.unresolvedState.ncomponents = true;
-      return;
-    }
-
-
-    this.state.booleans = [];
-
-    for(let child of this.state.booleanAndBooleanlistChildren) {
-      if(child.componentType === "boolean") {
-        this.state.booleans.push(child.state.value);
-      } else{
-        this.state.booleans.push(...child.state.booleans)
+    stateVariableDefinitions.booleanAndBooleanlistChildren = {
+      returnDependencies: () => ({
+        booleanAndBooleanlistChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "booleanAndBooleanLists",
+          variableNames: ["value"],
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            booleanAndBooleanlistChildren: dependencyValues.booleanAndBooleanlistChildren
+          }
+        }
       }
     }
 
-    if(this.state.maximumnumber !== undefined && this.state.booleans.length > this.state.maximumnumber) {
-      let maxnum = Math.max(0,Math.floor(this.state.maximumnumber));
-      this.state.booleans = this.state.booleans.slice(0,maxnum)
+    stateVariableDefinitions.booleans = {
+      public: true,
+      componentType: "boolean",
+      isArray: true,
+      entryPrefixes: ["boolean"],
+      returnDependencies: () => ({
+        booleanAndBooleanlistChildren: {
+          dependencyType: "stateVariable",
+          variableName: "booleanAndBooleanlistChildren",
+        },
+        booleanChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroBooleans",
+          variableNames: ["value"],
+        },
+        booleanlistChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroBooleanlists",
+          variableNames: ["booleans"],
+        },
+        maximumNumber: {
+          dependencyType: "stateVariable",
+          variableName: "maximumNumber",
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        let booleanNumber = 0;
+        let booleanlistNumber = 0;
+        let booleans = [];
+
+        for (let child of dependencyValues.booleanAndBooleanlistChildren) {
+          if (child.componentType === "boolean") {
+            booleans.push(dependencyValues.booleanChildren[booleanNumber].stateValues.value);
+            booleanNumber++;
+          } else {
+            booleans.push(...dependencyValues.booleanlistChildren[booleanlistNumber].stateValues.booleans);
+          }
+        }
+
+        let maxNum = dependencyValues.maximumNumber;
+        if (maxNum !== undefined && booleans.length > maxNum) {
+          maxNum = Math.max(0, Math.floor(maxNum));
+          booleans = booleans.slice(0, maxNum)
+        }
+
+        return { newValues: { booleans } }
+
+      }
     }
 
-    this.state.ncomponents = this.state.booleans.length;
+    stateVariableDefinitions.ncomponents = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        booleans: {
+          dependencyType: "stateVariable",
+          variableName: "booleans"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { ncomponents: dependencyValues.booleans.length } }
+      }
+    }
 
+    return stateVariableDefinitions;
   }
+
 
 
   initializeRenderer() {
@@ -144,15 +167,19 @@ export default class BooleanList extends InlineComponent {
   updateChildrenWhoRender() {
 
     this.childrenWhoRender = [];
-    for (let child of this.state.booleanAndBooleanlistChildren) {
+    for (let child of this.stateValues.booleanAndBooleanlistChildren) {
       if (child.componentType === "boolean") {
         this.childrenWhoRender.push(child.componentName);
       } else {
-        this.childrenWhoRender.push(...child.childrenWhoRender);
+        // state variable doesn't contain entire component,
+        // just componentType and componentName
+        // Look up actual component from allChildren
+        let childComponent = this.allChildren[child.componentName].component
+        this.childrenWhoRender.push(...childComponent.childrenWhoRender);
       }
     }
-    if (this.childrenWhoRender.length > this.state.ncomponents) {
-      this.childrenWhoRender.length = this.state.ncomponents;
+    if (this.childrenWhoRender.length > this.stateValues.ncomponents) {
+      this.childrenWhoRender.length = this.stateValues.ncomponents;
     }
 
   }

@@ -12,8 +12,6 @@ export default class Ref extends CompositeComponent {
   }
   static componentType = "ref";
 
-  static alwaysContinueUpstreamUpdates = true;
-
   static takesComponentName = true;
 
   static refPropOfReplacements = true;
@@ -83,6 +81,7 @@ export default class Ref extends CompositeComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
+      affectedBySugar: ["exactlyOneRefTarget"],
       replacementFunction: addRefTarget,
     });
 
@@ -998,7 +997,11 @@ export default class Ref extends CompositeComponent {
     // if creating reference from a prop
     // manually create the serialized state
     if (component.stateValues.useProp) {
-      return { replacements: this.refReplacementFromProp({ component, components, getComponentNamesForProp }) };
+      let componentOrReplacementNames = getComponentNamesForProp(component.stateValues.refTargetName);
+
+      return { replacements: refReplacementFromProp({ 
+        component, components, componentOrReplacementNames
+       }) };
     }
 
     // TODO: check if inactive?
@@ -1050,105 +1053,6 @@ export default class Ref extends CompositeComponent {
 
   // }
 
-  static refReplacementFromProp({ component, components, getComponentNamesForProp }) {
-
-    let additionalDepProperties = {
-      refComponentName: component.componentName,
-    }
-    // if (component.state.childnumber !== undefined) {
-    //   additionalDepProperties.childnumber = component.state.childnumber;
-    // }
-
-    let serializedReplacements = [];
-
-    let componentOrReplacementNames = getComponentNamesForProp(component.stateValues.refTargetName);
-
-    // TODO: correctly generalize to more than one component
-    for (let [index, replacementClass] of component.stateValues.replacementClasses.entries()) {
-      let propVariableObj = component.stateValues.propVariableObjs[index];
-      let targetName = componentOrReplacementNames[index];
-      let targetComponent = components[targetName];
-
-      let componentType = replacementClass.componentType
-
-      if (propVariableObj.isArray) {
-        let arrayStateVarObj = targetComponent.state[propVariableObj.varName];
-
-        // TODO: generalize to multi-dimensional arrays
-
-        for (let ind in arrayStateVarObj.value) {
-          let arrayKey = arrayStateVarObj.indexToKey(ind);
-          serializedReplacements.push({
-            componentType,
-            downstreamDependencies: {
-              [componentOrReplacementNames[index]]: {
-                dependencyType: "referenceShadow",
-                refComponentName: component.componentName,
-                propVariable: arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey),
-                // arrayStateVariable: propVariableObj.varName,
-                // arrayKey
-              }
-            }
-          })
-        }
-      } else if (propVariableObj.isArrayEntry) {
-
-        let arrayStateVarObj = targetComponent.state[propVariableObj.arrayVarName];
-        let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
-          varEnding: propVariableObj.varEnding,
-          arrayEntryPrefix: propVariableObj.arrayEntryPrefix,
-        });
-
-        // TODO: commented out below two conditiions to get tests to pass
-        // Check why these conditions were added inthe first place.
-
-        // let entryValue = targetComponent.state[propVariableObj.varName].value;
-
-        // if (entryValue !== undefined) {
-        for (let arrayKey of arrayKeys) {
-          // if (arrayStateVarObj.getArrayValue({ arrayKey }) !== undefined) {
-          serializedReplacements.push({
-            componentType,
-            downstreamDependencies: {
-              [componentOrReplacementNames[index]]: {
-                dependencyType: "referenceShadow",
-                refComponentName: component.componentName,
-                propVariable: arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey),
-                // propVariable: propVariableObj.varName,
-                // arrayStateVariable: propVariableObj.arrayVarName,
-                // arrayKey
-              }
-            }
-          })
-          // }
-          // }
-
-        }
-      } else {
-        serializedReplacements.push({
-          componentType,
-          downstreamDependencies: {
-            [componentOrReplacementNames]: {
-              dependencyType: "referenceShadow",
-              refComponentName: component.componentName,
-              propVariable: propVariableObj.varName,
-            }
-          }
-        })
-      }
-    }
-
-    return serializedReplacements;
-
-    return component.state.propChild.constructor.createSerializedReplacements({
-      component: component.state.propChild,
-      propData: component.state.propData,
-      additionalProperties: additionalProperties,
-      additionalDepProperties: additionalDepProperties,
-      components: components,
-    });
-
-  }
 
   static calculateReplacementChanges({ component, componentChanges, components }) {
 
@@ -1433,6 +1337,97 @@ export default class Ref extends CompositeComponent {
       replacementChanges.push(replacementInstruction);
     }
   }
+
+}
+
+export function refReplacementFromProp({ component, components, componentOrReplacementNames }) {
+
+  let additionalDepProperties = {
+    refComponentName: component.componentName,
+  }
+  // if (component.state.childnumber !== undefined) {
+  //   additionalDepProperties.childnumber = component.state.childnumber;
+  // }
+
+  let serializedReplacements = [];
+
+
+  // TODO: correctly generalize to more than one component
+  for (let [index, replacementClass] of component.stateValues.replacementClasses.entries()) {
+    let propVariableObj = component.stateValues.propVariableObjs[index];
+    let targetName = componentOrReplacementNames[index];
+    let targetComponent = components[targetName];
+
+    let componentType = replacementClass.componentType
+
+    if (propVariableObj.isArray) {
+      let arrayStateVarObj = targetComponent.state[propVariableObj.varName];
+
+      // TODO: generalize to multi-dimensional arrays
+
+      for (let ind in arrayStateVarObj.value) {
+        let arrayKey = arrayStateVarObj.indexToKey(ind);
+        serializedReplacements.push({
+          componentType,
+          downstreamDependencies: {
+            [componentOrReplacementNames[index]]: {
+              dependencyType: "referenceShadow",
+              refComponentName: component.componentName,
+              propVariable: arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey),
+              // arrayStateVariable: propVariableObj.varName,
+              // arrayKey
+            }
+          }
+        })
+      }
+    } else if (propVariableObj.isArrayEntry) {
+
+      let arrayStateVarObj = targetComponent.state[propVariableObj.arrayVarName];
+      let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
+        varEnding: propVariableObj.varEnding,
+        arrayEntryPrefix: propVariableObj.arrayEntryPrefix,
+      });
+
+      // TODO: commented out below two conditiions to get tests to pass
+      // Check why these conditions were added in the first place.
+
+      // let entryValue = targetComponent.state[propVariableObj.varName].value;
+
+      // if (entryValue !== undefined) {
+      for (let arrayKey of arrayKeys) {
+        // if (arrayStateVarObj.getArrayValue({ arrayKey }) !== undefined) {
+        serializedReplacements.push({
+          componentType,
+          downstreamDependencies: {
+            [componentOrReplacementNames[index]]: {
+              dependencyType: "referenceShadow",
+              refComponentName: component.componentName,
+              propVariable: arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey),
+              // propVariable: propVariableObj.varName,
+              // arrayStateVariable: propVariableObj.arrayVarName,
+              // arrayKey
+            }
+          }
+        })
+        // }
+        // }
+
+      }
+    } else {
+      serializedReplacements.push({
+        componentType,
+        downstreamDependencies: {
+          [componentOrReplacementNames]: {
+            dependencyType: "referenceShadow",
+            refComponentName: component.componentName,
+            propVariable: propVariableObj.varName,
+          }
+        }
+      })
+    }
+  }
+
+  return serializedReplacements;
 
 }
 

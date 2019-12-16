@@ -73,8 +73,6 @@ export default class Prop extends BaseComponent {
         let standardComponentClasses = componentInfoObjects.standardComponentClasses;
         let allPossibleProperties = componentInfoObjects.allPossibleProperties;
 
-        // just pick first class
-        // TODO: should we check more if there are more?
         for (let targetClass of dependencyValues.effectiveTargetClasses) {
 
           let publicStateVariablesInfo = targetClass.returnStateVariableInfo({ onlyPublic: true, standardComponentClasses, allPossibleProperties });

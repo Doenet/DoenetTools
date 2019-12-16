@@ -796,76 +796,6 @@ export default class BaseComponent {
     return [];
   }
 
-  get descendantSearchClasses() {
-    return [];
-  }
-
-  gatherDescendants() {
-    const descendantsFound = {};
-    for (let classObj of this.descendantSearchClasses) {
-      let classNames = [];
-      let conditionFunction;
-      let recurseToMatchedChildren = true;
-      let key;
-      if (typeof classObj === "string") {
-        classNames = [classObj];
-        key = classObj;
-      } else {
-        if (classObj.skip) {
-          continue;
-        }
-        classNames = classObj.classNames;
-        conditionFunction = classObj.childCondition;
-        key = classObj.key;
-        if ('recurseToMatchedChildren' in classObj) {
-          recurseToMatchedChildren = classObj.recurseToMatchedChildren;
-        }
-
-      }
-      const descendants = descendantsFound[key] = [];
-      let descendantClasses = classNames.map(x => this.allComponentClasses[x]);
-
-      this.gatherDescendantsSub({
-        activeChildren: this.activeChildren,
-        descendantClasses: descendantClasses,
-        conditionFunction: conditionFunction,
-        recurseToMatchedChildren: recurseToMatchedChildren,
-        descendants: descendants,
-      });
-    }
-
-    this.descendantsFound = descendantsFound;
-  }
-
-  gatherDescendantsSub({ activeChildren, descendantClasses, conditionFunction,
-    recurseToMatchedChildren, descendants }) {
-
-    for (let child of activeChildren) {
-      let matchedChild = false;
-      if (descendantClasses.some(x => child instanceof x)) {
-        if (conditionFunction === undefined) {
-          matchedChild = true;
-        } else if (conditionFunction(child)) {
-          matchedChild = true;
-        }
-      }
-      if (matchedChild) {
-        descendants.push(child);
-      }
-
-      if (!matchedChild || recurseToMatchedChildren) {
-        // recurse
-        this.gatherDescendantsSub({
-          activeChildren: child.activeChildren,
-          descendantClasses: descendantClasses,
-          conditionFunction: conditionFunction,
-          recurseToMatchedChildren: recurseToMatchedChildren,
-          descendants: descendants
-        });
-      }
-    }
-  }
-
   returnSerializeInstructions() {
     return {};
   }
@@ -1077,41 +1007,6 @@ export default class BaseComponent {
       state: newState,
     };
 
-  }
-
-  addReferenceDependencies({ target, recursive = false, shadowed = false }) {
-    let thisDep = this.downstreamDependencies[target.componentName];
-    if (thisDep === undefined) {
-      thisDep = this.downstreamDependencies[target.componentName] = {
-        dependencyType: "reference",
-        component: target,
-      };
-    }
-    if (shadowed === true) {
-      thisDep.shadowed = true;
-    }
-    if (recursive === true) {
-      if (target.stateVariablesForReference === undefined) {
-        if (target instanceof this.allComponentClasses['_composite']) {
-          for (let repl of target.replacements) {
-            this.addReferenceDependencies({
-              target: repl, recursive: recursive, shadowed: shadowed
-            });
-          }
-        } else {
-          for (let child of target.definingChildren) {
-            if (!child.componentIsAProperty) {
-              this.addReferenceDependencies({
-                target: child, recursive: recursive, shadowed: shadowed
-              });
-            }
-          }
-        }
-      }
-    } else {
-      // if not recursive, mark the dependency as the base reference
-      thisDep.baseReference = true;
-    }
   }
 
   applyConstraints(variables, constraintChildrenIndices) {

@@ -517,8 +517,8 @@ export class NumberDigits extends Integer {
   static componentType = "numberdigits";
 }
 
-export class Components extends TextList {
-  static componentType = "components";
+export class ComponentTypes extends TextList {
+  static componentType = "componenttypes";
 }
 
 export class Source extends TextComponent {

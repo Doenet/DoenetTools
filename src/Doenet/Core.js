@@ -7,7 +7,7 @@ import MersenneTwister from 'mersenne-twister';
 import me from 'math-expressions';
 import { createUniqueName } from './utils/naming';
 import * as serializeFunctions from './utils/serializedStateProcessing';
-import { deepClone } from './utils/deepFunctions';
+import { gatherDescendants } from './utils/descendants';
 
 // string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -109,6 +109,8 @@ export default class Core {
     this._renderComponents = [];
     this._renderComponentsByName = {};
     this._graphRenderComponents = [];
+
+    this.descendantDependenciesByAncestor = {};
 
     // console.timeEnd('serialize doenetML');
 
@@ -923,10 +925,6 @@ export default class Core {
       applyAdapters: true,
     });
 
-    if (childLogicResults.success) {
-      component.gatherDescendants();
-    }
-
     return childLogicResults;
 
   }
@@ -999,9 +997,9 @@ export default class Core {
 
     // TODO: verify this works and understand what it does
     if (component.stateValues.stateVariablesRequested) {
-      let componentOrReplacementNames = this.getComponentNamesForProp(component.stateValues.stateVariablesRequested[0].componentOrReplacementOf);
-      for (let [index, stateVarInfo] of component.stateValues.stateVariablesRequested.entries()) {
-        let targetComponent = this._components[componentOrReplacementNames[index]];
+      for (let stateVarInfo of component.stateValues.stateVariablesRequested) {
+        let componentOrReplacementNames = this.getComponentNamesForProp(stateVarInfo.componentOrReplacementOf);
+        let targetComponent = this._components[componentOrReplacementNames[0]];
         let targetVarObj = targetComponent.state[stateVarInfo.stateVariable];
 
         if (targetVarObj === undefined) {
@@ -1573,7 +1571,7 @@ export default class Core {
         console.error(`Child logic of ${component.componentName} is not satisfied after failing to apply sugar`)
       }
 
-      this.markChildDependenciesChanged(component);
+      this.markChildAndDescendantDependenciesChanged(component);
 
       return
     }
@@ -1594,7 +1592,7 @@ export default class Core {
       console.error(`Child logic of ${component.componentName} is not satisfied after applying sugar`)
     }
 
-    this.markChildDependenciesChanged(component);
+    this.markChildAndDescendantDependenciesChanged(component);
 
     if (sugarResults.childChanges === undefined) {
       return;
@@ -1622,7 +1620,7 @@ export default class Core {
         console.error(`Child logic of ${component.componentName} is not satisfied after applying sugar`)
       }
 
-      this.markChildDependenciesChanged(child);
+      this.markChildAndDescendantDependenciesChanged(child);
 
     }
 
@@ -1765,6 +1763,7 @@ export default class Core {
             dependencyType: "childStateVariables",
             childLogicName: childLogicName,
             variableNames: [stateVariableForPropertyValue],
+            markChildrenAsProperties: true,
           },
           ancestorProp: {
             dependencyType: "componentStateVariable",
@@ -1828,6 +1827,7 @@ export default class Core {
             dependencyType: "childStateVariables",
             childLogicName: childLogicName,
             variableNames: [stateVariableForPropertyValue],
+            markChildrenAsProperties: true,
           },
         });
         definition = function ({ dependencyValues }) {
@@ -2660,17 +2660,23 @@ export default class Core {
         newDep.doNotProxy = true;
       }
 
-      if (dep.dependencyType === "childStateVariables") {
+      if (dep.dependencyType === "childStateVariables" || dep.dependencyType === "childIdentity") {
         let activeChildrenIndices = component.childLogic.returnMatches(dep.childLogicName);
         if (activeChildrenIndices === undefined) {
           throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${depName}: childLogicName ${dep.childLogicName} does not exist.`);
         }
-        if (!Array.isArray(dep.variableNames)) {
-          throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${depName}: variableNames must be an array`)
+
+        let varNames;
+        if (dep.dependencyType === "childStateVariables") {
+          if (!Array.isArray(dep.variableNames)) {
+            throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${depName}: variableNames must be an array`)
+          }
+          varNames = newDep.downstreamVariableNames = dep.variableNames;
+        } else {
+          varNames = ['__identity'];
         }
 
         newDep.componentIdentitiesChanged = true;
-        newDep.downstreamVariableNames = dep.variableNames;
         if (activeChildrenIndices.length === 0) {
           newDep.downstreamComponentNames = [];
         }
@@ -2683,14 +2689,23 @@ export default class Core {
             valuesChanged.push(dep.variableNames);
           }
           newDep.downstreamComponentNames = children;
-          newDep.valuesChanged = valuesChanged;
-          for (let childIndex of activeChildrenIndices) {
-            let childName = component.activeChildren[childIndex].componentName;
+          if (dep.dependencyType === "childStateVariables") {
+            newDep.valuesChanged = valuesChanged;
+          }
+
+          if (dep.markChildrenAsProperties) {
+            for (let childIndex of activeChildrenIndices) {
+              component.activeChildren[childIndex].componentIsAProperty = true;
+            }
+          }
+
+          for (let childName of children) {
             let childUp = this.upstreamDependencies[childName];
             if (!childUp) {
               childUp = this.upstreamDependencies[childName] = {};
             }
-            for (let varName of dep.variableNames) {
+            // varNames is ['__identity'] if child identity
+            for (let varName of varNames) {
               if (childUp[varName] === undefined) {
                 childUp[varName] = [];
               }
@@ -2702,7 +2717,11 @@ export default class Core {
         let childLogicStateVariable = `__childLogic_${dep.childLogicName}`;
         if (childLogicStateVariable in component.state) {
           // have a state variable in component corresponding to the child logic
+          // (which happens when have sugar that isn't resolved yet)
           // so make a dependency to it
+          // This will prevent the state variable from being resolved until
+          // after the sugar is applied, so that the state variable can
+          // count on having the sugar applied
           let childLogicDependency = {
             dependencyName: `_${depName}_childLogic`,
             dependencyType: 'stateVariable',
@@ -2722,35 +2741,81 @@ export default class Core {
 
 
       }
-      else if (dep.dependencyType === "childIdentity") {
-        let activeChildrenIndices = component.childLogic.returnMatches(dep.childLogicName);
-        if (activeChildrenIndices === undefined) {
-          throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${depName}: childLogicName ${dep.childLogicName} does not exist.`);
+      else if (["descendantStateVariables", "descendantIdentity", "componentDescendantStateVariables", "componentDescendantIdentity"].includes(dep.dependencyType)) {
+
+        let ancestor = component;
+        if (["componentDescendantStateVariables", "componentDescendantIdentity"].includes(dep.dependencyType)) {
+          ancestor = this.components[dep.ancestorName];
+
+          // now treat the same regardless of ancestor determined
+          if (dep.dependencyType === "componentDescendantStateVariables") {
+            newDep.dependencyType = "descendantStateVariables";
+          } else {
+            newDep.dependencyType = "descendantIdentity";
+          }
         }
+
+        newDep.ancestor = ancestor;
+
+        if (!this.descendantDependenciesByAncestor[ancestor.componentName]) {
+          this.descendantDependenciesByAncestor[ancestor.componentName] = [];
+        }
+        this.descendantDependenciesByAncestor[ancestor.componentName].push({
+          componentName: component.componentName,
+          stateVariable,
+          depName,
+        });
+
+        let descendants = gatherDescendants({
+          ancestor,
+          descendantClasses: dep.componentTypes.map(x => this.allComponentClasses[x]),
+          recurseToMatchedChildren: dep.recurseToMatchedChildren,
+          useReplacementsForComposites: dep.useReplacementsForComposites,
+          includeNonActiveChildren: dep.includeNonActiveChildren,
+          includePropertyChildren: dep.includePropertyChildren,
+          compositeClass: this.allComponentClasses._composite,
+        });
+
+        newDep.componentTypes = dep.componentTypes;
+        newDep.recurseToMatchedChildren = dep.recurseToMatchedChildren;
+        newDep.useReplacementsForComposites = dep.useReplacementsForComposites;
+        newDep.includeNonActiveChildren = dep.includeNonActiveChildren;
+        newDep.includePropertyChildren = dep.includePropertyChildren;
+
+        let requestStateVariables = newDep.dependencyType === "descendantStateVariables";
+
+        let varNames;
+        if (requestStateVariables) {
+          if (!Array.isArray(dep.variableNames)) {
+            throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${depName}: variableNames must be an array`)
+          }
+          varNames = newDep.downstreamVariableNames = dep.variableNames;
+        } else {
+          varNames = ['__identity'];
+        }
+
         newDep.componentIdentitiesChanged = true;
-        // newDep.downstreamVariableNames = [];
-        if (activeChildrenIndices.length === 0) {
-          newDep.downstreamComponentNames = [];
+        newDep.downstreamComponentNames = descendants;
+        if (requestStateVariables) {
+          newDep.valuesChanged = descendants.map(() => dep.variableNames);
         }
-        else {
-          let children = [];
-          for (let childIndex of activeChildrenIndices) {
-            let childName = component.activeChildren[childIndex].componentName;
-            children.push(childName);
+
+        for (let descendantName of descendants) {
+          let descendantUp = this.upstreamDependencies[descendantName];
+          if (!descendantUp) {
+            descendantUp = this.upstreamDependencies[descendantName] = {};
           }
-          newDep.downstreamComponentNames = children;
-          for (let childIndex of activeChildrenIndices) {
-            let childName = component.activeChildren[childIndex].componentName;
-            let childUp = this.upstreamDependencies[childName];
-            if (!childUp) {
-              childUp = this.upstreamDependencies[childName] = {};
+          // varNames is ['__identity'] if identity
+          for (let varName of varNames) {
+            if (descendantUp[varName] === undefined) {
+              descendantUp[varName] = [];
             }
-            if (childUp['__identity'] === undefined) {
-              childUp['__identity'] = [];
-            }
-            childUp['__identity'].push(newDep);
+            descendantUp[varName].push(newDep);
           }
+
+
         }
+
       }
       else if (dep.dependencyType === "stateVariable" || dep.dependencyType === "stateVariableResolved") {
         newDep.downstreamComponentName = component.componentName;
@@ -3344,7 +3409,10 @@ export default class Core {
       let value;
 
       if (dep.dependencyType === "childStateVariables" ||
-        dep.dependencyType === "childIdentity") {
+        dep.dependencyType === "childIdentity" ||
+        dep.dependencyType === "descendantStateVariables" ||
+        dep.dependencyType === "descendantIdentity"
+      ) {
 
         let newDep = [];
         let newChanges = {};
@@ -4041,7 +4109,8 @@ export default class Core {
 
   }
 
-  markChildDependenciesChanged(component) {
+
+  markChildAndDescendantDependenciesChanged(component) {
 
     let componentsTouched = [];
 
@@ -4051,15 +4120,33 @@ export default class Core {
 
     let componentName = component.componentName;
 
-    if (!(componentName in this.downstreamDependencies)) {
-      // this is first time through, so don't do anything
-      return componentsTouched;
+    if (componentName in this.downstreamDependencies) {
+      // only need to change child dependencies if the component already has dependencies
+      componentsTouched = this.markChildDependenciesChanged(component);
     }
+
+    if (component.ancestors) {
+
+      // if component or its ancestors are the ancestor
+      // of a descendant state variable
+      // then need to recalculate dependencies of that state variable
+      componentsTouched.push(...this.markDescendantDependenciesChanged(component));
+
+    }
+
+    return componentsTouched;
+
+  }
+
+  markChildDependenciesChanged(component) {
+
+    let componentName = component.componentName;
+    let componentsTouched = [];
 
     // before making any changes, go through and find out if there are
     // any components with state variables determining dependencies
     // and get the value fo those state variables
-    let stateValuesForDependencies = {}
+    let stateValuesForDependencies = {};
     for (let varName in component.state) {
       let stateVarObj = component.state[varName];
       if (stateVarObj.stateVariablesDeterminingDependencies) {
@@ -4074,9 +4161,7 @@ export default class Core {
     }
 
     for (let varName in component.state) {
-
       let stateVarObj = component.state[varName];
-
       let stateValues;
       if (stateVarObj.stateVariablesDeterminingDependencies) {
         let missingAValue = false;
@@ -4085,11 +4170,11 @@ export default class Core {
             missingAValue = true;
             break;
           }
-          stateValues[varName2] = stateValuesForDependencies[varName2]
+          stateValues[varName2] = stateValuesForDependencies[varName2];
         }
         if (missingAValue) {
           // if a value determining dependencies isn't defined
-          // then we can reexamine the state variable dependencies
+          // then we can't reexamine the state variable dependencies
           continue;
         }
       }
@@ -4103,26 +4188,22 @@ export default class Core {
       });
 
       let downDeps = this.downstreamDependencies[componentName][varName];
-
       let varDepsChanged = false;
 
       for (let depName in dependencyDefinitions) {
         let depDef = dependencyDefinitions[depName];
         let currentDep = downDeps[depName];
-
         if (depDef.dependencyType === "childStateVariables" || depDef.dependencyType === "childIdentity") {
-
           let childrenChanged = false;
-
           let activeChildrenIndices = component.childLogic.returnMatches(depDef.childLogicName);
           if (activeChildrenIndices === undefined) {
-            throw Error(`Invalid state variable ${varName} of ${component.componentName}: childLogicName ${depDef.childLogicName} does not exist.`)
+            throw Error(`Invalid state variable ${varName} of ${component.componentName}: childLogicName ${depDef.childLogicName} does not exist.`);
           }
           let newChildren = activeChildrenIndices.map(x => component.activeChildren[x].componentName);
-
           if (newChildren.length !== currentDep.downstreamComponentNames.length) {
             childrenChanged = true;
-          } else {
+          }
+          else {
             for (let [ind, childName] of newChildren) {
               if (childName !== currentDep.downstreamComponentNames[ind]) {
                 childrenChanged = true;
@@ -4133,15 +4214,13 @@ export default class Core {
 
           if (childrenChanged) {
             varDepsChanged = true;
-
             currentDep.componentIdentitiesChanged = true;
-
             let children = [];
             let valuesChanged = [];
             for (let childIndex of activeChildrenIndices) {
               let childName = component.activeChildren[childIndex].componentName;
               children.push(childName);
-              valuesChanged.push(depDef.variableNames)
+              valuesChanged.push(depDef.variableNames);
             }
 
             // change upstream dependencies
@@ -4149,17 +4228,16 @@ export default class Core {
               if (!children.includes(currentChild)) {
                 // lost a child.  remove dependency
                 // and change any child state variable that refer to parent state variables
-
                 componentsTouched.push(currentChild);
                 let additionalComponentsTouched = this.changeParentStateVariables(currentChild);
                 componentsTouched.push(...additionalComponentsTouched);
-
                 let childUpDep = this.upstreamDependencies[currentChild];
                 let depNamesToCheck = [];
                 if (currentDep.downstreamVariableNames) {
                   depNamesToCheck = currentDep.downstreamVariableNames;
-                } else {
-                  depNamesToCheck = ['__identity']
+                }
+                else {
+                  depNamesToCheck = ['__identity'];
                 }
                 for (let vName of depNamesToCheck) {
                   let upDeps = childUpDep[vName];
@@ -4177,12 +4255,9 @@ export default class Core {
               if (!currentDep.downstreamComponentNames.includes(newChild)) {
                 // gained a child.  add dependency
                 // and change any child state variable that refer to parent state variables
-
                 componentsTouched.push(newChild);
-
                 let additionalComponentsTouched = this.changeParentStateVariables(newChild);
                 componentsTouched.push(...additionalComponentsTouched);
-
                 let childUpDep = this.upstreamDependencies[newChild];
                 if (childUpDep === undefined) {
                   childUpDep = this.upstreamDependencies[newChild] = {};
@@ -4194,7 +4269,8 @@ export default class Core {
                     }
                     childUpDep[vName].push(currentDep);
                   }
-                } else if (currentDep.dependencyType === "childIdentity") {
+                }
+                else if (currentDep.dependencyType === "childIdentity") {
                   if (childUpDep['__identity'] === undefined) {
                     childUpDep['__identity'] = [];
                   }
@@ -4205,9 +4281,7 @@ export default class Core {
 
             currentDep.downstreamComponentNames = children;
             currentDep.valuesChanged = valuesChanged;
-
           }
-
         }
       }
 
@@ -4217,6 +4291,121 @@ export default class Core {
         componentsTouched.push(...additionalComponentsTouched);
       }
     }
+
+    return componentsTouched;
+
+  }
+
+  markDescendantDependenciesChanged(component) {
+
+    let componentsTouched = [];
+
+    let componentAndAncestors = [component.componentName, ...component.ancestors];
+
+    for (let ancestorName of componentAndAncestors) {
+      if (this.descendantDependenciesByAncestor[ancestorName]) {
+        for (let depDescription of this.descendantDependenciesByAncestor[ancestorName]) {
+          let cName = depDescription.componentName;
+          let varName = depDescription.stateVariable;
+          let depName = depDescription.depName;
+          let currentDep = this.downstreamDependencies[cName][varName][depName];
+
+          let descendants = gatherDescendants({
+            ancestor: currentDep.ancestor,
+            descendantClasses: currentDep.componentTypes.map(x => this.allComponentClasses[x]),
+            recurseToMatchedChildren: currentDep.recurseToMatchedChildren,
+            useReplacementsForComposites: currentDep.useReplacementsForComposites,
+            includeNonActiveChildren: currentDep.includeNonActiveChildren,
+            includePropertyChildren: currentDep.includePropertyChildren,
+            compositeClass: this.allComponentClasses._composite,
+          });
+
+          let descendantsChanged = false;
+          if (descendants.length !== currentDep.downstreamComponentNames.length) {
+            descendantsChanged = true;
+          }
+          else {
+            for (let [ind, descendantName] of descendants) {
+              if (descendantName !== currentDep.downstreamComponentNames[ind]) {
+                descendantsChanged = true;
+                break;
+              }
+            }
+          }
+
+          if (descendantsChanged) {
+            currentDep.componentIdentitiesChanged = true;
+            let valuesChanged = [];
+            if (currentDep.downstreamVariableNames) {
+              valuesChanged = descendants.map(() => currentDep.downstreamVariableNames);
+            }
+
+            // change upstream dependencies
+            for (let currentDescendant of currentDep.downstreamComponentNames) {
+              if (!descendants.includes(currentDescendant)) {
+                // lost a descendant.  remove dependency
+                componentsTouched.push(currentDescendant);
+                let descendantUpDep = this.upstreamDependencies[currentDescendant];
+                let depNamesToCheck = [];
+                if (currentDep.downstreamVariableNames) {
+                  depNamesToCheck = currentDep.downstreamVariableNames;
+                }
+                else {
+                  depNamesToCheck = ['__identity'];
+                }
+                for (let vName of depNamesToCheck) {
+                  let upDeps = descendantUpDep[vName];
+                  for (let [ind, u] of upDeps.entries()) {
+                    if (u === currentDep) {
+                      upDeps.splice(ind, 1);
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+
+            for (let newDescendant of descendants) {
+              if (!currentDep.downstreamComponentNames.includes(newDescendant)) {
+                // gained a descendant.  add dependency
+                componentsTouched.push(newDescendant);
+                let descendantUpDep = this.upstreamDependencies[newDescendant];
+                if (descendantUpDep === undefined) {
+                  descendantUpDep = this.upstreamDependencies[newDescendant] = {};
+                }
+                if (currentDep.downstreamVariableNames) {
+                  for (let vName of currentDep.downstreamVariableNames) {
+                    if (descendantUpDep[vName] === undefined) {
+                      descendantUpDep[vName] = [];
+                    }
+                    descendantUpDep[vName].push(currentDep);
+                  }
+                }
+                else if (currentDep.dependencyType === "descendantIdentity") {
+                  if (descendantUpDep['__identity'] === undefined) {
+                    descendantUpDep['__identity'] = [];
+                  }
+                  descendantUpDep['__identity'].push(currentDep);
+                }
+              }
+            }
+
+            currentDep.downstreamComponentNames = descendants;
+            currentDep.valuesChanged = valuesChanged;
+
+            this.checkForCircularDependency({ componentName: cName, varName });
+
+            let additionalComponentsTouched = this.markStateVariableAndUpstreamDependentsStale({
+              component: this._components[cName],
+              varName
+            });
+
+            componentsTouched.push(...additionalComponentsTouched);
+          }
+        }
+      }
+    }
+
     return componentsTouched;
 
   }
@@ -4557,37 +4746,37 @@ export default class Core {
 
   setAncestors(component, ancestors = []) {
 
-    // set answers based on allChildren
+    // set ancestors based on allChildren
     // so that all components get ancestors
     // even if not activeChildren or definingChildren
 
     component.ancestors = ancestors;
 
-    // check if component is a gathered descendant of any ancestor
-    let ancestorsWhoGathered = [];
-    for (let ancName of ancestors) {
-      let anc = this.components[ancName];
-      if (anc.descendantsFound) {
-        let wasGathered = false;
-        for (let key in anc.descendantsFound) {
-          for (let comp of anc.descendantsFound[key]) {
-            if (comp.componentName === component.componentName) {
-              ancestorsWhoGathered.push(ancName);
-              wasGathered = true;
-              break;
-            }
-          }
-          if (wasGathered) {
-            break;
-          }
-        }
-      }
-    }
-    if (ancestorsWhoGathered.length > 0) {
-      component.ancestorsWhoGathered = ancestorsWhoGathered;
-    } else {
-      delete component.ancestorsWhoGathered;
-    }
+    // // check if component is a gathered descendant of any ancestor
+    // let ancestorsWhoGathered = [];
+    // for (let ancName of ancestors) {
+    //   let anc = this.components[ancName];
+    //   if (anc.descendantsFound) {
+    //     let wasGathered = false;
+    //     for (let key in anc.descendantsFound) {
+    //       for (let comp of anc.descendantsFound[key]) {
+    //         if (comp.componentName === component.componentName) {
+    //           ancestorsWhoGathered.push(ancName);
+    //           wasGathered = true;
+    //           break;
+    //         }
+    //       }
+    //       if (wasGathered) {
+    //         break;
+    //       }
+    //     }
+    //   }
+    // }
+    // if (ancestorsWhoGathered.length > 0) {
+    //   component.ancestorsWhoGathered = ancestorsWhoGathered;
+    // } else {
+    //   delete component.ancestorsWhoGathered;
+    // }
 
     let ancestorsForChildren = [component.componentName, ...component.ancestors];
 
@@ -4643,11 +4832,11 @@ export default class Core {
     // this.resolveAllDependencies();
 
 
-    // gather descendants of ancestors
-    for (let ancestor of parent.ancestors) {
-      let unproxiedAncestor = this._components[ancestor];
-      unproxiedAncestor.gatherDescendants();
-    }
+    // // gather descendants of ancestors
+    // for (let ancestor of parent.ancestors) {
+    //   let unproxiedAncestor = this._components[ancestor];
+    //   unproxiedAncestor.gatherDescendants();
+    // }
 
     let ancestorsForChildren = [parent.componentName, ...parent.ancestors];
 
@@ -4658,7 +4847,7 @@ export default class Core {
       this.setAncestors(unproxiedChild, ancestorsForChildren);
     }
 
-    childResult.componentsTouched = this.markChildDependenciesChanged(parent);
+    childResult.componentsTouched = this.markChildAndDescendantDependenciesChanged(parent);
 
     return childResult;
 
