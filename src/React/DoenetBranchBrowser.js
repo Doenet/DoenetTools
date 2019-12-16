@@ -7,6 +7,47 @@ import { faFileAlt, faFolder, faArrowUp,
 import "./branchBrowser.css";
 import SpinningLoader from './SpinningLoader';
 
+function formatTimestamp(date) {  
+  let delta = Math.round((new Date - new Date(date)) / 1000);
+
+  let minute = 60;
+  let hour = minute * 60;
+  let day = hour * 24;
+  let week = day * 7;
+  let month = 30 * day;
+  let year = 52 * week;
+
+  let result = "";
+
+  if (delta < minute) {
+    result = 'Just now';
+  } else if (delta < hour) {
+    result = Math.floor(delta / minute) + ' minute(s) ago';
+  } else if (delta < day) {
+    result = Math.floor(delta / hour) + ' hour(s) ago';
+  } else if (delta < day * 2) {
+    result = 'Yesterday';
+  } else if (delta < week) {
+    result = Math.floor(delta / day) + ' day(s) ago';
+  } else if (delta < month) {
+    let weekNumber = Math.floor(delta / week);
+    let dayNumber = Math.floor((delta - (weekNumber * week)) / day);
+    if (dayNumber !== 0) result = `${weekNumber} week(s) and ${dayNumber} day(s) ago`;
+    else result = `${weekNumber} week(s) ago`;
+  } else if (delta < year) {
+    let monthNumber = Math.floor(delta / month);
+    let dayNumber = Math.floor((delta - (monthNumber * month)) / day);
+    if (dayNumber !== 0) result = `${monthNumber} month(s) and ${dayNumber} day(s) ago`;
+    else result = `${monthNumber} month(s) ago`;
+  } else {  // years
+    let yearNumber = Math.floor(delta / year);
+    let monthNumber = Math.floor((delta - (yearNumber * year)) / month);
+    if (monthNumber !== 0) result = `${yearNumber} year(s) and ${monthNumber} month(s) ago`;
+    else result = `${yearNumber} year(s) ago`;
+  }
+  return result;
+}
+
 class DoenetBranchBrowser extends Component {
   static defaultProps = {
     addContentToFolder: null,
@@ -156,7 +197,7 @@ class DoenetBranchBrowser extends Component {
     // create table row items to be rendered in chooser
     for (let folderId of this.folderList){
       let title = this.props.allFolderInfo[folderId].title;
-      let publishDate = this.props.allFolderInfo[folderId].publishDate;
+      let publishDate = formatTimestamp(this.props.allFolderInfo[folderId].publishDate);
       let childContent = this.props.allFolderInfo[folderId].childContent;
       let childFolder = this.props.allFolderInfo[folderId].childFolder;
       let isRepo = this.props.allFolderInfo[folderId].isRepo;
@@ -223,8 +264,8 @@ class DoenetBranchBrowser extends Component {
     // build files
     for (let branchId of this.contentList){
       let title = this.props.allContentInfo[branchId].title;
-      let publishDate = this.props.allContentInfo[branchId].publishDate;
-      let draftDate = this.props.allContentInfo[branchId].draftDate;
+      let publishDate = formatTimestamp(this.props.allContentInfo[branchId].publishDate);
+      let draftDate = formatTimestamp(this.props.allContentInfo[branchId].draftDate);
       let classes = this.state.selectedItems.includes(branchId) ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
       
@@ -577,6 +618,8 @@ class File extends React.Component {
   }
 
   render() {
+
+    // console.log(formatDate(new Date("2015-12-13 17:32:36")));
     return(
       <tr
       className={this.props.classes}
@@ -804,7 +847,7 @@ class InfoPanel extends Component {
 
       itemDetails = {
         "Location"  : "Content",
-        "Published" : this.props.allFolderInfo[selectedItemId].publishDate,
+        "Published" : formatTimestamp(this.props.allFolderInfo[selectedItemId].publishDate),
       };
 
       Object.keys(itemDetails).map(itemDetailsKey => {
@@ -859,7 +902,7 @@ class InfoPanel extends Component {
 
       itemDetails = {
         "Location" : "Content",
-        "Published" : this.props.allContentInfo[selectedItemId].publishDate,
+        "Published" : formatTimestamp(this.props.allContentInfo[selectedItemId].publishDate),
         "Versions" : versions,
         // "Related content" : relatedContent,
       };
