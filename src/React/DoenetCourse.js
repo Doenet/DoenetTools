@@ -802,7 +802,7 @@ class DoenetCourse extends Component {
             )
           }
           if (this.state.assignment){
-            this.assignment_link = (<Link to={'/assignments'} className="homeMainMenuItem" data-cy="assignmentsNavItem"onClick={()=>{this.activeSection="assignments";this.showsAllAssignment=!this.showsAllAssignment;this.componentLoadedFromNavigationBar=null;this.makeTreeVisible({loadSpecificId:""})}}>{this.activeSection === "assignments" ? "* " : null}Assignments</Link>
+            this.assignment_link = (<Link to={'/assignments'} className="homeMainMenuItem" data-cy="assignmentsNavItem"onClick={()=>{console.log("HELLO THERE");this.activeSection="assignments";this.showsAllAssignment=!this.showsAllAssignment;this.componentLoadedFromNavigationBar=null;this.makeTreeVisible({loadSpecificId:""})}}>{this.activeSection === "assignments" ? "* " : null}Assignments</Link>
             )
           }
           // let foundit=false
@@ -910,6 +910,7 @@ class DoenetCourse extends Component {
     }
   }
   buildTreeArray(){
+    console.log("running buildTreeArray")
     // first get pId that is null
     this.makeTreeArray=[]
     if (this.heading_obj.length!=1){
@@ -984,9 +985,8 @@ class DoenetCourse extends Component {
     
   }
 buildTree(){
+  console.log("building tree")
   let ClassName = "headerSelection"
-  let countChildrenOfUltimate=0
-  let lengthChildrenOfUltimate=0
   // making space
   this.tree = [];
   this.tree_route = [];
@@ -1601,11 +1601,12 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
 
   }
   makeTreeVisible({loadSpecificId}) {
+    console.log("RUNNING makeTreeVisible")
     const url_header_assignment = "/api/getHeaderAndAssignmentInfo.php";
     if (!this.alreadyMadeTree){
       axios (url_header_assignment)
     .then (resp=>{
-      console.log("RUNNING PHP")
+      console.log("RUNNING PHP here")
       this.obj_return = resp.data;
       //let lengthOfReturnArray = (this.obj_return.length)
       console.log("obj is")
@@ -1656,6 +1657,10 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         }
         iterator++;
       }
+      console.log ("this.assignment_obj")
+      console.log(this.assignment_obj)
+      console.log ("this.heading_obj")
+      console.log(this.heading_obj)
         this.buildTreeArray()
         this.buildTree()
         this.assignmentTree = this.tree;
@@ -1673,8 +1678,10 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     
   }
   render() {
-    console.log("====RENDER====");
-    console.log(this.tree_route)
+    // console.log("====RENDER====");
+    // console.log(this.tree_route)
+    console.log("assignment link")
+    console.log(this.assignment_link)
   
     return (
     <React.Fragment>
