@@ -43,6 +43,8 @@ class DoenetViewer extends Component {
     this.delayedSaveSerializedState = this.delayedSaveSerializedState.bind(this);
     this.saveSerializedState = this.saveSerializedState.bind(this);
     this.allAnswersSubmitted = this.allAnswersSubmitted.bind(this);
+    this.localStateChanged = this.localStateChanged.bind(this);
+    this.remoteStateChanged = this.remoteStateChanged.bind(this);
     this.update = this.update.bind(this);
 
     //Modes Listed:
@@ -92,6 +94,7 @@ class DoenetViewer extends Component {
       delayedSaveSerializedState: this.delayedSaveSerializedState,
       saveSerializedState: this.saveSerializedState,
       allAnswersSubmitted: this.allAnswersSubmitted,
+      localStateChanged: this.localStateChanged,
     };
 
     this.core = new Core({
@@ -104,15 +107,55 @@ class DoenetViewer extends Component {
       postConstructionCallBack: this.update
     });
 
+    //Integration with Doenet Library
+    this.worksheet = new window.doenet.Worksheet();
     
-    
-    
+
+    if(this.props.collaborate) {
+      this.worksheet.addEventListener( 'globalState', this.remoteStateChanged);
+    } else {
+      this.worksheet.addEventListener( 'state', this.remoteStateChanged);
+    }
 
     if(this.props.functionsSuppliedByChild){
 
       this.props.functionsSuppliedByChild.submitAllAnswers = () => this.core.document.submitAllAnswers();
     }
     // this.update({ doenetTags: this.core.doenetState, init: true });
+  }
+
+
+  remoteStateChanged(event,state) {
+
+    this.core.executeUpdateStateVariables({newStateVariableValues: state})
+
+  }
+
+  localStateChanged({newStateVariableValues }) {
+
+    if(!this.worksheet.progress) {
+      this.worksheet.progress = 0;
+    }
+    
+    this.worksheet.progress += 0.1;
+
+    let theState;
+    
+    if(this.props.collaborate) {
+      theState = this.worksheet.globalState;
+    } else {
+      theState = this.worksheet.state;
+    }
+
+    for(let componentName in newStateVariableValues) {
+      let componentState = theState[componentName];
+      if(componentState === undefined) {
+        componentState = theState[componentName] = {};
+      }
+
+      Object.assign(componentState, newStateVariableValues[componentName]);
+    }
+
   }
 
   delayedSaveSerializedState({ document }) {

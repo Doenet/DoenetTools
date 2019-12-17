@@ -99,8 +99,11 @@ export default class Core {
 
       // TODO: why are we hard coding a document name here?
       // Seems like a bad idea, author could have named document something esle
-      serializedState[0].doenetAttributes.componentName = "/_document1";
+      // serializedState[0].doenetAttributes.componentName = "/_document1";
     }
+
+
+    this.documentName = serializedState[0].doenetAttributes.componentName;
 
     this._components = {};
     this.downstreamDependencies = {};
@@ -317,7 +320,7 @@ export default class Core {
   }
 
   //Add on to array of components that render things
-  rebuildRenderComponents(component = this._components["/_document1"], init = true) {
+  rebuildRenderComponents(component = this._components[this.documentName], init = true) {
 
     if (init === true) {
       // empty the array and object without reassigning
@@ -5674,9 +5677,9 @@ export default class Core {
         }
       }
 
-      if (this.externalFunctions.stateVariablesUpdated) {
+      if (this.externalFunctions.localStateChanged) {
         // TODO: make this call asynchronous
-        this.externalFunctions.stateVariablesUpdated({ newStateVariableValues });
+        this.externalFunctions.localStateChanged({ newStateVariableValues });
       }
 
       this.executeUpdateStateVariables({ newStateVariableValues, componentsTouched, saveSerializedState });
@@ -5802,12 +5805,9 @@ export default class Core {
     console.log("**** Components after updateValue");
     console.log(this._components);
 
-    // TODO: should not use '/_document1' in below references to document
-    // as the code will break if someone named the document tag
-
     if (sourceOfUpdate !== undefined && sourceOfUpdate.instructionsByComponent !== undefined) {
       let updateKeys = Object.keys(sourceOfUpdate.instructionsByComponent);
-      if (updateKeys.length === 1 && updateKeys[0] === "/_document1") {
+      if (updateKeys.length === 1 && updateKeys[0] === this.documentName) {
         saveSerializedStateImmediately = true;
       }
     }
@@ -5815,11 +5815,11 @@ export default class Core {
     if (saveSerializedState) {
       if (saveSerializedStateImmediately) {
         this.externalFunctions.saveSerializedState({
-          document: this.components['/_document1'],
+          document: this.components[this.documentName],
         })
       } else {
         this.externalFunctions.delayedSaveSerializedState({
-          document: this.components['/_document1'],
+          document: this.components[this.documentName],
         })
       }
     }
