@@ -3,7 +3,7 @@ import Slider from './ReactSlider';
 import BaseRenderer from './BaseRenderer';
 
 class SliderRenderer extends BaseRenderer {
-  constructor({ actions, key, index, items, sliderType, width, height, valueToIndex, markers, label, showcontrols, showticks }) {
+  constructor({ actions, key, index, items, sliderType, width, height, valueToIndex, markers, label, showControls, showTicks }) {
     super({ key: key });
     if (index > items.length) { index = items.length - 1; }
     if (width < 30) { width = 30; }
@@ -25,8 +25,8 @@ class SliderRenderer extends BaseRenderer {
       valueToIndex: valueToIndex,
       markers: markers,
       label: label,
-      showcontrols: showcontrols,
-      showticks: showticks,
+      showControls: showControls,
+      showTicks: showTicks,
     }
     this.valueToIndex = valueToIndex;
 
@@ -35,7 +35,7 @@ class SliderRenderer extends BaseRenderer {
 
   updateSlider({ index, items, sliderType,
     width, height, valueToIndex,
-    markers, label, showcontrols, showticks }) {
+    markers, label, showControls, showTicks }) {
     this.sliderProps.index = index;
     this.sharedState.index = index;
     this.sliderProps.items = items;
@@ -45,8 +45,8 @@ class SliderRenderer extends BaseRenderer {
     this.sliderProps.valueToIndex = valueToIndex;
     this.sliderProps.markers = markers;
     this.sliderProps.label = label;
-    this.sliderProps.showcontrols = showcontrols;
-    this.sliderProps.showticks = showticks;
+    this.sliderProps.showControls = showControls;
+    this.sliderProps.showTicks = showTicks;
 
   }
 

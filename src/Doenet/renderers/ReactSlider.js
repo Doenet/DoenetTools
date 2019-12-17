@@ -80,7 +80,7 @@ export default class ReactSlider extends React.Component {
       this.label_width = tsize.width + 8;
 
     }
-    if (this.props.showcontrols === true) {
+    if (this.props.showControls === true) {
       this.buttons_width = 47;
     } else {
       this.buttons_width = 0;
@@ -397,7 +397,7 @@ export default class ReactSlider extends React.Component {
     const handleText = this.props.items[this.sharedState.index];
 
     // let hiddenControlsBoundOffset = 0;
-    // if (this.props.showcontrols === false){
+    // if (this.props.showControls === false){
     //   hiddenControlsBoundOffset = 4;
     // }
 
@@ -420,11 +420,11 @@ export default class ReactSlider extends React.Component {
     }
 
 
-    let showcontrols = <React.Fragment></React.Fragment>
+    let showControls = <React.Fragment></React.Fragment>
 
-    if (this.props.showcontrols === true) {
+    if (this.props.showControls === true) {
 
-      showcontrols = <React.Fragment>
+      showControls = <React.Fragment>
         <Style rules={{
           ".sliderControl": {
             height: "20px",
@@ -441,7 +441,7 @@ export default class ReactSlider extends React.Component {
       </React.Fragment>
     }
 
-    if (this.props.showticks === false) {
+    if (this.props.showTicks === false) {
       this.ticks = null;
     }
 
@@ -500,7 +500,7 @@ export default class ReactSlider extends React.Component {
           <div style={track_style}></div>
           {this.markers}
         </span>
-        {showcontrols}
+        {showControls}
       </div>);
 
   }
