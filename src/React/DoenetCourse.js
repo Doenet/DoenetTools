@@ -911,10 +911,14 @@ class DoenetCourse extends Component {
   }
   buildTreeArray(){
     console.log("running buildTreeArray")
+    console.log(this.heading_obj)
+    console.log(this.assignment_obj)
+    console.log("this.makeTreeArray0")
+    console.log(this.makeTreeArray)
     // first get pId that is null
     this.makeTreeArray=[]
     if (this.heading_obj.length!=1){
-
+      console.log("HERE01")
     // let assignmentObjectLength = this.assignmentId_arr.length;
     let iterator = 0;
     this.headerId_arr=[]
@@ -937,7 +941,8 @@ class DoenetCourse extends Component {
       let object = {id:element,name:name,attribute:"header",level:0}
       this.makeTreeArray.unshift(object)
     })
-
+    console.log("this.makeTreeArray1")
+    console.log(this.makeTreeArray)
     // add header first, level = level's parent + 1
     iterator = 0;
      while (iterator < this.makeTreeArray.length){
@@ -959,6 +964,8 @@ class DoenetCourse extends Component {
       
       iterator++;
     }
+    console.log("this.makeTreeArray2")
+    console.log(this.makeTreeArray)
    //add assignments
    // add arrow when this.enableMode==='assignment'
     iterator = 0;
@@ -982,7 +989,8 @@ class DoenetCourse extends Component {
       iterator++;
     }
     }
-    
+    console.log("this.makeTreeArray3")
+    console.log(this.makeTreeArray)
   }
 buildTree(){
   console.log("building tree")
