@@ -466,6 +466,7 @@ function breakStringByCommasWithParens(string) {
 export function createComponentNames({ serializedState, namespaceStack = [],
   componentTypesTakingComponentNames, allComponentClasses,
   nameSpaceForChildren, parentDoenetAttributes,
+  rng,
 }) {
 
   if (namespaceStack.length === 0) {
@@ -570,7 +571,7 @@ export function createComponentNames({ serializedState, namespaceStack = [],
           doenetAttributes.prescribedName = prescribedName;
 
         } else if (doenetAttributes.createUniqueName) {
-          prescribedName = createUniqueName(componentType);
+          prescribedName = createUniqueName(componentType, rng);
         }
         if (assignNames !== undefined) {
           if (assignNamespaces !== undefined) {

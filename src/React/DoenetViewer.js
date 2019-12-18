@@ -6,7 +6,6 @@ import crypto from 'crypto';
 import { serializedStateReplacer, serializedStateReviver } from '../Doenet/utils/serializedStateProcessing';
 
 
-
 class DoenetViewer extends Component {
   constructor(props) {
     super(props);
@@ -110,7 +109,6 @@ class DoenetViewer extends Component {
     //Integration with Doenet Library
     this.worksheet = new window.doenet.Worksheet();
     
-
     if(this.props.collaborate) {
       this.worksheet.addEventListener( 'globalState', this.remoteStateChanged);
     } else {
@@ -127,7 +125,17 @@ class DoenetViewer extends Component {
 
   remoteStateChanged(event,state) {
 
-    this.core.executeUpdateStateVariables({newStateVariableValues: state})
+    let newStateVariableValues = {};
+
+    //Rehydrate for serializing when functions that are in variables
+    for(let componentName in state) {
+      newStateVariableValues[componentName] = {};
+      for(let varName in state[componentName]) {
+        newStateVariableValues[componentName][varName] = JSON.parse(state[componentName][varName], serializedStateReviver);
+      }
+    }
+
+    this.core.executeUpdateStateVariables({newStateVariableValues })
 
   }
 
@@ -140,6 +148,10 @@ class DoenetViewer extends Component {
     this.worksheet.progress += 0.1;
 
     let theState;
+
+    // // Note: uncomment these lines and change an element to reset state
+    // this.worksheet.globalState = {};
+    // this.worksheet.state = {};
     
     if(this.props.collaborate) {
       theState = this.worksheet.globalState;
@@ -153,7 +165,10 @@ class DoenetViewer extends Component {
         componentState = theState[componentName] = {};
       }
 
-      Object.assign(componentState, newStateVariableValues[componentName]);
+      //Stringify for serializing when functions that are in variables
+      for(let varName in newStateVariableValues[componentName]) {
+        componentState[varName] = JSON.stringify(newStateVariableValues[componentName][varName], serializedStateReplacer)
+      }
     }
 
   }

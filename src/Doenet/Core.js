@@ -61,6 +61,10 @@ export default class Core {
     // console.time('serialize doenetML');
 
     this.parameterStack = new ParameterStack(parameters);
+    this.setUpRng();
+
+
+    this.idRng = new MersenneTwister('47');
 
     let serializedState;
 
@@ -90,7 +94,8 @@ export default class Core {
       serializeFunctions.createComponentNames({
         serializedState,
         componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
-        allComponentClasses: this.allComponentClasses
+        allComponentClasses: this.allComponentClasses,
+        rng: this.idRng
       });
     } else {
       if (serializedState[0].doenetAttributes === undefined) {
@@ -154,6 +159,10 @@ export default class Core {
 
     variantComponents[0].variants.desiredVariant = this.parameterStack.parameters.variant;
 
+  }
+
+  setUpRng() {
+
     // from https://stackoverflow.com/a/7616484
     this.parameterStack.parameters.hashStringToInteger = function (s) {
       var hash = 0, i, chr;
@@ -166,12 +175,10 @@ export default class Core {
       }
       return hash;
     };
-
     if (this.parameterStack.parameters.seed === undefined) {
       // this.parameterStack.parameters.seed = '47';
       this.parameterStack.parameters.seed = this.parameterStack.parameters.hashStringToInteger(Date.now().toString());
     }
-
     this.parameterStack.parameters.selectRng = new MersenneTwister(this.parameterStack.parameters.seed);
     this.parameterStack.parameters.rngClass = MersenneTwister;
   }
@@ -492,7 +499,8 @@ export default class Core {
         componentName = serializedComponent.doenetAttributes.componentName;
       }
       if (componentName === undefined) {
-        componentName = createUniqueName(serializedComponent.componentType)
+        componentName = createUniqueName(serializedComponent.componentType,
+          this.idRng)
       }
 
       let createResult = this.createChildrenThenComponent({
@@ -1240,7 +1248,8 @@ export default class Core {
           let namespace = instruction.namespace;
 
           if (namespace === undefined) {
-            namespace = createUniqueName(component.componentType);
+            namespace = createUniqueName(component.componentType,
+              this.idRng);
           }
 
           let namespacePieces = component.componentName.split('/');
@@ -1270,7 +1279,8 @@ export default class Core {
             serializedState: replacementsToAdd,
             namespaceStack,
             componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
-            allComponentClasses: this.allComponentClasses
+            allComponentClasses: this.allComponentClasses,
+            rng: this.idRng
           });
         }
         else if (instruction.operation === "assignName") {
@@ -1289,7 +1299,8 @@ export default class Core {
           let name = instruction.name;
 
           if (name === undefined) {
-            name = createUniqueName(component.componentType);
+            name = createUniqueName(component.componentType,
+              this.idRng);
           }
 
           let theReplacement = replacementsToAdd[0];
@@ -1297,7 +1308,8 @@ export default class Core {
           if (Array.isArray(name)) {
             // if name is an array, then it refers to names of the grandchildren
 
-            let nameForChild = createUniqueName(component.componentType);
+            let nameForChild = createUniqueName(component.componentType,
+              this.idRng);
             if (!theReplacement.doenetAttributes) {
               theReplacement.doenetAttributes = {}
             }
@@ -1313,7 +1325,8 @@ export default class Core {
                 ind++;
                 let nameForGrandchild = name[ind];
                 if (nameForGrandchild === undefined) {
-                  nameForGrandchild = createUniqueName(component.componentType);
+                  nameForGrandchild = createUniqueName(component.componentType,
+                    this.idRng);
                 }
                 if (!grandchild.doenetAttributes) {
                   grandchild.doenetAttributes = {}
@@ -1357,7 +1370,8 @@ export default class Core {
             serializedState: replacementsToAdd,
             namespaceStack,
             componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
-            allComponentClasses: this.allComponentClasses
+            allComponentClasses: this.allComponentClasses,
+            rng: this.idRng
           });
         }
         else {
