@@ -221,6 +221,24 @@ class Syllabus extends Component {
 class Grades extends Component {
   constructor(props) {
     super(props);
+    //this.props.student, this.props.sections, this.props.group,
+    // this.props.gradeCategories, this.props.score, this.props.subtotal
+    // this.props.total
+    console.log("GRADE CONSTRUCTOR")
+    console.log(this.props.student)
+    console.log(this.props.sections)
+    console.log(this.props.group)
+    console.log(this.props.gradeCategories)
+    console.log(this.props.score)
+    console.log(this.props.subtotal)
+    console.log(this.props.total)
+    // this.student = this.props.student
+    // this.sections = this.props.sections
+    // this.group = this.props.group
+    // this.gradeCategories = this.props.gradeCategories
+    // this.score = this.props.score
+    // this.subtotal = this.props.subtotal
+    // this.total = this.props.total
 
     this.courseId = COURSE_ID // TODO: get from url
     this.scores = {};
@@ -319,11 +337,24 @@ class Grades extends Component {
 
     this.setState({ dataLoaded: true });
   }
+  trclick(){console.log('tr clicked')};
+  tdclick(event) {
+    console.log(event)
+  }
 
   render() {
+    console.log("===GRADES===")
+    console.log(this.student)
+    console.log(this.sections)
+    console.log(this.group)
+    console.log(this.gradeCategories)
+    console.log(this.score)
+    console.log(this.subtotal)
+    console.log(this.total)
     if (!this.state.dataLoaded) {
       return (<p>Loading...</p>)
     }
+    
 
     return (<React.Fragment>
       <h2 data-cy="sectionTitle">Grades</h2>
@@ -355,11 +386,19 @@ class Grades extends Component {
             {this.scores[cat].map(
               (score) => (<React.Fragment key={'score_row' + score.assignmentId}>
                 <tr className="typeDataRow">
-                  <td><Link to={`/grades/assignment/?assignmentId=${score.assignmentId}`} className="assignmentLink">{score.gradeItem}</Link></td>
+                  <td onClick={()=>{this.tdclick()}}              
+                  >
+                    {/* {score.gradeItem} */}
+                    <Link to={`/assignments/${score.assignmentId}`} className="assignmentLink"
+                    onClick={()=>{this.props.parentFunction(score.assignmentId)}}
+                    >{score.gradeItem}
+                  </Link>
+                  </td>
                   <td>{score.possible}</td>
                   <td>{score.score}</td>
                   <td>{score.percentage}</td>
                 </tr>
+                
               </React.Fragment>)
             )}
 
@@ -604,6 +643,12 @@ class DoenetCourse extends Component {
     console.log("active section is "+this.activeSection)
     this.assignment_state_1 = url.searchParams.get("assignment"); // get false
 
+    this.courseId = COURSE_ID // TODO: get from url
+    this.scores = {};
+    this.subTotals = {};
+    this.gradeCategories = ['Gateway', 'Problem Sets', 'Projects', 'Exams', 'Participation'];
+    
+    this.gradeComponent=null
     this.enableThese=[]
     this.alreadyLoadAssignment=[]
     this.loadFirstTrue=null; 
@@ -612,6 +657,7 @@ class DoenetCourse extends Component {
     this.showsAllAssignment=false;
     this.alreadyMadeTree = false;
     this.LoadAssignmentFromTheBeginningFlag=false;
+    this.loadAssignmentFromGrade=false;
     this.assignmentDoenetML=""
     this.ListOfAlreadyDownLoadDoenetML={}  // {assignmentId:doenetML}
     this.overview_branchId=""
@@ -633,6 +679,10 @@ class DoenetCourse extends Component {
       syllabus:null,
       showTree:false,
       selectedAssignmentId:"",
+
+      error: null,
+      errorInfo: null,
+      dataLoaded: false,
     };
 
 
@@ -736,6 +786,7 @@ class DoenetCourse extends Component {
       this.syllabus_link=null;
       this.grade_link=null;
       this.assignment_link=null;
+      this.assignmentIsClicked=false;
 
 
 
@@ -798,11 +849,11 @@ class DoenetCourse extends Component {
             )
           }
           if (this.state.grade){
-            this.grade_link = (<Link to={'/grades'} className="homeMainMenuItem" data-cy="gradesNavItem"onClick={()=>{this.activeSection="grade";this.componentLoadedFromNavigationBar=null;this.loadSection()}}>{this.activeSection === "grades" ? "* " : null}Grades</Link>
+            this.grade_link = (<Link to={'/grades'} className="homeMainMenuItem" data-cy="gradesNavItem"onClick={()=>{this.activeSection="grades";this.componentLoadedFromNavigationBar=null;this.forceUpdate()}}>{this.activeSection === "grades" ? "* " : null}Grades</Link>
             )
           }
           if (this.state.assignment){
-            this.assignment_link = (<Link to={'/assignments'} className="homeMainMenuItem" data-cy="assignmentsNavItem"onClick={()=>{console.log("HELLO THERE");this.activeSection="assignments";this.showsAllAssignment=!this.showsAllAssignment;this.componentLoadedFromNavigationBar=null;this.makeTreeVisible({loadSpecificId:""})}}>{this.activeSection === "assignments" ? "* " : null}Assignments</Link>
+            this.assignment_link = (<Link to={'/assignments'} className="homeMainMenuItem" data-cy="assignmentsNavItem"onClick={()=>{this.assignmentIsClicked=true;this.activeSection="assignments";this.showsAllAssignment=!this.showsAllAssignment;this.componentLoadedFromNavigationBar=null;this.makeTreeVisible({loadSpecificId:""})}}>{this.activeSection === "assignments" ? "* " : null}Assignments</Link>
             )
           }
           // let foundit=false
@@ -835,12 +886,20 @@ class DoenetCourse extends Component {
             this.activeSection="overview"
           } else if (location=="#/syllabus"){
             this.activeSection="syllabus"
-          } else if (location=="#/grade"){
-            this.activeSection="grade"
+          } else if (location=="#/grades"){
+            this.activeSection="grades"
           } else  {
             this.activeSection="assignments"
             this.LoadAssignmentFromTheBeginning({location:location})
           }
+          console.log("==END OF COURSE CONSTRUCTOR==")
+          console.log(this.activeSection)
+          console.log(this.state.overview)
+          console.log(this.state.syllabus)
+          console.log(this.state.grade)
+          console.log(this.state.assignment)
+
+
           this.loadSection()
         });
          
@@ -893,6 +952,78 @@ class DoenetCourse extends Component {
     // var parsed = queryString.parse(this.props.location.search);
     // console.log(parsed.param);
   }
+  buildGrades() {
+    console.log("building grades in DoenetCourse")
+    this.total = { possible: 0, score: 0, percentage: '0%' }
+
+    for (let gcat of this.gradeCategories) {
+      this.scores[gcat] = [];
+      this.subTotals[gcat] = { possible: 0, score: 0, percentage: '0%' };
+
+      for (let dObj of this.assignmentsData) {
+        if (dObj.gradeCategory === gcat) {
+          let possible = dObj.totalPointsOrPercent;
+          let percentFLAG = false;
+          if (possible === null) {
+            possible = '--';
+            percentFLAG = true;
+          } else {
+            possible = Number(possible);
+            this.subTotals[gcat].possible += possible;
+          }
+          let score = dObj.credit;
+          if (score === null || possible === null) {
+            score = '--';
+            percentFLAG = true;
+          } else {
+            score = Number(score) * possible;
+            if (!(isNaN(score))) {
+              this.subTotals[gcat].score += score;
+            }
+          }
+          let percentage;
+          if (percentFLAG) {
+            percentage = '--';
+          } else {
+            percentage = Math.round(score / possible * 1000) / 10 + '%';
+          }
+
+          if (isNaN(score)) {
+            score = "--";
+          }
+
+          this.scores[gcat].push({
+            gradeItem: dObj.assignmentName,
+            assignmentId: dObj.assignmentId,
+            possible: possible,
+            score: score,
+            percentage: percentage
+          });
+        }
+      }
+
+      if (this.subTotals[gcat].score > 0 && this.subTotals[gcat].possible > 0) {
+        this.subTotals[gcat].percentage = Math.round(this.subTotals[gcat].score / this.subTotals[gcat].possible * 1000) / 10 + '%';
+        this.total.score += Number(this.subTotals[gcat].score);
+        this.total.possible += Number(this.subTotals[gcat].possible);
+      }
+
+    }
+    this.total.percentage = '0%';
+    if (!isNaN(this.total.score / this.total.possible * 1000) / 10) {
+      this.total.percentage = Math.round(this.total.score / this.total.possible * 1000) / 10 + '%';
+    }
+    // this.gradeComponent=(<Grades 
+    //   student={this.student} 
+    //   sections={this.sections}
+    //   group={this.group}
+    //   gradeCategories={this.gradeCategories}
+    //   score={this.score}
+    //   subtotal={this.subtotal}
+    //   total={this.total}
+    //   />)
+    // this.setState({ dataLoaded: true });
+  }
   LoadAssignmentFromTheBeginning ({location}){
     console.log("LoadAssignmentFromTheBeginning")
     let path ="#/assignments/"
@@ -903,10 +1034,13 @@ class DoenetCourse extends Component {
     console.log(currentAssignmentId)
     this.LoadAssignmentFromTheBeginningFlag=true
     // TODO(me): add IF ASSIGNMENT CAN BE LOADED
-    this.makeTreeVisible({loadSpecificId:currentAssignmentId})
+    // this.makeTreeVisible({loadSpecificId:currentAssignmentId})
     // this.loadAssignmentContent({contentId:null,branchId:null,assignmentId:currentAssignmentId})
     // console.log(assignmentDoenetML)
     // this.forceUpdate()
+    }
+    else {
+      this.forceUpdate()
     }
   }
   buildTreeArray(){
@@ -989,11 +1123,12 @@ class DoenetCourse extends Component {
       iterator++;
     }
     }
-    console.log("this.makeTreeArray3")
-    console.log(this.makeTreeArray)
+    console.log("==END==")
+    // console.log(this.makeTreeArray)
   }
 buildTree(){
   console.log("building tree")
+  console.log(this.makeTreeArray)
   let ClassName = "headerSelection"
   // making space
   this.tree = [];
@@ -1003,6 +1138,7 @@ buildTree(){
        onClick ={()=>{this.addNewHeaderAtTheEndUltimateHeader()}} icon={faPlus}/></span>);
   let addingAssignmentArray = this.AddedAssignmentObjArray 
   if (this.makeTreeArray.length>0) {
+    console.log("TREE!")
     this.makeTreeArray.forEach((element,index)=>{
       let name = element["name"]
       let level = element["level"];
@@ -1046,7 +1182,8 @@ buildTree(){
       
       })
   } else {
-     console.log("EMPTY TREE")
+    console.log("EMPTY TREE")
+    //  this.tree.push(<p>Empty Tree</p>)
   }
 }
 makeTreeRoute ({link}) {
@@ -1071,7 +1208,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   console.log(assignmentId in this.ListOfAlreadyDownLoadDoenetML)
   console.log(this.ListOfAlreadyDownLoadDoenetML)
   // given contentId, get me doenetML
-
+//4P7WK6V4HvxS9fIT8IY4i
+//4P7WK6V4HvxS9fIT8IY4i
     // if (contentId!=null && branchId!=null){   // get rid of this condition if things work w/o these 3 ids
       console.log("=======DOWNLOADING ASSIGNMENTS========")
     this.selectedAssignmentId = assignmentId
@@ -1256,6 +1394,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   //   // TODO: what assignment get un-publish ?
 
   loadGrades(){
+    console.log("loading grades in DoenetCourse")
     this.scores = {};
     this.subTotals = {};
       
@@ -1283,16 +1422,16 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         .catch(error=>{this.setState({error:error})});
   }
   
-  buildGrades(){
+  // buildGrades(){
     
-    if (this.assignmentsData === null){
-      this.mainSection = this.loadingScreen;
-    }else{
-      this.buildGradesHelper();
-    }
+  //   if (this.assignmentsData === null){
+  //     this.mainSection = this.loadingScreen;
+  //   }else{
+  //     this.buildGradesHelper();
+  //   }
 
     
-  }
+  // }
 
   buildGradesHelper(){
     
@@ -1583,6 +1722,47 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   //   }
   //   this.forceUpdate();
   // }
+  loadingGrade(){
+    console.log("loading grade from COurse")
+    const loadGradsUrl = '/api/loadGradsLearner.php';
+    const data = {
+      courseId: this.courseId,
+    }
+    const payload = {
+      params: data
+    }
+
+    axios.get(loadGradsUrl, payload)
+      .then(resp => {
+        this.assignmentsData = resp.data.grades;
+        this.student = resp.data.student;
+        this.course = resp.data.course;
+        this.section = resp.data.section;
+        this.group = resp.data.group;
+        console.log("INSIDE loading grade")
+        console.log(this.assignmentsData)
+        console.log(this.student)
+        console.log(this.course)
+        console.log(this.section)
+        console.log(this.group)
+        console.log("END")
+        this.buildGrades();
+        // this.loadFirstTrue=(<Syllabus doenetML={this.Syllabus_doenetML}/>)
+        this.loadFirstTrue=(<Grades parentFunction={(e)=>{this.activeSection="assignments";this.loadAssignmentFromGrade=true;this.makeTreeVisible({loadSpecificId:e})}}/>)
+        
+        // this.gradeComponent=(<Grades 
+        //   student={this.student} 
+        //   sections={this.sections}
+        //   group={this.group}
+        //   gradeCategories={this.gradeCategories}
+        //   score={this.score}
+        //   subtotal={this.subtotal}
+        //   total={this.subtotal}
+        //   />)
+        this.forceUpdate()
+      })
+      .catch(error => { this.setState({ error: error }) });
+  }
   loadSection(){
     console.log("active is "+this.activeSection)
     console.log("this.alreadyLoadOverview: "+this.alreadyLoadOverview)
@@ -1597,8 +1777,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       console.log("====MAKING====")
       this.loadSyllabus();
       // this.alreadyLoadSyllabus = true
-    } else if (this.activeSection==="grade") {
-      this.loadFirstTrue=(<Grades/>)
+    } else if (this.activeSection==="grades") {
+      this.loadingGrade();
+      // this.loadFirstTrue=(<Grades/>)
     } 
     else if (this.activeSection==="assignments") {
       this.loadFirstTrue=(<p>Select an assignments</p>)
@@ -1611,7 +1792,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   makeTreeVisible({loadSpecificId}) {
     console.log("RUNNING makeTreeVisible")
     const url_header_assignment = "/api/getHeaderAndAssignmentInfo.php";
-    if (!this.alreadyMadeTree){
+    // if (!this.alreadyMadeTree){
       axios (url_header_assignment)
     .then (resp=>{
       console.log("RUNNING PHP here")
@@ -1676,20 +1857,26 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.loadAssignmentContent({contentId:null,branchId:null,assignmentId:loadSpecificId})
         this.LoadAssignmentFromTheBeginningFlag=false
         }
+        if (this.loadAssignmentFromGrade){
+        this.loadAssignmentContent({contentId:null,branchId:null,assignmentId:loadSpecificId})
+        this.loadAssignmentFromGrade=false
+        }
       console.log("DONE LOOPING YES")
       console.log(this.assignmentTree)
       this.forceUpdate();
       
     }).catch(error=>{this.setState({error:error})});
-    }
+    // }  
     
     
   }
   render() {
-    // console.log("====RENDER====");
+    console.log("====RENDER====");
+    console.log(this.overview_link)
+    console.log(this.syllabus_link)
     // console.log(this.tree_route)
-    console.log("assignment link")
-    console.log(this.assignment_link)
+    // console.log(this.assignmentTree)
+    // console.log(this.assignmentTree)
   
     return (
     <React.Fragment>
@@ -1708,7 +1895,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
               {/* <Link to={'/syllabus'} className="homeMainMenuItem" data-cy="syllabusNavItem"onClick={()=>{this.activeSection="syllabus";this.loadSection();this.componentLoadedFromNavigationBar=null;this.forceUpdate()}}>{this.activeSection === "syllabus" ? "* " : null}Syllabus2</Link> */}
               {/* <Link to={'/grades'} className="homeMainMenuItem" data-cy="gradesNavItem"onClick={()=>{this.activeSection="grade";this.componentLoadedFromNavigationBar=null;this.loadSection()}}>{this.activeSection === "grades" ? "* " : null}Grades</Link> */}
               {/* <Link to={'/assignments'} className="homeMainMenuItem" data-cy="assignmentsNavItem"onClick={()=>{this.activeSection="assignments";this.showsAllAssignment=!this.showsAllAssignment;this.componentLoadedFromNavigationBar=null;this.makeTreeVisible({loadSpecificId:""})}}>{this.activeSection === "assignments" ? "* " : null}Assignments</Link> */}
-              {this.assignmentTree}
+              {/* {this.assignmentTree!=null?(this.activeSection==="assignments"?):null} */}
+              {this.activeSection==="assignments" && this.assignmentIsClicked?(this.assignmentTree!=null?this.assignmentTree:<p>Empty tree</p>):null}
             </div>
             <div className="homeActiveSection">
             {this.componentLoadedFromNavigationBar}
@@ -1721,7 +1909,11 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 {this.Syllabus_doenetML!=""?<Syllabus doenetML={this.Syllabus_doenetML}/>:null}             
                 </Route>
                 <Route key="grade" exact path="/grades">
-                  <Grades />
+                  <Grades parentFunction={(e)=>{this.activeSection="assignments";this.loadAssignmentFromGrade=true;this.makeTreeVisible({loadSpecificId:e})}}/>
+                  {/* //this.props.student, this.props.sections, this.props.group,
+                  // this.props.gradeCategories, this.props.score, this.props.subtotal
+                  // this.props.total */}
+                  {/* {this.gradeComponent} */}
                 </Route>
                 <Route key="/" exact path="/">
                 {this.loadFirstTrue}
