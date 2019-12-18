@@ -30,10 +30,8 @@ class SpinningLoader extends React.Component {
       return null;
     }
 
-    return <div id="branchBrowser" style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
-      <FontAwesomeIcon style={{animation: `spin 1.5s linear infinite, spinnerColor 2s linear infinite`, 
+    return <FontAwesomeIcon style={{animation: `spin 1.5s linear infinite, spinnerColor 2s linear infinite`, 
                                 fontSize:"35px"}} icon={faSpinner}/>
-      </div>
   }
 }
 

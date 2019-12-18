@@ -47,7 +47,7 @@ for ($i = 0; $i < $number_items; $i++) {
     UPDATE course_content
     SET removedFlag=1,
     timestamp=NOW()
-    WHERE itemId='$itemId' AND folderId='$courseId'
+    WHERE itemId='$itemId' AND courseId='$courseId'
     ";
     $result = $conn->query($sql); 
   }

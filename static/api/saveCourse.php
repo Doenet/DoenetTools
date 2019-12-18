@@ -38,9 +38,22 @@ if ($result->num_rows < 1){
   ('$courseId','$term','$longName', '$shortName', '$description', '$overviewId', '$syllabusId', '$section', '$department')
   ";
   echo $sql;
-  if ($courseId != ""){
-    $result = $conn->query($sql); 
-  }
+  $result = $conn->query($sql); 
+} else {
+  $sql = "
+  UPDATE course
+  SET term='$term',
+      longName='$longName', 
+      shortName='$shortName', 
+      description='$description', 
+      overview_branchId='$overviewId', 
+      syllabus_branchId='$syllabusId', 
+      section='$section', 
+      department='$department'
+  WHERE courseId='$courseId'
+  ";
+  echo $sql;
+  $result = $conn->query($sql); 
 }
 
 if ($result === TRUE) {

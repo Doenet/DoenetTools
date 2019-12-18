@@ -7,7 +7,7 @@ import "./chooser.css";
 import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown, 
-  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder} 
+  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave} 
   from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
@@ -46,7 +46,7 @@ class DoenetChooser extends Component {
     this.handleNewDocument = this.handleNewDocument.bind(this);
     this.saveContentToServer = this.saveContentToServer.bind(this);
     this.getContentId = this.getContentId.bind(this);
-    this.toggleAddCourseMenu = this.toggleAddCourseMenu.bind(this);
+    this.toggleManageCourseForm = this.toggleManageCourseForm.bind(this);
     this.saveCourse = this.saveCourse.bind(this);
     this.selectDrive = this.selectDrive.bind(this);
     this.handleNewCourseCreated = this.handleNewCourseCreated.bind(this);
@@ -63,6 +63,7 @@ class DoenetChooser extends Component {
     this.jumpToDirectory = this.jumpToDirectory.bind(this);
     this.saveUserContent = this.saveUserContent.bind(this);
     this.modifyRepoAccess = this.modifyRepoAccess.bind(this);
+    this.renameFolder = this.renameFolder.bind(this);
   }
 
 
@@ -115,7 +116,7 @@ class DoenetChooser extends Component {
                   </div>
                 </div>
                 <div className="newContentButtonMenuSection">
-                  <div className="newContentButtonMenuItem" onClick={this.toggleAddCourseMenu} data-cy="newCourseButton">
+                  <div className="newContentButtonMenuItem" onClick={() => this.toggleManageCourseForm("add_course")} data-cy="newCourseButton">
                     <FontAwesomeIcon icon={faChalkboard} style={{"fontSize":"16px", "color":"#a7a7a7", "marginRight":"13px"}}/>
                     <span>Course</span>
                   </div>
@@ -157,6 +158,8 @@ class DoenetChooser extends Component {
       }
     } else if (this.state.activeSection === "add_course") {
       toolbarTitle = "Add New Course";
+    } else if (this.state.activeSection === "edit_course") {
+      toolbarTitle = "Edit Course - " + this.courseInfo[this.state.selectedCourse].courseCode;
     }
 
     this.topToolbar = <React.Fragment>
@@ -210,30 +213,45 @@ class DoenetChooser extends Component {
     }));    
   }
 
-  toggleAddCourseMenu() {
-    if (this.state.activeSection !== "add_course") {
-      this.setState({ activeSection: "add_course" });
+  toggleManageCourseForm(mode) {
+    if (this.state.activeSection !== mode) {
+      this.setState({ activeSection: mode });
     } else {
       this.setState({ activeSection: "chooser" });
     }
   }
 
-  handleNewCourseCreated(courseId) {
-    // reload list of courses
-    this.loadAllCourses(() => {
-      if (this.courseIds.includes(courseId)) {
-        // successfully created new document, set as selected and redirect to editor
-        this.setState({
-          selectedItems: [],
-          activeSection: "chooser",
-          selectedCourse: courseId,
-          selectedDrive: "Courses",
-        });
-        this.forceUpdate();
-      } else {
-        // TODO: Show warning message, failed to create course
-        
-      }
+  handleNewCourseCreated({courseId, courseName, courseCode, term, description, department, section}) {
+    // create new documents for overview and syllabus, get branchIds
+    let overviewId = nanoid();
+    let overviewDocumentName = courseName + " Overview";
+    this.saveContentToServer({
+      documentName:overviewDocumentName,
+      code:"",
+      branchId:overviewId,
+      publish:true
+    });
+
+    let syllabusId = nanoid();
+    let syllabusDocumentName = courseName + " Syllabus";    
+    this.saveContentToServer({
+      documentName:syllabusDocumentName,
+      code:"",
+      branchId:syllabusId,
+      publish:true
+    });
+    this.addContentToCourse(courseId, [overviewId, syllabusId], ["content", "content"]);
+    this.saveUserContent([overviewId, syllabusId], ["content", "content"], "insert");
+    this.saveCourse({
+      courseName: courseName,
+      courseId: courseId,
+      courseCode: courseCode,
+      term: term,
+      description: description,
+      department: department,
+      section: section,
+      overviewId: overviewId,
+      syllabusId: syllabusId
     });
   }
 
@@ -290,26 +308,7 @@ class DoenetChooser extends Component {
     return contentId;
   }
 
-  saveCourse({courseId, courseName, courseCode, term, description, department, section}, callback=(()=>{})) {
-    // create new documents for overview and syllabus, get branchIds
-    let overviewId = nanoid();
-    let overviewDocumentName = courseName + " Overview";
-    this.saveContentToServer({
-      documentName:overviewDocumentName,
-      code:"",
-      branchId:overviewId,
-      publish:true
-    });
-
-    let syllabusId = nanoid();
-    let syllabusDocumentName = courseName + " Syllabus";    
-    this.saveContentToServer({
-      documentName:syllabusDocumentName,
-      code:"",
-      branchId:syllabusId,
-      publish:true
-    });
-
+  saveCourse({courseId, courseName, courseCode, term, description, department, section, overviewId, syllabusId}, callback=(()=>{})) {
     const url='/api/saveCourse.php';
     const data={
       longName: courseName,
@@ -324,6 +323,16 @@ class DoenetChooser extends Component {
     }
     axios.post(url, data)
     .then(resp => {
+      // reload list of courses
+      this.loadAllCourses(() => {
+        this.loadCourseContent(courseId, () => {
+          this.setState({
+            selectedItems: [],
+            activeSection: "chooser",
+          });
+          this.forceUpdate();
+        });
+      });
       callback(courseId);
     })
     .catch(function (error) {
@@ -350,6 +359,8 @@ class DoenetChooser extends Component {
   }
 
   loadCourseContent(courseId, callback=(()=>{})) {
+    this.folders_loaded = false;
+    this.branches_loaded = false;
     const loadCoursesUrl='/api/loadCourseContent.php';
     const data={
       courseId: courseId
@@ -500,7 +511,7 @@ class DoenetChooser extends Component {
 
   addContentToFolder(childId, childType, folderId) {
     let operationType = "insert";
-    let title = this.folderInfo[folderId];
+    let title = this.folderInfo[folderId].title;
     let isRepo = this.folderInfo[folderId].isRepo;
     if (this.folderInfo[folderId].parentId == "root") {
       this.saveUserContent(childId, childType, "remove");
@@ -513,7 +524,7 @@ class DoenetChooser extends Component {
 
   removeContentFromFolder(childId, childType, folderId) {
     let operationType = "remove";
-    let title = this.folderInfo[folderId];
+    let title = this.folderInfo[folderId].title;
     let isRepo = this.folderInfo[folderId].isRepo;
     if (this.folderInfo[folderId].parentId == "root") {
       this.saveUserContent(childId, childType, "insert");
@@ -521,6 +532,12 @@ class DoenetChooser extends Component {
     this.saveFolder(folderId, title, childId, childType, operationType, isRepo, (folderId) => {
       this.loadUserFoldersAndRepo();
       this.loadUserContentBranches();
+    });
+  }
+
+  renameFolder(folderId, newTitle) {
+    this.saveFolder(folderId, newTitle, [], [], "", this.folderInfo[folderId].isRepo, () => {
+      this.loadUserFoldersAndRepo();
     });
   }
 
@@ -654,14 +671,19 @@ class DoenetChooser extends Component {
     this.buildLeftNavPanel();
     this.buildTopToolbar();
 
-    // setup mainSection to be chooser / NewCourseForm
+    // setup mainSection to be chooser / CourseForm
     this.mainSection;
-    if (this.state.activeSection === "add_course") {
-      this.mainSection = <NewCourseForm 
-                          handleBack={this.toggleAddCourseMenu}
+    if (this.state.activeSection === "add_course" || this.state.activeSection === "edit_course") {
+      this.mainSection = <CourseForm 
+                          mode={this.state.activeSection}
+                          handleBack={this.toggleManageCourseForm}
                           handleNewCourseCreated={this.handleNewCourseCreated}
-                          saveCourse={this.saveCourse}/>;
-    } else {
+                          saveCourse={this.saveCourse}
+                          selectedCourse={this.state.selectedCourse}
+                          selectedCourseInfo={this.courseInfo[this.state.selectedCourse]}
+                          />;
+    }
+    else {
       let folderList = [];
       let contentList = [];
       if (this.state.selectedDrive === "Content") {
@@ -691,6 +713,8 @@ class DoenetChooser extends Component {
           directoryData={this.state.directoryStack}               // optional
           selectedItems={this.state.selectedItems}                // optional
           selectedItemsType={this.state.selectedItemsType}        // optional
+          renameFolder={this.renameFolder}                        // optional
+          openEditCourseForm={() => this.toggleManageCourseForm("edit_course")}
         />
       </React.Fragment>
     }
@@ -706,7 +730,12 @@ class DoenetChooser extends Component {
   }
 }
 
-class NewCourseForm extends React.Component {
+class CourseForm extends React.Component {
+  static defaultProps = {
+    selectedCourse: null,
+    selectedCourseInfo: null
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -720,11 +749,26 @@ class NewCourseForm extends React.Component {
       description: "",
       roles: [],
     };
-
+    
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleBack = this.handleBack.bind(this);
     this.addRole = this.addRole.bind(this);
+  }
+
+  componentDidMount() {
+    if (this.props.mode == "edit_course" && this.props.selectedCourseInfo !== null) {
+      let term = this.props.selectedCourseInfo.term.split(" ");
+      this.setState({
+        courseName: this.props.selectedCourseInfo.courseName,
+        department: this.props.selectedCourseInfo.department,
+        courseCode: this.props.selectedCourseInfo.courseCode,
+        section: this.props.selectedCourseInfo.section,
+        semester: term[0],
+        year: term[1],
+        description: this.props.selectedCourseInfo.description
+      });
+    }
   }
 
   handleChange(event) {
@@ -737,22 +781,32 @@ class NewCourseForm extends React.Component {
   }
 
   handleSubmit(event) {
-
-    let courseId = nanoid();
     let term = this.state.semester + " " + this.state.year;
-
-    this.props.saveCourse({
-      courseName:this.state.courseName,
-      courseId: courseId,
-      courseCode:this.state.courseCode,
-      term: term,
-      description: this.state.description,
-      department: this.state.department,
-      section: this.state.section,
-    }, (courseId) => {
-      this.props.handleNewCourseCreated(courseId);  
-    });
-    event.preventDefault();    
+    if (this.props.mode == "add_course") {
+      let courseId = nanoid();
+      this.props.handleNewCourseCreated({
+        courseName:this.state.courseName,
+        courseId: courseId,
+        courseCode:this.state.courseCode,
+        term: term,
+        description: this.state.description,
+        department: this.state.department,
+        section: this.state.section,
+        });
+    } else {
+      this.props.saveCourse({
+        courseName:this.state.courseName,
+        courseId: this.props.selectedCourse,
+        courseCode:this.state.courseCode,
+        term: term,
+        description: this.state.description,
+        department: this.state.department,
+        section: this.state.section,
+        overviewId: this.props.selectedCourseInfo.overviewId,
+        syllabusId: this.props.selectedCourseInfo.syllabusId
+      });
+    }
+    event.preventDefault();        
     this.props.handleBack();
   }
 
@@ -764,7 +818,7 @@ class NewCourseForm extends React.Component {
       }
     }
 
-    this.props.handleBack();
+    this.props.handleBack(this.props.mode);
   }
 
   addRole(role) {
@@ -787,35 +841,35 @@ class NewCourseForm extends React.Component {
         <form onSubmit={this.handleSubmit}>
           <div className="newCourseFormGroup-12">
             <label className="newCourseFormLabel">COURSE NAME</label>
-            <input className="newCourseFormInput" required type="text" name="courseName" 
+            <input className="newCourseFormInput" required type="text" name="courseName" value={this.state.courseName}
               placeholder="Course name goes here." onChange={this.handleChange} data-cy="newCourseFormNameInput"/>
           </div>
           <div className="newCourseFormGroupWrapper">
             <div className="newCourseFormGroup-4" >
               <label className="newCourseFormLabel">DEPARTMENT</label>
-              <input className="newCourseFormInput" required type="text" name="department" 
+              <input className="newCourseFormInput" required type="text" name="department" value={this.state.department}
               placeholder="DEP" onChange={this.handleChange} data-cy="newCourseFormDepInput"/>
             </div>
             <div className="newCourseFormGroup-4">
               <label className="newCourseFormLabel">COURSE CODE</label>
-              <input className="newCourseFormInput" required type="text" name="courseCode" 
+              <input className="newCourseFormInput" required type="text" name="courseCode" value={this.state.courseCode}
                 placeholder="MATH 1241" onChange={this.handleChange} data-cy="newCourseFormCodeInput"/>
             </div>
             <div className="newCourseFormGroup-4">
               <label className="newCourseFormLabel">SECTION</label>
-              <input className="newCourseFormInput" type="number" name="section" 
+              <input className="newCourseFormInput" type="number" name="section" value={this.state.section}
               placeholder="00000" onChange={this.handleChange} data-cy="newCourseFormSectionInput"/>
             </div>
           </div>          
           <div className="newCourseFormGroupWrapper">
             <div className="newCourseFormGroup-4" >
               <label className="newCourseFormLabel">YEAR</label>
-              <input className="newCourseFormInput" required type="number" name="year" 
+              <input className="newCourseFormInput" required type="number" name="year" value={this.state.year}
               placeholder="2019" onChange={this.handleChange} data-cy="newCourseFormYearInput"/>
             </div>
             <div className="newCourseFormGroup-4">
               <label className="newCourseFormLabel">SEMESTER</label>
-              <select className="newCourseFormSelect" required name="semester" onChange={this.handleChange}>
+              <select className="newCourseFormSelect" required name="semester" onChange={this.handleChange} value={this.state.semester}>
                 <option value="Spring">Spring</option>
                 <option value="Summer">Summer</option>
                 <option value="Fall">Fall</option>
@@ -826,7 +880,7 @@ class NewCourseForm extends React.Component {
           </div> 
           <div className="newCourseFormGroup-12">
             <label className="newCourseFormLabel">DESCRIPTION</label>
-            <textarea className="newCourseFormInput" type="text" name="description" 
+            <textarea className="newCourseFormInput" type="text" name="description" value={this.state.description}
               placeholder="Official course description here" onChange={this.handleChange} data-cy="newCourseFormDescInput"/>
           </div>
           <div className="newCourseFormGroup-12">
@@ -837,8 +891,17 @@ class NewCourseForm extends React.Component {
           <div id="newCourseFormButtonsContainer">
             <button id="newCourseFormSubmitButton" type="submit" data-cy="newCourseFormSubmitButton">
               <div className="newCourseFormButtonWrapper">
-                <span>Create Course</span>
-                <FontAwesomeIcon icon={faPlusCircle} style={{"fontSize":"20px", "color":"#fff", "cursor":"pointer", "marginLeft":"8px"}}/>
+                { this.mode == "add_course" ?
+                  <React.Fragment>
+                    <span>Create Course</span>
+                    <FontAwesomeIcon icon={faPlusCircle} style={{"fontSize":"20px", "color":"#fff", "cursor":"pointer", "marginLeft":"8px"}}/>
+                  </React.Fragment>                  
+                  : 
+                  <React.Fragment>
+                    <span>Save Changes</span>
+                    <FontAwesomeIcon icon={faSave} style={{"fontSize":"20px", "color":"#fff", "cursor":"pointer", "marginLeft":"8px"}}/>
+                  </React.Fragment>
+                }
               </div>              
             </button>
             <button id="newCourseFormCancelButton" onClick={this.handleBack} data-cy="newCourseFormCancelButton">
