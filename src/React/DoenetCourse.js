@@ -1031,12 +1031,12 @@ class DoenetCourse extends Component {
     if (location.length == (path.length+21)){
     // console.log(location.substring(index))
     let currentAssignmentId = location.substring(index)
+    console.log("currentAssignmentId")
     console.log(currentAssignmentId)
-    this.LoadAssignmentFromTheBeginningFlag=true
+    this.LoadAssignmentFromTheBeginningFlag = true
     // TODO(me): add IF ASSIGNMENT CAN BE LOADED
-    // this.makeTreeVisible({loadSpecificId:currentAssignmentId})
+    this.makeTreeVisible({loadSpecificId:currentAssignmentId})
     // this.loadAssignmentContent({contentId:null,branchId:null,assignmentId:currentAssignmentId})
-    // console.log(assignmentDoenetML)
     // this.forceUpdate()
     }
     else {
@@ -1178,6 +1178,15 @@ buildTree(){
             </span>
              </Link>
       )
+      if (type==="header"){
+        tree_branch=(<div to={link} key={"tree_branch"+index} 
+        data-cy={data_cy} className={ClassName} style={styleAssignment}
+        >
+        <span className="Section-Text" >
+            {name}
+            </span>
+             </div>)
+      }
       this.tree.push(tree_branch)
       
       })
@@ -1853,6 +1862,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.buildTreeArray()
         this.buildTree()
         this.assignmentTree = this.tree;
+        console.log("this.LoadAssignmentFromTheBeginningFlag")
+        console.log(this.LoadAssignmentFromTheBeginningFlag)
         if (this.LoadAssignmentFromTheBeginningFlag) {
         this.loadAssignmentContent({contentId:null,branchId:null,assignmentId:loadSpecificId})
         this.LoadAssignmentFromTheBeginningFlag=false
