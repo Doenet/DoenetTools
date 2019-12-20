@@ -4,11 +4,16 @@ body{
     margin: 0;
     font-family: 'Droid Serif','Georgia', 'Times New Roman', 'Times', 'serif';
 }
-
+.selectedEnableButton{
+    background-color: rgb(94, 197, 94); 
+    color: black; 
+    border: 2px solid rgb(94, 197, 94);
+    margin: 2 2 2 2
+}
 .courseContainer{
     display:grid;
     /* grid-template-columns: 120px 130px auto 140px; */
-    grid-template-columns: 250px auto;
+    grid-template-columns: 250px auto 250px;
     grid-template-rows: 60px auto;
     width: 100vw;
     height: 100vh;
@@ -26,7 +31,14 @@ body{
 }
 .homeActiveSection{
     /* background-color: rgb(243, 0, 0); */
-    grid-column: 2 / span 3;
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    padding: 5px;
+    overflow: scroll;
+}
+
+.info {
+    grid-column: 3 / 4;
     grid-row: 2 / 3;
     padding: 5px;
     overflow: scroll;
@@ -227,7 +239,7 @@ body{
     flex-grow: 1;
     font-size: 18px;
     padding:6px;
-
+    border-right:167px;
 }
 .Section-Icon {
     font-size:18px;
@@ -235,6 +247,30 @@ body{
 .Section-Icon-Box {
     padding:6px;
 }
+.AssignmentSelection {
+cursor:pointer
+}
+.AssignmentSelection-Active {
+    cursor:pointer;
+    display:flex;
+    justify-content: flex-end;
+    background-color: rgb(151, 155, 151);
+    padding: 2;
+}
+.headerSelection {
+
+}
+
+  .button {
+    background-color: white; 
+    color: black; 
+    border: 2px solid rgb(94, 197, 94);
+    margin: 2 2 2 2
+  }
+  .button:hover {
+    background-color: rgb(94, 197, 94);
+    color: white;
+  }
 @media only screen and (max-width: 600px) {
     .courseContainer{
         grid-template-rows: 120px auto;

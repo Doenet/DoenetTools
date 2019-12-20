@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import DoenetViewer from '../React/DoenetViewer';
-import doenetDefaultCode from '../defaultCode.doenet';
+// import doenetDefaultCode from '../defaultCode.doenet';
 import { Button, Dropdown, Icon, Menu } from 'semantic-ui-react';
 
 class DoenetTest extends Component {
