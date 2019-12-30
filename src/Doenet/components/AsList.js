@@ -18,6 +18,29 @@ export default class AsList extends InlineComponent {
     return childLogic;
   }
 
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.childrenWhoRender = {
+      returnDependencies: () => ({
+        activeChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroInline"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues:
+            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
+        };
+      }
+    }
+
+    return stateVariableDefinitions;
+  }
+
   initializeRenderer(){
     if(this.renderer === undefined) {
       this.renderer = new this.availableRenderers.aslist({
@@ -26,10 +49,6 @@ export default class AsList extends InlineComponent {
     }
   }
 
-  updateChildrenWhoRender(){
-    this.childrenWhoRender = this.activeChildren.map(x => x.componentName);
-  }
-  
   toText() {
 
     let atLeastZeroInline = this.childLogic.returnMatches("atLeastZeroInline");

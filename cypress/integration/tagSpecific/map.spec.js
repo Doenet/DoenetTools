@@ -436,10 +436,10 @@ describe('Map Tag Tests', function () {
       let graphs2 = components['/_ref1'].replacements[0].replacements;
       let graphs2Children = graphs2.map(x => x.activeChildren);
 
-      expect(graphs[0].descendantsFound._graphical.length).eq(8);
-      expect(graphs[1].descendantsFound._graphical.length).eq(8);
-      expect(graphs2[0].descendantsFound._graphical.length).eq(8);
-      expect(graphs2[1].descendantsFound._graphical.length).eq(8);
+      expect(graphs[0].stateValues.graphicalDescendants.length).eq(8);
+      expect(graphs[1].stateValues.graphicalDescendants.length).eq(8);
+      expect(graphs2[0].stateValues.graphicalDescendants.length).eq(8);
+      expect(graphs2[1].stateValues.graphicalDescendants.length).eq(8);
 
       expect(graphsChildren[0][0].stateValues.xs[0].tree).eq(-9);
       expect(graphsChildren[0][0].stateValues.xs[1].tree).eq(-5);
@@ -596,8 +596,8 @@ describe('Map Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
 
-        expect(components['/u/_graph1'].descendantsFound._graphical.length).eq(4);
-        expect(components['/v/_graph1'].descendantsFound._graphical.length).eq(4);
+        expect(components['/u/_graph1'].stateValues.graphicalDescendants.length).eq(4);
+        expect(components['/v/_graph1'].stateValues.graphicalDescendants.length).eq(4);
         expect(components['/u/u/u/a'].stateValues.xs[0].tree).eq(-9);
         expect(components['/u/u/u/a'].stateValues.xs[1].tree).eq(-5);
         expect(components['/u/u/v/a'].stateValues.xs[0].tree).eq(-8);
@@ -645,8 +645,8 @@ describe('Map Tag Tests', function () {
       let graphs = components['/_map1'].replacements;
       let graphsChildren = graphs.map(x => x.activeChildren);
 
-      expect(graphs[0].descendantsFound._graphical.length).eq(4);
-      expect(graphs[1].descendantsFound._graphical.length).eq(4);
+      expect(graphs[0].stateValues.graphicalDescendants.length).eq(4);
+      expect(graphs[1].stateValues.graphicalDescendants.length).eq(4);
       expect(graphsChildren[0][0].stateValues.xs[0].tree).eq(-9);
       expect(graphsChildren[0][0].stateValues.xs[1].tree).eq(-5);
       expect(graphsChildren[0][1].stateValues.xs[0].tree).eq(-9);
@@ -990,7 +990,7 @@ describe('Map Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
 
-        expect(components['/hi'].descendantsFound._graphical.length).eq(4);
+        expect(components['/hi'].stateValues.graphicalDescendants.length).eq(4);
         expect(components['/hi/q/_point1'].stateValues.xs[0].tree).eq(1);
         expect(components['/hi/q/_point1'].stateValues.xs[1].tree).eq(-3);
         expect(components['/hi/c/_point1'].stateValues.xs[0].tree).eq(1);
@@ -1084,8 +1084,8 @@ describe('Map Tag Tests', function () {
   //   cy.log('Test internal values are set to the correct values')
   //   cy.window().then((win) => {
   //     let components = Object.assign({},win.state.components);
-  //     expect(components['/_graph1'].descendantsFound._graphical.length).eq(2);
-  //     expect(components['/_graph2'].descendantsFound._graphical.length).eq(2);
+  //     expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(2);
+  //     expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(2);
   //     expect(components['/__map1_1/_point1'].stateValues.xs[0].tree).eq(8);
   //     expect(components['/__map1_1/_point1'].stateValues.xs[1].tree).eq(1);
   //     expect(components['/_map1[2]/_point1'].stateValues.xs[0].tree).eq(9);
@@ -1571,7 +1571,7 @@ describe('Map Tag Tests', function () {
       let xs2 = s.map(v => v * r);
       let ns = ["a", "b", "c"];
       let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].descendantsFound._graphical.length).eq(6);
+      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(6);
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
         expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).eq(xs1[ind]);
@@ -1768,10 +1768,10 @@ describe('Map Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].descendantsFound._graphical.length).eq(0);
-      expect(components['/_graph2'].descendantsFound._graphical.length).eq(0);
-      expect(components['/_graph3'].descendantsFound._graphical.length).eq(0);
-      expect(components['/graph4'].replacements[0].descendantsFound._graphical.length).eq(0);
+      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
+      expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
+      expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(0);
+      expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(0);
     })
 
     cy.log('make sequence length 1');
@@ -1786,10 +1786,10 @@ describe('Map Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].descendantsFound._graphical.length).eq(2);
-      expect(components['/_graph2'].descendantsFound._graphical.length).eq(2);
-      expect(components['/_graph3'].descendantsFound._graphical.length).eq(2);
-      expect(components['/graph4'].replacements[0].descendantsFound._graphical.length).eq(2);
+      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(2);
+      expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(2);
+      expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(2);
+      expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(2);
       expect(components['/a/_point1'].stateValues.coords.tree).eqls(["tuple", -1, 1]);
       expect(components['/q/_point1'].stateValues.coords.tree).eqls(["tuple", 1, -1]);
       expect(components['/refmap1'].replacements[0].stateValues.coords.tree).eqls(["tuple", -1, 1]);
@@ -1811,10 +1811,10 @@ describe('Map Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].descendantsFound._graphical.length).eq(0);
-      expect(components['/_graph2'].descendantsFound._graphical.length).eq(0);
-      expect(components['/_graph3'].descendantsFound._graphical.length).eq(0);
-      expect(components['/graph4'].replacements[0].descendantsFound._graphical.length).eq(0);
+      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
+      expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
+      expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(0);
+      expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(0);
     })
 
 
@@ -1836,10 +1836,10 @@ describe('Map Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].descendantsFound._graphical.length).eq(4);
-      expect(components['/_graph2'].descendantsFound._graphical.length).eq(4);
-      expect(components['/_graph3'].descendantsFound._graphical.length).eq(4);
-      expect(components['/graph4'].replacements[0].descendantsFound._graphical.length).eq(4);
+      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(4);
+      expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(4);
+      expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(4);
+      expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(4);
       expect(components['/a/_point1'].stateValues.coords.tree).eqls(["tuple", -1, 1]);
       expect(components['/q/_point1'].stateValues.coords.tree).eqls(["tuple", 1, -1]);
       expect(components['/refmap1'].replacements[0].stateValues.coords.tree).eqls(["tuple", -1, 1]);
@@ -1882,10 +1882,10 @@ describe('Map Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].descendantsFound._graphical.length).eq(4);
-      expect(components['/_graph2'].descendantsFound._graphical.length).eq(4);
-      expect(components['/_graph3'].descendantsFound._graphical.length).eq(4);
-      expect(components['/graph4'].replacements[0].descendantsFound._graphical.length).eq(4);
+      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(4);
+      expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(4);
+      expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(4);
+      expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(4);
       expect(components['/a/_point1'].stateValues.coords.tree).eqls(["tuple", -3, 9]);
       expect(components['/q/_point1'].stateValues.coords.tree).eqls(["tuple", 3, -9]);
       expect(components['/refmap1'].replacements[0].stateValues.coords.tree).eqls(["tuple", -3, 9]);
@@ -1918,10 +1918,10 @@ describe('Map Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].descendantsFound._graphical.length).eq(0);
-      expect(components['/_graph2'].descendantsFound._graphical.length).eq(0);
-      expect(components['/_graph3'].descendantsFound._graphical.length).eq(0);
-      expect(components['/graph4'].replacements[0].descendantsFound._graphical.length).eq(0);
+      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
+      expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
+      expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(0);
+      expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(0);
     })
 
     cy.log('make sequence length 3');
@@ -1950,10 +1950,10 @@ describe('Map Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].descendantsFound._graphical.length).eq(6);
-      expect(components['/_graph2'].descendantsFound._graphical.length).eq(6);
-      expect(components['/_graph3'].descendantsFound._graphical.length).eq(6);
-      expect(components['/graph4'].replacements[0].descendantsFound._graphical.length).eq(6);
+      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(6);
+      expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(6);
+      expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(6);
+      expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(6);
       expect(components['/a/_point1'].stateValues.coords.tree).eqls(["tuple", -3, 9]);
       expect(components['/q/_point1'].stateValues.coords.tree).eqls(["tuple", 3, -9]);
       expect(components['/refmap1'].replacements[0].stateValues.coords.tree).eqls(["tuple", -3, 9]);

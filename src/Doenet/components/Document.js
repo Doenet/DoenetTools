@@ -44,7 +44,22 @@ export default class Document extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+    let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.childrenWhoRender = {
+      returnDependencies: () => ({
+        activeChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "anything"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues:
+            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
+        };
+      }
+    }
 
     return stateVariableDefinitions;
   }
@@ -310,10 +325,6 @@ export default class Document extends BaseComponent {
       title: this.stateValues.title,
       // viewedSolution: this.state.viewedSolution,
     });
-  }
-
-  updateChildrenWhoRender(){
-    this.childrenWhoRender = this.activeChildren.map(x => x.componentName);
   }
 
   static setUpVariant({serializedComponent, sharedParameters, definingChildrenSoFar,

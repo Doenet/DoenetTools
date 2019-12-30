@@ -278,7 +278,7 @@ describe('Math Tag Tests', function () {
       expect(components['/_point1'].stateValues.xs[1].tree).eq(3);
     });
 
-    cy.log("Move point to (7,9");
+    cy.log("Move point to (7,9)");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       console.log(`move point1`)

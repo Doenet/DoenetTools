@@ -36,7 +36,7 @@ export default class Ref extends CompositeComponent {
     // Will check validity depending on ref target
     let properties = {};
     for (let componentType of allPossibleProperties) {
-      properties[componentType] = {};
+      properties[componentType] = { ignorePropagationFromAncestors: true };
     }
 
     // Just in case there is a component that added these as a property, delete them
@@ -60,7 +60,7 @@ export default class Ref extends CompositeComponent {
 
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let addRefTarget = function ({ activeChildrenMatched }) {
@@ -839,6 +839,7 @@ export default class Ref extends CompositeComponent {
 
     serializeFunctions.createComponentsFromProps(serializedState, this.standardComponentClasses);
 
+    // need idRng
     serializeFunctions.createComponentNames({ serializedState, componentTypesTakingComponentNames: this.componentTypesTakingComponentNames, allComponentClasses: this.allComponentClasses });
 
     this.componentNameToPreserializedName(serializedState, this.componentTypesTakingComponentNames);
@@ -999,9 +1000,11 @@ export default class Ref extends CompositeComponent {
     if (component.stateValues.useProp) {
       let componentOrReplacementNames = getComponentNamesForProp(component.stateValues.refTargetName);
 
-      return { replacements: refReplacementFromProp({ 
-        component, components, componentOrReplacementNames
-       }) };
+      return {
+        replacements: refReplacementFromProp({
+          component, components, componentOrReplacementNames
+        })
+      };
     }
 
     // TODO: check if inactive?
@@ -1342,15 +1345,8 @@ export default class Ref extends CompositeComponent {
 
 export function refReplacementFromProp({ component, components, componentOrReplacementNames }) {
 
-  let additionalDepProperties = {
-    refComponentName: component.componentName,
-  }
-  // if (component.state.childnumber !== undefined) {
-  //   additionalDepProperties.childnumber = component.state.childnumber;
-  // }
 
   let serializedReplacements = [];
-
 
   // TODO: correctly generalize to more than one component
   for (let [index, replacementClass] of component.stateValues.replacementClasses.entries()) {

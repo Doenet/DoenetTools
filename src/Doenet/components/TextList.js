@@ -112,13 +112,16 @@ export default class TextList extends InlineComponent {
           variableName: "maximumNumber",
         }
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, componentInfoObjects }) {
         let textNumber = 0;
         let textlistNumber = 0;
         let texts = [];
 
         for (let child of dependencyValues.textAndTextlistChildren) {
-          if (child.componentType === "text") {
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "text"
+          })) {
             texts.push(dependencyValues.textChildren[textNumber].stateValues.value);
             textNumber++;
           } else {
@@ -137,7 +140,7 @@ export default class TextList extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.ncomponents = {
+    stateVariableDefinitions.nComponents = {
       public: true,
       componentType: "number",
       returnDependencies: () => ({
@@ -147,10 +150,60 @@ export default class TextList extends InlineComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { ncomponents: dependencyValues.texts.length } }
+        return { newValues: { nComponents: dependencyValues.texts.length } }
       }
     }
 
+    stateVariableDefinitions.childrenWhoRender = {
+      returnDependencies: () => ({
+        textAndTextlistChildren: {
+          dependencyType: "stateVariable",
+          variableName: "textAndTextlistChildren",
+        },
+        textChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroTexts",
+        },
+        textlistChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroTextlists",
+          variableNames: ["childrenWhoRender"],
+        },
+        maximumNumber: {
+          dependencyType: "stateVariable",
+          variableName: "maximumNumber",
+        },
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let textNumber = 0;
+        let textlistNumber = 0;
+        let childrenWhoRender = [];
+
+        for (let child of dependencyValues.textAndTextlistChildren) {
+
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "text"
+          })) {
+            childrenWhoRender.push(dependencyValues.textChildren[textNumber].componentName);
+            textNumber++;
+          } else {
+            childrenWhoRender.push(...dependencyValues.textlistChildren[textlistNumber].stateValues.childrenWhoRender);
+            textlistNumber++;
+          }
+        }
+
+        let maxNum = dependencyValues.maximumNumber;
+        if (maxNum !== undefined && texts.length > maxNum) {
+          maxNum = Math.max(0, Math.floor(maxNum));
+          childrenWhoRender = childrenWhoRender.slice(0, maxNum)
+        }
+
+        return { newValues: { childrenWhoRender } }
+
+      }
+    }
+    
     return stateVariableDefinitions;
   }
 
@@ -161,27 +214,5 @@ export default class TextList extends InlineComponent {
       });
     }
   }
-
-  updateChildrenWhoRender() {
-
-    this.childrenWhoRender = [];
-    if (this.stateValues.textAndTextlistChildren !== undefined) {
-      for (let child of this.stateValues.textAndTextlistChildren) {
-        if (child.componentType === "text") {
-          this.childrenWhoRender.push(child.componentName);
-        } else {
-          // state variable doesn't contain entire component,
-          // just componentType and componentName
-          // Look up actual component from allChildren
-          let childComponent = this.allChildren[child.componentName].component
-          this.childrenWhoRender.push(...childComponent.childrenWhoRender);
-        }
-      }
-      if (this.childrenWhoRender.length > this.stateValues.ncomponents) {
-        this.childrenWhoRender.length = this.stateValues.ncomponents;
-      }
-    }
-  }
-
 
 }

@@ -42,8 +42,8 @@ export default class Graph extends BlockComponent {
       }
     }
 
-    let AtLeastOneString = childLogic.newLeaf({
-      name: "AtLeastOneString",
+    let atLeastOneString = childLogic.newLeaf({
+      name: "atLeastOneString",
       componentType: 'string',
       comparison: 'atLeast',
       number: 1,
@@ -52,8 +52,8 @@ export default class Graph extends BlockComponent {
       replacementFunction: addCurve,
     });
 
-    let AtLeastZeroGraphical = childLogic.newLeaf({
-      name: "AtLeastZeroGraphical",
+    let atLeastZeroGraphical = childLogic.newLeaf({
+      name: "atLeastZeroGraphical",
       componentType: '_graphical',
       comparison: 'atLeast',
       number: 0,
@@ -62,7 +62,7 @@ export default class Graph extends BlockComponent {
     childLogic.newOperator({
       name: "SugarXorGraph",
       operator: "xor",
-      propositions: [AtLeastOneString, AtLeastZeroGraphical],
+      propositions: [atLeastOneString, atLeastZeroGraphical],
       setAsBase: true,
     })
 
@@ -89,6 +89,22 @@ export default class Graph extends BlockComponent {
         }
       },
     };
+
+
+    stateVariableDefinitions.childrenWhoRender = {
+      returnDependencies: () => ({
+        activeChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroGraphical"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues:
+            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
+        };
+      }
+    }
 
     return stateVariableDefinitions;
   }
@@ -124,10 +140,6 @@ export default class Graph extends BlockComponent {
         ymax: this.stateValues.ymax,
       })
     }
-  }
-
-  updateChildrenWhoRender() {
-    this.childrenWhoRender = this.activeChildren.map(x => x.componentName);
   }
 
   returnRenderersInGraph() {

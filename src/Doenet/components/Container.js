@@ -17,16 +17,36 @@ export default class Container extends BlockComponent {
     return childLogic;
   }
 
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.childrenWhoRender = {
+      returnDependencies: () => ({
+        activeChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "anything"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues:
+            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
+        };
+      }
+    }
+
+    return stateVariableDefinitions;
+  }
+
   initializeRenderer(){
     if(this.renderer === undefined) {
       this.renderer = new this.availableRenderers.container({
         key: this.componentName,
       });
     }
-  }
-
-  updateChildrenWhoRender(){
-    this.childrenWhoRender = this.activeChildren.map(x => x.componentName);
   }
 
 }

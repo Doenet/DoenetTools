@@ -112,13 +112,16 @@ export default class BooleanList extends InlineComponent {
           variableName: "maximumNumber",
         }
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, componentInfoObjects }) {
         let booleanNumber = 0;
         let booleanlistNumber = 0;
         let booleans = [];
 
         for (let child of dependencyValues.booleanAndBooleanlistChildren) {
-          if (child.componentType === "boolean") {
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "boolean"
+          })) {
             booleans.push(dependencyValues.booleanChildren[booleanNumber].stateValues.value);
             booleanNumber++;
           } else {
@@ -137,7 +140,7 @@ export default class BooleanList extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.ncomponents = {
+    stateVariableDefinitions.nComponents = {
       public: true,
       componentType: "number",
       returnDependencies: () => ({
@@ -147,7 +150,58 @@ export default class BooleanList extends InlineComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { ncomponents: dependencyValues.booleans.length } }
+        return { newValues: { nComponents: dependencyValues.booleans.length } }
+      }
+    }
+
+
+    stateVariableDefinitions.childrenWhoRender = {
+      returnDependencies: () => ({
+        booleanAndBooleanlistChildren: {
+          dependencyType: "stateVariable",
+          variableName: "booleanAndBooleanlistChildren",
+        },
+        booleanChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroBooleans",
+        },
+        booleanlistChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroBooleanlists",
+          variableNames: ["childrenWhoRender"],
+        },
+        maximumNumber: {
+          dependencyType: "stateVariable",
+          variableName: "maximumNumber",
+        },
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let booleanNumber = 0;
+        let booleanlistNumber = 0;
+        let childrenWhoRender = [];
+
+        for (let child of dependencyValues.booleanAndBooleanlistChildren) {
+
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "boolean"
+          })) {
+            childrenWhoRender.push(dependencyValues.booleanChildren[booleanNumber].componentName);
+            booleanNumber++;
+          } else {
+            childrenWhoRender.push(...dependencyValues.booleanlistChildren[booleanlistNumber].stateValues.childrenWhoRender);
+            booleanlistNumber++;
+          }
+        }
+
+        let maxNum = dependencyValues.maximumNumber;
+        if (maxNum !== undefined && booleans.length > maxNum) {
+          maxNum = Math.max(0, Math.floor(maxNum));
+          childrenWhoRender = childrenWhoRender.slice(0, maxNum)
+        }
+
+        return { newValues: { childrenWhoRender } }
+
       }
     }
 
@@ -163,26 +217,5 @@ export default class BooleanList extends InlineComponent {
       });
     }
   }
-
-  updateChildrenWhoRender() {
-
-    this.childrenWhoRender = [];
-    for (let child of this.stateValues.booleanAndBooleanlistChildren) {
-      if (child.componentType === "boolean") {
-        this.childrenWhoRender.push(child.componentName);
-      } else {
-        // state variable doesn't contain entire component,
-        // just componentType and componentName
-        // Look up actual component from allChildren
-        let childComponent = this.allChildren[child.componentName].component
-        this.childrenWhoRender.push(...childComponent.childrenWhoRender);
-      }
-    }
-    if (this.childrenWhoRender.length > this.stateValues.ncomponents) {
-      this.childrenWhoRender.length = this.stateValues.ncomponents;
-    }
-
-  }
-
 
 }

@@ -10,7 +10,7 @@ export default class BaseComponent {
     definingChildren,
     serializedChildren, childLogic,
     stateVariableDefinitions,
-    standardComponentClasses, allComponentClasses, allPossibleProperties,
+    standardComponentClasses, allComponentClasses, isInheritedComponentType,
     componentTypesTakingComponentNames, componentTypesCreatingVariants,
     shadow, requestUpdate, availableRenderers,
     allRenderComponents, graphRenderComponents,
@@ -40,6 +40,7 @@ export default class BaseComponent {
     this.componentType = this.constructor.componentType;
     this.standardComponentClasses = standardComponentClasses;
     this.allComponentClasses = allComponentClasses;
+    this.isInheritedComponentType = isInheritedComponentType;
     this.componentTypesTakingComponentNames = componentTypesTakingComponentNames;
     this.componentTypesCreatingVariants = componentTypesCreatingVariants;
     this.componentIsAProperty = false;
@@ -65,7 +66,6 @@ export default class BaseComponent {
     // this.upstreamDependencies = {};
     // this.downstreamDependencies = {};
 
-    this.childrenWhoRender = [];
 
     this.state = {};
     for (let stateVariable in stateVariableDefinitions) {
@@ -390,9 +390,6 @@ export default class BaseComponent {
       descendants = [...descendants, child, ...child.allDescendants];
     }
     return descendants;
-  }
-
-  updateChildrenWhoRender() {
   }
 
   updateState({ init } = {}) {

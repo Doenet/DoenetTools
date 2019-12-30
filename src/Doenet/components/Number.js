@@ -77,9 +77,9 @@ export default class NumberComponent extends InlineComponent {
           return { newValues: { value: dependencyValues.numberChild[0].stateValues.value } }
         }
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues }) {
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues, overrideFixed }) {
 
-        if (!stateValues.canBeModified) {
+        if (!stateValues.canBeModified && !overrideFixed) {
           return { success: false };
         }
 

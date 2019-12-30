@@ -15,7 +15,7 @@ export default class Sequence extends CompositeComponent {
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
     let standardComponentClasses = args.standardComponentClasses;
 
@@ -301,12 +301,6 @@ export default class Sequence extends CompositeComponent {
 
         let step = dependencyValues.stepChild[0].stateValues.value;
 
-        // convert step to number if not math
-        if (dependencyValues.selectedType !== "math" && !Number.isFinite(step)) {
-          if (step && step.evaluate_to_constant) {
-            step = step.evaluate_to_constant();
-          }
-        }
         return { newValues: { specifiedStep: step } };
       },
     };
@@ -403,8 +397,10 @@ export default class Sequence extends CompositeComponent {
         if (dependencyValues.specifiedStep !== undefined) {
           // step must be number if not math
           if (dependencyValues.selectedType !== "math" && !Number.isFinite(dependencyValues.specifiedStep)) {
-            console.log("Invalid step of sequence.  Must be a number for sequence of type " + dependencyValues.selectedType + ".")
-            validSequence = false;
+            if (!(dependencyValues.specifiedStep instanceof me.class && Number.isFinite(dependencyValues.specifiedStep.evaluate_to_constant()))) {
+              console.log("Invalid step of sequence.  Must be a number for sequence of type " + dependencyValues.selectedType + ".")
+              validSequence = false;
+            }
           }
         }
 
@@ -456,26 +452,68 @@ export default class Sequence extends CompositeComponent {
         let exclude = [...dependencyValues.specifiedExclude];
         let selectedType = dependencyValues.selectedType;
 
-        if (dependencyValues.selectedType === "letters") {
-
-          // if from, to, and exclude are strings
-          // then convert to numbers
-          if (from !== undefined) {
-            if (typeof from === "string") {
-              from = lettersToNumber(from);
-            }
-          }
+        if (dependencyValues.selectedType === "math") {
+          // make sure to and from are math expressions
           if (to !== undefined) {
-            if (typeof to === "string") {
-              to = lettersToNumber(to);
+            if (!(to instanceof me.class)) {
+              to = me.fromAst(to);
             }
           }
-          for (let [index, value] of exclude.entries()) {
-            if (typeof value === "string") {
-              exclude[index] = lettersToNumber(value)
+          if (from !== undefined) {
+            if (!(from instanceof me.class)) {
+              from = me.fromAst(from);
+            }
+          }
+          if (step !== undefined) {
+            if (!(step instanceof me.class)) {
+              step = me.fromAst(step);
+            }
+          }
+        } else {
+
+          // if selectedType is not math, convert step to a number
+          if (step !== undefined) {
+            if (step instanceof me.class) {
+              step = step.evaluate_to_constant();
+            }
+          }
+
+
+          if (dependencyValues.selectedType === "letters") {
+
+            // if from, to, and exclude are strings
+            // then convert to numbers
+            if (from !== undefined) {
+              if (typeof from === "string") {
+                from = lettersToNumber(from);
+              }
+            }
+            if (to !== undefined) {
+              if (typeof to === "string") {
+                to = lettersToNumber(to);
+              }
+            }
+            for (let [index, value] of exclude.entries()) {
+              if (typeof value === "string") {
+                exclude[index] = lettersToNumber(value)
+              }
+            }
+          } else if (dependencyValues.selectedType === "number") {
+            // make sure to and from are numbers
+            if (to !== undefined) {
+              if (to instanceof me.class) {
+                to = to.evaluate_to_constant();
+              }
+            }
+            if (from !== undefined) {
+              if (from instanceof me.class) {
+                from = from.evaluate_to_constant();
+              }
             }
           }
         }
+
+
 
         if (dependencyValues.validSequence) {
           let results = componentConstructor.calculateSequenceParameters({
@@ -576,7 +614,7 @@ export default class Sequence extends CompositeComponent {
         // no from, but to
         // defined step and count even if none
         if (selectedType === "math") {
-          from = to.subtract(step.multipy(count - 1)).simplify();
+          from = to.subtract(step.multiply(count - 1)).simplify();
         } else {
           from = to - step * (count - 1);
           if (selectedType === "letters") {
