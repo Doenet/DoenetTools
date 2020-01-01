@@ -11,34 +11,64 @@ $folderId =  mysqli_real_escape_string($conn,$_REQUEST["folderId"]);  // root or
 
 if ($folderId === "root") {
   $sql="
-    SELECT 
+  SELECT   -- get personal content
     c.branchId as branchId,
     c.title as title,
     c.contentId as contentId,
     c.timestamp as publishDate,
     c.removedFlag as removedFlag,
-    c.draft as draft
-    FROM content AS c
-    LEFT JOIN user_content uc ON uc.branchId = c.branchId
-    WHERE 
-      uc.username='$remoteuser' AND c.removedFlag=0
-    ORDER BY c.branchId, c.timestamp DESC
-  ";
-} else {
-  $sql="
-    SELECT 
+    c.draft as draft,
+    'root' as rootId, 
+    'root' as parentId,
+    c.public as public
+  FROM content AS c
+  LEFT JOIN user_content uc ON uc.branchId = c.branchId
+  WHERE uc.username='$remoteuser' AND c.removedFlag=0
+  UNION
+  SELECT  -- get children content 
     c.branchId as branchId,
     c.title as title,
     c.contentId as contentId,
     c.timestamp as publishDate,
     c.removedFlag as removedFlag,
-    c.draft as draft
-    FROM content AS c
-    LEFT JOIN folder_content fc ON fc.childId = c.branchId
-    WHERE fc.folderId='$folderId' AND fc.childType='content' AND c.removedFlag=0
-    ORDER BY c.branchId, c.timestamp DESC
+    c.draft as draft,
+    fc.rootId as rootId, 
+    fc.folderId as parentId,
+    c.public as public
+  FROM content AS c
+  LEFT JOIN folder_content fc ON fc.childId = c.branchId
+  WHERE fc.childType='content' AND c.removedFlag=0
+  AND rootId IN (
+      SELECT 
+        f.folderId as folderId
+      FROM repo_access AS ra
+      LEFT JOIN folder f ON ra.repoId = f.folderId
+      WHERE ra.username='$remoteuser' AND ra.removedFlag=0
+      UNION
+      SELECT 
+        f.folderId as folderId
+      FROM user_folders AS uf
+      LEFT JOIN folder f ON uf.folderId = f.folderId
+      WHERE uf.username='$remoteuser'
+    )
+  ORDER BY branchId, publishDate DESC
   ";
 }
+//  else {
+//   $sql="
+//     SELECT 
+//     c.branchId as branchId,
+//     c.title as title,
+//     c.contentId as contentId,
+//     c.timestamp as publishDate,
+//     c.removedFlag as removedFlag,
+//     c.draft as draft
+//     FROM content AS c
+//     LEFT JOIN folder_content fc ON fc.childId = c.branchId
+//     WHERE fc.folderId='$folderId' AND fc.childType='content' AND c.removedFlag=0
+//     ORDER BY c.branchId, c.timestamp DESC
+//   ";
+// }
 
 $result = $conn->query($sql); 
 $response_arr = array();
@@ -71,7 +101,7 @@ if ($result->num_rows > 0){
                 "title"=>$row["title"],
                 "publishDate" => "",
                 "draftDate" => "",
-                "parentId" => null
+                "parentId" => $row["parentId"]
                 );
                 array_push($sort_order_arr,$bi);
         }
@@ -90,9 +120,17 @@ if ($result->num_rows > 0){
     }
 }
 
+$filtered_sort_order_arr = array();
+
+foreach($sort_order_arr as $key => $value) {
+  if ($branchId_info_arr[$value]["parentId"] == "root") {
+    array_push($filtered_sort_order_arr,$value);
+  }
+}
+
 $response_arr = array(
         "branchId_info"=>$branchId_info_arr,
-        "sort_order"=>$sort_order_arr,
+        "sort_order"=>$filtered_sort_order_arr,
 );
     
  // set response code - 200 OK
