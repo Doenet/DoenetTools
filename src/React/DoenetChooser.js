@@ -67,6 +67,7 @@ class DoenetChooser extends Component {
     this.flattenFolder = this.flattenFolder.bind(this);
     this.renameFolder = this.renameFolder.bind(this);
     this.modifyPublicState = this.modifyPublicState.bind(this);
+    this.addContentToRepo = this.addContentToRepo.bind(this);
   }
 
 
@@ -519,7 +520,6 @@ class DoenetChooser extends Component {
               selectedDrive: "Content"
             }, () => { 
               this.updateNumber++;
-              this.forceUpdate();
             });
           });
         });        
@@ -540,25 +540,43 @@ class DoenetChooser extends Component {
     });
   }
 
+  addContentToRepo(childIds, childType, repoId, callback=(()=>{})) {
+    let isPublic = this.folderInfo[repoId].isPublic;
+
+    // modify public/private state if parent is repo
+    if (isPublic) {
+      childIds.forEach(childId => {
+        this.modifyPublicState(isPublic, [].concat(this.flattenFolder(childId).itemIds),
+          [].concat(this.flattenFolder(childId).itemType));
+      });
+      this.addContentToFolder(childIds, childType, repoId);
+    } else {
+      // private (personal / in private repo) -> private allowed
+      // public (in public repo) -> private not allowed
+      childIds.forEach((childId, i) => {
+        if (childType[i] == "folder") {
+          // check if public
+          if (!this.folderInfo[childId].isPublic) {
+            this.modifyPublicState(isPublic, [].concat(this.flattenFolder(childId).itemIds),
+              [].concat(this.flattenFolder(childId).itemType));
+            this.addContentToFolder([childId], ["folder"], repoId);
+          }
+        } else {
+          // check if public
+          if (!this.branchId_info[childId].isPublic) {
+            this.modifyPublicState(isPublic, [childId], ["content"]);
+            this.addContentToFolder([childId], ["content"], repoId);
+          }
+        }
+      });
+    }
+  }
+
   addContentToFolder(childIds, childType, folderId, callback=(()=>{})) {
     let operationType = "insert";
     let title = this.folderInfo[folderId].title;
     let isRepo = this.folderInfo[folderId].isRepo;
     let isPublic = this.folderInfo[folderId].isPublic;
-
-    // modify public/private state if parent is repo
-    if (isRepo) {
-      if (isPublic) {
-        childIds.forEach(childId => {
-          this.modifyPublicState(isPublic, [].concat(this.flattenFolder(childId).itemIds),
-            [].concat(this.flattenFolder(childId).itemType));
-        });
-        console.log("Modify public");
-        // continue with adding
-      } else {
-        return; // private(default) -> private redundant, public -> private not allowed
-      }
-    }
 
     this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (folderId) => {
       // creating new folder
@@ -662,7 +680,7 @@ class DoenetChooser extends Component {
     })
     this.folderInfo[folderId].childContent.forEach((childContentId) => {
       itemIds.push(childContentId);
-      itemType = itemType.push("content");
+      itemType.push("content");
     })
     return {itemIds: itemIds, itemType: itemType};
   }
@@ -818,7 +836,6 @@ class DoenetChooser extends Component {
         folderList = this.courseInfo[this.state.selectedCourse].folders;
         contentList = this.courseInfo[this.state.selectedCourse].content;
       }
-      console.log(contentList);
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
           loading={!this.folders_loaded && !this.branches_loaded}
@@ -834,6 +851,7 @@ class DoenetChooser extends Component {
           updateSelectedItems={this.updateSelectedItems}          // optional
           updateDirectoryStack={this.updateDirectoryStack}        // optional
           addContentToFolder={this.addContentToFolder}            // optional
+          addContentToRepo ={this.addContentToRepo}               // optional
           removeContentFromCourse={this.removeContentFromCourse}  // optional
           removeContentFromFolder={this.removeContentFromFolder}  // optional                  
           directoryData={this.state.directoryStack}               // optional

@@ -51,6 +51,7 @@ function formatTimestamp(date) {
 class DoenetBranchBrowser extends Component {
   static defaultProps = {
     addContentToFolder: null,
+    addContentToRepo: null,
     removeContentFromFolder: null,
     selectedDrive: "Content",
     selectedCourse: null,
@@ -136,9 +137,13 @@ class DoenetBranchBrowser extends Component {
         selectedItemsWithoutRepo.push(itemId);
         selectedItemsTypeWithoutRepo.push("folder");
       }
-    }); 
-    
-    this.props.addContentToFolder(selectedItemsWithoutRepo, selectedItemsTypeWithoutRepo, folderId);
+    });
+
+    if (this.props.allFolderInfo[folderId].isRepo) {
+      this.props.addContentToRepo(selectedItemsWithoutRepo, selectedItemsTypeWithoutRepo, folderId);
+    } else {
+      this.props.addContentToFolder(selectedItemsWithoutRepo, selectedItemsTypeWithoutRepo, folderId);
+    }
     this.setState({selectedItems: [], selectedItemType: []});
   }
 
