@@ -14,7 +14,7 @@ SELECT   -- get all repos user has access to
   f.parentId as parentId,
   f.creationDate as creationDate,
   f.isRepo as isRepo,
-  f.public as public,
+  f.public as isPublic,
   f.folderId as rootId
 FROM repo_access AS ra
 LEFT JOIN folder f ON ra.repoId = f.folderId
@@ -26,7 +26,7 @@ SELECT  -- get all personal folders
   f.parentId as parentId,
   f.creationDate as creationDate,
   f.isRepo as isRepo,
-  f.public as public,
+  f.public as isPublic,
   f.folderId as rootId
 FROM user_folders AS uf
 LEFT JOIN folder f ON uf.folderId = f.folderId
@@ -38,7 +38,7 @@ SELECT  -- get all nested folders
   f.parentId as parentId,
   f.creationDate as creationDate,
   f.isRepo as isRepo,
-  f.public as public,
+  f.public as isPublic,
   fc.rootId as rootId
 FROM folder_content AS fc
 LEFT JOIN folder f ON fc.childId = f.folderId
@@ -74,7 +74,7 @@ if ($result->num_rows > 0){
           "childContent" => array(),
           "childFolders" => array(),
           "isRepo" => ($row["isRepo"] == 1),
-          "public" => ($row["public"] == 1)
+          "isPublic" => ($row["isPublic"] == 1)
     );
   }
 }

@@ -9,66 +9,49 @@ include "db_connection.php";
 
 $folderId =  mysqli_real_escape_string($conn,$_REQUEST["folderId"]);  // root or folderId
 
-if ($folderId === "root") {
-  $sql="
-  SELECT   -- get personal content
-    c.branchId as branchId,
-    c.title as title,
-    c.contentId as contentId,
-    c.timestamp as publishDate,
-    c.removedFlag as removedFlag,
-    c.draft as draft,
-    'root' as rootId, 
-    'root' as parentId,
-    c.public as public
-  FROM content AS c
-  LEFT JOIN user_content uc ON uc.branchId = c.branchId
-  WHERE uc.username='$remoteuser' AND c.removedFlag=0
-  UNION
-  SELECT  -- get children content 
-    c.branchId as branchId,
-    c.title as title,
-    c.contentId as contentId,
-    c.timestamp as publishDate,
-    c.removedFlag as removedFlag,
-    c.draft as draft,
-    fc.rootId as rootId, 
-    fc.folderId as parentId,
-    c.public as public
-  FROM content AS c
-  LEFT JOIN folder_content fc ON fc.childId = c.branchId
-  WHERE fc.childType='content' AND c.removedFlag=0
-  AND rootId IN (
-      SELECT 
-        f.folderId as folderId
-      FROM repo_access AS ra
-      LEFT JOIN folder f ON ra.repoId = f.folderId
-      WHERE ra.username='$remoteuser' AND ra.removedFlag=0
-      UNION
-      SELECT 
-        f.folderId as folderId
-      FROM user_folders AS uf
-      LEFT JOIN folder f ON uf.folderId = f.folderId
-      WHERE uf.username='$remoteuser'
-    )
-  ORDER BY branchId, publishDate DESC
-  ";
-}
-//  else {
-//   $sql="
-//     SELECT 
-//     c.branchId as branchId,
-//     c.title as title,
-//     c.contentId as contentId,
-//     c.timestamp as publishDate,
-//     c.removedFlag as removedFlag,
-//     c.draft as draft
-//     FROM content AS c
-//     LEFT JOIN folder_content fc ON fc.childId = c.branchId
-//     WHERE fc.folderId='$folderId' AND fc.childType='content' AND c.removedFlag=0
-//     ORDER BY c.branchId, c.timestamp DESC
-//   ";
-// }
+$sql="
+SELECT   -- get personal content
+  c.branchId as branchId,
+  c.title as title,
+  c.contentId as contentId,
+  c.timestamp as publishDate,
+  c.removedFlag as removedFlag,
+  c.draft as draft,
+  'root' as rootId, 
+  'root' as parentId,
+  c.public as public
+FROM content AS c
+LEFT JOIN user_content uc ON uc.branchId = c.branchId
+WHERE uc.username='$remoteuser' AND c.removedFlag=0
+UNION
+SELECT  -- get children content 
+  c.branchId as branchId,
+  c.title as title,
+  c.contentId as contentId,
+  c.timestamp as publishDate,
+  c.removedFlag as removedFlag,
+  c.draft as draft,
+  fc.rootId as rootId, 
+  fc.folderId as parentId,
+  c.public as public
+FROM content AS c
+LEFT JOIN folder_content fc ON fc.childId = c.branchId
+WHERE fc.childType='content' AND c.removedFlag=0
+AND rootId IN (
+    SELECT 
+      f.folderId as folderId
+    FROM repo_access AS ra
+    LEFT JOIN folder f ON ra.repoId = f.folderId
+    WHERE ra.username='$remoteuser' AND ra.removedFlag=0
+    UNION
+    SELECT 
+      f.folderId as folderId
+    FROM user_folders AS uf
+    LEFT JOIN folder f ON uf.folderId = f.folderId
+    WHERE uf.username='$remoteuser'
+  )
+ORDER BY branchId, publishDate DESC
+";
 
 $result = $conn->query($sql); 
 $response_arr = array();

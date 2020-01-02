@@ -12,7 +12,7 @@ $folderId = mysqli_real_escape_string($conn,$_POST["folderId"]);
 $parentId = mysqli_real_escape_string($conn,$_POST["parentId"]);
 $rootId = mysqli_real_escape_string($conn,$_POST["rootId"]);
 $isRepo = (mysqli_real_escape_string($conn,$_POST["isRepo"]) == true) ? 1 : 0;
-$private = (mysqli_real_escape_string($conn,$_POST["private"]) == true) ? 1 : 0;
+$public = (mysqli_real_escape_string($conn,$_POST["isPublic"]) == true) ? 1 : 0;
 $number_children = count($_POST["childContent"]);
 $operationType =  mysqli_real_escape_string($conn,$_POST["operationType"]);
 

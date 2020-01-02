@@ -66,6 +66,7 @@ class DoenetChooser extends Component {
     this.modifyFolderChildrenRoot = this.modifyFolderChildrenRoot.bind(this);
     this.flattenFolder = this.flattenFolder.bind(this);
     this.renameFolder = this.renameFolder.bind(this);
+    this.modifyPublicState = this.modifyPublicState.bind(this);
   }
 
 
@@ -280,8 +281,8 @@ class DoenetChooser extends Component {
     .then(resp=>{
       this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchId_info);
       this.sort_order = resp.data.sort_order;
-      callback();
       this.branches_loaded = true;
+      callback();
       this.forceUpdate();
     });
   }
@@ -451,7 +452,7 @@ class DoenetChooser extends Component {
     });
   }
 
-  saveFolder(folderId, title, childContent, childType, operationType, isRepo, callback=(()=>{})) {
+  saveFolder(folderId, title, childContent, childType, operationType, isRepo, isPublic, callback=(()=>{})) {
     // get current directory folderId/root
     let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
     // setup parent
@@ -467,6 +468,7 @@ class DoenetChooser extends Component {
       operationType: operationType,
       parentId: parentId,
       isRepo: isRepo,
+      isPublic: isPublic
     }
     axios.post(url, data)
     .then((resp) => {
@@ -487,8 +489,8 @@ class DoenetChooser extends Component {
     .then(resp=>{
       this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
       this.folderIds = resp.data.folderIds;
-      callback();
       this.folders_loaded = true;
+      callback();
       this.forceUpdate();
     });
   }
@@ -497,14 +499,14 @@ class DoenetChooser extends Component {
     // generate new folderId
     let folderId = nanoid();
 
-    // check if new folder is private or public
-    let isPrivate = true;
+    // check if new folder is private or isPublic
+    let isPublic = false;
     // if (this.state.directoryStack.length == 0  // in root
     //   || this.folderInfo(this.state.directoryStack[0])) {       // in private repo
     //   isPrivate = true;
     // }
 
-    this.saveFolder(folderId, title, [], [], "insert", false, () => {
+    this.saveFolder(folderId, title, [], [], "insert", false, false, () => {
       // if not in base dir, add folder to current folder
       if (this.state.directoryStack.length !== 0) {
         let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
@@ -517,6 +519,7 @@ class DoenetChooser extends Component {
               selectedDrive: "Content"
             }, () => { 
               this.updateNumber++;
+              this.forceUpdate();
             });
           });
         });        
@@ -541,7 +544,23 @@ class DoenetChooser extends Component {
     let operationType = "insert";
     let title = this.folderInfo[folderId].title;
     let isRepo = this.folderInfo[folderId].isRepo;
-    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, (folderId) => {
+    let isPublic = this.folderInfo[folderId].isPublic;
+
+    // modify public/private state if parent is repo
+    if (isRepo) {
+      if (isPublic) {
+        childIds.forEach(childId => {
+          this.modifyPublicState(isPublic, [].concat(this.flattenFolder(childId).itemIds),
+            [].concat(this.flattenFolder(childId).itemType));
+        });
+        console.log("Modify public");
+        // continue with adding
+      } else {
+        return; // private(default) -> private redundant, public -> private not allowed
+      }
+    }
+
+    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (folderId) => {
       // creating new folder
       //    in a folder ~ set childItem.rootId = folderId.rootId
       //    at root ~ addContentToFolder not invoked
@@ -551,59 +570,74 @@ class DoenetChooser extends Component {
       if (this.folderInfo[folderId].parentId == "root") { 
         this.saveUserContent(childIds, childType, "remove");
       }
+      let itemIds = [];
       childIds.forEach(childId => {
-        console.log("HERE");
-        this.modifyFolderChildrenRoot(this.folderInfo[folderId].rootId, 
-          [childId].concat(this.flattenFolder(childId)));
+          itemIds = itemIds.concat(this.flattenFolder(childId).itemIds);
       });
-      
-      // new folder/document private by default
-
-      // add/create into public repo
-      //    set childId.isPublic = true
-      // add/create into private repo
-      //    if childId.isPublic = true, not allowed
-      
-      // moving out of public repo (child must be public)
-      //    if childId.isPublic = true, not allowed
-      // moving out of private repo (child must be private)
-      //    allowed, isPublic unchanged)
-      
-      this.loadUserFoldersAndRepo();
-      this.loadUserContentBranches();
-      this.forceUpdate();
-      callback();
+      this.modifyFolderChildrenRoot(this.folderInfo[folderId].rootId, itemIds, () => {
+        this.loadUserFoldersAndRepo();
+        this.loadUserContentBranches();
+        callback();
+      });
     });
   }
 
-  removeContentFromFolder(childIds, childType, folderId) {
+  removeContentFromFolder(childIds, childType, folderId, callback=(()=>{})) {
     let operationType = "remove";
     let title = this.folderInfo[folderId].title;
     let isRepo = this.folderInfo[folderId].isRepo;
-    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, (folderId) => {
+    let isPublic = this.folderInfo[folderId].isPublic;
+
+    // modify public/private state if parent is repo
+    if (isRepo) {
+      if (isPublic) {
+        return; // public -> private not allowed
+      } 
+      // private -> private redundant, continue with removing    
+    }
+
+    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (folderId) => {
       // within same root ~ set childItem.rootId = folderId.rootId (unchanged)
       // to diff root ~ set childItem.rootId = folderId.rootId (changed)
       // to root ~ set childItem.rootId = childItem.id
       if (this.folderInfo[folderId].parentId == "root") {
         this.saveUserContent(childIds, childType, "insert");
         childIds.forEach(folderAtRoot => {
-          this.modifyFolderChildrenRoot(folderAtRoot, [folderAtRoot].concat(this.flattenFolder(folderAtRoot)) );
+          this.modifyFolderChildrenRoot(folderAtRoot, [].concat(this.flattenFolder(folderAtRoot).itemIds), () => {
+          });
         });
       }
-
-      this.loadUserFoldersAndRepo();
       this.loadUserContentBranches();
-      this.forceUpdate();
+      this.loadUserFoldersAndRepo();
+      // this.forceUpdate();
+      callback();
     });
+  }
+
+  modifyPublicState(isPublic, itemIds, itemType, callback=(()=>{})) {
+    const url='/api/modifyPublicState.php';
+    const data={
+      isPublic: isPublic,
+      itemIds: itemIds,
+      itemType: itemType
+    }
+    axios.post(url, data)
+    .then((resp) => {
+      callback();
+    })
+    .catch(function (error) {
+      this.setState({error:error});
+    })
   }
 
   renameFolder(folderId, newTitle) {
-    this.saveFolder(folderId, newTitle, [], [], "", this.folderInfo[folderId].isRepo, () => {
+    this.saveFolder(folderId, newTitle, [], [], "", 
+      this.folderInfo[folderId].isRepo, this.folderInfo[folderId].isPublic, () => {
       this.loadUserFoldersAndRepo();
     });
   }
 
-  modifyFolderChildrenRoot(newRoot, itemIds) {
+  modifyFolderChildrenRoot(newRoot, itemIds, callback=(()=>{})) {
     const url='/api/modifyFolderChildrenRoot.php';
     const data={
       newRoot: newRoot,
@@ -611,6 +645,7 @@ class DoenetChooser extends Component {
     }
     axios.post(url, data)
     .then((resp) => {
+      callback();
     })
     .catch(function (error) {
       this.setState({error:error});
@@ -618,15 +653,18 @@ class DoenetChooser extends Component {
   }
 
   flattenFolder(folderId) {
-    let itemIds = [folderId];
-    if (!this.folderInfo[folderId]) return;
+    if (!this.folderInfo[folderId]) return {itemIds: [folderId], itemType: ["content"]};
+    let itemIds = [folderId]; 
+    let itemType = ["folder"];
     this.folderInfo[folderId].childFolders.forEach((childFolderId) => {
-      itemIds = itemIds.concat(this.flattenFolder(childFolderId));
+      itemIds = itemIds.concat(this.flattenFolder(childFolderId).itemIds);
+      itemType = itemType.concat(this.flattenFolder(childFolderId).itemType);
     })
     this.folderInfo[folderId].childContent.forEach((childContentId) => {
       itemIds.push(childContentId);
+      itemType = itemType.push("content");
     })
-    return itemIds;
+    return {itemIds: itemIds, itemType: itemType};
   }
 
   saveUserContent(childIds, childType, operationType, callback=(()=>{})) {
@@ -665,7 +703,7 @@ class DoenetChooser extends Component {
 
   addNewRepo(title) {
     let folderId = nanoid();
-    this.saveFolder(folderId, title, [], [], "insert", true, () => {
+    this.saveFolder(folderId, title, [], [], "insert", true, false, () => {
       this.modifyRepoAccess(folderId, "insert", true, () => {  // add user to repo_access
         this.loadUserFoldersAndRepo(() => {
           this.setState({
@@ -780,6 +818,7 @@ class DoenetChooser extends Component {
         folderList = this.courseInfo[this.state.selectedCourse].folders;
         contentList = this.courseInfo[this.state.selectedCourse].content;
       }
+      console.log(contentList);
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
           loading={!this.folders_loaded && !this.branches_loaded}
