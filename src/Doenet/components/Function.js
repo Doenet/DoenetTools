@@ -1992,7 +1992,7 @@ export default class Function extends InlineComponent {
     return {
       componentType: "curve",
       downstreamDependencies: {
-        [this.componentName]: downDep
+        [this.componentName]: [downDep]
       },
       state: newState,
     };

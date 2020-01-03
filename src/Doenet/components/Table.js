@@ -1034,7 +1034,7 @@ function returnTableSerializedComponents({
 
     // second shallow copy for downDep.downstreamVariables deep copy
     serializedComponent.downstreamDependencies = {
-      [componentName]:  Object.assign({}, downDep),
+      [componentName]:  [Object.assign({}, downDep)],
     }
     return serializedComponent;
   }

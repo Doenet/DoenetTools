@@ -83,6 +83,99 @@ export default class Textinput extends Input {
       }
     }
 
+    stateVariableDefinitions.componentTypes = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { componentTypes: ["text"] } })
+    }
+
+
+
+
+    stateVariableDefinitions.numberTimesSubmitted = {
+      public: true,
+      componentType: "number",
+      defaultValue: 0,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          numberTimesSubmitted: {
+            variablesToCheck: ["numberTimesSubmitted"]
+          }
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "numberTimesSubmitted",
+            value: desiredStateVariableValues.numberTimesSubmitted
+          }]
+        };
+      }
+    }
+
+
+    stateVariableDefinitions.creditAchieved = {
+      defaultValue: 0,
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          creditAchieved: {
+            variablesToCheck: ["creditAchieved"]
+          }
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "creditAchieved",
+            value: desiredStateVariableValues.creditAchieved
+          }]
+        };
+      }
+    }
+
+
+    stateVariableDefinitions.submittedValue = {
+      defaultValue: "",
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          submittedValue: {
+            variablesToCheck: ["submittedValue"]
+          }
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "submittedValue",
+            value: desiredStateVariableValues.submittedValue
+          }]
+        };
+      }
+    }
+
+    stateVariableDefinitions.rendererValueAsSubmitted = {
+      returnDependencies: () => ({
+
+      }),
+      definition: function ({ dependencyValues }) {
+        console.warn('todo')
+        return {
+          newValues: {
+            rendererValueAsSubmitted: true
+          }
+        }
+      }
+    }
+
     return stateVariableDefinitions;
 
   }
@@ -101,11 +194,11 @@ export default class Textinput extends Input {
         componentType: "text",
       });
       this.makePublicStateVariable({
-        variableName: "creditachieved",
+        variableName: "creditAchieved",
         componentType: "number"
       });
       this.makePublicStateVariable({
-        variableName: "numbertimessubmitted",
+        variableName: "numberTimesSubmitted",
         componentType: "number"
       });
 
@@ -113,18 +206,18 @@ export default class Textinput extends Input {
       if (this._state.submittedvalue.essential !== true) {
         this.state.submittedvalue = ""
       }
-      if (this._state.numbertimessubmitted.essential !== true) {
-        this.state.numbertimessubmitted = 0
+      if (this._state.numberTimesSubmitted.essential !== true) {
+        this.state.numberTimesSubmitted = 0
       }
-      if (this._state.creditachieved.essential !== true) {
-        this.state.creditachieved = 0;
+      if (this._state.creditAchieved.essential !== true) {
+        this.state.creditAchieved = 0;
       }
-      // make value, submittedvalue, creditachieved, numbertimessubmitted essential
+      // make value, submittedvalue, creditAchieved, numberTimesSubmitted essential
       // as they are used to store changed quantities
       this._state.value.essential = true;
       this._state.submittedvalue.essential = true;
-      this._state.creditachieved.essential = true;
-      this._state.numbertimessubmitted.essential = true;
+      this._state.creditAchieved.essential = true;
+      this._state.numberTimesSubmitted.essential = true;
 
 
       this.setRendererValueAsSubmitted = this.setRendererValueAsSubmitted.bind(
@@ -210,7 +303,7 @@ export default class Textinput extends Input {
     }
     this.state.valueHasBeenValidated = false;
 
-    if (this.state.allAwardsJustSubmitted && this.state.numbertimessubmitted > 0 && this.state.value === this.state.submittedvalue) {
+    if (this.state.allAwardsJustSubmitted && this.state.numberTimesSubmitted > 0 && this.state.value === this.state.submittedvalue) {
       this.state.valueHasBeenValidated = true;
     }
 
@@ -254,7 +347,7 @@ export default class Textinput extends Input {
   get variablesUpdatableDownstream() {
     // only allowed to change these state variables
     return [
-      "value", "submittedvalue", "creditachieved", "numbertimessubmitted",
+      "value", "submittedvalue", "creditAchieved", "numberTimesSubmitted",
       "rendererValueAsSubmitted"
     ];
   }
@@ -308,9 +401,9 @@ export default class Textinput extends Input {
       text: this.stateValues.value,
       key: this.componentName,
       includeCheckWork: this.stateValues.includeCheckWork,
-      creditachieved: this.stateValues.creditachieved,
+      creditAchieved: this.stateValues.creditAchieved,
       valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      numbertimessubmitted: this.stateValues.numbertimessubmitted,
+      numberTimesSubmitted: this.stateValues.numberTimesSubmitted,
       size: this.stateValues.size,
       showCorrectness: this.flags.showCorrectness,
     });
@@ -319,9 +412,9 @@ export default class Textinput extends Input {
   updateRenderer() {
     this.renderer.updateTextinputRenderer({
       text: this.stateValues.value,
-      creditachieved: this.stateValues.creditachieved,
+      creditAchieved: this.stateValues.creditAchieved,
       valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      numbertimessubmitted: this.stateValues.numbertimessubmitted,
+      numberTimesSubmitted: this.stateValues.numberTimesSubmitted,
     });
 
   }

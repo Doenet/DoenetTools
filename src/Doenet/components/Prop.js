@@ -47,13 +47,13 @@ export default class Prop extends BaseComponent {
         },
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
-        if (dependencyValues.stringChild.length === 0) {
-          return {
-            useEssentialOrDefaultValue: {
-              propVariableObjs: { variablesToCheck: "propVariableObjs" }
-            }
-          }
-        }
+        // if (dependencyValues.stringChild.length === 0) {
+        //   return {
+        //     useEssentialOrDefaultValue: {
+        //       propVariableObjs: { variablesToCheck: "propVariableObjs" }
+        //     }
+        //   }
+        // }
 
         // have a string.  Need to see if it is a valid public state variable of effectiveTargetClass
         // TODO: arrays and other embellishments

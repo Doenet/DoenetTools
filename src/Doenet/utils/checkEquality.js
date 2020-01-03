@@ -7,10 +7,10 @@ export default function checkEquality({
   matchExactLocations = false,
   symbolicEquality = false,
   simplify = "none", expand = false,
-  allowederrorinnumbers = 0,
-  includeerrorinnumberexponents = false,
-  allowederrorisabsolute = false,
-  nsignerrorsmatched = 0,
+  allowedErrorInNumbers = 0,
+  includeErrorInNumberExponents = false,
+  allowedErrorIsAbsolute = false,
+  nSignErrorsMatched = 0,
 }) {
 
   /*
@@ -78,7 +78,7 @@ export default function checkEquality({
     x = x.normalize_function_names().normalize_applied_functions();;
 
     if (simplify === "none") {
-      if (allowederrorinnumbers > 0) {
+      if (allowedErrorInNumbers > 0) {
         // only if allowing rounding, do we replace constants with floats
         x = x.constants_to_floats();
       }
@@ -103,7 +103,7 @@ export default function checkEquality({
         let expr_a = normalize(a);
         let expr_b = normalize(b);
 
-        if (nsignerrorsmatched > 0) {
+        if (nSignErrorsMatched > 0) {
           // We have to make a deep copy
           // because equalSpecifiedSignErrors does in-place changes of ast
           // (and then undoes them)
@@ -113,22 +113,22 @@ export default function checkEquality({
           let equalityFunction = function (aa, bb) {
             aa = normalize(aa); // only have to normalize aa as that is the one that gets modified
             return aa.equalsViaSyntax(bb, {
-              allowed_error_in_numbers: allowederrorinnumbers,
-              include_error_in_number_exponents: includeerrorinnumberexponents,
-              allowed_error_is_absolute: allowederrorisabsolute,
+              allowed_error_in_numbers: allowedErrorInNumbers,
+              include_error_in_number_exponents: includeErrorInNumberExponents,
+              allowed_error_is_absolute: allowedErrorIsAbsolute,
             })
           }
           let equality = me.equalSpecifiedSignErrors(expr_b, expr_a, {
             equalityFunction,
-            n_sign_errors: nsignerrorsmatched
+            n_sign_errors: nSignErrorsMatched
           });
           return { fraction_equal: equality ? 1 : 0 };
 
         } else {
           let equality = expr_a.equalsViaSyntax(expr_b, {
-            allowed_error_in_numbers: allowederrorinnumbers,
-            include_error_in_number_exponents: includeerrorinnumberexponents,
-            allowed_error_is_absolute: allowederrorisabsolute,
+            allowed_error_in_numbers: allowedErrorInNumbers,
+            include_error_in_number_exponents: includeErrorInNumberExponents,
+            allowed_error_is_absolute: allowedErrorIsAbsolute,
           })
           return { fraction_equal: equality ? 1 : 0 };
         }
@@ -167,7 +167,7 @@ export default function checkEquality({
         }
 
 
-        if (nsignerrorsmatched > 0) {
+        if (nSignErrorsMatched > 0) {
           // We have to make a deep copy
           // because equalSpecifiedSignErrors does in-place changes of ast
           // (and then undoes them)
@@ -175,22 +175,22 @@ export default function checkEquality({
           expr_b = JSON.parse(JSON.stringify(expr_b), me.reviver);
           let equalityFunction = function (aa, bb) {
             return aa.equals(bb, {
-              allowed_error_in_numbers: allowederrorinnumbers,
-              include_error_in_number_exponents: includeerrorinnumberexponents,
-              allowed_error_is_absolute: allowederrorisabsolute,
+              allowed_error_in_numbers: allowedErrorInNumbers,
+              include_error_in_number_exponents: includeErrorInNumberExponents,
+              allowed_error_is_absolute: allowedErrorIsAbsolute,
             })
           }
           let equality = me.equalSpecifiedSignErrors(expr_b, expr_a, {
             equalityFunction,
-            n_sign_errors: nsignerrorsmatched
+            n_sign_errors: nSignErrorsMatched
           });
           return { fraction_equal: equality ? 1 : 0 };
 
         } else {
           let equality = expr_a.equals(expr_b, {
-            allowed_error_in_numbers: allowederrorinnumbers,
-            include_error_in_number_exponents: includeerrorinnumberexponents,
-            allowed_error_is_absolute: allowederrorisabsolute,
+            allowed_error_in_numbers: allowedErrorInNumbers,
+            include_error_in_number_exponents: includeErrorInNumberExponents,
+            allowed_error_is_absolute: allowedErrorIsAbsolute,
           })
           return { fraction_equal: equality ? 1 : 0 };
         }

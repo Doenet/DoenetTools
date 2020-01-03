@@ -127,11 +127,11 @@ export default class Choiceinput extends Input {
       });
 
       this.makePublicStateVariable({
-        variableName: "creditachieved",
+        variableName: "creditAchieved",
         componentType: "number"
       });
       this.makePublicStateVariable({
-        variableName: "numbertimessubmitted",
+        variableName: "numberTimesSubmitted",
         componentType: "number"
       });
       this.makePublicStateVariable({
@@ -164,21 +164,21 @@ export default class Choiceinput extends Input {
       if (this._state.submittedvalues.essential !== true) {
         this.state.submittedindices = []
       }
-      if (this._state.numbertimessubmitted.essential !== true) {
-        this.state.numbertimessubmitted = 0
+      if (this._state.numberTimesSubmitted.essential !== true) {
+        this.state.numberTimesSubmitted = 0
       }
-      if (this._state.creditachieved.essential !== true) {
-        this.state.creditachieved = 0;
+      if (this._state.creditAchieved.essential !== true) {
+        this.state.creditAchieved = 0;
       }
 
-      // make selectedindices, submittedindices, creditachieved, numbertimessubmitted essential
+      // make selectedindices, submittedindices, creditAchieved, numberTimesSubmitted essential
       // as they are used to store changed quantities
       this._state.selectedindices.essential = true;
       this._state.selectedvalues.essential = true;
       this._state.submittedindices.essential = true;
       this._state.submittedvalues.essential = true;
-      this._state.creditachieved.essential = true;
-      this._state.numbertimessubmitted.essential = true;
+      this._state.creditAchieved.essential = true;
+      this._state.numberTimesSubmitted.essential = true;
       this._state.numberchoices.essential = true;
 
       this.updateSelectedIndices = this.updateSelectedIndices.bind(
@@ -349,7 +349,7 @@ export default class Choiceinput extends Input {
     }
     this.state.valueHasBeenValidated = false;
 
-    if (this.state.allAwardsJustSubmitted && this.state.numbertimessubmitted > 0 &&
+    if (this.state.allAwardsJustSubmitted && this.state.numberTimesSubmitted > 0 &&
       this.state.selectedindices.length === this.state.submittedindices.length &&
       this.state.selectedindices.every((v, i) => v === this.state.submittedindices[i])
     ) {
@@ -405,7 +405,7 @@ export default class Choiceinput extends Input {
     return [
       "selectedindices", "selectedvalues",
       "submittedindices", "submittedoriginalindices", "submittedvalues",
-      "creditachieved", "numbertimessubmitted",
+      "creditAchieved", "numberTimesSubmitted",
       "rendererValueAsSubmitted"
     ];
   }
@@ -472,9 +472,9 @@ export default class Choiceinput extends Input {
       inline: this.state.inline,
       key: this.componentName,
       includeCheckWork: this.state.includeCheckWork,
-      creditachieved: this.state.creditachieved,
+      creditAchieved: this.state.creditAchieved,
       valueHasBeenValidated: this.state.valueHasBeenValidated,
-      numbertimessubmitted: this.state.numbertimessubmitted,
+      numberTimesSubmitted: this.state.numberTimesSubmitted,
       returnChoiceRenderers: this.returnChoiceRenderers,
       showCorrectness: this.flags.showCorrectness,
     });
@@ -485,9 +485,9 @@ export default class Choiceinput extends Input {
       choiceChildren: this.state.choiceChildrenOrdered,
       choicetexts: this.state.choicetexts,
       selectedindices: this.state.selectedindices,
-      creditachieved: this.state.creditachieved,
+      creditAchieved: this.state.creditAchieved,
       valueHasBeenValidated: this.state.valueHasBeenValidated,
-      numbertimessubmitted: this.state.numbertimessubmitted,
+      numberTimesSubmitted: this.state.numberTimesSubmitted,
       inline: this.state.inline,
     });
 
@@ -584,10 +584,10 @@ function returnSerializedComponentsAward({
         }
       ],
       downstreamDependencies: {
-        [componentName]: {
+        [componentName]: [{
           dependencyType: "referenceShadow",
           prop: propName,
-        }
+        }]
       },
     }
   }

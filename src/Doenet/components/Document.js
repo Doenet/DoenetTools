@@ -67,7 +67,7 @@ export default class Document extends BaseComponent {
   updateState(args={}) {
     if(args.init) {
       this.makePublicStateVariable({
-        variableName: "creditachieved",
+        variableName: "creditAchieved",
         componentType: "number",
         additionalProperties: {
           displaydigits: 3,
@@ -97,11 +97,11 @@ export default class Document extends BaseComponent {
         arrayIndex: 1
       })
 
-      if(!this._state.creditachieved.essential) {
-        this.state.creditachieved = 0;
-        this._state.creditachieved.essential = true;
+      if(!this._state.creditAchieved.essential) {
+        this.state.creditAchieved = 0;
+        this._state.creditAchieved.essential = true;
       }
-      this.state.percentcreditachieved = this.state.creditachieved*100;
+      this.state.percentcreditachieved = this.state.creditAchieved*100;
 
       this.state.submissionNumber = 0;
       this.state.previousSubmissionNumber = 0;
@@ -160,8 +160,8 @@ export default class Document extends BaseComponent {
       if(this.externalFunctions.submitResults) {
         this.externalFunctions.submitResults({
           itemNumber:scoredItemNumber,
-          documentCreditAchieved: this.state.creditachieved,
-          itemCreditAchieved: scoredComponent.state.creditachieved,
+          documentCreditAchieved: this.state.creditAchieved,
+          itemCreditAchieved: scoredComponent.state.creditAchieved,
           serializedItem: scoredComponent.serialize({savingJustOneComponent: scoredComponent.componentName }),
           callBack: x => this.submitResultsCallBack({results: x, scoredComponent}),
         });
@@ -248,11 +248,11 @@ export default class Document extends BaseComponent {
 
     for(let component of this.descendantsFound.scoredComponents) {
       let weight = component.state.weight;
-      creditSum += component.state.creditachieved * weight;
+      creditSum += component.state.creditAchieved * weight;
       totalWeight += weight;
     }
-    this.state.creditachieved = creditSum / totalWeight;
-    this.state.percentcreditachieved = this.state.creditachieved*100;
+    this.state.creditAchieved = creditSum / totalWeight;
+    this.state.percentcreditachieved = this.state.creditAchieved*100;
   }
 
   submitAllAnswers() {

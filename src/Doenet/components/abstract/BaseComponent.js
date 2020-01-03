@@ -5,14 +5,14 @@ import me from 'math-expressions';
 
 export default class BaseComponent {
   constructor({
-    componentName, parentName,
+    componentName, parentName, ancestors,
     serializedState,
     definingChildren,
     serializedChildren, childLogic,
     stateVariableDefinitions,
     standardComponentClasses, allComponentClasses, isInheritedComponentType,
     componentTypesTakingComponentNames, componentTypesCreatingVariants,
-    shadow, requestUpdate, availableRenderers,
+    shadow, requestUpdate, requestAction, availableRenderers,
     allRenderComponents, graphRenderComponents,
     numerics, sharedParameters,
     requestAnimationFrame, cancelAnimationFrame,
@@ -36,6 +36,7 @@ export default class BaseComponent {
 
     this.componentName = componentName;
     this.parentName = parentName;
+    this.ancestors = ancestors;
 
     this.componentType = this.constructor.componentType;
     this.standardComponentClasses = standardComponentClasses;
@@ -45,6 +46,7 @@ export default class BaseComponent {
     this.componentTypesCreatingVariants = componentTypesCreatingVariants;
     this.componentIsAProperty = false;
     this.requestUpdate = requestUpdate;
+    this.requestAction = requestAction;
     this.externalFunctions = externalFunctions;
     this.allowSugarForChildren = allowSugarForChildren;
     this.flags = flags;
@@ -356,7 +358,7 @@ export default class BaseComponent {
     if (this.ancestors === undefined || this.ancestors.length === 0) {
       return;
     }
-    return this.ancestors[0];
+    return this.ancestors[0].componentName;
   }
 
   // TODO: if resurrect this, it would just be componentNames
@@ -963,10 +965,10 @@ export default class BaseComponent {
     return {
       componentType: adapterComponentType,
       downstreamDependencies: {
-        [this.componentName]: {
+        [this.componentName]: [{
           dependencyType: "adapter",
           adapterVariable: adapterStateVariable,
-        }
+        }]
       }
     }
 

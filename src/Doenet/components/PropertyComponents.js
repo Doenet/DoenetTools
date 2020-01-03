@@ -325,6 +325,10 @@ export class Simplify extends TextComponent {
   static componentType = "simplify";
 }
 
+export class SimplifyOnCompare extends TextComponent {
+  static componentType = "simplifyOnCompare";
+}
+
 export class VariableName extends TextComponent {
   static componentType = "variablename";
 }
@@ -569,8 +573,16 @@ export class Expand extends BooleanComponent {
   static componentType = "expand";
 }
 
+export class ExpandOnCompare extends BooleanComponent {
+  static componentType = "expandOnCompare";
+}
+
 export class Unordered extends BooleanComponent {
   static componentType = "unordered";
+}
+
+export class UnorderedCompare extends BooleanComponent {
+  static componentType = "unorderedCompare";
 }
 
 export class MatchPartial extends BooleanComponent {

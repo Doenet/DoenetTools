@@ -71,7 +71,7 @@ export default class SectioningComponent extends BlockComponent {
   updateState(args = {}) {
     if (args.init) {
       this.makePublicStateVariable({
-        variableName: "creditachieved",
+        variableName: "creditAchieved",
         componentType: "number",
         additionalProperties: {
           displaydigits: 3,
@@ -89,11 +89,11 @@ export default class SectioningComponent extends BlockComponent {
       //   componentType: "number"
       // });
 
-      if (!this._state.creditachieved.essential) {
-        this.state.creditachieved = 0;
-        this._state.creditachieved.essential = true;
+      if (!this._state.creditAchieved.essential) {
+        this.state.creditAchieved = 0;
+        this._state.creditAchieved.essential = true;
       }
-      this.state.percentcreditachieved = this.state.creditachieved * 100;
+      this.state.percentcreditachieved = this.state.creditAchieved * 100;
 
       if (this.doenetAttributes.isVariantComponent) {
         this.state.selectedVariant = this.sharedParameters.selectedVariant;
@@ -128,9 +128,9 @@ export default class SectioningComponent extends BlockComponent {
     //       possiblePoints = component.state.weight;
     //     }
     //     totalPoints += possiblePoints;
-    //     pointsachieved += possiblePoints * component.state.creditachieved;
+    //     pointsachieved += possiblePoints * component.state.creditAchieved;
     //   }
-    //   this.state.creditachieved = pointsachieved/totalPoints;
+    //   this.state.creditAchieved = pointsachieved/totalPoints;
     //   this.state.possiblepoints = totalPoints;
 
     // }else {
@@ -139,15 +139,15 @@ export default class SectioningComponent extends BlockComponent {
 
     for (let component of this.descendantsFound.scoredComponents) {
       let weight = component.state.weight;
-      creditSum += component.state.creditachieved * weight;
+      creditSum += component.state.creditAchieved * weight;
       totalWeight += weight;
     }
-    this.state.creditachieved = creditSum / totalWeight;
-    this.state.percentcreditachieved = this.state.creditachieved * 100;
+    this.state.creditAchieved = creditSum / totalWeight;
+    this.state.percentcreditachieved = this.state.creditAchieved * 100;
     // }
 
     // if(this.state.possiblePoints !== undefined) {
-    //   this.state.pointsachieved = this.state.creditachieved * this.state.possiblePoints;
+    //   this.state.pointsachieved = this.state.creditAchieved * this.state.possiblePoints;
     // }
   }
 

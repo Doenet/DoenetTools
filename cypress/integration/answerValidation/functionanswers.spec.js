@@ -41,7 +41,7 @@ describe('Function answer validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Submit correct answers")
@@ -49,31 +49,31 @@ describe('Function answer validation tests', function () {
     cy.get('#\\/x_correct').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
     cy.get('#\\/x_input').clear().type('0{enter}');
     cy.get('#\\/x_correct').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
     cy.get('#\\/x_input').clear().type('-14{enter}');
     cy.get('#\\/x_correct').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
     cy.get('#\\/x_input').clear().type('33{enter}');
     cy.get('#\\/x_correct').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
     cy.get('#\\/x_input').clear().type('-102351{enter}');
     cy.get('#\\/x_correct').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Submit incorrect answers")
@@ -81,25 +81,25 @@ describe('Function answer validation tests', function () {
     cy.get('#\\/x_incorrect').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
     cy.get('#\\/x_input').clear().type('x^2{enter}');
     cy.get('#\\/x_incorrect').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
     cy.get('#\\/x_input').clear().type('-253.3{enter}');
     cy.get('#\\/x_incorrect').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
     cy.get('#\\/x_input').clear().type('23.6{enter}');
     cy.get('#\\/x_incorrect').should('be.visible');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Submit partially correct answers")
@@ -107,25 +107,25 @@ describe('Function answer validation tests', function () {
     cy.get('#\\/x_partial').should('have.text', `${partialCredit01Percent} %`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(partialCredit01, 1E-12);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(partialCredit01, 1E-12);
     });
     cy.get('#\\/x_input').clear().type('73.15{enter}');
     cy.get('#\\/x_partial').should('have.text', `${partialCredit015Percent} %`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(partialCredit015, 1E-12);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(partialCredit015, 1E-12);
     });
     cy.get('#\\/x_input').clear().type('-103.8{enter}');
     cy.get('#\\/x_partial').should('have.text', `${partialCredit02Percent} %`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(partialCredit02, 1E-12);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(partialCredit02, 1E-12);
     });
     cy.get('#\\/x_input').clear().type('-0.05{enter}');
     cy.get('#\\/x_partial').should('have.text', `${partialCredit005Percent} %`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(partialCredit005, 1E-12);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(partialCredit005, 1E-12);
     });
 
   });
@@ -172,7 +172,7 @@ describe('Function answer validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
 
@@ -200,7 +200,7 @@ describe('Function answer validation tests', function () {
 
               cy.window().then((win) => {
                 let components = Object.assign({}, win.state.components);
-                expect(components['/_answer1'].state.creditachieved).closeTo(credit, 1E-12);
+                expect(components['/_answer1'].state.creditAchieved).closeTo(credit, 1E-12);
               });
             }
           }

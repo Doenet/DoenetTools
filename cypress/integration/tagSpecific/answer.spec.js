@@ -4,7 +4,7 @@ describe('Answer Tag Tests', function () {
     cy.visit('/test')
   })
 
-  it('answer sugar from one string', () => {
+  it.only('answer sugar from one string', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
@@ -26,9 +26,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq('\uFF3F');
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
     cy.log("Type correct answer in")
@@ -46,9 +46,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq('\uFF3F');
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
 
@@ -67,9 +67,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput1'].state.value.tree).eqls(["+", 'x', 'y']);
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eqls(["+", 'x', 'y']);
       expect(components.__math3.state.value.tree).eqls(["+", 'x', 'y']);
     });
 
@@ -89,9 +89,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput1'].state.value.tree).eq("x");
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq("x");
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eqls(["+", 'x', 'y']);
       expect(components.__math3.state.value.tree).eqls(["+", 'x', 'y']);
     });
 
@@ -111,9 +111,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq("x");
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq("x");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq("x");
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq("x");
       expect(components.__math3.state.value.tree).eq("x");
     });
 
@@ -139,9 +139,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq('');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq('');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('');
     });
 
     cy.log("Type correct answer in")
@@ -157,9 +157,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq('');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq('');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('');
     });
 
 
@@ -176,9 +176,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_textinput1'].state.value).eq(" hello there ");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq(" hello there ");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_textinput1'].stateValues.value).eq(" hello there ");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq(" hello there ");
       expect(components.__text3.state.value).eq(" hello there ");
     });
 
@@ -196,9 +196,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_textinput1'].state.value).eq("hello  there");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq(" hello there ");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_textinput1'].stateValues.value).eq("hello  there");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq(" hello there ");
       expect(components.__text3.state.value).eq(" hello there ");
     });
 
@@ -216,9 +216,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq("hello  there");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq("hello  there");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq("hello  there");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq("hello  there");
       expect(components.__text3.state.value).eq("hello  there");
     });
 
@@ -247,9 +247,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq('');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq('');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('');
     });
 
     cy.log("Type correct answer in")
@@ -265,9 +265,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq('');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq('');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('');
     });
 
 
@@ -284,9 +284,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_textinput1'].state.value).eq(" hello there ");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq(" hello there ");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_textinput1'].stateValues.value).eq(" hello there ");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq(" hello there ");
       expect(components.__text5.state.value).eq(" hello there ");
     });
 
@@ -304,9 +304,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_textinput1'].state.value).eq("hello  there");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq(" hello there ");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_textinput1'].stateValues.value).eq("hello  there");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq(" hello there ");
       expect(components.__text5.state.value).eq(" hello there ");
     });
 
@@ -324,9 +324,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq("hello  there");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq("hello  there");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq("hello  there");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq("hello  there");
       expect(components.__text5.state.value).eq("hello  there");
     });
 
@@ -353,9 +353,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq('\uFF3F');
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
     cy.log("Type correct answer in")
@@ -372,9 +372,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq('\uFF3F');
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
 
@@ -393,9 +393,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput1'].state.value.tree).eqls(["+", 'x', 'y']);
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eqls(["+", 'x', 'y']);
       expect(components.__math2.state.value.tree).eqls(["+", 'x', 'y']);
     });
 
@@ -415,9 +415,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput1'].state.value.tree).eq("x");
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq("x");
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eqls(["+", 'x', 'y']);
       expect(components.__math2.state.value.tree).eqls(["+", 'x', 'y']);
     });
 
@@ -436,9 +436,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq("x");
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq("x");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq("x");
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq("x");
       expect(components.__math2.state.value.tree).eq("x");
     });
 
@@ -473,9 +473,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq('\uFF3F');
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
     cy.log("Type correct answer in")
@@ -493,9 +493,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq('\uFF3F');
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
 
@@ -514,9 +514,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput1'].state.value.tree).eqls(["+", 'x', 'y']);
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eqls(["+", 'x', 'y']);
       expect(components.__math2.state.value.tree).eqls(["+", 'x', 'y']);
     });
 
@@ -536,9 +536,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput1'].state.value.tree).eq("x");
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq("x");
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eqls(["+", 'x', 'y']);
       expect(components.__math2.state.value.tree).eqls(["+", 'x', 'y']);
     });
 
@@ -558,9 +558,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq("x");
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq("x");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq("x");
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq("x");
       expect(components.__math2.state.value.tree).eq("x");
     });
 
@@ -586,9 +586,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq('');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq('');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('');
     });
 
     cy.log("Type correct answer in")
@@ -604,9 +604,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq('');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq('');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('');
     });
 
 
@@ -623,9 +623,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_textinput1'].state.value).eq('hello there');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('hello there');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_textinput1'].stateValues.value).eq('hello there');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('hello there');
       expect(components.__text2.state.value).eq('hello there');
     });
 
@@ -643,9 +643,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_textinput1'].state.value).eq("hello  there");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('hello there');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_textinput1'].stateValues.value).eq("hello  there");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('hello there');
       expect(components.__text2.state.value).eq('hello there');
     });
 
@@ -662,9 +662,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq("hello  there");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq("hello  there");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq("hello  there");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq("hello  there");
       expect(components.__text2.state.value).eq("hello  there");
     });
 
@@ -700,9 +700,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq('');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq('');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('');
     });
 
     cy.log("Type correct answer in")
@@ -718,9 +718,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq('');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq('');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('');
     });
 
 
@@ -737,9 +737,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_textinput1'].state.value).eq('hello there');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('hello there');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_textinput1'].stateValues.value).eq('hello there');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('hello there');
       expect(components.__text10.state.value).eq('hello there');
     });
 
@@ -757,9 +757,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_textinput1'].state.value).eq("hello  there");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('hello there');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_textinput1'].stateValues.value).eq("hello  there");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('hello there');
       expect(components.__text10.state.value).eq('hello there');
     });
 
@@ -776,9 +776,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq("hello  there");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq("hello  there");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq("hello  there");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq("hello  there");
       expect(components.__text10.state.value).eq("hello  there");
     });
 
@@ -806,9 +806,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq('\uFF3F');
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
     cy.log("Type correct answer in")
@@ -826,9 +826,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq('\uFF3F');
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
 
@@ -847,9 +847,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput1'].state.value.tree).eqls(["+", 'x', 'y']);
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eqls(["+", 'x', 'y']);
       expect(components.__math4.state.value.tree).eqls(["+", 'x', 'y']);
     });
 
@@ -869,9 +869,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput1'].state.value.tree).eq("x");
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq("x");
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eqls(["+", 'x', 'y']);
       expect(components.__math4.state.value.tree).eqls(["+", 'x', 'y']);
     });
 
@@ -891,9 +891,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['_answer_mathinput1'].state.value.tree).eq("x");
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq("x");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq("x");
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq("x");
       expect(components.__math4.state.value.tree).eq("x");
     });
 
@@ -913,9 +913,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['_answer_mathinput1'].state.value.tree).eq("y");
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq("x");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq("y");
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq("x");
       expect(components.__math4.state.value.tree).eq("x");
     });
 
@@ -934,9 +934,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq("y");
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq("y");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq("y");
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq("y");
       expect(components.__math4.state.value.tree).eq("y");
     });
 
@@ -962,9 +962,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq('');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq('');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('');
     });
 
     cy.log("Type correct answer in")
@@ -980,9 +980,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq('');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq('');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('');
     });
 
 
@@ -999,9 +999,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_textinput1'].state.value).eq('hello there');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('hello there');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_textinput1'].stateValues.value).eq('hello there');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('hello there');
       expect(components.__text4.state.value).eq('hello there');
     });
 
@@ -1019,9 +1019,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_textinput1'].state.value).eq("bye");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('hello there');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_textinput1'].stateValues.value).eq("bye");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('hello there');
       expect(components.__text4.state.value).eq('hello there');
     });
 
@@ -1039,9 +1039,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['_answer_textinput1'].state.value).eq("bye");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq("bye");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['_answer_textinput1'].stateValues.value).eq("bye");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq("bye");
       expect(components.__text4.state.value).eq("bye");
     });
 
@@ -1059,9 +1059,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['_answer_textinput1'].state.value).eq("y");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq("bye");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['_answer_textinput1'].stateValues.value).eq("y");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq("bye");
       expect(components.__text4.state.value).eq("bye");
     });
 
@@ -1078,9 +1078,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq("y");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq("y");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq("y");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq("y");
       expect(components.__text4.state.value).eq("y");
     });
 
@@ -1106,9 +1106,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq('');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq('');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('');
     });
 
     cy.log("Type correct answer in")
@@ -1124,9 +1124,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq('');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq('');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('');
     });
 
 
@@ -1143,9 +1143,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_textinput1'].state.value).eq('hello there');
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('hello there');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_textinput1'].stateValues.value).eq('hello there');
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('hello there');
       expect(components.__text4.state.value).eq('hello there');
     });
 
@@ -1163,9 +1163,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_textinput1'].state.value).eq("bye");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq('hello there');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_textinput1'].stateValues.value).eq("bye");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq('hello there');
       expect(components.__text4.state.value).eq('hello there');
     });
 
@@ -1183,9 +1183,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['_answer_textinput1'].state.value).eq("bye");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq("bye");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['_answer_textinput1'].stateValues.value).eq("bye");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq("bye");
       expect(components.__text4.state.value).eq("bye");
     });
 
@@ -1203,9 +1203,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['_answer_textinput1'].state.value).eq("y");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq("bye");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['_answer_textinput1'].stateValues.value).eq("y");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq("bye");
       expect(components.__text4.state.value).eq("bye");
     });
 
@@ -1222,9 +1222,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_textinput1'].state.value).eq("y");
-      expect(components['_answer_textinput1'].state.submittedvalue).eq("y");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_textinput1'].stateValues.value).eq("y");
+      expect(components['_answer_textinput1'].stateValues.submittedvalue).eq("y");
       expect(components.__text4.state.value).eq("y");
     });
 
@@ -1254,9 +1254,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq('\uFF3F');
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
     cy.log("Type correct answer in")
@@ -1274,9 +1274,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq('\uFF3F');
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
 
@@ -1295,9 +1295,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput1'].state.value.tree).eqls(["+", 'x', 'y']);
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eqls(["+", 'x', 'y']);
       expect(components.__math4.state.value.tree).eqls(["+", 'x', 'y']);
     });
 
@@ -1317,9 +1317,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput1'].state.value.tree).eq("x");
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq("x");
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eqls(["+", 'x', 'y']);
       expect(components.__math4.state.value.tree).eqls(["+", 'x', 'y']);
     });
 
@@ -1339,9 +1339,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['_answer_mathinput1'].state.value.tree).eq("x");
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq("x");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq("x");
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq("x");
       expect(components.__math4.state.value.tree).eq("x");
     });
 
@@ -1361,9 +1361,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['_answer_mathinput1'].state.value.tree).eq("y");
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq("x");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq("y");
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq("x");
       expect(components.__math4.state.value.tree).eq("x");
     });
 
@@ -1383,9 +1383,9 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq("y");
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq("y");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq("y");
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq("y");
       expect(components.__math4.state.value.tree).eq("y");
     });
 
@@ -1432,11 +1432,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_mathinput1'].state.value.tree).eq('\uFF3F');
-      expect(components['/_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
-      expect(components['/_mathinput2'].state.value.tree).eq('\uFF3F');
-      expect(components['/_mathinput2'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_mathinput1'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['/_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_mathinput2'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['/_mathinput2'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
     cy.log("Enter a correct answer in")
@@ -1468,11 +1468,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_mathinput1'].state.value.tree).eqls(["+", 'x', 'y']);
-      expect(components['/_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
-      expect(components['/_mathinput2'].state.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-      expect(components['/_mathinput2'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect(components['/_mathinput2'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
 
@@ -1504,11 +1504,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_mathinput1'].state.value.tree).eqls(["+", 'x', 'y']);
-      expect(components['/_mathinput1'].state.submittedvalue.tree).eqls(["+", 'x', 'y']);
-      expect(components['/_mathinput2'].state.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-      expect(components['/_mathinput2'].state.submittedvalue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_mathinput1'].stateValues.submittedvalue.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect(components['/_mathinput2'].stateValues.submittedvalue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(components.__math5.state.value.tree).eqls(["+", 'x', 'y']);
       expect(components.__math6.state.value.tree).eqls(["+", 'x', 'y']);
       expect(components.__math7.state.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
@@ -1546,11 +1546,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_mathinput1'].state.value.tree).eq("x");
-      expect(components['/_mathinput1'].state.submittedvalue.tree).eqls(["+", 'x', 'y']);
-      expect(components['/_mathinput2'].state.value.tree).eqls(["+", 3, ['-', 'x']]);
-      expect(components['/_mathinput2'].state.submittedvalue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_mathinput1'].stateValues.value.tree).eq("x");
+      expect(components['/_mathinput1'].stateValues.submittedvalue.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+      expect(components['/_mathinput2'].stateValues.submittedvalue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(components.__math5.state.value.tree).eqls(["+", 'x', 'y']);
       expect(components.__math6.state.value.tree).eqls(["+", 'x', 'y']);
       expect(components.__math7.state.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
@@ -1586,11 +1586,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['/_mathinput1'].state.value.tree).eq("x");
-      expect(components['/_mathinput1'].state.submittedvalue.tree).eq("x");
-      expect(components['/_mathinput2'].state.value.tree).eqls(["+", 3, ['-', 'x']]);
-      expect(components['/_mathinput2'].state.submittedvalue.tree).eqls(["+", 3, ['-', 'x']]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_mathinput1'].stateValues.value.tree).eq("x");
+      expect(components['/_mathinput1'].stateValues.submittedvalue.tree).eq("x");
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+      expect(components['/_mathinput2'].stateValues.submittedvalue.tree).eqls(["+", 3, ['-', 'x']]);
       expect(components.__math5.state.value.tree).eq("x");
       expect(components.__math6.state.value.tree).eq("x");
       expect(components.__math7.state.value.tree).eqls(["+", 3, ['-', 'x']]);
@@ -1626,11 +1626,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['/_mathinput1'].state.value.tree).eq("y");
-      expect(components['/_mathinput1'].state.submittedvalue.tree).eq("x");
-      expect(components['/_mathinput2'].state.value.tree).eqls(["+", 3, ['-', 'x']]);
-      expect(components['/_mathinput2'].state.submittedvalue.tree).eqls(["+", 3, ['-', 'x']]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_mathinput1'].stateValues.value.tree).eq("y");
+      expect(components['/_mathinput1'].stateValues.submittedvalue.tree).eq("x");
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+      expect(components['/_mathinput2'].stateValues.submittedvalue.tree).eqls(["+", 3, ['-', 'x']]);
       expect(components.__math5.state.value.tree).eq("x");
       expect(components.__math6.state.value.tree).eq("x");
       expect(components.__math7.state.value.tree).eqls(["+", 3, ['-', 'x']]);
@@ -1666,11 +1666,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_mathinput1'].state.value.tree).eq("y");
-      expect(components['/_mathinput1'].state.submittedvalue.tree).eq("y");
-      expect(components['/_mathinput2'].state.value.tree).eqls(["+", 3, ['-', 'x']]);
-      expect(components['/_mathinput2'].state.submittedvalue.tree).eqls(["+", 3, ['-', 'x']]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_mathinput1'].stateValues.value.tree).eq("y");
+      expect(components['/_mathinput1'].stateValues.submittedvalue.tree).eq("y");
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+      expect(components['/_mathinput2'].stateValues.submittedvalue.tree).eqls(["+", 3, ['-', 'x']]);
       expect(components.__math5.state.value.tree).eq("y");
       expect(components.__math6.state.value.tree).eq("y");
       expect(components.__math7.state.value.tree).eqls(["+", 3, ['-', 'x']]);
@@ -1723,11 +1723,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_mathinput1'].state.value.tree).eq('\uFF3F');
-      expect(components['/_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
-      expect(components['/_mathinput2'].state.value.tree).eq('\uFF3F');
-      expect(components['/_mathinput2'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_mathinput1'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['/_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_mathinput2'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['/_mathinput2'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
     cy.log("Enter a correct answer in")
@@ -1759,11 +1759,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_mathinput1'].state.value.tree).eqls(["+", 'x', 'y']);
-      expect(components['/_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
-      expect(components['/_mathinput2'].state.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-      expect(components['/_mathinput2'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect(components['/_mathinput2'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
 
@@ -1795,11 +1795,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_mathinput1'].state.value.tree).eqls(["+", 'x', 'y']);
-      expect(components['/_mathinput1'].state.submittedvalue.tree).eqls(["+", 'x', 'y']);
-      expect(components['/_mathinput2'].state.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-      expect(components['/_mathinput2'].state.submittedvalue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_mathinput1'].stateValues.submittedvalue.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect(components['/_mathinput2'].stateValues.submittedvalue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(components.__math5.state.value.tree).eqls(["+", 'x', 'y']);
       expect(components.__math6.state.value.tree).eqls(["+", 'x', 'y']);
       expect(components.__math7.state.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
@@ -1837,11 +1837,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_mathinput1'].state.value.tree).eq("x");
-      expect(components['/_mathinput1'].state.submittedvalue.tree).eqls(["+", 'x', 'y']);
-      expect(components['/_mathinput2'].state.value.tree).eqls(["+", 3, ['-', 'x']]);
-      expect(components['/_mathinput2'].state.submittedvalue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_mathinput1'].stateValues.value.tree).eq("x");
+      expect(components['/_mathinput1'].stateValues.submittedvalue.tree).eqls(["+", 'x', 'y']);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+      expect(components['/_mathinput2'].stateValues.submittedvalue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(components.__math5.state.value.tree).eqls(["+", 'x', 'y']);
       expect(components.__math6.state.value.tree).eqls(["+", 'x', 'y']);
       expect(components.__math7.state.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
@@ -1877,11 +1877,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['/_mathinput1'].state.value.tree).eq("x");
-      expect(components['/_mathinput1'].state.submittedvalue.tree).eq("x");
-      expect(components['/_mathinput2'].state.value.tree).eqls(["+", 3, ['-', 'x']]);
-      expect(components['/_mathinput2'].state.submittedvalue.tree).eqls(["+", 3, ['-', 'x']]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_mathinput1'].stateValues.value.tree).eq("x");
+      expect(components['/_mathinput1'].stateValues.submittedvalue.tree).eq("x");
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+      expect(components['/_mathinput2'].stateValues.submittedvalue.tree).eqls(["+", 3, ['-', 'x']]);
       expect(components.__math5.state.value.tree).eq("x");
       expect(components.__math6.state.value.tree).eq("x");
       expect(components.__math7.state.value.tree).eqls(["+", 3, ['-', 'x']]);
@@ -1917,11 +1917,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['/_mathinput1'].state.value.tree).eq("y");
-      expect(components['/_mathinput1'].state.submittedvalue.tree).eq("x");
-      expect(components['/_mathinput2'].state.value.tree).eqls(["+", 3, ['-', 'x']]);
-      expect(components['/_mathinput2'].state.submittedvalue.tree).eqls(["+", 3, ['-', 'x']]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_mathinput1'].stateValues.value.tree).eq("y");
+      expect(components['/_mathinput1'].stateValues.submittedvalue.tree).eq("x");
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+      expect(components['/_mathinput2'].stateValues.submittedvalue.tree).eqls(["+", 3, ['-', 'x']]);
       expect(components.__math5.state.value.tree).eq("x");
       expect(components.__math6.state.value.tree).eq("x");
       expect(components.__math7.state.value.tree).eqls(["+", 3, ['-', 'x']]);
@@ -1957,11 +1957,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_mathinput1'].state.value.tree).eq("y");
-      expect(components['/_mathinput1'].state.submittedvalue.tree).eq("y");
-      expect(components['/_mathinput2'].state.value.tree).eqls(["+", 3, ['-', 'x']]);
-      expect(components['/_mathinput2'].state.submittedvalue.tree).eqls(["+", 3, ['-', 'x']]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_mathinput1'].stateValues.value.tree).eq("y");
+      expect(components['/_mathinput1'].stateValues.submittedvalue.tree).eq("y");
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+      expect(components['/_mathinput2'].stateValues.submittedvalue.tree).eqls(["+", 3, ['-', 'x']]);
       expect(components.__math5.state.value.tree).eq("y");
       expect(components.__math6.state.value.tree).eq("y");
       expect(components.__math7.state.value.tree).eqls(["+", 3, ['-', 'x']]);
@@ -2007,11 +2007,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_textinput1'].state.value).eq('');
-      expect(components['/_textinput1'].state.submittedvalue).eq('');
-      expect(components['/_textinput2'].state.value).eq('');
-      expect(components['/_textinput2'].state.submittedvalue).eq('');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_textinput1'].stateValues.value).eq('');
+      expect(components['/_textinput1'].stateValues.submittedvalue).eq('');
+      expect(components['/_textinput2'].stateValues.value).eq('');
+      expect(components['/_textinput2'].stateValues.submittedvalue).eq('');
     });
 
     cy.log("Enter a correct answer in")
@@ -2033,11 +2033,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_textinput1'].state.value).eq('rain');
-      expect(components['/_textinput1'].state.submittedvalue).eq('');
-      expect(components['/_textinput2'].state.value).eq('snow');
-      expect(components['/_textinput2'].state.submittedvalue).eq('');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_textinput1'].stateValues.value).eq('rain');
+      expect(components['/_textinput1'].stateValues.submittedvalue).eq('');
+      expect(components['/_textinput2'].stateValues.value).eq('snow');
+      expect(components['/_textinput2'].stateValues.submittedvalue).eq('');
     });
 
 
@@ -2059,11 +2059,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_textinput1'].state.value).eq('rain');
-      expect(components['/_textinput1'].state.submittedvalue).eq('rain');
-      expect(components['/_textinput2'].state.value).eq('snow');
-      expect(components['/_textinput2'].state.submittedvalue).eq('snow');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_textinput1'].stateValues.value).eq('rain');
+      expect(components['/_textinput1'].stateValues.submittedvalue).eq('rain');
+      expect(components['/_textinput2'].stateValues.value).eq('snow');
+      expect(components['/_textinput2'].stateValues.submittedvalue).eq('snow');
       expect(components.__text9.state.value).eq('rain');
       expect(components.__text10.state.value).eq('rain');
       expect(components.__text11.state.value).eq('snow');
@@ -2090,11 +2090,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_textinput1'].state.value).eq("rain");
-      expect(components['/_textinput1'].state.submittedvalue).eq('rain');
-      expect(components['/_textinput2'].state.value).eq("rain");
-      expect(components['/_textinput2'].state.submittedvalue).eq('snow');
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_textinput1'].stateValues.value).eq("rain");
+      expect(components['/_textinput1'].stateValues.submittedvalue).eq('rain');
+      expect(components['/_textinput2'].stateValues.value).eq("rain");
+      expect(components['/_textinput2'].stateValues.submittedvalue).eq('snow');
       expect(components.__text9.state.value).eq('rain');
       expect(components.__text10.state.value).eq('rain');
       expect(components.__text11.state.value).eq('snow');
@@ -2120,11 +2120,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['/_textinput1'].state.value).eq("rain");
-      expect(components['/_textinput1'].state.submittedvalue).eq("rain");
-      expect(components['/_textinput2'].state.value).eq("rain");
-      expect(components['/_textinput2'].state.submittedvalue).eq("rain");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_textinput1'].stateValues.value).eq("rain");
+      expect(components['/_textinput1'].stateValues.submittedvalue).eq("rain");
+      expect(components['/_textinput2'].stateValues.value).eq("rain");
+      expect(components['/_textinput2'].stateValues.submittedvalue).eq("rain");
       expect(components.__text9.state.value).eq("rain");
       expect(components.__text10.state.value).eq("rain");
       expect(components.__text11.state.value).eq("rain");
@@ -2150,11 +2150,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['/_textinput1'].state.value).eq("snow");
-      expect(components['/_textinput1'].state.submittedvalue).eq("rain");
-      expect(components['/_textinput2'].state.value).eq("rain");
-      expect(components['/_textinput2'].state.submittedvalue).eq("rain");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_textinput1'].stateValues.value).eq("snow");
+      expect(components['/_textinput1'].stateValues.submittedvalue).eq("rain");
+      expect(components['/_textinput2'].stateValues.value).eq("rain");
+      expect(components['/_textinput2'].stateValues.submittedvalue).eq("rain");
       expect(components.__text9.state.value).eq("rain");
       expect(components.__text10.state.value).eq("rain");
       expect(components.__text11.state.value).eq("rain");
@@ -2180,11 +2180,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_textinput1'].state.value).eq("snow");
-      expect(components['/_textinput1'].state.submittedvalue).eq("snow");
-      expect(components['/_textinput2'].state.value).eq("rain");
-      expect(components['/_textinput2'].state.submittedvalue).eq("rain");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_textinput1'].stateValues.value).eq("snow");
+      expect(components['/_textinput1'].stateValues.submittedvalue).eq("snow");
+      expect(components['/_textinput2'].stateValues.value).eq("rain");
+      expect(components['/_textinput2'].stateValues.submittedvalue).eq("rain");
       expect(components.__text9.state.value).eq("snow");
       expect(components.__text10.state.value).eq("snow");
       expect(components.__text11.state.value).eq("rain");
@@ -2210,11 +2210,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_textinput1'].state.value).eq("snow");
-      expect(components['/_textinput1'].state.submittedvalue).eq("snow");
-      expect(components['/_textinput2'].state.value).eq("snow");
-      expect(components['/_textinput2'].state.submittedvalue).eq("rain");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_textinput1'].stateValues.value).eq("snow");
+      expect(components['/_textinput1'].stateValues.submittedvalue).eq("snow");
+      expect(components['/_textinput2'].stateValues.value).eq("snow");
+      expect(components['/_textinput2'].stateValues.submittedvalue).eq("rain");
       expect(components.__text9.state.value).eq("snow");
       expect(components.__text10.state.value).eq("snow");
       expect(components.__text11.state.value).eq("rain");
@@ -2241,11 +2241,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['/_textinput1'].state.value).eq("snow");
-      expect(components['/_textinput1'].state.submittedvalue).eq("snow");
-      expect(components['/_textinput2'].state.value).eq("snow");
-      expect(components['/_textinput2'].state.submittedvalue).eq("snow");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_textinput1'].stateValues.value).eq("snow");
+      expect(components['/_textinput1'].stateValues.submittedvalue).eq("snow");
+      expect(components['/_textinput2'].stateValues.value).eq("snow");
+      expect(components['/_textinput2'].stateValues.submittedvalue).eq("snow");
       expect(components.__text9.state.value).eq("snow");
       expect(components.__text10.state.value).eq("snow");
       expect(components.__text11.state.value).eq("snow");
@@ -2274,11 +2274,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['/_textinput1'].state.value).eq("fog");
-      expect(components['/_textinput1'].state.submittedvalue).eq("snow");
-      expect(components['/_textinput2'].state.value).eq("hail");
-      expect(components['/_textinput2'].state.submittedvalue).eq("snow");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_textinput1'].stateValues.value).eq("fog");
+      expect(components['/_textinput1'].stateValues.submittedvalue).eq("snow");
+      expect(components['/_textinput2'].stateValues.value).eq("hail");
+      expect(components['/_textinput2'].stateValues.submittedvalue).eq("snow");
       expect(components.__text9.state.value).eq("snow");
       expect(components.__text10.state.value).eq("snow");
       expect(components.__text11.state.value).eq("snow");
@@ -2306,11 +2306,11 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_textinput1'].state.value).eq("fog");
-      expect(components['/_textinput1'].state.submittedvalue).eq("fog");
-      expect(components['/_textinput2'].state.value).eq("hail");
-      expect(components['/_textinput2'].state.submittedvalue).eq("hail");
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_textinput1'].stateValues.value).eq("fog");
+      expect(components['/_textinput1'].stateValues.submittedvalue).eq("fog");
+      expect(components['/_textinput2'].stateValues.value).eq("hail");
+      expect(components['/_textinput2'].stateValues.submittedvalue).eq("hail");
       expect(components.__text9.state.value).eq("fog");
       expect(components.__text10.state.value).eq("fog");
       expect(components.__text11.state.value).eq("hail");
@@ -2337,7 +2337,7 @@ describe('Answer Tag Tests', function () {
     cy.log('Test initial values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Submit a correct answer")
@@ -2345,7 +2345,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_mathinput1_submit').click();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
 
@@ -2354,7 +2354,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_mathinput1_submit').click();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
 
@@ -2363,7 +2363,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_mathinput1_submit').click();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
 
@@ -2372,7 +2372,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_mathinput1_submit').click();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
 
@@ -2381,7 +2381,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_mathinput1_submit').click();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
 
@@ -2407,7 +2407,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/_mathinput1_submit').click();
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].state.creditachieved).eq(answers1[answerString]);
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(answers1[answerString]);
       });
     }
 
@@ -2429,7 +2429,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/_mathinput1_submit').click();
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].state.creditachieved).eq(answers2[answerString]);
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(answers2[answerString]);
       });
     }
 
@@ -2452,7 +2452,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/_mathinput1_submit').click();
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].state.creditachieved).eq(answers3[answerString]);
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(answers3[answerString]);
       });
     }
   });
@@ -2489,7 +2489,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/_answer1_submit').click();
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].state.creditachieved).eq(answer[0]);
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(answer[0]);
       });
     }
 
@@ -2536,15 +2536,15 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/__map1_0_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq('\uFF3F');
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
-      expect(components['/__map1_1_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput2'].state.value.tree).eq('\uFF3F');
-      expect(components['_answer_mathinput2'].state.submittedvalue.tree).eq('\uFF3F');
-      expect(components['/__map1_2_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput3'].state.value.tree).eq('\uFF3F');
-      expect(components['_answer_mathinput3'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/__map1_0_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/__map1_1_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput2'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['_answer_mathinput2'].stateValues.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/__map1_2_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput3'].stateValues.value.tree).eq('\uFF3F');
+      expect(components['_answer_mathinput3'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
     cy.log("Enter correct answer in all three blanks")
@@ -2578,15 +2578,15 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/__map1_0_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq('x');
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq('\uFF3F');
-      expect(components['/__map1_1_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput2'].state.value.tree).eqls(['^', 'x', 2]);
-      expect(components['_answer_mathinput2'].state.submittedvalue.tree).eq('\uFF3F');
-      expect(components['/__map1_2_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput3'].state.value.tree).eqls(['^', 'x', 3]);
-      expect(components['_answer_mathinput3'].state.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/__map1_0_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq('x');
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/__map1_1_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput2'].stateValues.value.tree).eqls(['^', 'x', 2]);
+      expect(components['_answer_mathinput2'].stateValues.submittedvalue.tree).eq('\uFF3F');
+      expect(components['/__map1_2_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput3'].stateValues.value.tree).eqls(['^', 'x', 3]);
+      expect(components['_answer_mathinput3'].stateValues.submittedvalue.tree).eq('\uFF3F');
     });
 
     cy.log("Submit answers")
@@ -2621,15 +2621,15 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/__map1_0_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput1'].state.value.tree).eq('x');
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq('x');
-      expect(components['/__map1_1_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput2'].state.value.tree).eqls(['^', 'x', 2]);
-      expect(components['_answer_mathinput2'].state.submittedvalue.tree).eqls(['^', 'x', 2]);
-      expect(components['/__map1_2_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput3'].state.value.tree).eqls(['^', 'x', 3]);
-      expect(components['_answer_mathinput3'].state.submittedvalue.tree).eqls(['^', 'x', 3]);
+      expect(components['/__map1_0_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq('x');
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq('x');
+      expect(components['/__map1_1_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput2'].stateValues.value.tree).eqls(['^', 'x', 2]);
+      expect(components['_answer_mathinput2'].stateValues.submittedvalue.tree).eqls(['^', 'x', 2]);
+      expect(components['/__map1_2_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput3'].stateValues.value.tree).eqls(['^', 'x', 3]);
+      expect(components['_answer_mathinput3'].stateValues.submittedvalue.tree).eqls(['^', 'x', 3]);
     });
 
     cy.log("Enter wrong answers")
@@ -2663,15 +2663,15 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/__map1_0_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput1'].state.value.tree).eq('u');
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq('x');
-      expect(components['/__map1_1_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput2'].state.value.tree).eq('v');
-      expect(components['_answer_mathinput2'].state.submittedvalue.tree).eqls(['^', 'x', 2]);
-      expect(components['/__map1_2_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_mathinput3'].state.value.tree).eq('w');
-      expect(components['_answer_mathinput3'].state.submittedvalue.tree).eqls(['^', 'x', 3]);
+      expect(components['/__map1_0_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq('u');
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq('x');
+      expect(components['/__map1_1_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput2'].stateValues.value.tree).eq('v');
+      expect(components['_answer_mathinput2'].stateValues.submittedvalue.tree).eqls(['^', 'x', 2]);
+      expect(components['/__map1_2_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_mathinput3'].stateValues.value.tree).eq('w');
+      expect(components['_answer_mathinput3'].stateValues.submittedvalue.tree).eqls(['^', 'x', 3]);
     });
 
 
@@ -2706,15 +2706,15 @@ describe('Answer Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/__map1_0_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput1'].state.value.tree).eq('u');
-      expect(components['_answer_mathinput1'].state.submittedvalue.tree).eq('u');
-      expect(components['/__map1_1_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput2'].state.value.tree).eq('v');
-      expect(components['_answer_mathinput2'].state.submittedvalue.tree).eq('v');
-      expect(components['/__map1_2_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_mathinput3'].state.value.tree).eq('w');
-      expect(components['_answer_mathinput3'].state.submittedvalue.tree).eq('w');
+      expect(components['/__map1_0_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput1'].stateValues.value.tree).eq('u');
+      expect(components['_answer_mathinput1'].stateValues.submittedvalue.tree).eq('u');
+      expect(components['/__map1_1_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput2'].stateValues.value.tree).eq('v');
+      expect(components['_answer_mathinput2'].stateValues.submittedvalue.tree).eq('v');
+      expect(components['/__map1_2_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_mathinput3'].stateValues.value.tree).eq('w');
+      expect(components['_answer_mathinput3'].stateValues.submittedvalue.tree).eq('w');
     });
 
 
@@ -3831,17 +3831,17 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      for (let [ind, val] of components['/_choiceinput1'].state.choicetexts.entries()) {
+      for (let [ind, val] of components['/_choiceinput1'].stateValues.choicetexts.entries()) {
         indexByName[val] = ind + 1;
       }
 
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls([]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls([]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([]);
 
     });
 
@@ -3854,13 +3854,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["dog"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["dog"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([2]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls([]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["dog"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["dog"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([2]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([]);
     });
 
     cy.log("Click submit button")
@@ -3872,13 +3872,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["dog"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["dog"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([2]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls(["dog"]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([indexByName["dog"]]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([2]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["dog"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["dog"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([2]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls(["dog"]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([indexByName["dog"]]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([2]);
     });
 
     cy.log("Select incorrect answer")
@@ -3890,13 +3890,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["monkey"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["monkey"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([3]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls(["dog"]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([indexByName["dog"]]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([2]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["monkey"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["monkey"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([3]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls(["dog"]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([indexByName["dog"]]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([2]);
     });
 
     cy.log("Press enter on submit button")
@@ -3908,13 +3908,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["monkey"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["monkey"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([3]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls(["monkey"]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([indexByName["monkey"]]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([3]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["monkey"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["monkey"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([3]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls(["monkey"]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([indexByName["monkey"]]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([3]);
     });
 
     cy.log("Select partially correct answer")
@@ -3926,13 +3926,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["cat"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["cat"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([1]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls(["monkey"]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([indexByName["monkey"]]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([3]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["cat"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([1]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls(["monkey"]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([indexByName["monkey"]]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([3]);
     });
 
     cy.log("Press enter on submit button")
@@ -3944,13 +3944,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["cat"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["cat"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([1]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls(["cat"]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([indexByName["cat"]]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([1]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["cat"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([1]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([indexByName["cat"]]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([1]);
     });
 
   });
@@ -3981,17 +3981,17 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      for (let [ind, val] of components['/_choiceinput1'].state.choicetexts.entries()) {
+      for (let [ind, val] of components['/_choiceinput1'].stateValues.choicetexts.entries()) {
         expect(indexByName[val]).eq(ind+1);
       }
 
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls([]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls([]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([]);
 
     });
 
@@ -4004,13 +4004,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["dog"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["dog"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([2]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls([]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["dog"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["dog"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([2]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([]);
     });
 
     cy.log("Click submit button")
@@ -4022,13 +4022,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["dog"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["dog"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([2]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls(["dog"]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([indexByName["dog"]]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([2]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["dog"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["dog"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([2]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls(["dog"]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([indexByName["dog"]]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([2]);
     });
 
     cy.log("Select incorrect answer")
@@ -4040,13 +4040,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["monkey"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["monkey"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([3]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls(["dog"]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([indexByName["dog"]]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([2]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["monkey"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["monkey"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([3]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls(["dog"]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([indexByName["dog"]]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([2]);
     });
 
     cy.log("Press enter on submit button")
@@ -4058,13 +4058,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["monkey"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["monkey"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([3]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls(["monkey"]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([indexByName["monkey"]]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([3]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["monkey"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["monkey"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([3]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls(["monkey"]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([indexByName["monkey"]]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([3]);
     });
 
     cy.log("Select partially correct answer")
@@ -4076,13 +4076,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["cat"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["cat"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([1]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls(["monkey"]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([indexByName["monkey"]]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([3]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["cat"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([1]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls(["monkey"]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([indexByName["monkey"]]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([3]);
     });
 
     cy.log("Press enter on submit button")
@@ -4094,13 +4094,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["cat"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["cat"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([1]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls(["cat"]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([indexByName["cat"]]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([1]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["cat"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([1]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([indexByName["cat"]]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([1]);
     });
 
   });
@@ -4127,17 +4127,17 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      for (let [ind, val] of components['_answer_choiceinput1'].state.choicetexts.entries()) {
+      for (let [ind, val] of components['_answer_choiceinput1'].stateValues.choicetexts.entries()) {
         indexByName[val] = ind + 1;
       }
 
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls([]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls([]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([]);
 
     });
 
@@ -4150,13 +4150,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["dog"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["dog"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([2]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls([]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["dog"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["dog"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([2]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([]);
     });
 
     cy.log("Click submit button")
@@ -4168,13 +4168,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["dog"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["dog"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([2]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls(["dog"]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([indexByName["dog"]]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([2]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["dog"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["dog"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([2]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls(["dog"]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([indexByName["dog"]]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([2]);
     });
 
     cy.log("Select incorrect answer")
@@ -4186,13 +4186,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["monkey"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["monkey"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([3]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls(["dog"]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([indexByName["dog"]]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([2]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["monkey"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["monkey"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([3]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls(["dog"]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([indexByName["dog"]]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([2]);
     });
 
     cy.log("Press enter on submit button")
@@ -4204,13 +4204,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["monkey"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["monkey"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([3]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls(["monkey"]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([indexByName["monkey"]]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([3]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["monkey"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["monkey"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([3]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls(["monkey"]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([indexByName["monkey"]]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([3]);
     });
 
     cy.log("Select partially correct answer")
@@ -4222,13 +4222,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["cat"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["cat"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([1]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls(["monkey"]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([indexByName["monkey"]]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([3]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["cat"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["cat"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([1]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls(["monkey"]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([indexByName["monkey"]]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([3]);
     });
 
     cy.log("Press enter on submit button")
@@ -4240,13 +4240,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["cat"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["cat"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([1]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls(["cat"]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([indexByName["cat"]]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([1]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["cat"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["cat"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([1]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls(["cat"]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([indexByName["cat"]]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([1]);
     });
 
   });
@@ -4276,17 +4276,17 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      for (let [ind, val] of components['_answer_choiceinput1'].state.choicetexts.entries()) {
+      for (let [ind, val] of components['_answer_choiceinput1'].stateValues.choicetexts.entries()) {
         expect(indexByName[val]).eq(ind+1);
       }
 
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls([]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls([]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([]);
 
     });
 
@@ -4299,13 +4299,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["dog"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["dog"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([2]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls([]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["dog"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["dog"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([2]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([]);
     });
 
     cy.log("Click submit button")
@@ -4317,13 +4317,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["dog"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["dog"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([2]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls(["dog"]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([indexByName["dog"]]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([2]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["dog"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["dog"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([2]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls(["dog"]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([indexByName["dog"]]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([2]);
     });
 
     cy.log("Select incorrect answer")
@@ -4335,13 +4335,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["monkey"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["monkey"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([3]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls(["dog"]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([indexByName["dog"]]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([2]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["monkey"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["monkey"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([3]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls(["dog"]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([indexByName["dog"]]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([2]);
     });
 
     cy.log("Press enter on submit button")
@@ -4353,13 +4353,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["monkey"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["monkey"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([3]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls(["monkey"]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([indexByName["monkey"]]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([3]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["monkey"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["monkey"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([3]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls(["monkey"]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([indexByName["monkey"]]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([3]);
     });
 
     cy.log("Select partially correct answer")
@@ -4371,13 +4371,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["cat"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["cat"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([1]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls(["monkey"]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([indexByName["monkey"]]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([3]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["cat"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["cat"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([1]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls(["monkey"]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([indexByName["monkey"]]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([3]);
     });
 
     cy.log("Press enter on submit button")
@@ -4389,13 +4389,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["cat"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["cat"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([1]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls(["cat"]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([indexByName["cat"]]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([1]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["cat"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["cat"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([1]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls(["cat"]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([indexByName["cat"]]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([1]);
     });
 
   });
@@ -4427,17 +4427,17 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      for (let [ind, val] of components['/_choiceinput1'].state.choicetexts.entries()) {
+      for (let [ind, val] of components['/_choiceinput1'].stateValues.choicetexts.entries()) {
         indexByName[val] = ind + 1;
       }
 
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls([]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls([]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([]);
 
     });
 
@@ -4452,13 +4452,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["dog"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["dog"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([2]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls([]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["dog"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["dog"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([2]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([]);
     });
 
     cy.log("Click submit button")
@@ -4472,13 +4472,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["dog"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["dog"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([2]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls(["dog"]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([indexByName["dog"]]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([2]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["dog"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["dog"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([2]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls(["dog"]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([indexByName["dog"]]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([2]);
     });
 
     cy.log("Select incorrect answer")
@@ -4492,13 +4492,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["monkey"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["monkey"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([3]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls(["dog"]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([indexByName["dog"]]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([2]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["monkey"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["monkey"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([3]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls(["dog"]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([indexByName["dog"]]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([2]);
     });
 
     cy.log("Press enter on submit button")
@@ -4512,13 +4512,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["monkey"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["monkey"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([3]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls(["monkey"]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([indexByName["monkey"]]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([3]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["monkey"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["monkey"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([3]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls(["monkey"]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([indexByName["monkey"]]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([3]);
     });
 
     cy.log("Select partially correct answer")
@@ -4532,13 +4532,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["cat"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["cat"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([1]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls(["monkey"]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([indexByName["monkey"]]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([3]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["cat"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([1]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls(["monkey"]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([indexByName["monkey"]]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([3]);
     });
 
     cy.log("Press enter on submit button")
@@ -4552,13 +4552,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['/_choiceinput1'].state.selectedvalues).eqls(["cat"]);
-      expect(components['/_choiceinput1'].state.selectedindices).eqls([indexByName["cat"]]);
-      expect(components['/_choiceinput1'].state.selectedoriginalindices).eqls([1]);
-      expect(components['/_choiceinput1'].state.submittedvalues).eqls(["cat"]);
-      expect(components['/_choiceinput1'].state.submittedindices).eqls([indexByName["cat"]]);
-      expect(components['/_choiceinput1'].state.submittedoriginalindices).eqls([1]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_choiceinput1'].stateValues.selectedvalues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.selectedindices).eqls([indexByName["cat"]]);
+      expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([1]);
+      expect(components['/_choiceinput1'].stateValues.submittedvalues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.submittedindices).eqls([indexByName["cat"]]);
+      expect(components['/_choiceinput1'].stateValues.submittedoriginalindices).eqls([1]);
     });
 
   });
@@ -4588,17 +4588,17 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      for (let [ind, val] of components['_answer_choiceinput1'].state.choicetexts.entries()) {
+      for (let [ind, val] of components['_answer_choiceinput1'].stateValues.choicetexts.entries()) {
         indexByName[val] = ind + 1;
       }
 
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls([]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls([]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([]);
 
     });
 
@@ -4613,13 +4613,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["dog"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["dog"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([2]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls([]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["dog"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["dog"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([2]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([]);
     });
 
     cy.log("Click submit button")
@@ -4633,13 +4633,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["dog"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["dog"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([2]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls(["dog"]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([indexByName["dog"]]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([2]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["dog"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["dog"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([2]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls(["dog"]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([indexByName["dog"]]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([2]);
     });
 
     cy.log("Select incorrect answer")
@@ -4653,13 +4653,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["monkey"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["monkey"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([3]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls(["dog"]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([indexByName["dog"]]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([2]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["monkey"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["monkey"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([3]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls(["dog"]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([indexByName["dog"]]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([2]);
     });
 
     cy.log("Press enter on submit button")
@@ -4673,13 +4673,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["monkey"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["monkey"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([3]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls(["monkey"]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([indexByName["monkey"]]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([3]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["monkey"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["monkey"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([3]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls(["monkey"]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([indexByName["monkey"]]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([3]);
     });
 
     cy.log("Select partially correct answer")
@@ -4693,13 +4693,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["cat"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["cat"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([1]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls(["monkey"]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([indexByName["monkey"]]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([3]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["cat"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["cat"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([1]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls(["monkey"]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([indexByName["monkey"]]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([3]);
     });
 
     cy.log("Press enter on submit button")
@@ -4713,13 +4713,13 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['_answer_choiceinput1'].state.selectedvalues).eqls(["cat"]);
-      expect(components['_answer_choiceinput1'].state.selectedindices).eqls([indexByName["cat"]]);
-      expect(components['_answer_choiceinput1'].state.selectedoriginalindices).eqls([1]);
-      expect(components['_answer_choiceinput1'].state.submittedvalues).eqls(["cat"]);
-      expect(components['_answer_choiceinput1'].state.submittedindices).eqls([indexByName["cat"]]);
-      expect(components['_answer_choiceinput1'].state.submittedoriginalindices).eqls([1]);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['_answer_choiceinput1'].stateValues.selectedvalues).eqls(["cat"]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedindices).eqls([indexByName["cat"]]);
+      expect(components['_answer_choiceinput1'].stateValues.selectedoriginalindices).eqls([1]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedvalues).eqls(["cat"]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedindices).eqls([indexByName["cat"]]);
+      expect(components['_answer_choiceinput1'].stateValues.submittedoriginalindices).eqls([1]);
     });
 
   });
@@ -4755,7 +4755,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_choiceinput1'].state.choicetexts.length).eq(3);
+      expect(components['/_choiceinput1'].stateValues.choicetexts.length).eq(3);
     })
 
     cy.log("Select correct answer")
@@ -4817,7 +4817,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_choiceinput1'].state.choicetexts.length).eq(4);
+      expect(components['/_choiceinput1'].stateValues.choicetexts.length).eq(4);
     })
 
     cy.get('#\\/_choiceinput1').should('have.value', '');
@@ -4906,7 +4906,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_choiceinput1'].state.choicetexts.length).eq(3);
+      expect(components['/_choiceinput1'].stateValues.choicetexts.length).eq(3);
     })
 
     cy.get('#\\/_choiceinput1').should('have.value', '');
@@ -4977,7 +4977,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_choiceinput1'].state.choicetexts.length).eq(6);
+      expect(components['/_choiceinput1'].stateValues.choicetexts.length).eq(6);
     })
 
     cy.get('#\\/_choiceinput1').should('have.value', '');

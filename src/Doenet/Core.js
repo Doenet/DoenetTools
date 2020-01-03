@@ -28,6 +28,7 @@ export default class Core {
     }
 
     this.requestUpdate = this.requestUpdate.bind(this);
+    this.requestAction = this.requestAction.bind(this);
     this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
     this._requestAnimationFrame = this._requestAnimationFrame.bind(this);
     this.cancelAnimationFrame = this.cancelAnimationFrame.bind(this);
@@ -120,6 +121,7 @@ export default class Core {
     this._graphRenderComponents = [];
 
     this.descendantDependenciesByAncestor = {};
+    this.ancestorDependenciesByDescendant = {};
 
     this.childLogicWaitingOnSugar = {};
 
@@ -272,9 +274,24 @@ export default class Core {
       serializedState = [serializedState];
     }
 
+    let parentName;
+    let ancestors = [];
+    if (parent) {
+      parentName = parent.componentName;
+      ancestors = [
+        {
+          componentName: parentName,
+          componentClass: parent.constructor,
+        },
+        ...parent.ancestors
+      ];
+
+    }
+
     let createResult = this.createIsolatedComponents({
-      serializedState: serializedState,
-      applySugar: applySugar,
+      serializedState, applySugar,
+      parentName,
+      ancestors,
     });
 
     if (createResult.success !== true) {
@@ -291,7 +308,7 @@ export default class Core {
       if (newComponents.length !== 1) {
         throw Error("Initial components need to be an array of just one component.");
       }
-      this.setAncestors(newComponents[0]);
+      // this.setAncestors(newComponents[0]);
       this.updateRenderers({ componentNames: [newComponents[0].componentName] });
       this.document = newComponents[0];
 
@@ -417,15 +434,16 @@ export default class Core {
     return componentNames;
   }
 
-  createIsolatedComponents({ serializedState, parentName, applySugar = false,
-    applyAdapters = true, shadow = false }) {
+  createIsolatedComponents({ serializedState, parentName, ancestors, applySugar = false,
+    applyAdapters = true, shadow = false }
+  ) {
 
     this.unresolvedDependencies = {};
     this.unresolvedByDependent = {};
 
     let createResult = this.createIsolatedComponentsSub({
       serializedState: serializedState,
-      parentName,
+      parentName, ancestors,
       applySugar, applyAdapters,
       shadow,
     });
@@ -436,7 +454,7 @@ export default class Core {
     let newComponents = createResult.components;
 
     // set ancestors within group so upstream updates will work
-    newComponents.forEach(x => this.setAncestors(x));
+    // newComponents.forEach(x => this.setAncestors(x));
 
     // let result = this.upstreamUpdate({ initialFailures: createResult });
 
@@ -466,8 +484,9 @@ export default class Core {
 
   }
 
-  createIsolatedComponentsSub({ serializedState, parentName, applySugar = false,
-    applyAdapters = true, shadow = false }) {
+  createIsolatedComponentsSub({ serializedState, parentName, ancestors, applySugar = false,
+    applyAdapters = true, shadow = false }
+  ) {
 
     let newComponents = [];
 
@@ -516,7 +535,7 @@ export default class Core {
       let createResult = this.createChildrenThenComponent({
         serializedComponent,
         componentName,
-        parentName,
+        parentName, ancestors,
         componentClass, applySugar,
         applyAdapters, shadow,
       });
@@ -550,13 +569,19 @@ export default class Core {
   }
 
   createChildrenThenComponent({ serializedComponent, componentName, parentName,
-    componentClass,
-    applySugar = false, applyAdapters = true, shadow = false }) {
+    ancestors, componentClass,
+    applySugar = false, applyAdapters = true, shadow = false }
+  ) {
+
+    console.log('create children then component')
+    console.log(ancestors);
 
     // first recursively create children
     let serializedChildren = serializedComponent.children;
     let definingChildren = [];
     let childrenToRemainSerialized = [];
+
+    let ancestorsForChildren = [{ componentName, componentClass }, ...ancestors];
 
     // add a new level to parameter stack;
     this.parameterStack.push();
@@ -617,6 +642,7 @@ export default class Core {
           let childrenResult = this.createIsolatedComponentsSub({
             serializedState: [variantControlChild],
             parentName: componentName,
+            ancestors: ancestorsForChildren,
             applySugar, applyAdapters, shadow,
           });
 
@@ -637,6 +663,7 @@ export default class Core {
         let childrenResult = this.createIsolatedComponentsSub({
           serializedState: childrenToCreate,
           parentName: componentName,
+          ancestors: ancestorsForChildren,
           applySugar, applyAdapters, shadow,
         });
 
@@ -675,6 +702,7 @@ export default class Core {
           let childrenResult = this.createIsolatedComponentsSub({
             serializedState: childrenToCreate,
             parentName: componentName,
+            ancestors: ancestorsForChildren,
             applySugar, applyAdapters, shadow,
           });
 
@@ -690,6 +718,7 @@ export default class Core {
         let childrenResult = this.createIsolatedComponentsSub({
           serializedState: serializedChildren,
           parentName: componentName,
+          ancestors: ancestorsForChildren,
           applySugar, applyAdapters, shadow,
         });
 
@@ -718,11 +747,15 @@ export default class Core {
     }
     for (let property in propertiesPropagated) {
       let ancestorName = propertiesPropagated[property];
-      prescribedDependencies[ancestorName] = {
+      if (prescribedDependencies[ancestorName] === undefined) {
+        prescribedDependencies[ancestorName] = [];
+      }
+      prescribedDependencies[ancestorName].push({
         dependencyType: "ancestorProp",
         property,
-      }
+      })
     }
+
     let stateVariableDefinitions = this.createStateVariableDefinitions({
       childLogic,
       componentClass,
@@ -733,7 +766,7 @@ export default class Core {
     // create component itself
     let newComponent = new componentClass({
       componentName,
-      parentName,
+      parentName, ancestors,
       definingChildren,
       childLogic,
       stateVariableDefinitions,
@@ -747,6 +780,7 @@ export default class Core {
       componentTypesCreatingVariants: this.componentTypesCreatingVariants,
       shadow: shadow,
       requestUpdate: this.requestUpdate,
+      requestAction: this.requestAction,
       availableRenderers: availableRenderers,
       allRenderComponents: this._renderComponentsByName,
       graphRenderComponents: this._graphRenderComponents,
@@ -763,20 +797,24 @@ export default class Core {
     this.registerComponent(newComponent);
 
     for (let name in prescribedDependencies) {
-      let dep = prescribedDependencies[name];
-      if (dep.dependencyType === "referenceShadow") {
-        let shadowInfo = {
-          componentName: name
-        }
-        Object.assign(shadowInfo, dep);
-        delete shadowInfo.dependencyType;
-        newComponent.shadows = new Proxy(shadowInfo, readOnlyProxyHandler);
+      let depArray = prescribedDependencies[name];
+      for (let dep of depArray) {
+        if (dep.dependencyType === "referenceShadow") {
+          let shadowInfo = {
+            componentName: name
+          }
+          Object.assign(shadowInfo, dep);
+          delete shadowInfo.dependencyType;
+          newComponent.shadows = new Proxy(shadowInfo, readOnlyProxyHandler);
 
-        let shadowedComponent = this._components[name];
-        if (!shadowedComponent.shadowedBy) {
-          shadowedComponent.shadowedBy = [];
+          let shadowedComponent = this._components[name];
+          if (!shadowedComponent.shadowedBy) {
+            shadowedComponent.shadowedBy = [];
+          }
+          shadowedComponent.shadowedBy.push(newComponent);
+
+          break;
         }
-        shadowedComponent.shadowedBy.push(newComponent);
       }
     }
 
@@ -1161,10 +1199,10 @@ export default class Core {
       if (!serializedComp.downstreamDependencies) {
         serializedComp.downstreamDependencies = {};
       }
-      serializedComp.downstreamDependencies[shadowedComp.componentName] = {
+      serializedComp.downstreamDependencies[shadowedComp.componentName] = [{
         dependencyType: "referenceShadow",
         refComponentName
-      }
+      }]
 
       if (serializedComp.children &&
         !(shadowedComp.serializedChildren && shadowedComp.serializedChildren.length > 0)
@@ -1185,6 +1223,7 @@ export default class Core {
     let replacementResult = this.createIsolatedComponentsSub({
       serializedState: serializedReplacements,
       parentName: component.parentName,
+      ancestors: component.ancestors,
       applySugar: true,
       shadow: true,
     });
@@ -1395,6 +1434,7 @@ export default class Core {
       let replacementResult = this.createIsolatedComponentsSub({
         serializedState: replacementsToAdd,
         parentName: component.parentName,
+        ancestors: component.ancestors,
         applySugar: true,
         shadow: true,
       });
@@ -1529,6 +1569,7 @@ export default class Core {
             applySugar: false,
             shadow: true,
             parentName: component.parentName,
+            ancestors: component.ancestors,
           });
           // mergeFailures(overallResults, newChildrenResult);
 
@@ -1677,10 +1718,19 @@ export default class Core {
 
     this.parameterStack.push(component.sharedParameters, false);
 
+    let ancestorsForChildren = [
+      {
+        componentName: component.componentName,
+        componentClass: component.constructor
+      },
+      ...component.ancestors
+    ];
+
     let childrenResult = this.createIsolatedComponentsSub({
       serializedState: sugarResults.newChildren,
       applySugar: true,
       parentName: component.componentName,
+      ancestors: ancestorsForChildren,
     });
 
     this.parameterStack.pop();
@@ -1700,24 +1750,26 @@ export default class Core {
 
     if (prescribedDependencies) {
       for (let name in prescribedDependencies) {
-        let dep = prescribedDependencies[name];
-        if (dep.dependencyType === "referenceShadow") {
-          redefineDependencies = {
-            linkSource: "referenceShadow",
-            refTargetName: name,
-            refComponentName: dep.refComponentName,
-            propVariable: dep.propVariable,
-            arrayStateVariable: dep.arrayStateVariable,
-            arrayKey: dep.arrayKey,
+        let depArray = prescribedDependencies[name];
+        for (let dep of depArray) {
+          if (dep.dependencyType === "referenceShadow") {
+            redefineDependencies = {
+              linkSource: "referenceShadow",
+              refTargetName: name,
+              refComponentName: dep.refComponentName,
+              propVariable: dep.propVariable,
+              arrayStateVariable: dep.arrayStateVariable,
+              arrayKey: dep.arrayKey,
+            }
+          } else if (dep.dependencyType === "adapter") {
+            redefineDependencies = {
+              linkSource: "adapter",
+              adapterTargetName: name,
+              adapterVariable: dep.adapterVariable
+            }
+          } else if (dep.dependencyType === "ancestorProp") {
+            ancestorProps[dep.property] = name;
           }
-        } else if (dep.dependencyType === "adapter") {
-          redefineDependencies = {
-            linkSource: "adapter",
-            adapterTargetName: name,
-            adapterVariable: dep.adapterVariable
-          }
-        } else if (dep.dependencyType === "ancestorProp") {
-          ancestorProps[dep.property] = name;
         }
       }
     }
@@ -3026,7 +3078,8 @@ export default class Core {
         }
 
       }
-      else if (dep.dependencyType === "stateVariable" || dep.dependencyType === "stateVariableResolved") {
+      else if (dep.dependencyType === "stateVariable" ||
+        dep.dependencyType === "recursiveDependencyValues") { //|| dep.dependencyType === "stateVariableResolved") {
         newDep.downstreamComponentName = component.componentName;
         if (dep.variableName === undefined) {
           throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${depName}: variableName is not defined`);
@@ -3085,6 +3138,68 @@ export default class Core {
           depUp[dep.variableName] = [];
         }
         depUp[dep.variableName].push(newDep);
+      }
+      else if (dep.dependencyType === "ancestorStateVariables" || dep.dependencyType === "ancestorIdentity") {
+
+        newDep.descendant = component;
+
+        if (!this.ancestorDependenciesByDescendant[component.componentName]) {
+          this.ancestorDependenciesByDescendant[component.componentName] = [];
+        }
+
+        this.ancestorDependenciesByDescendant[component.componentName].push({
+          componentName: component.componentName,
+          stateVariable,
+          depName,
+        });
+
+        let ancestorsSearchClass = this.allComponentClasses[dep.componentType];
+
+        let foundAncestorName;
+
+        for (let ancestor of component.ancestors) {
+          if (ancestor.componentClass === ancestorsSearchClass ||
+            ancestorsSearchClass.isPrototypeOf(ancestor.componentClass)
+          ) {
+            foundAncestorName = ancestor.componentName;
+            break;
+          }
+        }
+
+        let requestStateVariables = newDep.dependencyType === "ancestorStateVariables";
+
+        let varNames;
+        if (requestStateVariables) {
+          if (!Array.isArray(dep.variableNames)) {
+            throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${depName}: variableNames must be an array`)
+          }
+          varNames = newDep.downstreamVariableNames = dep.variableNames;
+        } else {
+          varNames = ['__identity'];
+        }
+
+        newDep.componentIdentitiesChanged = true;
+        if (requestStateVariables) {
+          newDep.valuesChanged = [dep.variableNames];
+        }
+
+        if (foundAncestorName) {
+          newDep.downstreamComponentNames = [foundAncestorName];
+
+          let depUp = this.upstreamDependencies[foundAncestorName];
+          if (!depUp) {
+            depUp = this.upstreamDependencies[foundAncestorName] = {};
+          }
+          // varNames is ['__identity'] if identity
+          for (let varName of varNames) {
+            if (depUp[varName] === undefined) {
+              depUp[varName] = [];
+            }
+            depUp[varName].push(newDep);
+          }
+        } else {
+          newDep.downstreamComponentNames = [];
+        }
       }
       else if (dep.dependencyType === "componentIdentity") {
 
@@ -3625,7 +3740,9 @@ export default class Core {
       if (dep.dependencyType === "childStateVariables" ||
         dep.dependencyType === "childIdentity" ||
         dep.dependencyType === "descendantStateVariables" ||
-        dep.dependencyType === "descendantIdentity"
+        dep.dependencyType === "descendantIdentity" ||
+        dep.dependencyType === "ancestorStateVariables" ||
+        dep.dependencyType === "ancestorIdentity"
       ) {
 
         let newDep = [];
@@ -3689,12 +3806,12 @@ export default class Core {
         //   value = {
         //     value: depComponent._calculatedStateValues[dep.downstreamVariableNameForPrevious],
         //   }
-      } else if (dep.dependencyType === "stateVariableResolved") {
-        value = true;
-        if (dep.valueChanged) {
-          changes[dep.dependencyName] = { valueChanged: true };
-          dep.valueChanged = false;
-        }
+        // } else if (dep.dependencyType === "stateVariableResolved") {
+        //   value = true;
+        //   if (dep.valueChanged) {
+        //     changes[dep.dependencyName] = { valueChanged: true };
+        //     dep.valueChanged = false;
+        //   }
       } else if (dep.dependencyType === "componentStateVariableComponentType") {
         let depComponent = this.components[dep.downstreamComponentName];
         // call getter to make sure component type is set
@@ -3716,6 +3833,21 @@ export default class Core {
         if (dep.componentIdentitiesChanged) {
           changes[dep.dependencyName] = { componentIdentitiesChanged: true };
           dep.componentIdentitiesChanged = false;
+        }
+      }
+      else if (dep.dependencyType === "recursiveDependencyValues") {
+        // first calculate value of state variable
+        // since dependencies are created as though depended on state variable itself
+        this.components[dep.downstreamComponentName].stateValues[dep.downstreamVariableName]
+
+        value = this.getStateVariableRecursiveDependencyValues({
+          componentName: dep.downstreamComponentName,
+          stateVariable: dep.downstreamVariableName
+        })
+
+        if (dep.valueChanged) {
+          changes[dep.dependencyName] = { valueChanged: true };
+          dep.valueChanged = false;
         }
       }
       // else if (dep.dependencyType === "replacementClassesAndNames") {
@@ -3763,6 +3895,100 @@ export default class Core {
       dependencyValues,
       changes, usedDefault,
     }
+  }
+
+  // gets all dependency values that are state variables themselves
+  getStateVariableRecursiveDependencyValues({ componentName, stateVariable }) {
+    // and then recurses on those state variables
+    // stores result on object keyed by component name and state variable
+    // (dependency considered a state variable if it has 
+    // downstreamComponentName(s) and downstreamVariableName(s))
+
+
+    let component = this._components[componentName];
+
+    // if they recursive dependency values are already computed, just return them
+    if (component.state[stateVariable].recursiveDependencyValues) {
+      return component.state[stateVariable].recursiveDependencyValues;
+    }
+
+    let { dependencyValues } = this.getStateVariableDependencyValues({ component, stateVariable });
+
+    let recursiveDependencyValues
+      = component.state[stateVariable].recursiveDependencyValues = {};
+
+    let downDeps = this.downstreamDependencies[componentName][stateVariable];
+
+    for (let depName in downDeps) {
+      let dep = downDeps[depName];
+
+      let cNames = [];
+      let multipleComponents = false;
+      if (dep.downstreamComponentName) {
+        cNames = [dep.downstreamComponentName];
+      } else if (dep.downstreamComponentNames) {
+        cNames = dep.downstreamComponentNames;
+        multipleComponents = true;
+      }
+
+      for (let [cInd, cName] of cNames.entries()) {
+        let dependencyValuesForCName = recursiveDependencyValues[cName];
+        if (dependencyValuesForCName === undefined) {
+          dependencyValuesForCName = recursiveDependencyValues[cName] = {};
+        }
+
+        let vNames = [];
+        let multipleVariables = false;
+        if (dep.downstreamVariableName) {
+          vNames = [dep.downstreamVariableName];
+        } else if (dep.downstreamVariableNames) {
+          vNames = dep.downstreamVariableNames;
+          multipleVariables = true;
+        }
+
+
+
+        for (let vName of vNames) {
+          // don't calculate value or recurse if calculated this value before
+          if (!(vName in dependencyValuesForCName)) {
+
+            let value = dependencyValues[depName];
+
+            if (multipleComponents) {
+              value = value[cInd];
+            }
+            if (multipleVariables) {
+              value = value.stateValues[vName]
+            }
+            dependencyValuesForCName[vName] = value;
+
+
+            let additionalValues = this.getStateVariableRecursiveDependencyValues({
+              componentName: cName,
+              stateVariable: vName
+            });
+
+            for (let cName2 in additionalValues) {
+              let dependencyValuesForCName2 = recursiveDependencyValues[cName2];
+              if (dependencyValuesForCName2 === undefined) {
+                dependencyValuesForCName2 = recursiveDependencyValues[cName2] = {};
+              }
+
+              Object.assign(dependencyValuesForCName2, additionalValues[cName2])
+
+            }
+
+          }
+        }
+
+      }
+
+    }
+
+    // console.log(`recursiveDependencyValues for ${component.componentName}, ${stateVariable}`)
+    // console.log(JSON.parse(JSON.stringify(recursiveDependencyValues)))
+    return recursiveDependencyValues;
+
   }
 
   getComponentNamesForProp(componentName) {
@@ -4512,9 +4738,16 @@ export default class Core {
 
     let componentsTouched = [];
 
-    let componentAndAncestors = [component.componentName, ...component.ancestors];
+    let componentAndAncestors = [
+      {
+        componentName: component.componentName,
+        componentClass: component.constructor
+      },
+      ...component.ancestors
+    ];
 
-    for (let ancestorName of componentAndAncestors) {
+    for (let ancestorObj of componentAndAncestors) {
+      let ancestorName = ancestorObj.componentName;
       if (this.descendantDependenciesByAncestor[ancestorName]) {
         for (let depDescription of this.descendantDependenciesByAncestor[ancestorName]) {
           let cName = depDescription.componentName;
@@ -4809,6 +5042,9 @@ export default class Core {
     let componentsTouched = [component.componentName];
     let stateVarObj = component.state[varName];
 
+    // delete recursive dependency values, in case they were defined
+    delete stateVarObj.recursiveDependencyValues;
+
     // if don't have a getter set, then need to save old value
     // and put getter back in place to get a new value next time it is requested
     if (!(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)) {
@@ -4914,6 +5150,9 @@ export default class Core {
             });
           }
 
+          // delete recursive dependency values, if they exist
+          delete upVar.recursiveDependencyValues;
+
           // if don't have a getter set, then need to save old value
           // and put getter back in place to get a new value next time it is requested
           if (!(Object.getOwnPropertyDescriptor(upVar, 'value').get || upVar.immutable)) {
@@ -4998,7 +5237,13 @@ export default class Core {
     //   delete component.ancestorsWhoGathered;
     // }
 
-    let ancestorsForChildren = [component.componentName, ...component.ancestors];
+    let ancestorsForChildren = [
+      {
+        componentName: component.componentName,
+        componentClass: component.constructor
+      },
+      ...component.ancestors
+    ];
 
     for (let childName in component.allChildren) {
       let unproxiedChild = this._components[childName];
@@ -5058,7 +5303,13 @@ export default class Core {
     //   unproxiedAncestor.gatherDescendants();
     // }
 
-    let ancestorsForChildren = [parent.componentName, ...parent.ancestors];
+    let ancestorsForChildren = [
+      {
+        componentName: parent.componentName,
+        componentClass: parent.constructor
+      },
+      ...parent.ancestors
+    ];
 
     // set ancestors for allChildren of parent
     // since could replace newChildren by adapters or via composites
@@ -5441,7 +5692,8 @@ export default class Core {
           let createResult = this.createIsolatedComponentsSub({
             serializedState: serializedReplacements,
             applySugar: true,
-            parentName: component.componentName
+            parentName: component.componentName,
+            ancestors: component.ancestors,
           });
           newComponents = createResult.components;
 
@@ -5711,6 +5963,7 @@ export default class Core {
 
         let workspace = {};
         let newStateVariableValues = {};
+        let overrides = {};
         for (let stateVariable in change.stateChanges) {
           let instruction = {
             componentName: change.component.componentName,
@@ -5729,10 +5982,15 @@ export default class Core {
             }
             Object.assign(newStateVariableValues[cName], additionalChanges.newStateVariableValues[cName]);
           }
-
+          for (let cName in additionalChanges.overrides) {
+            if (!overrides[cName]) {
+              overrides[cName] = {};
+            }
+            Object.assign(overrides[cName], additionalChanges.overrides[cName]);
+          }
         }
 
-        this.processNewStateVariableValues({ newStateVariableValues, componentsTouched });
+        this.processNewStateVariableValues({ newStateVariableValues, overrides, componentsTouched });
 
 
       } else if (change.changeType === "changedReplacementsToWithhold") {
@@ -5894,6 +6152,17 @@ export default class Core {
     return null;
   }
 
+  requestAction({ componentName, actionName, args }) {
+    let component = this.components[componentName];
+    if (component && component.actions) {
+      let action = component.actions[actionName];
+      if (action) {
+        return action(args);
+      }
+    }
+    console.warn(`Cannot run action ${actionName} on component ${componentName}`);
+  }
+
   requestUpdate({ updateType, updateInstructions, saveSerializedState }) {
 
     let returnValue = { success: true };
@@ -5901,6 +6170,7 @@ export default class Core {
     if (updateType === "updateValue") {
       let componentsTouched = [];
       let newStateVariableValues = {};
+      let overrides = {};
       let workspace = {};
 
       for (let instruction of updateInstructions) {
@@ -5913,14 +6183,20 @@ export default class Core {
           }
           Object.assign(newStateVariableValues[cName], additionalChanges.newStateVariableValues[cName]);
         }
+        for (let cName in additionalChanges.overrides) {
+          if (!overrides[cName]) {
+            overrides[cName] = {};
+          }
+          Object.assign(overrides[cName], additionalChanges.overrides[cName]);
+        }
       }
 
       if (this.externalFunctions.localStateChanged) {
         // TODO: make this call asynchronous
-        this.externalFunctions.localStateChanged({ newStateVariableValues });
+        this.externalFunctions.localStateChanged({ newStateVariableValues, overrides });
       }
 
-      this.executeUpdateStateVariables({ newStateVariableValues, componentsTouched, saveSerializedState });
+      this.executeUpdateStateVariables({ newStateVariableValues, overrides, componentsTouched, saveSerializedState });
 
     }
     else if (updateType === "updateRendererOnly") {
@@ -6130,6 +6406,7 @@ export default class Core {
 
     let componentsTouched = [component.componentName];
     let newStateVariableValues = {};
+    let overrides = {};
 
     if (!origStateVarObj.inverseDefinition) {
       console.warn(`Cannot change state variable ${stateVariable} of ${component.componentName} as it doesn't have an inverse definition`);
@@ -6179,6 +6456,13 @@ export default class Core {
           }
         } else {
           newStateVariableValues[component.componentName][newInstruction.setStateVariable] = newInstruction.value;
+        }
+
+        if (newInstruction.temporaryOverride) {
+          if (!overrides[component.componentName]) {
+            overrides[component.componentName] = {};
+            overrides[component.componentName][newInstruction.setStateVariable] = true;
+          }
         }
 
       } else if (newInstruction.setDependency) {
@@ -6282,7 +6566,7 @@ export default class Core {
       }
     }
 
-    return { newStateVariableValues, componentsTouched };
+    return { newStateVariableValues, overrides, componentsTouched };
   }
 
   getDeferredStateVariable({ component, stateVariable, upstreamComponent, upstreamStateVariable, dependencyValues, inverseDefinition }) {

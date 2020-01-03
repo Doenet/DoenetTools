@@ -1366,13 +1366,13 @@ export function refReplacementFromProp({ component, components, componentOrRepla
         serializedReplacements.push({
           componentType,
           downstreamDependencies: {
-            [componentOrReplacementNames[index]]: {
+            [componentOrReplacementNames[index]]: [{
               dependencyType: "referenceShadow",
               refComponentName: component.componentName,
               propVariable: arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey),
               // arrayStateVariable: propVariableObj.varName,
               // arrayKey
-            }
+            }]
           }
         })
       }
@@ -1395,14 +1395,14 @@ export function refReplacementFromProp({ component, components, componentOrRepla
         serializedReplacements.push({
           componentType,
           downstreamDependencies: {
-            [componentOrReplacementNames[index]]: {
+            [componentOrReplacementNames[index]]: [{
               dependencyType: "referenceShadow",
               refComponentName: component.componentName,
               propVariable: arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey),
               // propVariable: propVariableObj.varName,
               // arrayStateVariable: propVariableObj.arrayVarName,
               // arrayKey
-            }
+            }]
           }
         })
         // }
@@ -1413,11 +1413,11 @@ export function refReplacementFromProp({ component, components, componentOrRepla
       serializedReplacements.push({
         componentType,
         downstreamDependencies: {
-          [componentOrReplacementNames]: {
+          [componentOrReplacementNames]: [{
             dependencyType: "referenceShadow",
             refComponentName: component.componentName,
             propVariable: propVariableObj.varName,
-          }
+          }]
         }
       })
     }
@@ -1477,10 +1477,10 @@ function postProcessRefSub({ serializedComponents, preserializedNamesFound,
 
       if (addShadowDependencies) {
         let downDep = {
-          [component.preserializedName]: {
+          [component.preserializedName]: [{
             dependencyType: "referenceShadow",
             refComponentName: componentName,
-          }
+          }]
         };
         if (component.state !== undefined) {
           let stateVariables = Object.keys(component.state);

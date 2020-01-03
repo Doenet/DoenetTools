@@ -965,7 +965,7 @@ function convertComponentTarget({ allComponentClasses, componentType,
     // Can't find where originalTarget might be.
     // Check if this component is a reference shadow
     for (let key in serializedComponent.downstreamDependencies) {
-      if (serializedComponent.downstreamDependencies[key].dependencyType === "referenceShadow") {
+      if (serializedComponent.downstreamDependencies[key].some(x=>x.dependencyType === "referenceShadow")) {
         // Found reference shadow, nothing to do as presumably will get target
         // from the shadowed component
         return;
