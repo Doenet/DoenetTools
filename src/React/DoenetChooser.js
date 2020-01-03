@@ -138,11 +138,17 @@ class DoenetChooser extends Component {
           <div className="leftNavPanelMenuItem">
             <Accordion>
               <div label="Courses">
-                <ul style={{"paddingLeft":"20px"}}>
+                <ul style={{"paddingLeft":"20px","margin":"5px 0 0 0"}}>
                   { this.courseList }
                 </ul>
               </div>
             </Accordion>    
+          </div>
+          <div className={"Global" === this.state.selectedDrive ? 
+                    "leftNavPanelMenuItem activeLeftNavPanelMenuItem": "leftNavPanelMenuItem"} 
+            onClick={() => {this.selectDrive("Global")}}>
+            <FontAwesomeIcon className="menuDoughnutIcon" icon={faDotCircle}/>
+            <span>Global</span>
           </div>
         </div>        
       </div>
@@ -159,12 +165,15 @@ class DoenetChooser extends Component {
       } else if (this.state.selectedDrive === "Courses") {
         toolbarTitle = this.courseInfo[this.state.selectedCourse].courseCode + ' - '
         + this.courseInfo[this.state.selectedCourse].courseName;
+      }  else if (this.state.selectedDrive === "Global") {
+        toolbarTitle = "Search Globally"
       }
+
     } else if (this.state.activeSection === "add_course") {
       toolbarTitle = "Add New Course";
     } else if (this.state.activeSection === "edit_course") {
       toolbarTitle = "Edit Course - " + this.courseInfo[this.state.selectedCourse].courseCode;
-    }
+    } 
 
     this.topToolbar = <React.Fragment>
       <div id="topToolbar">
@@ -422,6 +431,15 @@ class DoenetChooser extends Component {
       this.branches_loaded = false;
       this.updateIndexedDBCourseContent(courseId);
       this.loadCourseContent(courseId);
+    } else if (drive === "Global") {
+      this.setState({
+        selectedItems: [],
+        selectedItemsType: [],
+        activeSection: "chooser",
+        selectedDrive: drive,
+        directoryStack: []});
+      // this.folders_loaded = false;
+      // this.branches_loaded = false;
     } else {
       this.setState({
         selectedItems: [],
@@ -1171,6 +1189,38 @@ class AccordionSection extends Component {
         )}
       </div>
     );
+  }
+}
+
+class FilterForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      input: ""
+    };
+
+    this.addRole = this.addRole.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  addRole(event) {
+    this.props.addRole(this.state.input);
+    this.setState({ input: ""});
+    event.preventDefault();
+  };
+
+  handleChange(event) {
+    this.setState({ input: event.target.value });
+  }
+
+  render() {
+    return(
+      <div className="newCourseFormGroup-4" style={{"display":"flex"}}>
+        <input className="newCourseFormInput" type="text" value={this.state.input} onChange={this.handleChange}
+        type="text" placeholder="Admin"/>
+        <button type="submit" style={{"whiteSpace":"nowrap"}} onClick={this.addRole}>Add Role</button>
+      </div>
+    )
   }
 }
 
