@@ -573,9 +573,6 @@ export default class Core {
     applySugar = false, applyAdapters = true, shadow = false }
   ) {
 
-    console.log('create children then component')
-    console.log(ancestors);
-
     // first recursively create children
     let serializedChildren = serializedComponent.children;
     let definingChildren = [];
