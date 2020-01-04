@@ -5,28 +5,18 @@ import me from 'math-expressions';
 export class Sum extends MathBaseOperator {
   static componentType = "sum";
 
-  applyMathOperator() {
-    if(this.state.nMaths === 0) {
-      return me.fromAst(0);
-    }
-    if(this.state.nMaths === 1) {
-      return this.state.mathChildren[0].state.value;
-    }
-    return this.state.mathChildren.map(x=>x.state.value).reduce((a,c) => a.add(c)).simplify();
+  static applyMathOperator(dependencyValues) {
+    return dependencyValues.mathChildren.map(x => x.stateValues.value)
+      .reduce((a, c) => a.add(c)).simplify();
   }
 }
 
 export class Product extends MathBaseOperator {
   static componentType = "product";
 
-  applyMathOperator() {
-    if(this.state.nMaths === 0) {
-      return me.fromAst(1);
-    }
-    if(this.state.nMaths === 1) {
-      return this.state.mathChildren[0].state.value;
-    }
-    return this.state.mathChildren.map(x=>x.state.value).reduce((a,c) => a.multiply(c)).simplify();
+  static applyMathOperator(dependencyValues) {
+    return dependencyValues.mathChildren.map(x => x.stateValues.value)
+      .reduce((a, c) => a.multiply(c)).simplify();
   }
 }
 
@@ -35,29 +25,53 @@ export class ClampNumber extends MathBaseOperatorOneInput {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.lowervalue = {default: 0};
-    properties.uppervalue = {default: 1};
+    properties.lowerValue = { default: 0 };
+    properties.upperValue = { default: 1 };
     return properties;
   }
 
-  applyMathOperator() {
+  static returnStateVariableDefinitions() {
 
-    return this.clamp(this.state.value);
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.unnormalizedValue.returnDependencies = () => ({
+      value: {
+        dependencyType: "stateVariable",
+        variableName: "unnormalizedValuePreOperator"
+      },
+      lowerValue: {
+        dependencyType: "stateVariable",
+        variableName: "lowerValue"
+      },
+      upperValue: {
+        dependencyType: "stateVariable",
+        variableName: "upperValue"
+      }
+    })
+
+    return stateVariableDefinitions;
   }
 
-  clamp(value) {
+  static applyMathOperator(dependencyValues) {
+    return this.clamp(dependencyValues);
+  }
+
+  static clamp({ value, lowerValue, upperValue }) {
     let numericValue = value.evaluate_to_constant();
 
     // if don't have a number, just return value unchanged
-    if(!Number.isFinite(numericValue)) {
+    if (!Number.isFinite(numericValue)) {
       return value;
     }
-    return me.fromAst(Math.max(this.state.lowervalue, Math.min(this.state.uppervalue, numericValue)));
+    return me.fromAst(Math.max(lowerValue, Math.min(upperValue, numericValue)));
   }
 
-  reverseMathOperatorForDownstream(x) {
-    return this.clamp(x);
+  static reverseMathOperator({ desiredValue, dependencyValues }) {
+    return this.clamp({
+      value: desiredValue,
+      lowerValue: dependencyValues.lowerValue,
+      upperValue: dependencyValues.upperValue
+    });
   }
 
 }
@@ -67,48 +81,71 @@ export class WrapNumberPeriodic extends MathBaseOperatorOneInput {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.lowervalue = {default: 0};
-    properties.uppervalue = {default: 1};
+    properties.lowerValue = { default: 0 };
+    properties.upperValue = { default: 1 };
     return properties;
   }
 
-  applyMathOperator() {
 
-    return this.makePeriodic(this.state.value);
+  static returnStateVariableDefinitions() {
 
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.unnormalizedValue.returnDependencies = () => ({
+      value: {
+        dependencyType: "stateVariable",
+        variableName: "unnormalizedValuePreOperator"
+      },
+      lowerValue: {
+        dependencyType: "stateVariable",
+        variableName: "lowerValue"
+      },
+      upperValue: {
+        dependencyType: "stateVariable",
+        variableName: "upperValue"
+      }
+    })
+
+    return stateVariableDefinitions;
   }
 
-  makePeriodic(value) {
+
+  static applyMathOperator(dependencyValues) {
+    return this.makePeriodic(dependencyValues);
+  }
+
+  static makePeriodic({ value, lowerValue, upperValue }) {
     let numericValue = value.evaluate_to_constant();
 
     // if don't have a number, just return value unchanged
-    if(!Number.isFinite(numericValue)) {
+    if (!Number.isFinite(numericValue)) {
       return value;
     }
 
-    let lower = this.state.lowervalue
-    let upper = this.state.uppervalue;
-
     // if bounds are the same, clamp to that value
-    if(lower === upper) {
-      return me.fromAst(lower);
+    if (lowerValue === upperValue) {
+      return me.fromAst(lowerValue);
     }
 
-    // just in case lower is larger than upper, swap values
-    if(lower > upper) {
-      [upper, lower] = [lower, upper];
+    // just in case lowerValue is larger than upperValue, swap values
+    if (lowerValue > upperValue) {
+      [upperValue, lowerValue] = [lowerValue, upperValue];
     }
 
     return me.fromAst(
-      lower + me.math.mod(
-        numericValue-lower,
-        upper - lower
+      lowerValue + me.math.mod(
+        numericValue - lowerValue,
+        upperValue - lowerValue
       )
     )
   }
 
-  reverseMathOperatorForDownstream(x) {
-    return this.makePeriodic(x);
+  static reverseMathOperator({ desiredValue, dependencyValues }) {
+    return this.makePeriodic({
+      value: desiredValue,
+      lowerValue: dependencyValues.lowerValue,
+      upperValue: dependencyValues.upperValue
+    });
   }
 
 }
@@ -119,34 +156,58 @@ export class Round extends MathBaseOperatorOneInput {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.numberdecimals = {default: 0};
-    properties.numberdigits = {default: undefined};
+    properties.numberDecimals = { default: 0 };
+    properties.numberDigits = { default: undefined };
     return properties;
   }
 
-  applyMathOperator() {
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.unnormalizedValue.returnDependencies = () => ({
+      value: {
+        dependencyType: "stateVariable",
+        variableName: "unnormalizedValuePreOperator"
+      },
+      numberDecimals: {
+        dependencyType: "stateVariable",
+        variableName: "numberDecimals"
+      },
+      numberDigits: {
+        dependencyType: "stateVariable",
+        variableName: "numberDigits"
+      }
+    })
+
+    return stateVariableDefinitions;
+  }
+
+
+  static applyMathOperator(dependencyValues) {
 
     // first convert all numbers and constants (such as pi) to floating point numbers
-    let valueWithNumbers = this.state.value.evaluate_numbers({max_digits: Infinity, evaluate_functions: true});
+    let valueWithNumbers = dependencyValues.value.evaluate_numbers({ max_digits: Infinity, evaluate_functions: true });
 
     // // ignore non-numerical values
     // if(!Number.isFinite(numericValue)) {
-    //   return this.state.mathChild.state.value;
+    //   return dependencyValues.value;
     // }
 
-    if(this.state.numberdigits !== undefined) {
+    if (dependencyValues.numberDigits !== undefined) {
 
-      return valueWithNumbers.round_numbers_to_precision(this.state.numberdigits);
+      return valueWithNumbers.round_numbers_to_precision(dependencyValues.numberDigits);
 
     } else {
 
-      return valueWithNumbers.round_numbers_to_decimals(this.state.numberdecimals);
+      return valueWithNumbers.round_numbers_to_decimals(dependencyValues.numberDecimals);
 
     }
   }
 
-  reverseMathOperatorForDownstream(x) {
-    return x;
+  static reverseMathOperator({ desiredValue }) {
+    return desiredValue
   }
 
 }
@@ -155,22 +216,35 @@ export class Round extends MathBaseOperatorOneInput {
 export class ConvertSetToList extends MathBaseOperatorOneInput {
   static componentType = "convertsettolist";
 
-  updateState(args={}) {
-    if(args.init) {
-      this.state.unordered = true;
-      this._state.unordered.usedDefault = false;
-      this._state.unordered.essential = true;
-    }
-    super.updateState(args);
-
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
+    delete properties.unordered;
+    return properties;
   }
-  
 
-  applyMathOperator() {
 
-    let value = this.state.value;
+  static returnStateVariableDefinitions() {
 
-    if(value !== undefined && Array.isArray(value.tree) && value.tree[0] === "set") {
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+
+    stateVariableDefinitions.unordered = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {unordered: true},
+        makeEssential: ["unordered"]
+      })
+    }
+
+    return stateVariableDefinitions;
+  }
+
+
+  static applyMathOperator(dependencyValues) {
+
+    let value = dependencyValues.value;
+
+    if (value !== undefined && Array.isArray(value.tree) && value.tree[0] === "set") {
       let distinctElements = [];
       for (let v of value.tree.slice(1)) {
         // if v doesn't match any previous elements, add to array
@@ -193,27 +267,27 @@ export class ConvertSetToList extends MathBaseOperatorOneInput {
 export class Ceil extends MathBaseOperatorOneInput {
   static componentType = "ceil";
 
-  applyMathOperator() {
-    let numericValue = this.state.value.evaluate_to_constant();
+  static applyMathOperator(dependencyValues) {
+    let numericValue = dependencyValues.value.evaluate_to_constant();
 
     // if don't have a number, just return value unchanged
     // TODO: is this the right behavior?
-    if(!Number.isFinite(numericValue)) {
-      return this.state.value;
+    if (!Number.isFinite(numericValue)) {
+      return dependencyValues.value;
     }
 
     // to account for roundoff error, if within rounding error of integer, use that
     let rounded = Math.round(numericValue);
-    if(Math.abs((rounded-numericValue)/numericValue) < 1E-15) {
-      return rounded;
+    if (Math.abs((rounded - numericValue) / numericValue) < 1E-15) {
+      return me.fromAst(rounded);
     }
 
-    return Math.ceil(numericValue);
+    return me.fromAst(Math.ceil(numericValue));
 
   }
 
-  reverseMathOperatorForDownstream(x) {
-    return x;
+  static reverseMathOperator({ desiredValue }) {
+    return desiredValue
   }
 
 }
@@ -222,55 +296,52 @@ export class Ceil extends MathBaseOperatorOneInput {
 export class Floor extends MathBaseOperatorOneInput {
   static componentType = "floor";
 
-  applyMathOperator() {
-    let numericValue = this.state.value.evaluate_to_constant();
+  static applyMathOperator(dependencyValues) {
+    let numericValue = dependencyValues.value.evaluate_to_constant();
 
     // if don't have a number, just return value unchanged
     // TODO: is this the right behavior?
-    if(!Number.isFinite(numericValue)) {
-      return this.state.value;
+    if (!Number.isFinite(numericValue)) {
+      return dependencyValues.value;
     }
 
     // to account for roundoff error, if within rounding error of integer, use that
     let rounded = Math.round(numericValue);
-    if(Math.abs((rounded-numericValue)/numericValue) < 1E-15) {
-      return rounded;
+    if (Math.abs((rounded - numericValue) / numericValue) < 1E-15) {
+      return me.fromAst(rounded);
     }
 
-    return Math.floor(numericValue);
+    return me.fromAst(Math.floor(numericValue));
 
   }
 
-  reverseMathOperatorForDownstream(x) {
-    return x;
+  static reverseMathOperator({ desiredValue }) {
+    return desiredValue
   }
-
 }
 
 
 export class Abs extends MathBaseOperatorOneInput {
   static componentType = "abs";
 
-  applyMathOperator() {
+  static applyMathOperator(dependencyValues) {
     // TODO: is this the right behavior?
     // or should <abs>log(5)</abs> yield |log(5)|?
-    let numericValue = this.state.value.evaluate_to_constant();
+    let numericValue = dependencyValues.value.evaluate_to_constant();
 
     // if don't have a number, just return symbolic absolute value
-    if(!Number.isFinite(numericValue)) {
-      return me.fromAst(['apply', 'abs', this.state.value.tree])
+    if (!Number.isFinite(numericValue)) {
+      return me.fromAst(['apply', 'abs', dependencyValues.value.tree])
     }
 
-    return Math.abs(numericValue);
+    return me.fromAst(Math.abs(numericValue));
   }
 
-  reverseMathOperatorForDownstream(x) {
-    return x;
+  static reverseMathOperator({ desiredValue }) {
+    return desiredValue
   }
 
 }
-
-
 
 
 export class Derivative extends MathBaseOperatorOneInput {
@@ -278,13 +349,33 @@ export class Derivative extends MathBaseOperatorOneInput {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.variable = {default: me.fromAst('x')};
+    properties.variable = { default: me.fromAst('x') };
     return properties;
   }
 
-  applyMathOperator() {
 
-    return this.state.value.derivative(this.state.variable.tree);
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.unnormalizedValue.returnDependencies = () => ({
+      value: {
+        dependencyType: "stateVariable",
+        variableName: "unnormalizedValuePreOperator"
+      },
+      variable: {
+        dependencyType: "stateVariable",
+        variableName: "variable"
+      },
+    })
+
+    return stateVariableDefinitions;
+  }
+
+
+  static applyMathOperator(dependencyValues) {
+
+    return dependencyValues.value.derivative(dependencyValues.variable.tree);
 
   }
 

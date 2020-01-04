@@ -244,7 +244,8 @@ export default class NumberComponent extends InlineComponent {
   }
 
   returnSerializeInstructions() {
-    let skipChildren = this.childLogic.returnMatches("atMostOneString").length === 1;
+    let stringMatches =  this.childLogic.returnMatches("atMostOneString");
+    let skipChildren = stringMatches && stringMatches.length === 1;
     if (skipChildren) {
       let stateVariables = ["value"];
       return { skipChildren, stateVariables };

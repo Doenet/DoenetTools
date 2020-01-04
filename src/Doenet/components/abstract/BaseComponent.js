@@ -394,9 +394,7 @@ export default class BaseComponent {
     return descendants;
   }
 
-  updateState({ init } = {}) {
-
-    throw Error("Probably won't use updateState anymore")
+  updateStateOld({ init } = {}) {
 
     // create a tracked state variable of active children
     // so that changes to active children will always count as a change
@@ -492,7 +490,7 @@ export default class BaseComponent {
 
   // merge any unresolvedDependencies or unresolvedDependenceChain from component
   // into this.state.unresolvedDependenceChain
-  mergeUnresolved(component) {
+  mergeUnresolvedOld(component) {
     let componentHasUnresolved = false;
     if (component.unresolvedDependencies && Object.keys(component.unresolvedDependencies).length > 0) {
       componentHasUnresolved = true;
@@ -555,7 +553,7 @@ export default class BaseComponent {
     return componentHasUnresolved;
   }
 
-  updateProperties() {
+  updatePropertiesOld() {
     // update state from properties and child logic
     if (this.childLogic === undefined) {
       return;
@@ -765,7 +763,7 @@ export default class BaseComponent {
     }
   }
 
-  updateStateVariable({ variable, value, allowChangeToNonEssential = false }) {
+  updateStateVariableOld({ variable, value, allowChangeToNonEssential = false }) {
 
     let varObj = this._state[variable];
     if (varObj === undefined) {

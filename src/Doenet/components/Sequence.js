@@ -499,7 +499,7 @@ export default class Sequence extends CompositeComponent {
               }
             }
           } else if (dependencyValues.selectedType === "number") {
-            // make sure to and from are numbers
+            // make sure to, from, and exclude are numbers
             if (to !== undefined) {
               if (to instanceof me.class) {
                 to = to.evaluate_to_constant();
@@ -508,6 +508,11 @@ export default class Sequence extends CompositeComponent {
             if (from !== undefined) {
               if (from instanceof me.class) {
                 from = from.evaluate_to_constant();
+              }
+            }
+            for (let [index, value] of exclude.entries()) {
+              if (value instanceof me.class) {
+                exclude[index] = value.evaluate_to_constant();
               }
             }
           }

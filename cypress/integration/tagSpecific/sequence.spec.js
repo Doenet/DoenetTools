@@ -626,7 +626,7 @@ describe('Sequence Tag Tests', function () {
       win.postMessage({
         doenetCode: `
     <text>a</text>
-    <aslist><sequence type="number" count="10">
+    <aslist><sequence from="1" count="10">
     <exclude><ref prop="value">exclude2</ref></exclude>
     <exclude>2,6</exclude>
     </sequence></aslist>
