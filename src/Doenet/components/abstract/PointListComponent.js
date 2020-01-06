@@ -73,7 +73,7 @@ export default class PointListComponent extends BaseComponent {
         pointChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "atLeastZeroPoints",
-          variableNames: ["xs", "coords"]
+          variableNames: ["xs", "coords", "nDimensions"]
         }
       }),
       definition: function ({ dependencyValues, changes }) {

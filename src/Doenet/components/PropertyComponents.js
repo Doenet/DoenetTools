@@ -16,6 +16,7 @@ import ComponentSize from './abstract/ComponentSize';
 import Variable from './Variable';
 import MathWithVariable from './abstract/MathWithVariable';
 import TextList from './TextList';
+import NumberList from './NumberList';
 
 export class Hide extends BooleanComponent {
   static componentType = "hide";
@@ -669,6 +670,10 @@ export class MergeMathLists extends BooleanComponent {
   static componentType = "mergemathlists";
 }
 
+export class MergeNumberLists extends BooleanComponent {
+  static componentType = "mergenumberlists";
+}
+
 export class AttractThreshold extends NumberComponent {
   static componentType = "attractthreshold";
 }
@@ -687,4 +692,8 @@ export class Slope extends MathComponent {
 
 export class ForceFullCheckWorkButton extends BooleanComponent {
   static componentType = "forcefullcheckworkbutton";
+}
+
+export class PossibleNumberOfGroups extends NumberList {
+  static componentType = "PossibleNumberOfGroups";
 }

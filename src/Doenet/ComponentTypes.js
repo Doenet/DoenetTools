@@ -19,6 +19,7 @@ import Text from './components/Text';
 import Letters from './components/Letters';
 import TextList from './components/TextList';
 import MathList from './components/MathList';
+import NumberList from './components/NumberList';
 import P from './components/P';
 import BooleanComponent from './components/Boolean';
 import BooleanList from './components/BooleanList';
@@ -117,6 +118,8 @@ import IntComma from './components/IntComma';
 import Pluralize from './components/Pluralize';
 import Feedback from './components/Feedback';
 import Container from './components/Container';
+import CollaborateGroups from './components/CollaborateGroups';
+import CollaborateGroupSetup from './components/CollaborateGroupSetup';
 
 
 //Extended
@@ -166,6 +169,7 @@ const componentTypeArray = [
   P,
   BooleanComponent, BooleanList,
   MathComponent, MathList,
+  NumberList,
   Ref, RefTarget,
   Prop,
   Extract,
@@ -236,6 +240,8 @@ const componentTypeArray = [
   Pluralize,
   Feedback,
   Container,
+  CollaborateGroups,
+  CollaborateGroupSetup,
 ];
 
 const componentTypeArrayExtended = [

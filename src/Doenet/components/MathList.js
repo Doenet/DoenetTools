@@ -221,7 +221,7 @@ export default class MathList extends InlineComponent {
             baseComponentType: "math"
           })) {
 
-            let childValue = dependencyValues.mathChildren[mathNumber].stateValues.valueToDisplay;
+            let childValue = dependencyValues.mathChildren[mathNumber].stateValues.valueForDisplay;
 
             if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
               for (let i = 0; i < childValue.tree.length - 1; i++) {
@@ -292,7 +292,7 @@ export default class MathList extends InlineComponent {
             baseComponentType: "math"
           })) {
 
-            let childValue = dependencyValues.mathChildren[mathNumber].stateValues.valueToDisplay;
+            let childValue = dependencyValues.mathChildren[mathNumber].stateValues.valueForDisplay;
 
             if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
               for (let i = 0; i < childValue.tree.length - 1; i++) {

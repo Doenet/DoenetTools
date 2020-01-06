@@ -18,6 +18,7 @@ export default class Mathinput extends Input {
     properties.prefill = { default: "" };
     properties.format = { default: "text" };
     properties.size = { default: 10 };
+    properties.collaborateGroups = { default: undefined };
     return properties;
   }
 
@@ -247,7 +248,7 @@ export default class Mathinput extends Input {
 
         let valueHasBeenValidated = false;
 
-        if(dependencyValues.answerAncestor &&
+        if (dependencyValues.answerAncestor &&
           dependencyValues.answerAncestor.stateValues.justSubmitted //&&
           // dependencyValues.numberTimesSubmitted > 0 &&
           // dependencyValues.value.equalsViaSyntax(dependencyValues.submittedValue)
