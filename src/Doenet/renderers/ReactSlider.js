@@ -26,7 +26,7 @@ export default class ReactSlider extends React.Component {
       width: "12px",
       borderRadius: "12px",
       background: "#ffffff",
-      cursor: "pointer",
+      // cursor: "pointer",
       boxShadow: "0 1px 3px 0px rgba(0, 0, 0, 0.15)",
       marginTop: "17px",
       display: "inline-block",
@@ -80,7 +80,7 @@ export default class ReactSlider extends React.Component {
       this.label_width = tsize.width + 8;
 
     }
-    if (this.props.showControls === true) {
+    if (this.props.showControls === true && !this.props.disabled) {
       this.buttons_width = 47;
     } else {
       this.buttons_width = 0;
@@ -179,6 +179,9 @@ export default class ReactSlider extends React.Component {
         stroke: "rgb(0,0,0)",
         strokeWidth: 2,
       }
+      if (this.props.disabled) {
+        linestyle.stroke = "rgb(100,100,100)";
+      }
       let key = this.props._key + tickPixel;
       let newTick = <svg key={key} style={svgstyle}>
         <line style={linestyle} x1="0" y1="0" x2="0" y2="20" />
@@ -224,6 +227,9 @@ export default class ReactSlider extends React.Component {
         textAlign: "center",
         // border: "1px solid black",
       };
+      if (this.props.disabled) {
+        markerStyle.color = "rgb(100,100,100)";
+      }
       let newMarker = <span key={key} style={markerStyle} >{markerText}</span>
       this.markers.push(newMarker);
       // this.markerWidthOffset = this.markerWidthOffset - tsize.width/2 - 1;
@@ -271,6 +277,10 @@ export default class ReactSlider extends React.Component {
 
   //could be optimized by starting in the middle and use half way
   updateValue(positionFromLeft) {
+    if (this.props.disabled) {
+      return;
+    }
+
     //Correct position for handle vs track offsets
     if (this.props.label === undefined) {
       positionFromLeft = positionFromLeft - this.label_width + 8;
@@ -419,10 +429,13 @@ export default class ReactSlider extends React.Component {
       // backgroundColor: 'blue',
     }
 
+    if (this.props.disabled) {
+      label_style.color = "rgb(100,100,100)";
+    }
 
     let showControls = <React.Fragment></React.Fragment>
 
-    if (this.props.showControls === true) {
+    if (this.props.showControls === true && !this.props.disabled) {
 
       showControls = <React.Fragment>
         <Style rules={{
@@ -451,10 +464,14 @@ export default class ReactSlider extends React.Component {
       marginTop: "0px",
       opacity: 0.7,
       zIndex: 2,
-      cursor: "pointer",
+      // cursor: "pointer",
       // backgroundColor: 'yellow',
       // left: this.x + this.label_width +"px",
       left: this.label_width + "px",
+    }
+
+    if (!this.props.disabled) {
+      track_container_style.cursor = "pointer";
     }
 
     const slider_style = {
@@ -478,24 +495,42 @@ export default class ReactSlider extends React.Component {
       zIndex: "0",
     }
 
+    if (this.props.disabled) {
+      track_style.background = "rgb(160, 160, 160)"
+    }
+
     let labelSpan = null;
     if (this.props.label !== undefined) {
       labelSpan = <span style={label_style}>{this.props.label}</span>
     }
 
+    let handle_style = Object.assign({}, this.handle_style);
+
+
+    let handle = (
+      <span style={handle_style} data-cy={`${_key}slider-handle`}>
+        <span style={this.handle_label_style}>
+          {handleText}
+        </span>
+      </span>);
+
+    if (this.props.disabled) {
+      handle_style.cursor = "";
+    } else {
+      handle = (
+        <Draggable  {...handle_props} >
+          {handle}
+        </Draggable>
+      )
+      handle_style.cursor = "pointer";
+    }
 
     return (
       <div key={_key} id={_key} style={slider_style} ref={this.sliderRef}>
         <a name={this._key} />
         {labelSpan}
         <span style={track_container_style} data-cy={`${_key}slider-track`} onClick={(e) => this.trackClick(e, _key)}>
-          <Draggable  {...handle_props} >
-            <span style={this.handle_style} data-cy={`${_key}slider-handle`}>
-              <span style={this.handle_label_style}>
-                {handleText}
-              </span>
-            </span>
-          </Draggable>
+          {handle}
           {this.ticks}
           <div style={track_style}></div>
           {this.markers}

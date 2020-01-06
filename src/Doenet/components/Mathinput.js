@@ -338,6 +338,11 @@ export default class Mathinput extends Input {
       })
     }
 
+    let disabled = false;
+    if(this.stateValues.collaborateGroups) {
+      disabled = !this.stateValues.collaborateGroups.matchGroup(this.flags.collaboration);
+    }
+
     this.renderer = new this.availableRenderers.mathinput({
       actions: this.actions,
       mathExpression: new Proxy(this.stateValues.value, this.readOnlyProxyHandler),
@@ -348,15 +353,24 @@ export default class Mathinput extends Input {
       numberTimesSubmitted: this.stateValues.numberTimesSubmitted,
       size: this.stateValues.size,
       showCorrectness: this.flags.showCorrectness,
+      disabled
     });
   }
 
+
   updateRenderer() {
+
+    let disabled = false;
+    if(this.stateValues.collaborateGroups) {
+      disabled = !this.stateValues.collaborateGroups.matchGroup(this.flags.collaboration);
+    }
+
     this.renderer.updateMathinputRenderer({
       mathExpression: new Proxy(this.stateValues.value, this.readOnlyProxyHandler),
       creditAchieved: this.stateValues.creditAchieved,
       valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
       numberTimesSubmitted: this.stateValues.numberTimesSubmitted,
+      disabled
     });
 
   }

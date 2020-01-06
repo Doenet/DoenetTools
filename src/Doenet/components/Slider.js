@@ -16,6 +16,7 @@ export default class Slider extends BaseComponent {
     properties.label = { default: undefined };
     properties.showControls = { default: false };
     properties.showTicks = { default: true };
+    properties.collaborateGroups = { default: undefined };
 
     return properties;
   }
@@ -309,6 +310,11 @@ export default class Slider extends BaseComponent {
       changeValue: this.changeValue,
     }
 
+    let disabled = false;
+    if(this.stateValues.collaborateGroups) {
+      disabled = !this.stateValues.collaborateGroups.matchGroup(this.flags.collaboration);
+    }
+
     this.renderer = new this.availableRenderers.slider({
       actions: actions,
       key: this.componentName,
@@ -322,10 +328,16 @@ export default class Slider extends BaseComponent {
       label: this.stateValues.label,
       showControls: this.stateValues.showControls,
       showTicks: this.stateValues.showTicks,
+      disabled,
     });
   }
 
   updateRenderer() {
+    let disabled = false;
+    if(this.stateValues.collaborateGroups) {
+      disabled = !this.stateValues.collaborateGroups.matchGroup(this.flags.collaboration);
+    }
+
     this.renderer.updateSlider({
       index: this.stateValues.index,
       items: this.stateValues.items,
@@ -337,6 +349,7 @@ export default class Slider extends BaseComponent {
       label: this.stateValues.label,
       showControls: this.stateValues.showControls,
       showTicks: this.stateValues.showTicks,
+      disabled,
     })
 
   }

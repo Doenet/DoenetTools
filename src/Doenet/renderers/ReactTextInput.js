@@ -352,6 +352,7 @@ export default class ReactTextInput extends React.Component {
           key={inputKey}
           id={inputKey}
           value={this.props.free.sharedState.textValue}
+          disabled={this.props.disabled}
           onChange={this.onChangeHandler}
           onKeyPress={this.handleKeyPress}
           onKeyDown={this.handleKeyDown}

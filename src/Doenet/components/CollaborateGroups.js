@@ -56,7 +56,7 @@ export default class CollaborateGroups extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        let collaborateGroups = {};
+        let groups = {};
 
         for (let point of dependencyValues.pointChildren) {
 
@@ -72,15 +72,37 @@ export default class CollaborateGroups extends BaseComponent {
             ) {
               console.warn(`invalid collaborate group: ${point.stateValues.coords.toString()}`)
             } else {
-              if (collaborateGroups[numberOfGroups] === undefined) {
-                collaborateGroups[numberOfGroups] = [];
+              if (groups[numberOfGroups] === undefined) {
+                groups[numberOfGroups] = [];
               }
-              collaborateGroups[numberOfGroups].push(group);
+              groups[numberOfGroups].push(group);
             }
 
           }
         }
-        return { newValues: { collaborateGroups } }
+
+        let matchGroup = function ({ groupNumber, numberOfGroups }) {
+          if (numberOfGroups > 1) {
+            let collaborationAssignment = groups[numberOfGroups];
+            if (collaborationAssignment === undefined) {
+              return false;
+            }
+            else {
+              return collaborationAssignment.includes(groupNumber);
+            }
+          } else {
+            return true;
+          }
+
+        }
+
+        return {
+          newValues: {
+            collaborateGroups: {
+              groups, matchGroup
+            }
+          }
+        }
 
       }
     }
