@@ -4,38 +4,38 @@ import Doenet from './Doenet';
 import axios from 'axios';
 import crypto from 'crypto';
 import { serializedStateReplacer, serializedStateReviver } from '../Doenet/utils/serializedStateProcessing';
-
+import generate from 'nanoid/generate';
 
 class DoenetViewer extends Component {
   constructor(props) {
     super(props);
-    this.update = this.update.bind(this);
+    this.update = this.update.bind(this);a
     this.submitResults = this.submitResults.bind(this);
 
     this.saveSerializedTimer = null;
 
-    let code = this.props.free.doenetCode;
-    // console.log(` code before ${code}`);
-    // code = this.removeComments({ code: code });
-    // console.log(` code after ${code}`);
+    let url_string = window.location.href;
+    var url = new URL(url_string);
+    this.group = url.searchParams.get("group");
 
-    let doenetState;
-    
-    if(props.free.doenetState) {
-      doenetState = JSON.parse(props.free.doenetState, serializedStateReviver);
+    if (props.free.doenetState) {
+      this.doenetState = JSON.parse(props.free.doenetState, serializedStateReviver);
 
       // TODO: remove this once we can ensure that serialized state is always an array
-      if(!Array.isArray(doenetState)) {
-        doenetState = [doenetState];
+      if (!Array.isArray(this.doenetState)) {
+        this.doenetState = [doenetState];
       }
     }
 
+
     this.viewerExternalFunctions = {};
-    if(props.viewerExternalFunctions) {
+    if (props.viewerExternalFunctions) {
       this.viewerExternalFunctions = props.viewerExternalFunctions;
     }
 
     this.callSubmitAllAnswersCounter = 0;
+
+
 
     this.recordSolutionView = this.recordSolutionView.bind(this);
     this.contentIdsToDoenetMLs = this.contentIdsToDoenetMLs.bind(this);
@@ -45,6 +45,58 @@ class DoenetViewer extends Component {
     this.localStateChanged = this.localStateChanged.bind(this);
     this.remoteStateChanged = this.remoteStateChanged.bind(this);
     this.update = this.update.bind(this);
+
+    this.goToGroup = this.goToGroup.bind(this);
+    this.leaveGroup = this.leaveGroup.bind(this);
+    this.continueConstruction = this.continueConstruction.bind(this);
+
+    //Integration with Doenet Library
+    this.worksheet = new window.doenet.Worksheet();
+    // this.worksheet.addEventListener('ready', this.continueConstruction);
+    setTimeout(this.continueConstruction, 1000);
+
+
+    let collaborationPanelState = "join or create";
+    if (this.group) {
+      collaborationPanelState = "group is active";
+    }
+
+    let test = true;
+
+    this.state = {
+      apiStateReady: false,
+      collaborateWindowOpen: false,
+      joinGroupText: "",
+      collaborationPanelState: collaborationPanelState,
+    }
+
+    if (this.props.functionsSuppliedByChild) {
+
+      this.props.functionsSuppliedByChild.submitAllAnswers = () => this.core.document.submitAllAnswers();
+    }
+    // this.update({ doenetTags: this.core.doenetState, init: true });
+
+  }
+
+  continueConstruction() {
+
+
+    if (!this.worksheet.globalState.users) {
+      this.worksheet.globalState.users = [];
+    }
+
+    let index = this.worksheet.globalState.users.indexOf(this.worksheet.userId);
+    if (index === -1) {
+      this.worksheet.globalState.users.push(this.worksheet.userId);
+      this.playerNumber = this.worksheet.globalState.users.length;
+    } else {
+      this.playerNumber = index + 1;
+    }
+    // let numberOfPlayers = this.worksheet.globalState.users.length;
+    console.log(`Your userid ${this.worksheet.userId}`);
+    console.log(this.worksheet.globalState.users);
+
+
 
     //Modes Listed:
     //Gradebook
@@ -67,25 +119,30 @@ class DoenetViewer extends Component {
     this.flags.showFeedback = true;
     this.flags.showCorrectness = true;
     this.flags.solutionType = "button";
+
+    if (this.groups) {
+      this.flags.collaboration = { numberOfGroups: 3, groupNumber: this.playerNumber }
+    }
+
     this.allowViewSolutionWithoutRoundTrip = true;
-    if (props.mode !== undefined){
-      if(props.mode.showHints !== undefined){
-        this.flags.showHints = props.mode.showHints;
+    if (this.props.mode !== undefined) {
+      if (this.props.mode.showHints !== undefined) {
+        this.flags.showHints = this.props.mode.showHints;
       }
-      if(props.mode.showFeedback !== undefined){
-        this.flags.showFeedback = props.mode.showFeedback;
+      if (this.props.mode.showFeedback !== undefined) {
+        this.flags.showFeedback = this.props.mode.showFeedback;
       }
-      if(props.mode.showCorrectness !== undefined){
-        this.flags.showCorrectness = props.mode.showCorrectness;
+      if (this.props.mode.showCorrectness !== undefined) {
+        this.flags.showCorrectness = this.props.mode.showCorrectness;
       }
-      if (props.mode.solutionType !== undefined) {
-        this.flags.solutionType = props.mode.solutionType;
+      if (this.props.mode.solutionType !== undefined) {
+        this.flags.solutionType = this.props.mode.solutionType;
       }
-      if (props.mode.allowViewSolutionWithoutRoundTrip !== undefined) {
-        this.allowViewSolutionWithoutRoundTrip = props.mode.allowViewSolutionWithoutRoundTrip;
+      if (this.props.mode.allowViewSolutionWithoutRoundTrip !== undefined) {
+        this.allowViewSolutionWithoutRoundTrip = this.props.mode.allowViewSolutionWithoutRoundTrip;
       }
     }
-    
+
     let externalFunctions = {
       submitResults: this.submitResults,
       recordSolutionView: this.recordSolutionView,
@@ -97,8 +154,8 @@ class DoenetViewer extends Component {
     };
 
     this.core = new Core({
-      doenetML: code,
-      doenetState: doenetState,
+      doenetML: this.props.free.doenetCode,
+      doenetState: this.doenetState,
       update: this.update,
       requestedVariant: this.props.free.requestedVariant,
       externalFunctions: externalFunctions,
@@ -106,68 +163,110 @@ class DoenetViewer extends Component {
       postConstructionCallBack: this.update
     });
 
-    //Integration with Doenet Library
-    this.worksheet = new window.doenet.Worksheet();
-    
-    if(this.props.collaborate) {
-      this.worksheet.addEventListener( 'globalState', this.remoteStateChanged);
+    if (this.group) {
+      this.worksheet.addEventListener('globalState', this.remoteStateChanged);
     } else {
-      this.worksheet.addEventListener( 'state', this.remoteStateChanged);
+      this.worksheet.addEventListener('state', this.remoteStateChanged);
     }
 
-    if(this.props.functionsSuppliedByChild){
+    //Transfer state
+    //TODO clean up testing undefined
+    if (typeof window.sessionStorage.transferToGlobal !== 'undefined') {
 
-      this.props.functionsSuppliedByChild.submitAllAnswers = () => this.core.document.submitAllAnswers();
+      if (window.sessionStorage.transferToGlobal === 'undefined') {
+        //Clean up if state was not defined
+        delete window.sessionStorage.transferToGlobal;
+      } else {
+        //Transfer session state to global API state
+        let newGlobalState = JSON.parse(window.sessionStorage.transferToGlobal, serializedStateReviver);
+        this.remoteStateChanged(null, newGlobalState);
+
+        this.worksheet.globalState.doenetMLState = newGlobalState;
+        delete window.sessionStorage.transferToGlobal;
+      }
+
     }
-    // this.update({ doenetTags: this.core.doenetState, init: true });
+
+    if (typeof window.sessionStorage.transferToLocal !== 'undefined') {
+      if (window.sessionStorage.transferToLocal === 'undefined') {
+        //Clean up if state was not defined
+        delete window.sessionStorage.transferToLocal;
+      } else {
+        //Transfer session state to local API state
+        let newLocalState = JSON.parse(window.sessionStorage.transferToLocal, serializedStateReviver);
+        this.remoteStateChanged(null, newLocalState);
+
+        this.worksheet.state.doenetMLState = newLocalState;
+        delete window.sessionStorage.transferToLocal;
+      }
+
+    }
+
+
+    this.setState({ apiStateReady: true });
+
   }
 
-
-  remoteStateChanged(event,state) {
+  remoteStateChanged(event, state) {
 
     let newStateVariableValues = {};
 
     //Rehydrate for serializing when functions that are in variables
-    for(let componentName in state) {
+
+    for (let componentName in state.doenetMLState) {
       newStateVariableValues[componentName] = {};
-      for(let varName in state[componentName]) {
-        newStateVariableValues[componentName][varName] = JSON.parse(state[componentName][varName], serializedStateReviver);
+      for (let varName in state.doenetMLState[componentName]) {
+        newStateVariableValues[componentName][varName] = JSON.parse(state.doenetMLState[componentName][varName], serializedStateReviver);
       }
     }
 
-    this.core.executeUpdateStateVariables({newStateVariableValues })
+
+    this.core.executeUpdateStateVariables({ newStateVariableValues })
 
   }
 
-  localStateChanged({newStateVariableValues }) {
+  localStateChanged({ newStateVariableValues }) {
 
-    if(!this.worksheet.progress) {
-      this.worksheet.progress = 0;
-    }
-    
-    this.worksheet.progress += 0.1;
+    // if(!this.worksheet.progress) {
+    //   this.worksheet.progress = 0;
+    // }
 
-    let theState;
+    // this.worksheet.progress += 0.1;
+
 
     // // Note: uncomment these lines and change an element to reset state
     // this.worksheet.globalState = {};
     // this.worksheet.state = {};
-    
-    if(this.props.collaborate) {
-      theState = this.worksheet.globalState;
+    // console.log("CLEAR!!!");
+    // return;
+
+    let theState;
+
+
+    if (this.group) {
+      theState = this.worksheet.globalState.doenetMLState;
+
+      if (theState === undefined) {
+        theState = this.worksheet.globalState.doenetMLState = {};
+      }
     } else {
-      theState = this.worksheet.state;
+      theState = this.worksheet.state.doenetMLState;
+
+      if (theState === undefined) {
+        theState = this.worksheet.state.doenetMLState = {};
+      }
     }
 
-    for(let componentName in newStateVariableValues) {
+
+    for (let componentName in newStateVariableValues) {
       let componentState = theState[componentName];
-      if(componentState === undefined) {
+      if (componentState === undefined) {
         componentState = theState[componentName] = {};
       }
 
       //Stringify for serializing when functions that are in variables
-      for(let varName in newStateVariableValues[componentName]) {
-        componentState[varName] = JSON.stringify(newStateVariableValues[componentName][varName], serializedStateReplacer)
+      for (let varName in newStateVariableValues[componentName]) {
+        componentState[varName] = JSON.stringify(newStateVariableValues[componentName][varName], serializedStateReplacer);
       }
     }
 
@@ -197,28 +296,28 @@ class DoenetViewer extends Component {
 
 
 
-      const url = '/api/saveSerializedDocument.php';
+    const url = '/api/saveSerializedDocument.php';
 
-      const data = {
-        serializedDocument,
-        assignmentId: this.props.assignmentId,
-        attemptNumber: this.props.attemptNumber,
-        learnerUsername: this.props.learnerUsername
-      }
+    const data = {
+      serializedDocument,
+      assignmentId: this.props.assignmentId,
+      attemptNumber: this.props.attemptNumber,
+      learnerUsername: this.props.learnerUsername
+    }
 
-      // console.log("save serialized State data");
-      // console.log(data);
-
-
-      axios.post(url, data)
-        .then(resp => {
-          // console.log("Saved serialized State outline!");
-          // console.log(resp);
-          // console.log(resp.data);
+    // console.log("save serialized State data");
+    // console.log(data);
 
 
-        })
-        .catch(error => { this.setState({ error: error }) });
+    axios.post(url, data)
+      .then(resp => {
+        // console.log("Saved serialized State outline!");
+        // console.log(resp);
+        // console.log(resp.data);
+
+
+      })
+      .catch(error => { this.setState({ error: error }) });
 
   }
 
@@ -226,120 +325,120 @@ class DoenetViewer extends Component {
 
     // console.log(`-----External Function: contentId to DoenetML "${contentId}" ------`);
 
-      const url = '/open_api/contentIdsToDoenetMLs.php';
-      // const url = '/api/contentIdsToDoenetMLs.php';
-      const data = {
-        contentIds: contentIds,
-      }
- 
-      console.log("contentIdsToDoenetMLs data");
-      console.log(data);
+    const url = '/open_api/contentIdsToDoenetMLs.php';
+    // const url = '/api/contentIdsToDoenetMLs.php';
+    const data = {
+      contentIds: contentIds,
+    }
 
-      axios.post(url, data)
-        .then(resp => {
-          console.log('resp data');
-          console.log(resp.data);
+    // console.log("contentIdsToDoenetMLs data");
+    // console.log(data);
 
-          let retrievedDoenetMLs = resp.data.doenetMLs;
-          let retrievedContentIds = resp.data.retrievedContentIds;
+    axios.post(url, data)
+      .then(resp => {
+        console.log('resp data');
+        console.log(resp.data);
 
-          let doenetMLByContentId = {};
-          for(let [ind, doenetML] of retrievedDoenetMLs.entries()) {
-            doenetMLByContentId[retrievedContentIds[ind]] = doenetML;
-          }
+        let retrievedDoenetMLs = resp.data.doenetMLs;
+        let retrievedContentIds = resp.data.retrievedContentIds;
 
-          let success = true;
-          let message = ""
-          let doenetMLs = [];
-          for(let contentId of contentIds) {
-            let doenetML = doenetMLByContentId[contentId]
-            if (doenetML === undefined) {
-              message += `Can't find content with contentId ${contentId}\n`;
+        let doenetMLByContentId = {};
+        for (let [ind, doenetML] of retrievedDoenetMLs.entries()) {
+          doenetMLByContentId[retrievedContentIds[ind]] = doenetML;
+        }
+
+        let success = true;
+        let message = ""
+        let doenetMLs = [];
+        for (let contentId of contentIds) {
+          let doenetML = doenetMLByContentId[contentId]
+          if (doenetML === undefined) {
+            message += `Can't find content with contentId ${contentId}\n`;
+            success = false;
+            doenetMLs.push("");
+          } else {
+            const hash = crypto.createHash('sha256');
+            hash.update(doenetML);
+            let contentIdTest = hash.digest('hex');
+            if (contentId === contentIdTest) {
+              doenetMLs.push(doenetML);
+            } else {
+              message += `Error: checksum didn't match for contentId ${contentId}\n`;
               success = false;
               doenetMLs.push("");
-            } else {
-              const hash = crypto.createHash('sha256');
-              hash.update(doenetML);
-              let contentIdTest = hash.digest('hex');
-              if (contentId === contentIdTest) {
-                doenetMLs.push(doenetML);
-              }else {
-                message += `Error: checksum didn't match for contentId ${contentId}\n`;
-                success = false;
-                doenetMLs.push("");
-              }
             }
-
           }
 
-          callBack({ newDoenetMLs: doenetMLs, message, success });
+        }
 
-        });
-    
+        callBack({ newDoenetMLs: doenetMLs, message, success });
+
+      });
+
 
   }
 
   recordSolutionView({ itemNumber, scoredComponent, callBack }) {
-    console.log(`-----External Function: reveal solution "${itemNumber}" ------`);
-    console.log(`this.props.attemptNumber ${this.props.attemptNumber}`);
-    console.log(`this.props.assignmentId ${this.props.assignmentId}`);
-    console.log(`allowViewSolutionWithoutRoundTrip ${this.allowViewSolutionWithoutRoundTrip}`);
+    // console.log(`-----External Function: reveal solution "${itemNumber}" ------`);
+    // console.log(`this.props.attemptNumber ${this.props.attemptNumber}`);
+    // console.log(`this.props.assignmentId ${this.props.assignmentId}`);
+    // console.log(`allowViewSolutionWithoutRoundTrip ${this.allowViewSolutionWithoutRoundTrip}`);
 
     // Note: made all calls to callBack asynchronous so that have same behavior
     // regardless of what option gets triggered
 
- 
-      //Mode offline?,
-      // mode demo? 
-      // read only?
-      //in exam mode, don't allow view
+
+    //Mode offline?,
+    // mode demo? 
+    // read only?
+    //in exam mode, don't allow view
 
 
-      if (this.allowViewSolutionWithoutRoundTrip) {
-        makeAsynchronous()
+    if (this.allowViewSolutionWithoutRoundTrip) {
+      makeAsynchronous()
         .then(x =>
           callBack({ allowView: true, message: "", scoredComponent })
         )
 
-      } else {
-        //Contact database
-        if (this.props.attemptNumber === undefined ||
-          this.props.assignmentId === undefined) {
-          makeAsynchronous()
+    } else {
+      //Contact database
+      if (this.props.attemptNumber === undefined ||
+        this.props.assignmentId === undefined) {
+        makeAsynchronous()
           .then(x =>
             callBack({ allowView: false, message: "Attempt Number or AssignmentID not defined", scoredComponent })
           )
 
-        } else {
+      } else {
 
-          const url = '/api/viewedSolution.php';
-          const data = {
-            assignmentId: this.props.assignmentId,
-            attemptNumber: this.props.attemptNumber,
-            itemNumber: itemNumber,
-            learnerUsername: this.props.learnerUsername,
-          }
-          const payload = {
-            params: data
-          }
-          console.log("viewedSolution data");
-          console.log(data);
-
-          axios.get(url, payload)
-            .then(resp => {
-              console.log('resp');
-              console.log(resp);
-              callBack({ allowView: true, message: "", scoredComponent });
-
-            });
-
+        const url = '/api/viewedSolution.php';
+        const data = {
+          assignmentId: this.props.assignmentId,
+          attemptNumber: this.props.attemptNumber,
+          itemNumber: itemNumber,
+          learnerUsername: this.props.learnerUsername,
         }
+        const payload = {
+          params: data
+        }
+        console.log("viewedSolution data");
+        console.log(data);
+
+        axios.get(url, payload)
+          .then(resp => {
+            console.log('resp');
+            console.log(resp);
+            callBack({ allowView: true, message: "", scoredComponent });
+
+          });
 
       }
 
+    }
 
 
-  
+
+
 
   }
 
@@ -348,7 +447,7 @@ class DoenetViewer extends Component {
     console.log("---submitResults---");
     console.log(`itemNumber ${itemNumber}`);
     console.log(`this.props.learnerUsername ${this.props.learnerUsername}`);
-    
+
     // console.log(`documentCreditAchieved ${documentCreditAchieved}`);
     // console.log(`itemCreditAchieved ${itemCreditAchieved}`);
     // console.log(`serializedItem`);
@@ -359,60 +458,60 @@ class DoenetViewer extends Component {
       this.props.creditUpdate({ credit: documentCreditAchieved });
     }
 
-      const data = {
-        assignmentId: this.props.assignmentId,
-        itemNumber: itemNumber,
-        documentCreditAchieved: documentCreditAchieved,
-        itemCreditAchieved: itemCreditAchieved,
-        serializedItem: serializedItem,
-        attemptNumber: this.props.attemptNumber,
-        learnerUsername: this.props.learnerUsername,
-      }
+    const data = {
+      assignmentId: this.props.assignmentId,
+      itemNumber: itemNumber,
+      documentCreditAchieved: documentCreditAchieved,
+      itemCreditAchieved: itemCreditAchieved,
+      serializedItem: serializedItem,
+      attemptNumber: this.props.attemptNumber,
+      learnerUsername: this.props.learnerUsername,
+    }
 
-      console.log("data");
-      console.log(data);
-      console.log(`this.props.course ${this.props.course}`);
-      
+    // console.log("data");
+    // console.log(data);
+    // console.log(`this.props.course ${this.props.course}`);
 
-      if (this.props.course){
-        const url = '/open_api/saveSubmitResult.php';
-     
-        axios.post(url, data)
+
+    if (this.props.course) {
+      const url = '/open_api/saveSubmitResult.php';
+
+      axios.post(url, data)
         .then(resp => {
           console.log(resp.data);
-          let resultObj = {success:false};
-          if (resp.status === 200){
+          let resultObj = { success: false };
+          if (resp.status === 200) {
             resultObj.success = true;
             resultObj.viewedSolution = resp.data.viewedSolution;
           }
-          if(callBack){
+          if (callBack) {
             callBack(resultObj);
           }
         })
         .catch(
           err => {
             console.log(err);
-            
-            let resultObj = {success:false};
-            if(callBack) {
+
+            let resultObj = { success: false };
+            if (callBack) {
               callBack(resultObj);
             }
 
           }
         );
-       
-        
-      }
 
-      
 
-     
+    }
+
+
+
+
 
 
   }
 
   allAnswersSubmitted() {
-    if(this.viewerExternalFunctions.allAnswersSubmitted) {
+    if (this.viewerExternalFunctions.allAnswersSubmitted) {
       this.viewerExternalFunctions.allAnswersSubmitted();
     }
   }
@@ -461,15 +560,122 @@ class DoenetViewer extends Component {
     this.props.free.requestedVariant = undefined;
   }
 
+  goToGroup({ groupCode, transferState = false }) {
+    if (transferState) {
+      //Local State to Global State
+      window.sessionStorage.transferToGlobal = JSON.stringify(this.worksheet.state.doenetMLState, serializedStateReplacer);
+    }
+    window.location.href = URL_add_parameter(location.href, 'group', groupCode.toString().toLowerCase());
+  }
+
+  leaveGroup() {
+    //Global State to Local State
+    window.sessionStorage.transferToLocal = JSON.stringify(this.worksheet.globalState.doenetMLState, serializedStateReplacer);
+
+    window.location.href = URL_remove_parameter(location.href, 'group');
+  }
+
   render() {
-    // console.log('DoenetView Render Refreshed--')
-  
-    if(this.props.viewerFlags && this.props.viewerFlags.callSubmitAllAnswersCounter !== this.callSubmitAllAnswersCounter) {
+
+    if (!this.state.apiStateReady) { return <div>Loading..</div>; }
+
+    if (this.props.viewerFlags && this.props.viewerFlags.callSubmitAllAnswersCounter !== this.callSubmitAllAnswersCounter) {
       this.callSubmitAllAnswersCounter = this.props.viewerFlags.callSubmitAllAnswersCounter;
       this.core.document.submitAllAnswers();
     }
 
+    let collaborationWindow = null;
+    if (this.props.showCollaboration) {
+      let collaborationPane = null;
+      let activeGroupPane = null;
+
+
+      if (this.state.collaborateWindowOpen) {
+
+        if (this.state.collaborationPanelState === "join or create") {
+          collaborationPane = <React.Fragment>
+            <div style={{ margin: "10px 0px 10px 0px" }}>
+              <button onClick={() => this.setState({ collaborationPanelState: "joining group" })}>Join Group</button>
+            </div>
+            <div style={{ marginTop: "10px", marginBottom: "10px" }}><button
+              onClick={() => { this.goToGroup({ groupCode: generate('abcdefghijklmnopqrstuvwxyz', 5), transferState: true }) }}>Create Group</button></div>
+          </React.Fragment>
+        }
+        if (this.state.collaborationPanelState === "joining group") {
+          let joinGroupText = this.state.joinGroupText;
+          if (!joinGroupText) { joinGroupText = ""; }
+          let joinGroupDisabled = true;
+          if (joinGroupText.length === 5) {
+            joinGroupDisabled = false;
+          }
+          collaborationPane =
+            <div style={{ margin: "10px 0px 10px 0px" }}>
+              <input
+                onKeyDown={((e) => {
+                  if (e.key === 'Enter') {
+                    this.goToGroup({ groupCode: this.state.joinGroupText });
+                  }
+                })}
+                onChange={(e) => {
+                  this.setState({ joinGroupText: e.target.value })
+                }}
+                maxLength="5"
+                placeholder="Group Code"
+                style={{ marginLeft: "10px", marginRight: "5px", width: "120px", fontSize: "14pt", textAlign: "center" }}
+                type="text"
+                value={joinGroupText.toLowerCase()}
+              />
+              <button disabled={joinGroupDisabled} onClick={() => this.goToGroup({ groupCode: this.state.joinGroupText })}>Join</button>
+            </div>
+        }
+
+
+        if (this.state.collaborationPanelState === "group is active") {
+          collaborationPane = <React.Fragment>
+            <div style={{ margin: "10px 0px 10px 0px" }}>
+              <button onClick={this.leaveGroup}>Leave Group</button>
+            </div>
+          </React.Fragment>
+
+        }
+      }
+
+      let playerNumberPane = null;
+      if (this.state.collaborationPanelState === "group is active") {
+        let activeGroupCode = this.group;
+        if (!activeGroupCode) {
+          activeGroupCode = "";
+        }
+        activeGroupCode = activeGroupCode.toLowerCase();
+
+        activeGroupPane = <div>Group <b>{activeGroupCode}</b> </div>;
+        playerNumberPane = <div>Player {this.playerNumber}</div>;
+      }
+
+
+
+      collaborationWindow = <div style={{
+        backgroundColor: "#f5f5f5",
+        width: "150px",
+        position: "fixed",
+        right: "200px",
+        top: "0px",
+        textAlign: "center",
+
+      }}><div style={{ padding: "5px" }}
+        onClick={() => this.setState({ collaborateWindowOpen: !this.state.collaborateWindowOpen })}>
+          <div style={{ cursor: "pointer", textDecoration: "underline", fontSize: "12pt" }}>Collaborate</div>
+          {activeGroupPane}
+          {playerNumberPane}
+        </div>
+        {collaborationPane}
+
+      </div>
+    }
+
+
     return (<React.Fragment>
+      {collaborationWindow}
       <div style={{ margin: "10px" }}>
         {this.tags}
 
@@ -481,6 +687,60 @@ class DoenetViewer extends Component {
 // TODO: what's the best way to make a function asynchronous?
 function makeAsynchronous() {
   return new Promise(resolve => resolve(true));
+}
+
+function URL_remove_parameter(url, param) {
+  var hash = {};
+  var parser = document.createElement('a');
+
+  parser.href = url;
+
+  var parameters = parser.search.split(/\?|&/);
+
+  for (var i = 0; i < parameters.length; i++) {
+    if (!parameters[i])
+      continue;
+
+    var ary = parameters[i].split('=');
+    if (ary[0] == param)
+      continue;
+    hash[ary[0]] = ary[1];
+  }
+
+  var list = [];
+  Object.keys(hash).forEach(function (key) {
+    list.push(key + '=' + hash[key]);
+  });
+
+  parser.search = '?' + list.join('&');
+  return parser.href;
+}
+
+function URL_add_parameter(url, param, value) {
+  var hash = {};
+  var parser = document.createElement('a');
+
+  parser.href = url;
+
+  var parameters = parser.search.split(/\?|&/);
+
+  for (var i = 0; i < parameters.length; i++) {
+    if (!parameters[i])
+      continue;
+
+    var ary = parameters[i].split('=');
+    hash[ary[0]] = ary[1];
+  }
+
+  hash[param] = value;
+
+  var list = [];
+  Object.keys(hash).forEach(function (key) {
+    list.push(key + '=' + hash[key]);
+  });
+
+  parser.search = '?' + list.join('&');
+  return parser.href;
 }
 
 export default DoenetViewer;
