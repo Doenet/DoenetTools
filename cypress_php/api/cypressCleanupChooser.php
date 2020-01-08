@@ -37,6 +37,19 @@ for ($i = 0; $i < $number_content; $i++){
   }else {
     echo "Error: " . $sql . "<br>" . $conn->error;
   }
+
+  $sql = "
+  DELETE FROM user_content
+  WHERE branchId = '$branchId'
+  ";
+  echo $sql;
+  $result = $conn->query($sql); 
+  if ($result === TRUE) {
+    // set response code - 200 OK
+    http_response_code(200);
+  }else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+  }
 }
 
 $number_folders = count($_POST["folderSeeds"]["folderId"]);
@@ -58,6 +71,19 @@ for ($i = 0; $i < $number_folders; $i++){
 
   $sql = "
   DELETE FROM folder_content
+  WHERE folderId = '$folderId'
+  ";
+  echo $sql;
+  $result = $conn->query($sql); 
+  if ($result === TRUE) {
+    // set response code - 200 OK
+    http_response_code(200);
+  }else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+  }
+
+  $sql = "
+  DELETE FROM user_folders
   WHERE folderId = '$folderId'
   ";
   echo $sql;

@@ -33,6 +33,21 @@ for ($i = 0; $i < $number_content; $i++){
   }
 
   $sql = "
+  INSERT INTO user_content
+  (username, branchId)
+  VALUES
+  ('devuser','$branchId')
+  ";
+  echo $sql;
+  $result = $conn->query($sql); 
+  if ($result === TRUE) {
+    // set response code - 200 OK
+    http_response_code(200);
+  }else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+  }
+
+  $sql = "
   INSERT INTO content
   (doenetML,branchId,title,contentId,timestamp,draft)
   VALUES
@@ -77,6 +92,14 @@ for ($i = 0; $i < $number_folders; $i++){
     (folderId, childId, childType, timestamp)
     VALUES
     ('$parentId','$folderId' ,'folder', NOW())
+    ";
+    $result = $conn->query($sql); 
+  } else {
+    $sql = "
+    INSERT INTO user_folders
+    (username, folderId)
+    VALUES
+    ('devuser','$folderId')
     ";
     $result = $conn->query($sql); 
   }
