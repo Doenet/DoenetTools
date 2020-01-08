@@ -9,9 +9,9 @@ describe('DoenetChooser tests', function () {
   beforeEach(() => {
     cy.fixture('chooserSeed').then((seed) => {
       this.seed = seed;
-      cy.request('POST', 'api/cleanupChooser.php', this.seed).then((response) => {
+      cy.request('POST', 'api/cypressCleanupChooser.php', this.seed).then((response) => {
         cy.log(response);
-        cy.request('POST', 'api/setupChooser.php', this.seed).then((response) => {
+        cy.request('POST', 'api/cypressSetupChooser.php', this.seed).then((response) => {
           cy.log(response);
           cy.visit('/chooser')
         })
