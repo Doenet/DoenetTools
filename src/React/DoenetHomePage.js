@@ -227,7 +227,7 @@ class DoenetHomePage extends Component {
   }
   
   render() {
-    console.log(this.state);
+    // console.log(this.state);
      //We have an error so doen't show the viewer
      if (this.state.error){
 
@@ -266,17 +266,30 @@ class DoenetHomePage extends Component {
                 <div className="section-text">
                   <h1 className="section-headline">Multiuser Demonstration</h1>
                   <p>Multiple users can collaborate on any content written in Doenet.  Collaboration is started by clicking 
-                    on the "Start Collaboration" button at the top of interactive content.    </p>
-                    <p>Click below to start demo collaboration activity</p>
-                    <button disabled>Start Activity</button> (coming soon)
+                    on the "Collaborate" button at the top right of interactive content. From there you can join an existing group or create your own.    </p>
+                    <p>Click on a button below to navigate to a demo.</p>
+                    <div style={{marginBottom:"10px"}}>Basic <button onClick={()=>location.href = "/page/?contentId=6c31178a531d27b98e9db531d0090b2f7c11a9dc897adc06c10badc79739e6ba"}>Demo 1a</button> 
+                    <button disabled>Demo 2a</button> <button disabled>Demo 3a</button></div>
+                    <div>Advanced <button disabled>Demo 1b</button> <button disabled>Demo 2b</button> <button disabled>Demo 3b</button></div>
                 </div>
               </div> 
 
               <div className="shadow-color section">
                 <div className="section-text">
+                  <h1 className="section-headline">Try out DoenetML</h1>
+                  <p>DoenetML is a mark up language an author uses to write content using the semantic meaning of the content. Click the button below to visit our Guest Editor.  </p>
+                    <button onClick={()=>location.href = "/guestEditor"}>Guest Editor</button>
+                    
+                </div>
+              </div> 
+              
+             
+
+              {/* <div className="shadow-color section">
+                <div className="section-text">
                   <h1 className="section-headline">Doenet Discussions</h1>
-                  <p>Anyone is welcome to come to our discussion groups!  We usually meet the second Wednesday of every month to 
-                    discuss the progress of the Doenet project, answer questions and discuss educational technology.
+                  <p>You are welcome to join our discussion!  We usually meet the second Wednesday of every month to 
+                    discuss the progress of the Doenet project, answer questions and discuss related educational technology.
                   </p>
                   <div style={{width:"400px",}}>
                     <a href="/discussion">Next Discussion January 8th, 2020</a>
@@ -284,7 +297,7 @@ class DoenetHomePage extends Component {
                   </div>
                   
                 </div>
-              </div> 
+              </div>  */}
 
               {/* <div className="cloud-color-section">
                 <div className="Flex-container">
