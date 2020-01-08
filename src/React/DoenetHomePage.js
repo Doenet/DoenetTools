@@ -268,9 +268,12 @@ class DoenetHomePage extends Component {
                   <p>Multiple users can collaborate on any content written in Doenet.  Collaboration is started by clicking 
                     on the "Collaborate" button at the top right of interactive content. From there you can join an existing group or create your own.    </p>
                     <p>Click on a button below to navigate to a demo.</p>
-                    <div style={{marginBottom:"10px"}}>Basic <button onClick={()=>location.href = "/page/?contentId=6c31178a531d27b98e9db531d0090b2f7c11a9dc897adc06c10badc79739e6ba"}>Demo 1a</button> 
-                    <button disabled>Demo 2a</button> <button disabled>Demo 3a</button></div>
-                    <div>Advanced <button disabled>Demo 1b</button> <button disabled>Demo 2b</button> <button disabled>Demo 3b</button></div>
+                    <div style={{marginBottom:"5px"}}>Basic <button style={{margin:"3px"}} onClick={()=>location.href = "/page/?contentId=6c31178a531d27b98e9db531d0090b2f7c11a9dc897adc06c10badc79739e6ba"}>Demo 1a</button> 
+                    <button style={{margin:"3px"}} disabled>Demo 2a</button>
+                    <button  style={{margin:"3px"}} disabled>Demo 3a</button></div>
+                    <div>Advanced <button style={{margin:"3px"}} disabled>Demo 1b</button> 
+                    <button style={{margin:"3px"}} disabled>Demo 2b</button> 
+                    <button style={{margin:"3px"}} disabled>Demo 3b</button></div>
                 </div>
               </div> 
 
