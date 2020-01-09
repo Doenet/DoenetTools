@@ -191,7 +191,7 @@ export default class Mathinput extends Input {
         }
       }),
       definition: function ({ dependencyValues }) {
-        let answerAncestor;
+        let answerAncestor = null;
 
         if (dependencyValues.answerAncestor.length === 1) {
           answerAncestor = dependencyValues.answerAncestor[0];
@@ -243,8 +243,6 @@ export default class Mathinput extends Input {
 
       }),
       definition: function ({ dependencyValues }) {
-        console.log('dependency values for value has been validated')
-        console.log(dependencyValues);
 
         let valueHasBeenValidated = false;
 

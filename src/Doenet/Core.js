@@ -8,6 +8,7 @@ import me from 'math-expressions';
 import { createUniqueName } from './utils/naming';
 import * as serializeFunctions from './utils/serializedStateProcessing';
 import { gatherDescendants } from './utils/descendants';
+import crypto from 'crypto';
 
 // string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -71,10 +72,26 @@ export default class Core {
     let serializedState;
 
     if (doenetState) {
-      serializedState = doenetState;
-      this.finishCoreConstruction({ fullSerializedStates: [serializedState], finishSerializedStateProcessing: false });
+      serializedState = doenetState;k
+      let contentId ;
+      if(serializedState[0].doenetAttributes) {
+        contentId = serializedState[0].doenetAttributes.contentId;
+      }
+      if(contentId === undefined) {
+        contentId = "";
+      }
+      console.log(`contentId from doenetState: ${contentId}`)
+      this.finishCoreConstruction({
+        contentIds: [contentId],
+        fullSerializedStates: [serializedState],
+        finishSerializedStateProcessing: false
+      });
     } else {
+      const hash = crypto.createHash('sha256');
+      hash.update(doenetML);
+      let contentId = hash.digest('hex');
       this.expandDoenetMLsToFullSerializedState({
+        contentIds: [contentId],
         doenetMLs: [doenetML],
         callBack: this.finishCoreConstruction
       })
@@ -82,10 +99,13 @@ export default class Core {
   }
 
   finishCoreConstruction({
+    contentIds,
     fullSerializedStates,
     finishSerializedStateProcessing = true,
     calledAsynchronously = false
   }) {
+
+    this.contentId = contentIds[0];
 
     let serializedState = fullSerializedStates[0];
 
@@ -111,6 +131,7 @@ export default class Core {
 
 
     this.documentName = serializedState[0].doenetAttributes.componentName;
+    serializedState[0].doenetAttributes.contentId = this.contentId;
 
     this._components = {};
     this.downstreamDependencies = {};
@@ -188,7 +209,7 @@ export default class Core {
     this.parameterStack.parameters.rngClass = MersenneTwister;
   }
 
-  expandDoenetMLsToFullSerializedState({ doenetMLs, callBack }) {
+  expandDoenetMLsToFullSerializedState({ contentIds, doenetMLs, callBack }) {
 
     // TODO: check if this works for new core setup
 
@@ -235,13 +256,16 @@ export default class Core {
           }
         }
 
+        // Note: this is the callback from the enclosing expandDoenetMLsToFullSerializedState
+        // so we call it with the contentIds and serializedState from that context
         callBack({
+          contentIds,
           fullSerializedStates: serializedStates,
           calledAsynchronously: true,
         })
       }.bind(this);
 
-      let recurseToAdditionalDoenetMLs = function ({ newDoenetMLs, success, message }) {
+      let recurseToAdditionalDoenetMLs = function ({ newDoenetMLs, newContentIds, success, message }) {
 
         if (!success) {
           console.warn(message);
@@ -249,6 +273,7 @@ export default class Core {
 
         this.expandDoenetMLsToFullSerializedState({
           doenetMLs: newDoenetMLs,
+          contentIds: newContentIds,
           callBack: mergedContentIdSerializedStateIntoRef,
         });
       }.bind(this);
@@ -261,6 +286,7 @@ export default class Core {
     } else {
       // end recursion when don't find additional refs with contentIds
       callBack({
+        contentIds,
         fullSerializedStates: serializedStates,
         calledAsynchronously: false,
       });
@@ -1036,7 +1062,7 @@ export default class Core {
       return { success: false };
     }
 
-    console.log(`expanding composite ${component.componentName}`);
+    // console.log(`expanding composite ${component.componentName}`);
 
     let shadowedComposite;
 
@@ -1863,7 +1889,7 @@ export default class Core {
       let childLogicName = '_property_' + property;
       let componentType = propertySpecification.componentName ? propertySpecification.componentName : property;
       let defaultValue = propertySpecification.default;
-      if(defaultValue === undefined) {
+      if (defaultValue === undefined) {
         defaultValue = null;
       }
       // let deleteIfUndefined = defaultValue === undefined && propertySpecification.deleteIfUndefined;
@@ -5293,7 +5319,7 @@ export default class Core {
 
     // parent.gatherDescendants();
 
-    console.log("new children for " + parent.componentName);
+    // console.log("new children for " + parent.componentName);
     // this.resolveAllDependencies();
 
 
@@ -5963,7 +5989,6 @@ export default class Core {
 
         let workspace = {};
         let newStateVariableValues = {};
-        let overrides = {};
         for (let stateVariable in change.stateChanges) {
           let instruction = {
             componentName: change.component.componentName,
@@ -5982,15 +6007,9 @@ export default class Core {
             }
             Object.assign(newStateVariableValues[cName], additionalChanges.newStateVariableValues[cName]);
           }
-          for (let cName in additionalChanges.overrides) {
-            if (!overrides[cName]) {
-              overrides[cName] = {};
-            }
-            Object.assign(overrides[cName], additionalChanges.overrides[cName]);
-          }
         }
 
-        this.processNewStateVariableValues({ newStateVariableValues, overrides, componentsTouched });
+        this.processNewStateVariableValues({ newStateVariableValues, componentsTouched });
 
 
       } else if (change.changeType === "changedReplacementsToWithhold") {
@@ -6170,7 +6189,6 @@ export default class Core {
     if (updateType === "updateValue") {
       let componentsTouched = [];
       let newStateVariableValues = {};
-      let overrides = {};
       let workspace = {};
 
       for (let instruction of updateInstructions) {
@@ -6183,20 +6201,14 @@ export default class Core {
           }
           Object.assign(newStateVariableValues[cName], additionalChanges.newStateVariableValues[cName]);
         }
-        for (let cName in additionalChanges.overrides) {
-          if (!overrides[cName]) {
-            overrides[cName] = {};
-          }
-          Object.assign(overrides[cName], additionalChanges.overrides[cName]);
-        }
       }
 
       if (this.externalFunctions.localStateChanged) {
         // TODO: make this call asynchronous
-        this.externalFunctions.localStateChanged({ newStateVariableValues, overrides });
+        this.externalFunctions.localStateChanged({ newStateVariableValues, contentId: this.contentId });
       }
 
-      this.executeUpdateStateVariables({ newStateVariableValues, overrides, componentsTouched, saveSerializedState });
+      this.executeUpdateStateVariables({ newStateVariableValues, componentsTouched, saveSerializedState });
 
     }
     else if (updateType === "updateRendererOnly") {
@@ -6276,10 +6288,12 @@ export default class Core {
       if (saveSerializedStateImmediately) {
         this.externalFunctions.saveSerializedState({
           document: this.components[this.documentName],
+          contentId: this.contentId,
         })
       } else {
         this.externalFunctions.delayedSaveSerializedState({
           document: this.components[this.documentName],
+          contentId: this.contentId,
         })
       }
     }
@@ -6339,16 +6353,25 @@ export default class Core {
         }
         else {
 
-          if (comp.state[vName] === undefined) {
+          let compStateObj = comp.state[vName];
+          if (compStateObj === undefined) {
             console.warn(`can't update state variable ${vName} of component ${cName}, as it doesn't exist.`);
             continue;
           }
+          if (!compStateObj.essential) {
+            console.warn(`can't update state variable ${vName} of component ${cName}, as it is not an essential state variable.`);
+            continue;
+          }
 
-          comp.state[vName]._previousValue = comp.state[vName].value;
+          compStateObj._previousValue = compStateObj.value;
 
           // delete value before assigning new value to remove any getter
-          delete comp.state[vName].value;
-          comp.state[vName].value = newComponentStateVariables[vName];
+          delete compStateObj.value;
+          if (compStateObj.set) {
+            compStateObj.value = compStateObj.set(newComponentStateVariables[vName]);
+          } else {
+            compStateObj.value = newComponentStateVariables[vName];
+          }
           let additionalComponentsTouched = this.markUpstreamDependentsStale({
             component: comp, varName: vName
           });
@@ -6406,7 +6429,6 @@ export default class Core {
 
     let componentsTouched = [component.componentName];
     let newStateVariableValues = {};
-    let overrides = {};
 
     if (!origStateVarObj.inverseDefinition) {
       console.warn(`Cannot change state variable ${stateVariable} of ${component.componentName} as it doesn't have an inverse definition`);
@@ -6456,13 +6478,6 @@ export default class Core {
           }
         } else {
           newStateVariableValues[component.componentName][newInstruction.setStateVariable] = newInstruction.value;
-        }
-
-        if (newInstruction.temporaryOverride) {
-          if (!overrides[component.componentName]) {
-            overrides[component.componentName] = {};
-            overrides[component.componentName][newInstruction.setStateVariable] = true;
-          }
         }
 
       } else if (newInstruction.setDependency) {
@@ -6566,7 +6581,7 @@ export default class Core {
       }
     }
 
-    return { newStateVariableValues, overrides, componentsTouched };
+    return { newStateVariableValues, componentsTouched };
   }
 
   getDeferredStateVariable({ component, stateVariable, upstreamComponent, upstreamStateVariable, dependencyValues, inverseDefinition }) {

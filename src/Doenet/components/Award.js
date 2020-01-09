@@ -178,36 +178,36 @@ export default class Award extends BaseComponent {
 
     }
 
-    stateVariableDefinitions.justSubmitted = {
-      // TODO: not sure how to get this to work
-      public: true,
-      componentType: "boolean",
-      defaultValue: false,
-      returnDependencies: () => ({
-        ifChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneIf",
-          variableNames: ["justSubmitted"]
-        }
-      }),
-      definition: ({dependencyValues}) => ({
-        newValues: {
-          justSubmitted: dependencyValues.ifChild[0].stateValues.justSubmitted,
-        }
-      }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setDependency: "ifChild",
-            desiredValue: desiredStateVariableValues.justSubmitted,
-            childIndex: 0,
-            variableIndex: 0,
-          }]
-        };
-      }
+    // stateVariableDefinitions.justSubmitted = {
+    //   // TODO: not sure how to get this to work
+    //   public: true,
+    //   componentType: "boolean",
+    //   defaultValue: false,
+    //   returnDependencies: () => ({
+    //     ifChild: {
+    //       dependencyType: "childStateVariables",
+    //       childLogicName: "exactlyOneIf",
+    //       variableNames: ["justSubmitted"]
+    //     }
+    //   }),
+    //   definition: ({dependencyValues}) => ({
+    //     newValues: {
+    //       justSubmitted: dependencyValues.ifChild[0].stateValues.justSubmitted,
+    //     }
+    //   }),
+    //   inverseDefinition: function ({ desiredStateVariableValues }) {
+    //     return {
+    //       success: true,
+    //       instructions: [{
+    //         setDependency: "ifChild",
+    //         desiredValue: desiredStateVariableValues.justSubmitted,
+    //         childIndex: 0,
+    //         variableIndex: 0,
+    //       }]
+    //     };
+    //   }
 
-    }
+    // }
 
     stateVariableDefinitions.feedback = {
       public: true,

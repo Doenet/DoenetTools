@@ -240,6 +240,10 @@ class DoenetViewer extends Component {
       return;
     }
 
+    if(state.contentId !== this.core.contentId) {
+      console.warn(`contentId don't match.  Should we keep the data?`);
+    }
+    
     let newStateVariableValues = {};
 
     //Rehydrate for serializing when functions that are in variables
@@ -256,7 +260,7 @@ class DoenetViewer extends Component {
 
   }
 
-  localStateChanged({ newStateVariableValues }) {
+  localStateChanged({ newStateVariableValues, contentId }) {
 
     // if(!this.worksheet.progress) {
     //   this.worksheet.progress = 0;
@@ -273,14 +277,15 @@ class DoenetViewer extends Component {
 
     let theState;
 
-
     if (this.group) {
+      this.worksheet.globalState.contentId = contentId;
       theState = this.worksheet.globalState.doenetMLState;
 
       if (theState === undefined) {
         theState = this.worksheet.globalState.doenetMLState = {};
       }
     } else {
+      this.worksheet.state.contentId = contentId;
       theState = this.worksheet.state.doenetMLState;
 
       if (theState === undefined) {
@@ -303,20 +308,21 @@ class DoenetViewer extends Component {
 
   }
 
-  delayedSaveSerializedState({ document }) {
+  delayedSaveSerializedState({ document, contentId }) {
     //Save after three second delay save state
     if (this.saveSerializedTimer === null) {
       this.saveSerializedTimer = setTimeout(
-        () => { this.saveSerializedState({ document }); }
+        () => { this.saveSerializedState({ document, contentId }); }
         , 3000);
 
     }
   }
 
-  saveSerializedState({ document }) {
+  saveSerializedState({ document, contentId }) {
     console.log(`-----External Function: save serialized state  ------`);
     console.log(`this.props.attemptNumber ${this.props.attemptNumber}`);
     console.log(`this.props.assignmentId ${this.props.assignmentId}`);
+    console.log(`contentId: ${contentId}`);
 
     if (this.saveSerializedTimer !== null) {
       clearTimeout(this.saveSerializedTimer);
@@ -333,7 +339,7 @@ class DoenetViewer extends Component {
       serializedDocument,
       assignmentId: this.props.assignmentId,
       attemptNumber: this.props.attemptNumber,
-      learnerUsername: this.props.learnerUsername
+      learnerUsername: this.props.learnerUsername,
     }
 
     // console.log("save serialized State data");
@@ -381,28 +387,32 @@ class DoenetViewer extends Component {
         let success = true;
         let message = ""
         let doenetMLs = [];
+        let contentIds = [];
         for (let contentId of contentIds) {
           let doenetML = doenetMLByContentId[contentId]
           if (doenetML === undefined) {
             message += `Can't find content with contentId ${contentId}\n`;
             success = false;
             doenetMLs.push("");
+            contentIds.push("");
           } else {
             const hash = crypto.createHash('sha256');
             hash.update(doenetML);
             let contentIdTest = hash.digest('hex');
             if (contentId === contentIdTest) {
               doenetMLs.push(doenetML);
+              contentIds.push(contentId);
             } else {
               message += `Error: checksum didn't match for contentId ${contentId}\n`;
               success = false;
               doenetMLs.push("");
+              contentIds.push("");
             }
           }
 
         }
 
-        callBack({ newDoenetMLs: doenetMLs, message, success });
+        callBack({ newDoenetMLs: doenetMLs, newContentIds: contentIds, message, success });
 
       });
 
