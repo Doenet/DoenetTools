@@ -15,19 +15,10 @@ export default class ReactSlider extends React.Component {
     this.fontSize = "14px";
     
 
-    this.handle_label_style = {
-      display: "inline-block",
-      position: " relative",
-      top: "-20px",
-      left: "-93px",
-      width: " 200px",
-      fontSize: "12pt",
-      textAlign: "center",
-      // backgroundColor: "rgb(98, 243, 31)", 
-    }
+    
 
     this.trackClick = this.trackClick.bind(this);
-    this.createTicksForRendering = this.createTicksForRendering.bind(this);
+    // this.createTicksForRendering = this.createTicksForRendering.bind(this);
     this.updateValue = this.updateValue.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.mouseButtonDownOnHandle = this.mouseButtonDownOnHandle.bind(this);
@@ -124,8 +115,8 @@ export default class ReactSlider extends React.Component {
       return;
     }
 
-    this.createTicksForRendering();
-    this.createMarkersForRendering();
+    // this.createTicksForRendering();
+    // this.createMarkersForRendering();
   }
 
   get_tex_size(txt, font) {
@@ -136,82 +127,82 @@ export default class ReactSlider extends React.Component {
     return tsize;
   }
 
-  createTicksForRendering() {
-    this.ticks = [];
+  // createTicksForRendering() {
+  //   this.ticks = [];
 
-    for (let tickPixel of this.tickPixelValues) {
+  //   for (let tickPixel of this.tickPixelValues) {
 
-      let svgstyle = {
-        position: 'relative',
-        left: tickPixel + 'px',
-        width: this.tickWidth + "px",
-        height: "20px",
-        top: "14px",
-        zIndex: 1,
-        shapeRendering: "crispEdges",
-      };
+  //     let svgstyle = {
+  //       position: 'relative',
+  //       left: tickPixel + 'px',
+  //       width: this.tickWidth + "px",
+  //       height: "20px",
+  //       top: "14px",
+  //       zIndex: 1,
+  //       shapeRendering: "crispEdges",
+  //     };
 
-      let linestyle = {
-        stroke: "rgb(0,0,0)",
-        strokeWidth: 2,
-      }
-      if (this.props.disabled) {
-        linestyle.stroke = "rgb(100,100,100)";
-      }
-      let key = this.props._key + tickPixel;
-      let newTick = <svg key={key} style={svgstyle}>
-        <line style={linestyle} x1="0" y1="0" x2="0" y2="20" />
-      </svg>
-      this.ticks.push(newTick);
-    }
-  }
+  //     let linestyle = {
+  //       stroke: "rgb(0,0,0)",
+  //       strokeWidth: 2,
+  //     }
+  //     if (this.props.disabled) {
+  //       linestyle.stroke = "rgb(100,100,100)";
+  //     }
+  //     let key = this.props._key + tickPixel;
+  //     let newTick = <svg key={key} style={svgstyle}>
+  //       <line style={linestyle} x1="0" y1="0" x2="0" y2="20" />
+  //     </svg>
+  //     this.ticks.push(newTick);
+  //   }
+  // }
 
-  createMarkersForRendering() {
-    // console.log("valueOfMarkersAtTicks");
-    // console.log(this.valueOfMarkersAtTicks);
-    // console.log("this.tickPixelValues");
-    // console.log(this.tickPixelValues);
+  // createMarkersForRendering() {
+  //   // console.log("valueOfMarkersAtTicks");
+  //   // console.log(this.valueOfMarkersAtTicks);
+  //   // console.log("this.tickPixelValues");
+  //   // console.log(this.tickPixelValues);
 
-    this.markerWidthOffset = 0;
-    this.markers = [];
-    let previousMarkerRightPixel = Number.NEGATIVE_INFINITY;
-    const font = this.fontSize + " " + this.fontFamily;
+  //   this.markerWidthOffset = 0;
+  //   this.markers = [];
+  //   let previousMarkerRightPixel = Number.NEGATIVE_INFINITY;
+  //   const font = this.fontSize + " " + this.fontFamily;
 
-    // for (let marker of this.props.markers){
-    for (let [ind, markerText] of this.valueOfMarkersAtTicks.entries()) {
-      // console.log(ind+'>'+markerText);
-      let tsize = this.get_tex_size(markerText, font);
-      let halfWidth = Math.round(tsize.width / 2);
-      let leftPixelValue = this.tickPixelValues[ind] - halfWidth + this.markerWidthOffset;
-      let rightPixelValue = leftPixelValue + tsize.width;
-      //  console.log(leftPixelValue +'|'+this.tickPixelValues[ind]+'|'+rightPixelValue);
-      if (leftPixelValue < (previousMarkerRightPixel + 4)) { continue; }
+  //   // for (let marker of this.props.markers){
+  //   for (let [ind, markerText] of this.valueOfMarkersAtTicks.entries()) {
+  //     // console.log(ind+'>'+markerText);
+  //     let tsize = this.get_tex_size(markerText, font);
+  //     let halfWidth = Math.round(tsize.width / 2);
+  //     let leftPixelValue = this.tickPixelValues[ind] - halfWidth + this.markerWidthOffset;
+  //     let rightPixelValue = leftPixelValue + tsize.width;
+  //     //  console.log(leftPixelValue +'|'+this.tickPixelValues[ind]+'|'+rightPixelValue);
+  //     if (leftPixelValue < (previousMarkerRightPixel + 4)) { continue; }
 
-      previousMarkerRightPixel = rightPixelValue;
+  //     previousMarkerRightPixel = rightPixelValue;
 
-      let key = key + 'marker' + this.tickPixelValues[ind];
+  //     let key = key + 'marker' + this.tickPixelValues[ind];
 
-      let markerStyle = {
-        left: leftPixelValue + 'px',
-        top: "8px",
-        position: "relative",
-        zIndex: "1",
-        fontFamily: this.fontFamily,
-        fontSize: this.fontSize,
-        height: "16px",
-        width: tsize.width + "px",
-        textAlign: "center",
-        // border: "1px solid black",
-      };
-      if (this.props.disabled) {
-        markerStyle.color = "rgb(100,100,100)";
-      }
-      let newMarker = <span key={key} style={markerStyle} >{markerText}</span>
-      this.markers.push(newMarker);
-      // this.markerWidthOffset = this.markerWidthOffset - tsize.width/2 - 1;
-      this.markerWidthOffset = this.markerWidthOffset - tsize.width + 2;
-    }
-  }
+  //     let markerStyle = {
+  //       left: leftPixelValue + 'px',
+  //       top: "8px",
+  //       position: "relative",
+  //       zIndex: "1",
+  //       fontFamily: this.fontFamily,
+  //       fontSize: this.fontSize,
+  //       height: "16px",
+  //       width: tsize.width + "px",
+  //       textAlign: "center",
+  //       // border: "1px solid black",
+  //     };
+  //     if (this.props.disabled) {
+  //       markerStyle.color = "rgb(100,100,100)";
+  //     }
+  //     let newMarker = <span key={key} style={markerStyle} >{markerText}</span>
+  //     this.markers.push(newMarker);
+  //     // this.markerWidthOffset = this.markerWidthOffset - tsize.width/2 - 1;
+  //     this.markerWidthOffset = this.markerWidthOffset - tsize.width + 2;
+  //   }
+  // }
 
   // for (let ind in this.tickPixelValues){
   //   let item = this.props.items[ind];
@@ -432,7 +423,7 @@ export default class ReactSlider extends React.Component {
       opacity: 0.7,
       zIndex: 2,
       // cursor: "pointer",
-      // backgroundColor: 'grey',
+      // backgroundColor: 'yellow',
       // left: this.x + this.label_width +"px",
       left: this.label_width + "px",
     }
@@ -454,12 +445,13 @@ export default class ReactSlider extends React.Component {
       width: this.trackWidth + 'px',
       left: '4px',
       position: "relative",
-      height: "6px",
-      background: "rgb(84, 155, 255)",
+      height: "5px",
+      background: "rgb(0, 110, 255)",
       // background: " rgb(96, 146, 255)",
       borderRadius: "6px",
-      marginTop: "-2px",
-      boxShadow: "inset 0 0 0 1px rgba(0, 0, 0, 0.2)",
+      marginTop: "26px",
+      // marginTop: "-2px", //with ticks
+      // boxShadow: "inset 0 0 0 1px rgba(0, 0, 0, 0.2)",
       zIndex: "0",
     }
 
@@ -478,7 +470,7 @@ export default class ReactSlider extends React.Component {
       MozUserSelect: "none",
       MsUserSelect: "none",
       UserSelect: "none",
-      border: "3px solid rgb(84, 155, 255)",
+      border: "4px solid rgb(0, 110, 255)",
       // border: "1px solid #bcbcbc",
       height: "20px",
       width: "20px",
@@ -491,17 +483,24 @@ export default class ReactSlider extends React.Component {
       position: "absolute",
       zIndex: "3",
       // transition: "transform .1s ease", //makes it bounce Firefox bug?
-      transform: `translate(${currentHandlePixel}px, -3px)`,
+      transform: `translate(${currentHandlePixel}px, 2px)`,
     }
 
     if (this.props.disabled){
       handle_style.background = "rgb(160, 160, 160)";
       handle_style.border = "3px solid rgb(160, 160, 160)";
+      handle_style.cursor = "";
     }
 
-
-    if (this.props.disabled) {
-      handle_style.cursor = "";
+    let handle_label_style = {
+      display: "inline-block",
+      position: " relative",
+      top: "-24px",
+      left: "-93px",
+      width: " 200px",
+      fontSize: "12pt",
+      textAlign: "center",
+      // backgroundColor: "rgb(98, 243, 31)", 
     }
 
     let handle = (
@@ -509,7 +508,7 @@ export default class ReactSlider extends React.Component {
       onMouseDown={this.mouseButtonDownOnHandle}
       style={handle_style} 
       data-cy={`${_key}slider-handle`}>
-        <span style={this.handle_label_style}>
+        <span style={handle_label_style}>
           {handleText}
         </span>
       </span>);
@@ -529,9 +528,7 @@ export default class ReactSlider extends React.Component {
         {labelSpan}
         <span style={track_container_style} data-cy={`${_key}slider-track`} onClick={(e) => this.trackClick(e, _key)}>
           {handle}
-          {this.ticks}
           <div style={track_style}></div>
-          {this.markers}
         </span>
         {showControls}
       </div>);
