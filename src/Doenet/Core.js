@@ -3247,6 +3247,9 @@ export default class Core {
       else if (dep.dependencyType == "doenetAttribute") {
         newDep.attributeName = dep.attributeName;
       }
+      else if (dep.dependencyType === "flag") {
+        newDep.flagName = dep.flagName;
+      }
       else if (dep.dependencyType === "value") {
         newDep.value = dep.value;
       }
@@ -3890,6 +3893,9 @@ export default class Core {
 
       else if (dep.dependencyType === "doenetAttribute") {
         value = component.doenetAttributes[dep.attributeName];
+      }
+      else if (dep.dependencyType === "flag") {
+        value = this.flags[dep.flagName];
       }
       else if (dep.dependencyType === "value") {
         value = dep.value;

@@ -284,20 +284,39 @@ export default class Slider extends BaseComponent {
       }
     }
 
+    stateVariableDefinitions.disabled = {
+      returnDependencies: () => ({
+        collaborateGroups: {
+          dependencyType: "stateVariable",
+          variableName: "collaborateGroups"
+        },
+        collaboration: {
+          dependencyType: "flag",
+          flagName: "collaboration"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          disabled: !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
+        }
+      })
+    }
+
     return stateVariableDefinitions;
   }
 
 
   changeValue({ value }) {
-    this.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
-        componentName: this.componentName,
-        stateVariable: "value",
-        value
-      }]
-    });
-
+    if (!this.stateValues.disabled) {
+      this.requestUpdate({
+        updateType: "updateValue",
+        updateInstructions: [{
+          componentName: this.componentName,
+          stateVariable: "value",
+          value
+        }]
+      });
+    }
   }
 
   initializeRenderer({ }) {
@@ -308,11 +327,6 @@ export default class Slider extends BaseComponent {
 
     const actions = {
       changeValue: this.changeValue,
-    }
-
-    let disabled = false;
-    if(this.stateValues.collaborateGroups) {
-      disabled = !this.stateValues.collaborateGroups.matchGroup(this.flags.collaboration);
     }
 
     this.renderer = new this.availableRenderers.slider({
@@ -328,15 +342,11 @@ export default class Slider extends BaseComponent {
       label: this.stateValues.label,
       showControls: this.stateValues.showControls,
       showTicks: this.stateValues.showTicks,
-      disabled,
+      disabled: this.stateValues.disabled,
     });
   }
 
   updateRenderer() {
-    let disabled = false;
-    if(this.stateValues.collaborateGroups) {
-      disabled = !this.stateValues.collaborateGroups.matchGroup(this.flags.collaboration);
-    }
 
     this.renderer.updateSlider({
       index: this.stateValues.index,
@@ -349,7 +359,7 @@ export default class Slider extends BaseComponent {
       label: this.stateValues.label,
       showControls: this.stateValues.showControls,
       showTicks: this.stateValues.showTicks,
-      disabled,
+      disabled: this.stateValues.disabled,
     })
 
   }
