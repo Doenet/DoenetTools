@@ -54,17 +54,13 @@ class DoenetViewer extends Component {
     //Integration with Doenet Library
     this.worksheet = new window.doenet.Worksheet();
 
-    this.receivedReadySignal = false;
-    this.worksheet.addEventListener('ready', this.continueConstruction);
 
     let collaborationPanelState = "join or create";
     if (this.group) {
       collaborationPanelState = "group is active";
-      this.receivedGlobalStateSetSignal = false;
-      this.worksheet.addEventListener('globalState', this.remoteStateChanged);
+      this.worksheet.addEventListener('globalState', this.continueConstruction);
     } else {
-      this.receivedStateSetSignal = false;
-      this.worksheet.addEventListener('state', this.remoteStateChanged);
+      this.worksheet.addEventListener('state', this.continueConstruction);
     }
 
     this.state = {
@@ -82,15 +78,15 @@ class DoenetViewer extends Component {
 
   }
 
-  continueConstruction() {
+  continueConstruction(event, state) {
 
-    this.receivedReadySignal = true;
 
+
+    if(this.core) {
+      return;
+    }
 
     if (this.group) {
-      if (!this.receivedGlobalStateSetSignal) {
-        return;
-      }
 
       if (!this.worksheet.globalState.users) {
         this.worksheet.globalState.users = [];
@@ -106,10 +102,6 @@ class DoenetViewer extends Component {
       // let numberOfPlayers = this.worksheet.globalState.users.length;
       console.log(`Your userid ${this.worksheet.userId}`);
       console.log(this.worksheet.globalState.users);
-    } else {
-      if (!this.receivedStateSetSignal) {
-        return;
-      }
     }
 
 
@@ -179,8 +171,10 @@ class DoenetViewer extends Component {
     });
 
     if (this.group) {
+      this.worksheet.addEventListener('globalState', this.remoteStateChanged);
       this.remoteStateChanged(null, this.worksheet.globalState)
     } else {
+      this.worksheet.addEventListener('state', this.remoteStateChanged);
       this.remoteStateChanged(null, this.worksheet.state);
     }
 
