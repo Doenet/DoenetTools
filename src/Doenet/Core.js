@@ -5649,7 +5649,7 @@ export default class Core {
     // TODO: this function is only partially converted to the new system
 
 
-    console.log("upstream composites " + component.componentName);
+    // console.log("upstream composites " + component.componentName);
 
     let deletedComponents = {};
     let addedComponents = {};
@@ -6768,14 +6768,14 @@ function validatePropertyValue({ value, propertySpecification, property }) {
     value = propertySpecification.valueTransformations[value];
   }
 
+  if (propertySpecification.toLowerCase) {
+    value = value.toLowerCase();
+  }
+
   if (propertySpecification.validValues) {
     if (!propertySpecification.validValues.has(value)) {
       throw Error(`Invalid value ${value} for property ${property}`)
     }
-  }
-
-  if (propertySpecification.toLowerCase) {
-    value = value.toLowerCase();
   }
 
   return value;
