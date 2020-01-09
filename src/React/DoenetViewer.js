@@ -9,7 +9,7 @@ import generate from 'nanoid/generate';
 class DoenetViewer extends Component {
   constructor(props) {
     super(props);
-    this.update = this.update.bind(this);a
+    this.update = this.update.bind(this);
     this.submitResults = this.submitResults.bind(this);
 
     this.saveSerializedTimer = null;
@@ -50,18 +50,22 @@ class DoenetViewer extends Component {
     this.leaveGroup = this.leaveGroup.bind(this);
     this.continueConstruction = this.continueConstruction.bind(this);
 
+
     //Integration with Doenet Library
     this.worksheet = new window.doenet.Worksheet();
-    // this.worksheet.addEventListener('ready', this.continueConstruction);
-    setTimeout(this.continueConstruction, 1000);
 
+    this.receivedReadySignal = false;
+    this.worksheet.addEventListener('ready', this.continueConstruction);
 
     let collaborationPanelState = "join or create";
     if (this.group) {
       collaborationPanelState = "group is active";
+      this.receivedGlobalStateSetSignal = false;
+      this.worksheet.addEventListener('globalState', this.remoteStateChanged);
+    } else {
+      this.receivedStateSetSignal = false;
+      this.worksheet.addEventListener('state', this.remoteStateChanged);
     }
-
-    let test = true;
 
     this.state = {
       apiStateReady: false,
@@ -80,22 +84,33 @@ class DoenetViewer extends Component {
 
   continueConstruction() {
 
+    this.receivedReadySignal = true;
 
-    if (!this.worksheet.globalState.users) {
-      this.worksheet.globalState.users = [];
-    }
 
-    let index = this.worksheet.globalState.users.indexOf(this.worksheet.userId);
-    if (index === -1) {
-      this.worksheet.globalState.users.push(this.worksheet.userId);
-      this.playerNumber = this.worksheet.globalState.users.length;
+    if (this.group) {
+      if (!this.receivedGlobalStateSetSignal) {
+        return;
+      }
+
+      if (!this.worksheet.globalState.users) {
+        this.worksheet.globalState.users = [];
+      }
+
+      let index = this.worksheet.globalState.users.indexOf(this.worksheet.userId);
+      if (index === -1) {
+        this.worksheet.globalState.users.push(this.worksheet.userId);
+        this.playerNumber = this.worksheet.globalState.users.length;
+      } else {
+        this.playerNumber = index + 1;
+      }
+      // let numberOfPlayers = this.worksheet.globalState.users.length;
+      console.log(`Your userid ${this.worksheet.userId}`);
+      console.log(this.worksheet.globalState.users);
     } else {
-      this.playerNumber = index + 1;
+      if (!this.receivedStateSetSignal) {
+        return;
+      }
     }
-    // let numberOfPlayers = this.worksheet.globalState.users.length;
-    console.log(`Your userid ${this.worksheet.userId}`);
-    console.log(this.worksheet.globalState.users);
-
 
 
     //Modes Listed:
@@ -120,7 +135,7 @@ class DoenetViewer extends Component {
     this.flags.showCorrectness = true;
     this.flags.solutionType = "button";
 
-    if (this.groups) {
+    if (this.group) {
       this.flags.collaboration = { numberOfGroups: 3, groupNumber: this.playerNumber }
     }
 
@@ -164,9 +179,9 @@ class DoenetViewer extends Component {
     });
 
     if (this.group) {
-      this.worksheet.addEventListener('globalState', this.remoteStateChanged);
+      this.remoteStateChanged(null, this.worksheet.globalState)
     } else {
-      this.worksheet.addEventListener('state', this.remoteStateChanged);
+      this.remoteStateChanged(null, this.worksheet.state);
     }
 
     //Transfer state
@@ -208,6 +223,22 @@ class DoenetViewer extends Component {
   }
 
   remoteStateChanged(event, state) {
+    console.log('remote state changed')
+    console.log(state);
+
+
+    if (this.group) {
+      this.receivedGlobalStateSetSignal = true;
+    } else {
+      this.receivedStateSetSignal = true;
+    }
+
+    if (!this.core) {
+      if (this.receivedReadySignal) {
+        this.continueConstruction();
+      }
+      return;
+    }
 
     let newStateVariableValues = {};
 
