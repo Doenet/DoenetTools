@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import axios from 'axios';
 axios.defaults.withCredentials = true;
 import crypto from 'crypto';
@@ -166,7 +166,7 @@ class DoenetChooser extends Component {
         toolbarTitle = this.courseInfo[this.state.selectedCourse].courseCode + ' - '
         + this.courseInfo[this.state.selectedCourse].courseName;
       }  else if (this.state.selectedDrive === "Global") {
-        toolbarTitle = "Search Globally"
+        toolbarTitle = <FilterForm/>
       }
 
     } else if (this.state.activeSection === "add_course") {
@@ -1192,36 +1192,77 @@ class AccordionSection extends Component {
   }
 }
 
-class FilterForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      input: ""
-    };
+function FilterForm () {
 
-    this.addRole = this.addRole.bind(this);
-    this.handleChange = this.handleChange.bind(this);
+  let filterTypes = ["Folder name", "Content name", "Author", "Creation date"];
+
+  let allowedOperators = {
+    "Folder name" : ["IS LIKE", "IS NOT LIKE", "IS", "IS NOT"],
+    "Content name" : ["IS LIKE", "IS NOT LIKE", "IS", "IS NOT"],
+    "Author" : ["IS", "IS NOT"],
+    "Creation date" : ["ON", "<", "<=", ">", ">="]
+  }
+  
+  const [filters, setFilters] = useState([{ type: "Folder name", operator: "IS LIKE", value: null}]);
+
+  function handleChange(i, event, field) {
+    const values = [...filters];
+    console.log(field);
+    console.log(event);
+    if (field == "type") {
+      values[i].type = event.target.value;
+    } else if (field == "operator") {
+      values[i].operator = event.target.value;
+    } else {
+      values[i].value = event.target.value;
+    }
+    
+    setFilters(values);
   }
 
-  addRole(event) {
-    this.props.addRole(this.state.input);
-    this.setState({ input: ""});
-    event.preventDefault();
-  };
-
-  handleChange(event) {
-    this.setState({ input: event.target.value });
+  function handleAdd() {
+    const values = [...filters];
+    values.push({ type: "Folder name", operator: "IS LIKE", value: null});
+    setFilters(values);
   }
 
-  render() {
-    return(
-      <div className="newCourseFormGroup-4" style={{"display":"flex"}}>
-        <input className="newCourseFormInput" type="text" value={this.state.input} onChange={this.handleChange}
-        type="text" placeholder="Admin"/>
-        <button type="submit" style={{"whiteSpace":"nowrap"}} onClick={this.addRole}>Add Role</button>
-      </div>
-    )
+  function handleRemove(i) {
+    const values = [...filters];
+    values.splice(i, 1);
+    setFilters(values);
   }
+
+  return (
+    <div className="App">
+      <button type="button" onClick={() => handleAdd()}> + </button>
+
+      {filters.map((filter, idx) => {
+        return (
+          <div key={`${filter}-${idx}`}>
+            <select onChange={e => handleChange(idx, e, "type")} value={filter.type}>
+              {filterTypes.map(filterType => {
+                return <option key={"filterType" + Math.random() * 50} value={filterType}>{filterType}</option>
+              })}
+            </select>
+            <select onChange={e => handleChange(idx, e, "operator")} value={allowedOperators[filter.type][0]}>
+              {allowedOperators[filter.type].map(operator => {
+                return <option key={"filterType" + Math.random() * 50} value={operator}>{operator}</option>
+              })}
+            </select>
+            <input
+              type="text"
+              placeholder="Enter text"
+              value={filter.value || ""}
+              onChange={e => handleChange(idx, e, "value")}
+            />
+            <button type="button" onClick={() => handleRemove(idx)}>
+              X
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 
