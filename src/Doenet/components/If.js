@@ -347,7 +347,7 @@ function buildParsedExpression({ dependencyValues, componentInfoObjects }) {
     }
   }
 
-  let parsedExpression = undefined;
+  let parsedExpression = null;
 
   try {
     parsedExpression = me.fromAst(textToAstUnsplit.convert(inputString));

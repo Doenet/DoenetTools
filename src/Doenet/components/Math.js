@@ -333,8 +333,8 @@ export default class MathComponent extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        if (dependencyValues.expressionWithCodes === undefined) {
-          return { newValues: { mathChildrenByArrayComponent: undefined } };
+        if (dependencyValues.expressionWithCodes === null) {
+          return { newValues: { mathChildrenByArrayComponent: null } };
         }
         let expressionWithCodesTree = dependencyValues.expressionWithCodes.tree;
         let nMathChildren = dependencyValues.mathChildren.length;
@@ -343,7 +343,7 @@ export default class MathComponent extends InlineComponent {
           !Array.isArray(expressionWithCodesTree) ||
           !["tuple", "vector"].includes(expressionWithCodesTree[0])
         ) {
-          return { newValues: { mathChildrenByArrayComponent: undefined } };
+          return { newValues: { mathChildrenByArrayComponent: null } };
         }
 
         let mathChildrenByArrayComponent = {};
@@ -446,7 +446,7 @@ export default class MathComponent extends InlineComponent {
 
 
 export function convertValueToMathExpression(value) {
-  if (value === undefined) {
+  if (value === undefined || value === null) {
     return me.fromAst('\uFF3F');  // long underscore
   } else if (value instanceof me.class) {
     return value;
@@ -493,10 +493,10 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
   }
 
   // if don't have any string or math children,
-  // set expressionWithCodes to be undefined,
+  // set expressionWithCodes to be null,
   // which will indicate that value should use its essential or default value
   if (dependencyValues.stringMathChildren.length === 0) {
-    return { newValues: { expressionWithCodes: undefined } }
+    return { newValues: { expressionWithCodes: null } }
   }
 
   let inputString = "";
@@ -525,7 +525,7 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
     }
   }
 
-  let expressionWithCodes = undefined;
+  let expressionWithCodes = null;
 
   if (inputString === "") {
     expressionWithCodes = me.fromAst('\uFF3F'); // long underscore
@@ -554,8 +554,8 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
 function calculateMathValue({ dependencyValues } = {}) {
 
-  // if expressionWithCodes is undefined, there were no string or math children
-  if (dependencyValues.expressionWithCodes === undefined) {
+  // if expressionWithCodes is null, there were no string or math children
+  if (dependencyValues.expressionWithCodes === null) {
     return {
       useEssentialOrDefaultValue: {
         unnormalizedValue: { variablesToCheck: ["value", "unnormalizedValue"] }
@@ -636,11 +636,11 @@ function determineCanBeModified({ dependencyValues }) {
     return {
       newValues: {
         canBeModified: false,
-        constantChildIndices: undefined,
-        codeForExpression: undefined,
-        inverseMaps: undefined,
-        template: undefined,
-        mathChildrenMapped: undefined,
+        constantChildIndices: null,
+        codeForExpression: null,
+        inverseMaps: null,
+        template: null,
+        mathChildrenMapped: null,
       }
     };
   }
@@ -651,11 +651,11 @@ function determineCanBeModified({ dependencyValues }) {
     return {
       newValues: {
         canBeModified: true,
-        constantChildIndices: undefined,
-        codeForExpression: undefined,
-        inverseMaps: undefined,
-        template: undefined,
-        mathChildrenMapped: undefined,
+        constantChildIndices: null,
+        codeForExpression: null,
+        inverseMaps: null,
+        template: null,
+        mathChildrenMapped: null,
       }
     };
   }
@@ -729,11 +729,11 @@ function determineCanBeModified({ dependencyValues }) {
   return {
     newValues: {
       canBeModified: false,
-      constantChildIndices: undefined,
-      codeForExpression: undefined,
-      inverseMaps: undefined,
-      template: undefined,
-      mathChildrenMapped: undefined,
+      constantChildIndices: null,
+      codeForExpression: null,
+      inverseMaps: null,
+      template: null,
+      mathChildrenMapped: null,
     }
   }
 }
@@ -900,7 +900,7 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
       let notAffected = [];
       let foundNotAffected = false;
       for (let [ind, value] of desiredExpression.tree.entries()) {
-        if (value === undefined) {
+        if (value === null) {
           foundNotAffected = true;
           notAffected.push(ind);
         } else {
@@ -1106,10 +1106,10 @@ function finishInvertMathForStringChildren({ dependencyValues, stateValues }) {
         });
 
       } else {
-        if (stringCodes.prevCode !== undefined) {
+        if (stringCodes.prevCode !== null) {
           thisString = thisString.split(stringCodes.prevCode)[1];
         }
-        if (stringCodes.nextCode !== undefined) {
+        if (stringCodes.nextCode !== null) {
           thisString = thisString.split(stringCodes.nextCode)[0];
         }
         instructions.push({

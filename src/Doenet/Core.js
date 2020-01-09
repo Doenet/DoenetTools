@@ -1863,6 +1863,9 @@ export default class Core {
       let childLogicName = '_property_' + property;
       let componentType = propertySpecification.componentName ? propertySpecification.componentName : property;
       let defaultValue = propertySpecification.default;
+      if(defaultValue === undefined) {
+        defaultValue = null;
+      }
       // let deleteIfUndefined = defaultValue === undefined && propertySpecification.deleteIfUndefined;
       let propertyClass = this.allComponentClasses[property.toLowerCase()];
       let stateVariableForPropertyValue = propertyClass.stateVariableForPropertyValue;
@@ -3875,7 +3878,7 @@ export default class Core {
         if (component.potentialEssentialState) {
           value = component.potentialEssentialState[dep.variableName];
         } else {
-          value = undefined;
+          value = null;
         }
       }
       else {

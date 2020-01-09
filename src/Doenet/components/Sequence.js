@@ -11,7 +11,7 @@ export default class Sequence extends CompositeComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.type = { default: undefined, propagateToDescendants: true };
+    properties.type = { default: null, propagateToDescendants: true };
     return properties;
   }
 
@@ -30,7 +30,7 @@ export default class Sequence extends CompositeComponent {
 
       let newType = dependencyValues.type;
 
-      if (newType === undefined) {
+      if (newType === null) {
         if (/^[a-zA-Z]+$/.test(stringPieces[0])) {
           newType = "letters";
         } else if (Number.isFinite(Number(stringPieces[0]))) {
@@ -175,14 +175,14 @@ export default class Sequence extends CompositeComponent {
           variableNames: ["value", "selectedType"],
         },
       }),
-      defaultValue: undefined,
+      defaultValue: null,
       definition: function ({ dependencyValues }) {
         if (dependencyValues.fromChild.length === 0) {
           return {
             useEssentialOrDefaultValue: {
               specifiedFrom: { variablesToCheck: ["from", "specifiedFrom"] },
             },
-            newValues: { typeOfFrom: undefined }
+            newValues: { typeOfFrom: null }
           }
         }
         return {
@@ -204,14 +204,14 @@ export default class Sequence extends CompositeComponent {
           variableNames: ["value", "selectedType"],
         },
       }),
-      defaultValue: undefined,
+      defaultValue: null,
       definition: function ({ dependencyValues }) {
         if (dependencyValues.toChild.length === 0) {
           return {
             useEssentialOrDefaultValue: {
               specifiedTo: { variablesToCheck: ["to", "specifiedTo"] },
             },
-            newValues: { typeOfTo: undefined }
+            newValues: { typeOfTo: null }
           }
         }
         return {
@@ -240,13 +240,13 @@ export default class Sequence extends CompositeComponent {
 
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.type !== undefined) {
+        if (dependencyValues.type !== null) {
           return { newValues: { selectedType: dependencyValues.type } };
         }
-        if (dependencyValues.typeOfFrom !== undefined) {
+        if (dependencyValues.typeOfFrom !== null) {
           return { newValues: { selectedType: dependencyValues.typeOfFrom } };
         }
-        if (dependencyValues.typeOfTo !== undefined) {
+        if (dependencyValues.typeOfTo !== null) {
           return { newValues: { selectedType: dependencyValues.typeOfTo } };
         }
 
@@ -263,7 +263,7 @@ export default class Sequence extends CompositeComponent {
           variableNames: ["value"],
         },
       }),
-      defaultValue: undefined,
+      defaultValue: null,
       definition: function ({ dependencyValues }) {
         if (dependencyValues.countChild.length === 0) {
           return {
@@ -289,7 +289,7 @@ export default class Sequence extends CompositeComponent {
           variableName: "selectedType",
         },
       }),
-      defaultValue: undefined,
+      defaultValue: null,
       definition: function ({ dependencyValues }) {
         if (dependencyValues.stepChild.length === 0) {
           return {
@@ -349,11 +349,11 @@ export default class Sequence extends CompositeComponent {
 
         // base whether lowercase or upper case on from, if it exists, else to
         let lowercase = true;
-        if (dependencyValues.specifiedFrom !== undefined) {
+        if (dependencyValues.specifiedFrom !== null) {
           if (capitalRegex.test(dependencyValues.specifiedFrom)) {
             lowercase = false;
           }
-        } else if (dependencyValues.specifiedTo !== undefined) {
+        } else if (dependencyValues.specifiedTo !== null) {
           if (capitalRegex.test(dependencyValues.specifiedTo)) {
             lowercase = false;
           }
@@ -387,14 +387,14 @@ export default class Sequence extends CompositeComponent {
 
         let validSequence = true;
 
-        if (dependencyValues.specifiedCount !== undefined) {
+        if (dependencyValues.specifiedCount !== null) {
           if (!Number.isInteger(dependencyValues.specifiedCount) || dependencyValues.specifiedCount < 0) {
             console.log("Invalid count of sequence.  Must be a non-negative integer.")
             validSequence = false;
           }
         }
 
-        if (dependencyValues.specifiedStep !== undefined) {
+        if (dependencyValues.specifiedStep !== null) {
           // step must be number if not math
           if (dependencyValues.selectedType !== "math" && !Number.isFinite(dependencyValues.specifiedStep)) {
             if (!(dependencyValues.specifiedStep instanceof me.class && Number.isFinite(dependencyValues.specifiedStep.evaluate_to_constant()))) {
@@ -454,17 +454,17 @@ export default class Sequence extends CompositeComponent {
 
         if (dependencyValues.selectedType === "math") {
           // make sure to and from are math expressions
-          if (to !== undefined) {
+          if (to !== null) {
             if (!(to instanceof me.class)) {
               to = me.fromAst(to);
             }
           }
-          if (from !== undefined) {
+          if (from !== null) {
             if (!(from instanceof me.class)) {
               from = me.fromAst(from);
             }
           }
-          if (step !== undefined) {
+          if (step !== null) {
             if (!(step instanceof me.class)) {
               step = me.fromAst(step);
             }
@@ -472,7 +472,7 @@ export default class Sequence extends CompositeComponent {
         } else {
 
           // if selectedType is not math, convert step to a number
-          if (step !== undefined) {
+          if (step !== null) {
             if (step instanceof me.class) {
               step = step.evaluate_to_constant();
             }
@@ -483,12 +483,12 @@ export default class Sequence extends CompositeComponent {
 
             // if from, to, and exclude are strings
             // then convert to numbers
-            if (from !== undefined) {
+            if (from !== null) {
               if (typeof from === "string") {
                 from = lettersToNumber(from);
               }
             }
-            if (to !== undefined) {
+            if (to !== null) {
               if (typeof to === "string") {
                 to = lettersToNumber(to);
               }
@@ -500,12 +500,12 @@ export default class Sequence extends CompositeComponent {
             }
           } else if (dependencyValues.selectedType === "number") {
             // make sure to, from, and exclude are numbers
-            if (to !== undefined) {
+            if (to !== null) {
               if (to instanceof me.class) {
                 to = to.evaluate_to_constant();
               }
             }
-            if (from !== undefined) {
+            if (from !== null) {
               if (from instanceof me.class) {
                 from = from.evaluate_to_constant();
               }
@@ -576,39 +576,39 @@ export default class Sequence extends CompositeComponent {
 
     // calculate from, count and step from combinatons of from/to/count/step specified
 
-    if (from === undefined) {
-      if (to === undefined) {
+    if (from === null) {
+      if (to === null) {
         if (selectedType === "math") {
           from = me.fromAst(1);
         } else {
           from = 1;
         }
-        if (step === undefined) {
+        if (step === null) {
           // no from, to, or step
           if (selectedType === "math") {
             step = me.fromAst(1);
           } else {
             step = 1;
           }
-          if (count === undefined) {
+          if (count === null) {
             count = 10;
           }
         } else {
           // no from or to, but step
-          if (count === undefined) {
+          if (count === null) {
             count = 10;
           }
         }
       } else {
         // no from, but to
-        if (step === undefined) {
+        if (step === null) {
           if (selectedType === "math") {
             step = me.fromAst(1);
           } else {
             step = 1;
           }
         }
-        if (count === undefined) {
+        if (count === null) {
           if (selectedType === "math") {
             count = Math.floor(to.subtract(1).divide(step).evaluate_to_constant() + 1);
           } else {
@@ -634,22 +634,22 @@ export default class Sequence extends CompositeComponent {
       }
     } else {
       // from defined
-      if (to === undefined) {
+      if (to === null) {
         // no to, but from
-        if (step === undefined) {
+        if (step === null) {
           if (selectedType === "math") {
             step = me.fromAst(1);
           } else {
             step = 1;
           }
         }
-        if (count === undefined) {
+        if (count === null) {
           count = 10;
         }
       } else {
         // from and to defined
-        if (step === undefined) {
-          if (count === undefined) {
+        if (step === null) {
+          if (count === null) {
             if (selectedType === "math") {
               step = me.fromAst(1);
               count = to.subtract(from).add(1).evaluate_to_constant();
@@ -669,7 +669,7 @@ export default class Sequence extends CompositeComponent {
             }
           }
         } else {
-          if (count === undefined) {
+          if (count === null) {
             // from, to, and step, no count
             if (selectedType === "math") {
               count = Math.floor(to.subtract(from).divide(step).add(1).evaluate_to_constant());
@@ -698,11 +698,11 @@ export default class Sequence extends CompositeComponent {
 
     if (!component.stateValues.validSequence) {
       workspace.lastReplacementParameters = {
-        from: undefined,
-        count: undefined,
-        step: undefined,
-        selectedType: undefined,
-        exclude: undefined,
+        from: null,
+        count: null,
+        step: null,
+        selectedType: null,
+        exclude: null,
       }
       return { replacements: [] };
     }
@@ -773,10 +773,10 @@ export default class Sequence extends CompositeComponent {
         replacementChanges.push(replacementInstruction);
       }
 
-      lrp.selectedType = undefined;
-      lrp.count = undefined;
-      lrp.from = undefined;
-      lrp.step = undefined;
+      lrp.selectedType = null;
+      lrp.count = null;
+      lrp.from = null;
+      lrp.step = null;
       lrp.exclude = [];
 
       return replacementChanges;

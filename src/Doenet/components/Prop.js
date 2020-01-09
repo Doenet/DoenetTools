@@ -59,9 +59,9 @@ export default class Prop extends BaseComponent {
         // TODO: arrays and other embellishments
 
         // if don't have any effectiveTargetClasses, then we can't determine
-        // if the propVariableObjs are valid.  So, we just set propVariableObjs to be undefined
+        // if the propVariableObjs are valid.  So, we just set propVariableObjs to be null
         if (dependencyValues.effectiveTargetClasses.length === 0) {
-          return { newValues: { propVariableObjs: undefined } };
+          return { newValues: { propVariableObjs: null } };
         }
 
         let authorProp = dependencyValues.stringChild[0].stateValues.value.toLowerCase();
@@ -83,7 +83,7 @@ export default class Prop extends BaseComponent {
 
           // need a case insensitive match to variable name
           let variableNames = Object.keys(stateVarDescrip);
-          let matchedObj, componentType;
+          let matchedObj = null, componentType = null;
           for (let varName of variableNames) {
             if (authorProp === varName.toLowerCase()) {
               matchedObj = { varName };
@@ -95,7 +95,7 @@ export default class Prop extends BaseComponent {
             }
           }
 
-          if (matchedObj === undefined) {
+          if (matchedObj === null) {
 
             // try to match to alias
             let propToMatch = authorProp;
@@ -116,7 +116,7 @@ export default class Prop extends BaseComponent {
               }
             }
 
-            if (matchedObj === undefined) {
+            if (matchedObj === null) {
 
               // try to match to arrayEntryPrefix
               for (let prefix in publicStateVariablesInfo.arrayEntryPrefixes) {
@@ -129,7 +129,7 @@ export default class Prop extends BaseComponent {
                   break;
                 }
               }
-              if (matchedObj === undefined) {
+              if (matchedObj === null) {
                 authorPropValid = false;
                 console.warn(`Invalid prop: ${authorProp}`)
                 break;
@@ -144,6 +144,9 @@ export default class Prop extends BaseComponent {
           // need to keep the capitalization of the actual public state variable
           // since state variables are case sensitive even though DoenetML is not
           propVariableObjs.push(matchedObj);
+          if(!componentType) {
+            componentType = null;
+          }
           propComponentTypes.push(componentType);
 
         }
@@ -156,7 +159,7 @@ export default class Prop extends BaseComponent {
         if (authorPropValid) {
           return { newValues: { propVariableObjs, propComponentTypes } };
         } else {
-          return { newValues: { propVariableObjs: undefined, propComponentTypes: undefined } };
+          return { newValues: { propVariableObjs: null, propComponentTypes: null } };
         }
 
       }

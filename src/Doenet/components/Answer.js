@@ -19,7 +19,7 @@ export default class Answer extends InlineComponent {
     properties.type = { default: "math", propagateToDescendants: true };
     properties.splitIntoOptions = { default: false, propagateToDescendants: true };
     properties.fixedOrder = { default: false };
-    properties.size = { default: undefined, propagateToDescendants: true };
+    properties.size = { default: null, propagateToDescendants: true };
     properties.forceFullCheckworkButton = { default: false };
     properties.expandOnCompare = { default: false, propagateToDescendants: true };
     properties.simplifyOnCompare = {

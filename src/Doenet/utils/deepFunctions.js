@@ -137,6 +137,9 @@ export function deepCompare(a, b, BaseComponent) {
           rightChain.push(y);
 
           if (!compare2Objects(x[p], y[p])) {
+            // console.log(`false because objects weren't equal`);
+            // console.log(x[p])
+            // console.log(y[p])
             return false;
           }
 

@@ -81,7 +81,7 @@ export default class CollaborateGroups extends BaseComponent {
           }
         }
 
-        let matchGroup = function ({ groupNumber, numberOfGroups }) {
+        let matchGroup = function ({ groupNumber, numberOfGroups } = {}) {
           if (numberOfGroups > 1) {
             let collaborationAssignment = groups[numberOfGroups];
             if (collaborationAssignment === undefined) {

@@ -160,7 +160,7 @@ export default class Ref extends CompositeComponent {
           variableNames: ["refTarget"],
         },
       }),
-      defaultValue: undefined,
+      defaultValue: null,
       definition: function ({ dependencyValues }) {
         if (dependencyValues.refTargetChild.length === 0) {
           return {
@@ -185,7 +185,7 @@ export default class Ref extends CompositeComponent {
           attributeName: "newNamespace",
         },
       }),
-      defaultValue: undefined,
+      defaultValue: null,
       definition: function ({ dependencyValues }) {
         if (dependencyValues.contentIdChild.length === 0) {
           return {
@@ -195,7 +195,7 @@ export default class Ref extends CompositeComponent {
           }
         }
 
-        if (newNamespace.value === undefined) {
+        if (!newNamespace.value) {
           throw Error("Cannot ref contentId without specifying a new namespace")
         }
 
@@ -206,7 +206,7 @@ export default class Ref extends CompositeComponent {
 
     stateVariableDefinitions.serializedStateForContentId = {
       returnDependencies: () => ({}),
-      defaultValue: undefined,
+      defaultValue: null,
       definition: function () {
         return {
           useEssentialOrDefaultValue: {
@@ -361,9 +361,9 @@ export default class Ref extends CompositeComponent {
           return {
             newValues: {
               preliminaryReplacementClasses: dependencyValues.effectiveTargetClasses,
-              propVariableObjs: undefined,
-              stateVariablesRequested: undefined,
-              validProp: undefined,
+              propVariableObjs: null,
+              stateVariablesRequested: null,
+              validProp: null,
             }
           };
         }
@@ -375,16 +375,16 @@ export default class Ref extends CompositeComponent {
 
         let replacementClasses = [];
 
-        if (propComponentTypes === undefined) {
+        if (!propComponentTypes) {
           validProp = false;
         } else {
           for (let propComponentType of propComponentTypes) {
-            if (propComponentType === undefined) {
+            if (!propComponentType) {
               if (propComponentTypes.length !== 1) {
                 console.warn(`Have not implemented case of ref of prop with undefined component type and more than one returned component.`)
                 validProp = false;
               }
-              replacementClasses.push(undefined);
+              replacementClasses.push(null);
             } else {
               replacementClasses.push(componentInfoObjects.allComponentClasses[propComponentType.toLowerCase()]);
             }
@@ -394,9 +394,9 @@ export default class Ref extends CompositeComponent {
         if (!validProp) {
           return {
             newValues: {
-              preliminaryReplacementClasses: undefined,
+              preliminaryReplacementClasses: null,
               propVariableObjs,
-              stateVariablesRequested: undefined,
+              stateVariablesRequested: null,
               validProp,
             }
           };
@@ -438,9 +438,9 @@ export default class Ref extends CompositeComponent {
         // if have more than one preliminary replacement class
         // or the one preliminary replacement class is defined,
         // then preliminary replacement classes are all we need
-        if (stateValues.preliminaryReplacementClasses === undefined
+        if (!stateValues.preliminaryReplacementClasses
           || stateValues.preliminaryReplacementClasses.length > 1
-          || stateValues.preliminaryReplacementClasses[0] !== undefined
+          || stateValues.preliminaryReplacementClasses[0] !== null
         ) {
           return dependencies;
         }
@@ -559,7 +559,7 @@ export default class Ref extends CompositeComponent {
 
           for (let property in dependencyValues) {
             if (!["replacementClasses", "useProp", "validProp"].includes(property) && !(property in propertiesObject)) {
-              if (dependencyValues[property] !== undefined) {
+              if (dependencyValues[property] !== null) {
                 validProperties = false;
                 console.warn(`Invalid property ${property} for reference to component of type ${targetClass.componentType}`)
                 break;
@@ -991,7 +991,7 @@ export default class Ref extends CompositeComponent {
     // } else {
 
 
-    if (component.stateValues.refTarget === undefined) {
+    if (!component.stateValues.refTarget) {
       return { replacements: [] };
     }
 
@@ -1471,7 +1471,7 @@ function postProcessRefSub({ serializedComponents, preserializedNamesFound,
   for (let ind in serializedComponents) {
     let component = serializedComponents[ind];
 
-    if (component.preserializedName !== undefined) {
+    if (component.preserializedName) {
 
       preserializedNamesFound[component.preserializedName] = component;
 
@@ -1482,16 +1482,16 @@ function postProcessRefSub({ serializedComponents, preserializedNamesFound,
             refComponentName: componentName,
           }]
         };
-        if (component.state !== undefined) {
+        if (component.state) {
           let stateVariables = Object.keys(component.state);
           downDep[component.preserializedName].downstreamStateVariables = stateVariables;
           downDep[component.preserializedName].upstreamStateVariables = stateVariables;
         }
-        if (component.includeAnyDefiningChildren !== undefined) {
+        if (component.includeAnyDefiningChildren) {
           downDep[component.preserializedName].includeAnyDefiningChildren =
             component.includeAnyDefiningChildren;
         }
-        if (component.includePropertyChildren !== undefined) {
+        if (component.includePropertyChildren) {
           downDep[component.preserializedName].includePropertyChildren =
             component.includePropertyChildren;
         }
@@ -1504,7 +1504,7 @@ function postProcessRefSub({ serializedComponents, preserializedNamesFound,
 
     if (component.componentType === "ref") {
       let refTargetName = component.refTargetComponentName;
-      if (refTargetName === undefined) {
+      if (!refTargetName) {
         // if refTargetComponentName is undefined,
         // then the ref wasn't serialized via ref's serialize function
         // e.g., directly have a serialized ref from a select
@@ -1513,8 +1513,8 @@ function postProcessRefSub({ serializedComponents, preserializedNamesFound,
         refTargetName = normalizeSerializedRef(component);
 
       }
-      if (refTargetName !== undefined) {
-        if (refTargetNamesFound[refTargetName] === undefined) {
+      if (refTargetName) {
+        if (!refTargetNamesFound[refTargetName]) {
           refTargetNamesFound[refTargetName] = [];
         }
         refTargetNamesFound[refTargetName].push(component);
@@ -1558,7 +1558,7 @@ export function normalizeSerializedRef(serializedRef) {
   }
   // if no refTargetChild, then check for string child
   // which we have to do since sugar may not have been applied
-  if (refTargetChild === undefined) {
+  if (!refTargetChild) {
     for (let childInd = 0; childInd < serializedRef.children.length; childInd++) {
       let child = serializedRef.children[childInd];
       if (child.componentType === "string") {
@@ -1575,12 +1575,12 @@ export function normalizeSerializedRef(serializedRef) {
     // found a refTargetChild
 
     // first look to see if refTargetName is defined in state
-    if (refTargetChild.state !== undefined) {
+    if (refTargetChild.state) {
       refTargetName = refTargetChild.state.refTargetName;
     }
 
     // if not, look for first string child
-    if (refTargetName === undefined && refTargetChild.children !== undefined) {
+    if (!refTargetName && refTargetChild.children) {
       for (let childInd = 0; childInd < refTargetChild.children.length; childInd++) {
         let child = refTargetChild.children[childInd];
         if (child.componentType === "string") {
@@ -1593,7 +1593,7 @@ export function normalizeSerializedRef(serializedRef) {
           // when processing the refs
           refTargetChild.children.splice(childInd, 1); // delete child
           childInd--;
-          if (refTargetChild.state === undefined) {
+          if (!refTargetChild.state) {
             refTargetChild.state = {};
           }
           refTargetChild.state.refTargetName = refTargetName; // store in state
