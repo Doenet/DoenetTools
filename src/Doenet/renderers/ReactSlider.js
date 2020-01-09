@@ -1,5 +1,4 @@
 import React from 'react';
-// import Draggable from 'react-draggable';
 import { Style } from 'radium';
 
 
@@ -11,11 +10,9 @@ export default class ReactSlider extends React.Component {
     this.sliderRef = React.createRef();
 
     this.dragging = false;
-    // this.rebuildSlider();
 
     this.fontFamily = "Times New Roman";
     this.fontSize = "14px";
-
     
 
     this.handle_label_style = {
@@ -28,12 +25,6 @@ export default class ReactSlider extends React.Component {
       textAlign: "center",
       // backgroundColor: "rgb(98, 243, 31)", 
     }
-
-    this.state = {
-      value: this.props.items[this.props.index],
-      currentHandlePixel: this.currentHandlePixel,
-    };
-
 
     this.trackClick = this.trackClick.bind(this);
     this.createTicksForRendering = this.createTicksForRendering.bind(this);
@@ -288,7 +279,7 @@ export default class ReactSlider extends React.Component {
         if (Number(this.props.index) !== Number(newIndex)) {
 
           const value = this.props.items[newIndex];
-          console.log('UpdateValue actions left <-------');
+          // console.log('UpdateValue actions left <-------');
           this.props.actions.changeValue({ value: value });
           // this.forceUpdate();
         }
@@ -300,7 +291,7 @@ export default class ReactSlider extends React.Component {
 
           const value = this.props.items[newIndex];
 
-          console.log('UpdateValue actions right ------->');
+          // console.log('UpdateValue actions right ------->');
           this.props.actions.changeValue({ value: value });
           // this.forceUpdate();
         }
@@ -310,6 +301,7 @@ export default class ReactSlider extends React.Component {
   }
 
   trackClick(e, key) {
+    if (this.props.disabled){return;}
 
     let container = document.getElementById(key).getBoundingClientRect();
 
@@ -321,7 +313,7 @@ export default class ReactSlider extends React.Component {
   }
 
   handleMouseMove(e) {
-    
+    if (this.props.disabled){return;}
     
     if(this.dragging){
 
@@ -385,13 +377,11 @@ export default class ReactSlider extends React.Component {
     let _key = this.props._key + 'div';
 
     const newIndex = this.sharedState.index;
-    // const currentHandlePixel = this.tickPixelValues[newIndex] - 15;
-    // const currentHandlePixel = this.tickPixelValues[newIndex] - 7 - this.x;
-    //***** this.x */
-    // const currentHandlePixel = this.tickPixelValues[newIndex] - 7;
+  
+    
     const currentHandlePixel = this.tickHandlePixelValues[newIndex] - 7;
     const handleText = this.props.items[this.sharedState.index];
-
+    
     // let hiddenControlsBoundOffset = 0;
     // if (this.props.showControls === false){
     //   hiddenControlsBoundOffset = 4;
@@ -442,7 +432,7 @@ export default class ReactSlider extends React.Component {
       opacity: 0.7,
       zIndex: 2,
       // cursor: "pointer",
-      // backgroundColor: 'yellow',
+      // backgroundColor: 'grey',
       // left: this.x + this.label_width +"px",
       left: this.label_width + "px",
     }
@@ -464,8 +454,9 @@ export default class ReactSlider extends React.Component {
       width: this.trackWidth + 'px',
       left: '4px',
       position: "relative",
-      height: "4px",
-      background: " rgb(96, 146, 255)",
+      height: "6px",
+      background: "rgb(84, 155, 255)",
+      // background: " rgb(96, 146, 255)",
       borderRadius: "6px",
       marginTop: "-2px",
       boxShadow: "inset 0 0 0 1px rgba(0, 0, 0, 0.2)",
@@ -481,22 +472,14 @@ export default class ReactSlider extends React.Component {
       labelSpan = <span style={label_style}>{this.props.label}</span>
     }
 
-    // const handle_props = {
-    //   axis: 'x',
-    //   // bounds: {left: this.label_width - 7, right: this.trackWidth + this.label_width - hiddenControlsBoundOffset - 14},
-    //   bounds: { left: -3, right: this.trackWidth - 4 },
-    //   position: { x: currentHandlePixel, y: 0 },
-    //   onDrag: this.handleMouseMove,
-    //   onStart: this.mouseButtonDownOnHandle,
-    //   onStop: this.mouseButtonUpForHandle,
-    // }
 
     let handle_style = {
       WebkitUserSelect: "none",
       MozUserSelect: "none",
       MsUserSelect: "none",
       UserSelect: "none",
-      border: "1px solid #bcbcbc",
+      border: "3px solid rgb(84, 155, 255)",
+      // border: "1px solid #bcbcbc",
       height: "20px",
       width: "20px",
       borderRadius: "12px",
@@ -507,9 +490,15 @@ export default class ReactSlider extends React.Component {
       display: "inline-block",
       position: "absolute",
       zIndex: "3",
-      transition: "transform .1s ease",
+      // transition: "transform .1s ease", //makes it bounce Firefox bug?
       transform: `translate(${currentHandlePixel}px, -3px)`,
     }
+
+    if (this.props.disabled){
+      handle_style.background = "rgb(160, 160, 160)";
+      handle_style.border = "3px solid rgb(160, 160, 160)";
+    }
+
 
     if (this.props.disabled) {
       handle_style.cursor = "";
