@@ -381,9 +381,9 @@ export default class ReactSlider extends React.Component {
 
     const label_style = {
       width: this.label_width + "px",
-      marginTop: "14px",
+      marginTop: "16px",
       fontFamily: this.fontFamily,
-      fontSize: this.fontSize,
+      fontSize: "18pt",
       // backgroundColor: 'blue',
     }
 
@@ -391,7 +391,7 @@ export default class ReactSlider extends React.Component {
       label_style.color = "rgb(100,100,100)";
     }
 
-    let showControls = <React.Fragment></React.Fragment>
+    let showControls = null;
 
     if (this.props.showControls === true && !this.props.disabled) {
 
@@ -399,15 +399,15 @@ export default class ReactSlider extends React.Component {
         <Style rules={{
           ".sliderControl": {
             height: "20px",
-            marginTop: "14px",
-            marginLeft: "0px",
+            marginTop: "20px",
           },
           ':focus': {
             // backgroundColor: 'blue',
             outline: 'none'
           },
         }} />
-        <button className="sliderControl" onClick={this.clickLeftControl} >&lt;</button>
+        <button style={{marginLeft:"16px"}} 
+        className="sliderControl" onClick={this.clickLeftControl} >&lt;</button>
         <button className="sliderControl" onClick={this.clickRightControl} >&gt;</button>
       </React.Fragment>
     }
