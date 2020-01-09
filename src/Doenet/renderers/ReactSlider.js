@@ -1,5 +1,5 @@
 import React from 'react';
-import Draggable from 'react-draggable';
+// import Draggable from 'react-draggable';
 import { Style } from 'radium';
 
 
@@ -16,24 +16,7 @@ export default class ReactSlider extends React.Component {
     this.fontFamily = "Times New Roman";
     this.fontSize = "14px";
 
-    this.handle_style = {
-      WebkitUserSelect: "none",
-      MozUserSelect: "none",
-      MsUserSelect: "none",
-      UserSelect: "none",
-      border: "1px solid #bcbcbc",
-      height: "12px",
-      width: "12px",
-      borderRadius: "12px",
-      background: "#ffffff",
-      // cursor: "pointer",
-      boxShadow: "0 1px 3px 0px rgba(0, 0, 0, 0.15)",
-      marginTop: "17px",
-      display: "inline-block",
-      position: "absolute",
-      zIndex: "3",
-      transition: "transform .1s ease",
-    }
+    
 
     this.handle_label_style = {
       display: "inline-block",
@@ -51,15 +34,17 @@ export default class ReactSlider extends React.Component {
       currentHandlePixel: this.currentHandlePixel,
     };
 
+
     this.trackClick = this.trackClick.bind(this);
     this.createTicksForRendering = this.createTicksForRendering.bind(this);
     this.updateValue = this.updateValue.bind(this);
-    this.handleDrag = this.handleDrag.bind(this);
+    this.handleMouseMove = this.handleMouseMove.bind(this);
     this.mouseButtonDownOnHandle = this.mouseButtonDownOnHandle.bind(this);
-    this.mouseButtonUpOnHandle = this.mouseButtonUpOnHandle.bind(this);
+    this.mouseButtonUpForHandle = this.mouseButtonUpForHandle.bind(this);
     this.clickLeftControl = this.clickLeftControl.bind(this);
     this.clickRightControl = this.clickRightControl.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
+
 
   }
 
@@ -277,9 +262,7 @@ export default class ReactSlider extends React.Component {
 
   //could be optimized by starting in the middle and use half way
   updateValue(positionFromLeft) {
-    if (this.props.disabled) {
-      return;
-    }
+
 
     //Correct position for handle vs track offsets
     if (this.props.label === undefined) {
@@ -337,19 +320,24 @@ export default class ReactSlider extends React.Component {
     // this.forceUpdate();
   }
 
-  handleDrag(e) {
-    let dragFromLeft = e.clientX - this.x;
-    if (dragFromLeft < this.trackLeftMostPixel) { dragFromLeft = this.trackLeftMostPixel; }
-    if (dragFromLeft > this.trackRightMostPixel) { dragFromLeft = this.trackRightMostPixel; }
+  handleMouseMove(e) {
+    
+    
+    if(this.dragging){
 
-    this.updateValue(dragFromLeft);
+      let dragFromLeft = e.clientX - this.x;
+      if (dragFromLeft < this.trackLeftMostPixel) { dragFromLeft = this.trackLeftMostPixel; }
+      if (dragFromLeft > this.trackRightMostPixel) { dragFromLeft = this.trackRightMostPixel; }
+  
+      this.updateValue(dragFromLeft);
+    }
   }
 
   mouseButtonDownOnHandle(e) {
     this.dragging = true;
   }
 
-  mouseButtonUpOnHandle(e) {
+  mouseButtonUpForHandle(e) {
     this.dragging = false;
     let dragFromLeft = e.clientX;
     if (dragFromLeft < this.trackLeftMostPixel) { dragFromLeft = this.trackLeftMostPixel; }
@@ -390,9 +378,7 @@ export default class ReactSlider extends React.Component {
     //  if (this.x === undefined){
     //   return <div key={_key} ref={this.sliderRef}></div>
     // }
-    // console.log('SLIDER RENDER !!!');
-    // console.log(this.dragging);
-
+    
 
     this.rebuildSlider();
 
@@ -411,15 +397,6 @@ export default class ReactSlider extends React.Component {
     //   hiddenControlsBoundOffset = 4;
     // }
 
-    const handle_props = {
-      axis: 'x',
-      // bounds: {left: this.label_width - 7, right: this.trackWidth + this.label_width - hiddenControlsBoundOffset - 14},
-      bounds: { left: -3, right: this.trackWidth - 4 },
-      position: { x: currentHandlePixel, y: 0 },
-      onDrag: this.handleDrag,
-      onStart: this.mouseButtonDownOnHandle,
-      onStop: this.mouseButtonUpOnHandle,
-    }
 
     const label_style = {
       width: this.label_width + "px",
@@ -504,29 +481,61 @@ export default class ReactSlider extends React.Component {
       labelSpan = <span style={label_style}>{this.props.label}</span>
     }
 
-    let handle_style = Object.assign({}, this.handle_style);
+    // const handle_props = {
+    //   axis: 'x',
+    //   // bounds: {left: this.label_width - 7, right: this.trackWidth + this.label_width - hiddenControlsBoundOffset - 14},
+    //   bounds: { left: -3, right: this.trackWidth - 4 },
+    //   position: { x: currentHandlePixel, y: 0 },
+    //   onDrag: this.handleMouseMove,
+    //   onStart: this.mouseButtonDownOnHandle,
+    //   onStop: this.mouseButtonUpForHandle,
+    // }
 
+    let handle_style = {
+      WebkitUserSelect: "none",
+      MozUserSelect: "none",
+      MsUserSelect: "none",
+      UserSelect: "none",
+      border: "1px solid #bcbcbc",
+      height: "20px",
+      width: "20px",
+      borderRadius: "12px",
+      background: "#ffffff",
+      cursor: "pointer",
+      boxShadow: "0 1px 3px 0px rgba(0, 0, 0, 0.15)",
+      marginTop: "17px",
+      display: "inline-block",
+      position: "absolute",
+      zIndex: "3",
+      transition: "transform .1s ease",
+      transform: `translate(${currentHandlePixel}px, -3px)`,
+    }
+
+    if (this.props.disabled) {
+      handle_style.cursor = "";
+    }
 
     let handle = (
-      <span style={handle_style} data-cy={`${_key}slider-handle`}>
+      <span 
+      onMouseDown={this.mouseButtonDownOnHandle}
+      style={handle_style} 
+      data-cy={`${_key}slider-handle`}>
         <span style={this.handle_label_style}>
           {handleText}
         </span>
       </span>);
 
-    if (this.props.disabled) {
-      handle_style.cursor = "";
-    } else {
-      handle = (
-        <Draggable  {...handle_props} >
-          {handle}
-        </Draggable>
-      )
-      handle_style.cursor = "pointer";
-    }
-
+  
     return (
-      <div key={_key} id={_key} style={slider_style} ref={this.sliderRef}>
+      <div 
+      key={_key} 
+      id={_key} 
+      style={slider_style} 
+      ref={this.sliderRef}
+      onMouseMove={this.handleMouseMove}
+      onMouseLeave={()=>{this.dragging = false;}}
+      onMouseUp={()=>{this.dragging = false;}}
+      >
         <a name={this._key} />
         {labelSpan}
         <span style={track_container_style} data-cy={`${_key}slider-track`} onClick={(e) => this.trackClick(e, _key)}>
