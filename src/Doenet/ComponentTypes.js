@@ -120,6 +120,7 @@ import Feedback from './components/Feedback';
 import Container from './components/Container';
 import CollaborateGroups from './components/CollaborateGroups';
 import CollaborateGroupSetup from './components/CollaborateGroupSetup';
+import Div from './components/Div';
 
 
 //Extended
@@ -242,6 +243,7 @@ const componentTypeArray = [
   Container,
   CollaborateGroups,
   CollaborateGroupSetup,
+  Div,
 ];
 
 const componentTypeArrayExtended = [
