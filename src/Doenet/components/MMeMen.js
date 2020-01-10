@@ -4,7 +4,7 @@ import me from 'math-expressions';
 export class M extends InlineComponent {
   static componentType = "m";
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroStrings = childLogic.newLeaf({
@@ -41,136 +41,158 @@ export class M extends InlineComponent {
     return childLogic;
   }
 
-  updateState(args={}) {
+  static returnStateVariableDefinitions() {
 
-    super.updateState(args);
+    let stateVariableDefinitions = {};
 
-    if(args.init) {
-      this.makePublicStateVariable({
-        variableName: "value",
-        componentType: this.componentType
-      });
-      
-      // make default reference (with no prop) be value
-      this.stateVariablesForReference = ["value"];
+    stateVariableDefinitions.latex = {
+      public: true,
+      componentType: this.componentType,
+      defaultValue: "",
+      returnDependencies: () => ({
+        stringTextMathChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "stringsTextsAndMaths",
+        },
+        stringChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroStrings",
+          variableNames: ["value"]
+        },
+        textChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroTexts",
+          variableNames: ["value"]
+        },
+        mathChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroMaths",
+          variableNames: ["latex"]
+        },
+        mathlistChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroMathlists",
+          variableNames: ["latex"]
+        },
 
-      this.state.renderMode = "inline";
+      }),
+      definition: function ({ dependencyValues }) {
 
-    }
-
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.value = true;
-      return;
-    }
-
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-
-      let stringsTextsAndMaths = this.childLogic.returnMatches("stringsTextsAndMaths");
-
-      if(stringsTextsAndMaths.length > 0) {
-        this.state.stringTextAndMathChildren = stringsTextsAndMaths.map(x => this.activeChildren[x]);
-      } else {
-        delete this.state.stringTextAndMathChildren;
-      }
-    }
-
-    if(this.state.stringTextAndMathChildren) {
-
-      this.state.value = "";
-      for(let child of this.state.stringTextAndMathChildren) {
-        if(child.componentType === "string" || child instanceof this.allComponentClasses.text) {
-          if(child.unresolvedState.value) {
-            this.unresolvedState.value = true;
-            return;
+        console.log(dependencyValues)
+        if (dependencyValues.stringTextMathChildren.length === 0) {
+          return {
+            useEssentialOrDefaultValue: {
+              latex: { variablesToCheck: "latex" }
+            }
           }
-          this.state.value += child.state.value;
         }
-        else if(child instanceof this.allComponentClasses.mathlist) {
-          if(child.unresolvedState.maths) {
-            this.unresolvedState.value = true;
-            return;
+
+        let latex = "";
+        let stringNum = 0;
+        let textNum = 0;
+        let mathNum = 0;
+        let mathlistNum = 0;
+
+        for (let child of dependencyValues.stringTextMathChildren) {
+
+          if (child.componentType === "string") {
+            latex += dependencyValues.stringChildren[stringNum].stateValues.value;
+            stringNum++;
+          } else if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "text"
+          })) {
+            latex += dependencyValues.textChildren[textNum].stateValues.value;
+            textNum++;
+          } else if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "math"
+          })) {
+            latex += dependencyValues.mathChildren[mathNum].stateValues.latex;
+            mathNum++;
+          } else if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "mathlist"
+          })) {
+            latex += dependencyValues.mathlistChildren[mathlistNum].stateValues.value;
+            mathlistNum++;
           }
-          this.state.value += child.state.latex;
-        } else {
-          if(child.unresolvedState.latex) {
-            this.unresolvedState.value = true;
-            return;
-          }
-          this.state.value += child.state.latex;
+
         }
+        return { newValues: { latex } }
+
       }
 
-    } else {
-
-      // if no string/math activeChildren and value wasn't set from state directly,
-      // make value be blank
-
-      if(this._state.value.essential !== true || this.state.value===undefined) {
-        this.state.value = "";
-      }
     }
 
-    delete this.unresolvedState.value;
+    stateVariableDefinitions.renderMode = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { renderMode: "inline" } })
+    }
+
+    return stateVariableDefinitions;
   }
-  
 
   toText() {
     let expression;
-    if(!this.state.value) {
+    if (!this.stateValues.latex) {
       return;
     }
     try {
-      expression = me.fromLatex(this.state.value);
-    }catch(e) {
+      expression = me.fromLatex(this.stateValues.latex);
+    } catch (e) {
       // just return latex if can't parse with math-expression
-      return this.state.value;
+      return this.stateValues.latex;
     }
     return expression.toString();
   }
 
-  initializeRenderer({}){
-    if(this.renderer !== undefined) {
+  initializeRenderer({ }) {
+    if (this.renderer !== undefined) {
       this.updateRenderer();
       return;
     }
-    
+
     this.renderer = new this.availableRenderers.math({
       key: this.componentName,
-      mathLatex: this.state.value,
-      renderMode: this.state.renderMode,
+      mathLatex: this.stateValues.latex,
+      renderMode: this.stateValues.renderMode,
     });
   }
 
   updateRenderer() {
-    this.renderer.updateMathLatex(this.state.value);
+    this.renderer.updateMathLatex(this.stateValues.latex);
   }
-  
+
 }
 
 export class Me extends M {
   static componentType = "me";
 
-  updateState(args={}) {
-    super.updateState(args);
-    if(args.init) {
-      this.state.renderMode = "display";
-    }
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.renderMode.definition = () => ({
+      newValues: { renderMode: "display" }
+    });
+    return stateVariableDefinitions;
   }
-}  
+}
 
 export class Men extends M {
   static componentType = "men";
-  
-  updateState(args={}) {
-    super.updateState(args);
-    if(args.init) {
-      this.state.renderMode = "numbered";
-    }
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.renderMode.definition = () => ({
+      newValues: { renderMode: "numbered" }
+    });
+    return stateVariableDefinitions;
   }
-} 
+}
 
 

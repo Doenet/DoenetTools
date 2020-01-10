@@ -3944,7 +3944,7 @@ export default class Core {
       return component.state[stateVariable].recursiveDependencyValues;
     }
 
-    let { dependencyValues } = this.getStateVariableDependencyValues({ component, stateVariable });
+    let { dependencyValues, usedDefault } = this.getStateVariableDependencyValues({ component, stateVariable });
 
     let recursiveDependencyValues
       = component.state[stateVariable].recursiveDependencyValues = {};
@@ -4011,6 +4011,10 @@ export default class Core {
             }
 
           }
+        }
+
+        if(Object.keys(dependencyValuesForCName).length === 0) {
+          delete recursiveDependencyValues[cName];
         }
 
       }
