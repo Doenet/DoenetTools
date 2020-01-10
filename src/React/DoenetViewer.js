@@ -600,7 +600,7 @@ class DoenetViewer extends Component {
       //Local State to Global State
       window.sessionStorage.transferToGlobal = JSON.stringify(this.worksheet.state.doenetMLState, serializedStateReplacer);
     }
-    window.location.href = URL_add_parameter(location.href, 'group', groupCode.toString().toLowerCase());
+    window.location.href = URL_add_parameter(location.href, 'group', groupCode.toString().toUpperCase());
   }
 
   leaveGroup() {
@@ -658,7 +658,7 @@ class DoenetViewer extends Component {
                 placeholder="Group Code"
                 style={{ marginLeft: "10px", marginRight: "5px", width: "120px", fontSize: "14pt", textAlign: "center" }}
                 type="text"
-                value={joinGroupText.toLowerCase()}
+                value={joinGroupText.toUpperCase()}
               />
               <button disabled={joinGroupDisabled} onClick={() => this.goToGroup({ groupCode: this.state.joinGroupText })}>Join</button>
             </div>
@@ -681,7 +681,7 @@ class DoenetViewer extends Component {
         if (!activeGroupCode) {
           activeGroupCode = "";
         }
-        activeGroupCode = activeGroupCode.toLowerCase();
+        activeGroupCode = activeGroupCode.toUpperCase();
 
         activeGroupPane = <div>Group <b>{activeGroupCode}</b> </div>;
         playerNumberPane = <div>Player {this.playerNumber}</div>;
