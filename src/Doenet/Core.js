@@ -72,12 +72,12 @@ export default class Core {
     let serializedState;
 
     if (doenetState) {
-      serializedState = doenetState;k
-      let contentId ;
-      if(serializedState[0].doenetAttributes) {
+      serializedState = doenetState;
+      let contentId;
+      if (serializedState[0].doenetAttributes) {
         contentId = serializedState[0].doenetAttributes.contentId;
       }
-      if(contentId === undefined) {
+      if (contentId === undefined) {
         contentId = "";
       }
       console.log(`contentId from doenetState: ${contentId}`)
@@ -152,6 +152,8 @@ export default class Core {
 
     //Make these variables available for cypress
     window.state = { components: this._components, downstreamDependencies: this.downstreamDependencies, upstreamDependencies: this.upstreamDependencies, core: this }
+
+    this.changedStateVariables = {};
 
     this.addComponents({
       serializedState: serializedState,
@@ -3104,8 +3106,7 @@ export default class Core {
         }
 
       }
-      else if (dep.dependencyType === "stateVariable" ||
-        dep.dependencyType === "recursiveDependencyValues") { //|| dep.dependencyType === "stateVariableResolved") {
+      else if (dep.dependencyType === "stateVariable") {
         newDep.downstreamComponentName = component.componentName;
         if (dep.variableName === undefined) {
           throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${depName}: variableName is not defined`);
@@ -3116,17 +3117,19 @@ export default class Core {
           thisUpstream[dep.variableName] = [];
         }
         thisUpstream[dep.variableName].push(newDep);
-        // } else if (dep.dependencyType === "previouslyCalculatedStateVariable") {
-        //   newDep.downstreamComponentName = component.componentName;
-        //   // mark as just depending on identity, we don't actually want
-        //   // a dependency from the state variable, we just want to
-        //   // return a previously calculated value if it exists
-        //   newDep.downstreamVariableName = '__identity';
-        //   newDep.downstreamVariableNameForPrevious = dep.variableName;
-        //   if (thisUpstream['__identity'] === undefined) {
-        //     thisUpstream['__identity'] = [];
-        //   }
-        //   thisUpstream['__identity'].push(newDep);
+      }
+      else if (dep.dependencyType === "recursiveDependencyValues") {
+        newDep.downstreamComponentName = component.componentName;
+        if (dep.variableName === undefined) {
+          throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${depName}: variableName is not defined`);
+        }
+        newDep.downstreamVariableName = dep.variableName;
+        newDep.changedValuesOnly = dep.changedValuesOnly;
+        newDep.valueChanged = true;
+        if (thisUpstream[dep.variableName] === undefined) {
+          thisUpstream[dep.variableName] = [];
+        }
+        thisUpstream[dep.variableName].push(newDep);
       }
       else if (dep.dependencyType === "componentStateVariable" ||
         dep.dependencyType === "componentStateVariableComponentType"
@@ -3871,7 +3874,8 @@ export default class Core {
 
         value = this.getStateVariableRecursiveDependencyValues({
           componentName: dep.downstreamComponentName,
-          stateVariable: dep.downstreamVariableName
+          stateVariable: dep.downstreamVariableName,
+          changedValuesOnly: dep.changedValuesOnly,
         })
 
         if (dep.valueChanged) {
@@ -3930,7 +3934,7 @@ export default class Core {
   }
 
   // gets all dependency values that are state variables themselves
-  getStateVariableRecursiveDependencyValues({ componentName, stateVariable }) {
+  getStateVariableRecursiveDependencyValues({ componentName, stateVariable, changedValuesOnly }) {
     // and then recurses on those state variables
     // stores result on object keyed by component name and state variable
     // (dependency considered a state variable if it has 
@@ -3944,7 +3948,7 @@ export default class Core {
       return component.state[stateVariable].recursiveDependencyValues;
     }
 
-    let { dependencyValues, usedDefault } = this.getStateVariableDependencyValues({ component, stateVariable });
+    let { dependencyValues } = this.getStateVariableDependencyValues({ component, stateVariable });
 
     let recursiveDependencyValues
       = component.state[stateVariable].recursiveDependencyValues = {};
@@ -3969,6 +3973,8 @@ export default class Core {
           dependencyValuesForCName = recursiveDependencyValues[cName] = {};
         }
 
+        let changedValuesForCName = this.changedStateVariables[cName];
+
         let vNames = [];
         let multipleVariables = false;
         if (dep.downstreamVariableName) {
@@ -3984,20 +3990,27 @@ export default class Core {
           // don't calculate value or recurse if calculated this value before
           if (!(vName in dependencyValuesForCName)) {
 
-            let value = dependencyValues[depName];
+            // if changedValuesOnly, then only include if these values have changed
+            if (!changedValuesOnly || changedValuesForCName) {
 
-            if (multipleComponents) {
-              value = value[cInd];
-            }
-            if (multipleVariables) {
-              value = value.stateValues[vName]
-            }
-            dependencyValuesForCName[vName] = value;
+              let value = dependencyValues[depName];
 
+              if (multipleComponents) {
+                value = value[cInd];
+              }
+              if (multipleVariables) {
+                value = value.stateValues[vName]
+              }
+              if (!changedValuesOnly || vName in changedValuesForCName) {
+                dependencyValuesForCName[vName] = value;
+              }
+
+            }
 
             let additionalValues = this.getStateVariableRecursiveDependencyValues({
               componentName: cName,
-              stateVariable: vName
+              stateVariable: vName,
+              changedValuesOnly
             });
 
             for (let cName2 in additionalValues) {
@@ -4013,7 +4026,7 @@ export default class Core {
           }
         }
 
-        if(Object.keys(dependencyValuesForCName).length === 0) {
+        if (Object.keys(dependencyValuesForCName).length === 0) {
           delete recursiveDependencyValues[cName];
         }
 
@@ -5438,10 +5451,10 @@ export default class Core {
       let parentObj = parentsOfPotentiallyDeleted[component.parent];
       if (parentObj === undefined) {
         parentObj =
-          {
-            parent: this._components[component.parent],
-            definingChildrenNames: new Set(),
-          }
+        {
+          parent: this._components[component.parent],
+          definingChildrenNames: new Set(),
+        }
         parentsOfPotentiallyDeleted[component.parent] = parentObj;
       }
       parentObj.definingChildrenNames.add(componentName);
@@ -6229,6 +6242,14 @@ export default class Core {
   }
 
   executeUpdateStateVariables({ newStateVariableValues, componentsTouched, saveSerializedState = true }) {
+
+    // merege newStateVariableValues into changedStateVariables
+    for (let cName in newStateVariableValues) {
+      if (!this.changedStateVariables[cName]) {
+        this.changedStateVariables[cName] = {};
+      }
+      Object.assign(this.changedStateVariables[cName], newStateVariableValues[cName]);
+    }
 
 
     let saveSerializedStateImmediately = false;

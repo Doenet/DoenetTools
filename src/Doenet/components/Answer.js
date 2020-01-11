@@ -775,7 +775,8 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({
         currentCreditAchievedDependencies: {
           dependencyType: "recursiveDependencyValues",
-          variableName: "creditAchievedIfSubmit"
+          variableName: "creditAchievedIfSubmit",
+          changedValuesOnly: true,
         },
       }),
       definition: ({ dependencyValues }) => ({
@@ -787,7 +788,7 @@ export default class Answer extends InlineComponent {
 
 
     stateVariableDefinitions.creditAchievedDependenciesAtSubmit = {
-      defaultValue: {},
+      defaultValue: null,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
@@ -828,7 +829,8 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({
         currentCreditAchievedDependencies: {
           dependencyType: "recursiveDependencyValues",
-          variableName: "creditAchievedIfSubmit"
+          variableName: "creditAchievedIfSubmit",
+          changedValuesOnly: true,
         },
         creditAchievedDependenciesAtSubmit: {
           dependencyType: "stateVariable",

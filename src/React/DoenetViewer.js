@@ -81,7 +81,6 @@ class DoenetViewer extends Component {
   continueConstruction(event, state) {
 
 
-
     if(this.core) {
       return;
     }
