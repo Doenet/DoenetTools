@@ -68,6 +68,7 @@ class DoenetChooser extends Component {
     this.renameFolder = this.renameFolder.bind(this);
     this.modifyPublicState = this.modifyPublicState.bind(this);
     this.addContentToRepo = this.addContentToRepo.bind(this);
+    this.loadFilteredContent = this.loadFilteredContent.bind(this);
   }
 
 
@@ -166,7 +167,9 @@ class DoenetChooser extends Component {
         toolbarTitle = this.courseInfo[this.state.selectedCourse].courseCode + ' - '
         + this.courseInfo[this.state.selectedCourse].courseName;
       }  else if (this.state.selectedDrive === "Global") {
-        toolbarTitle = <FilterForm/>
+        toolbarTitle = <React.Fragment>
+            <FilterPanel loadFilteredContent={this.loadFilteredContent}/>
+          </React.Fragment>
       }
 
     } else if (this.state.activeSection === "add_course") {
@@ -820,6 +823,56 @@ class DoenetChooser extends Component {
     });
   }
 
+  loadFilteredContent(filters, callback=(()=>{})) {
+
+    const typeToSQLMap = {
+      "Folder name" : "title",
+      "Content name" : "title",
+      "Author" : "author",
+      "Creation date" : "creationDate"
+    }
+    const operatorsToSQLMap = {
+      "IS" : "==",
+      "IS NOT" : "!=",
+      "IS LIKE" : "LIKE",
+      "IS NOT LIKE" : "NOT LIKE",
+      "ON" : "==",
+    }
+    // process filters
+    let processedFilters = [];
+    let folderOnly = false;
+    let contentOnly = false;
+    filters.forEach(filter => {
+      let sql = "";
+      if (filter.type == "Folder name") folderOnly = true;
+      else if (filter.type == "Content name") contentOnly = true;
+
+      sql += `${typeToSQLMap[filter.type]} ${operatorsToSQLMap[filter.operator]} `;
+      if (filter.operator == "IS LIKE" || filter.operator == "IS NOT LIKE") {
+        sql += `%${filter.value}%`;        
+      } else {
+        sql += `${filter.value}`;        
+      }
+      if (filter.value != null) processedFilters.push(sql);
+    })
+
+    console.log(processedFilters);
+
+    // // const url='/api/loadFilteredContent.php';
+    // // const data={
+    // //   folderOnly: folderOnly,
+    // //   contentOnly: contentOnly,
+    // //   filters: processedFilters
+    // // }
+    // // axios.post(url, data)
+    // // .then(resp => {
+    // //   callback();
+    // // })
+    // // .catch(function (error) {
+    // //   this.setState({error:error});
+    // // })
+  }
+
   render(){
 
     if (!this.courses_loaded){
@@ -1192,7 +1245,33 @@ class AccordionSection extends Component {
   }
 }
 
-function FilterForm () {
+class FilterPanel extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = { showFilters: false };
+
+    this.togglePanel = this.togglePanel.bind(this);
+  }
+
+  togglePanel = () => {
+    this.setState(prevState => ({
+      showFilters: !prevState.showFilters
+    }));    
+  }
+
+  render() {
+    return (
+      <div id="filterPanel">
+        <span>Search Globally</span>
+        <button id="editFiltersButton" onClick={this.togglePanel}>Edit Filters</button>
+        <FilterForm show={this.state.showFilters} loadFilteredContent={this.props.loadFilteredContent}/>
+      </div>
+    );
+  }
+}
+
+const FilterForm = (props) => {
 
   let filterTypes = ["Folder name", "Content name", "Author", "Creation date"];
 
@@ -1207,16 +1286,14 @@ function FilterForm () {
 
   function handleChange(i, event, field) {
     const values = [...filters];
-    console.log(field);
-    console.log(event);
     if (field == "type") {
       values[i].type = event.target.value;
+      values[i].operator = allowedOperators[event.target.value][0];
     } else if (field == "operator") {
       values[i].operator = event.target.value;
     } else {
       values[i].value = event.target.value;
     }
-    
     setFilters(values);
   }
 
@@ -1232,10 +1309,15 @@ function FilterForm () {
     setFilters(values);
   }
 
-  return (
-    <div className="App">
-      <button type="button" onClick={() => handleAdd()}> + </button>
+  function handleSearch() {
+    const values = [...filters];
+    props.loadFilteredContent(values);
+  }
 
+  return (
+    props.show && 
+    <div id="filterForm">
+      <button type="button" onClick={() => handleAdd()}> + </button>
       {filters.map((filter, idx) => {
         return (
           <div key={`${filter}-${idx}`}>
@@ -1244,23 +1326,31 @@ function FilterForm () {
                 return <option key={"filterType" + Math.random() * 50} value={filterType}>{filterType}</option>
               })}
             </select>
-            <select onChange={e => handleChange(idx, e, "operator")} value={allowedOperators[filter.type][0]}>
+            <select onChange={e => handleChange(idx, e, "operator")} value={filter.operator}>
               {allowedOperators[filter.type].map(operator => {
                 return <option key={"filterType" + Math.random() * 50} value={operator}>{operator}</option>
               })}
             </select>
+            { filter.type == "Creation date" ?
+            <input type="datetime-local" id="meeting-time"
+              name="meeting-time" onChange={e => handleChange(idx, e, "value")}
+              value={filter.value}
+              ></input>
+            :
             <input
               type="text"
-              placeholder="Enter text"
+              placeholder={filter.type == "Author" ? "Username/Last Name/First Name" : ""}
               value={filter.value || ""}
               onChange={e => handleChange(idx, e, "value")}
             />
+            }
             <button type="button" onClick={() => handleRemove(idx)}>
               X
             </button>
           </div>
         );
       })}
+      <button type="button" onClick={() => handleSearch()}> Apply Filters </button>
     </div>
   );
 }
