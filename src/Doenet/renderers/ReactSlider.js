@@ -304,11 +304,19 @@ export default class ReactSlider extends React.Component {
   }
 
   handleMouseMove(e) {
+  
+    
+    
     if (this.props.disabled){return;}
     
     if(this.dragging){
 
-      let dragFromLeft = e.clientX - this.x;
+      let clientX = e.clientX;
+      if (e.touches){
+        clientX = e.touches[0].clientX;
+      }
+      let dragFromLeft = clientX - this.x;
+      // let dragFromLeft = e.clientX - this.x;
       if (dragFromLeft < this.trackLeftMostPixel) { dragFromLeft = this.trackLeftMostPixel; }
       if (dragFromLeft > this.trackRightMostPixel) { dragFromLeft = this.trackRightMostPixel; }
   
@@ -321,6 +329,7 @@ export default class ReactSlider extends React.Component {
   }
 
   mouseButtonUpForHandle(e) {
+    
     this.dragging = false;
     let dragFromLeft = e.clientX;
     if (dragFromLeft < this.trackLeftMostPixel) { dragFromLeft = this.trackLeftMostPixel; }
@@ -329,6 +338,7 @@ export default class ReactSlider extends React.Component {
   }
 
   clickLeftControl(e) {
+    
     //Don't go beyond the slider's index range
     if (this.props.index <= 0) { return; }
 
@@ -506,6 +516,7 @@ export default class ReactSlider extends React.Component {
     let handle = (
       <span 
       onMouseDown={this.mouseButtonDownOnHandle}
+      onTouchStart={this.mouseButtonDownOnHandle}
       style={handle_style} 
       data-cy={`${_key}slider-handle`}>
         <span style={handle_label_style}>
@@ -521,6 +532,9 @@ export default class ReactSlider extends React.Component {
       style={slider_style} 
       ref={this.sliderRef}
       onMouseMove={this.handleMouseMove}
+      onTouchMove={this.handleMouseMove}
+      onTouchEnd={()=>{this.dragging = false;}}
+
       onMouseLeave={()=>{this.dragging = false;}}
       onMouseUp={()=>{this.dragging = false;}}
       >
