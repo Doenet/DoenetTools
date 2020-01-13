@@ -264,27 +264,37 @@ class DoenetHomePage extends Component {
 
               <div className="chocolate-color section">
                 <div className="section-text">
+                  <h1 className="section-headline">Introducing DoenetML</h1>
+                  <p>DoenetML is a mark up language an author uses to write content using the semantic meaning of the content. Click the button below to visit our Guest Editor.  </p>
+                    <button onClick={()=>location.href = "/guestEditor"}>Guest Editor</button>
+                    <p style={{marginTop:"14px",marginBottom:"2px"}}>Click on a button below to navigate to a demo.</p>
+                    <div style={{display:"inline-flex",flexDirection: "column"}}>
+                    <span>Description here <button style={{margin:"3px"}} onClick={()=>location.href = "/guestEditor/?contentId=a15bcb12dfd82a95740d19c5a799fdfbeef01c74a244f523537fa66ac9b13b98"}>Demo 1</button> </span>
+                    <span>Description here <button style={{margin:"3px"}} onClick={()=>location.href = "/guestEditor/?contentId=a15bcb12dfd82a95740d19c5a799fdfbeef01c74a244f523537fa66ac9b13b98"}>Demo 2</button> </span>
+                    <span>Description here <button style={{margin:"3px"}} onClick={()=>location.href = "/guestEditor/?contentId=a15bcb12dfd82a95740d19c5a799fdfbeef01c74a244f523537fa66ac9b13b98"}>Demo 3</button> </span>
+                    </div>
+                </div>
+              </div> 
+              
+              <div className="shadow-color section">
+                <div className="section-text">
                   <h1 className="section-headline">Multiuser Demonstration</h1>
                   <p>Multiple users can collaborate on any content written in Doenet.  Collaboration is started by clicking 
                     on the "Collaborate" button at the top right of interactive content. From there you can join an existing group or create your own.    </p>
                     <p>Click on a button below to navigate to a demo.</p>
-                    <div style={{marginBottom:"5px"}}>Basic <button style={{margin:"3px"}} onClick={()=>location.href = "/page/?contentId=a15bcb12dfd82a95740d19c5a799fdfbeef01c74a244f523537fa66ac9b13b98"}>Demo 1a</button> 
-                    <button style={{margin:"3px"}}  onClick={()=>location.href = "/page/?contentId=aa689f00de1272a608bb731918ba45901567f71b8810955b39cb651ebdc021a8"}>Demo 2a</button>
-                    <button  style={{margin:"3px"}} disabled>Demo 3a</button></div>
-                    <div>Advanced <button style={{margin:"3px"}} disabled>Demo 1b</button> 
-                    <button style={{margin:"3px"}} disabled>Demo 2b</button> 
-                    <button style={{margin:"3px"}} disabled>Demo 3b</button></div>
+                    <div style={{marginBottom:"5px"}}> <button style={{margin:"3px"}} onClick={()=>location.href = "/page/?contentId=4ff81bb91641a2ee576c7ba9a0be61382568b99ca7f166a8520747e60e61cd01"}>Demo 1a</button> 
+                    <button style={{margin:"3px"}}  onClick={()=>location.href = "/page/?contentId=aa689f00de1272a608bb731918ba45901567f71b8810955b39cb651ebdc021a8"}>Demo 1b</button>
+                    <button  style={{margin:"3px"}} onClick={()=>location.href = "/page/?contentId=aa689f00de1272a608bb731918ba45901567f71b8810955b39cb651ebdc021a8"} >Demo 1c</button></div>
+                    <div><button style={{margin:"3px"}} onClick={()=>location.href = "/page/?contentId=4ff81bb91641a2ee576c7ba9a0be61382568b99ca7f166a8520747e60e61cd01"}>Demo 2a</button> 
+                    <button style={{margin:"3px"}}  onClick={()=>location.href = "/page/?contentId=aa689f00de1272a608bb731918ba45901567f71b8810955b39cb651ebdc021a8"}>Demo 2b</button>
+                    <button  style={{margin:"3px"}} onClick={()=>location.href = "/page/?contentId=aa689f00de1272a608bb731918ba45901567f71b8810955b39cb651ebdc021a8"} >Demo 2c</button></div>
                 </div>
               </div> 
 
-              <div className="shadow-color section">
-                <div className="section-text">
-                  <h1 className="section-headline">Try out DoenetML</h1>
-                  <p>DoenetML is a mark up language an author uses to write content using the semantic meaning of the content. Click the button below to visit our Guest Editor.  </p>
-                    <button onClick={()=>location.href = "/guestEditor"}>Guest Editor</button>
-                    
-                </div>
-              </div> 
+              
+
+
+              
               
              
 
