@@ -256,6 +256,7 @@ class DoenetHomePage extends Component {
                 <div className="section-text">
                   <h1 className="section-headline">The Distributed Open Education Network</h1>
                   <h4 style={{marginTop: "0px"}}>The free and open data-driven educational technology platform</h4>
+                
                   <p style={{textAlign: "left"}}>The Distributed Open Education Network (Doenet) is, at its core, a mechanism for measuring and
                      sharing student interactions with web pages and storing anonymized data in an open distributed data warehouse.  
                      The Doenet platform will include tools for authoring interactive educational content, conducting educational 
