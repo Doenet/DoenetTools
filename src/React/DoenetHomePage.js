@@ -255,39 +255,47 @@ class DoenetHomePage extends Component {
               <div className="cloud-color section">
                 <div className="section-text">
                   <h1 className="section-headline">The Distributed Open Education Network</h1>
-                  <p>The Distributed Open Education Network (Doenet) that is, at its core, a mechanism for measuring and
+                  <h4 style={{marginTop: "0px"}}>The free and open data-driven educational technology platform</h4>
+                  <p style={{textAlign: "left"}}>The Distributed Open Education Network (Doenet) is, at its core, a mechanism for measuring and
                      sharing student interactions with web pages and storing anonymized data in an open distributed data warehouse.  
                      The Doenet platform will include tools for authoring interactive educational content, conducting educational 
                      research using the content, and discovering the most effective content based on the research results. </p>
+
+                  <p style={{textAlign:"left"}}>The Doenet platform is just getting started.  We are excited to introduce early versions of two projects: DoenetML, a markup language for authoring interactive online activities, and DoenetAPI, a library for connecting web pages to the Doenet data layer, enabling tracking of student data across web pages and multiuser interactives.</p>
                 </div>
               </div> 
 
               <div className="chocolate-color section">
                 <div className="section-text">
                   <h1 className="section-headline">Introducing DoenetML</h1>
-                  <p>DoenetML is a mark up language an author uses to write content using the semantic meaning of the content. Click the button below to visit our Guest Editor.  </p>
-                    <button onClick={()=>location.href = "/guestEditor"}>Guest Editor</button>
-                    <p style={{marginTop:"14px",marginBottom:"2px"}}>Click on a button below to navigate to a demo.</p>
+                  <p style={{textAlign:"left"}}>The markup language DoenetML allows you to build richly interactive activities by focusing on the meaning of the elements you wish to create.  Based on <a href="http://pretextbook.org">PreTeXt</a>, DoenetML looks similar to HTML, with descriptive tags such as <code>&lt;point&gt;</code>, <code>&lt;intersection&gt;</code>, and <code>&lt;answer&gt;</code>.</p>
+
+                  <p style={{textAlign:"left"}}>You can experiment with a preliminary version of DoenetML by clicking the Guest Editor button.  Only a small subset of DoenetML tags are implemented in this version.</p>
+                    <button onClick={()=>location.href = "/guestEditor/?contentId=974ce22bae0fa1d313c9aa203e4eb32488c842de1be30780110cd887ce0a3555"}>Guest Editor</button>
+
+
+                    
+                    <p style={{marginTop:"14px",marginBottom:"2px"}}>You can use the guest editor to explore additional sample DoenetML activities.</p>
                     <div style={{display:"inline-flex",flexDirection: "column"}}>
-                    <span>Description here <button style={{margin:"3px"}} onClick={()=>location.href = "/guestEditor/?contentId=a15bcb12dfd82a95740d19c5a799fdfbeef01c74a244f523537fa66ac9b13b98"}>Demo 1</button> </span>
-                    <span>Description here <button style={{margin:"3px"}} onClick={()=>location.href = "/guestEditor/?contentId=a15bcb12dfd82a95740d19c5a799fdfbeef01c74a244f523537fa66ac9b13b98"}>Demo 2</button> </span>
-                    <span>Description here <button style={{margin:"3px"}} onClick={()=>location.href = "/guestEditor/?contentId=a15bcb12dfd82a95740d19c5a799fdfbeef01c74a244f523537fa66ac9b13b98"}>Demo 3</button> </span>
+                    <span> <button style={{margin:"3px"}} onClick={()=>location.href = "/guestEditor/?contentId=a11c2db8fcc6280a91e763fcdf01de8b0770afffa4e70c5ef8d2fa670564eda4"}>A line through two points</button> </span>
+                    <span> <button style={{margin:"3px"}} onClick={()=>location.href = "/guestEditor/?contentId=19b3992f020a2d6c738eaad37d19a81908e9f7508b51586ad90d6b9af294b4c8"}>The derivative of a quadratic</button> </span>
+                    <span><button style={{margin:"3px"}} onClick={()=>location.href = "/guestEditor/?contentId=ea679d587429fbeab982f296857eb856db3214da7327797553f285fe5ce72de3"}>Undamped pendulum simulation</button> </span>
                     </div>
                 </div>
               </div> 
               
               <div className="shadow-color section">
                 <div className="section-text">
-                  <h1 className="section-headline">Multiuser Demonstration</h1>
-                  <p>Multiple users can collaborate on any content written in Doenet.  Collaboration is started by clicking 
+                  <h1 className="section-headline">Introducing DoenetAPI</h1>
+                  <p  style={{textAlign:"left"}}>DoenetAPI saves data from web pages, allowing instructors to evaluate student perfomance on any web page using DoenetAPI.  In addition, multiple users can collaborate on content written using DoenetAPI.  Collaboration is started by clicking 
                     on the "Collaborate" button at the top right of interactive content. From there you can join an existing group or create your own.    </p>
                     <p>Click on a button below to navigate to a demo.</p>
                     <div style={{marginBottom:"5px"}}> <button style={{margin:"3px"}} onClick={()=>location.href = "/page/?contentId=4ff81bb91641a2ee576c7ba9a0be61382568b99ca7f166a8520747e60e61cd01"}>Demo 1a</button> 
-                    <button style={{margin:"3px"}}  onClick={()=>location.href = "/page/?contentId=aa689f00de1272a608bb731918ba45901567f71b8810955b39cb651ebdc021a8"}>Demo 1b</button>
-                    <button  style={{margin:"3px"}} onClick={()=>location.href = "/page/?contentId=aa689f00de1272a608bb731918ba45901567f71b8810955b39cb651ebdc021a8"} >Demo 1c</button></div>
-                    <div><button style={{margin:"3px"}} onClick={()=>location.href = "/page/?contentId=4ff81bb91641a2ee576c7ba9a0be61382568b99ca7f166a8520747e60e61cd01"}>Demo 2a</button> 
-                    <button style={{margin:"3px"}}  onClick={()=>location.href = "/page/?contentId=aa689f00de1272a608bb731918ba45901567f71b8810955b39cb651ebdc021a8"}>Demo 2b</button>
-                    <button  style={{margin:"3px"}} onClick={()=>location.href = "/page/?contentId=aa689f00de1272a608bb731918ba45901567f71b8810955b39cb651ebdc021a8"} >Demo 2c</button></div>
+                    <button style={{margin:"3px"}}  onClick={()=>location.href = "/page/?contentId=9158f1944b46e39d2bcf7bd912c291d9ace59b882c0059615fd002b6e69b66d9"}>Demo 1b</button>
+                    <button  style={{margin:"3px"}} onClick={()=>location.href = "/page/?contentId=0184d996a7394bcf9e45cabd1de64cf9e04962e48a2ad952ca149dc4bed8ba63"} >Demo 1c</button></div>
+                    <div><button style={{margin:"3px"}} onClick={()=>location.href = "/page/?contentId=aa689f00de1272a608bb731918ba45901567f71b8810955b39cb651ebdc021a8"}>Demo 2a</button> 
+                    <button style={{margin:"3px"}}  onClick={()=>location.href = "/page/?contentId=6626b57cc3dcb369ddfb4ef412d514692613701c773ad31f9359d589a2a26674"}>Demo 2b</button>
+                    <button  style={{margin:"3px"}} onClick={()=>location.href = "/page/?contentId=e7337aea5a4558326669a88ba737eea65bbe044d16e1c889b793eff94549dded"} >Demo 2c</button></div>
                 </div>
               </div> 
 
@@ -336,6 +344,8 @@ class DoenetHomePage extends Component {
            
             <div className="footer">
               <div className="footer-logo-container">
+                <h4 style={{marginBottom: "0px"}}>Contact us</h4> 
+                <div style={{marginBottom: "20px"}}><a href="mailto:info@doenet.org">info@doenet.org</a></div>
                 <p> 
                   <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
                     <img alt="Creative Commons License" style={{borderWidth:0}} src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>

@@ -46,6 +46,9 @@ body{
   color:#e3d2d2;
   /* border: 2px solid black; */
 }
+.chocolate-color a {
+  color: #6de5ff;
+}
 .sky-color{
   background-color: #6de5ff;
   color:#333333;
