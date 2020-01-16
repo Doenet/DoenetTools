@@ -829,7 +829,7 @@ class DoenetChooser extends Component {
       "Folder name" : "title",
       "Content name" : "title",
       "Author" : "author",
-      "Creation date" : "creationDate"
+      "Creation date" : "timestamp"
     }
     const operatorsToSQLMap = {
       "IS" : "=",
@@ -849,16 +849,18 @@ class DoenetChooser extends Component {
     let contentOnly = false;
     filters.forEach(filter => {
       let sql = "";
+      let filterValue = filter.value;
       if (filter.type == "Folder name") folderOnly = true;
       else if (filter.type == "Content name") contentOnly = true;
+      else if (filter.type == "Creation date") filterValue = new Date(filterValue).toISOString().slice(0, 19).replace('T', ' ');
 
       sql += `${typeToSQLMap[filter.type]} ${operatorsToSQLMap[filter.operator]} `;
       if (filter.operator == "IS LIKE" || filter.operator == "IS NOT LIKE") {
-        sql += `'%${filter.value}%'`;        
+        sql += `'%${filterValue}%'`;        
       } else {
-        sql += `'${filter.value}'`;
+        sql += `'${filterValue}'`;
       }
-      if (filter.value != null) processedFilters.push(sql);
+      if (filterValue != null) processedFilters.push(sql);
     })
 
     if (folderOnly && contentOnly) {
@@ -879,7 +881,6 @@ class DoenetChooser extends Component {
       this.sort_order = resp.data.sort_order;
       this.branches_loaded = true;
       this.forceUpdate();
-      console.log(this.sort_order);
     })
     .catch(function (error) {
       this.setState({error:error});
