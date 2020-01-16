@@ -441,8 +441,8 @@ class DoenetChooser extends Component {
         activeSection: "chooser",
         selectedDrive: drive,
         directoryStack: []});
-      // this.folders_loaded = false;
-      // this.branches_loaded = false;
+      this.sort_order = [];
+      this.folderIds = [];
     } else {
       this.setState({
         selectedItems: [],
@@ -832,13 +832,18 @@ class DoenetChooser extends Component {
       "Creation date" : "creationDate"
     }
     const operatorsToSQLMap = {
-      "IS" : "==",
+      "IS" : "=",
       "IS NOT" : "!=",
       "IS LIKE" : "LIKE",
       "IS NOT LIKE" : "NOT LIKE",
-      "ON" : "==",
+      "ON" : "=",
+      "<" : "<",
+      "<=" : "<=",
+      ">" : ">",
+      ">=" : ">="
     }
     // process filters
+    this.branches_loaded = false;
     let processedFilters = [];
     let folderOnly = false;
     let contentOnly = false;
@@ -849,28 +854,36 @@ class DoenetChooser extends Component {
 
       sql += `${typeToSQLMap[filter.type]} ${operatorsToSQLMap[filter.operator]} `;
       if (filter.operator == "IS LIKE" || filter.operator == "IS NOT LIKE") {
-        sql += `%${filter.value}%`;        
+        sql += `'%${filter.value}%'`;        
       } else {
-        sql += `${filter.value}`;        
+        sql += `'${filter.value}'`;
       }
       if (filter.value != null) processedFilters.push(sql);
     })
 
-    console.log(processedFilters);
+    if (folderOnly && contentOnly) {
+      folderOnly = false;
+      contentOnly = false;
+    }
 
-    // // const url='/api/loadFilteredContent.php';
-    // // const data={
-    // //   folderOnly: folderOnly,
-    // //   contentOnly: contentOnly,
-    // //   filters: processedFilters
-    // // }
-    // // axios.post(url, data)
-    // // .then(resp => {
-    // //   callback();
-    // // })
-    // // .catch(function (error) {
-    // //   this.setState({error:error});
-    // // })
+    const url='/api/loadFilteredContent.php';
+    const data={
+      folderOnly: folderOnly,
+      contentOnly: contentOnly,
+      filters: processedFilters
+    }
+    axios.post(url, data)
+    .then(resp => {
+      callback();
+      this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchId_info);
+      this.sort_order = resp.data.sort_order;
+      this.branches_loaded = true;
+      this.forceUpdate();
+      console.log(this.sort_order);
+    })
+    .catch(function (error) {
+      this.setState({error:error});
+    })
   }
 
   render(){
@@ -900,7 +913,7 @@ class DoenetChooser extends Component {
     else {
       let folderList = [];
       let contentList = [];
-      if (this.state.selectedDrive == "Content") {
+      if (this.state.selectedDrive == "Content" || this.state.selectedDrive == "Global") {
         folderList = this.folderIds;
         contentList = this.sort_order;
       } else if (this.state.selectedDrive == "Courses") {
@@ -1289,6 +1302,7 @@ const FilterForm = (props) => {
     if (field == "type") {
       values[i].type = event.target.value;
       values[i].operator = allowedOperators[event.target.value][0];
+      if (values[i].type == "Creation date") values[i].value = "2020-01-01T00:00";
     } else if (field == "operator") {
       values[i].operator = event.target.value;
     } else {
@@ -1334,7 +1348,7 @@ const FilterForm = (props) => {
             { filter.type == "Creation date" ?
             <input type="datetime-local" id="meeting-time"
               name="meeting-time" onChange={e => handleChange(idx, e, "value")}
-              value={filter.value}
+              value={filter.value || "2020-01-01T00:00"}
               ></input>
             :
             <input
