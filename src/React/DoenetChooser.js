@@ -1279,7 +1279,7 @@ class FilterPanel extends Component {
       <div id="filterPanel">
         <span>Search Globally</span>
         <button id="editFiltersButton" onClick={this.togglePanel}>Edit Filters</button>
-        <FilterForm show={this.state.showFilters} loadFilteredContent={this.props.loadFilteredContent}/>
+        <FilterForm show={this.state.showFilters} loadFilteredContent={this.props.loadFilteredContent} togglePanel={this.togglePanel}/>
       </div>
     );
   }
@@ -1330,6 +1330,7 @@ const FilterForm = (props) => {
   function handleSearch() {
     const values = [...filters];
     props.loadFilteredContent(values);
+    props.togglePanel();
   }
 
   return (
