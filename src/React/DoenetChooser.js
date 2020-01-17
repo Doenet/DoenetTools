@@ -1287,16 +1287,16 @@ class FilterPanel extends Component {
 
 const FilterForm = (props) => {
 
-  let filterTypes = ["Folder name", "Content name", "Author", "Creation date"];
+  let filterTypes = ["Content name", "Folder name", "Author", "Creation date"];
 
   let allowedOperators = {
-    "Folder name" : ["IS LIKE", "IS NOT LIKE", "IS", "IS NOT"],
     "Content name" : ["IS LIKE", "IS NOT LIKE", "IS", "IS NOT"],
+    "Folder name" : ["IS LIKE", "IS NOT LIKE", "IS", "IS NOT"],
     "Author" : ["IS", "IS NOT"],
     "Creation date" : ["ON", "<", "<=", ">", ">="]
   }
   
-  const [filters, setFilters] = useState([{ type: "Folder name", operator: "IS LIKE", value: null}]);
+  const [filters, setFilters] = useState([{ type: "Content name", operator: "IS LIKE", value: null}]);
 
   function handleChange(i, event, field) {
     const values = [...filters];
@@ -1304,6 +1304,7 @@ const FilterForm = (props) => {
       values[i].type = event.target.value;
       values[i].operator = allowedOperators[event.target.value][0];
       if (values[i].type == "Creation date") values[i].value = "2020-01-01T00:00";
+      else values[i].value = "";
     } else if (field == "operator") {
       values[i].operator = event.target.value;
     } else {
@@ -1314,13 +1315,15 @@ const FilterForm = (props) => {
 
   function handleAdd() {
     const values = [...filters];
-    values.push({ type: "Folder name", operator: "IS LIKE", value: null});
+    values.push({ type: "Content name", operator: "IS LIKE", value: null});
     setFilters(values);
   }
 
   function handleRemove(i) {
     const values = [...filters];
-    values.splice(i, 1);
+    if (values.length != 1) {
+      values.splice(i, 1);
+    }
     setFilters(values);
   }
 
@@ -1332,40 +1335,42 @@ const FilterForm = (props) => {
   return (
     props.show && 
     <div id="filterForm">
-      <button type="button" onClick={() => handleAdd()}> + </button>
+      <button id="addFilterButton" type="button" onClick={() => handleAdd()}> + </button>
       {filters.map((filter, idx) => {
         return (
-          <div key={`${filter}-${idx}`}>
-            <select onChange={e => handleChange(idx, e, "type")} value={filter.type}>
+          <div className="filter" key={`${filter}-${idx}`}>
+            <select className="filterSelectInput" onChange={e => handleChange(idx, e, "type")} value={filter.type}>
               {filterTypes.map(filterType => {
                 return <option key={"filterType" + Math.random() * 50} value={filterType}>{filterType}</option>
               })}
             </select>
-            <select onChange={e => handleChange(idx, e, "operator")} value={filter.operator}>
+            <select className="filterSelectInput" onChange={e => handleChange(idx, e, "operator")} value={filter.operator}>
               {allowedOperators[filter.type].map(operator => {
                 return <option key={"filterType" + Math.random() * 50} value={operator}>{operator}</option>
               })}
             </select>
             { filter.type == "Creation date" ?
             <input type="datetime-local" id="meeting-time"
+              className="filterValueInput"
               name="meeting-time" onChange={e => handleChange(idx, e, "value")}
               value={filter.value || "2020-01-01T00:00"}
               ></input>
             :
             <input
               type="text"
-              placeholder={filter.type == "Author" ? "Username/Last Name/First Name" : ""}
+              className="filterValueInput"
+              placeholder={filter.type == "Author" ? "Username/Last or First Name" : ""}
               value={filter.value || ""}
               onChange={e => handleChange(idx, e, "value")}
             />
             }
-            <button type="button" onClick={() => handleRemove(idx)}>
+            <button id="removeFilterButton" type="button" onClick={() => handleRemove(idx)}>
               X
             </button>
           </div>
         );
       })}
-      <button type="button" onClick={() => handleSearch()}> Apply Filters </button>
+      <button id="applyFilterButton" type="button" onClick={() => handleSearch()}> Apply Filters </button>
     </div>
   );
 }
