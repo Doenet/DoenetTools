@@ -427,10 +427,17 @@ input[type=number]::-webkit-outer-spin-button {
   flex-wrap: wrap;
 }
 
+#filterPanel {
+  display: flex;
+  align-items: center;
+}
+
 #filterForm {
   position:absolute;
   height: auto;
   z-index: 10;
+  top: 140px;
+  left: 330px;
   background: #fff;
   border: 1px solid #ccc;
   border-color: rgba(0,0,0,.2);

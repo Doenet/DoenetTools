@@ -879,6 +879,7 @@ class DoenetChooser extends Component {
       callback();
       this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchId_info);
       this.sort_order = resp.data.sort_order;
+      console.log(this.branchId_info);
       this.branches_loaded = true;
       this.forceUpdate();
     })
