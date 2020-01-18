@@ -109,7 +109,6 @@ if (!$contentOnly) {
   //   }
   // }
 
-  // $all_fi_array_imploded = join(',', array_map('intval', $all_fi_array));
   // // get children content and folders
   // $sql="
   // SELECT 
@@ -120,7 +119,7 @@ if (!$contentOnly) {
   // f.public as public
   // FROM folder_content AS fc
   // LEFT JOIN folder f ON fc.childId = f.folderId
-  // WHERE fc.removedFlag=0 AND f.public=1 AND fc.folderId IN ($all_fi_array_imploded)
+  // WHERE fc.removedFlag=0 AND f.public=1 AND fc.folderId IN ('".implode("','",$all_fi_array)."')
   // ORDER BY fc.folderId
   // ";
 

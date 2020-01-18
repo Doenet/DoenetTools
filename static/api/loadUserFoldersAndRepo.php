@@ -78,7 +78,7 @@ if ($result->num_rows > 0){
     );
   }
 }
-$all_fi_array_imploded = join(',', array_map('intval', $all_fi_array));
+
 // get children content and folders
 $sql="
 SELECT 
@@ -87,7 +87,7 @@ SELECT
  fc.childType as childType,
  fc.timestamp as creationDate
 FROM folder_content AS fc
-WHERE fc.removedFlag=0 AND fc.folderId IN ($all_fi_array_imploded)
+WHERE fc.removedFlag=0 AND fc.folderId IN ('".implode("','",$all_fi_array)."')
 ORDER BY fc.folderId
 ";
 

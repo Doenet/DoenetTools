@@ -396,7 +396,8 @@ class DoenetChooser extends Component {
     axios.get(loadCoursesUrl,payload)
     .then(resp=>{
       this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchInfo);
-      this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
+      // this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
+      this.folderInfo = {...this.folderInfo, ...resp.data.folderInfo};
       this.folders_loaded = true;
       this.branches_loaded = true;
       callback();
@@ -879,7 +880,6 @@ class DoenetChooser extends Component {
       callback();
       this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchId_info);
       this.sort_order = resp.data.sort_order;
-      console.log(this.branchId_info);
       this.branches_loaded = true;
       this.forceUpdate();
     })
