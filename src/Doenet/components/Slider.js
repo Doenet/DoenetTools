@@ -1,60 +1,65 @@
 import BaseComponent from './abstract/BaseComponent';
 
 export default class Slider extends BaseComponent {
+  constructor(args) {
+    super(args);
+    this.changeValue = this.changeValue.bind(this);
+  }
   static componentType = "slider";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
-    properties.width = {default: 300};
-    properties.height = {default: 50};
-    properties.initialnumber = {default: undefined};
-    properties.initialtext = {default: undefined};
-    properties.label = {default: undefined};
-    properties.showcontrols = {default: false};
-    properties.showticks = {default: true};
-    
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
+    properties.width = { default: 300 };
+    properties.height = { default: 50 };
+    properties.initialNumber = { default: undefined };
+    properties.initialText = { default: undefined };
+    properties.label = { default: undefined };
+    properties.showControls = { default: false };
+    properties.showTicks = { default: true };
+    properties.collaborateGroups = { default: undefined };
+
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
 
-    let AtLeastOneNumbers = childLogic.newLeaf({
-      name: "AtLeastOneNumbers",
+    let atLeastOneNumbers = childLogic.newLeaf({
+      name: "atLeastOneNumbers",
       componentType: 'number',
       comparison: 'atLeast',
       number: 1,
     });
-    let AtLeastOneTexts = childLogic.newLeaf({
-      name: "AtLeastOneTexts",
+    let atLeastOneTexts = childLogic.newLeaf({
+      name: "atLeastOneTexts",
       componentType: 'text',
       comparison: 'atLeast',
       number: 1,
     });
 
-    let AtMostOneMarkers = childLogic.newLeaf({
-      name: "AtMostOneMarkers",
+    // let exactlyOneSequence = childLogic.newLeaf({
+    //   name: "exactlyOneSequence",
+    //   componentType: 'sequence',
+    //   number: 1,
+    // });
+
+    let numbersXorTextsXorSequence = childLogic.newOperator({
+      name: "numbersXorTextsXorSequence",
+      operator: 'xor',
+      propositions: [atLeastOneNumbers, atLeastOneTexts, /*exactlyOneSequence*/],
+    });
+
+    let atMostOneMarkers = childLogic.newLeaf({
+      name: "atMostOneMarkers",
       componentType: 'markers',
       comparison: 'atMost',
       number: 1,
-    });
-    
-    let NumbersXorTexts = childLogic.newOperator({
-      name: "NumbersXorTexts",
-      operator: 'xor',
-      propositions: [AtLeastOneNumbers, AtLeastOneTexts],
     });
 
     childLogic.newOperator({
       name: "SliderLogic",
       operator: 'and',
-      propositions: [NumbersXorTexts, AtMostOneMarkers],
+      propositions: [numbersXorTextsXorSequence, atMostOneMarkers],
       setAsBase: true,
     });
 
@@ -62,331 +67,382 @@ export default class Slider extends BaseComponent {
     return childLogic;
   }
 
-  updateState(args={}) {
-    if(args.init) {
 
-      this.makePublicStateVariable({
-        variableName: "value",
-        componentType: "text"  // placeholder until know slider type
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.sliderType = {
+      returnDependencies: () => ({
+        textChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastOneTexts",
+        },
+        numberChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastOneNumbers",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        let sliderType;
+        if (dependencyValues.textChildren.length > 0) {
+          sliderType = "text";
+        } else {
+          sliderType = "number"
+        }
+        return { newValues: { sliderType } }
+      }
+    }
+
+    stateVariableDefinitions.items = {
+      public: true,
+      isArray: true,
+      entryPrefixes: ["item"],
+      returnDependencies: () => ({
+        textChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastOneTexts",
+          variableNames: ["value"]
+        },
+        numberChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastOneNumbers",
+          variableNames: ["value"]
+        },
+        sliderType: {
+          dependencyType: "stateVariable",
+          variableName: "sliderType"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let items;
+
+        if (dependencyValues.sliderType === "text") {
+          items = dependencyValues.textChildren.map(x => x.stateValues.value);
+        } else {
+          items = dependencyValues.numberChildren.map(x => x.stateValues.value);
+          items.sort((a, b) => { return a - b; }); //sort in number order
+        }
+
+        return {
+          newValues: { items },
+          setComponentType: dependencyValues.sliderType,
+        };
+      }
+    }
+
+    stateVariableDefinitions.valueToIndex = {
+      returnDependencies: () => ({
+        items: {
+          dependencyType: "stateVariable",
+          variableName: "items"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        let valueToIndex = {};
+        for (let [ind, item] of dependencyValues.items.entries()) {
+          valueToIndex[item] = ind;
+        }
+        return { newValues: { valueToIndex } }
+      }
+    }
+
+
+    stateVariableDefinitions.preliminaryValue = {
+      returnDependencies: () => ({
+        sliderType: {
+          dependencyType: "stateVariable",
+          variableName: "sliderType"
+        },
+        initialNumber: {
+          dependencyType: "stateVariable",
+          variableName: "initialNumber"
+        },
+        initialText: {
+          dependencyType: "stateVariable",
+          variableName: "initialText"
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          useEssentialOrDefaultValue: {
+            preliminaryValue: {
+              variablesToCheck: "value",
+              get defaultValue() {
+                if (dependencyValues.sliderType === "text") {
+                  return dependencyValues.initialText;
+                } else {
+                  return dependencyValues.initialNumber;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.index = {
+      returnDependencies: () => ({
+        sliderType: {
+          dependencyType: "stateVariable",
+          variableName: "sliderType"
+        },
+        valueToIndex: {
+          dependencyType: "stateVariable",
+          variableName: "valueToIndex",
+        },
+        items: {
+          dependencyType: "stateVariable",
+          variableName: "items",
+        },
+        preliminaryValue: {
+          dependencyType: "stateVariable",
+          variableName: "preliminaryValue"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let value = findClosestValidValue(dependencyValues);
+
+        //The text value might not match so choose the first item
+        let index = 0;
+
+        if (value !== undefined) {
+          index = dependencyValues.valueToIndex[value];
+        }
+
+        return { newValues: { index } }
+
+      }
+
+    }
+
+    stateVariableDefinitions.value = {
+      public: true,
+      returnDependencies: () => ({
+        sliderType: {
+          dependencyType: "stateVariable",
+          variableName: "sliderType"
+        },
+        items: {
+          dependencyType: "stateVariable",
+          variableName: "items"
+        },
+        index: {
+          dependencyType: "stateVariable",
+          variableName: "index"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: { value: dependencyValues.items[dependencyValues.index] },
+          makeEssential: ["value"],
+          setComponentType: dependencyValues.sliderType,
+        }
+      },
+      inverseDefinition: invertSliderValue,
+    }
+
+    stateVariableDefinitions.markers = {
+      returnDependencies: () => ({
+        markersChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneMarkers",
+          variableNames: ["markerType", "markers"]
+        },
+        sliderType: {
+          dependencyType: "stateVariable",
+          variableName: "sliderType"
+        },
+        items: {
+          dependencyType: "stateVariable",
+          variableName: "items"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        let markers = [];
+
+        if (dependencyValues.markersChild.length === 1) {
+
+          let markerType = dependencyValues.markersChild[0].stateValues.markerType;
+
+          if (markerType === 'empty') {
+            //All Ticks become markers
+            markers = [...dependencyValues.items];
+          } else if (markerType !== dependencyValues.sliderType) {
+            //Note: no markers when they don't match and not init
+            console.warn("Markers type doesn't match slider type.");
+            markers = [];
+          } else {
+            markers = dependencyValues.markersChild[0].stateValues.markers;
+          }
+        }
+
+        return { newValues: { markers } }
+
+      }
+    }
+
+    stateVariableDefinitions.disabled = {
+      returnDependencies: () => ({
+        collaborateGroups: {
+          dependencyType: "stateVariable",
+          variableName: "collaborateGroups"
+        },
+        collaboration: {
+          dependencyType: "flag",
+          flagName: "collaboration"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          disabled: !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
+        }
+      })
+    }
+
+    return stateVariableDefinitions;
+  }
+
+
+  changeValue({ value }) {
+    if (!this.stateValues.disabled) {
+      this.requestUpdate({
+        updateType: "updateValue",
+        updateInstructions: [{
+          componentName: this.componentName,
+          stateVariable: "value",
+          value
+        }]
       });
-      this.makePublicStateVariableArray({
-        variableName: "items",
-        componentType: "text", // placeholder until know slider type
-      });
-
-      this.changeValue = this.changeValue.bind(this);
-    }
-
-    super.updateState(args);
-
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.sliderType = true;
-      this.unresolvedState.value = true;
-      this.unresolvedState.index = true;
-      this.unresolvedState.markers = true;
-      return;
-    }
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-      const textItemsIndices = this.childLogic.returnMatches('AtLeastOneTexts');
-      this.state.textChildren = textItemsIndices.map(x=>this.activeChildren[x]);
-      const numberItemsIndices = this.childLogic.returnMatches('AtLeastOneNumbers');
-      this.state.numberChildren = numberItemsIndices.map(x=>this.activeChildren[x]);
-
-      const markersIndices = this.childLogic.returnMatches('AtMostOneMarkers');
-      if(markersIndices.length === 1) {
-        this.state.markersChild = this.activeChildren[markersIndices[0]];
-      }else {
-        delete this.state.markersChild;
-        this.state.markers = [];
-      }
-      
-      if (textItemsIndices.length > 0){
-        this.state.sliderType = 'text';
-      }else if(numberItemsIndices.length > 0) {
-        this.state.sliderType = 'number';
-      }else {
-        // unneeded due to child logic....
-        throw Error('Slider can only handle number or text');
-      }
-
-      delete this.unresolvedState.sliderType;
-
-      this._state.value.componentType = this.state.sliderType;
-      this._state.items.componentType = this.state.sliderType;
-
-    }
-
-    if(this.state.sliderType === "text") {
-      if(this.state.textChildren.some(x => x.unresolvedState.value)) {
-        this.unresolvedState.value = true;
-        this.unresolvedState.index = true;
-        this.unresolvedState.markers = true;
-        return;
-      }
-
-      if(childrenChanged || this.state.textChildren.some(x => trackChanges.getVariableChanges({
-        component: x, variable: "value"
-      }))) {
-
-        this.state.items = this.textChildren.map(x=>x.state.value);
-
-        delete this.unresolvedState.items;
-
-      }
-    }else if(this.state.sliderType === "number") {
-
-      if(this.state.numberChildren.some(x => x.unresolvedState.number)) {
-        this.unresolvedState.value = true;
-        this.unresolvedState.index = true;
-        this.unresolvedState.markers = true;
-        return;
-      }
-
-      if(childrenChanged || this.state.numberChildren.some(x => trackChanges.getVariableChanges({
-        component: x, variable: "number"
-      }))) {
-
-        this.state.items = this.state.numberChildren.map(x => x.state.number);
-
-        //sort in number order
-        this.state.items.sort((a,b) => {return a-b;})
-
-        delete this.unresolvedState.items;
-
-      }
-    }
-
-    if(childrenChanged || trackChanges.getVariableChanges({component: this, variable: "items"})) {
-      this.state.valueToIndex = {};
-      for (let ind in this.state.items){
-        let item = this.state.items[ind];
-        this.state.valueToIndex[item] = ind;
-      }
-    }
-
-    // if this is first time through, set initial value
-    if(this.state.initialvalue === undefined) {
-      
-      if (this._state.value.essential === true){
-        this.state.initialvalue = this.state.value;
-      }
-      this._state.value.essential = true;
-
-      // override initial value from essential state if have children
-      if(this.state.sliderType === "number") {
-        if(this.state.initialnumber !== undefined) {
-          this.state.initialvalue = this.state.initialnumber;
-        }
-      } else if(this.state.sliderType === "text") {
-        if(this.state.initialtext !== undefined) {
-          this.state.initialvalue = this.state.initialtext;
-        }
-      }
-    
-      this.state.index = 0; //default to 0
-      if (this.state.valueToIndex[this.state.initialvalue] !== undefined){
-        this.state.index = this.state.valueToIndex[this.state.initialvalue];
-      }
-
-      this.state.value = this.state.items[this.state.index];
-
-    }else{
-
-      // since initialvalue was set already
-      // must not be first time through
-
-      this.state.value = this.findClosestValidValue(this.state.value);
-      //The text value might not match so choose the first item
-      if (this.state.value === undefined){
-        this.state.index = 0;
-        this.state.value = this.state.items[this.state.index];
-
-      } else {
-        this.state.index = this.state.valueToIndex[this.state.value];
-      }
-
-    }
-
-    delete this.unresolvedState.value;
-    delete this.unresolvedState.index;
-
-    if(this.state.markersChild) {
-      if(childrenChanged ||
-        trackChanges.getVariableChanges({
-          component: this.state.markersChild, variable: "markerType"}) ||
-        trackChanges.getVariableChanges({
-          component: this.state.markersChild, variable: "markers"})
-      ) {
-
-        let markerType = markersChild.state.markerType;
-      
-        if (markerType === 'empty'){
-          //All Ticks become markers
-          this.state.markers = [...this.state.items];
-        }else if(markerType !== this.state.sliderType) {
-          //Note: no markers when they don't match and not init
-          console.warn("Markers type doesn't match slider type.");
-          this.state.markers = [];
-        }else{
-          this.state.markers = this.state.markersChild.state.markers;
-        }
-
-        delete this.unresolvedState.markers;
-      }
     }
   }
 
-  changeValue({value}) {
-    this.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
-        componentName: this.componentName,
-        variableUpdates: {
-          value: {changes: value}
-        }
-      }]
-    });
-
-  }
-
-  initializeRenderer({}){
-    if(this.renderer !== undefined) {
+  initializeRenderer({ }) {
+    if (this.renderer !== undefined) {
       this.updateRenderer();
       return;
     }
-    
+
     const actions = {
       changeValue: this.changeValue,
     }
-    
+
     this.renderer = new this.availableRenderers.slider({
       actions: actions,
       key: this.componentName,
-      index: this.state.index,
-      items: this.state.items,
-      sliderType: this.state.sliderType,
-      width: this.state.width,
-      height: this.state.height,
-      valueToIndex: this.state.valueToIndex,
-      markers: this.state.markers,
-      label: this.state.label,
-      showcontrols: this.state.showcontrols,
-      showticks: this.state.showticks,
+      index: this.stateValues.index,
+      items: this.stateValues.items,
+      sliderType: this.stateValues.sliderType,
+      width: this.stateValues.width,
+      height: this.stateValues.height,
+      valueToIndex: this.stateValues.valueToIndex,
+      markers: this.stateValues.markers,
+      label: this.stateValues.label,
+      showControls: this.stateValues.showControls,
+      showTicks: this.stateValues.showTicks,
+      disabled: this.stateValues.disabled,
     });
   }
 
-  updateRenderer(){
+  updateRenderer() {
+
     this.renderer.updateSlider({
-      index: this.state.index,
-      items: this.state.items,
-      sliderType: this.state.sliderType,
-      width: this.state.width,
-      height: this.state.height,
-      valueToIndex: this.state.valueToIndex,
-      markers: this.state.markers,
-      label: this.state.label,
-      showcontrols: this.state.showcontrols,
-      showticks: this.state.showticks,
+      index: this.stateValues.index,
+      items: this.stateValues.items,
+      sliderType: this.stateValues.sliderType,
+      width: this.stateValues.width,
+      height: this.stateValues.height,
+      valueToIndex: this.stateValues.valueToIndex,
+      markers: this.stateValues.markers,
+      label: this.stateValues.label,
+      showControls: this.stateValues.showControls,
+      showTicks: this.stateValues.showTicks,
+      disabled: this.stateValues.disabled,
     })
-    
-  }
-
-  allowDownstreamUpdates(status) {
-    // since can't change via parents, 
-    // only non-initial change can be due to reference
-    return(status.initialChange === true || this.state.modifybyreference === true);
-  }
-
-  get variablesUpdatableDownstream() {
-    // for now, only know how to change value
-    return ["value"];
-  }
-
-  
-  calculateDownstreamChanges({stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate}) {
-
-    let newValue = this.findClosestValidValue(stateVariablesToUpdate.value.changes);
-
-    //Text value given by another component didn't match so can't update
-    if (newValue === undefined){
-      return false;
-    }
-
-    let newStateVariables = {value: {changes: newValue}};
-
-    let shadowedResult = this.updateShadowSources({
-      newStateVariables: newStateVariables,
-      dependenciesToUpdate: dependenciesToUpdate,
-    });
-    let shadowedStateVariables = shadowedResult.shadowedStateVariables;
-    let isReplacement = shadowedResult.isReplacement;
-
-    // if didn't update a downstream referenceShadow
-    // then this slider is at the bottom
-    // and we need to give core instructions to update its value explicitly
-    // if the the update is successful
-    if(!shadowedStateVariables.has("value") && !isReplacement) {
-      stateVariableChangesToSave.value = newStateVariables.value;
-    }
-
-    return true;
 
   }
 
+}
 
+function findClosestValidValue({ preliminaryValue, valueToIndex, sliderType, items }) {
 
-  findClosestValidValue(newValue) {
+  let value = preliminaryValue;
 
-    // first check if newValue is actually a known value
-    let matchedIndex = this.state.valueToIndex[newValue];
-    if(matchedIndex !== undefined) {
-      return newValue;
-    }
+  // first check if value is actually a known value
+  let matchedIndex = valueToIndex[value];
+  if (matchedIndex !== undefined) {
+    return value;
+  }
 
-    // for text, we don't have a way to find the closest value
-    if(this.state.sliderType === "text") {
-      return undefined;
-    }
+  // for text, we don't have a way to find the closest value
+  if (sliderType === "text") {
+    return undefined;
+  }
 
-    let items = this.state.items;
-    let findNextLargerIndex = function (minIndex = 0, maxIndex = items.length - 1) {
-      if (maxIndex <= minIndex + 1) {
-        if (newValue > items[minIndex]) {
-          return maxIndex;
-        }
-        else {
-          return minIndex;
-        }
-      }
-      let midIndex = Math.round((maxIndex + minIndex) / 2);
-      if (newValue > items[midIndex]) {
-        return findNextLargerIndex(midIndex, maxIndex);
+  let findNextLargerIndex = function (minIndex = 0, maxIndex = items.length - 1) {
+    if (maxIndex <= minIndex + 1) {
+      if (value > items[minIndex]) {
+        return maxIndex;
       }
       else {
-        return findNextLargerIndex(minIndex, midIndex);
+        return minIndex;
       }
-    };
-    let closeIndex = findNextLargerIndex();
-    if (closeIndex === 0) {
-      newValue = items[0];
+    }
+    let midIndex = Math.round((maxIndex + minIndex) / 2);
+    if (value > items[midIndex]) {
+      return findNextLargerIndex(midIndex, maxIndex);
     }
     else {
-      let leftValue = items[closeIndex - 1];
-      let rightValue = items[closeIndex];
-      let leftDist = Math.abs(newValue - leftValue);
-      let rightDist = Math.abs(newValue - rightValue);
-      if (leftDist < rightDist) {
-        newValue = leftValue;
-      }
-      else {
-        newValue = rightValue;
-      }
+      return findNextLargerIndex(minIndex, midIndex);
     }
-    return newValue;
+  };
+  let closeIndex = findNextLargerIndex();
+  if (closeIndex === 0) {
+    value = items[0];
   }
+  else {
+    let leftValue = items[closeIndex - 1];
+    let rightValue = items[closeIndex];
+    let leftDist = Math.abs(value - leftValue);
+    let rightDist = Math.abs(value - rightValue);
+    if (leftDist < rightDist) {
+      value = leftValue;
+    }
+    else {
+      value = rightValue;
+    }
+  }
+  return value;
+}
+
+function invertSliderValue({ desiredStateVariableValues, stateValues }) {
+
+  let newValue = findClosestValidValue({
+    preliminaryValue: desiredStateVariableValues.value,
+    valueToIndex: stateValues.valueToIndex,
+    sliderType: stateValues.sliderType,
+    items: stateValues.items
+  });
+
+  //Text value given by another component didn't match so can't update
+  if (newValue === undefined) {
+    return { success: false };
+  } else {
+    return {
+      success: true,
+      instructions: [
+        {
+          setStateVariable: "value",
+          value: newValue
+        },
+        {
+          setStateVariable: "preliminaryValue",
+          value: newValue
+        },
+      ]
+    }
+  }
+
 }

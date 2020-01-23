@@ -8,8 +8,8 @@ import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-sol
 class ChoiceinputRenderer extends BaseRenderer {
   constructor({ key, actions, choicetexts,
     selectedindices, selectmultiple, inline,
-    includeCheckWork, creditachieved, valueHasBeenValidated,
-    numbertimessubmitted, returnChoiceRenderers, showCorrectness }) {
+    includeCheckWork, creditAchieved, valueHasBeenValidated,
+    numberTimesSubmitted, returnChoiceRenderers, showCorrectness }) {
     super({ key: key });
     this.actions = actions;
     this.choicetexts = choicetexts;
@@ -17,13 +17,13 @@ class ChoiceinputRenderer extends BaseRenderer {
     this.selectmultiple = selectmultiple;
     this.inline = inline;
     this.includeCheckWork = includeCheckWork;
-    this.creditachieved = creditachieved;
+    this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
-    this.numbertimessubmitted = numbertimessubmitted;
+    this.numberTimesSubmitted = numberTimesSubmitted;
     this.returnChoiceRenderers = returnChoiceRenderers;
     this.showCorrectness = showCorrectness;
 
-    this.localNumberTimesSubmitted = this.numbertimessubmitted;
+    this.localNumberTimesSubmitted = this.numberTimesSubmitted;
 
     this.onChangeHandler = this.onChangeHandler.bind(this);
     this.localSubmitAnswer = this.localSubmitAnswer.bind(this);
@@ -32,27 +32,27 @@ class ChoiceinputRenderer extends BaseRenderer {
   updateChoiceinputRenderer({
     choicetexts,
     selectedindices,
-    creditachieved,
+    creditAchieved,
     valueHasBeenValidated,
-    numbertimessubmitted,
+    numberTimesSubmitted,
     inline,
   }) {
 
     this.choicetexts = choicetexts;
     this.selectedindices = selectedindices;
-    this.creditachieved = creditachieved;
+    this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
-    this.numbertimessubmitted = numbertimessubmitted;
+    this.numberTimesSubmitted = numberTimesSubmitted;
     this.inline = inline;
   }
 
 
 
   updateValidationState() {
-    if (this.localNumberTimesSubmitted !== this.numbertimessubmitted) {
+    if (this.localNumberTimesSubmitted !== this.numberTimesSubmitted) {
       // if number of times submitted doesn't match,
       // it means that the answer has been submitted since last pass
-      this.localNumberTimesSubmitted = this.numbertimessubmitted;
+      this.localNumberTimesSubmitted = this.numberTimesSubmitted;
       this.lastSubmittedIndices = this.selectedindices;
       this.valueAsSubmitted = true;
     } else if (!this.valueHasBeenValidated) {
@@ -63,9 +63,9 @@ class ChoiceinputRenderer extends BaseRenderer {
 
     this.validationState = "unvalidated";
     if (this.valueAsSubmitted) {
-      if (this.creditachieved === 1) {
+      if (this.creditAchieved === 1) {
         this.validationState = "correct";
-      } else if (this.creditachieved === 0) {
+      } else if (this.creditAchieved === 0) {
         this.validationState = "incorrect";
       } else {
         this.validationState = "partialcorrect";
@@ -146,7 +146,7 @@ class ChoiceinputRenderer extends BaseRenderer {
             } else if (this.validationState === "partialcorrect") {
               //partial credit
 
-              let percent = Math.round(this.creditachieved * 100);
+              let percent = Math.round(this.creditAchieved * 100);
               let partialCreditContents = `${percent} %`;
               checkWorkStyle.width = "50px";
 
@@ -257,7 +257,7 @@ class ChoiceinputRenderer extends BaseRenderer {
                 </span>);
             } else if (this.validationState === "partialcorrect") {
               checkWorkStyle.backgroundColor = "#efab34";
-              let percent = Math.round(this.creditachieved * 100);
+              let percent = Math.round(this.creditAchieved * 100);
               let partialCreditContents = `${percent}% Correct`;
 
               checkworkComponent = (

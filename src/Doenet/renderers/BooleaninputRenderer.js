@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
 
 class BooleaninputRenderer extends BaseRenderer {
-  constructor({ actions, boolean, key, label, includeCheckWork, creditachieved,
-    valueHasBeenValidated, numbertimessubmitted, showCorrectness  }) {
+  constructor({ actions, boolean, key, label, includeCheckWork, creditAchieved,
+    valueHasBeenValidated, numberTimesSubmitted, showCorrectness  }) {
     super({ key: key });
 
     this.inputKey = key + "_input";
@@ -16,12 +16,12 @@ class BooleaninputRenderer extends BaseRenderer {
     this.label = label;
 
     this.includeCheckWork = includeCheckWork;
-    this.creditachieved = creditachieved;
+    this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
-    this.numbertimessubmitted = numbertimessubmitted;
+    this.numberTimesSubmitted = numberTimesSubmitted;
     this.showCorrectness = showCorrectness;
 
-    this.localNumberTimesSubmitted = this.numbertimessubmitted;
+    this.localNumberTimesSubmitted = this.numberTimesSubmitted;
 
     this.onChangeHandler = this.onChangeHandler.bind(this);
     this.localSubmitAnswer = this.localSubmitAnswer.bind(this);
@@ -34,7 +34,7 @@ class BooleaninputRenderer extends BaseRenderer {
     });
   }
 
-  updateBoolean({ boolean, label, creditachieved, valueHasBeenValidated, numbertimessubmitted }) {
+  updateBoolean({ boolean, label, creditAchieved, valueHasBeenValidated, numberTimesSubmitted }) {
     if (boolean !== this.boolean) {
       this.boolean = boolean;
     }
@@ -42,18 +42,18 @@ class BooleaninputRenderer extends BaseRenderer {
       this.label = label;
     }
 
-    this.creditachieved = creditachieved;
+    this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
-    this.numbertimessubmitted = numbertimessubmitted;
+    this.numberTimesSubmitted = numberTimesSubmitted;
 
   }
 
 
   updateValidationState() {
-    if (this.localNumberTimesSubmitted !== this.numbertimessubmitted) {
+    if (this.localNumberTimesSubmitted !== this.numberTimesSubmitted) {
       // if number of times submitted doesn't match,
       // it means that the answer has been submitted since last pass
-      this.localNumberTimesSubmitted = this.numbertimessubmitted;
+      this.localNumberTimesSubmitted = this.numberTimesSubmitted;
       this.lastSubmittedIndices = this.selectedindices;
       this.valueAsSubmitted = true;
     } else if (!this.valueHasBeenValidated) {
@@ -64,9 +64,9 @@ class BooleaninputRenderer extends BaseRenderer {
 
     this.validationState = "unvalidated";
     if (this.valueAsSubmitted) {
-      if (this.creditachieved === 1) {
+      if (this.creditAchieved === 1) {
         this.validationState = "correct";
-      } else if (this.creditachieved === 0) {
+      } else if (this.creditAchieved === 0) {
         this.validationState = "incorrect";
       } else {
         this.validationState = "partialcorrect";
@@ -129,7 +129,7 @@ class BooleaninputRenderer extends BaseRenderer {
           } else if (this.validationState === "partialcorrect") {
             //partial credit
 
-            let percent = Math.round(this.creditachieved * 100);
+            let percent = Math.round(this.creditAchieved * 100);
             let partialCreditContents = `${percent} %`;
             checkWorkStyle.width = "50px";
 

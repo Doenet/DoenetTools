@@ -13,10 +13,10 @@ SELECT
  c.branchId as branchId,
  c.title as title,
  c.contentId as contentId,
- c.timestamp as publishDate
+ c.timestamp as publishDate,
+ c.draft as draft
 FROM content AS c
 WHERE removedFlag = 0
-AND draft = 0
 ORDER BY c.branchId, c.timestamp DESC
 ";
 
@@ -33,10 +33,13 @@ if ($result->num_rows > 0){
             
         $end_bi = end($sort_order_arr);
         $bi = $row["branchId"]; 
+        
         $ci = array(
                 "contentId"=> $row["contentId"],
-                "publishDate"=> $row["publishDate"]
-         );
+                "publishDate"=> $row["publishDate"],
+                "draft"=> $row["draft"]
+        );
+        
         //     echo "$bi\n";
         //     echo $row["contentId"]."\n";
         //     var_dump($ci);
@@ -49,20 +52,45 @@ if ($result->num_rows > 0){
                 }
                 $branchId_info_arr[$bi] = array(
                 "title"=>$row["title"],
-                "publishDate" => $row["publishDate"],
+                "publishDate" => "",
+                "draftDate" => "",
+                "parentId" => null
                 );
                 array_push($sort_order_arr,$bi);
-
+        }
+        if ($row["draft"] == 1) {
+                $branchId_info_arr[$bi]["draftDate"] = $row["publishDate"];       
+        }
+        else if ($row["draft"] == 0) {
+                if ($branchId_info_arr[$bi]["publishDate"] <= $row["publishDate"]) {
+                        $branchId_info_arr[$bi]["publishDate"] = $row["publishDate"];               
+                }                        
         }
         array_push($ci_array,$ci);
-
-
     }
     if ($end_bi !== false){ //Only add when we have a branchId
         $branchId_info_arr[$end_bi]["contentIds"] = $ci_array;
     }
-
 }
+
+// get parent
+$sql="
+SELECT 
+ f.folderId as folderId,
+ f.childId as childId
+FROM folder_content AS f
+WHERE removedFlag=0 
+AND childType='content'
+ORDER BY f.folderId
+";
+$result = $conn->query($sql); 
+
+if ($result->num_rows > 0){
+  while($row = $result->fetch_assoc()){ 
+    $branchId_info_arr[$row["childId"]]["parentId"] = $row["folderId"];
+  }
+}
+
 $response_arr = array(
         "branchId_info"=>$branchId_info_arr,
         "sort_order"=>$sort_order_arr,

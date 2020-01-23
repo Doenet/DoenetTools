@@ -34,7 +34,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Enter too large an error")
@@ -43,7 +43,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("shink error")
@@ -52,7 +52,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.6, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.6, 1E-14);
     });
 
     cy.log("shink error further")
@@ -61,7 +61,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.8, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.8, 1E-14);
     });
 
 
@@ -71,7 +71,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
 
@@ -81,7 +81,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.8, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.8, 1E-14);
     });
 
 
@@ -91,7 +91,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.6, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.6, 1E-14);
     });
 
     cy.log("error too large again")
@@ -100,7 +100,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
   });
@@ -135,7 +135,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Enter too large an error")
@@ -144,7 +144,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("shink error")
@@ -153,7 +153,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.6, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.6, 1E-14);
     });
 
     cy.log("shink error further")
@@ -162,7 +162,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.8, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.8, 1E-14);
     });
 
 
@@ -172,7 +172,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
 
@@ -182,7 +182,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.8, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.8, 1E-14);
     });
 
 
@@ -192,7 +192,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.6, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.6, 1E-14);
     });
 
     cy.log("error too large again")
@@ -201,7 +201,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
   });
@@ -234,7 +234,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Enter too large an error")
@@ -243,7 +243,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("shink error")
@@ -252,7 +252,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.6, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.6, 1E-14);
     });
 
     cy.log("acceptable error for full credit")
@@ -261,7 +261,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
   });
@@ -301,8 +301,8 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Enter too large an error")
@@ -313,8 +313,8 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
     });
 
     cy.log("Too large an error if don't allow exponent error")
@@ -325,8 +325,8 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Shrink to allowable error in both cases")
@@ -337,8 +337,8 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
   });
 
@@ -372,7 +372,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Enter too large an error")
@@ -381,7 +381,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("shink error")
@@ -390,7 +390,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.6, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.6, 1E-14);
     });
 
     cy.log("shink error further")
@@ -399,7 +399,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.8, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.8, 1E-14);
     });
 
 
@@ -409,7 +409,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
 
@@ -419,7 +419,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.8, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.8, 1E-14);
     });
 
 
@@ -429,7 +429,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.6, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.6, 1E-14);
     });
 
     cy.log("error too large again")
@@ -438,7 +438,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
   });
@@ -473,7 +473,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Enter too large an error")
@@ -482,7 +482,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("shink error")
@@ -491,7 +491,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.6, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.6, 1E-14);
     });
 
     cy.log("shink error further")
@@ -500,7 +500,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.8, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.8, 1E-14);
     });
 
 
@@ -510,7 +510,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
 
@@ -520,7 +520,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.8, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.8, 1E-14);
     });
 
 
@@ -530,7 +530,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.6, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.6, 1E-14);
     });
 
     cy.log("error too large again")
@@ -539,7 +539,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
   });
@@ -574,7 +574,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Enter too large an error in first number")
@@ -583,7 +583,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Enter too large an error in second number")
@@ -592,7 +592,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Enter too large an error in third number")
@@ -601,7 +601,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("partial credit error in each")
@@ -610,7 +610,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.6, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.6, 1E-14);
     });
 
     cy.log("higher partial credit error in each")
@@ -619,7 +619,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.8, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.8, 1E-14);
     });
 
     cy.log("acceptable error for full credit")
@@ -628,7 +628,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
   });
@@ -663,7 +663,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Enter too large an error in first number")
@@ -672,7 +672,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Enter too large an error in second number")
@@ -681,7 +681,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Enter too large an error in third number")
@@ -690,7 +690,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("partial credit error in each")
@@ -699,7 +699,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.6, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.6, 1E-14);
     });
 
     cy.log("higher partial credit error in each")
@@ -708,7 +708,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(0.8, 1E-14);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(0.8, 1E-14);
     });
 
     cy.log("acceptable error for full credit")
@@ -717,7 +717,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
   });
@@ -757,8 +757,8 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Enter too large an error in exponent")
@@ -769,8 +769,8 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
     });
 
     cy.log("Small error in exponent")
@@ -781,8 +781,8 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Error in numbers not in exponents")
@@ -793,8 +793,8 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
   });
 
@@ -822,7 +822,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Reordering not allowed")
@@ -831,14 +831,14 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
     cy.get('#_answer_mathinput1_input').clear().type('e*25.602348230+2.15234262pi{enter}');
     cy.get('#_answer_mathinput1_incorrect').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Numeric evaluation not allowed")
@@ -847,7 +847,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Round too much")
@@ -856,14 +856,14 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
     cy.get('#_answer_mathinput1_input').clear().type('2.15234262pi+2.73*25.602348230{enter}');
     cy.get('#_answer_mathinput1_incorrect').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("acceptable rounding")
@@ -872,7 +872,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
 
@@ -902,7 +902,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Reordering not allowed")
@@ -911,7 +911,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Combining terms not allowed")
@@ -920,7 +920,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Numeric evaluation OK")
@@ -929,7 +929,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Round too much")
@@ -938,14 +938,14 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
     cy.get('#_answer_mathinput1_input').clear().type('6.28+x+4x+9.14159{enter}');
     cy.get('#_answer_mathinput1_incorrect').should('be.visible');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
   });
@@ -974,7 +974,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Reordering allowed")
@@ -983,7 +983,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Combining terms not allowed")
@@ -992,7 +992,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Numeric evaluation OK")
@@ -1001,7 +1001,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.get('#_answer_mathinput1_input').clear().type('sin(x+15.42478+4x){enter}');
@@ -1009,7 +1009,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Round too much")
@@ -1018,7 +1018,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
   });
@@ -1047,7 +1047,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Reordering allowed")
@@ -1056,7 +1056,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Combining terms allowed")
@@ -1065,7 +1065,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Numeric evaluation OK")
@@ -1074,7 +1074,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.get('#_answer_mathinput1_input').clear().type('sin(15.42478+5x){enter}');
@@ -1082,7 +1082,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Round too much")
@@ -1091,7 +1091,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
   });

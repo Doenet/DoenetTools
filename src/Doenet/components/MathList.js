@@ -4,67 +4,24 @@ import me from 'math-expressions';
 export default class MathList extends InlineComponent {
   static componentType = "mathlist";
 
-
-  static previewSerializedComponent({serializedComponent, sharedParameters, components}) {
-    if(serializedComponent.children === undefined) {
-      return;
-    }
-
-    let simplifyInd;
-    for(let [ind,child] of serializedComponent.children.entries()) {
-      if(child.componentType === "simplify" || (
-        child.createdComponent && components[child.componentName].componentType === "simplify"
-      )) {
-        simplifyInd = ind;
-        break;
-      }
-    }
-
-    let creationInstructions = [];
-    if(simplifyInd !== undefined) {
-      creationInstructions.push({createChildren: [simplifyInd]});
-    }
-
-    creationInstructions.push({callMethod: "setUpSimplify"})
-    return creationInstructions;
-
-  }
-
-  static setUpSimplify({sharedParameters, definingChildrenSoFar, serializedComponent}) {
-
-    // check for simplify child
-    let simplifyChild;
-    for(let child of definingChildrenSoFar) {
-      if(child !== undefined && child.componentType === "simplify") {
-        simplifyChild = child;
-        break;
-      }
-    }
-
-    if(simplifyChild !== undefined) {
-      sharedParameters.simplifyChild = simplifyChild;
-    }
-
-  }
-  
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
-    properties.simplify = {default: 'none'};
-    properties.unordered = {default: false};
-    properties.maximumnumber = {default: undefined};
-    properties.mergemathlists = {default: false};
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
+    properties.simplify = {
+      propagateToDescendants: true,
+      default: "none",
+      toLowerCase: true,
+      valueTransformations: { "": "full", "true": "full" },
+      validValues: new Set(["full", "numbers", "numbersepreserveorder", "none"])
+    };
+    properties.unordered = { default: false };
+    properties.maximumNumber = { default: undefined };
+    properties.mergeMathLists = { default: false };
     return properties;
   }
 
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroMaths = childLogic.newLeaf({
       name: "atLeastZeroMaths",
@@ -80,25 +37,14 @@ export default class MathList extends InlineComponent {
       number: 0
     });
 
-    let breakStringIntoMathsByCommas = function({activeChildrenMatched, sharedParameters}) {
+    let breakStringIntoMathsByCommas = function ({ activeChildrenMatched }) {
       let stringChild = activeChildrenMatched[0];
 
 
-      let childrenForMaths = [];
-      if(sharedParameters.simplifyChild !== undefined) {
-        childrenForMaths.push({
-          componentType: "ref",
-          children: [{
-            componentType: "reftarget",
-            state: { refTargetName: sharedParameters.simplifyChild.componentName }
-          }]
-        })
-      }
-
-      let stringPieces = stringChild.state.value.split(",").map(x=>x.trim()).filter(x=>x!="");
+      let stringPieces = stringChild.stateValues.value.split(",").map(x => x.trim()).filter(x => x != "");
       let newChildren = [];
 
-      for(let piece of stringPieces) {
+      for (let piece of stringPieces) {
         let mathExpr;
         try {
           mathExpr = me.fromText(piece);
@@ -108,8 +54,7 @@ export default class MathList extends InlineComponent {
         }
         newChildren.push({
           componentType: "math",
-          state: {value: mathExpr},
-          children: [...childrenForMaths],
+          state: { value: mathExpr },
         });
       }
 
@@ -119,15 +64,16 @@ export default class MathList extends InlineComponent {
         toDelete: [stringChild.componentName],
       }
     }
-    
+
     let exactlyOneString = childLogic.newLeaf({
       name: "exactlyOneString",
       componentType: 'string',
       number: 1,
       isSugar: true,
+      affectedBySugar: ["atLeastZeroMaths"],
       replacementFunction: breakStringIntoMathsByCommas,
     });
-    
+
     let mathAndMathLists = childLogic.newOperator({
       name: "mathAndMathLists",
       operator: "and",
@@ -135,157 +81,323 @@ export default class MathList extends InlineComponent {
     })
 
     childLogic.newOperator({
-      name: "MathsXorSugar",
+      name: "mathsXorSugar",
       operator: 'xor',
-      propositions: [exactlyOneString,mathAndMathLists],
+      propositions: [exactlyOneString, mathAndMathLists],
       setAsBase: true,
     });
 
     return childLogic;
   }
 
-  updateState(args={}) {
-    if(args.init === true) {
-      this.makePublicStateVariableArray({
-        variableName: "maths",
-        componentType: "math",
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "math",
-        arrayVariableName: "maths",
-      });
-      this.makePublicStateVariable({
-        variableName: "ncomponents",
-        componentType: "number",
-      });
-      this.makePublicStateVariable({
-        variableName: "latex",
-        componentType: "text",
-      });
-
-    }
-
-    super.updateState(args);
-
-    if (!this.childLogicSatisfied) {
-      this.unresolvedState.maths = true;
-      this.unresolvedState.ncomponents = true;
-      return;
-    }
 
 
-    // override default simplify from shared parameters
-    if(this._state.simplify.usedDefault) {
-      let simplifyChild = this.sharedParameters.simplifyChild;
-      if(simplifyChild) {
-        if(simplifyChild.unresolvedState.value) {
-          this.unresolvedState.simplify = true;
-          return;
-        }
-        this.state.simplify = simplifyChild.state.value;
-      }else if(this.sharedParameters.simplify) {
-        this.state.simplify = this.sharedParameters.simplify;
-      }
+  static returnStateVariableDefinitions() {
 
-      delete this.unresolvedState.simplify;
-      // delete usedDefault so logic isn't repeated
-      delete this._state.simplify.usedDefault;
-    }
+    let stateVariableDefinitions = {};
 
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    // normalize form of simplify
-    if(trackChanges.getVariableChanges({ component: this, variable: "simplify"})) {
-      this.state.simplify = this.state.simplify.toLowerCase();
-      if(this.state.simplify === "" || this.state.simplify === "true") {
-        this.state.simplify = "full";
-      }
-    }
-
-    if (childrenChanged) {
-      let mathAndMathlistChildrenInds = this.childLogic.returnMatches("mathAndMathLists");
-      this.state.mathAndMathlistChildren = mathAndMathlistChildrenInds.map(x => this.activeChildren[x]);
-      let mathChildrenInds = this.childLogic.returnMatches("atLeastZeroMaths");
-      this.state.mathChildren = mathChildrenInds.map(x => this.activeChildren[x]);
-      let mathlistChildrenInds = this.childLogic.returnMatches("atLeastZeroMathlists");
-      this.state.mathlistChildren = mathlistChildrenInds.map(x => this.activeChildren[x]);
-    }
-
-    if(this.state.mathChildren.some(x => x.unresolvedState.value) ||
-      this.state.mathlistChildren.some(x => x.unresolvedState.maths)
-    ) {
-      this.unresolvedState.maths = true;
-      this.unresolvedState.ncomponents = true;
-      return;
-    }
-
-    if(childrenChanged || this.state.mathChildren.some(x => trackChanges.getVariableChanges({
-      component: x, variable: "value"
-    })) || this.state.mathlistChildren.some(x => trackChanges.getVariableChanges({
-      component: x, variable: "maths"
-    })) || trackChanges.getVariableChanges({
-      component: this, variable: "maximumnumber"
-    })) {
-
-      delete this.unresolvedState.maths;
-      delete this.unresolvedState.ncomponents;
-
-      this.state.maths = [];
-      let latexs = [];
-
-      for(let child of this.state.mathAndMathlistChildren) {
-        if(child instanceof this.allComponentClasses.math) {
-          let childValue = child.state.value;
-          let childDisplayValue = child.get_value_to_display();
-          if(this.state.mergemathlists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
-            for(let i=0; i < childValue.tree.length-1; i++) {
-              this.state.maths.push(childValue.get_component(i));
-              latexs.push(childDisplayValue.get_component(i));
-            }
-          } else {
-            this.state.maths.push(child.state.value);
-            latexs.push(child.state.latex)
+    stateVariableDefinitions.mathAndMathlistChildren = {
+      returnDependencies: () => ({
+        mathAndMathlistChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "mathAndMathLists",
+          variableNames: ["value"],
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            mathAndMathlistChildren: dependencyValues.mathAndMathlistChildren
           }
-        } else{
-          this.state.maths.push(...child.state.maths)
-          latexs.push(...child.state.latexs)
         }
       }
-
-      if(this.state.maximumnumber !== undefined && this.state.maths.length > this.state.maximumnumber) {
-        let maxnum = Math.max(0,Math.floor(this.state.maximumnumber));
-        this.state.maths = this.state.maths.slice(0,maxnum)
-        latexs = latexs.slice(0,maxnum)
-      }
-      this.state.ncomponents = this.state.maths.length;
-      this.state.latex = latexs.join(', ');
     }
-    
+
+    stateVariableDefinitions.maths = {
+      public: true,
+      componentType: "math",
+      isArray: true,
+      entryPrefixes: ["math"],
+      returnDependencies: () => ({
+        mathAndMathlistChildren: {
+          dependencyType: "stateVariable",
+          variableName: "mathAndMathlistChildren",
+        },
+        mathChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroMaths",
+          variableNames: ["value"],
+        },
+        mathlistChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroMathlists",
+          variableNames: ["maths"],
+        },
+        maximumNumber: {
+          dependencyType: "stateVariable",
+          variableName: "maximumNumber",
+        },
+        mergeMathLists: {
+          dependencyType: "stateVariable",
+          variableName: "mergeMathLists",
+        }
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let mathNumber = 0;
+        let mathlistNumber = 0;
+        let maths = [];
+
+        for (let child of dependencyValues.mathAndMathlistChildren) {
+
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "math"
+          })) {
+
+            let childValue = dependencyValues.mathChildren[mathNumber].stateValues.value;
+            mathNumber++;
+
+            if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
+              for (let i = 0; i < childValue.tree.length - 1; i++) {
+                maths.push(childValue.get_component(i));
+              }
+            } else {
+              maths.push(childValue);
+            }
+
+          } else {
+            maths.push(...dependencyValues.mathlistChildren[mathlistNumber].stateValues.maths);
+            mathlistNumber++;
+          }
+        }
+
+        let maxNum = dependencyValues.maximumNumber;
+        if (maxNum !== undefined && maths.length > maxNum) {
+          maxNum = Math.max(0, Math.floor(maxNum));
+          maths = maths.slice(0, maxNum)
+        }
+
+        return { newValues: { maths } }
+
+      }
+    }
+
+    stateVariableDefinitions.latex = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        mathAndMathlistChildren: {
+          dependencyType: "stateVariable",
+          variableName: "mathAndMathlistChildren",
+        },
+        mathChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroMaths",
+          variableNames: ["valueForDisplay", "latex"],
+        },
+        mathlistChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroMathlists",
+          variableNames: ["latex"],
+        },
+        maximumNumber: {
+          dependencyType: "stateVariable",
+          variableName: "maximumNumber",
+        },
+        mergeMathLists: {
+          dependencyType: "stateVariable",
+          variableName: "mergeMathLists",
+        }
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let mathNumber = 0;
+        let mathlistNumber = 0;
+        let latexs = [];
+
+        for (let child of dependencyValues.mathAndMathlistChildren) {
+
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "math"
+          })) {
+
+            let childValue = dependencyValues.mathChildren[mathNumber].stateValues.valueForDisplay;
+
+            if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
+              for (let i = 0; i < childValue.tree.length - 1; i++) {
+                latexs.push(childValue.get_component(i).toLatex());
+              }
+            } else {
+              latexs.push(dependencyValues.mathChildren[mathNumber].stateValues.latex);
+            }
+
+            mathNumber++;
+
+          } else {
+            latexs.push(...dependencyValues.mathlistChildren[mathlistNumber].stateValues.latex);
+            mathlistNumber++;
+          }
+        }
+
+        let maxNum = dependencyValues.maximumNumber;
+        if (maxNum !== undefined && latexs.length > maxNum) {
+          maxNum = Math.max(0, Math.floor(maxNum));
+          latexs = latexs.slice(0, maxNum)
+        }
+
+        let latex = latexs.join(', ');
+
+        return { newValues: { latex } }
+
+      }
+    }
+
+
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        mathAndMathlistChildren: {
+          dependencyType: "stateVariable",
+          variableName: "mathAndMathlistChildren",
+        },
+        mathChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroMaths",
+          variableNames: ["valueForDisplay", "text"],
+        },
+        mathlistChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroMathlists",
+          variableNames: ["text"],
+        },
+        maximumNumber: {
+          dependencyType: "stateVariable",
+          variableName: "maximumNumber",
+        },
+        mergeMathLists: {
+          dependencyType: "stateVariable",
+          variableName: "mergeMathLists",
+        }
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let mathNumber = 0;
+        let mathlistNumber = 0;
+        let texts = [];
+
+        for (let child of dependencyValues.mathAndMathlistChildren) {
+
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "math"
+          })) {
+
+            let childValue = dependencyValues.mathChildren[mathNumber].stateValues.valueForDisplay;
+
+            if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
+              for (let i = 0; i < childValue.tree.length - 1; i++) {
+                texts.push(childValue.get_component(i).toString());
+              }
+            } else {
+              texts.push(dependencyValues.mathChildren[mathNumber].stateValues.text);
+            }
+
+            mathNumber++;
+
+          } else {
+            texts.push(...dependencyValues.mathlistChildren[mathlistNumber].stateValues.text);
+            mathlistNumber++;
+          }
+        }
+
+        let maxNum = dependencyValues.maximumNumber;
+        if (maxNum !== undefined && texts.length > maxNum) {
+          maxNum = Math.max(0, Math.floor(maxNum));
+          texts = texts.slice(0, maxNum)
+        }
+
+        let text = texts.join(', ');
+
+        return { newValues: { text } }
+
+      }
+    }
+
+    stateVariableDefinitions.nComponents = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        maths: {
+          dependencyType: "stateVariable",
+          variableName: "maths"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { nComponents: dependencyValues.maths.length } }
+      }
+    }
+
+    stateVariableDefinitions.childrenWhoRender = {
+      returnDependencies: () => ({
+        mathAndMathlistChildren: {
+          dependencyType: "stateVariable",
+          variableName: "mathAndMathlistChildren",
+        },
+        mathChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroMaths",
+        },
+        mathlistChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroMathlists",
+          variableNames: ["childrenWhoRender"],
+        },
+        maximumNumber: {
+          dependencyType: "stateVariable",
+          variableName: "maximumNumber",
+        },
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let mathNumber = 0;
+        let mathlistNumber = 0;
+        let childrenWhoRender = [];
+
+        for (let child of dependencyValues.mathAndMathlistChildren) {
+
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "math"
+          })) {
+            childrenWhoRender.push(dependencyValues.mathChildren[mathNumber].componentName);
+            mathNumber++;
+          } else {
+            childrenWhoRender.push(...dependencyValues.mathlistChildren[mathlistNumber].stateValues.childrenWhoRender);
+            mathlistNumber++;
+          }
+        }
+
+        let maxNum = dependencyValues.maximumNumber;
+        if (maxNum !== undefined && childrenWhoRender.length > maxNum) {
+          maxNum = Math.max(0, Math.floor(maxNum));
+          childrenWhoRender = childrenWhoRender.slice(0, maxNum)
+        }
+
+        return { newValues: { childrenWhoRender } }
+
+      }
+    }
+
+
+    return stateVariableDefinitions;
   }
 
-  initializeRenderer(){
-    if(this.renderer === undefined) {
+
+  initializeRenderer() {
+    if (this.renderer === undefined) {
       this.renderer = new this.availableRenderers.aslist({
         key: this.componentName,
       });
     }
   }
 
-  updateChildrenWhoRender(){
-    this.childrenWhoRender = [];
-    for(let child of this.state.mathAndMathlistChildren) {
-      if(child instanceof this.allComponentClasses.math) {
-        this.childrenWhoRender.push(child.componentName);
-      } else {
-        this.childrenWhoRender.push(...child.childrenWhoRender);
-      }
-    }
-    if(this.childrenWhoRender.length > this.state.ncomponents) {
-      this.childrenWhoRender.length = this.state.ncomponents;
-    }
-
-  }
-  
 }

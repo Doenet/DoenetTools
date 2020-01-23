@@ -4,22 +4,16 @@ import { textFromComponent } from '../utils/text';
 export default class Choice extends InlineComponent {
   static componentType = "choice";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.credit = {default: 0};
     properties.feedbackcode = { default: undefined };
     properties.feedbacktext = { default: undefined };
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
       name: "atLeastZeroInline",

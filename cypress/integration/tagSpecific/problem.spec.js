@@ -11,13 +11,13 @@ describe('Problem Tag Tests', function () {
         doenetCode: `
     <title>Activity</title>
     <p>Credit achieved for <ref prop="title">_document1</ref>:
-    <ref prop="creditachieved">_document1</ref>, or <ref prop="percentcreditachieved">_document1</ref>%</p>
+    <ref prop="creditAchieved">_document1</ref>, or <ref prop="percentcreditachieved">_document1</ref>%</p>
 
     <p>Enter <m>u</m>: <answer>u</answer></p>
 
     <problem title="Problem 1" name="problem1">
       <p>Credit achieved for <ref prop="title">problem1</ref>:
-      <ref prop="creditachieved">problem1</ref>, or <ref prop="percentcreditachieved">problem1</ref>%</p>
+      <ref prop="creditAchieved">problem1</ref>, or <ref prop="percentcreditachieved">problem1</ref>%</p>
 
       <p>Enter <m>x</m>: <answer>x</answer></p>
       <p>Enter <m>y</m>: <answer weight="2">y</answer></p>
@@ -26,13 +26,13 @@ describe('Problem Tag Tests', function () {
     </problem>
     <problem title="Problem 2" name="problem2">
       <p>Credit achieved for <ref prop="title">problem2</ref>:
-      <ref prop="creditachieved">problem2</ref>, or <ref prop="percentcreditachieved">problem2</ref>%</p>
+      <ref prop="creditAchieved">problem2</ref>, or <ref prop="percentcreditachieved">problem2</ref>%</p>
 
       <p>Enter <m>z</m>: <answer>z</answer></p>
 
       <problem title="Problem 2.1" name="problem21">
         <p>Credit achieved for <ref prop="title">problem21</ref>:
-        <ref prop="creditachieved">problem21</ref>, or <ref prop="percentcreditachieved">problem21</ref>%</p>
+        <ref prop="creditAchieved">problem21</ref>, or <ref prop="percentcreditachieved">problem21</ref>%</p>
 
 
         <p>Enter <m>v</m>: <answer weight="0.5">v</answer></p>
@@ -41,20 +41,20 @@ describe('Problem Tag Tests', function () {
       </problem>
       <problem title="Problem 2.2" name="problem22">
         <p>Credit achieved for <ref prop="title">problem22</ref>:
-        <ref prop="creditachieved">problem22</ref>, or <ref prop="percentcreditachieved">problem22</ref>%</p>
+        <ref prop="creditAchieved">problem22</ref>, or <ref prop="percentcreditachieved">problem22</ref>%</p>
 
         <p>Enter <m>q</m>: <answer>q</answer></p>
 
         <problem title="Problem 2.2.1" name="problem221">
           <p>Credit achieved for <ref prop="title">problem221</ref>:
-          <ref prop="creditachieved">problem221</ref>, or <ref prop="percentcreditachieved">problem221</ref>%</p>
+          <ref prop="creditAchieved">problem221</ref>, or <ref prop="percentcreditachieved">problem221</ref>%</p>
 
           <p>Enter <m>r</m>: <answer>r</answer></p>
 
         </problem>
         <problem title="Problem 2.2.2" name="problem222">
           <p>Credit achieved for <ref prop="title">problem222</ref>:
-          <ref prop="creditachieved">problem222</ref>, or <ref prop="percentcreditachieved">problem222</ref>%</p>
+          <ref prop="creditAchieved">problem222</ref>, or <ref prop="percentcreditachieved">problem222</ref>%</p>
 
           <p>Enter <m>s</m>: <answer weight="3">s</answer></p>
 
@@ -113,29 +113,29 @@ describe('Problem Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_document1'].state.creditachieved).eq(0);
+      expect(components['/_document1'].state.creditAchieved).eq(0);
       expect(components['/_document1'].state.percentcreditachieved).eq(0);
-      expect(components['/problem1'].state.creditachieved).eq(0);
+      expect(components['/problem1'].state.creditAchieved).eq(0);
       expect(components['/problem1'].state.percentcreditachieved).eq(0);
-      expect(components['/problem2'].state.creditachieved).eq(0);
+      expect(components['/problem2'].state.creditAchieved).eq(0);
       expect(components['/problem2'].state.percentcreditachieved).eq(0);
-      expect(components['/problem21'].state.creditachieved).eq(0);
+      expect(components['/problem21'].state.creditAchieved).eq(0);
       expect(components['/problem21'].state.percentcreditachieved).eq(0);
-      expect(components['/problem22'].state.creditachieved).eq(0);
+      expect(components['/problem22'].state.creditAchieved).eq(0);
       expect(components['/problem22'].state.percentcreditachieved).eq(0);
-      expect(components['/problem221'].state.creditachieved).eq(0);
+      expect(components['/problem221'].state.creditAchieved).eq(0);
       expect(components['/problem221'].state.percentcreditachieved).eq(0);
-      expect(components['/problem222'].state.creditachieved).eq(0);
+      expect(components['/problem222'].state.creditAchieved).eq(0);
       expect(components['/problem222'].state.percentcreditachieved).eq(0);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
-      expect(components['/_answer5'].state.creditachieved).eq(0);
-      expect(components['/_answer6'].state.creditachieved).eq(0);
-      expect(components['/_answer7'].state.creditachieved).eq(0);
-      expect(components['/_answer8'].state.creditachieved).eq(0);
-      expect(components['/_answer9'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
+      expect(components['/_answer5'].state.creditAchieved).eq(0);
+      expect(components['/_answer6'].state.creditAchieved).eq(0);
+      expect(components['/_answer7'].state.creditAchieved).eq(0);
+      expect(components['/_answer8'].state.creditAchieved).eq(0);
+      expect(components['/_answer9'].state.creditAchieved).eq(0);
     })
 
     cy.log('enter first correct answer');
@@ -191,29 +191,29 @@ describe('Problem Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_document1'].state.creditachieved).closeTo(credit1,1E-12);
+      expect(components['/_document1'].state.creditAchieved).closeTo(credit1,1E-12);
       expect(components['/_document1'].state.percentcreditachieved).closeTo(percentCredit1, 1E-12);
-      expect(components['/problem1'].state.creditachieved).eq(0);
+      expect(components['/problem1'].state.creditAchieved).eq(0);
       expect(components['/problem1'].state.percentcreditachieved).eq(0);
-      expect(components['/problem2'].state.creditachieved).eq(0);
+      expect(components['/problem2'].state.creditAchieved).eq(0);
       expect(components['/problem2'].state.percentcreditachieved).eq(0);
-      expect(components['/problem21'].state.creditachieved).eq(0);
+      expect(components['/problem21'].state.creditAchieved).eq(0);
       expect(components['/problem21'].state.percentcreditachieved).eq(0);
-      expect(components['/problem22'].state.creditachieved).eq(0);
+      expect(components['/problem22'].state.creditAchieved).eq(0);
       expect(components['/problem22'].state.percentcreditachieved).eq(0);
-      expect(components['/problem221'].state.creditachieved).eq(0);
+      expect(components['/problem221'].state.creditAchieved).eq(0);
       expect(components['/problem221'].state.percentcreditachieved).eq(0);
-      expect(components['/problem222'].state.creditachieved).eq(0);
+      expect(components['/problem222'].state.creditAchieved).eq(0);
       expect(components['/problem222'].state.percentcreditachieved).eq(0);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
-      expect(components['/_answer5'].state.creditachieved).eq(0);
-      expect(components['/_answer6'].state.creditachieved).eq(0);
-      expect(components['/_answer7'].state.creditachieved).eq(0);
-      expect(components['/_answer8'].state.creditachieved).eq(0);
-      expect(components['/_answer9'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
+      expect(components['/_answer5'].state.creditAchieved).eq(0);
+      expect(components['/_answer6'].state.creditAchieved).eq(0);
+      expect(components['/_answer7'].state.creditAchieved).eq(0);
+      expect(components['/_answer8'].state.creditAchieved).eq(0);
+      expect(components['/_answer9'].state.creditAchieved).eq(0);
     })
 
 
@@ -292,29 +292,29 @@ describe('Problem Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_document1'].state.creditachieved).closeTo(credit2,1E-12);
+      expect(components['/_document1'].state.creditAchieved).closeTo(credit2,1E-12);
       expect(components['/_document1'].state.percentcreditachieved).closeTo(percentCredit2, 1E-12);
-      expect(components['/problem1'].state.creditachieved).closeTo(problem1credit2,1E-12);
+      expect(components['/problem1'].state.creditAchieved).closeTo(problem1credit2,1E-12);
       expect(components['/problem1'].state.percentcreditachieved).closeTo(problem1percentCredit2,1E-12);
-      expect(components['/problem2'].state.creditachieved).closeTo(problem2credit2,1E-12);
+      expect(components['/problem2'].state.creditAchieved).closeTo(problem2credit2,1E-12);
       expect(components['/problem2'].state.percentcreditachieved).closeTo(problem2percentCredit2,1E-12);
-      expect(components['/problem21'].state.creditachieved).closeTo(problem21credit2,1E-12)
+      expect(components['/problem21'].state.creditAchieved).closeTo(problem21credit2,1E-12)
       expect(components['/problem21'].state.percentcreditachieved).closeTo(problem21percentCredit2,1E-12);
-      expect(components['/problem22'].state.creditachieved).closeTo(problem22credit2,1E-12)
+      expect(components['/problem22'].state.creditAchieved).closeTo(problem22credit2,1E-12)
       expect(components['/problem22'].state.percentcreditachieved).closeTo(problem22percentCredit2,1E-12);
-      expect(components['/problem221'].state.creditachieved).eq(0);
+      expect(components['/problem221'].state.creditAchieved).eq(0);
       expect(components['/problem221'].state.percentcreditachieved).eq(0);
-      expect(components['/problem222'].state.creditachieved).eq(0);
+      expect(components['/problem222'].state.creditAchieved).eq(0);
       expect(components['/problem222'].state.percentcreditachieved).eq(0);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(1);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
-      expect(components['/_answer5'].state.creditachieved).eq(1);
-      expect(components['/_answer6'].state.creditachieved).eq(0);
-      expect(components['/_answer7'].state.creditachieved).eq(1);
-      expect(components['/_answer8'].state.creditachieved).eq(0);
-      expect(components['/_answer9'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(1);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
+      expect(components['/_answer5'].state.creditAchieved).eq(1);
+      expect(components['/_answer6'].state.creditAchieved).eq(0);
+      expect(components['/_answer7'].state.creditAchieved).eq(1);
+      expect(components['/_answer8'].state.creditAchieved).eq(0);
+      expect(components['/_answer9'].state.creditAchieved).eq(0);
     })
 
     cy.log('enter most other correct answers');
@@ -399,29 +399,29 @@ describe('Problem Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_document1'].state.creditachieved).closeTo(credit3,1E-12);
+      expect(components['/_document1'].state.creditAchieved).closeTo(credit3,1E-12);
       expect(components['/_document1'].state.percentcreditachieved).closeTo(percentCredit3, 1E-12);
-      expect(components['/problem1'].state.creditachieved).closeTo(problem1credit3,1E-12);
+      expect(components['/problem1'].state.creditAchieved).closeTo(problem1credit3,1E-12);
       expect(components['/problem1'].state.percentcreditachieved).closeTo(problem1percentCredit3,1E-12);
-      expect(components['/problem2'].state.creditachieved).closeTo(problem2credit3,1E-12);
+      expect(components['/problem2'].state.creditAchieved).closeTo(problem2credit3,1E-12);
       expect(components['/problem2'].state.percentcreditachieved).closeTo(problem2percentCredit3,1E-12);
-      expect(components['/problem21'].state.creditachieved).closeTo(problem21credit3,1E-12)
+      expect(components['/problem21'].state.creditAchieved).closeTo(problem21credit3,1E-12)
       expect(components['/problem21'].state.percentcreditachieved).closeTo(problem21percentCredit3,1E-12);
-      expect(components['/problem22'].state.creditachieved).closeTo(problem22credit3,1E-12)
+      expect(components['/problem22'].state.creditAchieved).closeTo(problem22credit3,1E-12)
       expect(components['/problem22'].state.percentcreditachieved).closeTo(problem22percentCredit3,1E-12);
-      expect(components['/problem221'].state.creditachieved).closeTo(problem221credit3,1E-12);
+      expect(components['/problem221'].state.creditAchieved).closeTo(problem221credit3,1E-12);
       expect(components['/problem221'].state.percentcreditachieved).closeTo(problem221percentCredit3,1E-12);;
-      expect(components['/problem222'].state.creditachieved).eq(0);
+      expect(components['/problem222'].state.creditAchieved).eq(0);
       expect(components['/problem222'].state.percentcreditachieved).eq(0);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
-      expect(components['/_answer3'].state.creditachieved).eq(1);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
-      expect(components['/_answer5'].state.creditachieved).eq(1);
-      expect(components['/_answer6'].state.creditachieved).eq(1);
-      expect(components['/_answer7'].state.creditachieved).eq(1);
-      expect(components['/_answer8'].state.creditachieved).eq(1);
-      expect(components['/_answer9'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
+      expect(components['/_answer3'].state.creditAchieved).eq(1);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
+      expect(components['/_answer5'].state.creditAchieved).eq(1);
+      expect(components['/_answer6'].state.creditAchieved).eq(1);
+      expect(components['/_answer7'].state.creditAchieved).eq(1);
+      expect(components['/_answer8'].state.creditAchieved).eq(1);
+      expect(components['/_answer9'].state.creditAchieved).eq(0);
     })
 
     cy.log('enter last correct answer');
@@ -508,29 +508,29 @@ describe('Problem Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_document1'].state.creditachieved).closeTo(credit4,1E-12);
+      expect(components['/_document1'].state.creditAchieved).closeTo(credit4,1E-12);
       expect(components['/_document1'].state.percentcreditachieved).closeTo(percentCredit4, 1E-12);
-      expect(components['/problem1'].state.creditachieved).closeTo(problem1credit4,1E-12);
+      expect(components['/problem1'].state.creditAchieved).closeTo(problem1credit4,1E-12);
       expect(components['/problem1'].state.percentcreditachieved).closeTo(problem1percentCredit4,1E-12);
-      expect(components['/problem2'].state.creditachieved).closeTo(problem2credit4,1E-12);
+      expect(components['/problem2'].state.creditAchieved).closeTo(problem2credit4,1E-12);
       expect(components['/problem2'].state.percentcreditachieved).closeTo(problem2percentCredit4,1E-12);
-      expect(components['/problem21'].state.creditachieved).closeTo(problem21credit4,1E-12)
+      expect(components['/problem21'].state.creditAchieved).closeTo(problem21credit4,1E-12)
       expect(components['/problem21'].state.percentcreditachieved).closeTo(problem21percentCredit4,1E-12);
-      expect(components['/problem22'].state.creditachieved).closeTo(problem22credit4,1E-12)
+      expect(components['/problem22'].state.creditAchieved).closeTo(problem22credit4,1E-12)
       expect(components['/problem22'].state.percentcreditachieved).closeTo(problem22percentCredit4,1E-12);
-      expect(components['/problem221'].state.creditachieved).closeTo(problem221credit4,1E-12);
+      expect(components['/problem221'].state.creditAchieved).closeTo(problem221credit4,1E-12);
       expect(components['/problem221'].state.percentcreditachieved).closeTo(problem221percentCredit4,1E-12);;
-      expect(components['/problem222'].state.creditachieved).closeTo(problem222credit4,1E-12);
+      expect(components['/problem222'].state.creditAchieved).closeTo(problem222credit4,1E-12);
       expect(components['/problem222'].state.percentcreditachieved).closeTo(problem222percentCredit4,1E-12);;
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
-      expect(components['/_answer3'].state.creditachieved).eq(1);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
-      expect(components['/_answer5'].state.creditachieved).eq(1);
-      expect(components['/_answer6'].state.creditachieved).eq(1);
-      expect(components['/_answer7'].state.creditachieved).eq(1);
-      expect(components['/_answer8'].state.creditachieved).eq(1);
-      expect(components['/_answer9'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
+      expect(components['/_answer3'].state.creditAchieved).eq(1);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
+      expect(components['/_answer5'].state.creditAchieved).eq(1);
+      expect(components['/_answer6'].state.creditAchieved).eq(1);
+      expect(components['/_answer7'].state.creditAchieved).eq(1);
+      expect(components['/_answer8'].state.creditAchieved).eq(1);
+      expect(components['/_answer9'].state.creditAchieved).eq(1);
     })
 
   });
@@ -541,13 +541,13 @@ describe('Problem Tag Tests', function () {
         doenetCode: `
     <title>Activity</title>
     <p>Credit achieved for <ref prop="title">_document1</ref>:
-    <ref prop="creditachieved">_document1</ref>, or <ref prop="percentcreditachieved">_document1</ref>%</p>
+    <ref prop="creditAchieved">_document1</ref>, or <ref prop="percentcreditachieved">_document1</ref>%</p>
 
     <p>Enter <m>u</m>: <answer>u</answer></p>
 
     <problem title="Problem 1" name="problem1" weight="0.5">
       <p>Credit achieved for <ref prop="title">problem1</ref>:
-      <ref prop="creditachieved">problem1</ref>, or <ref prop="percentcreditachieved">problem1</ref>%</p>
+      <ref prop="creditAchieved">problem1</ref>, or <ref prop="percentcreditachieved">problem1</ref>%</p>
 
       <p>Enter <m>x</m>: <answer>x</answer></p>
       <p>Enter <m>y</m>: <answer weight="2">y</answer></p>
@@ -556,13 +556,13 @@ describe('Problem Tag Tests', function () {
     </problem>
     <problem title="Problem 2" name="problem2" weight="2">
       <p>Credit achieved for <ref prop="title">problem2</ref>:
-      <ref prop="creditachieved">problem2</ref>, or <ref prop="percentcreditachieved">problem2</ref>%</p>
+      <ref prop="creditAchieved">problem2</ref>, or <ref prop="percentcreditachieved">problem2</ref>%</p>
 
       <p>Enter <m>z</m>: <answer>z</answer></p>
 
       <problem title="Problem 2.1" name="problem21" weight="3">
         <p>Credit achieved for <ref prop="title">problem21</ref>:
-        <ref prop="creditachieved">problem21</ref>, or <ref prop="percentcreditachieved">problem21</ref>%</p>
+        <ref prop="creditAchieved">problem21</ref>, or <ref prop="percentcreditachieved">problem21</ref>%</p>
 
 
         <p>Enter <m>v</m>: <answer weight="0.5">v</answer></p>
@@ -571,20 +571,20 @@ describe('Problem Tag Tests', function () {
       </problem>
       <problem title="Problem 2.2" name="problem22" weight="4">
         <p>Credit achieved for <ref prop="title">problem22</ref>:
-        <ref prop="creditachieved">problem22</ref>, or <ref prop="percentcreditachieved">problem22</ref>%</p>
+        <ref prop="creditAchieved">problem22</ref>, or <ref prop="percentcreditachieved">problem22</ref>%</p>
 
         <p>Enter <m>q</m>: <answer>q</answer></p>
 
         <problem title="Problem 2.2.1" name="problem221" weight="5">
           <p>Credit achieved for <ref prop="title">problem221</ref>:
-          <ref prop="creditachieved">problem221</ref>, or <ref prop="percentcreditachieved">problem221</ref>%</p>
+          <ref prop="creditAchieved">problem221</ref>, or <ref prop="percentcreditachieved">problem221</ref>%</p>
 
           <p>Enter <m>r</m>: <answer>r</answer></p>
 
         </problem>
         <problem title="Problem 2.2.2" name="problem222" weight="1">
           <p>Credit achieved for <ref prop="title">problem222</ref>:
-          <ref prop="creditachieved">problem222</ref>, or <ref prop="percentcreditachieved">problem222</ref>%</p>
+          <ref prop="creditAchieved">problem222</ref>, or <ref prop="percentcreditachieved">problem222</ref>%</p>
 
           <p>Enter <m>s</m>: <answer weight="3">s</answer></p>
 
@@ -643,29 +643,29 @@ describe('Problem Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_document1'].state.creditachieved).eq(0);
+      expect(components['/_document1'].state.creditAchieved).eq(0);
       expect(components['/_document1'].state.percentcreditachieved).eq(0);
-      expect(components['/problem1'].state.creditachieved).eq(0);
+      expect(components['/problem1'].state.creditAchieved).eq(0);
       expect(components['/problem1'].state.percentcreditachieved).eq(0);
-      expect(components['/problem2'].state.creditachieved).eq(0);
+      expect(components['/problem2'].state.creditAchieved).eq(0);
       expect(components['/problem2'].state.percentcreditachieved).eq(0);
-      expect(components['/problem21'].state.creditachieved).eq(0);
+      expect(components['/problem21'].state.creditAchieved).eq(0);
       expect(components['/problem21'].state.percentcreditachieved).eq(0);
-      expect(components['/problem22'].state.creditachieved).eq(0);
+      expect(components['/problem22'].state.creditAchieved).eq(0);
       expect(components['/problem22'].state.percentcreditachieved).eq(0);
-      expect(components['/problem221'].state.creditachieved).eq(0);
+      expect(components['/problem221'].state.creditAchieved).eq(0);
       expect(components['/problem221'].state.percentcreditachieved).eq(0);
-      expect(components['/problem222'].state.creditachieved).eq(0);
+      expect(components['/problem222'].state.creditAchieved).eq(0);
       expect(components['/problem222'].state.percentcreditachieved).eq(0);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
-      expect(components['/_answer5'].state.creditachieved).eq(0);
-      expect(components['/_answer6'].state.creditachieved).eq(0);
-      expect(components['/_answer7'].state.creditachieved).eq(0);
-      expect(components['/_answer8'].state.creditachieved).eq(0);
-      expect(components['/_answer9'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
+      expect(components['/_answer5'].state.creditAchieved).eq(0);
+      expect(components['/_answer6'].state.creditAchieved).eq(0);
+      expect(components['/_answer7'].state.creditAchieved).eq(0);
+      expect(components['/_answer8'].state.creditAchieved).eq(0);
+      expect(components['/_answer9'].state.creditAchieved).eq(0);
     })
 
     cy.log('enter first correct answer');
@@ -721,29 +721,29 @@ describe('Problem Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_document1'].state.creditachieved).closeTo(credit1,1E-12);
+      expect(components['/_document1'].state.creditAchieved).closeTo(credit1,1E-12);
       expect(components['/_document1'].state.percentcreditachieved).closeTo(percentCredit1, 1E-12);
-      expect(components['/problem1'].state.creditachieved).eq(0);
+      expect(components['/problem1'].state.creditAchieved).eq(0);
       expect(components['/problem1'].state.percentcreditachieved).eq(0);
-      expect(components['/problem2'].state.creditachieved).eq(0);
+      expect(components['/problem2'].state.creditAchieved).eq(0);
       expect(components['/problem2'].state.percentcreditachieved).eq(0);
-      expect(components['/problem21'].state.creditachieved).eq(0);
+      expect(components['/problem21'].state.creditAchieved).eq(0);
       expect(components['/problem21'].state.percentcreditachieved).eq(0);
-      expect(components['/problem22'].state.creditachieved).eq(0);
+      expect(components['/problem22'].state.creditAchieved).eq(0);
       expect(components['/problem22'].state.percentcreditachieved).eq(0);
-      expect(components['/problem221'].state.creditachieved).eq(0);
+      expect(components['/problem221'].state.creditAchieved).eq(0);
       expect(components['/problem221'].state.percentcreditachieved).eq(0);
-      expect(components['/problem222'].state.creditachieved).eq(0);
+      expect(components['/problem222'].state.creditAchieved).eq(0);
       expect(components['/problem222'].state.percentcreditachieved).eq(0);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
-      expect(components['/_answer5'].state.creditachieved).eq(0);
-      expect(components['/_answer6'].state.creditachieved).eq(0);
-      expect(components['/_answer7'].state.creditachieved).eq(0);
-      expect(components['/_answer8'].state.creditachieved).eq(0);
-      expect(components['/_answer9'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
+      expect(components['/_answer5'].state.creditAchieved).eq(0);
+      expect(components['/_answer6'].state.creditAchieved).eq(0);
+      expect(components['/_answer7'].state.creditAchieved).eq(0);
+      expect(components['/_answer8'].state.creditAchieved).eq(0);
+      expect(components['/_answer9'].state.creditAchieved).eq(0);
     })
 
 
@@ -822,29 +822,29 @@ describe('Problem Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_document1'].state.creditachieved).closeTo(credit2,1E-12);
+      expect(components['/_document1'].state.creditAchieved).closeTo(credit2,1E-12);
       expect(components['/_document1'].state.percentcreditachieved).closeTo(percentCredit2, 1E-12);
-      expect(components['/problem1'].state.creditachieved).closeTo(problem1credit2,1E-12);
+      expect(components['/problem1'].state.creditAchieved).closeTo(problem1credit2,1E-12);
       expect(components['/problem1'].state.percentcreditachieved).closeTo(problem1percentCredit2,1E-12);
-      expect(components['/problem2'].state.creditachieved).closeTo(problem2credit2,1E-12);
+      expect(components['/problem2'].state.creditAchieved).closeTo(problem2credit2,1E-12);
       expect(components['/problem2'].state.percentcreditachieved).closeTo(problem2percentCredit2,1E-12);
-      expect(components['/problem21'].state.creditachieved).closeTo(problem21credit2,1E-12)
+      expect(components['/problem21'].state.creditAchieved).closeTo(problem21credit2,1E-12)
       expect(components['/problem21'].state.percentcreditachieved).closeTo(problem21percentCredit2,1E-12);
-      expect(components['/problem22'].state.creditachieved).closeTo(problem22credit2,1E-12)
+      expect(components['/problem22'].state.creditAchieved).closeTo(problem22credit2,1E-12)
       expect(components['/problem22'].state.percentcreditachieved).closeTo(problem22percentCredit2,1E-12);
-      expect(components['/problem221'].state.creditachieved).eq(0);
+      expect(components['/problem221'].state.creditAchieved).eq(0);
       expect(components['/problem221'].state.percentcreditachieved).eq(0);
-      expect(components['/problem222'].state.creditachieved).eq(0);
+      expect(components['/problem222'].state.creditAchieved).eq(0);
       expect(components['/problem222'].state.percentcreditachieved).eq(0);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(1);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
-      expect(components['/_answer5'].state.creditachieved).eq(1);
-      expect(components['/_answer6'].state.creditachieved).eq(0);
-      expect(components['/_answer7'].state.creditachieved).eq(1);
-      expect(components['/_answer8'].state.creditachieved).eq(0);
-      expect(components['/_answer9'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(1);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
+      expect(components['/_answer5'].state.creditAchieved).eq(1);
+      expect(components['/_answer6'].state.creditAchieved).eq(0);
+      expect(components['/_answer7'].state.creditAchieved).eq(1);
+      expect(components['/_answer8'].state.creditAchieved).eq(0);
+      expect(components['/_answer9'].state.creditAchieved).eq(0);
     })
 
     cy.log('enter most other correct answers');
@@ -929,29 +929,29 @@ describe('Problem Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_document1'].state.creditachieved).closeTo(credit3,1E-12);
+      expect(components['/_document1'].state.creditAchieved).closeTo(credit3,1E-12);
       expect(components['/_document1'].state.percentcreditachieved).closeTo(percentCredit3, 1E-12);
-      expect(components['/problem1'].state.creditachieved).closeTo(problem1credit3,1E-12);
+      expect(components['/problem1'].state.creditAchieved).closeTo(problem1credit3,1E-12);
       expect(components['/problem1'].state.percentcreditachieved).closeTo(problem1percentCredit3,1E-12);
-      expect(components['/problem2'].state.creditachieved).closeTo(problem2credit3,1E-12);
+      expect(components['/problem2'].state.creditAchieved).closeTo(problem2credit3,1E-12);
       expect(components['/problem2'].state.percentcreditachieved).closeTo(problem2percentCredit3,1E-12);
-      expect(components['/problem21'].state.creditachieved).closeTo(problem21credit3,1E-12)
+      expect(components['/problem21'].state.creditAchieved).closeTo(problem21credit3,1E-12)
       expect(components['/problem21'].state.percentcreditachieved).closeTo(problem21percentCredit3,1E-12);
-      expect(components['/problem22'].state.creditachieved).closeTo(problem22credit3,1E-12)
+      expect(components['/problem22'].state.creditAchieved).closeTo(problem22credit3,1E-12)
       expect(components['/problem22'].state.percentcreditachieved).closeTo(problem22percentCredit3,1E-12);
-      expect(components['/problem221'].state.creditachieved).closeTo(problem221credit3,1E-12);
+      expect(components['/problem221'].state.creditAchieved).closeTo(problem221credit3,1E-12);
       expect(components['/problem221'].state.percentcreditachieved).closeTo(problem221percentCredit3,1E-12);;
-      expect(components['/problem222'].state.creditachieved).eq(0);
+      expect(components['/problem222'].state.creditAchieved).eq(0);
       expect(components['/problem222'].state.percentcreditachieved).eq(0);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
-      expect(components['/_answer3'].state.creditachieved).eq(1);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
-      expect(components['/_answer5'].state.creditachieved).eq(1);
-      expect(components['/_answer6'].state.creditachieved).eq(1);
-      expect(components['/_answer7'].state.creditachieved).eq(1);
-      expect(components['/_answer8'].state.creditachieved).eq(1);
-      expect(components['/_answer9'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
+      expect(components['/_answer3'].state.creditAchieved).eq(1);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
+      expect(components['/_answer5'].state.creditAchieved).eq(1);
+      expect(components['/_answer6'].state.creditAchieved).eq(1);
+      expect(components['/_answer7'].state.creditAchieved).eq(1);
+      expect(components['/_answer8'].state.creditAchieved).eq(1);
+      expect(components['/_answer9'].state.creditAchieved).eq(0);
     })
 
     cy.log('enter last correct answer');
@@ -1038,29 +1038,29 @@ describe('Problem Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_document1'].state.creditachieved).closeTo(credit4,1E-12);
+      expect(components['/_document1'].state.creditAchieved).closeTo(credit4,1E-12);
       expect(components['/_document1'].state.percentcreditachieved).closeTo(percentCredit4, 1E-12);
-      expect(components['/problem1'].state.creditachieved).closeTo(problem1credit4,1E-12);
+      expect(components['/problem1'].state.creditAchieved).closeTo(problem1credit4,1E-12);
       expect(components['/problem1'].state.percentcreditachieved).closeTo(problem1percentCredit4,1E-12);
-      expect(components['/problem2'].state.creditachieved).closeTo(problem2credit4,1E-12);
+      expect(components['/problem2'].state.creditAchieved).closeTo(problem2credit4,1E-12);
       expect(components['/problem2'].state.percentcreditachieved).closeTo(problem2percentCredit4,1E-12);
-      expect(components['/problem21'].state.creditachieved).closeTo(problem21credit4,1E-12)
+      expect(components['/problem21'].state.creditAchieved).closeTo(problem21credit4,1E-12)
       expect(components['/problem21'].state.percentcreditachieved).closeTo(problem21percentCredit4,1E-12);
-      expect(components['/problem22'].state.creditachieved).closeTo(problem22credit4,1E-12)
+      expect(components['/problem22'].state.creditAchieved).closeTo(problem22credit4,1E-12)
       expect(components['/problem22'].state.percentcreditachieved).closeTo(problem22percentCredit4,1E-12);
-      expect(components['/problem221'].state.creditachieved).closeTo(problem221credit4,1E-12);
+      expect(components['/problem221'].state.creditAchieved).closeTo(problem221credit4,1E-12);
       expect(components['/problem221'].state.percentcreditachieved).closeTo(problem221percentCredit4,1E-12);;
-      expect(components['/problem222'].state.creditachieved).closeTo(problem222credit4,1E-12);
+      expect(components['/problem222'].state.creditAchieved).closeTo(problem222credit4,1E-12);
       expect(components['/problem222'].state.percentcreditachieved).closeTo(problem222percentCredit4,1E-12);;
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
-      expect(components['/_answer3'].state.creditachieved).eq(1);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
-      expect(components['/_answer5'].state.creditachieved).eq(1);
-      expect(components['/_answer6'].state.creditachieved).eq(1);
-      expect(components['/_answer7'].state.creditachieved).eq(1);
-      expect(components['/_answer8'].state.creditachieved).eq(1);
-      expect(components['/_answer9'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
+      expect(components['/_answer3'].state.creditAchieved).eq(1);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
+      expect(components['/_answer5'].state.creditAchieved).eq(1);
+      expect(components['/_answer6'].state.creditAchieved).eq(1);
+      expect(components['/_answer7'].state.creditAchieved).eq(1);
+      expect(components['/_answer8'].state.creditAchieved).eq(1);
+      expect(components['/_answer9'].state.creditAchieved).eq(1);
     })
 
   });

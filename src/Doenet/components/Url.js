@@ -4,20 +4,14 @@ export default class Url extends InlineComponent {
   static componentType = "url";
 
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.href = {required: true};
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroStrings = childLogic.newLeaf({
       name: "atLeastZeroStrings",

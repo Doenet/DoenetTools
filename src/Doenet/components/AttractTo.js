@@ -10,12 +10,8 @@ export default class AttractTo extends ConstraintComponent {
     };
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
       name: "atLeastOneGraphical",

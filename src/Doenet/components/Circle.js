@@ -4,12 +4,8 @@ import me from 'math-expressions';
 export default class Circle extends Curve {
   static componentType = "circle";
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.deleteAllLogic();
 
@@ -665,7 +661,7 @@ export default class Circle extends Curve {
 
   allowDownstreamUpdates(status) {
     if(!((status.initialChange === true && this.state.draggable === true) ||
-      (status.initialChange !== true && this.state.modifybyreference === true))) {
+      (status.initialChange !== true && this.state.modifyIndirectly === true))) {
         return false;
     }
 

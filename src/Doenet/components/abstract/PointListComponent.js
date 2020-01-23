@@ -4,22 +4,14 @@ import { breakStringsAndOthersIntoComponentsByStringCommas } from '../commonsuga
 export default class PointListComponent extends BaseComponent {
   static componentType = "_pointlistcomponent";
 
-  static alwaysContinueUpstreamUpdates = true;
-
-  static createPropertiesObject({ standardComponentTypes }) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.hide = { default: true };
     return properties;
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroPoints = childLogic.newLeaf({
       name: "atLeastZeroPoints",
@@ -54,6 +46,7 @@ export default class PointListComponent extends BaseComponent {
       propositions: [atLeastOneString, atLeastOneMath],
       requireConsecutive: true,
       isSugar: true,
+      affectedBySugar: ["atLeastZeroPoints"],
       replacementFunction: breakIntoPointsByCommas,
     });
 
@@ -68,45 +61,54 @@ export default class PointListComponent extends BaseComponent {
   }
 
 
-  updateState(args = {}) {
-    if(args.init) {
-      this._state.points = {trackChanges: true};
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = {};
+
+
+    stateVariableDefinitions.points = {
+      additionalStateVariablesDefined: ["nPoints"],
+      returnDependencies: () => ({
+        pointChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroPoints",
+          variableNames: ["xs", "coords", "nDimensions"]
+        }
+      }),
+      definition: function ({ dependencyValues, changes }) {
+        return {
+          newValues: {
+            points: dependencyValues.pointChildren,
+            nPoints: dependencyValues.pointChildren.length
+          }
+        }
+      }
     }
 
-    super.updateState(args);
-
-    if (!this.childLogicSatisfied) {
-      this.unresolvedState.points = true;
-      this.unresolvedState.nPoints = true;
-      return;
+    stateVariableDefinitions.childrenWhoRender = {
+      returnDependencies: () => ({
+        points: {
+          dependencyType: "stateVariable",
+          variableName: "points"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          childrenWhoRender: dependencyValues.points.map(x => x.componentName)
+        }
+      })
     }
 
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if (childrenChanged) {
-      delete this.unresolvedState.points;
-      delete this.unresolvedState.nPoints;
-
-      let atLeastZeroPoints = this.childLogic.returnMatches("atLeastZeroPoints");
-      this.state.nPoints = atLeastZeroPoints.length;
-      this.state.points = atLeastZeroPoints.map(i => this.activeChildren[i]);
-    }
+    return stateVariableDefinitions;
 
   }
 
   initializeRenderer() {
-    if(this.renderer === undefined) {
+    if (this.renderer === undefined) {
       this.renderer = new this.availableRenderers.container({ key: this.componentName });
     }
   }
 
-  updateChildrenWhoRender() {
-    if(this.state.points === undefined) {
-      this.childrenWhoRender = [];
-    } else {
-      this.childrenWhoRender = this.state.points.map(x => x.componentName);
-    }
-  }
 
 }

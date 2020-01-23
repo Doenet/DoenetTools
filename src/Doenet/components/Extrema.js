@@ -5,12 +5,8 @@ import {breakEmbeddedStringByCommas, breakIntoVectorComponents,
 export class Extremum extends BaseComponent {
   static componentType = "extremum";
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let getVarName = function(piece) {
       if(piece.length > 1) {
