@@ -7,21 +7,14 @@ header("Access-Control-Allow-Credentials: true");
 
 include "db_connection.php";
 
-// Content
 $_POST = json_decode(file_get_contents("php://input"),true);
-$number_content = count($_POST["contentSeeds"]["contentId"]);
+$number_content = count($_POST["contentSeeds"]["branchId"]);
 
 for ($i = 0; $i < $number_content; $i++){
   $branchId = mysqli_real_escape_string($conn,$_POST["contentSeeds"]["branchId"][$i]);
-  $title =  mysqli_real_escape_string($conn,$_POST["contentSeeds"]["title"][$i]);
-  $doenetML = mysqli_real_escape_string($conn,$_POST["contentSeeds"]["doenetML"][$i]);
-  $contentId = mysqli_real_escape_string($conn,$_POST["contentSeeds"]["contentId"][$i]);
-
   $sql = "
-  INSERT INTO content_branch
-  (branchId,title,doenetML,updateDate,creationDate,latestContentId)
-  VALUES
-  ('$branchId','$title','$doenetML',NOW(),NOW(),'$contentId')
+  DELETE FROM content_branch
+  WHERE branchId = '$branchId'
   ";
   echo $sql;
   $result = $conn->query($sql); 
@@ -33,10 +26,21 @@ for ($i = 0; $i < $number_content; $i++){
   }
 
   $sql = "
-  INSERT INTO content
-  (doenetML,branchId,title,contentId,timestamp,draft)
-  VALUES
-  ('$doenetML','$branchId','$title','$contentId',NOW(),1)
+  DELETE FROM content
+  WHERE branchId = '$branchId'
+  ";
+  echo $sql;
+  $result = $conn->query($sql); 
+  if ($result === TRUE) {
+    // set response code - 200 OK
+    http_response_code(200);
+  }else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+  }
+
+  $sql = "
+  DELETE FROM user_content
+  WHERE branchId = '$branchId'
   ";
   echo $sql;
   $result = $conn->query($sql); 
@@ -48,22 +52,16 @@ for ($i = 0; $i < $number_content; $i++){
   }
 }
 
-// Heading
 $number_folders = count($_POST["folderSeeds"]["folderId"]);
 
 for ($i = 0; $i < $number_folders; $i++){
-
   $folderId = mysqli_real_escape_string($conn,$_POST["folderSeeds"]["folderId"][$i]);
-  $title =  mysqli_real_escape_string($conn,$_POST["folderSeeds"]["title"][$i]);
-  $parentId = mysqli_real_escape_string($conn,$_POST["folderSeeds"]["parentId"][$i]);
-  
   $sql = "
-  INSERT INTO folder
-  (folderId,title ,parentId, creationDate)
-  VALUES
-  ('$folderId','$title','$parentId' ,NOW())
+  DELETE FROM folder
+  WHERE folderId = '$folderId'
   ";
-  $result = $conn->query($sql);
+  echo $sql;
+  $result = $conn->query($sql); 
   if ($result === TRUE) {
     // set response code - 200 OK
     http_response_code(200);
@@ -71,18 +69,34 @@ for ($i = 0; $i < $number_folders; $i++){
     echo "Error: " . $sql . "<br>" . $conn->error;
   }
 
-  if ($parentId !== "root") {
-    $sql = "
-    INSERT INTO folder_content
-    (folderId, childId, childType, timestamp)
-    VALUES
-    ('$parentId','$folderId' ,'folder', NOW())
-    ";
-    $result = $conn->query($sql); 
+  $sql = "
+  DELETE FROM folder_content
+  WHERE folderId = '$folderId'
+  ";
+  echo $sql;
+  $result = $conn->query($sql); 
+  if ($result === TRUE) {
+    // set response code - 200 OK
+    http_response_code(200);
+  }else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+  }
+
+  $sql = "
+  DELETE FROM user_folders
+  WHERE folderId = '$folderId'
+  ";
+  echo $sql;
+  $result = $conn->query($sql); 
+  if ($result === TRUE) {
+    // set response code - 200 OK
+    http_response_code(200);
+  }else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
   }
 }
-
 
 $conn->close();
 
 ?>
+
