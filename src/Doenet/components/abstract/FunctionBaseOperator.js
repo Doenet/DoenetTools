@@ -7,12 +7,8 @@ export default class FunctionOperator extends Function {
 
   static alwaysContinueUpstreamUpdates = true;
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
     
     childLogic.deleteAllLogic();
 

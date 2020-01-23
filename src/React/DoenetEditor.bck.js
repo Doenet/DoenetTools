@@ -1010,11 +1010,11 @@ class DoenetEditor extends Component {
   tagTypeToContextJSX({ tagType, value, propInfo,addPropIndex, key }) {
     if (tagType === undefined) { return null; }
 
-    let standardComponentTypes = ComponentTypes.createComponentTypes();
+    let standardComponentClasses = ComponentTypes.createComponentTypes();
     let allComponentClasses = ComponentTypes.allComponentClasses();
 
-    if (standardComponentTypes[tagType] === undefined){return null;}
-    let TagClass = standardComponentTypes[tagType].class;
+    if (standardComponentClasses[tagType] === undefined){return null;}
+    let TagClass = standardComponentClasses[tagType];
     if (TagClass === undefined) { return null; }
     //Check for Boolean
     let BooleanComponent = allComponentClasses["boolean"];
@@ -1088,9 +1088,9 @@ class DoenetEditor extends Component {
     return componentTypes;
   }
 
-  expandAbstractComponentType({componentType, allComponentClasses, standardComponentTypes}) {
+  expandAbstractComponentType({componentType, allComponentClasses, standardComponentClasses}) {
 
-    if(componentType in standardComponentTypes) {
+    if(componentType in standardComponentClasses) {
       return new Set([componentType]);
     }
 
@@ -1101,7 +1101,7 @@ class DoenetEditor extends Component {
 
     let componentClass = allComponentClasses[componentType];
     if(componentClass !== undefined) {
-      for(let newType in standardComponentTypes) {
+      for(let newType in standardComponentClasses) {
         let newClass = allComponentClasses[newType];
         if (componentClass.isPrototypeOf(newClass)) {
           componentTypes.add(newType);
@@ -1615,7 +1615,7 @@ class DoenetEditor extends Component {
   generateDocs() {
     let components = {};
 
-    let standardComponentTypes = ComponentTypes.createComponentTypes();
+    let standardComponentClasses = ComponentTypes.createComponentTypes();
     let allComponentClasses = ComponentTypes.allComponentClasses();
   
     for (let componentClassKey in allComponentClasses) {
@@ -1627,7 +1627,7 @@ class DoenetEditor extends Component {
       }
       let ComponentClass = allComponentClasses[componentClassKey];
       let childLogic = ComponentClass.returnChildLogic({
-        standardComponentTypes:standardComponentTypes,
+        standardComponentClasses:standardComponentClasses,
         allComponentClasses:allComponentClasses,
         });
       
@@ -1637,7 +1637,7 @@ class DoenetEditor extends Component {
       //  properties
       let componentProperties = {};
       let PropertiesObject = ComponentClass.createPropertiesObject({
-        standardComponentTypes:standardComponentTypes
+        standardComponentClasses:standardComponentClasses
       })
       let sortedPropertiesKeys = Object.keys(PropertiesObject).sort();
       for (let i = 0; i < sortedPropertiesKeys.length; i++) {
@@ -1664,7 +1664,7 @@ class DoenetEditor extends Component {
         let expandedTypes = this.expandAbstractComponentType({
           componentType: componentType,
           allComponentClasses: allComponentClasses,
-          standardComponentTypes: standardComponentTypes
+          standardComponentClasses: standardComponentClasses
         });
         for(let newType of expandedTypes) {
           validChildTypes.add(newType);

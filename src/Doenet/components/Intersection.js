@@ -4,12 +4,8 @@ import me from 'math-expressions';
 export default class Intersection extends CompositeComponent {
   static componentType = "intersection";
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
       name: "atLeastZeroGraphical",
@@ -59,39 +55,35 @@ export default class Intersection extends CompositeComponent {
       return;
     }
 
-    if (args.init) {
-      this.serializedReplacements = this.createSerializedReplacements();
-    }
-
   }
 
-  createSerializedReplacements() {
+  static createSerializedReplacements({component}) {
 
-    if (this.state.numberGraphicalChildren === 0) {
-      return [];
+    if (Object.keys(component.unresolvedState).length > 0 || component.state.numberGraphicalChildren === 0) {
+      return {replacements: []};
     }
 
     // intersection of one object is the object itself
-    if (this.state.numberGraphicalChildren === 1) {
-      return [this.state.graphicalChildren[0].serialize()];
+    if (component.state.numberGraphicalChildren === 1) {
+      return {replacements: [component.state.graphicalChildren[0].serialize()]};
     }
 
-    if (this.state.numberGraphicalChildren > 2) {
+    if (component.state.numberGraphicalChildren > 2) {
       console.warn("Haven't implemented intersection for more than two objects");
-      return [];
+      return {replacements: [] };
     }
 
     // for now, have only implemented for two lines
     // in 2D with constant coefficients
-    let object1 = this.state.graphicalChildren[0];
-    let object2 = this.state.graphicalChildren[1];
+    let object1 = component.state.graphicalChildren[0];
+    let object2 = component.state.graphicalChildren[1];
 
-    let lineClass = this.allComponentClasses["line"];
+    let lineClass = component.allComponentClasses["line"];
     if ((object1 instanceof lineClass) && (object2 instanceof lineClass)) {
 
       if (object1.state.ndimensions !== 2 || object2.state.ndimensions !== 2) {
         console.log("Intersection of lines implemented only in 2D");
-        return [];
+        return {replacements: [] };
       }
 
       // only implement for constant coefficients
@@ -105,7 +97,7 @@ export default class Intersection extends CompositeComponent {
       if (!(Number.isFinite(a1) && Number.isFinite(b1) && Number.isFinite(c1) &&
         Number.isFinite(a2) && Number.isFinite(b2) && Number.isFinite(c2))) {
         console.log("Intersection of lines implemented only for constant coefficients");
-        return [];
+        return {replacements: []};
       }
 
       let d = a1 * b2 - a2 * b1;
@@ -113,13 +105,13 @@ export default class Intersection extends CompositeComponent {
       if (Math.abs(d) < 1E-14) {
         if (Math.abs(c2 * a1 - c1 * a2) > 1E-14) {
           // parallel lines
-          return [];
+          return {replacements: [] };
         } else if ((a1 === 0 && b1 === 0 && c1 === 0) || (a2 === 0 && b2 === 0 && c2 === 0)) {
           // at least one line not defined
-          return [];
+          return {replacements: [] };
         } else {
           // identical lines, return first line
-          return [object1.serialize()];
+          return {replacements: [object1.serialize()]};
         }
       }
 
@@ -128,32 +120,32 @@ export default class Intersection extends CompositeComponent {
       let y = (c1 * a2 - c2 * a1) / d;
       let coords = me.fromAst(["tuple", x, y]);
 
-      return [{ componentType: "point", state: { coords: coords, draggable: false } }]
+      return {replacements: [{ componentType: "point", state: { coords: coords, draggable: false } }]};
     }
 
     console.log("Intersection implemented only for two lines");
-    return [];
+    return {replacements: []};
   }
 
-  calculateReplacementChanges(componentChanges) {
+  static calculateReplacementChanges({component}) {
     let replacementChanges = [];
 
-    if (Object.keys(this.unresolvedState).length > 0) {
+    if (Object.keys(component.unresolvedState).length > 0) {
       return replacementChanges;
     }
 
-    let serializedIntersections = this.createSerializedReplacements();
+    let serializedIntersections = this.createSerializedReplacements({component}).replacements;
 
     let nNewIntersections = serializedIntersections.length;
 
     let recreateReplacements = true;
 
-    if (nNewIntersections === this.replacements.length) {
+    if (nNewIntersections === component.replacements.length) {
       recreateReplacements = false;
 
       for (let ind = 0; ind < nNewIntersections; ind++) {
 
-        if (serializedIntersections[ind].componentType !== this.replacements[ind].componentType) {
+        if (serializedIntersections[ind].componentType !== component.replacements[ind].componentType) {
 
           // found a different type of replacement, so recreate from scratch
           recreateReplacements = true;
@@ -169,7 +161,7 @@ export default class Intersection extends CompositeComponent {
 
         let replacementInstruction = {
           changeType: "updateStateVariables",
-          component: this.replacements[ind],
+          component: component.replacements[ind],
           stateChanges: serializedIntersections[ind].state,
         }
         replacementChanges.push(replacementInstruction);
@@ -187,7 +179,7 @@ export default class Intersection extends CompositeComponent {
       changeType: "add",
       changeTopLevelReplacements: true,
       firstReplacementInd: 0,
-      numberReplacementsToReplace: this.replacements.length,
+      numberReplacementsToReplace: component.replacements.length,
       serializedReplacements: serializedIntersections,
     }
 

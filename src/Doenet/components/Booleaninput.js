@@ -3,22 +3,16 @@ import Input from './abstract/Input';
 export default class Booleaninput extends Input {
   static componentType = "booleaninput";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.prefill = {default: ""};
     properties.label = {default: ""};
     return properties;
   }
 
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
       name: "atMostOneBoolean",
@@ -46,11 +40,11 @@ export default class Booleaninput extends Input {
         componentType: "boolean"
       });
       this.makePublicStateVariable({
-        variableName: "creditachieved",
+        variableName: "creditAchieved",
         componentType: "number"
       });
       this.makePublicStateVariable({
-        variableName: "numbertimessubmitted",
+        variableName: "numberTimesSubmitted",
         componentType: "number"
       });
   
@@ -58,18 +52,18 @@ export default class Booleaninput extends Input {
       if(this._state.submittedvalue.essential !== true) {
         this.state.submittedvalue = false;
       }
-      if(this._state.numbertimessubmitted.essential !== true) {
-        this.state.numbertimessubmitted = 0
+      if(this._state.numberTimesSubmitted.essential !== true) {
+        this.state.numberTimesSubmitted = 0
       }
-      if(this._state.creditachieved.essential !== true) {
-        this.state.creditachieved = 0;
+      if(this._state.creditAchieved.essential !== true) {
+        this.state.creditAchieved = 0;
       }
-      // make value, submittedvalue, creditachieved, numbertimessubmitted essential
+      // make value, submittedvalue, creditAchieved, numberTimesSubmitted essential
       // as they are used to store changed quantities
       this._state.value.essential = true;
       this._state.submittedvalue.essential = true;
-      this._state.creditachieved.essential = true;
-      this._state.numbertimessubmitted.essential = true;
+      this._state.creditAchieved.essential = true;
+      this._state.numberTimesSubmitted.essential = true;
 
       this.updateBoolean = this.updateBoolean.bind(
         new Proxy(this, this.readOnlyProxyHandler)
@@ -136,33 +130,33 @@ export default class Booleaninput extends Input {
       delete this.unresolvedState.includeCheckWork;
       delete this.unresolvedDependencies;
 
-      if (this.ancestorsWhoGathered === undefined){
+      // if (this.ancestorsWhoGathered === undefined){
         //booleaninput not inside an answer component
         this.state.includeCheckWork = false;
-      }else{
-        this.state.answerAncestor = undefined;
-        for (let componentName of this.ancestorsWhoGathered){
-          if (this.components[componentName].componentType === "answer"){
-            this.state.answerAncestor = this.components[componentName];
-            break;
-          }
-        }
-        if (this.state.answerAncestor === undefined){
-          //booleaninput not inside an answer component
-          this.state.includeCheckWork = false;
-        }else{
-          this.state.allAwardsJustSubmitted = this.state.answerAncestor.state.allAwardsJustSubmitted;
-          if (this.state.answerAncestor.state.delegateCheckWork){
-            this.state.includeCheckWork = true;
-          }else{
-            this.state.includeCheckWork = false;
-          }
-        }
-      }
+      // }else{
+      //   this.state.answerAncestor = undefined;
+      //   for (let componentName of this.ancestorsWhoGathered){
+      //     if (this.components[componentName].componentType === "answer"){
+      //       this.state.answerAncestor = this.components[componentName];
+      //       break;
+      //     }
+      //   }
+      //   if (this.state.answerAncestor === undefined){
+      //     //booleaninput not inside an answer component
+      //     this.state.includeCheckWork = false;
+      //   }else{
+      //     this.state.allAwardsJustSubmitted = this.state.answerAncestor.state.allAwardsJustSubmitted;
+      //     if (this.state.answerAncestor.state.delegateCheckWork){
+      //       this.state.includeCheckWork = true;
+      //     }else{
+      //       this.state.includeCheckWork = false;
+      //     }
+      //   }
+      // }
     }
     this.state.valueHasBeenValidated = false;
 
-    if (this.state.allAwardsJustSubmitted && this.state.numbertimessubmitted > 0 && this.state.value === this.state.submittedvalue) {
+    if (this.state.allAwardsJustSubmitted && this.state.numberTimesSubmitted > 0 && this.state.value === this.state.submittedvalue) {
       this.state.valueHasBeenValidated = true;
     }
 
@@ -202,12 +196,12 @@ export default class Booleaninput extends Input {
   allowDownstreamUpdates(status) {
     // since can't change via parents, 
     // only non-initial change can be due to reference
-    return(status.initialChange === true || this.state.modifybyreference === true);
+    return(status.initialChange === true || this.state.modifyIndirectly === true);
   }
 
   get variablesUpdatableDownstream() {
     // for now, only know how to change value and submittedvalue
-    return ["value", "submittedvalue", "creditachieved", "numbertimessubmitted",
+    return ["value", "submittedvalue", "creditAchieved", "numberTimesSubmitted",
       "rendererValueAsSubmitted"
     ];
   }
@@ -261,9 +255,9 @@ export default class Booleaninput extends Input {
       key: this.componentName,
       label: this.state.label,
       includeCheckWork: this.state.includeCheckWork,
-      creditachieved: this.state.creditachieved,
+      creditAchieved: this.state.creditAchieved,
       valueHasBeenValidated: this.state.valueHasBeenValidated,
-      numbertimessubmitted: this.state.numbertimessubmitted,
+      numberTimesSubmitted: this.state.numberTimesSubmitted,
       showCorrectness: this.flags.showCorrectness,
     });
   }
@@ -272,9 +266,9 @@ export default class Booleaninput extends Input {
     this.renderer.updateBoolean({
       boolean: this.state.value,
       label: this.state.label,
-      creditachieved: this.state.creditachieved,
+      creditAchieved: this.state.creditAchieved,
       valueHasBeenValidated: this.state.valueHasBeenValidated,
-      numbertimessubmitted: this.state.numbertimessubmitted,
+      numberTimesSubmitted: this.state.numberTimesSubmitted,
     });
     
   }

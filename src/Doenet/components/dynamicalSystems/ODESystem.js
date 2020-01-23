@@ -4,10 +4,8 @@ import me from 'math-expressions';
 export default class ODESystem extends InlineComponent {
   static componentType = "odesystem";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.independentvariable = {default: me.fromAst('t')};
     properties.initialindependentvariablevalue = {default: me.fromAst(0)};
     properties.displaydigits = {default: 14};
@@ -19,12 +17,8 @@ export default class ODESystem extends InlineComponent {
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.deleteAllLogic();
 
@@ -706,8 +700,8 @@ export default class ODESystem extends InlineComponent {
             let message = "For chunksize " + this.state.chunksize
               + " and tolerance " + this.state.tolerance
               + ", odesystem"
-            if(this.doenetAttributes.componentAlias !== undefined) {
-              message += " (" + this.doenetAttributes.componentAlias + ")"
+            if(this.doenetAttributes.componentName !== undefined) {
+              message += " (" + this.doenetAttributes.componentName + ")"
             }
             message += " hit maxiterations (" + this.state.maxIterations
               + ") at t = " + this.state.maxPossibleTime

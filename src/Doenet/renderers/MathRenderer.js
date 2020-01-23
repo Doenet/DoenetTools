@@ -37,6 +37,9 @@ class MathRenderer extends BaseRenderer {
       mathJaxify = "\\begin{align*}" + this.mathLatex + "\\end{align*}";
     } else if (this.renderMode === "alignnumbered") {
       mathJaxify = "\\begin{align}" + this.mathLatex + "\\end{align}";
+    } else {
+      // treat as inline if have unrecognized renderMode
+      mathJaxify = "\\(" + this.mathLatex + "\\)";
     }
     return <React.Fragment><a name={this._key} /><span id={this._key}>{mathJaxify}</span></React.Fragment>;
   }

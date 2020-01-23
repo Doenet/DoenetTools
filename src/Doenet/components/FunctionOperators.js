@@ -4,10 +4,8 @@ import me from 'math-expressions';
 export class ClampFunction extends FunctionBaseOperator {
   static componentType = "clampfunction";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.lowervalue = {default: 0};
     properties.uppervalue = {default: 1};
     return properties;
@@ -32,10 +30,8 @@ export class ClampFunction extends FunctionBaseOperator {
 export class WrapFunctionPeriodic extends FunctionBaseOperator {
   static componentType = "wrapfunctionperiodic";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.lowervalue = {default: 0};
     properties.uppervalue = {default: 1};
     return properties;

@@ -3,15 +3,11 @@ import BaseComponent from './abstract/BaseComponent';
 export default class MathTarget extends BaseComponent {
   static componentType = "mathtarget";
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
-      name: "ExactlyOneMath",
+      name: "exactlyOneMath",
       componentType: 'math',
       number: 1,
       setAsBase: true
@@ -19,6 +15,32 @@ export default class MathTarget extends BaseComponent {
 
     return childLogic;
   }
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.mathChildName = {
+      returnDependencies: () => ({
+        mathChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneMath",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            mathChildName: dependencyValues.mathChild[0].componentName
+          }
+        };
+      },
+    }
+
+    return stateVariableDefinitions;
+
+  }
+
 
   updateState(args={}) {
     super.updateState(args);

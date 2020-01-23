@@ -10,15 +10,12 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
+    <text>a</text>
     <p><select/></p>
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -30,7 +27,7 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
+    <text>a</text>
     <aslist>
     <select assignnames="x1">
       <math>u</math>
@@ -116,15 +113,13 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       for (let ind = 1; ind <= 10; ind++) {
-        let x = components['/x' + ind].state.value.tree;
+        let x = components['/x' + ind].stateValues.value.tree;
         expect(["u", "v", "w", "x", "y", "z"].includes(x)).eq(true);
       }
     })
@@ -134,7 +129,7 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
+    <text>a</text>
     <aslist>
     <select name="s1" assignnames="X1, y1, z1" numberToSelect="3">
       <math>u</math>
@@ -180,17 +175,14 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       for (let ind = 1; ind <= 5; ind++) {
-        let x = components['/x' + ind].state.value.tree;
-        let y = components['/y' + ind].state.value.tree;
-        let z = components['/z' + ind].state.value.tree;
+        let x = components['/x' + ind].stateValues.value.tree;
+        let y = components['/y' + ind].stateValues.value.tree;
+        let z = components['/z' + ind].stateValues.value.tree;
 
         expect(["u", "v", "w", "x", "y", "z"].includes(x)).eq(true);
         expect(["u", "v", "w", "x", "y", "z"].includes(y)).eq(true);
@@ -257,15 +249,15 @@ describe('Select Tag Tests', function () {
 
     <ref name="n2">n3</ref>
     <ref name="n">num1</ref>
-    <number name="num1"><ref>n2</ref>+<ref>num2</ref></number>
-    <number name="num2"><ref>n3</ref>+<ref>num3</ref></number>
+    <math name="num1" simplify><ref>n2</ref>+<ref>num2</ref></math>
+    <math name="num2" simplify><ref>n3</ref>+<ref>num3</ref></math>
     <ref name="n3">num3</ref>
     <number name="num3">1</number>
     `}, "*");
     });
 
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text','a');
+    cy.get('#\\/_text1').should('have.text', 'a');
     cy.get('#\\/num1 .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3')
     })
@@ -273,9 +265,9 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       for (let ind = 1; ind <= 5; ind++) {
-        let x = components['/x' + ind].state.value.tree;
-        let y = components['/y' + ind].state.value.tree;
-        let z = components['/z' + ind].state.value.tree;
+        let x = components['/x' + ind].stateValues.value.tree;
+        let y = components['/y' + ind].stateValues.value.tree;
+        let z = components['/z' + ind].stateValues.value.tree;
 
         expect(["u", "v", "w", "x", "y", "z"].includes(x)).eq(true);
         expect(["u", "v", "w", "x", "y", "z"].includes(y)).eq(true);
@@ -291,7 +283,7 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
+    <text>a</text>
     <aslist>
     <select name="s1" assignnames="x1, y1, z1" numberToSelect="3" newNameSpace>
       <math>u</math>
@@ -337,17 +329,15 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       for (let ind = 1; ind <= 5; ind++) {
-        let x = components['/s' + ind + '/x' + ind].state.value.tree;
-        let y = components['/s' + ind + '/y' + ind].state.value.tree;
-        let z = components['/s' + ind + '/z' + ind].state.value.tree;
+        let x = components['/s' + ind + '/x' + ind].stateValues.value.tree;
+        let y = components['/s' + ind + '/y' + ind].stateValues.value.tree;
+        let z = components['/s' + ind + '/z' + ind].stateValues.value.tree;
 
         expect(["u", "v", "w", "x", "y", "z"].includes(x)).eq(true);
         expect(["u", "v", "w", "x", "y", "z"].includes(y)).eq(true);
@@ -363,7 +353,7 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
+    <text>a</text>
     <aslist>
     <select name="s1" assignnames="x1, y1, z1" numberToSelect="5" withReplacement>
       <math>x</math>
@@ -394,17 +384,14 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       for (let ind = 1; ind <= 5; ind++) {
-        let x = components['/x' + ind].state.value.tree;
-        let y = components['/y' + ind].state.value.tree;
-        let z = components['/z' + ind].state.value.tree;
+        let x = components['/x' + ind].stateValues.value.tree;
+        let y = components['/y' + ind].stateValues.value.tree;
+        let z = components['/z' + ind].stateValues.value.tree;
 
         expect(["x", "y", "z"].includes(x)).eq(true);
         expect(["x", "y", "z"].includes(y)).eq(true);
@@ -413,7 +400,7 @@ describe('Select Tag Tests', function () {
         let s = components['/s' + ind];
 
         for (let i = 3; i < 5; i++) {
-          expect(["x", "y", "z"].includes(s.replacements[i].state.value.tree)).eq(true);
+          expect(["x", "y", "z"].includes(s.replacements[i].stateValues.value.tree)).eq(true);
         }
       }
     })
@@ -423,7 +410,7 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
+    <text>a</text>
     <p>
     <aslist>
     <select name="s1">
@@ -468,32 +455,29 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let x1 = components['/s1'].replacements[0].state.value.tree;
-      let x2 = components['/s2'].replacements[0].state.value.tree;
+      let x1 = components['/s1'].replacements[0].stateValues.value.tree;
+      let x2 = components['/s2'].replacements[0].stateValues.value.tree;
       expect(["u", "v", "w", "x", "y", "z"].includes(x1)).eq(true);
       expect(["u", "v", "w", "x", "y", "z"].includes(x2)).eq(true);
 
-      expect(components['/noresample1'].replacements[0].state.value.tree).eq(x1);
-      expect(components['/noresample2'].replacements[0].state.value.tree).eq(x2);
-      expect(components['/noreresample1'].replacements[0].state.value.tree).eq(x1);
-      expect(components['/noreresample2'].replacements[0].state.value.tree).eq(x2);
+      expect(components['/noresample1'].replacements[0].replacements[0].stateValues.value.tree).eq(x1);
+      expect(components['/noresample2'].replacements[0].replacements[0].stateValues.value.tree).eq(x2);
+      expect(components['/noreresample1'].replacements[0].replacements[0].replacements[0].stateValues.value.tree).eq(x1);
+      expect(components['/noreresample2'].replacements[0].replacements[0].replacements[0].stateValues.value.tree).eq(x2);
 
-      expect(components['/noresamplelist'].replacements[0].activeChildren[0].state.value.tree).eq(x1);
-      expect(components['/noresamplelist'].replacements[0].activeChildren[1].state.value.tree).eq(x2);
-      expect(components['/noreresamplelist'].replacements[0].activeChildren[0].state.value.tree).eq(x1);
-      expect(components['/noreresamplelist'].replacements[0].activeChildren[1].state.value.tree).eq(x2);
+      expect(components['/noresamplelist'].replacements[0].activeChildren[0].stateValues.value.tree).eq(x1);
+      expect(components['/noresamplelist'].replacements[0].activeChildren[1].stateValues.value.tree).eq(x2);
+      expect(components['/noreresamplelist'].replacements[0].replacements[0].activeChildren[0].stateValues.value.tree).eq(x1);
+      expect(components['/noreresamplelist'].replacements[0].replacements[0].activeChildren[1].stateValues.value.tree).eq(x2);
 
-      expect(components['/noresamplep'].replacements[0].activeChildren[1].activeChildren[0].state.value.tree).eq(x1);
-      expect(components['/noresamplep'].replacements[0].activeChildren[1].activeChildren[1].state.value.tree).eq(x2);
-      expect(components['/noreresamplep'].replacements[0].activeChildren[1].activeChildren[0].state.value.tree).eq(x1);
-      expect(components['/noreresamplep'].replacements[0].activeChildren[1].activeChildren[1].state.value.tree).eq(x2);
+      expect(components['/noresamplep'].replacements[0].activeChildren[1].activeChildren[0].stateValues.value.tree).eq(x1);
+      expect(components['/noresamplep'].replacements[0].activeChildren[1].activeChildren[1].stateValues.value.tree).eq(x2);
+      expect(components['/noreresamplep'].replacements[0].replacements[0].activeChildren[1].activeChildren[0].stateValues.value.tree).eq(x1);
+      expect(components['/noreresamplep'].replacements[0].replacements[0].activeChildren[1].activeChildren[1].stateValues.value.tree).eq(x2);
 
     })
   });
@@ -502,7 +486,7 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
+    <text>a</text>
     <p>Number to select: <mathinput prefill="5" name="numbertoselect"/></p>
     <p>First option: <mathinput prefill="a" name="x"/></p>
     <p>Second option: <mathinput prefill="b" name="y"/></p>
@@ -511,9 +495,9 @@ describe('Select Tag Tests', function () {
     Selected choices: <aslist>
     <select name="sample1" withReplacement>
       <numbertoselect><ref prop="value">numbertoselect</ref></numbertoselect>
-      <ref prop="value">x</ref>
-      <ref prop="value">y</ref>
-      <ref prop="value">z</ref>
+      <ref prop="value">../x</ref>
+      <ref prop="value">../y</ref>
+      <ref prop="value">../z</ref>
     </select>
     </aslist>
     </p>
@@ -525,10 +509,7 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     let samplemaths;
 
@@ -536,7 +517,7 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let samplereplacements = components['/sample1'].replacements;
       expect(samplereplacements.length).eq(5);
-      samplemaths = samplereplacements.map(x => x.replacements[0].state.value.tree);
+      samplemaths = samplereplacements.map(x => x.replacements[0].stateValues.value.tree);
       for (let val of samplemaths) {
         expect(["a", "b", "c"].includes(val)).eq(true);
       }
@@ -547,8 +528,8 @@ describe('Select Tag Tests', function () {
       expect(choices3.length).eq(5);
 
       for (let ind = 0; ind < 5; ind++) {
-        expect(choices2[ind].state.value.tree).eq(samplemaths[ind]);
-        expect(choices3[ind].state.value.tree).eq(samplemaths[ind]);
+        expect(choices2[ind].stateValues.value.tree).eq(samplemaths[ind]);
+        expect(choices3[ind].stateValues.value.tree).eq(samplemaths[ind]);
       }
 
     });
@@ -567,9 +548,9 @@ describe('Select Tag Tests', function () {
       expect(choices2.length).eq(5);
       expect(choices3.length).eq(5);
       for (let ind = 0; ind < 5; ind++) {
-        expect(samplereplacements[ind].replacements[0].state.value.tree).eq(samplemaths[ind]);
-        expect(choices2[ind].state.value.tree).eq(samplemaths[ind]);
-        expect(choices3[ind].state.value.tree).eq(samplemaths[ind]);
+        expect(samplereplacements[ind].replacements[0].stateValues.value.tree).eq(samplemaths[ind]);
+        expect(choices2[ind].stateValues.value.tree).eq(samplemaths[ind]);
+        expect(choices3[ind].stateValues.value.tree).eq(samplemaths[ind]);
       }
     })
 
@@ -594,9 +575,9 @@ describe('Select Tag Tests', function () {
       expect(choices2.length).eq(5);
       expect(choices3.length).eq(5);
       for (let ind = 0; ind < 5; ind++) {
-        expect(samplereplacements[ind].replacements[0].state.value.tree).eq(newvalues[samplemaths[ind]]);
-        expect(choices2[ind].state.value.tree).eq(newvalues[samplemaths[ind]]);
-        expect(choices3[ind].state.value.tree).eq(newvalues[samplemaths[ind]]);
+        expect(samplereplacements[ind].replacements[0].stateValues.value.tree).eq(newvalues[samplemaths[ind]]);
+        expect(choices2[ind].stateValues.value.tree).eq(newvalues[samplemaths[ind]]);
+        expect(choices3[ind].stateValues.value.tree).eq(newvalues[samplemaths[ind]]);
       }
     })
 
@@ -607,7 +588,7 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
+    <text>a</text>
     How many variables do you want? <mathinput />
     <p name="p1"><aslist>
     <map assignnamespaces="a,b,c,d,e,f">
@@ -647,10 +628,7 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     let sampledvariables = [];
 
@@ -663,16 +641,16 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
     cy.log("sample one variable");
     cy.get('#\\/_mathinput1_input').clear().type(`1{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].state.value.tree;
+      let n1 = components['/a/n'].stateValues.value.tree;
       sampledvariables.push(n1);
       expect(components['/p1'].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p2'].activeChildren[0].activeChildren.length).eq(1);
@@ -680,19 +658,19 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       for (let ind = 0; ind < 1; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
       }
     })
 
@@ -706,16 +684,16 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
     cy.log("get same number back");
     cy.get('#\\/_mathinput1_input').clear().type(`1{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].state.value.tree;
+      let n1 = components['/a/n'].stateValues.value.tree;
       expect(n1).eq(sampledvariables[0]);
       expect(components['/p1'].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p2'].activeChildren[0].activeChildren.length).eq(1);
@@ -723,20 +701,20 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(1);
 
       for (let ind = 0; ind < 1; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
       }
     })
 
@@ -744,9 +722,9 @@ describe('Select Tag Tests', function () {
     cy.get('#\\/_mathinput1_input').clear().type(`3{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].state.value.tree;
-      let n2 = components['/b/n'].state.value.tree;
-      let n3 = components['/c/n'].state.value.tree;
+      let n1 = components['/a/n'].stateValues.value.tree;
+      let n2 = components['/b/n'].stateValues.value.tree;
+      let n3 = components['/c/n'].stateValues.value.tree;
       expect(n1).eq(sampledvariables[0]);
       sampledvariables.push(n2);
       sampledvariables.push(n3);
@@ -756,19 +734,19 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(3);
       for (let ind = 0; ind < 3; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
       }
     })
 
@@ -782,9 +760,9 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
 
@@ -792,8 +770,8 @@ describe('Select Tag Tests', function () {
     cy.get('#\\/_mathinput1_input').clear().type(`2{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].state.value.tree;
-      let n2 = components['/b/n'].state.value.tree;
+      let n1 = components['/a/n'].stateValues.value.tree;
+      let n2 = components['/b/n'].stateValues.value.tree;
       expect(n1).eq(sampledvariables[0]);
       expect(n2).eq(sampledvariables[1]);
       expect(components['/p1'].activeChildren[0].activeChildren.length).eq(2);
@@ -802,20 +780,20 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(2);
 
       for (let ind = 0; ind < 2; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
       }
     })
 
@@ -823,12 +801,12 @@ describe('Select Tag Tests', function () {
     cy.get('#\\/_mathinput1_input').clear().type(`6{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].state.value.tree;
-      let n2 = components['/b/n'].state.value.tree;
-      let n3 = components['/c/n'].state.value.tree;
-      let n4 = components['/d/n'].state.value.tree;
-      let n5 = components['/e/n'].state.value.tree;
-      let n6 = components['/f/n'].state.value.tree;
+      let n1 = components['/a/n'].stateValues.value.tree;
+      let n2 = components['/b/n'].stateValues.value.tree;
+      let n3 = components['/c/n'].stateValues.value.tree;
+      let n4 = components['/d/n'].stateValues.value.tree;
+      let n5 = components['/e/n'].stateValues.value.tree;
+      let n6 = components['/f/n'].stateValues.value.tree;
       expect(n1).eq(sampledvariables[0]);
       expect(n2).eq(sampledvariables[1]);
       expect(n3).eq(sampledvariables[2]);
@@ -841,19 +819,19 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       for (let ind = 0; ind < 6; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
       }
     })
 
@@ -867,21 +845,21 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
     cy.log("get all six back");
     cy.get('#\\/_mathinput1_input').clear().type(`6{enter}`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].state.value.tree;
-      let n2 = components['/b/n'].state.value.tree;
-      let n3 = components['/c/n'].state.value.tree;
-      let n4 = components['/d/n'].state.value.tree;
-      let n5 = components['/e/n'].state.value.tree;
-      let n6 = components['/f/n'].state.value.tree;
+      let n1 = components['/a/n'].stateValues.value.tree;
+      let n2 = components['/b/n'].stateValues.value.tree;
+      let n3 = components['/c/n'].stateValues.value.tree;
+      let n4 = components['/d/n'].stateValues.value.tree;
+      let n5 = components['/e/n'].stateValues.value.tree;
+      let n6 = components['/f/n'].stateValues.value.tree;
       expect(n1).eq(sampledvariables[0]);
       expect(n2).eq(sampledvariables[1]);
       expect(n3).eq(sampledvariables[2]);
@@ -894,19 +872,19 @@ describe('Select Tag Tests', function () {
       expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       for (let ind = 0; ind < 6; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
-        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].state.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p7'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p8'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
+        expect(components['/p9'].replacements[0].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value.tree).eq(sampledvariables[ind]);
       }
     })
 
@@ -956,15 +934,15 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let x1 = components['/x1'].state.value.tree;
-      let y1 = components['/y1'].state.value.tree;
-      let z1 = components['/z1'].state.value.tree;
-      let x2 = components['/x2'].state.value.tree;
-      let y2 = components['/y2'].state.value.tree;
-      let z2 = components['/z2'].state.value.tree;
-      let x3 = components['/x3'].state.value.tree;
-      let y3 = components['/y3'].state.value.tree;
-      let z3 = components['/z3'].state.value.tree;
+      let x1 = components['/x1'].stateValues.value.tree;
+      let y1 = components['/y1'].stateValues.value.tree;
+      let z1 = components['/z1'].stateValues.value.tree;
+      let x2 = components['/x2'].stateValues.value.tree;
+      let y2 = components['/y2'].stateValues.value.tree;
+      let z2 = components['/z2'].stateValues.value.tree;
+      let x3 = components['/x3'].stateValues.value.tree;
+      let y3 = components['/y3'].stateValues.value.tree;
+      let z3 = components['/z3'].stateValues.value.tree;
 
       let list1 = lists[x1];
       let list2 = lists[x2];
@@ -980,19 +958,19 @@ describe('Select Tag Tests', function () {
       for (let name of ["/p1", "/q1"]) {
         let aslistChildren = components[name].activeChildren[0].activeChildren;
         for (let ind = 0; ind < 3; ind++) {
-          expect(aslistChildren[ind].state.value.tree).eq(list1[ind]);
+          expect(aslistChildren[ind].stateValues.value.tree).eq(list1[ind]);
         }
       }
       for (let name of ["/p2", "/q2"]) {
         let aslistChildren = components[name].activeChildren[0].activeChildren;
         for (let ind = 0; ind < 3; ind++) {
-          expect(aslistChildren[ind].state.value.tree).eq(list2[ind]);
+          expect(aslistChildren[ind].stateValues.value.tree).eq(list2[ind]);
         }
       }
       for (let name of ["/p3", "/q3"]) {
         let aslistChildren = components[name].activeChildren[0].activeChildren;
         for (let ind = 0; ind < 3; ind++) {
-          expect(aslistChildren[ind].state.value.tree).eq(list3[ind]);
+          expect(aslistChildren[ind].stateValues.value.tree).eq(list3[ind]);
         }
       }
 
@@ -1044,15 +1022,15 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let x1 = components['/s1/x'].state.value.tree;
-      let y1 = components['/s1/y'].state.value.tree;
-      let z1 = components['/s1/z'].state.value.tree;
-      let x2 = components['/s2/x'].state.value.tree;
-      let y2 = components['/s2/y'].state.value.tree;
-      let z2 = components['/s2/z'].state.value.tree;
-      let x3 = components['/s3/x'].state.value.tree;
-      let y3 = components['/s3/y'].state.value.tree;
-      let z3 = components['/s3/z'].state.value.tree;
+      let x1 = components['/s1/x'].stateValues.value.tree;
+      let y1 = components['/s1/y'].stateValues.value.tree;
+      let z1 = components['/s1/z'].stateValues.value.tree;
+      let x2 = components['/s2/x'].stateValues.value.tree;
+      let y2 = components['/s2/y'].stateValues.value.tree;
+      let z2 = components['/s2/z'].stateValues.value.tree;
+      let x3 = components['/s3/x'].stateValues.value.tree;
+      let y3 = components['/s3/y'].stateValues.value.tree;
+      let z3 = components['/s3/z'].stateValues.value.tree;
 
       let list1 = lists[x1];
       let list2 = lists[x2];
@@ -1068,19 +1046,19 @@ describe('Select Tag Tests', function () {
       for (let name of ["/p1", "/q1"]) {
         let aslistChildren = components[name].activeChildren[0].activeChildren;
         for (let ind = 0; ind < 3; ind++) {
-          expect(aslistChildren[ind].state.value.tree).eq(list1[ind]);
+          expect(aslistChildren[ind].stateValues.value.tree).eq(list1[ind]);
         }
       }
       for (let name of ["/p2", "/q2"]) {
         let aslistChildren = components[name].activeChildren[0].activeChildren;
         for (let ind = 0; ind < 3; ind++) {
-          expect(aslistChildren[ind].state.value.tree).eq(list2[ind]);
+          expect(aslistChildren[ind].stateValues.value.tree).eq(list2[ind]);
         }
       }
       for (let name of ["/p3", "/q3"]) {
         let aslistChildren = components[name].activeChildren[0].activeChildren;
         for (let ind = 0; ind < 3; ind++) {
-          expect(aslistChildren[ind].state.value.tree).eq(list3[ind]);
+          expect(aslistChildren[ind].stateValues.value.tree).eq(list3[ind]);
         }
       }
 
@@ -1123,15 +1101,15 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let x1 = components['/x1'].state.value.tree;
-      let y1 = components['/y1'].state.value.tree;
-      let z1 = components['/z1'].state.value.tree;
-      let x2 = components['/x2'].state.value.tree;
-      let y2 = components['/y2'].state.value.tree;
-      let z2 = components['/z2'].state.value.tree;
-      let x3 = components['/x3'].state.value.tree;
-      let y3 = components['/y3'].state.value.tree;
-      let z3 = components['/z3'].state.value.tree;
+      let x1 = components['/x1'].stateValues.value.tree;
+      let y1 = components['/y1'].stateValues.value.tree;
+      let z1 = components['/z1'].stateValues.value.tree;
+      let x2 = components['/x2'].stateValues.value.tree;
+      let y2 = components['/y2'].stateValues.value.tree;
+      let z2 = components['/z2'].stateValues.value.tree;
+      let x3 = components['/x3'].stateValues.value.tree;
+      let y3 = components['/y3'].stateValues.value.tree;
+      let z3 = components['/z3'].stateValues.value.tree;
 
       let list1 = lists[x1];
       let list2 = lists[x2];
@@ -1154,7 +1132,7 @@ describe('Select Tag Tests', function () {
         let astlistChildren = components[name].activeChildren[0].activeChildren
         for (let ind1 = 0; ind1 < 3; ind1++) {
           for (let ind2 = 0; ind2 < 3; ind2++) {
-            expect(astlistChildren[ind1 * 3 + ind2].state.value.tree).eq(listsByInd[ind1][ind2]);
+            expect(astlistChildren[ind1 * 3 + ind2].stateValues.value.tree).eq(listsByInd[ind1][ind2]);
           }
         }
       }
@@ -1206,28 +1184,28 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let q2 = components['/q2'].replacements[0].activeChildren;
-      let q2string = q2[0].state.value;
-      let q2math = q2[1].state.value;
+      let q2string = q2[0].stateValues.value;
+      let q2math = q2[1].stateValues.value;
       expect(q2math.equals(option[q2string])).eq(true);
 
       let r2 = components['/r2'].replacements[0].activeChildren;
-      let r2string = r2[0].state.value;
-      let r2math = r2[1].state.value;
+      let r2string = r2[0].stateValues.value;
+      let r2math = r2[1].stateValues.value;
       expect(r2math.equals(option[r2string])).eq(true);
 
       let s2 = components['/s2'].replacements[0].activeChildren;
-      let s2string = s2[0].state.value;
-      let s2math = s2[1].state.value;
+      let s2string = s2[0].stateValues.value;
+      let s2math = s2[1].stateValues.value;
       expect(s2math.equals(option[s2string])).eq(true);
 
       let t2 = components['/t2'].replacements[0].activeChildren;
-      let t2string = t2[0].state.value;
-      let t2math = t2[1].state.value;
+      let t2string = t2[0].stateValues.value;
+      let t2math = t2[1].stateValues.value;
       expect(t2math.equals(option[t2string])).eq(true);
 
       let u2 = components['/u2'].replacements[0].activeChildren;
-      let u2string = u2[0].state.value;
-      let u2math = u2[1].state.value;
+      let u2string = u2[0].stateValues.value;
+      let u2math = u2[1].stateValues.value;
       expect(u2math.equals(option[u2string])).eq(true);
 
     })
@@ -1285,48 +1263,48 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let q2 = components['/q2'].replacements[0].activeChildren;
-      let q2string = q2[0].state.value;
-      let q2math = q2[1].state.value;
+      let q2string = q2[0].stateValues.value;
+      let q2math = q2[1].stateValues.value;
       expect(q2math.equals(option[q2string])).eq(true);
-      let qx = components['/qx'].replacements[0].state.value.tree;
+      let qx = components['/qx'].replacements[0].stateValues.value.tree;
       expect(qx).eq(xoption[q2string]);
-      let repeatqmath = components["/repeat"].activeChildren[0].activeChildren[1].state.value;
+      let repeatqmath = components["/repeat"].activeChildren[0].activeChildren[1].stateValues.value;
       expect(repeatqmath.equals(option[q2string])).eq(true);
 
       let r2 = components['/r2'].replacements[0].activeChildren;
-      let r2string = r2[0].state.value;
-      let r2math = r2[1].state.value;
+      let r2string = r2[0].stateValues.value;
+      let r2math = r2[1].stateValues.value;
       expect(r2math.equals(option[r2string])).eq(true);
-      let rx = components['/rx'].replacements[0].state.value.tree;
+      let rx = components['/rx'].replacements[0].stateValues.value.tree;
       expect(rx).eq(xoption[r2string]);
-      let repeatrmath = components["/repeat"].activeChildren[1].activeChildren[1].state.value;
+      let repeatrmath = components["/repeat"].activeChildren[1].activeChildren[1].stateValues.value;
       expect(repeatrmath.equals(option[r2string])).eq(true);
 
       let s2 = components['/s2'].replacements[0].activeChildren;
-      let s2string = s2[0].state.value;
-      let s2math = s2[1].state.value;
+      let s2string = s2[0].stateValues.value;
+      let s2math = s2[1].stateValues.value;
       expect(s2math.equals(option[s2string])).eq(true);
-      let sx = components['/sx'].replacements[0].state.value.tree;
+      let sx = components['/sx'].replacements[0].stateValues.value.tree;
       expect(sx).eq(xoption[s2string]);
-      let repeatsmath = components["/repeat"].activeChildren[2].activeChildren[1].state.value;
+      let repeatsmath = components["/repeat"].activeChildren[2].activeChildren[1].stateValues.value;
       expect(repeatsmath.equals(option[s2string])).eq(true);
 
       let t2 = components['/t2'].replacements[0].activeChildren;
-      let t2string = t2[0].state.value;
-      let t2math = t2[1].state.value;
+      let t2string = t2[0].stateValues.value;
+      let t2math = t2[1].stateValues.value;
       expect(t2math.equals(option[t2string])).eq(true);
-      let tx = components['/tx'].replacements[0].state.value.tree;
+      let tx = components['/tx'].replacements[0].stateValues.value.tree;
       expect(tx).eq(xoption[t2string]);
-      let repeattmath = components["/repeat"].activeChildren[3].activeChildren[1].state.value;
+      let repeattmath = components["/repeat"].activeChildren[3].activeChildren[1].stateValues.value;
       expect(repeattmath.equals(option[t2string])).eq(true);
 
       let u2 = components['/u2'].replacements[0].activeChildren;
-      let u2string = u2[0].state.value;
-      let u2math = u2[1].state.value;
+      let u2string = u2[0].stateValues.value;
+      let u2math = u2[1].stateValues.value;
       expect(u2math.equals(option[u2string])).eq(true);
-      let ux = components['/ux'].replacements[0].state.value.tree;
+      let ux = components['/ux'].replacements[0].stateValues.value.tree;
       expect(ux).eq(xoption[u2string]);
-      let repeatumath = components["/repeat"].activeChildren[4].activeChildren[1].state.value;
+      let repeatumath = components["/repeat"].activeChildren[4].activeChildren[1].stateValues.value;
       expect(repeatumath.equals(option[u2string])).eq(true);
 
     })
@@ -1365,17 +1343,17 @@ describe('Select Tag Tests', function () {
       let variant = components['/x'].sharedParameters.variant;
       let expectedx = variant.substring(0, 1);
 
-      let x = components['/x'].state.value.tree;
+      let x = components['/x'].stateValues.value.tree;
 
       expect(x).eq(expectedx);
 
-      let xorig = components['/_select1'].replacements[0].state.value.tree;
+      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
       expect(xorig).eq(expectedx);
 
-      let x2 = components['/x2'].replacements[0].state.value.tree;
+      let x2 = components['/x2'].replacements[0].stateValues.value.tree;
       expect(x2).eq(expectedx);
 
-      let x3 = components['/x3'].replacements[0].state.value.tree;
+      let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
 
     })
@@ -1427,37 +1405,37 @@ describe('Select Tag Tests', function () {
       let variant = components['/x'].sharedParameters.variant;
       let variantVars = variantMap[variant];
 
-      let x = components['/x'].state.value.tree;
+      let x = components['/x'].stateValues.value.tree;
 
       expect(variantVars.includes(x)).eq(true);
       variantVars.splice(variantVars.indexOf(x), 1);
 
-      let y = components['/y'].state.value.tree;
+      let y = components['/y'].stateValues.value.tree;
       expect(variantVars.includes(y)).eq(true);
       variantVars.splice(variantVars.indexOf(y), 1);
 
-      let z = components['/z'].state.value.tree;
+      let z = components['/z'].stateValues.value.tree;
       expect(z).eq(variantVars[0]);
 
-      let xorig = components['/_select1'].replacements[0].state.value.tree;
+      let xorig = components['/_select1'].replacements[0].stateValues.value.tree;
       expect(xorig).eq(x);
-      let yorig = components['/_select1'].replacements[1].state.value.tree;
+      let yorig = components['/_select1'].replacements[1].stateValues.value.tree;
       expect(yorig).eq(y);
-      let zorig = components['/_select1'].replacements[2].state.value.tree;
+      let zorig = components['/_select1'].replacements[2].stateValues.value.tree;
       expect(zorig).eq(z);
 
-      let x2 = components['/x2'].replacements[0].state.value.tree;
+      let x2 = components['/x2'].replacements[0].stateValues.value.tree;
       expect(x2).eq(x);
-      let y2 = components['/y2'].replacements[0].state.value.tree;
+      let y2 = components['/y2'].replacements[0].stateValues.value.tree;
       expect(y2).eq(y);
-      let z2 = components['/z2'].replacements[0].state.value.tree;
+      let z2 = components['/z2'].replacements[0].stateValues.value.tree;
       expect(z2).eq(z);
 
-      let x3 = components['/s2'].replacements[0].state.value.tree;
+      let x3 = components['/s2'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(x);
-      let y3 = components['/s2'].replacements[1].state.value.tree;
+      let y3 = components['/s2'].replacements[0].replacements[1].stateValues.value.tree;
       expect(y3).eq(y);
-      let z3 = components['/s2'].replacements[2].state.value.tree;
+      let z3 = components['/s2'].replacements[0].replacements[2].stateValues.value.tree;
       expect(z3).eq(z);
 
     })
@@ -1485,7 +1463,7 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let wordsSoFar = [];
       for (let ind = 1; ind <= 5; ind++) {
-        let word = components['/w' + ind].state.value;
+        let word = components['/w' + ind].stateValues.value;
         expect(["Lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit"].includes(word)).eq(true);
         expect([wordsSoFar].includes(word)).eq(false);
         wordsSoFar.push(word);
@@ -1514,7 +1492,7 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       for (let ind = 1; ind <= 10; ind++) {
-        let num = components['/n' + ind].state.number;
+        let num = components['/n' + ind].stateValues.value;
         expect([2, 3, 5, 7, 11, 13, 17, 19].includes(num)).eq(true);
       }
     })
@@ -1547,7 +1525,7 @@ describe('Select Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let x = components['/x'].state.value;
+        let x = components['/x'].stateValues.value;
         if (x === "z") {
           numZ++;
         } else if (x === "y") {
@@ -1597,7 +1575,7 @@ describe('Select Tag Tests', function () {
       let numX = 0, numY = 0, numZ = 0;
       let selectReplacements = components['/_select1'].replacements;
       for (let ind = 0; ind < 200; ind++) {
-        let x = selectReplacements[ind].state.value;
+        let x = selectReplacements[ind].stateValues.value;
         if (x === "x") {
           numX++;
         } else if (x === "y") {
@@ -1647,7 +1625,7 @@ describe('Select Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let x = components['/x'].state.value;
+        let x = components['/x'].stateValues.value;
         if (x === "z") {
           numZ++;
         } else if (x === "y") {
@@ -1657,7 +1635,7 @@ describe('Select Tag Tests', function () {
         } else {
           numUVW++;
         }
-        let y = components['/y'].state.value;
+        let y = components['/y'].stateValues.value;
         if (y === "z") {
           numZ++;
         } else if (y === "y") {
@@ -1726,21 +1704,21 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = components['/q'].activeChildren.map(x => x.state.value)
-      let rs = components['/r'].activeChildren.map(x => x.state.value)
-      let ss = components['/s'].activeChildren.map(x => x.state.value)
-      let ts = components['/t'].activeChildren.map(x => x.state.value)
-      let us = components['/u'].activeChildren.map(x => x.state.value)
-      let vs = components['/v'].activeChildren.map(x => x.state.value)
-      let ws = components['/w'].activeChildren.map(x => x.state.value)
+      let qs = components['/q'].activeChildren.map(x => x.stateValues.value)
+      let rs = components['/r'].activeChildren.map(x => x.stateValues.value)
+      let ss = components['/s'].activeChildren.map(x => x.stateValues.value)
+      let ts = components['/t'].activeChildren.map(x => x.stateValues.value)
+      let us = components['/u'].activeChildren.map(x => x.stateValues.value)
+      let vs = components['/v'].activeChildren.map(x => x.stateValues.value)
+      let ws = components['/w'].activeChildren.map(x => x.stateValues.value)
 
-      let q2s = components['/q2'].replacements[0].activeChildren.map(x => x.state.value);
-      let r2s = components['/r2'].replacements[0].activeChildren.map(x => x.state.value);
-      let s2s = components['/s2'].replacements[0].activeChildren.map(x => x.state.value);
-      let t2s = components['/t2'].replacements[0].activeChildren.map(x => x.state.value);
-      let u2s = components['/u2'].replacements[0].activeChildren.map(x => x.state.value);
-      let v2s = components['/v2'].replacements[0].activeChildren.map(x => x.state.value);
-      let w2s = components['/w2'].replacements[0].activeChildren.map(x => x.state.value);
+      let q2s = components['/q2'].replacements[0].activeChildren.map(x => x.stateValues.value);
+      let r2s = components['/r2'].replacements[0].activeChildren.map(x => x.stateValues.value);
+      let s2s = components['/s2'].replacements[0].activeChildren.map(x => x.stateValues.value);
+      let t2s = components['/t2'].replacements[0].activeChildren.map(x => x.stateValues.value);
+      let u2s = components['/u2'].replacements[0].activeChildren.map(x => x.stateValues.value);
+      let v2s = components['/v2'].replacements[0].activeChildren.map(x => x.stateValues.value);
+      let w2s = components['/w2'].replacements[0].activeChildren.map(x => x.stateValues.value);
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
@@ -1751,46 +1729,46 @@ describe('Select Tag Tests', function () {
       expect(w2s).eqls(ws);
 
       let q3s = [
-        components['/qq'].replacements[0].state.value,
-        components['/qr'].replacements[0].state.value,
-        components['/qq2'].replacements[0].state.value,
-        components['/qr2'].replacements[0].state.value,
+        components['/qq'].replacements[0].stateValues.value,
+        components['/qr'].replacements[0].stateValues.value,
+        components['/qq2'].replacements[0].replacements[0].stateValues.value,
+        components['/qr2'].replacements[0].replacements[0].stateValues.value,
       ]
       let r3s = [
-        components['/rq'].replacements[0].state.value,
-        components['/rr'].replacements[0].state.value,
-        components['/rq2'].replacements[0].state.value,
-        components['/rr2'].replacements[0].state.value,
+        components['/rq'].replacements[0].stateValues.value,
+        components['/rr'].replacements[0].stateValues.value,
+        components['/rq2'].replacements[0].replacements[0].stateValues.value,
+        components['/rr2'].replacements[0].replacements[0].stateValues.value,
       ]
       let s3s = [
-        components['/sq'].replacements[0].state.value,
-        components['/sr'].replacements[0].state.value,
-        components['/sq2'].replacements[0].state.value,
-        components['/sr2'].replacements[0].state.value,
+        components['/sq'].replacements[0].stateValues.value,
+        components['/sr'].replacements[0].stateValues.value,
+        components['/sq2'].replacements[0].replacements[0].stateValues.value,
+        components['/sr2'].replacements[0].replacements[0].stateValues.value,
       ]
       let t3s = [
-        components['/tq'].replacements[0].state.value,
-        components['/tr'].replacements[0].state.value,
-        components['/tq2'].replacements[0].state.value,
-        components['/tr2'].replacements[0].state.value,
+        components['/tq'].replacements[0].stateValues.value,
+        components['/tr'].replacements[0].stateValues.value,
+        components['/tq2'].replacements[0].replacements[0].stateValues.value,
+        components['/tr2'].replacements[0].replacements[0].stateValues.value,
       ]
       let u3s = [
-        components['/uq'].replacements[0].state.value,
-        components['/ur'].replacements[0].state.value,
-        components['/uq2'].replacements[0].state.value,
-        components['/ur2'].replacements[0].state.value,
+        components['/uq'].replacements[0].stateValues.value,
+        components['/ur'].replacements[0].stateValues.value,
+        components['/uq2'].replacements[0].replacements[0].stateValues.value,
+        components['/ur2'].replacements[0].replacements[0].stateValues.value,
       ]
       let v3s = [
-        components['/vq'].replacements[0].state.value,
-        components['/vr'].replacements[0].state.value,
-        components['/vq2'].replacements[0].state.value,
-        components['/vr2'].replacements[0].state.value,
+        components['/vq'].replacements[0].stateValues.value,
+        components['/vr'].replacements[0].stateValues.value,
+        components['/vq2'].replacements[0].replacements[0].stateValues.value,
+        components['/vr2'].replacements[0].replacements[0].stateValues.value,
       ]
       let w3s = [
-        components['/wq'].replacements[0].state.value,
-        components['/wr'].replacements[0].state.value,
-        components['/wq2'].replacements[0].state.value,
-        components['/wr2'].replacements[0].state.value,
+        components['/wq'].replacements[0].stateValues.value,
+        components['/wr'].replacements[0].stateValues.value,
+        components['/wq2'].replacements[0].replacements[0].stateValues.value,
+        components['/wr2'].replacements[0].replacements[0].stateValues.value,
       ]
 
       expect(q3s).eqls(qs);
@@ -1855,21 +1833,21 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = components['/q'].activeChildren.map(x => x.state.value)
-      let rs = components['/r'].activeChildren.map(x => x.state.value)
-      let ss = components['/s'].activeChildren.map(x => x.state.value)
-      let ts = components['/t'].activeChildren.map(x => x.state.value)
-      let us = components['/u'].activeChildren.map(x => x.state.value)
-      let vs = components['/v'].activeChildren.map(x => x.state.value)
-      let ws = components['/w'].activeChildren.map(x => x.state.value)
+      let qs = components['/q'].activeChildren.map(x => x.stateValues.value)
+      let rs = components['/r'].activeChildren.map(x => x.stateValues.value)
+      let ss = components['/s'].activeChildren.map(x => x.stateValues.value)
+      let ts = components['/t'].activeChildren.map(x => x.stateValues.value)
+      let us = components['/u'].activeChildren.map(x => x.stateValues.value)
+      let vs = components['/v'].activeChildren.map(x => x.stateValues.value)
+      let ws = components['/w'].activeChildren.map(x => x.stateValues.value)
 
-      let q2s = components['/q2'].replacements[0].activeChildren.map(x => x.state.value);
-      let r2s = components['/r2'].replacements[0].activeChildren.map(x => x.state.value);
-      let s2s = components['/s2'].replacements[0].activeChildren.map(x => x.state.value);
-      let t2s = components['/t2'].replacements[0].activeChildren.map(x => x.state.value);
-      let u2s = components['/u2'].replacements[0].activeChildren.map(x => x.state.value);
-      let v2s = components['/v2'].replacements[0].activeChildren.map(x => x.state.value);
-      let w2s = components['/w2'].replacements[0].activeChildren.map(x => x.state.value);
+      let q2s = components['/q2'].replacements[0].activeChildren.map(x => x.stateValues.value);
+      let r2s = components['/r2'].replacements[0].activeChildren.map(x => x.stateValues.value);
+      let s2s = components['/s2'].replacements[0].activeChildren.map(x => x.stateValues.value);
+      let t2s = components['/t2'].replacements[0].activeChildren.map(x => x.stateValues.value);
+      let u2s = components['/u2'].replacements[0].activeChildren.map(x => x.stateValues.value);
+      let v2s = components['/v2'].replacements[0].activeChildren.map(x => x.stateValues.value);
+      let w2s = components['/w2'].replacements[0].activeChildren.map(x => x.stateValues.value);
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
@@ -1879,13 +1857,13 @@ describe('Select Tag Tests', function () {
       expect(v2s).eqls(vs);
       expect(w2s).eqls(ws);
 
-      let q3s = components['/q3'].replacements.map(x => x.state.value);
-      let r3s = components['/r3'].replacements.map(x => x.state.value);
-      let s3s = components['/s3'].replacements.map(x => x.state.value);
-      let t3s = components['/t3'].replacements.map(x => x.state.value);
-      let u3s = components['/u3'].replacements.map(x => x.state.value);
-      let v3s = components['/v3'].replacements.map(x => x.state.value);
-      let w3s = components['/w3'].replacements.map(x => x.state.value);
+      let q3s = components['/q3'].replacements[0].replacements.map(x => x.stateValues.value);
+      let r3s = components['/r3'].replacements[0].replacements.map(x => x.stateValues.value);
+      let s3s = components['/s3'].replacements[0].replacements.map(x => x.stateValues.value);
+      let t3s = components['/t3'].replacements[0].replacements.map(x => x.stateValues.value);
+      let u3s = components['/u3'].replacements[0].replacements.map(x => x.stateValues.value);
+      let v3s = components['/v3'].replacements[0].replacements.map(x => x.stateValues.value);
+      let w3s = components['/w3'].replacements[0].replacements.map(x => x.stateValues.value);
 
       expect(q3s).eqls(qs.slice(0, 2));
       expect(r3s).eqls(rs.slice(0, 2));
@@ -1896,46 +1874,46 @@ describe('Select Tag Tests', function () {
       expect(w3s).eqls(ws.slice(0, 2));
 
       let q4s = [
-        components['/qq'].replacements[0].state.value,
-        components['/qr'].replacements[0].state.value,
-        components['/qq2'].replacements[0].state.value,
-        components['/qr2'].replacements[0].state.value,
+        components['/qq'].replacements[0].stateValues.value,
+        components['/qr'].replacements[0].stateValues.value,
+        components['/qq2'].replacements[0].replacements[0].stateValues.value,
+        components['/qr2'].replacements[0].replacements[0].stateValues.value,
       ]
       let r4s = [
-        components['/rq'].replacements[0].state.value,
-        components['/rr'].replacements[0].state.value,
-        components['/rq2'].replacements[0].state.value,
-        components['/rr2'].replacements[0].state.value,
+        components['/rq'].replacements[0].stateValues.value,
+        components['/rr'].replacements[0].stateValues.value,
+        components['/rq2'].replacements[0].replacements[0].stateValues.value,
+        components['/rr2'].replacements[0].replacements[0].stateValues.value,
       ]
       let s4s = [
-        components['/sq'].replacements[0].state.value,
-        components['/sr'].replacements[0].state.value,
-        components['/sq2'].replacements[0].state.value,
-        components['/sr2'].replacements[0].state.value,
+        components['/sq'].replacements[0].stateValues.value,
+        components['/sr'].replacements[0].stateValues.value,
+        components['/sq2'].replacements[0].replacements[0].stateValues.value,
+        components['/sr2'].replacements[0].replacements[0].stateValues.value,
       ]
       let t4s = [
-        components['/tq'].replacements[0].state.value,
-        components['/tr'].replacements[0].state.value,
-        components['/tq2'].replacements[0].state.value,
-        components['/tr2'].replacements[0].state.value,
+        components['/tq'].replacements[0].stateValues.value,
+        components['/tr'].replacements[0].stateValues.value,
+        components['/tq2'].replacements[0].replacements[0].stateValues.value,
+        components['/tr2'].replacements[0].replacements[0].stateValues.value,
       ]
       let u4s = [
-        components['/uq'].replacements[0].state.value,
-        components['/ur'].replacements[0].state.value,
-        components['/uq2'].replacements[0].state.value,
-        components['/ur2'].replacements[0].state.value,
+        components['/uq'].replacements[0].stateValues.value,
+        components['/ur'].replacements[0].stateValues.value,
+        components['/uq2'].replacements[0].replacements[0].stateValues.value,
+        components['/ur2'].replacements[0].replacements[0].stateValues.value,
       ]
       let v4s = [
-        components['/vq'].replacements[0].state.value,
-        components['/vr'].replacements[0].state.value,
-        components['/vq2'].replacements[0].state.value,
-        components['/vr2'].replacements[0].state.value,
+        components['/vq'].replacements[0].stateValues.value,
+        components['/vr'].replacements[0].stateValues.value,
+        components['/vq2'].replacements[0].replacements[0].stateValues.value,
+        components['/vr2'].replacements[0].replacements[0].stateValues.value,
       ]
       let w4s = [
-        components['/wq'].replacements[0].state.value,
-        components['/wr'].replacements[0].state.value,
-        components['/wq2'].replacements[0].state.value,
-        components['/wr2'].replacements[0].state.value,
+        components['/wq'].replacements[0].stateValues.value,
+        components['/wr'].replacements[0].stateValues.value,
+        components['/wq2'].replacements[0].replacements[0].stateValues.value,
+        components['/wr2'].replacements[0].replacements[0].stateValues.value,
       ]
 
       expect(q4s).eqls(qs);
@@ -1949,7 +1927,8 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('references to internal assignnames, named grandchildren', () => {
+  // can no longer reference between named grandchildren using their original names
+  it.skip('references to internal assignnames, named grandchildren', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
@@ -1986,17 +1965,17 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = components['/q'].replacements.map(x => x.state.value)
-      let rs = components['/r'].replacements.map(x => x.state.value)
-      let ss = components['/s'].replacements.map(x => x.state.value)
-      let ts = components['/t'].replacements.map(x => x.state.value)
-      let us = components['/u'].replacements.map(x => x.state.value)
+      let qs = components['/q'].replacements.map(x => x.stateValues.value)
+      let rs = components['/r'].replacements.map(x => x.stateValues.value)
+      let ss = components['/s'].replacements.map(x => x.stateValues.value)
+      let ts = components['/t'].replacements.map(x => x.stateValues.value)
+      let us = components['/u'].replacements.map(x => x.stateValues.value)
 
-      let q2s = components['/q2'].replacements.map(x => x.state.value);
-      let r2s = components['/r2'].replacements.map(x => x.state.value);
-      let s2s = components['/s2'].replacements.map(x => x.state.value);
-      let t2s = components['/t2'].replacements.map(x => x.state.value);
-      let u2s = components['/u2'].replacements.map(x => x.state.value);
+      let q2s = components['/q2'].replacements.map(x => x.stateValues.value);
+      let r2s = components['/r2'].replacements.map(x => x.stateValues.value);
+      let s2s = components['/s2'].replacements.map(x => x.stateValues.value);
+      let t2s = components['/t2'].replacements.map(x => x.stateValues.value);
+      let u2s = components['/u2'].replacements.map(x => x.stateValues.value);
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
@@ -2005,44 +1984,44 @@ describe('Select Tag Tests', function () {
       expect(u2s).eqls(us);
 
       let q3s = [
-        components['/qq2'].replacements[0].state.value,
-        components['/qr2'].replacements[0].state.value,
+        components['/qq2'].replacements[0].stateValues.value,
+        components['/qr2'].replacements[0].stateValues.value,
       ];
       let q4s = [
-        components['/qq3'].replacements[0].state.value,
-        components['/qr3'].replacements[0].state.value,
+        components['/qq3'].replacements[0].stateValues.value,
+        components['/qr3'].replacements[0].stateValues.value,
       ];
       let r3s = [
-        components['/rq2'].replacements[0].state.value,
-        components['/rr2'].replacements[0].state.value,
+        components['/rq2'].replacements[0].stateValues.value,
+        components['/rr2'].replacements[0].stateValues.value,
       ];
       let r4s = [
-        components['/rq3'].replacements[0].state.value,
-        components['/rr3'].replacements[0].state.value,
+        components['/rq3'].replacements[0].stateValues.value,
+        components['/rr3'].replacements[0].stateValues.value,
       ];
       let s3s = [
-        components['/sq2'].replacements[0].state.value,
-        components['/sr2'].replacements[0].state.value,
+        components['/sq2'].replacements[0].stateValues.value,
+        components['/sr2'].replacements[0].stateValues.value,
       ];
       let s4s = [
-        components['/sq3'].replacements[0].state.value,
-        components['/sr3'].replacements[0].state.value,
+        components['/sq3'].replacements[0].stateValues.value,
+        components['/sr3'].replacements[0].stateValues.value,
       ];
       let t3s = [
-        components['/tq2'].replacements[0].state.value,
-        components['/tr2'].replacements[0].state.value,
+        components['/tq2'].replacements[0].stateValues.value,
+        components['/tr2'].replacements[0].stateValues.value,
       ];
       let t4s = [
-        components['/tq3'].replacements[0].state.value,
-        components['/tr3'].replacements[0].state.value,
+        components['/tq3'].replacements[0].stateValues.value,
+        components['/tr3'].replacements[0].stateValues.value,
       ];
       let u3s = [
-        components['/uq2'].replacements[0].state.value,
-        components['/ur2'].replacements[0].state.value,
+        components['/uq2'].replacements[0].stateValues.value,
+        components['/ur2'].replacements[0].stateValues.value,
       ];
       let u4s = [
-        components['/uq3'].replacements[0].state.value,
-        components['/ur3'].replacements[0].state.value,
+        components['/uq3'].replacements[0].stateValues.value,
+        components['/ur3'].replacements[0].stateValues.value,
       ];
 
 
@@ -2061,7 +2040,8 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('references to internal assignnames, newnamespaces, named grandchildren', () => {
+  // can no longer reference between named grandchildren using their original names
+  it.skip('references to internal assignnames, newnamespaces, named grandchildren', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
@@ -2099,17 +2079,17 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = components['/q'].replacements.map(x => x.state.value)
-      let rs = components['/r'].replacements.map(x => x.state.value)
-      let ss = components['/s'].replacements.map(x => x.state.value)
-      let ts = components['/t'].replacements.map(x => x.state.value)
-      let us = components['/u'].replacements.map(x => x.state.value)
+      let qs = components['/q'].replacements.map(x => x.stateValues.value)
+      let rs = components['/r'].replacements.map(x => x.stateValues.value)
+      let ss = components['/s'].replacements.map(x => x.stateValues.value)
+      let ts = components['/t'].replacements.map(x => x.stateValues.value)
+      let us = components['/u'].replacements.map(x => x.stateValues.value)
 
-      let q2s = components['/q2'].replacements.map(x => x.state.value);
-      let r2s = components['/r2'].replacements.map(x => x.state.value);
-      let s2s = components['/s2'].replacements.map(x => x.state.value);
-      let t2s = components['/t2'].replacements.map(x => x.state.value);
-      let u2s = components['/u2'].replacements.map(x => x.state.value);
+      let q2s = components['/q2'].replacements.map(x => x.stateValues.value);
+      let r2s = components['/r2'].replacements.map(x => x.stateValues.value);
+      let s2s = components['/s2'].replacements.map(x => x.stateValues.value);
+      let t2s = components['/t2'].replacements.map(x => x.stateValues.value);
+      let u2s = components['/u2'].replacements.map(x => x.stateValues.value);
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
@@ -2118,44 +2098,44 @@ describe('Select Tag Tests', function () {
       expect(u2s).eqls(us);
 
       let q3s = [
-        components['/qq2'].replacements[0].state.value,
-        components['/qr2'].replacements[0].state.value,
+        components['/qq2'].replacements[0].stateValues.value,
+        components['/qr2'].replacements[0].stateValues.value,
       ];
       let q4s = [
-        components['/qq3'].replacements[0].state.value,
-        components['/qr3'].replacements[0].state.value,
+        components['/qq3'].replacements[0].stateValues.value,
+        components['/qr3'].replacements[0].stateValues.value,
       ];
       let r3s = [
-        components['/rq2'].replacements[0].state.value,
-        components['/rr2'].replacements[0].state.value,
+        components['/rq2'].replacements[0].stateValues.value,
+        components['/rr2'].replacements[0].stateValues.value,
       ];
       let r4s = [
-        components['/rq3'].replacements[0].state.value,
-        components['/rr3'].replacements[0].state.value,
+        components['/rq3'].replacements[0].stateValues.value,
+        components['/rr3'].replacements[0].stateValues.value,
       ];
       let s3s = [
-        components['/sq2'].replacements[0].state.value,
-        components['/sr2'].replacements[0].state.value,
+        components['/sq2'].replacements[0].stateValues.value,
+        components['/sr2'].replacements[0].stateValues.value,
       ];
       let s4s = [
-        components['/sq3'].replacements[0].state.value,
-        components['/sr3'].replacements[0].state.value,
+        components['/sq3'].replacements[0].stateValues.value,
+        components['/sr3'].replacements[0].stateValues.value,
       ];
       let t3s = [
-        components['/tq2'].replacements[0].state.value,
-        components['/tr2'].replacements[0].state.value,
+        components['/tq2'].replacements[0].stateValues.value,
+        components['/tr2'].replacements[0].stateValues.value,
       ];
       let t4s = [
-        components['/tq3'].replacements[0].state.value,
-        components['/tr3'].replacements[0].state.value,
+        components['/tq3'].replacements[0].stateValues.value,
+        components['/tr3'].replacements[0].stateValues.value,
       ];
       let u3s = [
-        components['/uq2'].replacements[0].state.value,
-        components['/ur2'].replacements[0].state.value,
+        components['/uq2'].replacements[0].stateValues.value,
+        components['/ur2'].replacements[0].stateValues.value,
       ];
       let u4s = [
-        components['/uq3'].replacements[0].state.value,
-        components['/ur3'].replacements[0].state.value,
+        components['/uq3'].replacements[0].stateValues.value,
+        components['/ur3'].replacements[0].stateValues.value,
       ];
 
 
@@ -2211,17 +2191,17 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = components['/q'].replacements.map(x => x.state.value)
-      let rs = components['/r'].replacements.map(x => x.state.value)
-      let ss = components['/s'].replacements.map(x => x.state.value)
-      let ts = components['/t'].replacements.map(x => x.state.value)
-      let us = components['/u'].replacements.map(x => x.state.value)
+      let qs = components['/q'].replacements.map(x => x.stateValues.value)
+      let rs = components['/r'].replacements.map(x => x.stateValues.value)
+      let ss = components['/s'].replacements.map(x => x.stateValues.value)
+      let ts = components['/t'].replacements.map(x => x.stateValues.value)
+      let us = components['/u'].replacements.map(x => x.stateValues.value)
 
-      let q2s = components['/q2'].replacements.map(x => x.state.value);
-      let r2s = components['/r2'].replacements.map(x => x.state.value);
-      let s2s = components['/s2'].replacements.map(x => x.state.value);
-      let t2s = components['/t2'].replacements.map(x => x.state.value);
-      let u2s = components['/u2'].replacements.map(x => x.state.value);
+      let q2s = components['/q2'].replacements[0].replacements.map(x => x.stateValues.value);
+      let r2s = components['/r2'].replacements[0].replacements.map(x => x.stateValues.value);
+      let s2s = components['/s2'].replacements[0].replacements.map(x => x.stateValues.value);
+      let t2s = components['/t2'].replacements[0].replacements.map(x => x.stateValues.value);
+      let u2s = components['/u2'].replacements[0].replacements.map(x => x.stateValues.value);
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
@@ -2230,24 +2210,24 @@ describe('Select Tag Tests', function () {
       expect(u2s).eqls(us);
 
       let q3s = [
-        components['/qq'].replacements[0].state.value,
-        components['/qr'].replacements[0].state.value,
+        components['/qq'].replacements[0].stateValues.value,
+        components['/qr'].replacements[0].stateValues.value,
       ]
       let r3s = [
-        components['/rq'].replacements[0].state.value,
-        components['/rr'].replacements[0].state.value,
+        components['/rq'].replacements[0].stateValues.value,
+        components['/rr'].replacements[0].stateValues.value,
       ]
       let s3s = [
-        components['/sq'].replacements[0].state.value,
-        components['/sr'].replacements[0].state.value,
+        components['/sq'].replacements[0].stateValues.value,
+        components['/sr'].replacements[0].stateValues.value,
       ]
       let t3s = [
-        components['/tq'].replacements[0].state.value,
-        components['/tr'].replacements[0].state.value,
+        components['/tq'].replacements[0].stateValues.value,
+        components['/tr'].replacements[0].stateValues.value,
       ]
       let u3s = [
-        components['/uq'].replacements[0].state.value,
-        components['/ur'].replacements[0].state.value,
+        components['/uq'].replacements[0].stateValues.value,
+        components['/ur'].replacements[0].stateValues.value,
       ]
 
       expect(q3s).eqls(qs);
@@ -2297,17 +2277,17 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = components['/q'].replacements.map(x => x.state.value)
-      let rs = components['/r'].replacements.map(x => x.state.value)
-      let ss = components['/s'].replacements.map(x => x.state.value)
-      let ts = components['/t'].replacements.map(x => x.state.value)
-      let us = components['/u'].replacements.map(x => x.state.value)
+      let qs = components['/q'].replacements.map(x => x.stateValues.value)
+      let rs = components['/r'].replacements.map(x => x.stateValues.value)
+      let ss = components['/s'].replacements.map(x => x.stateValues.value)
+      let ts = components['/t'].replacements.map(x => x.stateValues.value)
+      let us = components['/u'].replacements.map(x => x.stateValues.value)
 
-      let q2s = components['/q2'].replacements.map(x => x.state.value);
-      let r2s = components['/r2'].replacements.map(x => x.state.value);
-      let s2s = components['/s2'].replacements.map(x => x.state.value);
-      let t2s = components['/t2'].replacements.map(x => x.state.value);
-      let u2s = components['/u2'].replacements.map(x => x.state.value);
+      let q2s = components['/q2'].replacements[0].replacements.map(x => x.stateValues.value);
+      let r2s = components['/r2'].replacements[0].replacements.map(x => x.stateValues.value);
+      let s2s = components['/s2'].replacements[0].replacements.map(x => x.stateValues.value);
+      let t2s = components['/t2'].replacements[0].replacements.map(x => x.stateValues.value);
+      let u2s = components['/u2'].replacements[0].replacements.map(x => x.stateValues.value);
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
@@ -2316,24 +2296,24 @@ describe('Select Tag Tests', function () {
       expect(u2s).eqls(us);
 
       let q3s = [
-        components['/qq'].replacements[0].state.value,
-        components['/qr'].replacements[0].state.value,
+        components['/qq'].replacements[0].stateValues.value,
+        components['/qr'].replacements[0].stateValues.value,
       ]
       let r3s = [
-        components['/rq'].replacements[0].state.value,
-        components['/rr'].replacements[0].state.value,
+        components['/rq'].replacements[0].stateValues.value,
+        components['/rr'].replacements[0].stateValues.value,
       ]
       let s3s = [
-        components['/sq'].replacements[0].state.value,
-        components['/sr'].replacements[0].state.value,
+        components['/sq'].replacements[0].stateValues.value,
+        components['/sr'].replacements[0].stateValues.value,
       ]
       let t3s = [
-        components['/tq'].replacements[0].state.value,
-        components['/tr'].replacements[0].state.value,
+        components['/tq'].replacements[0].stateValues.value,
+        components['/tr'].replacements[0].stateValues.value,
       ]
       let u3s = [
-        components['/uq'].replacements[0].state.value,
-        components['/ur'].replacements[0].state.value,
+        components['/uq'].replacements[0].stateValues.value,
+        components['/ur'].replacements[0].stateValues.value,
       ]
 
       expect(q3s).eqls(qs);
@@ -2383,7 +2363,6 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.wait(2000);// TODO: need something better than this
     cy.get('#\\/s\\/s\\/r').invoke('text').then((text) => {
       expect(text.length).equal(1);
     })
@@ -2393,32 +2372,32 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = components['/q'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.state.value)], [])
-      let rs = components['/r'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.state.value)], [])
-      let ss = components['/s'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.state.value)], [])
+      let qs = components['/q'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
+      let rs = components['/r'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
+      let ss = components['/s'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
 
-      let q2s = components['/q2'].replacements.map(x => x.state.value);
-      let r2s = components['/r2'].replacements.map(x => x.state.value);
-      let s2s = components['/s2'].replacements.map(x => x.state.value);
+      let q2s = components['/q2'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
+      let r2s = components['/r2'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
+      let s2s = components['/s2'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
       expect(s2s).eqls(ss);
 
       let q3s = [
-        ...components['/qq'].replacements.map(x => x.state.value),
-        ...components['/qr'].replacements.map(x => x.state.value),
-        ...components['/qs'].replacements.map(x => x.state.value),
+        ...components['/qq'].replacements[0].replacements.map(x => x.stateValues.value),
+        ...components['/qr'].replacements[0].replacements.map(x => x.stateValues.value),
+        ...components['/qs'].replacements[0].replacements.map(x => x.stateValues.value),
       ]
       let r3s = [
-        ...components['/rq'].replacements.map(x => x.state.value),
-        ...components['/rr'].replacements.map(x => x.state.value),
-        ...components['/rs'].replacements.map(x => x.state.value),
+        ...components['/rq'].replacements[0].replacements.map(x => x.stateValues.value),
+        ...components['/rr'].replacements[0].replacements.map(x => x.stateValues.value),
+        ...components['/rs'].replacements[0].replacements.map(x => x.stateValues.value),
       ]
       let s3s = [
-        ...components['/sq'].replacements.map(x => x.state.value),
-        ...components['/sr'].replacements.map(x => x.state.value),
-        ...components['/ss'].replacements.map(x => x.state.value),
+        ...components['/sq'].replacements[0].replacements.map(x => x.stateValues.value),
+        ...components['/sr'].replacements[0].replacements.map(x => x.stateValues.value),
+        ...components['/ss'].replacements[0].replacements.map(x => x.stateValues.value),
       ]
 
       expect(q3s).eqls(qs);
@@ -2426,28 +2405,28 @@ describe('Select Tag Tests', function () {
       expect(s3s).eqls(ss);
 
       let q4s = [
-        components['/qqq'].replacements[0].state.value,
-        components['/qqr'].replacements[0].state.value,
-        components['/qrq'].replacements[0].state.value,
-        components['/qrr'].replacements[0].state.value,
-        components['/qsq'].replacements[0].state.value,
-        components['/qsr'].replacements[0].state.value,
+        components['/qqq'].replacements[0].stateValues.value,
+        components['/qqr'].replacements[0].stateValues.value,
+        components['/qrq'].replacements[0].stateValues.value,
+        components['/qrr'].replacements[0].stateValues.value,
+        components['/qsq'].replacements[0].stateValues.value,
+        components['/qsr'].replacements[0].stateValues.value,
       ];
       let r4s = [
-        components['/rqq'].replacements[0].state.value,
-        components['/rqr'].replacements[0].state.value,
-        components['/rrq'].replacements[0].state.value,
-        components['/rrr'].replacements[0].state.value,
-        components['/rsq'].replacements[0].state.value,
-        components['/rsr'].replacements[0].state.value,
+        components['/rqq'].replacements[0].stateValues.value,
+        components['/rqr'].replacements[0].stateValues.value,
+        components['/rrq'].replacements[0].stateValues.value,
+        components['/rrr'].replacements[0].stateValues.value,
+        components['/rsq'].replacements[0].stateValues.value,
+        components['/rsr'].replacements[0].stateValues.value,
       ];
       let s4s = [
-        components['/sqq'].replacements[0].state.value,
-        components['/sqr'].replacements[0].state.value,
-        components['/srq'].replacements[0].state.value,
-        components['/srr'].replacements[0].state.value,
-        components['/ssq'].replacements[0].state.value,
-        components['/ssr'].replacements[0].state.value,
+        components['/sqq'].replacements[0].stateValues.value,
+        components['/sqr'].replacements[0].stateValues.value,
+        components['/srq'].replacements[0].stateValues.value,
+        components['/srr'].replacements[0].stateValues.value,
+        components['/ssq'].replacements[0].stateValues.value,
+        components['/ssr'].replacements[0].stateValues.value,
       ];
 
       expect(q4s).eqls(qs);
@@ -2496,7 +2475,6 @@ describe('Select Tag Tests', function () {
     });
 
     // to wait for page to load
-    cy.wait(2000);// TODO: need something better than this
     cy.get('#\\/a\\/s\\/s\\/r').invoke('text').then((text) => {
       expect(text.length).equal(1);
     })
@@ -2506,32 +2484,32 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let qs = components['/a/q'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.state.value)], [])
-      let rs = components['/a/r'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.state.value)], [])
-      let ss = components['/a/s'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.state.value)], [])
+      let qs = components['/a/q'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
+      let rs = components['/a/r'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
+      let ss = components['/a/s'].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
 
-      let q2s = components['/q2'].replacements.map(x => x.state.value);
-      let r2s = components['/r2'].replacements.map(x => x.state.value);
-      let s2s = components['/s2'].replacements.map(x => x.state.value);
+      let q2s = components['/q2'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
+      let r2s = components['/r2'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
+      let s2s = components['/s2'].replacements[0].replacements.reduce((a, c) => [...a, ...c.replacements.map(x => x.stateValues.value)], [])
 
       expect(q2s).eqls(qs);
       expect(r2s).eqls(rs);
       expect(s2s).eqls(ss);
 
       let q3s = [
-        ...components['/qq'].replacements.map(x => x.state.value),
-        ...components['/qr'].replacements.map(x => x.state.value),
-        ...components['/qs'].replacements.map(x => x.state.value),
+        ...components['/qq'].replacements[0].replacements.map(x => x.stateValues.value),
+        ...components['/qr'].replacements[0].replacements.map(x => x.stateValues.value),
+        ...components['/qs'].replacements[0].replacements.map(x => x.stateValues.value),
       ]
       let r3s = [
-        ...components['/rq'].replacements.map(x => x.state.value),
-        ...components['/rr'].replacements.map(x => x.state.value),
-        ...components['/rs'].replacements.map(x => x.state.value),
+        ...components['/rq'].replacements[0].replacements.map(x => x.stateValues.value),
+        ...components['/rr'].replacements[0].replacements.map(x => x.stateValues.value),
+        ...components['/rs'].replacements[0].replacements.map(x => x.stateValues.value),
       ]
       let s3s = [
-        ...components['/sq'].replacements.map(x => x.state.value),
-        ...components['/sr'].replacements.map(x => x.state.value),
-        ...components['/ss'].replacements.map(x => x.state.value),
+        ...components['/sq'].replacements[0].replacements.map(x => x.stateValues.value),
+        ...components['/sr'].replacements[0].replacements.map(x => x.stateValues.value),
+        ...components['/ss'].replacements[0].replacements.map(x => x.stateValues.value),
       ]
 
       expect(q3s).eqls(qs);
@@ -2539,28 +2517,28 @@ describe('Select Tag Tests', function () {
       expect(s3s).eqls(ss);
 
       let q4s = [
-        components['/qqq'].replacements[0].state.value,
-        components['/qqr'].replacements[0].state.value,
-        components['/qrq'].replacements[0].state.value,
-        components['/qrr'].replacements[0].state.value,
-        components['/qsq'].replacements[0].state.value,
-        components['/qsr'].replacements[0].state.value,
+        components['/qqq'].replacements[0].stateValues.value,
+        components['/qqr'].replacements[0].stateValues.value,
+        components['/qrq'].replacements[0].stateValues.value,
+        components['/qrr'].replacements[0].stateValues.value,
+        components['/qsq'].replacements[0].stateValues.value,
+        components['/qsr'].replacements[0].stateValues.value,
       ];
       let r4s = [
-        components['/rqq'].replacements[0].state.value,
-        components['/rqr'].replacements[0].state.value,
-        components['/rrq'].replacements[0].state.value,
-        components['/rrr'].replacements[0].state.value,
-        components['/rsq'].replacements[0].state.value,
-        components['/rsr'].replacements[0].state.value,
+        components['/rqq'].replacements[0].stateValues.value,
+        components['/rqr'].replacements[0].stateValues.value,
+        components['/rrq'].replacements[0].stateValues.value,
+        components['/rrr'].replacements[0].stateValues.value,
+        components['/rsq'].replacements[0].stateValues.value,
+        components['/rsr'].replacements[0].stateValues.value,
       ];
       let s4s = [
-        components['/sqq'].replacements[0].state.value,
-        components['/sqr'].replacements[0].state.value,
-        components['/srq'].replacements[0].state.value,
-        components['/srr'].replacements[0].state.value,
-        components['/ssq'].replacements[0].state.value,
-        components['/ssr'].replacements[0].state.value,
+        components['/sqq'].replacements[0].stateValues.value,
+        components['/sqr'].replacements[0].stateValues.value,
+        components['/srq'].replacements[0].stateValues.value,
+        components['/srr'].replacements[0].stateValues.value,
+        components['/ssq'].replacements[0].stateValues.value,
+        components['/ssr'].replacements[0].stateValues.value,
       ];
 
       expect(q4s).eqls(qs);
@@ -2575,19 +2553,19 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
+    <text>a</text>
     <select assignnames="(a,b,c,d)">
     <group>
-      Option 1: <math name="h"><math name="w">x</math><math>y</math></math>
-      <ref>w</ref>
-      <ref>h</ref>
-      <ref>_math3</ref>
+      Option 1: <math name="h"><math name="w">x</math><math>y</math></math>,
+      <math simplify><math name="q">z</math> + 2<ref name="v">q</ref></math>,
+      <ref>../a/w</ref>,
+      <ref>../b/q</ref>
     </group>
     <group>
-      Option 2: <math name="h"><math name="w">u</math><math>v</math></math>
-      <ref>w</ref>
-      <ref>h</ref>
-      <ref>_math3</ref>
+      Option 2: <math name="h"><math name="w">u</math><math>v</math></math>,
+      <math simplify><math name="q">t</math> + 2<ref name="v">q</ref></math>,
+      <ref>../a/w</ref>,
+      <ref>../b/q</ref>
     </group>
     </select>
     
@@ -2597,30 +2575,31 @@ describe('Select Tag Tests', function () {
     <p><ref name="c2">c</ref></p>
     <p><ref name="d2">d</ref></p>
     
-    <p>Ref named child of grandchild</p>
+    <p>Ref named children of grandchild</p>
     <p><ref name="w2">a/w</ref></p>
+    <p><ref name="v2">b/v</ref></p>
     
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     let options = {
       "Option 1:": {
         a: "x y",
-        b: "x",
-        c: "x y",
-        d: "y",
+        b: "3 z",
+        c: "x",
+        d: "z",
+        v: "z",
         w: "x",
       },
       "Option 2:": {
         a: "u v",
-        b: "u",
-        c: "u v",
-        d: "v",
+        b: "3 t",
+        c: "u",
+        d: "t",
+        v: "t",
         w: "u",
       },
     }
@@ -2629,24 +2608,26 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let chosenChildren = components['/_select1'].replacements[0].activeChildren;
-      let option = options[chosenChildren[0].state.value.trim()];
+      let option = options[chosenChildren[0].stateValues.value.trim()];
 
-      expect(chosenChildren[1].state.value.toString()).eq(option.a)
-      expect(chosenChildren[3].state.value.toString()).eq(option.b)
-      expect(chosenChildren[5].state.value.toString()).eq(option.c)
-      expect(chosenChildren[7].state.value.toString()).eq(option.d)
+      expect(chosenChildren[1].stateValues.value.toString()).eq(option.a)
+      expect(chosenChildren[3].stateValues.value.toString()).eq(option.b)
+      expect(chosenChildren[5].stateValues.value.toString()).eq(option.c)
+      expect(chosenChildren[7].stateValues.value.toString()).eq(option.d)
 
 
-      let a2 = components['/a2'].replacements[0].state.value.toString();
-      let b2 = components['/b2'].replacements[0].state.value.toString();
-      let c2 = components['/c2'].replacements[0].state.value.toString();
-      let d2 = components['/d2'].replacements[0].state.value.toString();
-      let w2 = components['/w2'].replacements[0].state.value.toString();
+      let a2 = components['/a2'].replacements[0].stateValues.value.toString();
+      let b2 = components['/b2'].replacements[0].stateValues.value.toString();
+      let c2 = components['/c2'].replacements[0].replacements[0].stateValues.value.toString();
+      let d2 = components['/d2'].replacements[0].replacements[0].stateValues.value.toString();
+      let v2 = components['/v2'].replacements[0].replacements[0].stateValues.value.toString();
+      let w2 = components['/w2'].replacements[0].stateValues.value.toString();
 
       expect(a2).eq(option.a);
       expect(b2).eq(option.b);
       expect(c2).eq(option.c);
       expect(d2).eq(option.d);
+      expect(v2).eq(option.v);
       expect(w2).eq(option.w);
 
     })
@@ -2656,19 +2637,19 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
+    <text>a</text>
     <select assignnames="(a,b,c,d)">
     <group>
-      Option 1: <math name="h" newnamespace><math name="w">x</math><math>y</math></math>
-      <ref>h/w</ref>
-      <ref>h</ref>
-      <ref>h/_math2</ref>
+      Option 1: <math name="h" newnamespace><math name="w">x</math><math>y</math></math>,
+      <math simplify newnamespace name="a"><math name="q">z</math> + 2<ref name="v">q</ref></math>,
+      <ref>../a/w</ref>,
+      <ref>../b/q</ref>
     </group>
     <group>
-      Option 2: <math name="h" newnamespace><math name="w">u</math><math>v</math></math>
-      <ref>h/w</ref>
-      <ref>h</ref>
-      <ref>h/_math2</ref>
+      Option 2: <math name="h" newnamespace><math name="w">u</math><math>v</math></math>,
+      <math simplify newnamespace name="a"><math name="q">t</math> + 2<ref name="v">q</ref></math>,
+      <ref>../a/w</ref>,
+      <ref>../b/q</ref>
     </group>
     </select>
     
@@ -2678,30 +2659,30 @@ describe('Select Tag Tests', function () {
     <p><ref name="c2">c</ref></p>
     <p><ref name="d2">d</ref></p>
     
-    <p>Ref named child of grandchild</p>
+    <p>Ref named children of grandchild</p>
     <p><ref name="w2">a/w</ref></p>
+    <p><ref name="v2">b/v</ref></p>
     
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     let options = {
       "Option 1:": {
         a: "x y",
-        b: "x",
-        c: "x y",
-        d: "y",
+        b: "3 z",
+        c: "x",
+        d: "z",
+        v: "z",
         w: "x",
       },
       "Option 2:": {
         a: "u v",
-        b: "u",
-        c: "u v",
-        d: "v",
+        b: "3 t",
+        c: "u",
+        d: "t",
+        v: "t",
         w: "u",
       },
     }
@@ -2710,94 +2691,27 @@ describe('Select Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let chosenChildren = components['/_select1'].replacements[0].activeChildren;
-      let option = options[chosenChildren[0].state.value.trim()];
+      let option = options[chosenChildren[0].stateValues.value.trim()];
 
-      expect(chosenChildren[1].state.value.toString()).eq(option.a)
-      expect(chosenChildren[3].state.value.toString()).eq(option.b)
-      expect(chosenChildren[5].state.value.toString()).eq(option.c)
-      expect(chosenChildren[7].state.value.toString()).eq(option.d)
+      expect(chosenChildren[1].stateValues.value.toString()).eq(option.a)
+      expect(chosenChildren[3].stateValues.value.toString()).eq(option.b)
+      expect(chosenChildren[5].stateValues.value.toString()).eq(option.c)
+      expect(chosenChildren[7].stateValues.value.toString()).eq(option.d)
 
 
-      let a2 = components['/a2'].replacements[0].state.value.toString();
-      let b2 = components['/b2'].replacements[0].state.value.toString();
-      let c2 = components['/c2'].replacements[0].state.value.toString();
-      let d2 = components['/d2'].replacements[0].state.value.toString();
-      let w2 = components['/w2'].replacements[0].state.value.toString();
+      let a2 = components['/a2'].replacements[0].stateValues.value.toString();
+      let b2 = components['/b2'].replacements[0].stateValues.value.toString();
+      let c2 = components['/c2'].replacements[0].replacements[0].stateValues.value.toString();
+      let d2 = components['/d2'].replacements[0].replacements[0].stateValues.value.toString();
+      let v2 = components['/v2'].replacements[0].replacements[0].stateValues.value.toString();
+      let w2 = components['/w2'].replacements[0].stateValues.value.toString();
 
       expect(a2).eq(option.a);
       expect(b2).eq(option.b);
       expect(c2).eq(option.c);
       expect(d2).eq(option.d);
+      expect(v2).eq(option.v);
       expect(w2).eq(option.w);
-
-    })
-  });
-
-  it("select of a map of a select", () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetCode: `
-    <math>1</math>
-    <p><aslist>
-    <select assignnames="j,k,l" numbertoselect="3" withreplacement>
-    <map assignnamespaces="a,b">
-      <template>
-        <select assignnames="(p,q),(r,s)" numbertoselect="2">
-          <group><math><subsref/>^2</math><math><subsref/>^6</math></group>
-          <group><math><subsref/>^3</math><math><subsref/>^7</math></group>
-          <group><math><subsref/>^4</math><math><subsref/>^8</math></group>
-          <group><math><subsref/>^5</math><math><subsref/>^9</math></group>
-        </select>
-      </template>
-      <substitutions>
-        <math>x</math><math>y</math>
-      </substitutions>
-    </map>
-    <map assignnamespaces="a,b">
-      <template>
-        <select assignnames="(p,q),(r,s)" numbertoselect="2">
-          <group><math><subsref/>2</math><math><subsref/>6</math></group>
-          <group><math><subsref/>3</math><math><subsref/>7</math></group>
-          <group><math><subsref/>4</math><math><subsref/>8</math></group>
-          <group><math><subsref/>5</math><math><subsref/>9</math></group>
-        </select>
-      </template>
-      <substitutions>
-        <math>u</math><math>v</math>
-      </substitutions>
-    </map>
-    </select>
-    </aslist></p>
-
-    <p>Ref whole select again</p>
-    <p><aslist><ref name="s2">_select1</ref></aslist></p>
-
-    `}, "*");
-    });
-
-    // NOTE: include this separately without references as it is a case
-    // where the number of failures in update loop temporarily increases
-
-    // to wait for page to load
-    cy.wait(2000);// TODO: need something better than this
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let theList = components['/_select1'].replacements.reduce((a, c) =>
-        [...a, ...c.replacements.reduce((a, c) =>
-          [...a, ...c.replacements.reduce((a, c) =>
-            [...a, ...c.activeChildren.map(x => x.state.value.toString())]
-            , [])]
-          , [])]
-        , [])
-
-      let s2 = components['/s2'].replacements.map(x => x.state.value.toString());
-
-      expect(s2).eqls(theList);
 
     })
   });
@@ -2806,8 +2720,8 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
-    <p><aslist>
+    <text>a</text>
+    <p><aslist name="list1">
     <select assignnames="j,k,l" numbertoselect="3" withreplacement>
     <map assignnamespaces="a,b">
       <template>
@@ -2839,15 +2753,17 @@ describe('Select Tag Tests', function () {
     </aslist></p>
 
     <p>Ref whole select again</p>
-    <p><aslist><ref name="s2">_select1</ref></aslist></p>
+    <p><aslist name="list2"><ref name="s2">_select1</ref></aslist></p>
 
     <p>Ref individual selections</p>
-    <p><aslist><ref name="j2">j</ref></aslist></p>
-    <p><aslist><ref name="k2">k</ref></aslist></p>
-    <p><aslist><ref name="l2">l</ref></aslist></p>
+    <p><aslist name="list3">
+    <ref name="j2">j</ref>
+    <ref name="k2">k</ref>
+    <ref name="l2">l</ref>
+    </aslist></p>
 
     <p>Ref individual pieces</p>
-    <p><aslist>
+    <p><aslist name="list4">
     <ref name="p1">j/a/p</ref><ref name="p2">j/a/q</ref><ref name="p3">j/a/r</ref><ref name="p4">j/a/s</ref><ref name="p5">j/b/p</ref><ref name="p6">j/b/q</ref><ref name="p7">j/b/r</ref><ref name="p8">j/b/s</ref>
     <ref name="p9">k/a/p</ref><ref name="p10">k/a/q</ref><ref name="p11">k/a/r</ref><ref name="p12">k/a/s</ref><ref name="p13">k/b/p</ref><ref name="p14">k/b/q</ref><ref name="p15">k/b/r</ref><ref name="p16">k/b/s</ref>
     <ref name="p17">l/a/p</ref><ref name="p18">l/a/q</ref><ref name="p19">l/a/r</ref><ref name="p20">l/a/s</ref><ref name="p21">l/b/p</ref><ref name="p22">l/b/q</ref><ref name="p23">l/b/r</ref><ref name="p24">l/b/s</ref>
@@ -2855,39 +2771,22 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.wait(2000);// TODO: need something better than this
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let theList = components['/_select1'].replacements.reduce((a, c) =>
-        [...a, ...c.replacements.reduce((a, c) =>
-          [...a, ...c.replacements.reduce((a, c) =>
-            [...a, ...c.activeChildren.map(x => x.state.value.toString())]
-            , [])]
-          , [])]
-        , [])
+      let theList1 = components['/list1'].activeChildren.map(x => x.stateValues.value.toString())
+      let theList2 = components['/list2'].activeChildren.map(x => x.stateValues.value.toString())
+      let theList3 = components['/list3'].activeChildren.map(x => x.stateValues.value.toString())
 
-      let s2 = components['/s2'].replacements.map(x => x.state.value.toString());
+      expect(theList2).eqls(theList1);
+      expect(theList3).eqls(theList1);
 
-      expect(s2).eqls(theList);
+      let theList4 = [...Array(24).keys()].map(i => components['/p' + (i + 1)].replacements[0].stateValues.value.toString());
 
-      let s3 = [
-        ...components['/j2'].replacements.map(x => x.state.value.toString()),
-        ...components['/k2'].replacements.map(x => x.state.value.toString()),
-        ...components['/l2'].replacements.map(x => x.state.value.toString()),
-      ];
-
-      expect(s3).eqls(theList);
-
-      let s4 = [...Array(24).keys()].map(i => components['/p' + (i + 1)].replacements[0].state.value.toString());
-
-      expect(s4).eqls(theList);
-
+      expect(theList4).eqls(theList1);
 
     })
   });
@@ -2896,8 +2795,8 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-    <math>1</math>
-    <p><aslist>
+    <text>a</text>
+    <p><aslist name="list1">
     <select name="s" newnamespace assignnames="j,k,l" numbertoselect="3" withreplacement>
     <map name="m" newnamespace assignnamespaces="a,b">
       <template>
@@ -2929,15 +2828,17 @@ describe('Select Tag Tests', function () {
     </aslist></p>
 
     <p>Ref whole select again</p>
-    <p><aslist><ref name="s2">s</ref></aslist></p>
+    <p><aslist name="list2"><ref name="s2">s</ref></aslist></p>
 
     <p>Ref individual selections</p>
-    <p><aslist><ref name="j2">s/j</ref></aslist></p>
-    <p><aslist><ref name="k2">s/k</ref></aslist></p>
-    <p><aslist><ref name="l2">s/l</ref></aslist></p>
+    <p><aslist name="list3">
+    <ref name="j2">s/j</ref>
+    <ref name="k2">s/k</ref>
+    <ref name="l2">s/l</ref>
+    </aslist></p>
 
     <p>Ref individual pieces</p>
-    <p><aslist>
+    <p><aslist name="list4">
     <ref name="p1">s/j/a/v/p</ref><ref name="p2">s/j/a/v/q</ref><ref name="p3">s/j/a/v/r</ref><ref name="p4">s/j/a/v/s</ref><ref name="p5">s/j/b/v/p</ref><ref name="p6">s/j/b/v/q</ref><ref name="p7">s/j/b/v/r</ref><ref name="p8">s/j/b/v/s</ref>
     <ref name="p9">s/k/a/v/p</ref><ref name="p10">s/k/a/v/q</ref><ref name="p11">s/k/a/v/r</ref><ref name="p12">s/k/a/v/s</ref><ref name="p13">s/k/b/v/p</ref><ref name="p14">s/k/b/v/q</ref><ref name="p15">s/k/b/v/r</ref><ref name="p16">s/k/b/v/s</ref>
     <ref name="p17">s/l/a/v/p</ref><ref name="p18">s/l/a/v/q</ref><ref name="p19">s/l/a/v/r</ref><ref name="p20">s/l/a/v/s</ref><ref name="p21">s/l/b/v/p</ref><ref name="p22">s/l/b/v/q</ref><ref name="p23">s/l/b/v/r</ref><ref name="p24">s/l/b/v/s</ref>
@@ -2945,39 +2846,22 @@ describe('Select Tag Tests', function () {
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.wait(2000);// TODO: need something better than this
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let theList = components['/s'].replacements.reduce((a, c) =>
-        [...a, ...c.replacements.reduce((a, c) =>
-          [...a, ...c.replacements.reduce((a, c) =>
-            [...a, ...c.activeChildren.map(x => x.state.value.toString())]
-            , [])]
-          , [])]
-        , [])
+      let theList1 = components['/list1'].activeChildren.map(x => x.stateValues.value.toString())
+      let theList2 = components['/list2'].activeChildren.map(x => x.stateValues.value.toString())
+      let theList3 = components['/list3'].activeChildren.map(x => x.stateValues.value.toString())
 
-      let s2 = components['/s2'].replacements.map(x => x.state.value.toString());
+      expect(theList2).eqls(theList1);
+      expect(theList3).eqls(theList1);
 
-      expect(s2).eqls(theList);
+      let theList4 = [...Array(24).keys()].map(i => components['/p' + (i + 1)].replacements[0].stateValues.value.toString());
 
-      let s3 = [
-        ...components['/j2'].replacements.map(x => x.state.value.toString()),
-        ...components['/k2'].replacements.map(x => x.state.value.toString()),
-        ...components['/l2'].replacements.map(x => x.state.value.toString()),
-      ];
-
-      expect(s3).eqls(theList);
-
-      let s4 = [...Array(24).keys()].map(i => components['/p' + (i + 1)].replacements[0].state.value.toString());
-
-      expect(s4).eqls(theList);
-
+      expect(theList4).eqls(theList1);
 
     })
   });
@@ -2986,6 +2870,7 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
+  <text>a</text>
   <p><aslist>
     <select name="s1" assignnames="X1, y1, z1" withReplacement>
       <numberToSelect><ref prop="numberToSelect">s2</ref></numberToSelect>
@@ -3007,27 +2892,25 @@ describe('Select Tag Tests', function () {
   <p> 
     <ref name="n2">n3</ref>
     <ref name="n">num1</ref>
-    <number name="num1"><ref>n2</ref>+<ref>num2</ref></number>
-    <number name="num2"><ref>n3</ref>+<ref>num3</ref></number>
+    <math name="num1"><ref>n2</ref>+<ref>num2</ref></math>
+    <math name="num2"><ref>n3</ref>+<ref>num3</ref></math>
     <ref name="n3">num3</ref>
     <number name="num3">1</number>
   </p>
     `}, "*");
     });
 
-    // to wait for page to load
-    cy.get('#\\/num1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let x1 = components['/x1'].state.value.tree;
-      let y1 = components['/y1'].state.value.tree;
-      let z1 = components['/z1'].state.value.tree;
-      let x2 = components['/x2'].state.value.tree;
-      let y2 = components['/y2'].state.value.tree;
-      let z2 = components['/z2'].state.value.tree;
+      let x1 = components['/x1'].stateValues.value.tree;
+      let y1 = components['/y1'].stateValues.value.tree;
+      let z1 = components['/z1'].stateValues.value.tree;
+      let x2 = components['/x2'].stateValues.value.tree;
+      let y2 = components['/y2'].stateValues.value.tree;
+      let z2 = components['/z2'].stateValues.value.tree;
 
       expect(["x", "y", "z"].includes(x1)).eq(true);
       expect(["x", "y", "z"].includes(y1)).eq(true);
@@ -3036,12 +2919,12 @@ describe('Select Tag Tests', function () {
       expect(["u", "v", "w"].includes(y2)).eq(true);
       expect(["u", "v", "w"].includes(z2)).eq(true);
 
-      let x1a = components['/x1a'].replacements[0].state.value.tree;
-      let y1a = components['/y1a'].replacements[0].state.value.tree;
-      let z1a = components['/z1a'].replacements[0].state.value.tree;
-      let x2a = components['/x2a'].replacements[0].state.value.tree;
-      let y2a = components['/y2a'].replacements[0].state.value.tree;
-      let z2a = components['/z2a'].replacements[0].state.value.tree;
+      let x1a = components['/x1a'].replacements[0].stateValues.value.tree;
+      let y1a = components['/y1a'].replacements[0].stateValues.value.tree;
+      let z1a = components['/z1a'].replacements[0].stateValues.value.tree;
+      let x2a = components['/x2a'].replacements[0].stateValues.value.tree;
+      let y2a = components['/y2a'].replacements[0].stateValues.value.tree;
+      let z2a = components['/z2a'].replacements[0].stateValues.value.tree;
 
       expect(x1a).eq(x1);
       expect(y1a).eq(y1);
@@ -3080,8 +2963,8 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let c = components['/c'].state.value;
-      let d = components['/d'].state.value;
+      let c = components['/c'].stateValues.value;
+      let d = components['/d'].stateValues.value;
       expect(["a", "b", "c", "d", "e"].includes(c)).eq(true);
       expect(["a", "b", "c", "d", "e"].includes(d)).eq(true);
 
@@ -3091,7 +2974,7 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('select with hide will hide name grandchildren replacements', () => {
+  it('select with hide will hide named grandchildren replacements', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
@@ -3130,11 +3013,11 @@ describe('Select Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let a = components['/a'].state.value;
-      let b = components['/b'].state.value;
-      let c = components['/c'].state.value;
-      let d = components['/d'].state.value;
-      let e = components['/e'].state.value;
+      let a = components['/a'].stateValues.value;
+      let b = components['/b'].stateValues.value;
+      let c = components['/c'].stateValues.value;
+      let d = components['/d'].stateValues.value;
+      let e = components['/e'].stateValues.value;
       expect(["a", "d"].includes(a)).eq(true);
       expect(["b", "e"].includes(b)).eq(true);
       expect(["c", "f"].includes(c)).eq(true);

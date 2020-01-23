@@ -30,7 +30,7 @@ describe('Slider Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let slider1value = components['/_slider1'].state.value;
+      let slider1value = components['/_slider1'].stateValues.value;
       expect(slider1value).eq(1)
     })
 
@@ -41,7 +41,7 @@ describe('Slider Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let slider1value = components['/_slider1'].state.value;
+      let slider1value = components['/_slider1'].stateValues.value;
       expect(slider1value).eq(2)
     })
 
@@ -50,7 +50,7 @@ describe('Slider Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let slider1value = components['/_slider1'].state.value;
+      let slider1value = components['/_slider1'].stateValues.value;
       expect(slider1value).eq(1)
     })
   })

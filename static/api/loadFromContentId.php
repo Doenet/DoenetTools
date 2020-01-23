@@ -1,10 +1,10 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: GET");
+header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
-//this works !
+
 include "db_connection.php";
 
 $_POST = json_decode(file_get_contents("php://input"),true); //newly added
@@ -29,8 +29,9 @@ $response_arr = array(
          
 if ($result->num_rows > 0){
   $row = $result->fetch_assoc();
+  $doenetML = $row['doenetML'];
   $response_arr = array( 
-            "doenetML" => "Match",
+            "doenetML" => $doenetML,
            );
 }
 }

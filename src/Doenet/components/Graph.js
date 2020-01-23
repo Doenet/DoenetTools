@@ -1,45 +1,35 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Graph extends BlockComponent {
-  constructor(args){
+  constructor(args) {
     super(args);
-    this.state.graphicalComponents = [];
     this.returnRenderersInGraph = this.returnRenderersInGraph.bind(this);
   }
   static componentType = "graph";
 
-  static alwaysContinueUpstreamUpdates = true;
-
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
-    properties.xmin = {default: -10};
-    properties.xmax = {default: 10};
-    properties.ymin = {default: -10};
-    properties.ymax = {default: 10};
-    properties.width = {default: 300};
-    properties.height = {default: 300};
-    properties.displayaxes = {default: true};
-    properties.xlabel = {default: ""};  
-    properties.ylabel = {default: ""};  
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
+    properties.xmin = { default: -10 };
+    properties.xmax = { default: 10 };
+    properties.ymin = { default: -10 };
+    properties.ymax = { default: 10 };
+    properties.width = { default: 300 };
+    properties.height = { default: 300 };
+    properties.displayaxes = { default: true };
+    properties.xlabel = { default: "" };
+    properties.ylabel = { default: "" };
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
 
-
-    let addCurve = function({activeChildrenMatched}) {
+    let addCurve = function ({ activeChildrenMatched }) {
       // add <curve> around strings, as long as they don't have points
       let curveChildren = [];
-      for(let child of activeChildrenMatched) {
-        if(child.state.value.includes(",")) {
-          return {success: false};
+      for (let child of activeChildrenMatched) {
+        if (child.stateValues.value.includes(",")) {
+          return { success: false };
         }
         curveChildren.push({
           createdComponent: true,
@@ -52,8 +42,8 @@ export default class Graph extends BlockComponent {
       }
     }
 
-    let AtLeastOneString = childLogic.newLeaf({
-      name: "AtLeastOneString",
+    let atLeastOneString = childLogic.newLeaf({
+      name: "atLeastOneString",
       componentType: 'string',
       comparison: 'atLeast',
       number: 1,
@@ -62,8 +52,8 @@ export default class Graph extends BlockComponent {
       replacementFunction: addCurve,
     });
 
-    let AtLeastZeroGraphical = childLogic.newLeaf({
-      name: "AtLeastZeroGraphical",
+    let atLeastZeroGraphical = childLogic.newLeaf({
+      name: "atLeastZeroGraphical",
       componentType: '_graphical',
       comparison: 'atLeast',
       number: 0,
@@ -72,57 +62,90 @@ export default class Graph extends BlockComponent {
     childLogic.newOperator({
       name: "SugarXorGraph",
       operator: "xor",
-      propositions: [AtLeastOneString, AtLeastZeroGraphical],
+      propositions: [atLeastOneString, atLeastZeroGraphical],
       setAsBase: true,
     })
-    
+
     return childLogic;
   }
 
-  get descendantSearchClasses() {
-    return ["_graphical"];
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.graphicalDescendants = {
+
+      returnDependencies: () => ({
+        descendants: {
+          dependencyType: "descendantIdentity",
+          componentTypes: ["_graphical"]
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            graphicalDescendants: dependencyValues.descendants
+          }
+        }
+      },
+    };
+
+
+    stateVariableDefinitions.childrenWhoRender = {
+      returnDependencies: () => ({
+        activeChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroGraphical"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues:
+            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
+        };
+      }
+    }
+
+    return stateVariableDefinitions;
   }
 
-  initializeRenderer({}){
-    if(this.renderer !== undefined) {
+  initializeRenderer({ }) {
+    if (this.renderer !== undefined) {
       this.updateRenderer();
       return;
     }
     this.renderer = new this.availableRenderers.graph2d({
       key: this.componentName,
       returnRenderersInGraph: this.returnRenderersInGraph,
+      // TODO: lost graphRenderComponents: is used in graph renderer!
       graphRenderComponents: this.graphRenderComponents,
-      width: parseInt(this.state.width),
-      height: parseInt(this.state.height),
-      xmin: this.state.xmin,
-      xmax: this.state.xmax,
-      ymin: this.state.ymin,
-      ymax: this.state.ymax,
-      displayaxes: this.state.displayaxes,
-      xlabel: this.state.xlabel,
-      ylabel: this.state.ylabel,
+      width: parseInt(this.stateValues.width),
+      height: parseInt(this.stateValues.height),
+      xmin: this.stateValues.xmin,
+      xmax: this.stateValues.xmax,
+      ymin: this.stateValues.ymin,
+      ymax: this.stateValues.ymax,
+      displayaxes: this.stateValues.displayaxes,
+      xlabel: this.stateValues.xlabel,
+      ylabel: this.stateValues.ylabel,
     });
   }
 
   updateRenderer() {
-    if(this.renderer !== undefined) {
+    if (this.renderer !== undefined) {
       this.renderer.resizeBoard({
-        xmin: this.state.xmin,
-        xmax: this.state.xmax,
-        ymin: this.state.ymin,
-        ymax: this.state.ymax,
+        xmin: this.stateValues.xmin,
+        xmax: this.stateValues.xmax,
+        ymin: this.stateValues.ymin,
+        ymax: this.stateValues.ymax,
       })
     }
-  }
-
-  updateChildrenWhoRender(){
-    this.childrenWhoRender = this.activeChildren.map(x => x.componentName);
   }
 
   returnRenderersInGraph() {
     let graphicalRenderers = {};
 
-    for(let component of this.descendantsFound._graphical) {
+    for (let component of this.stateValues.graphicalDescendants) {
       let componentRenderer = this.allRenderComponents[component.componentName];
       // could be undefined if no renderer present
       graphicalRenderers[component.componentName] = componentRenderer;

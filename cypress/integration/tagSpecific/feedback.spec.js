@@ -467,7 +467,7 @@ describe('Feedback Tag Tests', function () {
   <p><answer type="text">hello there</answer></p>
   <feedback>
     <if>
-      <ref prop="creditachieved">_answer1</ref> != 1
+      <ref prop="creditAchieved">_answer1</ref> != 1
       and <ref prop="responsehasbeensubmitted">_answer1</ref>
     </if>
     <p>Your response <em><ref prop="submittedresponse">_answer1</ref></em> is incorrect.</p>
