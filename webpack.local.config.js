@@ -161,5 +161,5 @@ module.exports = {
     port: 3000,
     // openPage: "protected",
   },
-  devtool: 'source-map'
+  // devtool: 'source-map'
 };
