@@ -1,5 +1,6 @@
 import BooleanComponent from './Boolean';
 import NumberComponent from './Number';
+import Integer from './Integer';
 import TextComponent from './Text';
 import MathComponent from './Math';
 import TextFromSingleStringChild from './abstract/TextFromSingleStringChild';
@@ -15,6 +16,7 @@ import ComponentSize from './abstract/ComponentSize';
 import Variable from './Variable';
 import MathWithVariable from './abstract/MathWithVariable';
 import TextList from './TextList';
+import NumberList from './NumberList';
 
 export class Hide extends BooleanComponent {
   static componentType = "hide";
@@ -24,8 +26,8 @@ export class Draggable extends BooleanComponent {
   static componentType = "draggable";
 }
 
-export class ModifyByReference extends BooleanComponent {
-  static componentType = "modifybyreference";
+export class modifyIndirectly extends BooleanComponent {
+  static componentType = "modifyIndirectly";
 }
 
 export class Fixed extends BooleanComponent {
@@ -36,7 +38,7 @@ export class Label extends TextComponent {
   static componentType = "label";
 }
 
-export class ChildNumber extends NumberComponent {
+export class ChildNumber extends Integer {
   static componentType = "childnumber";
 }
 
@@ -62,10 +64,8 @@ export class PossiblePoints extends NumberComponent {
 
 export class Through extends PointListComponent {
   static componentType = "through"
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.slope = {default: undefined};
     return properties;
   }
@@ -81,10 +81,8 @@ export class Vertices extends PointListComponent {
 
 export class Head extends Point {
   static componentType = "head"
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.hide = {default: true};
     return properties;
   }
@@ -92,10 +90,8 @@ export class Head extends Point {
 
 export class Tail extends Point {
   static componentType = "tail"
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.hide = {default: true};
     return properties;
   }
@@ -107,10 +103,8 @@ export class Displacement extends Vector {
 
 export class Center extends Point {
   static componentType = "center"
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.hide = {default: true};
     return properties;
   }
@@ -208,11 +202,11 @@ export class Step extends MathComponent {
   static componentType = "step";
 }
 
-export class NumRows extends NumberComponent {
+export class NumRows extends Integer {
   static componentType = "numrows";
 }
 
-export class NumColumns extends NumberComponent {
+export class NumColumns extends Integer {
   static componentType = "numcolumns";
 }
 
@@ -332,6 +326,10 @@ export class Simplify extends TextComponent {
   static componentType = "simplify";
 }
 
+export class SimplifyOnCompare extends TextComponent {
+  static componentType = "simplifyOnCompare";
+}
+
 export class VariableName extends TextComponent {
   static componentType = "variablename";
 }
@@ -364,7 +362,7 @@ export class Variant extends TextFromSingleStringChild {
   static componentType = "variant";
 }
 
-export class NVariants extends NumberComponent {
+export class NVariants extends Integer {
   static componentType = "nvariants";
 }
 
@@ -376,7 +374,7 @@ export class Seed extends TextFromSingleStringChild {
   static componentType = "seed";
 }
 
-export class NumberToSelect extends NumberComponent {
+export class NumberToSelect extends Integer {
   static componentType = "numbertoselect";
 }
 
@@ -384,7 +382,7 @@ export class WithReplacement extends BooleanComponent {
   static componentType = "withreplacement";
 }
 
-export class DisplayDigits extends NumberComponent {
+export class DisplayDigits extends Integer {
   static componentType = "displaydigits";
 }
 
@@ -424,7 +422,7 @@ export class AnimationInterval extends NumberComponent {
   static componentType = "animationinterval";
 }
 
-export class InitialSelectedIndex extends NumberComponent {
+export class InitialSelectedIndex extends Integer {
   static componentType = "initialselectedindex";
 }
 
@@ -444,7 +442,7 @@ export class Z extends MathComponent {
   static componentType = "z";
 }
 
-export class Layer extends NumberComponent {
+export class Layer extends Integer {
   static componentType = "layer";
 }
 
@@ -480,7 +478,7 @@ export class Tolerance extends NumberComponent {
   static componentType = "tolerance";
 }
 
-export class MaxIterations extends NumberComponent {
+export class MaxIterations extends Integer {
   static componentType = "maxiterations";
 }
 
@@ -488,7 +486,7 @@ export class Unbiased extends BooleanComponent {
   static componentType = "unbiased";
 }
 
-export class NumberOfSamples extends NumberComponent {
+export class NumberOfSamples extends Integer {
   static componentType = "numberofsamples";
 }
 
@@ -516,16 +514,16 @@ export class MaxIndex extends MathComponent {
   static componentType = "maxindex";
 }
 
-export class NumberDecimals extends NumberComponent {
+export class NumberDecimals extends Integer {
   static componentType = "numberdecimals";
 }
 
-export class NumberDigits extends NumberComponent {
+export class NumberDigits extends Integer {
   static componentType = "numberdigits";
 }
 
-export class Components extends TextList {
-  static componentType = "components";
+export class ComponentTypes extends TextList {
+  static componentType = "componenttypes";
 }
 
 export class Source extends TextComponent {
@@ -576,8 +574,16 @@ export class Expand extends BooleanComponent {
   static componentType = "expand";
 }
 
+export class ExpandOnCompare extends BooleanComponent {
+  static componentType = "expandOnCompare";
+}
+
 export class Unordered extends BooleanComponent {
   static componentType = "unordered";
+}
+
+export class UnorderedCompare extends BooleanComponent {
+  static componentType = "unorderedCompare";
 }
 
 export class MatchPartial extends BooleanComponent {
@@ -608,7 +614,7 @@ export class AllowedErrorIsAbsolute extends BooleanComponent {
   static componentType = "allowederrorisabsolute";
 }
 
-export class NSignErrorsMatched extends NumberComponent {
+export class NSignErrorsMatched extends Integer {
   static componentType = "nsignerrorsmatched";
 }
 
@@ -640,7 +646,7 @@ export class PluralForm extends TextComponent {
   static componentType = "pluralform";
 }
 
-export class BasedOnMumber extends NumberComponent {
+export class BasedOnNumber extends NumberComponent {
   static componentType = "basedonnumber";
 }
 
@@ -664,8 +670,8 @@ export class MergeMathLists extends BooleanComponent {
   static componentType = "mergemathlists";
 }
 
-export class AdditionalContent extends ComponentWithAnyChildren {
-  static componentType = "additionalcontent";
+export class MergeNumberLists extends BooleanComponent {
+  static componentType = "mergenumberlists";
 }
 
 export class AttractThreshold extends NumberComponent {
@@ -686,4 +692,8 @@ export class Slope extends MathComponent {
 
 export class ForceFullCheckWorkButton extends BooleanComponent {
   static componentType = "forcefullcheckworkbutton";
+}
+
+export class PossibleNumberOfGroups extends NumberList {
+  static componentType = "PossibleNumberOfGroups";
 }

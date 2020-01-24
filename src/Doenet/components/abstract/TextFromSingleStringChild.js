@@ -3,12 +3,8 @@ import Text from '../Text';
 export default class TextFromSingleStringChild extends Text {
   static componentType = "_textfromsinglestringchild";
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.deleteAllLogic();
 
@@ -23,32 +19,58 @@ export default class TextFromSingleStringChild extends Text {
     return childLogic;
   }
 
-  updateState(args={}) {
 
-    super.updateState(args);
+  static returnStateVariableDefinitions() {
 
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.value = true;
-      return;
-    }
+    let stateVariableDefinitions = {};
 
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-      delete this.unresolvedState.value;
-
-      let atMostOneString = this.childLogic.returnMatches("atMostOneString");
-      if(atMostOneString.length === 1) {
-        this.state.value = this.activeChildren[atMostOneString[0]].state.value;
-      }else {
-        if(this._state.value.essential !== true) {
-          // if no string/text activeChildren and value wasn't set from state directly,
-          // make value be blank and set it to be essential so any changes will be saved
-          this.state.value = "";
-          this._state.value = essential;
+    stateVariableDefinitions.value = {
+      public: true,
+      componentType: this.componentType,
+      returnDependencies: () => ({
+        stringChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneString",
+          variableNames: ["value"],
+        },
+      }),
+      defaultValue: "",
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.stringChild.length === 0) {
+          return {
+            useEssentialOrDefaultValue: {
+              value: { variablesToCheck: "value" }
+            }
+          }
         }
+        let value = dependencyValues.stringChild[0].state.value
+        return { newValues: { value } };
+      },
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
+        if (dependencyValues.stringChild.length === 1) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "stringChild",
+              desiredValue: desiredStateVariableValues.value,
+              childIndex: 0,
+              variableIndex: 0,
+            }]
+          };
+        }
+        // no children, so value is essential and give it the desired value
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "value",
+            value: desiredStateVariableValues.value
+          }]
+        };
       }
     }
+
+    return stateVariableDefinitions;
+
   }
+
 }

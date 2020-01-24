@@ -1,55 +1,85 @@
 import MathComponent from '../Math';
+import { renameStateVariable } from '../../utils/stateVariables';
 
 export default class MathOperatorOneInput extends MathComponent {
   static componentType = "_mathoperatoroneinput";
 
-  updateState(args) {
+  static returnStateVariableDefinitions() {
 
-    super.updateState(args);
-    
-    if(!this.childLogicSatisfied || Object.keys(this.unresolvedState).length > 0) {
-      return;
-    }
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    if(this.state.stringMathChildren !== undefined) {
-      this.state.value = this.applyMathOperator();
-    }
+    let constructor = this;
 
-    let trackChanges = this.currentTracker.trackChanges;
+    // rename unnormalizedValue to unnormalizedValuePreOperator
+    renameStateVariable({
+      stateVariableDefinitions,
+      oldName: "unnormalizedValue",
+      newName: "unnormalizedValuePreOperator"
+    });
 
-    if(trackChanges.getVariableChanges({
-      component: this, variable: "value"
-    }) ||
-    trackChanges.getVariableChanges({
-      component: this, variable: "displaydigits"
-    })) {
-      this.normalizeValue();
-      let rounded = this.normalizeValue(this.state.value
-        .round_numbers_to_precision(this.state.displaydigits));
-      this.state.latex = rounded.toLatex();
-      this.state.text = rounded.toString();
-    }
-  }
-
-
-
-  calculateDownstreamChanges({stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate}) {
-
-
-    if("value" in stateVariablesToUpdate) {
-      stateVariablesToUpdate.value = {
-        changes: this.reverseMathOperatorForDownstream(
-          stateVariablesToUpdate.value.changes)
+    // create new version of unnormalizedValue that applies operator
+    stateVariableDefinitions.unnormalizedValue = {
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "unnormalizedValuePreOperator"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            unnormalizedValue: constructor.applyMathOperator(dependencyValues)
+          }
+        }
+      },
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
+        if (constructor.reverseMathOperator) {
+          let newValue = constructor.reverseMathOperator({
+            desiredValue: desiredStateVariableValues.unnormalizedValue,
+            dependencyValues
+          })
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "value",
+              desiredValue: newValue,
+            }]
+          }
+        } else {
+          return { success: false }
+        }
       }
     }
 
-    return super.calculateDownstreamChanges({
-      stateVariablesToUpdate: stateVariablesToUpdate,
-      stateVariableChangesToSave: stateVariableChangesToSave,
-      dependenciesToUpdate: dependenciesToUpdate
+    // rename canBeModified to canBeModifiedPreOperator
+    renameStateVariable({
+      stateVariableDefinitions,
+      oldName: "canBeModified",
+      newName: "canBeModifiedPreOperator"
     });
 
+    // create new version on canBeModified that is false 
+    // if don't have reverseMathOperator
+    stateVariableDefinitions.canBeModified = {
+      returnDependencies: () => ({
+        canBeModifiedPreOperator: {
+          dependencyType: "stateVariable",
+          variableName: "canBeModifiedPreOperator"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        let canBeModified = dependencyValues.canBeModifiedPreOperator;
+
+        if (!constructor.reverseMathOperator) {
+          canBeModified = false;
+        }
+
+        return { newValues: { canBeModified } }
+      }
+    }
+
+    return stateVariableDefinitions;
   }
+
 
 }

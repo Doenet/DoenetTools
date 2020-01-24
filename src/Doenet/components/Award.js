@@ -3,258 +3,35 @@ import BaseComponent from './abstract/BaseComponent';
 export default class Award extends BaseComponent {
   static componentType = "award";
 
-  static previewSerializedComponent({ serializedComponent, sharedParameters, components }) {
-    if (serializedComponent.children === undefined) {
-      return;
-    }
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
 
-    let matchpartialInd;
-    for (let [ind, child] of serializedComponent.children.entries()) {
-      if (child.componentType === "matchpartial" || (
-        child.createdComponent && components[child.componentName].componentType === "matchpartial"
-      )) {
-        matchpartialInd = ind;
-        break;
-      }
-    }
-
-    let symbolicequalityInd;
-    for (let [ind, child] of serializedComponent.children.entries()) {
-      if (child.componentType === "symbolicequality" || (
-        child.createdComponent && components[child.componentName].componentType === "symbolicequality"
-      )) {
-        symbolicequalityInd = ind;
-        break;
-      }
-    }
-
-    let allowederrorinnumbersInd;
-    for (let [ind, child] of serializedComponent.children.entries()) {
-      if (child.componentType === "allowederrorinnumbers" || (
-        child.createdComponent && components[child.componentName].componentType === "allowederrorinnumbers"
-      )) {
-        allowederrorinnumbersInd = ind;
-        break;
-      }
-    }
-
-    let includeerrorinnumberexponentsInd;
-    for (let [ind, child] of serializedComponent.children.entries()) {
-      if (child.componentType === "includeerrorinnumberexponents" || (
-        child.createdComponent && components[child.componentName].componentType === "includeerrorinnumberexponents"
-      )) {
-        includeerrorinnumberexponentsInd = ind;
-        break;
-      }
-    }
-
-    let allowederrorisabsoluteInd;
-    for (let [ind, child] of serializedComponent.children.entries()) {
-      if (child.componentType === "allowederrorisabsolute" || (
-        child.createdComponent && components[child.componentName].componentType === "allowederrorisabsolute"
-      )) {
-        allowederrorisabsoluteInd = ind;
-        break;
-      }
-    }
-
-    let splitintooptionsInd;
-    for (let [ind, child] of serializedComponent.children.entries()) {
-      if (child.componentType === "splitintooptions" || (
-        child.createdComponent && components[child.componentName].componentType === "splitintooptions"
-      )) {
-        splitintooptionsInd = ind;
-        break;
-      }
-    }
-
-
-    let nsignerrorsmatchedInd;
-    for (let [ind, child] of serializedComponent.children.entries()) {
-      if (child.componentType === "nsignerrorsmatched" || (
-        child.createdComponent && components[child.componentName].componentType === "nsignerrorsmatched"
-      )) {
-        nsignerrorsmatchedInd = ind;
-        break;
-      }
-    }
-
-    let creationInstructions = [];
-
-    if (matchpartialInd !== undefined) {
-      creationInstructions.push({ createChildren: [matchpartialInd] });
-    }
-    if (symbolicequalityInd !== undefined) {
-      creationInstructions.push({ createChildren: [symbolicequalityInd] });
-    }
-    if (allowederrorinnumbersInd !== undefined) {
-      creationInstructions.push({ createChildren: [allowederrorinnumbersInd] });
-    }
-    if (includeerrorinnumberexponentsInd !== undefined) {
-      creationInstructions.push({ createChildren: [includeerrorinnumberexponentsInd] });
-    }
-    if (allowederrorisabsoluteInd !== undefined) {
-      creationInstructions.push({ createChildren: [allowederrorisabsoluteInd] });
-    }
-    if (splitintooptionsInd !== undefined) {
-      creationInstructions.push({ createChildren: [splitintooptionsInd] });
-    }
-    if (nsignerrorsmatchedInd !== undefined) {
-      creationInstructions.push({ createChildren: [nsignerrorsmatchedInd] });
-    }
-    creationInstructions.push({ callMethod: "setupComparisonParameters" })
-
-    return creationInstructions;
-
-  }
-
-
-  static setupComparisonParameters({ sharedParameters, definingChildrenSoFar, serializedComponent }) {
-
-    let matchpartialChild;
-    for (let child of definingChildrenSoFar) {
-      if (child !== undefined && child.componentType === "matchpartial") {
-        matchpartialChild = child;
-        break;
-      }
-    }
-
-    if (matchpartialChild !== undefined) {
-      // have a matchpartial child, so will get matchpartial from that child
-      // once it is resolved
-      sharedParameters.matchpartialChild = matchpartialChild;
-    } else if (serializedComponent.state !== undefined && "matchpartial" in serializedComponent.state) {
-      // matchpartial was specified directly via essential state variable
-      sharedParameters.matchpartial = serializedComponent.state.matchpartial;
-    }
-
-
-    let symbolicequalityChild;
-    for (let child of definingChildrenSoFar) {
-      if (child !== undefined && child.componentType === "symbolicequality") {
-        symbolicequalityChild = child;
-        break;
-      }
-    }
-
-    if (symbolicequalityChild !== undefined) {
-      // have a symbolicequality child, so will get symbolicequality from that child
-      // once it is resolved
-      sharedParameters.symbolicequalityChild = symbolicequalityChild;
-    } else if (serializedComponent.state !== undefined && "symbolicequality" in serializedComponent.state) {
-      // symbolicequality was specified directly via essential state variable
-      sharedParameters.symbolicequality = serializedComponent.state.symbolicequality;
-    }
-
-    let allowederrorinnumbersChild;
-    for (let child of definingChildrenSoFar) {
-      if (child !== undefined && child.componentType === "allowederrorinnumbers") {
-        allowederrorinnumbersChild = child;
-        break;
-      }
-    }
-
-    if (allowederrorinnumbersChild !== undefined) {
-      // have a allowederrorinnumbers child, so will get allowederrorinnumbers from that child
-      // once it is resolved
-      sharedParameters.allowederrorinnumbersChild = allowederrorinnumbersChild;
-    } else if (serializedComponent.state !== undefined && "allowederrorinnumbers" in serializedComponent.state) {
-      // allowederrorinnumbers was specified directly via essential state variable
-      sharedParameters.allowederrorinnumbers = serializedComponent.state.allowederrorinnumbers;
-    }
-
-    let includeerrorinnumberexponentsChild;
-    for (let child of definingChildrenSoFar) {
-      if (child !== undefined && child.componentType === "includeerrorinnumberexponents") {
-        includeerrorinnumberexponentsChild = child;
-        break;
-      }
-    }
-
-    if (includeerrorinnumberexponentsChild !== undefined) {
-      // have a includeerrorinnumberexponents child, so will get includeerrorinnumberexponents from that child
-      // once it is resolved
-      sharedParameters.includeerrorinnumberexponentsChild = includeerrorinnumberexponentsChild;
-    } else if (serializedComponent.state !== undefined && "includeerrorinnumberexponents" in serializedComponent.state) {
-      // includeerrorinnumberexponents was specified directly via essential state variable
-      sharedParameters.includeerrorinnumberexponents = serializedComponent.state.includeerrorinnumberexponents;
-    }
-
-    let allowederrorisabsoluteChild;
-    for (let child of definingChildrenSoFar) {
-      if (child !== undefined && child.componentType === "allowederrorisabsolute") {
-        allowederrorisabsoluteChild = child;
-        break;
-      }
-    }
-
-    if (allowederrorisabsoluteChild !== undefined) {
-      // have a allowederrorisabsolute child, so will get allowederrorisabsolute from that child
-      // once it is resolved
-      sharedParameters.allowederrorisabsoluteChild = allowederrorisabsoluteChild;
-    } else if (serializedComponent.state !== undefined && "allowederrorisabsolute" in serializedComponent.state) {
-      // allowederrorisabsolute was specified directly via essential state variable
-      sharedParameters.allowederrorisabsolute = serializedComponent.state.allowederrorisabsolute;
-    }
-
-    let splitintooptionsChild;
-    for (let child of definingChildrenSoFar) {
-      if (child !== undefined && child.componentType === "splitintooptions") {
-        splitintooptionsChild = child;
-        break;
-      }
-    }
-
-    if (splitintooptionsChild !== undefined) {
-      // have a splitintooptions child, so will get splitintooptions from that child
-      // once it is resolved
-      sharedParameters.splitintooptionsChild = splitintooptionsChild;
-    } else if (serializedComponent.state !== undefined && "splitintooptions" in serializedComponent.state) {
-      // splitintooptions was specified directly via essential state variable
-      sharedParameters.splitintooptions = serializedComponent.state.splitintooptions;
-    }
-
-    let nsignerrorsmatchedChild;
-    for (let child of definingChildrenSoFar) {
-      if (child !== undefined && child.componentType === "nsignerrorsmatched") {
-        nsignerrorsmatchedChild = child;
-        break;
-      }
-    }
-
-    if (nsignerrorsmatchedChild !== undefined) {
-      // have a nsignerrorsmatched child, so will get nsignerrorsmatched from that child
-      // once it is resolved
-      sharedParameters.nsignerrorsmatchedChild = nsignerrorsmatchedChild;
-    } else if (serializedComponent.state !== undefined && "nsignerrorsmatched" in serializedComponent.state) {
-      // nsignerrorsmatched was specified directly via essential state variable
-      sharedParameters.nsignerrorsmatched = serializedComponent.state.nsignerrorsmatched;
-    }
-
-
-  }
-
-  static createPropertiesObject() {
-    return {
-      credit: { default: 1 },
-      matchpartial: { default: false },
-      symbolicequality: { default: false },
-      allowederrorinnumbers: { default: 0 },
-      includeerrorinnumberexponents: { default: false },
-      allowederrorisabsolute: { default: false },
-      splitintooptions: { default: false },
-      nsignerrorsmatched: { default: 0 },
-      feedbackcode: { default: undefined },
-      feedbacktext: { default: undefined },
+    properties.credit = { default: 1 };
+    properties.matchPartial = { default: false, propagateToDescendants: true };
+    properties.symbolicEquality = { default: false, propagateToDescendants: true };
+    properties.expandOnCompare = { default: false, propagateToDescendants: true };
+    properties.simplifyOnCompare = {
+      default: "none",
+      toLowerCase: true,
+      valueTransformations: { "": "full", "true": "full" },
+      validValues: new Set(["full", "numbers", "numbersepreserveorder", "none"]),
+      propagateToDescendants: true,
     };
+    properties.unorderedCompare = { default: false, propagateToDescendants: true };
+    properties.allowedErrorInNumbers = { default: 0, propagateToDescendants: true };
+    properties.includeErrorInNumberExponents = { default: false, propagateToDescendants: true };
+    properties.allowedErrorIsAbsolute = { default: false, propagateToDescendants: true };
+    properties.splitIntoOptions = { default: false, propagateToDescendants: true };
+    properties.nSignErrorsMatched = { default: 0, propagateToDescendants: true };
+    properties.feedbackCode = { default: undefined };
+    properties.feedbackText = { default: undefined };
+
+    return properties;
+
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
 
     let exactlyOneIf = childLogic.newLeaf({
       name: "exactlyOneIf",
@@ -290,112 +67,199 @@ export default class Award extends BaseComponent {
     return childLogic;
   }
 
-  updateState(args = {}) {
-    if (args.init === true) {
-      this.makePublicStateVariable({
-        variableName: "awarded",
-        componentType: "boolean"
-      });
 
-      this.makePublicStateVariableArray({
-        variableName: "feedback",
-        componentType: "feedback",
-        returnSerializedComponents: returnSerializedComponentsFeedback,
-        emptyForOutOfBounds: true,
-      });
+  static returnStateVariableDefinitions() {
 
-      if (this._state.awarded.essential !== true) {
-        this.state.awarded = false;
-        this._state.awarded.essential = true;
-      }
+    let stateVariableDefinitions = {};
 
-      if (!(this._state.justSubmitted && this._state.justSubmitted.essential)) {
-        this.state.justSubmitted = false;
-      }
-      this._state.justSubmitted.trackChanges = true;
-      this._state.justSubmitted.essential = true;
-    }
+    stateVariableDefinitions.incomplete = {
+      additionalStateVariablesDefined: [
+        "incompleteType", "childForIncomplete",
+      ],
+      returnDependencies: () => ({
+        stringChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneString",
+        },
+        mathChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneMath",
+        },
+        textChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneText",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        let incomplete = false;
+        let incompleteType, childForIncomplete;
 
-    super.updateState(args);
-
-    if (!this.childLogicSatisfied) {
-      this.unresolvedState.awarded = true;
-      return;
-    }
-
-    delete this.unresolvedState.awarded;
-
-
-    // override default splitintooptions from shared parameters
-    if (this._state.splitintooptions.usedDefault) {
-      let splitintooptionsChild = this.sharedParameters.splitintooptionsChild;
-      if (splitintooptionsChild) {
-        if (splitintooptionsChild.unresolvedState.value) {
-          this.unresolvedState.splitintooptions = true;
-          return;
+        if (dependencyValues.stringChild.length === 1) {
+          childForIncomplete = dependencyValues.stringChild[0];
+          incomplete = true;
+          incompleteType = "string";
+        } else if (dependencyValues.mathChild.length === 1) {
+          childForIncomplete = dependencyValues.mathChild[0];
+          incomplete = true;
+          incompleteType = "math";
+        } else if (dependencyValues.textChild.length === 1) {
+          childForIncomplete = dependencyValues.textChild[0];
+          incomplete = true;
+          incompleteType = "text";
         }
-        this.state.splitintooptions = splitintooptionsChild.state.value;
-      } else if (this.sharedParameters.splitintooptions) {
-        this.state.splitintooptions = this.sharedParameters.splitintooptions;
+
+        return { newValues: { incomplete, incompleteType, childForIncomplete } }
       }
-      delete this.unresolvedState.splitintooptions;
-      // delete usedDefault so logic isn't repeated
-      delete this._state.splitintooptions.usedDefault;
-    }
+    };
 
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if (childrenChanged) {
-      this.state.incomplete = false;
-      let exactlyOneString = this.childLogic.returnMatches("exactlyOneString");
-      if (exactlyOneString.length === 1) {
-        this.state.childForIncomplete = this.activeChildren[exactlyOneString[0]];
-        this.state.incomplete = true;
-        this.state.incompleteType = "string";
-      } else {
-        let exactlyOneMath = this.childLogic.returnMatches("exactlyOneMath");
-        if (exactlyOneMath.length === 1) {
-          this.state.childForIncomplete = this.activeChildren[exactlyOneMath[0]];
-          this.state.incomplete = true;
-          this.state.incompleteType = "math";
-        } else {
-          let exactlyOneText = this.childLogic.returnMatches("exactlyOneText");
-          if (exactlyOneText.length === 1) {
-            this.state.childForIncomplete = this.activeChildren[exactlyOneText[0]];
-            this.state.incomplete = true;
-            this.state.incompleteType = "text";
+    stateVariableDefinitions.creditAchieved = {
+      additionalStateVariablesDefined: ["fractionSatisfied", "ifChild"],
+      returnDependencies: () => ({
+        credit: {
+          dependencyType: "stateVariable",
+          variableName: "credit"
+        },
+        ifChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneIf",
+          variableNames: ["fractionSatisfied"]
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.ifChild.length === 0) {
+          return {
+            newValues: {
+              creditAchieved: 0,
+              fractionSatisfied: 0,
+              ifChild: undefined,
+            }
           }
         }
+        let fractionSatisfied = dependencyValues.ifChild[0].stateValues.fractionSatisfied;
+        let creditAchieved = 0;
+        if (Number.isFinite(dependencyValues.credit)) {
+          creditAchieved = Math.max(0, Math.min(1, dependencyValues.credit)) * Math.max(0, Math.min(1, fractionSatisfied));
+        }
+        return {
+          newValues: {
+            fractionSatisfied, creditAchieved,
+            ifChild: dependencyValues.ifChild[0],
+          }
+        }
+
       }
+    }
 
-      if (this.state.incomplete) {
-        return;
+    stateVariableDefinitions.awarded = {
+      public: true,
+      componentType: "boolean",
+      defaultValue: false,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          awarded: {
+            variablesToCheck: "awarded",
+          }
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues, initialChange }) {
+        if (!initialChange) {
+          return { success: false }
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "awarded",
+            value: desiredStateVariableValues.awarded
+          }]
+        };
       }
-
-      delete this.state.childForIncomplete;
-      delete this.state.incompleteType;
-
-      this.state.ifChild = this.activeChildren[this.childLogic.returnMatches("exactlyOneIf")];
 
     }
 
-    if (this.state.incomplete) {
-      return;
-    }
+    // stateVariableDefinitions.justSubmitted = {
+    //   // TODO: not sure how to get this to work
+    //   public: true,
+    //   componentType: "boolean",
+    //   defaultValue: false,
+    //   returnDependencies: () => ({
+    //     ifChild: {
+    //       dependencyType: "childStateVariables",
+    //       childLogicName: "exactlyOneIf",
+    //       variableNames: ["justSubmitted"]
+    //     }
+    //   }),
+    //   definition: ({dependencyValues}) => ({
+    //     newValues: {
+    //       justSubmitted: dependencyValues.ifChild[0].stateValues.justSubmitted,
+    //     }
+    //   }),
+    //   inverseDefinition: function ({ desiredStateVariableValues }) {
+    //     return {
+    //       success: true,
+    //       instructions: [{
+    //         setDependency: "ifChild",
+    //         desiredValue: desiredStateVariableValues.justSubmitted,
+    //         childIndex: 0,
+    //         variableIndex: 0,
+    //       }]
+    //     };
+    //   }
 
-    if (this.state.feedbacktext === undefined) {
-      let feedback = this.constructor.standardizedFeedback[this.state.feedbackcode];
-      if (feedback === undefined) {
-        this.state.feedback = [];
-      } else {
-        this.state.feedback = [feedback];
+    // }
+
+    stateVariableDefinitions.feedback = {
+      public: true,
+      componentType: "feedback",
+
+      returnDependencies: () => ({
+        feedbackText: {
+          dependencyType: "stateVariable",
+          variableName: "feedbackText",
+        },
+        feedbackCode: {
+          dependencyType: "stateVariable",
+          variableName: "feedbackCode",
+        },
+        awarded: {
+          dependencyType: "stateVariable",
+          variableName: "awarded"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        if (!dependencyValues.awarded) {
+          return { newValues: { feedback: "" } }
+        }
+
+        let feedback;
+
+        if (dependencyValues.feedbackText === undefined) {
+
+          // TODO: mechanism for specifying standardized feedback
+          // and for authors to modify it
+          let feedback = this.constructor.standardizedFeedback[dependencyValues.feedbackCode];
+          if (feedback === undefined) {
+            feedback = "";
+          } else {
+            feedback = feedback;
+          }
+        } else {
+          feedback = dependencyValues.feedbackText;
+        }
+
+        return { newValues: feedback }
+
       }
-    } else {
-      this.state.feedback = [this.state.feedbacktext];
-    }
+    };
 
+    return stateVariableDefinitions;
+  }
+
+
+  updateState(args = {}) {
+ 
     let justSubmitted = true;
     if (args.sourceOfUpdate !== undefined) {
       justSubmitted = false;
@@ -422,60 +286,8 @@ export default class Award extends BaseComponent {
 
   }
 
-  determineCredit() {
-
-    let fractionsatisfied = this.state.ifChild.evaluateLogic();
-    let creditachieved = 0;
-    if (Number.isFinite(this.state.credit)) {
-      creditachieved = Math.max(0, Math.min(1, this.state.credit)) * Math.max(0, Math.min(1, fractionsatisfied));
-    }
-    return {
-      fractionsatisfied: fractionsatisfied,
-      creditachieved: creditachieved
-    }
-
-  }
-
   adapters = ["awarded"];
 
-
-  allowDownstreamUpdates(status) {
-    // don't allow non-initial changes
-    return (status.initialChange === true);
-  }
-
-  get variablesUpdatableDownstream() {
-    return ["awarded", "justSubmitted"];
-  }
-
-  calculateDownstreamChanges({ stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate }) {
-
-    let newStateVariables = {};
-    if ("awarded" in stateVariablesToUpdate) {
-      newStateVariables.awarded = stateVariablesToUpdate.awarded;
-    }
-    if ("justSubmitted" in stateVariablesToUpdate) {
-      newStateVariables.justSubmitted = stateVariablesToUpdate.justSubmitted;
-    }
-    let shadowedResult = this.updateShadowSources({
-      newStateVariables: newStateVariables,
-      dependenciesToUpdate: dependenciesToUpdate,
-    });
-    let shadowedStateVariables = shadowedResult.shadowedStateVariables;
-    let isReplacement = shadowedResult.isReplacement;
-
-    for (let varname in newStateVariables) {
-      if (this._state[varname].essential === true &&
-        !shadowedStateVariables.has(varname)// && !isReplacement
-      ) {
-        stateVariableChangesToSave[varname] = newStateVariables[varname];
-      }
-    }
-
-    return true;
-
-  }
 
   static standardizedFeedback = {
     'numericalerror': `Credit reduced because numbers in your answer weren't quite right.  Did you round too much?`,
@@ -526,10 +338,10 @@ function returnSerializedComponentsFeedback({
       }
     ],
     downstreamDependencies: {
-      [componentName]: {
+      [componentName]: [{
         dependencyType: "referenceShadow",
         prop: propName,
-      }
+      }]
     },
   }]
 

@@ -7,27 +7,33 @@ export default class ComponentWithSerializedChildren extends BaseComponent {
     return {};
   }
 
-  static previewSerializedComponent({serializedComponent}) {
-    if(serializedComponent.children === undefined) {
-      return;
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.serializedChildren = {
+      returnDependencies: () => ({
+        serializedChildren: {
+          dependencyType: "serializedChildren",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { serializedChildren: dependencyValues.serializedChildren } };
+      },
+    };
+
+    return stateVariableDefinitions;
+  }
+
+  static keepChildrenSerialized({ serializedComponent }) {
+    if (serializedComponent.children === undefined) {
+      return [];
     }
 
-    let creationInstructions = [];
-    creationInstructions.push({keepChildrenSerialized: Object.keys(serializedComponent.children)});
-
-    return creationInstructions;
+    return Object.keys(serializedComponent.children);
 
   }
 
-  updateState(args = {}) {
-
-    super.updateState(args);
-
-    // create a tracked state variable of serialized children
-    // so that changes to serialized children will always count as a change
-    this.state.lastSerializedChildren = this.serializedChildren;
-    this._state.lastSerializedChildren.trackChanges = true;
-    this._state.lastSerializedChildren.trackAsObject = true;
-
-  }
 }

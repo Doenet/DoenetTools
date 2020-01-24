@@ -6,14 +6,15 @@ describe('Math Tag Tests', function () {
 
   it('1+1', () => {
     cy.window().then((win) => {
-      win.postMessage({ doenetCode: `
+      win.postMessage({
+        doenetCode: `
     <text>a</text>
     <math>1+1</math>
     <math simplify>1+1</math>
     ` }, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text','a');  // to wait until loaded
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -25,8 +26,8 @@ describe('Math Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].state.value.tree).eqls(['+',1,1]);
-      expect(components['/_math2'].state.value.tree).eq(2);
+      expect(components['/_math1'].stateValues.value.tree).eqls(['+', 1, 1]);
+      expect(components['/_math2'].stateValues.value.tree).eq(2);
     })
   })
 
@@ -41,7 +42,7 @@ describe('Math Tag Tests', function () {
 
     });
 
-    cy.get('#\\/_text1').should('have.text','a');  // to wait until loaded
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -54,9 +55,9 @@ describe('Math Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].state.value.tree).eqls(["+", ["*", 3, ["+", "x", 1]],5])
-      expect(components['/_math2'].state.value.tree).eqls(['+', 'x', 1])
-      expect(components['/_math3'].state.value.tree).eqls(["+", 5, ["*", 3, ["+", "x", 1]]])
+      expect(components['/_math1'].stateValues.value.tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
+      expect(components['/_math2'].stateValues.value.tree).eqls(['+', 'x', 1])
+      expect(components['/_math3'].stateValues.value.tree).eqls(["+", 5, ["*", 3, ["+", "x", 1]]])
 
     })
   })
@@ -71,7 +72,7 @@ describe('Math Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text','a');  // to wait until loaded
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -84,12 +85,13 @@ describe('Math Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].state.value.tree).eqls(['+', 'x', 1])
-      expect(components.__math1.state.value.tree).eqls(['+', 'x', 1])
-      expect(components['/_math2'].state.value.tree).eqls(["+", ["*", 3, ["+", "x", 1]],5])
-      expect(components['/_math1']._state.hide.value).eq(true)
-      expect(components.__math1._state.hide.value).eq(true);
-      expect(components['/_math2']._state.hide.value).eq(false)
+      let replacement = components['/_ref1'].replacements[0];
+      expect(components['/_math1'].stateValues.value.tree).eqls(['+', 'x', 1])
+      expect(replacement.stateValues.value.tree).eqls(['+', 'x', 1])
+      expect(components['/_math2'].stateValues.value.tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
+      expect(components['/_math1'].stateValues.hide).eq(true)
+      expect(replacement.stateValues.hide).eq(true);
+      expect(components['/_math2'].stateValues.hide).eq(false)
     })
   })
 
@@ -144,7 +146,7 @@ describe('Math Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text','a');  // to wait until loaded
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_math1').find('.mjx-char').eq(0).invoke('text').then((text) => {
@@ -157,7 +159,7 @@ describe('Math Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].state.value.tree).eqls(['/', 'x', 'z'])
+      expect(components['/_math1'].stateValues.value.tree).eqls(['/', 'x', 'z'])
     })
   })
 
@@ -171,7 +173,7 @@ describe('Math Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text','a');  // to wait until loaded
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_math1').find('.mjx-char').eq(0).invoke('text').then((text) => {
@@ -180,7 +182,12 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/_math1').find('.mjx-char').eq(1).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     })
-    cy.get('#__text1').should('have.text', '\\frac{x}{y}');
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let replacement = components['/_ref1'].replacements[0];
+      cy.get('#' + replacement.componentName).should('have.text', '\\frac{x}{y}');
+
+    })
 
   });
 
@@ -191,18 +198,23 @@ describe('Math Tag Tests', function () {
   <text>a</text>
   <math name="a" simplify><math name="x">x</math> + <ref>x</ref> + <ref>z</ref></math>
   <math name="z">z</math>
-  <ref>a</ref>
+  <ref name="a2">a</ref>
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text','a');  // to wait until loaded
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x+z')
     })
-    cy.get('#__math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2x+z')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let replacement = components['/a2'].replacements[0];
+      cy.get('#' + replacement.componentName).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2x+z')
+      })
     })
 
   });
@@ -217,7 +229,7 @@ describe('Math Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text','a');  // to wait until loaded
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -227,10 +239,11 @@ describe('Math Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].state.value.tree).eq(5);
-      expect(components['/_math1'].activeChildren[2].componentName).equal("__coords2");
-      expect(components.__coords2.downstreamDependencies.__point1.dependencyType)
-        .eq("adapter");
+      let point = components['/_ref1'].replacements[0];
+      let coords = point.adapterUsed;
+      expect(components['/_math1'].stateValues.value.tree).eq(5);
+      expect(components['/_math1'].activeChildren[2].componentName).equal(coords.componentName);
+      expect(coords.adaptedFrom.componentName).eq(point.componentName);
     })
 
   });
@@ -239,15 +252,15 @@ describe('Math Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
-  <p><text>a</text></p>
-  <math simplify>2<ref childnumber="2">_p1</ref>3</math>
+  <text>a</text>
+  <math simplify>2<sequence count="0"/>3</math>
   <graph>
   <point><coords>(<ref>_math1</ref>, 3)</coords></point>
   </graph>
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text','a');  // to wait until loaded
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -258,23 +271,25 @@ describe('Math Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       // string children are originally 1 and 3
-      expect(components['/_math1'].activeChildren[1].state.value).eq("2");
-      expect(components['/_math1'].activeChildren[2].state.value).eq("3");
-      expect(components['/_math1'].state.value.tree).eq(6);
-      expect(components['/_point1'].state.xs[0].tree).eq(6);
-      expect(components['/_point1'].state.xs[1].tree).eq(3);
+      expect(components['/_math1'].activeChildren[1].stateValues.value).eq("2");
+      expect(components['/_math1'].activeChildren[2].stateValues.value).eq("3");
+      expect(components['/_math1'].stateValues.value.tree).eq(6);
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(6);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(3);
     });
 
-    cy.log("Move point to (7,9");
+    cy.log("Move point to (7,9)");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
+      console.log(`move point1`)
       components['/_point1'].movePoint({ x: 7, y: 9 });
+      console.log(`point moved`)
       // second child takes value, third is blank
-      expect(components['/_math1'].activeChildren[1].state.value).eq("7");
-      expect(components['/_math1'].activeChildren[2].state.value).eq("");
-      expect(components['/_math1'].state.value.tree).eq(7);
-      expect(components['/_point1'].state.xs[0].tree).eq(7);
-      expect(components['/_point1'].state.xs[1].tree).eq(9);
+      expect(components['/_math1'].activeChildren[1].stateValues.value).eq("7");
+      expect(components['/_math1'].activeChildren[2].stateValues.value).eq("");
+      expect(components['/_math1'].stateValues.value.tree).eq(7);
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(7);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(9);
     });
   });
 
@@ -288,7 +303,7 @@ describe('Math Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text','a');  // to wait until loaded
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -301,9 +316,9 @@ describe('Math Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].state.value.tree).eq(1.000000000000001);
-      expect(components['/_math2'].state.value.tree).eqls(
-        ['+', ['*', 0.30000000000000004, 'x'], ['*', 4, 'pi'] ]);
+      expect(components['/_math1'].stateValues.value.tree).eq(1.000000000000001);
+      expect(components['/_math2'].stateValues.value.tree).eqls(
+        ['+', ['*', 0.30000000000000004, 'x'], ['*', 4, 'pi']]);
     });
   });
 
@@ -425,15 +440,14 @@ describe('Math Tag Tests', function () {
     <p>Default is no simplification: <math>1x^2-3 +0x^2 + 4 -2x^2-3 + 5x^2</math></p>
     <p>Explicit no simplify: <math simplify="none">1x^2-3 +0x^2 + 4 -2x^2-3 + 5x^2</math></p>
     <p>Full simplify a: <math simplify>1x^2-3 +0x^2 + 4 -2x^2-3 + 5x^2</math></p>
-    <p>Full simplify b: <math simplify="true">1x^2-3 +0x^2 + 4 -2x^2-3 + 5x^2</math></p>
-    <p>Full simplify c: <math simplify="full">1x^2-3 +0x^2 + 4 -2x^2-3 + 5x^2</math></p>
+    <p>Full simplify b: <math simplify="full">1x^2-3 +0x^2 + 4 -2x^2-3 + 5x^2</math></p>
     <p>Simplify numbers: <math simplify="numbers">1x^2-3 +0x^2 + 4 -2x^2-3 + 5x^2</math></p>
     <p>Simplify numbers preserve order: <math simplify="numberspreserveorder">1x^2-3 +0x^2 + 4 -2x^2-3 + 5x^2</math></p>
     `}, "*");
 
     });
 
-    cy.get('#\\/_text1').should('have.text','a');  // to wait until loaded
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -449,12 +463,9 @@ describe('Math Tag Tests', function () {
       expect(text.trim()).equal('4x2−2')
     });
     cy.get('#\\/_math5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('4x2−2')
-    });
-    cy.get('#\\/_math6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−2x2+x2+5x2−2')
     });
-    cy.get('#\\/_math7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/_math6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x2+1−2x2−3+5x2')
     })
 
@@ -472,19 +483,18 @@ describe('Math Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].state.value.tree).eqls(originalTree);
-      expect(components['/_math2'].state.value.tree).eqls(originalTree);
-      expect(components['/_math3'].state.value.tree).eqls(["+", ["*", 4, ["^", "x", 2]], -2])
-      expect(components['/_math4'].state.value.tree).eqls(["+", ["*", 4, ["^", "x", 2]], -2])
-      expect(components['/_math5'].state.value.tree).eqls(["+", ["*", 4, ["^", "x", 2]], -2])
-      expect(components['/_math6'].state.value.tree).eqls([
+      expect(components['/_math1'].stateValues.value.tree).eqls(originalTree);
+      expect(components['/_math2'].stateValues.value.tree).eqls(originalTree);
+      expect(components['/_math3'].stateValues.value.tree).eqls(["+", ["*", 4, ["^", "x", 2]], -2])
+      expect(components['/_math4'].stateValues.value.tree).eqls(["+", ["*", 4, ["^", "x", 2]], -2])
+      expect(components['/_math5'].stateValues.value.tree).eqls([
         '+',
         ['*', -2, ['^', 'x', 2]],
         ['^', 'x', 2],
         ['*', 5, ['^', 'x', 2]],
         -2
       ]);
-      expect(components['/_math7'].state.value.tree).eqls([
+      expect(components['/_math6'].stateValues.value.tree).eqls([
         '+',
         ['^', 'x', 2],
         1,
@@ -508,7 +518,7 @@ describe('Math Tag Tests', function () {
     `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text','a');  // to wait until loaded
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -538,7 +548,7 @@ describe('Math Tag Tests', function () {
 
     });
 
-    cy.get('#\\/_text1').should('have.text','a');  // to wait until loaded
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Look same in browser')
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -557,33 +567,33 @@ describe('Math Tag Tests', function () {
     cy.log('Different internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].state.value.tree).eqls(["list",
-        ["tuple",1,2,3],
-        ["tuple",4,5],
-        ["array",6,7],
-        ["interval",["tuple", 8,9], ["tuple", false, true]],
-        ["interval",["tuple", 10,11], ["tuple", true, false]],
+      expect(components['/_math1'].stateValues.value.tree).eqls(["list",
+        ["tuple", 1, 2, 3],
+        ["tuple", 4, 5],
+        ["array", 6, 7],
+        ["interval", ["tuple", 8, 9], ["tuple", false, true]],
+        ["interval", ["tuple", 10, 11], ["tuple", true, false]],
       ]);
-      expect(components['/_math2'].state.value.tree).eqls(["list",
-        ["vector",1,2,3],
-        ["vector",4,5],
-        ["array",6,7],
-        ["interval",["tuple", 8,9], ["tuple", false, true]],
-        ["interval",["tuple", 10,11], ["tuple", true, false]],
+      expect(components['/_math2'].stateValues.value.tree).eqls(["list",
+        ["vector", 1, 2, 3],
+        ["vector", 4, 5],
+        ["array", 6, 7],
+        ["interval", ["tuple", 8, 9], ["tuple", false, true]],
+        ["interval", ["tuple", 10, 11], ["tuple", true, false]],
       ]);
-      expect(components['/_math3'].state.value.tree).eqls(["list",
-        ["tuple",1,2,3],
-        ["interval",["tuple", 4,5], ["tuple", false, false]],
-        ["interval",["tuple", 6,7], ["tuple", true, true]],
-        ["interval",["tuple", 8,9], ["tuple", false, true]],
-        ["interval",["tuple", 10,11], ["tuple", true, false]],
+      expect(components['/_math3'].stateValues.value.tree).eqls(["list",
+        ["tuple", 1, 2, 3],
+        ["interval", ["tuple", 4, 5], ["tuple", false, false]],
+        ["interval", ["tuple", 6, 7], ["tuple", true, true]],
+        ["interval", ["tuple", 8, 9], ["tuple", false, true]],
+        ["interval", ["tuple", 10, 11], ["tuple", true, false]],
       ]);
-      expect(components['/_math4'].state.value.tree).eqls(["list",
-        ["vector",1,2,3],
-        ["vector",4,5],
-        ["interval",["tuple", 6,7], ["tuple", true, true]],
-        ["interval",["tuple", 8,9], ["tuple", false, true]],
-        ["interval",["tuple", 10,11], ["tuple", true, false]],
+      expect(components['/_math4'].stateValues.value.tree).eqls(["list",
+        ["vector", 1, 2, 3],
+        ["vector", 4, 5],
+        ["interval", ["tuple", 6, 7], ["tuple", true, true]],
+        ["interval", ["tuple", 8, 9], ["tuple", false, true]],
+        ["interval", ["tuple", 10, 11], ["tuple", true, false]],
       ]);
     });
 
@@ -599,7 +609,7 @@ describe('Math Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_text1').should('have.text','a');  // to wait until loaded
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -612,10 +622,10 @@ describe('Math Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].state.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-15, 'y']]);
-      expect(components['/_math2'].state.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-15, 'y']]);
-      expect(components['/_math1'].state.displaysmallaszero).eq(false);
-      expect(components['/_math2'].state.displaysmallaszero).eq(true);
+      expect(components['/_math1'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-15, 'y']]);
+      expect(components['/_math2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-15, 'y']]);
+      expect(components['/_math1'].stateValues.displaySmallAsZero).eq(false);
+      expect(components['/_math2'].stateValues.displaySmallAsZero).eq(true);
     });
 
 

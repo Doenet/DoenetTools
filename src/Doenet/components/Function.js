@@ -4,22 +4,16 @@ import me from 'math-expressions';
 export default class Function extends InlineComponent {
   static componentType = "function";
 
-  static createPropertiesObject({ standardComponentTypes }) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.variable = { default: me.fromAst("x") };
     properties.xscale = { default: 1 };
     properties.yscale = { default: 1 };
     return properties;
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let addFormula = function ({ activeChildrenMatched }) {
       // add <formula> around math
@@ -1962,9 +1956,35 @@ export default class Function extends InlineComponent {
       return;
     }
 
+    let newState = {
+      functionComponentName: this.componentName
+    };
+
+
+    let downstreamStateVariables = [];
+    let upstreamStateVariables = [];
+
+    // copy any properties that match the adapter
+    // add them both to newState and to dependency state variables
+    let adapterClass = this.allComponentClasses.curve;
+    let availableClassProperties = adapterClass.createPropertiesObject({
+      standardComponentClasses: this.standardComponentClasses
+    });
+
+    for (let item in availableClassProperties) {
+      if (item in this._state) {
+        newState[item] = this.state[item];
+        downstreamStateVariables.push(item);
+        upstreamStateVariables.push(item);
+      }
+    }
+
     let downDep = {
       dependencyType: "adapter",
       adapter: "curve",
+      downstreamStateVariables: downstreamStateVariables,
+      upstreamStateVariables: upstreamStateVariables,
+      includeDownstreamComponent: true,
     }
 
     // TODO: if unresolved, should pass unresolvedState to curve
@@ -1972,9 +1992,9 @@ export default class Function extends InlineComponent {
     return {
       componentType: "curve",
       downstreamDependencies: {
-        [this.componentName]: downDep
+        [this.componentName]: [downDep]
       },
-      state: { functionComponentName: this.componentName }
+      state: newState,
     };
 
   }

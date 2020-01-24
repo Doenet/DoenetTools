@@ -26,7 +26,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
         </if>
       </award>
     </answer>
-    <p>Credit achieved: <ref prop="creditachieved">_answer1</ref></p>
+    <p>Credit achieved: <ref prop="creditAchieved">_answer1</ref></p>
     `}, "*");
     });
 
@@ -49,7 +49,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       expect(components['/s2'].state.period.tree).eq('pi');
       expect(components['/s2'].state.redundantoffsets).eq(false);
 
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Type in an offset and submit")
@@ -63,7 +63,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/s1'].state.value.tree).eq('\uFF3F');
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Type in a period and submit")
@@ -85,7 +85,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       expect(components['/s1'].state.period.tree).eqls(['/', 'pi', 2]);
       expect(components['/s1'].state.redundantoffsets).eq(false);
 
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("Change period")
@@ -107,7 +107,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       expect(components['/s1'].state.period.tree).eqls('pi');
       expect(components['/s1'].state.redundantoffsets).eq(false);
 
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("add offset")
@@ -131,7 +131,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       expect(components['/s1'].state.period.tree).eqls('pi');
       expect(components['/s1'].state.redundantoffsets).eq(false);
 
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("add redundant offset")
@@ -157,7 +157,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       expect(components['/s1'].state.period.tree).eqls('pi');
       expect(components['/s1'].state.redundantoffsets).eq(true);
 
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
     cy.log("add incorrect offset")
@@ -185,7 +185,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       expect(components['/s1'].state.period.tree).eqls('pi');
       expect(components['/s1'].state.redundantoffsets).eq(true);
 
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("add invalid math")
@@ -202,7 +202,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       s1.push(['tuple', '\uff3f', 'pi', ['-', Infinity], Infinity])
   
       expect(components['/s1'].state.value.tree).eqls(s1);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
 
@@ -234,7 +234,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       </award>
     </answer>
     
-    <p>Credit achieved: <ref prop="creditachieved">_answer1</ref></p>
+    <p>Credit achieved: <ref prop="creditAchieved">_answer1</ref></p>
     
     <p>Redundancies: <ref prop="redundantoffsets">a</ref>, <ref prop="redundantoffsets">b</ref>, <ref prop="redundantoffsets">a2</ref>, <ref prop="redundantoffsets">b2</ref></p>
     `}, "*");
@@ -259,7 +259,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       expect(components['/b'].state.value.tree).eq('\uFF3F');
       expect(components['/a2'].replacements[0].state.value.tree).eq('\uFF3F');
       expect(components['/b2'].replacements[0].state.value.tree).eq('\uFF3F');
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Submit offset for both")
@@ -273,7 +273,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       expect(components['/b'].state.value.tree).eq('\uFF3F');
       expect(components['/a2'].replacements[0].state.value.tree).eq('\uFF3F');
       expect(components['/b2'].replacements[0].state.value.tree).eq('\uFF3F');
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Submit periods for both")
@@ -321,7 +321,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       expect(components['/b2'].replacements[0].state.period.tree).eqls(['*', 2, 'pi']);
       expect(components['/b2'].replacements[0].state.redundantoffsets).eq(false);
 
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
     cy.log("Add offsets to match")
@@ -378,7 +378,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       expect(components['/b2'].replacements[0].state.period.tree).eqls(['*', 2, 'pi']);
       expect(components['/b2'].replacements[0].state.redundantoffsets).eq(false);
 
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
 
@@ -441,7 +441,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       expect(components['/b2'].replacements[0].state.period.tree).eqls(['*', 2, 'pi']);
       expect(components['/b2'].replacements[0].state.redundantoffsets).eq(false);
 
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
 
@@ -505,7 +505,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       expect(components['/b2'].replacements[0].state.period.tree).eqls('pi');
       expect(components['/b2'].replacements[0].state.redundantoffsets).eq(true);
 
-      expect(components['/_answer1'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
     });
 
 
@@ -573,7 +573,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       expect(components['/b2'].replacements[0].state.period.tree).eqls('pi');
       expect(components['/b2'].replacements[0].state.redundantoffsets).eq(true);
 
-      expect(components['/_answer1'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
     });
 
   });

@@ -40,10 +40,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
   
     cy.log("Submit correct answers")
@@ -58,10 +58,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
-      expect(components['/_answer3'].state.creditachieved).eq(1);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
+      expect(components['/_answer3'].state.creditAchieved).eq(1);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
     });
 
     cy.log("Omit one component")
@@ -76,10 +76,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("just a scalar")
@@ -94,10 +94,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("extra component")
@@ -112,10 +112,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(3/4,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(3/4,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(3/4,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(3/4,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("two extra components")
@@ -130,10 +130,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(3/5,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(3/5,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(3/5,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(3/5,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("omit parens")
@@ -148,10 +148,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("permute order")
@@ -166,10 +166,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
     });
 
     cy.log("reverse order")
@@ -184,10 +184,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
     });
 
     cy.log("add component")
@@ -202,10 +202,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(2/4,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(3/4,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(2/4,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(3/4,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("add another component")
@@ -220,10 +220,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(2/5,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(3/5,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(2/5,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(3/5,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
 
@@ -239,10 +239,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(3/6,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(3/6,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(3/6,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(3/6,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
 
@@ -258,10 +258,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("add component")
@@ -276,10 +276,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
   });
@@ -320,10 +320,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
   
     cy.log("Submit correct answers")
@@ -338,10 +338,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
-      expect(components['/_answer3'].state.creditachieved).eq(1);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
+      expect(components['/_answer3'].state.creditAchieved).eq(1);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
     });
 
     cy.log("Omit one component")
@@ -356,10 +356,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("just a scalar")
@@ -374,10 +374,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("extra component")
@@ -392,10 +392,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(3/4,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(3/4,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(3/4,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(3/4,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("two extra components")
@@ -410,10 +410,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(3/5,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(3/5,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(3/5,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(3/5,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("add parens")
@@ -428,10 +428,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("permute order")
@@ -446,10 +446,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
     });
 
     cy.log("reverse order")
@@ -464,10 +464,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
     });
 
     cy.log("add component")
@@ -482,10 +482,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(2/4,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(3/4,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(2/4,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(3/4,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("add another component")
@@ -500,10 +500,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(2/5,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(3/5,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(2/5,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(3/5,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
 
@@ -519,10 +519,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(3/6,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(3/6,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(3/6,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(3/6,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
 
@@ -538,10 +538,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("add component")
@@ -556,10 +556,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
   });
@@ -600,10 +600,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
   
     cy.log("Submit correct answers")
@@ -618,10 +618,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
-      expect(components['/_answer3'].state.creditachieved).eq(1);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
+      expect(components['/_answer3'].state.creditAchieved).eq(1);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
     });
 
     cy.log("Omit one component")
@@ -636,10 +636,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("just a scalar")
@@ -654,10 +654,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("extra component")
@@ -672,10 +672,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(3/4,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(3/4,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(3/4,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(3/4,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("two extra components")
@@ -690,10 +690,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(3/5,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(3/5,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(3/5,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(3/5,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("omit brackets")
@@ -708,10 +708,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("permute order")
@@ -726,10 +726,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
     });
 
     cy.log("reverse order")
@@ -744,10 +744,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
     });
 
     cy.log("add component")
@@ -762,10 +762,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(2/4,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(3/4,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(2/4,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(3/4,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("add another component")
@@ -780,10 +780,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(2/5,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(3/5,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(2/5,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(3/5,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
 
@@ -799,10 +799,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(3/6,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(3/6,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(3/6,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(3/6,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
 
@@ -818,10 +818,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("add component")
@@ -836,10 +836,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/_answer2'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/_answer2'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
   });
@@ -867,8 +867,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
     });
   
     cy.log("Submit correct answers")
@@ -879,8 +879,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Permute components")
@@ -891,8 +891,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Extra component")
@@ -903,8 +903,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(3/4, 1E-14);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(3/4, 1E-14);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
     });
 
     cy.log("Another component")
@@ -915,8 +915,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(3/5, 1E-14);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(3/5, 1E-14);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
     });
 
     cy.log("Duplicate components")
@@ -927,8 +927,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Add component")
@@ -939,8 +939,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(3/4, 1E-14);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(3/4, 1E-14);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
     });
 
     cy.log("Omit braces")
@@ -951,8 +951,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
     });
 
     cy.log("Single number")
@@ -963,8 +963,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(1/3, 1E-14);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(1/3, 1E-14);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
     });
 
     cy.log("Subset")
@@ -975,8 +975,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).closeTo(2/3, 1E-14);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).closeTo(2/3, 1E-14);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
     });
 
   });
@@ -1046,14 +1046,14 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
-      expect(components['/_answer5'].state.creditachieved).eq(0);
-      expect(components['/_answer6'].state.creditachieved).eq(0);
-      expect(components['/_answer7'].state.creditachieved).eq(0);
-      expect(components['/_answer8'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
+      expect(components['/_answer5'].state.creditAchieved).eq(0);
+      expect(components['/_answer6'].state.creditAchieved).eq(0);
+      expect(components['/_answer7'].state.creditAchieved).eq(0);
+      expect(components['/_answer8'].state.creditAchieved).eq(0);
     });
   
 
@@ -1077,14 +1077,14 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
-      expect(components['/_answer5'].state.creditachieved).eq(0);
-      expect(components['/_answer6'].state.creditachieved).eq(0);
-      expect(components['/_answer7'].state.creditachieved).eq(0);
-      expect(components['/_answer8'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
+      expect(components['/_answer5'].state.creditAchieved).eq(0);
+      expect(components['/_answer6'].state.creditAchieved).eq(0);
+      expect(components['/_answer7'].state.creditAchieved).eq(0);
+      expect(components['/_answer8'].state.creditAchieved).eq(0);
     });
 
     cy.log("Open interval")
@@ -1107,14 +1107,14 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
-      expect(components['/_answer5'].state.creditachieved).eq(0);
-      expect(components['/_answer6'].state.creditachieved).eq(0);
-      expect(components['/_answer7'].state.creditachieved).eq(0);
-      expect(components['/_answer8'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
+      expect(components['/_answer5'].state.creditAchieved).eq(0);
+      expect(components['/_answer6'].state.creditAchieved).eq(0);
+      expect(components['/_answer7'].state.creditAchieved).eq(0);
+      expect(components['/_answer8'].state.creditAchieved).eq(0);
     });
 
     cy.log("partially correct open interval")
@@ -1125,8 +1125,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0.5);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0.5);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
     });
 
 
@@ -1138,8 +1138,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
     });
 
     cy.log("Closed interval")
@@ -1162,14 +1162,14 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(1);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
-      expect(components['/_answer5'].state.creditachieved).eq(0);
-      expect(components['/_answer6'].state.creditachieved).eq(0);
-      expect(components['/_answer7'].state.creditachieved).eq(0);
-      expect(components['/_answer8'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(1);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
+      expect(components['/_answer5'].state.creditAchieved).eq(0);
+      expect(components['/_answer6'].state.creditAchieved).eq(0);
+      expect(components['/_answer7'].state.creditAchieved).eq(0);
+      expect(components['/_answer8'].state.creditAchieved).eq(0);
     });
 
     cy.log("Partially correct closed interval")
@@ -1180,8 +1180,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer3'].state.creditachieved).eq(0.5);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0.5);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
     cy.log("Permute order")
@@ -1192,8 +1192,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
 
 
@@ -1217,14 +1217,14 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
-      expect(components['/_answer5'].state.creditachieved).eq(1);
-      expect(components['/_answer6'].state.creditachieved).eq(1);
-      expect(components['/_answer7'].state.creditachieved).eq(0);
-      expect(components['/_answer8'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
+      expect(components['/_answer5'].state.creditAchieved).eq(1);
+      expect(components['/_answer6'].state.creditAchieved).eq(1);
+      expect(components['/_answer7'].state.creditAchieved).eq(0);
+      expect(components['/_answer8'].state.creditAchieved).eq(0);
     });
 
     cy.log("Partially correct left open interval")
@@ -1235,8 +1235,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer5'].state.creditachieved).eq(0.5);
-      expect(components['/_answer6'].state.creditachieved).eq(0);
+      expect(components['/_answer5'].state.creditAchieved).eq(0.5);
+      expect(components['/_answer6'].state.creditAchieved).eq(0);
     });
 
     cy.log("Permute order")
@@ -1247,8 +1247,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer5'].state.creditachieved).eq(0);
-      expect(components['/_answer6'].state.creditachieved).eq(0);
+      expect(components['/_answer5'].state.creditAchieved).eq(0);
+      expect(components['/_answer6'].state.creditAchieved).eq(0);
     });
 
     cy.log("Right open interval")
@@ -1271,14 +1271,14 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
-      expect(components['/_answer5'].state.creditachieved).eq(0);
-      expect(components['/_answer6'].state.creditachieved).eq(0);
-      expect(components['/_answer7'].state.creditachieved).eq(1);
-      expect(components['/_answer8'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
+      expect(components['/_answer5'].state.creditAchieved).eq(0);
+      expect(components['/_answer6'].state.creditAchieved).eq(0);
+      expect(components['/_answer7'].state.creditAchieved).eq(1);
+      expect(components['/_answer8'].state.creditAchieved).eq(1);
     });
 
     cy.log("Partially correct right open interval")
@@ -1289,8 +1289,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer7'].state.creditachieved).eq(0.5);
-      expect(components['/_answer8'].state.creditachieved).eq(0);
+      expect(components['/_answer7'].state.creditAchieved).eq(0.5);
+      expect(components['/_answer8'].state.creditAchieved).eq(0);
     });
 
     cy.log("Permute order")
@@ -1301,8 +1301,8 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer7'].state.creditachieved).eq(0);
-      expect(components['/_answer8'].state.creditachieved).eq(0);
+      expect(components['/_answer7'].state.creditAchieved).eq(0);
+      expect(components['/_answer8'].state.creditAchieved).eq(0);
     });
 
   });
@@ -1404,10 +1404,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).eq(0);
-      expect(components['/b'].state.creditachieved).eq(0);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(0);
+      expect(components['/a'].state.creditAchieved).eq(0);
+      expect(components['/b'].state.creditAchieved).eq(0);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(0);
     });
   
     cy.log("Submit correct answers")
@@ -1437,10 +1437,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).eq(1);
-      expect(components['/b'].state.creditachieved).eq(1);
-      expect(components['/c'].state.creditachieved).eq(1);
-      expect(components['/d'].state.creditachieved).eq(1);
+      expect(components['/a'].state.creditAchieved).eq(1);
+      expect(components['/b'].state.creditAchieved).eq(1);
+      expect(components['/c'].state.creditAchieved).eq(1);
+      expect(components['/d'].state.creditAchieved).eq(1);
     });
 
     cy.log("Omit one component")
@@ -1471,10 +1471,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/b'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(0);
+      expect(components['/a'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/b'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(0);
     });
 
     cy.log("permute order")
@@ -1506,10 +1506,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/b'].state.creditachieved).eq(1);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(1);
+      expect(components['/a'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/b'].state.creditAchieved).eq(1);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(1);
     });
 
     cy.log("reverse order")
@@ -1537,10 +1537,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/b'].state.creditachieved).eq(1);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(1);
+      expect(components['/a'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/b'].state.creditAchieved).eq(1);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(1);
     });
 
 
@@ -1567,10 +1567,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/b'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(0);
+      expect(components['/a'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/b'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(0);
     });
 
     cy.log("add component")
@@ -1596,10 +1596,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/b'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(0);
+      expect(components['/a'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/b'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(0);
     });
 
   });
@@ -1701,10 +1701,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).eq(0);
-      expect(components['/b'].state.creditachieved).eq(0);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(0);
+      expect(components['/a'].state.creditAchieved).eq(0);
+      expect(components['/b'].state.creditAchieved).eq(0);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(0);
     });
   
     cy.log("Submit correct answers")
@@ -1734,10 +1734,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).eq(1);
-      expect(components['/b'].state.creditachieved).eq(1);
-      expect(components['/c'].state.creditachieved).eq(1);
-      expect(components['/d'].state.creditachieved).eq(1);
+      expect(components['/a'].state.creditAchieved).eq(1);
+      expect(components['/b'].state.creditAchieved).eq(1);
+      expect(components['/c'].state.creditAchieved).eq(1);
+      expect(components['/d'].state.creditAchieved).eq(1);
     });
 
     cy.log("Omit one component")
@@ -1768,10 +1768,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/b'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(0);
+      expect(components['/a'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/b'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(0);
     });
 
     cy.log("permute order")
@@ -1803,10 +1803,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/b'].state.creditachieved).eq(1);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(1);
+      expect(components['/a'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/b'].state.creditAchieved).eq(1);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(1);
     });
 
     cy.log("reverse order")
@@ -1834,10 +1834,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/b'].state.creditachieved).eq(1);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(1);
+      expect(components['/a'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/b'].state.creditAchieved).eq(1);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(1);
     });
 
 
@@ -1864,10 +1864,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/b'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(0);
+      expect(components['/a'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/b'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(0);
     });
 
     cy.log("add component")
@@ -1893,10 +1893,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/b'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(0);
+      expect(components['/a'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/b'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(0);
     });
 
   });
@@ -2010,10 +2010,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).eq(1);
-      expect(components['/b'].state.creditachieved).eq(1);
-      expect(components['/c'].state.creditachieved).eq(1);
-      expect(components['/d'].state.creditachieved).eq(1);
+      expect(components['/a'].state.creditAchieved).eq(1);
+      expect(components['/b'].state.creditAchieved).eq(1);
+      expect(components['/c'].state.creditAchieved).eq(1);
+      expect(components['/d'].state.creditAchieved).eq(1);
     });
 
     cy.log("All true")
@@ -2039,10 +2039,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/b'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(0);
+      expect(components['/a'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/b'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(0);
     });
 
     cy.log("wrong order")
@@ -2066,10 +2066,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/b'].state.creditachieved).eq(1);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(1);
+      expect(components['/a'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/b'].state.creditAchieved).eq(1);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(1);
     });
 
     cy.log("wrong order and values")
@@ -2095,10 +2095,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/b'].state.creditachieved).closeTo(2/3,1E-14);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(0);
+      expect(components['/a'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/b'].state.creditAchieved).closeTo(2/3,1E-14);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(0);
     });
 
 
@@ -2125,10 +2125,10 @@ describe('Match partial validation tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/a'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/b'].state.creditachieved).closeTo(1/3,1E-14);
-      expect(components['/c'].state.creditachieved).eq(0);
-      expect(components['/d'].state.creditachieved).eq(0);
+      expect(components['/a'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/b'].state.creditAchieved).closeTo(1/3,1E-14);
+      expect(components['/c'].state.creditAchieved).eq(0);
+      expect(components['/d'].state.creditAchieved).eq(0);
     });
 
   });

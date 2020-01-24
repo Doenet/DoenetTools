@@ -3,12 +3,8 @@ import BlockComponent from './abstract/BlockComponent';
 export default class Solution extends BlockComponent {
   static componentType = "solution";
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroInline = childLogic.newLeaf({
       name: "atLeastZeroInline",
@@ -94,6 +90,8 @@ export default class Solution extends BlockComponent {
 
 
   revealSolution(){
+    // TODO: this doesn't work anymore since don't have actual ancestor components
+    console.warn("reveal solution doesn't work anymore, as don't have ancestor components")
     let document = this.ancestors[this.ancestors.length - 1];
     let { scoredItemNumber, scoredComponent } = document.calculateScoredItemNumberOfContainer(this);
     

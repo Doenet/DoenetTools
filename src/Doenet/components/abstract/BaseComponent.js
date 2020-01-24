@@ -5,12 +5,14 @@ import me from 'math-expressions';
 
 export default class BaseComponent {
   constructor({
-    componentName, serializedState,
-    activeChildren, definingChildren, allChildren,
-    serializedChildren, childLogic, trackChanges,
-    components, standardComponentTypes, allComponentClasses,
-    componentTypesTakingAliases, componentTypesCreatingVariants,
-    shadow, requestUpdate, availableRenderers,
+    componentName, parentName, ancestors,
+    serializedState,
+    definingChildren,
+    serializedChildren, childLogic,
+    stateVariableDefinitions,
+    standardComponentClasses, allComponentClasses, isInheritedComponentType,
+    componentTypesTakingComponentNames, componentTypesCreatingVariants,
+    shadow, requestUpdate, requestAction, availableRenderers,
     allRenderComponents, graphRenderComponents,
     numerics, sharedParameters,
     requestAnimationFrame, cancelAnimationFrame,
@@ -19,13 +21,13 @@ export default class BaseComponent {
     styleDefinitions,
     flags,
   }) {
-    this.styleDefinitions = styleDefinitions,
-    
+
+    this.styleDefinitions = styleDefinitions;
+
     this.numerics = numerics;
-    this.currentTracker = { trackChanges: trackChanges };
     this.sharedParameters = sharedParameters;
-    this.requestAnimationFrame = requestAnimationFrame,
-      this.cancelAnimationFrame = cancelAnimationFrame;
+    this.requestAnimationFrame = requestAnimationFrame;
+    this.cancelAnimationFrame = cancelAnimationFrame;
 
     this.readOnlyProxyHandler = readOnlyProxyHandler;
     this.availableRenderers = availableRenderers;
@@ -33,15 +35,18 @@ export default class BaseComponent {
     this.graphRenderComponents = graphRenderComponents;
 
     this.componentName = componentName;
+    this.parentName = parentName;
+    this.ancestors = ancestors;
 
     this.componentType = this.constructor.componentType;
-    this.components = components;
-    this.standardComponentTypes = standardComponentTypes;
+    this.standardComponentClasses = standardComponentClasses;
     this.allComponentClasses = allComponentClasses;
-    this.componentTypesTakingAliases = componentTypesTakingAliases;
+    this.isInheritedComponentType = isInheritedComponentType;
+    this.componentTypesTakingComponentNames = componentTypesTakingComponentNames;
     this.componentTypesCreatingVariants = componentTypesCreatingVariants;
     this.componentIsAProperty = false;
     this.requestUpdate = requestUpdate;
+    this.requestAction = requestAction;
     this.externalFunctions = externalFunctions;
     this.allowSugarForChildren = allowSugarForChildren;
     this.flags = flags;
@@ -50,149 +55,149 @@ export default class BaseComponent {
       this.isShadow = true;
     }
 
-    this.activeChildren = activeChildren;
-    if (this.activeChildren === undefined) {
-      this.activeChildren = [];
-    }
-
     this.definingChildren = definingChildren;
     if (this.definingChildren === undefined) {
       this.definingChildren = [];
     }
 
-    this.allChildren = allChildren;
-
     this.serializedChildren = serializedChildren;
-
-    this.upstreamDependencies = {};
-    this.downstreamDependencies = {};
 
     this.childLogic = childLogic;
 
-    this.childrenWhoRender = [];
 
-    this._state = {};
+    // this.upstreamDependencies = {};
+    // this.downstreamDependencies = {};
 
-    // shortcut for setting or getting state values
-    this.state = new Proxy(this._state, createStateProxyHandler(this, this.currentTracker));
 
-    // create essential state from serialized state
-    for (let item in serializedState.state) {
-      let value = serializedState.state[item];
-      if (Array.isArray(value)) {
-        // shallow copy so that don't have proxy around entire array
-        value = value.slice();
-      }
-      this._state[item] = { value: value, essential: true };
-      trackChanges.addNewValue(this, item);
+    this.state = {};
+    for (let stateVariable in stateVariableDefinitions) {
+      // need to separately create a shallow copy of each state variable
+      // as state variable definitions of multiple variables could be same object
+      this.state[stateVariable] = Object.assign({}, stateVariableDefinitions[stateVariable]);
+    }
+    this.stateValues = new Proxy(this.state, createStateProxyHandler());
+
+    if(serializedState.state) {
+      this.potentialEssentialState = new Proxy(serializedState.state, readOnlyProxyHandler);
     }
 
-    this.unresolvedState = {};
-    if (serializedState.unresolvedState) {
-      Object.assign(this.unresolvedState, serializedState.unresolvedState);
-    }
+    // this.unresolvedState = {};
+    // if (serializedState.unresolvedState) {
+    //   Object.assign(this.unresolvedState, serializedState.unresolvedState);
+    // }
 
-    this.propertyChildren = {};
+    // this.propertyChildren = {};
 
-    // create state from properties and child logic
-    if (this.childLogic === undefined) {
-      this.childLogicSatisfied = false;
-    } else {
-      if (this.childLogic.logicResult.success) {
-        this.childLogicSatisfied = true;
-      } else {
-        this.childLogicSatisfied = false;
-      }
+    // this.childLogicSatisfied = false
+    // if (this.childLogic && this.childLogic.logicResult.success) {
+    //   this.childLogicSatisfied = true;
+    // }
 
-      for (let property in this.childLogic.properties) {
-
-        let theProperty = this.setUpNewProperty(property);
-
-        if (!this.childLogicSatisfied) {
-          this.unresolvedState[property] = true;
-          continue;
-        } else {
-          delete this.unresolvedState[property];
-        }
-        let childResult = this.childLogic.returnMatches('_property_' + property);
-        if (childResult.length >= 1) {
-          if (theProperty.isArray) {
-            for (let [index, child] of childResult.map(x => this.activeChildren[x]).entries()) {
-              this.assignNewPropertyFromChildren({
-                property: property,
-                child: child,
-                arrayIndex: index
-              });
-            }
-          } else {
-            let child = this.activeChildren[childResult[0]];
-            this.assignNewPropertyFromChildren({
-              property: property,
-              child: child
-            });
-          }
-        } else if (theProperty.value === undefined ||
-          (theProperty.isArray && theProperty.value.length === 0)
-        ) {
-          if (theProperty.required) {
-            // if required, then it is an error that don't have it specified
-            // either by children or essential state
-            // TODO: record the absence of required property
-            // for possible future error message
-            this.unresolvedState[property] = true;
-          } else if (theProperty.default === undefined && theProperty.deleteIfUndefined) {
-            // if there was no default value or value defined
-            // and deleteIfUndefined specified, then delete the property
-            if (theProperty.addedLowerCaseProperty) {
-              delete this._state[property.toLowerCase()];
-            }
-            if (theProperty.singularName) {
-              delete this.arrayEntries[theProperty.singularName];
-              delete this._state[theProperty.singularName];
-            }
-            delete this._state[property];
-
-          } else {
-
-            // otherwise, if no value defined, use the default
-            theProperty.value = theProperty.default;
-            theProperty.usedDefault = true;
-            // set the property to be essential so that changes will be saved
-            theProperty.essential = true;
-          }
-        }
-      }
-    }
 
     this.doenetAttributes = {};
     if (serializedState.doenetAttributes !== undefined) {
       Object.assign(this.doenetAttributes, serializedState.doenetAttributes);
     }
 
-    if (serializedState.downstreamDependencies !== undefined) {
-      for (let depComponentName in serializedState.downstreamDependencies) {
+    // if (serializedState.downstreamDependencies !== undefined) {
+    //   for (let depComponentName in serializedState.downstreamDependencies) {
 
-        // create shallow copy of dependency
-        let dep = Object.assign({},
-          serializedState.downstreamDependencies[depComponentName]);
+    //     // create shallow copy of dependency
+    //     let dep = Object.assign({},
+    //       serializedState.downstreamDependencies[depComponentName]);
 
-        // add proxy to actual element
-        dep.component = this.components[depComponentName];
-        this.downstreamDependencies[depComponentName] = dep;
-      }
-    }
+    //     this.downstreamDependencies[depComponentName] = dep;
+    //   }
+    // }
 
     if (serializedState.variants !== undefined) {
       this.variants = serializedState.variants;
     }
 
-    this.gatherDescendants();
+    // this.gatherDescendants();
 
-    // call update state as last step of constructor
-    this.updateState({ init: true });
   }
 
   static componentType = "_base";
+
+  get childLogicSatisfied() {
+    return this.childLogic.logicResult.success;
+  }
+
+  static createPropertiesObject() {
+
+    return {
+      hide: { default: false },
+      modifyIndirectly: { default: true },
+      fixed: { default: false },
+      styleNumber: { default: 1 },
+    };
+  }
+
+  static returnChildLogic({ standardComponentClasses, allComponentClasses, components, allPossibleProperties }) {
+    let childLogic = new ChildLogicClass({
+      parentComponentType: this.componentType,
+      properties: this.createPropertiesObject({
+        standardComponentClasses, allPossibleProperties,
+      }),
+      allComponentClasses,
+      standardComponentClasses,
+      components,
+    });
+
+    return childLogic;
+  }
+
+  static returnStateVariableDefinitions() {
+    return {};
+  }
+
+  static returnStateVariableInfo({ onlyPublic = false, standardComponentClasses, allPossibleProperties }) {
+    let propertyObject = this.createPropertiesObject({ standardComponentClasses, allPossibleProperties });
+
+    let stateVariableDescriptions = {};
+    for (let varName in propertyObject) {
+      let componentTypeOverride = propertyObject[varName].componentType;
+      stateVariableDescriptions[varName] = {
+        componentType: componentTypeOverride ? componentTypeOverride : varName,
+        public: true,
+
+      }
+      if (propertyObject[varName].isArray) {
+        stateVariableDescriptions[varName].isArray = true;
+      }
+    }
+
+    let stateDef = this.returnStateVariableDefinitions({ propertyNames: Object.keys(stateVariableDescriptions) });
+
+    let arrayEntryPrefixes = {};
+    let aliases = {};
+
+    for (let varName in stateDef) {
+      let theStateDef = stateDef[varName];
+      if (theStateDef.isAlias) {
+        aliases[varName] = theStateDef.targetVariableName;
+        continue;
+      }
+      if (!onlyPublic || theStateDef.public) {
+        stateVariableDescriptions[varName] = {
+          componentType: theStateDef.componentType,
+          public: theStateDef.public,
+        };
+        if (theStateDef.isArray) {
+          stateVariableDescriptions[varName].isArray = true;
+          for (let prefix of theStateDef.entryPrefixes) {
+            arrayEntryPrefixes[prefix] = {
+              arrayVariableName: varName,
+            }
+          }
+        }
+      }
+    }
+
+    return { stateVariableDescriptions, arrayEntryPrefixes, aliases };
+
+  }
 
   setUpNewProperty(property) {
 
@@ -353,31 +358,31 @@ export default class BaseComponent {
     if (this.ancestors === undefined || this.ancestors.length === 0) {
       return;
     }
-    return this.ancestors[0];
+    return this.ancestors[0].componentName;
   }
 
-  getParentUpstreamComponents(includeInactive = false) {
-    const parent = this.parent;
-    let upstream = Object.values(this.upstreamDependencies)
-    if (includeInactive !== true) {
-      upstream = upstream.filter(x => x.inactive !== true);
-    }
-    upstream = upstream.map(x => x.component);
-    if (parent === undefined) {
-      return upstream;
-    } else {
-      return [parent, ...upstream];
-    }
-  }
+  // TODO: if resurrect this, it would just be componentNames
+  // getParentUpstreamComponents(includeInactive = false) {
+  //   const parent = this.parent;
+  //   let upstream = Object.values(this.upstreamDependencies)
+  //   if (includeInactive !== true) {
+  //     upstream = upstream.filter(x => x.inactive !== true);
+  //   }
+  //   upstream = upstream.map(x => x.component);
+  //   if (parent === undefined) {
+  //     return upstream;
+  //   } else {
+  //     return [parent, ...upstream];
+  //   }
+  // }
 
-  getAllChildrenDownstreamComponents(includeInactive = false) {
-    const children = Object.values(this.allChildren).map(x => x.component);
-    let downstream = Object.values(this.downstreamDependencies);
+  getAllChildrenDownstreamComponentNames(includeInactive = false) {
+    const childrenNames = Object.keys(this.allChildren);
+    let downstreamNames = Object.keys(this.downstreamDependencies);
     if (includeInactive !== true) {
-      downstream = downstream.filter(x => x.inactive !== true);
+      downstreamNames = downstreamNames.filter(x => this.downstreamDependencies[x].inactive !== true);
     }
-    downstream = downstream.map(x => x.component);
-    return [...children, ...downstream];
+    return [...childrenNames, ...downstreamNames];
   }
 
   get allDescendants() {
@@ -389,10 +394,7 @@ export default class BaseComponent {
     return descendants;
   }
 
-  updateChildrenWhoRender() {
-  }
-
-  updateState({ init } = {}) {
+  updateStateOld({ init } = {}) {
 
     // create a tracked state variable of active children
     // so that changes to active children will always count as a change
@@ -418,9 +420,11 @@ export default class BaseComponent {
       for (let child of this.definingChildren) {
         this.mergeUnresolved(child);
       }
-      for (let childName in this.downstreamDependencies) {
-        let child = this.downstreamDependencies[childName].component;
-        this.mergeUnresolved(child);
+      for (let compName in this.downstreamDependencies) {
+        let downComp = this.downstreamDependencies[compName].downstreamComponent;
+        if (downComp !== undefined) {
+          this.mergeUnresolved(downComp);
+        }
       }
       if (Object.keys(this.state.unresolvedDependenceChain).length === 0) {
         this.state.unresolvedDependenceChain = undefined;
@@ -457,29 +461,28 @@ export default class BaseComponent {
       }
 
       this.updateProperties();
-      this.copyStateFromShadowAdapterSource();
     }
-    // fixed is shorthand for modifybyreference and draggable (if defined)
+    // fixed is shorthand for modifyIndirectly and draggable (if defined)
     // being set to false
     if (this.state.fixed) {
-      if ("modifybyreference" in this._state) {
-        if(this.state.modifybyreference) {
+      if ("modifyIndirectly" in this._state) {
+        if (this.state.modifyIndirectly) {
           this.state.modifybyreferenceIfNotFixed = true;
         }
-        this.state.modifybyreference = false;
+        this.state.modifyIndirectly = false;
       }
       if ("draggable" in this._state) {
-        if(this.state.draggable) {
+        if (this.state.draggable) {
           this.state.draggableIfNotFixed = true;
         }
         this.state.draggable = false;
       }
 
     } else {
-      if(this.state.modifybyreferenceIfNotFixed) {
-        this.state.modifybyreference = true;
+      if (this.state.modifybyreferenceIfNotFixed) {
+        this.state.modifyIndirectly = true;
       }
-      if(this.state.draggableIfNotFixed) {
+      if (this.state.draggableIfNotFixed) {
         this.state.draggable = true;
       }
     }
@@ -487,7 +490,7 @@ export default class BaseComponent {
 
   // merge any unresolvedDependencies or unresolvedDependenceChain from component
   // into this.state.unresolvedDependenceChain
-  mergeUnresolved(component) {
+  mergeUnresolvedOld(component) {
     let componentHasUnresolved = false;
     if (component.unresolvedDependencies && Object.keys(component.unresolvedDependencies).length > 0) {
       componentHasUnresolved = true;
@@ -550,7 +553,7 @@ export default class BaseComponent {
     return componentHasUnresolved;
   }
 
-  updateProperties() {
+  updatePropertiesOld() {
     // update state from properties and child logic
     if (this.childLogic === undefined) {
       return;
@@ -628,7 +631,7 @@ export default class BaseComponent {
             // and child is now deleted, as property was made essential, above)
             // TODO: message for future display of error
             this.unresolvedState[property] = true;
-            
+
           } else if (theProperty.default === undefined && theProperty.deleteIfUndefined) {
             // if there was no default value or value defined
             // and deleteIfUndefined specified, then delete the property
@@ -760,178 +763,15 @@ export default class BaseComponent {
     }
   }
 
-  copyStateFromShadowAdapterSource() {
-    // if find a downstream dependency that is type "referenceShadow" or adapter,
-    // this component is a shadowing another.
-    // update this components state variables based on that of target
-
-    let trackChanges = this.currentTracker.trackChanges;
-
-    let copiedState = false;
-    for (let downDepComponentName in this.downstreamDependencies) {
-      let downDep = this.downstreamDependencies[downDepComponentName];
-      if (downDep.dependencyType === "referenceShadow" || downDep.dependencyType === "adapter") {
-        let shadowedComponent = downDep.component;
-        for (let ind in downDep.downstreamStateVariables) {
-          let downstreamVar = downDep.downstreamStateVariables[ind];
-          let upstreamVar = downDep.upstreamStateVariables[ind];
-          let variableChanges;
-          if (typeof downstreamVar === "string") {
-            if (shadowedComponent.unresolvedState[downstreamVar]) {
-              this.unresolvedState[upstreamVar] = true;
-            } else {
-              delete this.unresolvedState[upstreamVar];
-              variableChanges = trackChanges.getVariableChanges({
-                component: shadowedComponent,
-                variable: downstreamVar
-              });
-            }
-            // this.state[upstreamVar] = shadowedComponent.state[downstreamVar];
-          } else if(downstreamVar.arrayName !== undefined) {
-            // downstreamVar is actually object giving an array and index
-            let arrayName = downstreamVar.arrayName;
-            let index = downstreamVar.index;
-            if(index < 0) {
-              index = downDep.component.state[arrayName].length + index;
-            }
-            if (shadowedComponent.unresolvedState[arrayName] === true ||
-              !(index in shadowedComponent._state[arrayName].arrayComponents) ||
-              (shadowedComponent.unresolvedState[arrayName] !== undefined &&
-                shadowedComponent.unresolvedState[arrayName].arrayComponents[index])
-            ) {
-              this.unresolvedState[upstreamVar] = true;
-            } else {
-              delete this.unresolvedState[upstreamVar];
-              variableChanges = trackChanges.getVariableChanges({
-                component: shadowedComponent,
-                variable: arrayName,
-                index: index
-              });
-
-              // grab change for index
-              if (variableChanges) {
-                variableChanges = { changes: variableChanges.arrayComponents[index] }
-              } else if(downstreamVar.index < 0) {
-                // if originally had a negative index, then value could still change
-                // if length of shadowed array changed
-                let lengthChange = trackChanges.getVariableChanges({
-                  component: shadowedComponent,
-                  variable: arrayName,
-                  index: "length"
-                });
-                if(lengthChange) {
-                  // if length changes, just assert that a change did occur
-                  variableChanges = { changes: downDep.component.state[arrayName][index] }
-                }
-              }
-            }
-
-            // this.state[upstreamVar] = shadowedComponent._state[arrayName].getComponent(index);
-          } else if(downstreamVar.childnumberOf !== undefined) {
-            let childComponentName = downstreamVar.childnumberOf;
-            let childObj = shadowedComponent.allChildren[childComponentName];
-            let childnumber;
-            if(childObj) {
-              childnumber = childObj.activeChildrenIndex;
-            }
-            if(childnumber === undefined) {
-              this.state.value = me.fromAst('\uFF3F');
-            } else {
-              this.state.value = me.fromAst(childnumber+1);
-            }
-            
-          } else {
-            throw Error("Invalid format for downstream state variable");
-          }
-
-          if (variableChanges) {
-
-            // state variable that is being shadowed changed
-            // merge this change with current value of this component's variable
-            trackChanges.addChange({
-              component: this,
-              variable: upstreamVar,
-              newChanges: variableChanges,
-              mergeChangesIntoCurrent: true
-            })
-
-          }
-        }
-        copiedState = true;
-        break;
-      }
-    }
-
-    if (copiedState === true) {
-      // if component is a first-level replacement of a ref
-      // then properties specified directly on ref supercede any from shadow
-      // (as such properties on ref are overwritten)
-
-      // look for a downstream dependency of type replacement
-      // then check if component is actually a first-level replacement
-      for (let downDepComponentName in this.downstreamDependencies) {
-        let downDep = this.downstreamDependencies[downDepComponentName];
-        if (downDep.dependencyType === "replacement" && downDep.component.componentType === "ref") {
-          let refComponent = downDep.component;
-          let firstLevelReplacement = false;
-          for (let replacement of refComponent.replacements) {
-            if (replacement.componentName === this.componentName) {
-              firstLevelReplacement = true;
-              break;
-            }
-          }
-          if (firstLevelReplacement) {
-            // component is a first-level replacement of a ref
-            // copy its properties
-            // overwrite properties in state from ref
-            // (code as in addPropertiesFromRef from Ref.js)
-            for (let item in refComponent._state) {
-              if (item !== "prop" && item !== "childnumber") {
-                if (refComponent._state[item].isProperty && refComponent._state[item].fromRefItself) {
-                  // if changed either on this component (from above)
-                  // or in ref component, change state variable
-                  if (trackChanges.getVariableChanges({
-                    component: this,
-                    variable: item
-                  })) {
-                    // don't merge changes as want to overwrite any changes from above
-                    this.state[item] = refComponent.state[item];
-                    // trackChanges.addNewValue(this, item);
-                  } else {
-                    let variableChanges = trackChanges.getVariableChanges({
-                      component: refComponent,
-                      variable: item
-                    });
-                    if (variableChanges) {
-                      trackChanges.addChange({
-                        component: this,
-                        variable: item,
-                        newChanges: variableChanges,
-                        mergeChangesIntoCurrent: true
-                      });
-                    }
-                  }
-                }
-              }
-            }
-          }
-          break;
-        }
-      }
-    }
-
-    return { copiedState: copiedState };
-  }
-
-  updateStateVariable({ variable, value }) {
+  updateStateVariableOld({ variable, value, allowChangeToNonEssential = false }) {
 
     let varObj = this._state[variable];
     if (varObj === undefined) {
       console.log("Variable " + variable + " not a variable for " + this.componentName);
       return { success: false };
     }
-    if (varObj.essential !== true) {
-      console.log("Disallowing direct change to variable " + variable + " of " + this.componentName);
+    if (varObj.essential !== true && !allowChangeToNonEssential) {
+      console.log("Disallowing direct change to non-essential variable " + variable + " of " + this.componentName);
       return { success: false };
     }
 
@@ -947,145 +787,49 @@ export default class BaseComponent {
   updateRenderer() {
   }
 
-  static createPropertiesObject({ standardComponentTypes }) {
+  useChildrenForReference = true;
 
-    return {
-      hide: { default: false },
-      modifybyreference: { default: true },
-      fixed: { default: false },
-      stylenumber: { default: 1 },
-    };
-  }
-
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = new ChildLogicClass({
-      parentComponentType: this.componentType,
-      properties: this.createPropertiesObject({
-        standardComponentTypes: standardComponentTypes
-      }),
-      allComponentClasses: allComponentClasses,
-      standardComponentTypes: standardComponentTypes,
-      components: components,
-    });
-
-    return childLogic;
-  }
-
-  get descendantSearchClasses() {
+  get stateVariablesForReference() {
     return [];
   }
 
-  gatherDescendants() {
-    const descendantsFound = {};
-    for (let classObj of this.descendantSearchClasses) {
-      let classNames = [];
-      let conditionFunction;
-      let recurseToMatchedChildren = true;
-      let key;
-      if (typeof classObj === "string") {
-        classNames = [classObj];
-        key = classObj;
-      } else {
-        if (classObj.skip) {
-          continue;
-        }
-        classNames = classObj.classNames;
-        conditionFunction = classObj.childCondition;
-        key = classObj.key;
-        if ('recurseToMatchedChildren' in classObj) {
-          recurseToMatchedChildren = classObj.recurseToMatchedChildren;
-        }
-
-      }
-      const descendants = descendantsFound[key] = [];
-      let descendantClasses = classNames.map(x => this.allComponentClasses[x]);
-
-      this.gatherDescendantsSub({
-        activeChildren: this.activeChildren,
-        descendantClasses: descendantClasses,
-        conditionFunction: conditionFunction,
-        recurseToMatchedChildren: recurseToMatchedChildren,
-        descendants: descendants,
-      });
-    }
-
-    this.descendantsFound = descendantsFound;
-  }
-
-  gatherDescendantsSub({ activeChildren, descendantClasses, conditionFunction,
-    recurseToMatchedChildren, descendants }) {
-
-    for (let child of activeChildren) {
-      let matchedChild = false;
-      if (descendantClasses.some(x => child instanceof x)) {
-        if (conditionFunction === undefined) {
-          matchedChild = true;
-        } else if (conditionFunction(child)) {
-          matchedChild = true;
-        }
-      }
-      if (matchedChild) {
-        descendants.push(child);
-      }
-
-      if (!matchedChild || recurseToMatchedChildren) {
-        // recurse
-        this.gatherDescendantsSub({
-          activeChildren: child.activeChildren,
-          descendantClasses: descendantClasses,
-          conditionFunction: conditionFunction,
-          recurseToMatchedChildren: recurseToMatchedChildren,
-          descendants: descendants
-        });
-      }
-    }
+  returnSerializeInstructions() {
+    return {};
   }
 
   serialize(parameters = {}) {
 
-    let state = {};
-
     let includePropertyChildren = true;
-    let includeAnyDefiningChildren = true;
+    let includeOtherDefiningChildren = true;
+    let stateVariablesToInclude = [];
 
-    // if being serialized for a reference,
-    // serialize properties directly via state variables
-    // and check to see if have component-specified state variables
-    // to use rather than children
-    if (parameters.forReference === true) {
-      for (let varname in this._state) {
-        if (this._state[varname].isProperty) {
-          state[varname] = this.state[varname];
-        }
-      }
+    if (parameters.forReference) {
       includePropertyChildren = false;
-
-      if (this.stateVariablesForReference !== undefined) {
-        for (let varname of this.stateVariablesForReference) {
-          state[varname] = this.state[varname];
-        }
-        includeAnyDefiningChildren = false;
+      includeOtherDefiningChildren = this.useChildrenForReference;
+    } else {
+      let instructions = this.returnSerializeInstructions();
+      if (instructions.skipChildren) {
+        includeOtherDefiningChildren = false;
+      }
+      if (instructions.stateVariables) {
+        stateVariablesToInclude = instructions.stateVariables;
       }
 
-      if (this.additionalStateVariablesForReference !== undefined) {
-        for (let varname of this.additionalStateVariablesForReference) {
-          state[varname] = this.state[varname];
-        }
-      }
+    }
+
+    let serializedState = {
+      componentType: this.componentType,
     }
 
     let serializedChildren = [];
 
-    if (includeAnyDefiningChildren === true) {
+    if (includePropertyChildren || includeOtherDefiningChildren) {
 
       for (let child of this.definingChildren) {
-        if (includePropertyChildren || child.componentIsAProperty !== true) {
-          let serializedChild = child.serialize(parameters);
-          if (Array.isArray(serializedChild)) {
-            serializedChildren.push(...serializedChild);
-          } else {
-            serializedChildren.push(serializedChild);
-          }
+        if ((includePropertyChildren && child.componentIsAProperty) ||
+          (includeOtherDefiningChildren && !child.componentIsAProperty)) {
+
+          serializedChildren.push(child.serialize(parameters));
         }
       }
 
@@ -1097,30 +841,44 @@ export default class BaseComponent {
           }));
         }
       }
+
+      if (serializedChildren.length > 0) {
+        serializedState.children = serializedChildren;
+      }
+
     }
 
-    let serializedState = {
-      componentType: this.componentType,
-      children: serializedChildren,
-      preserializedName: this.componentName,
-      state: state,
-      includeAnyDefiningChildren: includeAnyDefiningChildren,
-      includePropertyChildren: includePropertyChildren,
-    }
 
-    for (let item in this._state) {
-      if (this._state[item].essential === true) {
-        serializedState.state[item] = this.state[item];
+    if (parameters.forReference) {
+      serializedState.preserializedName = this.componentName;
+    } else {
+      let additionalState = {};
+      for (let item in this._state) {
+        if (this.state[item].essential || stateVariablesToInclude.includes(item)) {
+
+          // evaluate state variable first so that usedDefault attribute is populated
+          let value = this.state[item].value;
+
+          if (!this.state[item].usedDefault) {
+            additionalState[item] = value;
+          }
+        }
+      }
+
+      if (Object.keys(additionalState).length > 0) {
+        serializedState.state = additionalState;
+      }
+
+      let doenetAttributes = Object.assign({}, this.doenetAttributes);
+      delete doenetAttributes.createdFromProperty;
+      if (Object.keys(doenetAttributes).length > 0) {
+        serializedState.doenetAttributes = doenetAttributes;
       }
     }
 
-    if (parameters.forReference !== true) {
-      serializedState.doenetAttributes = Object.assign({}, this.doenetAttributes);
-    }
-
-    if(Object.keys(this.unresolvedState).length > 0) {
-      serializedState.unresolvedState = Object.assign({}, this.unresolvedState);
-    }
+    // if (Object.keys(this.unresolvedState).length > 0) {
+    //   serializedState.unresolvedState = Object.assign({}, this.unresolvedState);
+    // }
 
     return serializedState;
 
@@ -1191,20 +949,10 @@ export default class BaseComponent {
     }
 
     // look in state for matching public value
-    let stateFromAdapter = this._state[adapterStateVariable];
+    let stateFromAdapter = this.state[adapterStateVariable];
     if (stateFromAdapter === undefined || stateFromAdapter.public !== true) {
       throw Error("Invalid adapter " + adapterStateVariable + " in "
         + this.componentType);
-    }
-
-    if (stateVariableForNewComponent === undefined) {
-      // adapter behaves like ref, so use the same state variable
-      stateVariableForNewComponent = stateFromAdapter.stateVariableForRef;
-
-      // use value if found no other option
-      if (stateVariableForNewComponent === undefined) {
-        stateVariableForNewComponent = "value";
-      }
     }
 
     if (adapterComponentType === undefined) {
@@ -1212,10 +960,15 @@ export default class BaseComponent {
       adapterComponentType = stateFromAdapter.componentType;
     }
 
-    let newState = {
-      [stateVariableForNewComponent]: stateFromAdapter.value
-    };
-
+    return {
+      componentType: adapterComponentType,
+      downstreamDependencies: {
+        [this.componentName]: [{
+          dependencyType: "adapter",
+          adapterVariable: adapterStateVariable,
+        }]
+      }
+    }
 
     let downstreamStateVariables = [adapterStateVariable];
     let upstreamStateVariables = [stateVariableForNewComponent]
@@ -1224,7 +977,8 @@ export default class BaseComponent {
     // add them both to newState and to dependency state variables
     let adapterClass = this.allComponentClasses[adapterComponentType];
     let availableClassProperties = adapterClass.createPropertiesObject({
-      standardComponentTypes: this.standardComponentTypes
+      standardComponentClasses: this.standardComponentClasses,
+      allPossibleProperties: this.allPossibleProperties,
     });
 
     for (let item in availableClassProperties) {
@@ -1252,41 +1006,6 @@ export default class BaseComponent {
 
   }
 
-  addReferenceDependencies({ target, recursive = false, shadowed = false }) {
-    let thisDep = this.downstreamDependencies[target.componentName];
-    if (thisDep === undefined) {
-      thisDep = this.downstreamDependencies[target.componentName] = {
-        dependencyType: "reference",
-        component: target,
-      };
-    }
-    if (shadowed === true) {
-      thisDep.shadowed = true;
-    }
-    if (recursive === true) {
-      if (target.stateVariablesForReference === undefined) {
-        if (target instanceof this.allComponentClasses['_composite']) {
-          for (let repl of target.replacements) {
-            this.addReferenceDependencies({
-              target: repl, recursive: recursive, shadowed: shadowed
-            });
-          }
-        } else {
-          for (let child of target.definingChildren) {
-            if (!child.componentIsAProperty) {
-              this.addReferenceDependencies({
-                target: child, recursive: recursive, shadowed: shadowed
-              });
-            }
-          }
-        }
-      }
-    } else {
-      // if not recursive, mark the dependency as the base reference
-      thisDep.baseReference = true;
-    }
-  }
-
   applyConstraints(variables, constraintChildrenIndices) {
     let constraintIndices = [];
     let constrained = false;
@@ -1297,7 +1016,7 @@ export default class BaseComponent {
 
       let constraintResult = constraintChild.applyTheConstraint(variables);
 
-      if(constraintResult.constrained) {
+      if (constraintResult.constrained) {
 
         constrained = true;
 
@@ -1307,10 +1026,10 @@ export default class BaseComponent {
           }
         }
 
-        if(constraintResult.constraintIndices === undefined) {
-          constraintIndices = [ind+1];
+        if (constraintResult.constraintIndices === undefined) {
+          constraintIndices = [ind + 1];
         } else {
-          constraintIndices = [ind+1, ...constraintResult.constraintIndices];
+          constraintIndices = [ind + 1, ...constraintResult.constraintIndices];
         }
       }
     }
@@ -1622,7 +1341,7 @@ export default class BaseComponent {
               // downstreamVar is actually object giving an array and index
               let arrayName = downstreamVariable.arrayName;
               let index = downstreamVariable.index;
-              if(index < 0) {
+              if (index < 0) {
                 index = downDep.component.state[arrayName].length + index;
               }
 
@@ -1744,7 +1463,7 @@ function validateParametersDefault(stateVariable, propChildren) {
     let index = propChildren[0].state.number;
     if (Number.isInteger(index)) {
       if (Array.isArray(componentType)) {
-        if(index >= 0) {
+        if (index >= 0) {
           componentType = componentType[index]
         } else {
           componentType = componentType[componentType.length + index]
@@ -1811,7 +1530,7 @@ function returnSerializedComponentsDefault({
       let componentState = {
         [stateVariableForRef]: stateVariable.value[index],
       }
-      if(additionalProperties !== undefined) {
+      if (additionalProperties !== undefined) {
         Object.assign(componentState, additionalProperties)
       }
       newComponents.push({
@@ -1831,7 +1550,7 @@ function returnSerializedComponentsDefault({
     // already know index is an integer
     // else would have failed validateParameters
 
-    if(index < 0) {
+    if (index < 0) {
       index = numComponents + index;
     }
 
@@ -1851,7 +1570,7 @@ function returnSerializedComponentsDefault({
     let componentState = {
       [stateVariableForRef]: stateVariable.value[index],
     }
-    if(additionalProperties !== undefined) {
+    if (additionalProperties !== undefined) {
       Object.assign(componentState, additionalProperties)
     }
 
@@ -1885,13 +1604,13 @@ function getSugarReplacementDefault({ arrayEntry, indexString }) {
   let validIndex = /^(0|-?[1-9]\d*)$/.test(indexString);
   if (validIndex) {
     let index = Number(indexString);
-    
-    if(index >= 0) {
+
+    if (index >= 0) {
       index -= arrayEntry.initialIndex;
 
       if (index < 0) {
         return; // mark as invalid
-      } 
+      }
     }
 
     return [{ componentType: "index", state: { value: index } }];

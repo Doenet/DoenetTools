@@ -3,15 +3,15 @@ import ReactTextInput from './ReactTextInput';
 import BaseRenderer from './BaseRenderer';
 
 class TextinputRenderer extends BaseRenderer {
-  constructor({ actions, text, key, includeCheckWork, creditachieved,
-    valueHasBeenValidated, numbertimessubmitted, size, showCorrectness }) {
+  constructor({ actions, text, key, includeCheckWork, creditAchieved,
+    valueHasBeenValidated, numberTimesSubmitted, size, showCorrectness }) {
     super({ key: key });
 
     this.actions = actions;
     this.includeCheckWork = includeCheckWork;
-    this.creditachieved = creditachieved;
+    this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
-    this.numbertimessubmitted = numbertimessubmitted;
+    this.numberTimesSubmitted = numberTimesSubmitted;
     this.size = size;
     this.showCorrectness = showCorrectness;
 
@@ -35,16 +35,16 @@ class TextinputRenderer extends BaseRenderer {
     }
   }
 
-  updateTextinputRenderer({ text, creditachieved, valueHasBeenValidated, numbertimessubmitted }) {
+  updateTextinputRenderer({ text, creditAchieved, valueHasBeenValidated, numberTimesSubmitted }) {
 
     if (text !== this.text) {
       this.text = text;
       this.sharedState.textValue = text;
     }
 
-    this.creditachieved = creditachieved;
+    this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
-    this.numbertimessubmitted = numbertimessubmitted;
+    this.numberTimesSubmitted = numberTimesSubmitted;
 
   }
 
@@ -69,9 +69,9 @@ class TextinputRenderer extends BaseRenderer {
       }}
       includeCheckWork={this.includeCheckWork}
       actions={this.actions}
-      creditachieved={this.creditachieved}
+      creditAchieved={this.creditAchieved}
       valueHasBeenValidated={this.valueHasBeenValidated}
-      numbertimessubmitted={this.numbertimessubmitted}
+      numberTimesSubmitted={this.numberTimesSubmitted}
       showMathPreview={false}
       size={this.size}
       showCorrectness={this.showCorrectness}
