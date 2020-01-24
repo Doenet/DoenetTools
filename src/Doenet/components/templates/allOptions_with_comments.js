@@ -1,14 +1,4 @@
-// Documentation on how to create a component
-// that has complex behaviour
-//
-// Process
-// 1. Duplicate this file and rename it to the component name and end it with .js 
-//    place in the appropriate components directory
-// 2. Edit the InheritedComponentClass, NewComponentClass and newcomponentname in this template 
-// 3. In /src/Doenet/ComponentTypes.js , 
-//     A. Import the NewComponentClass
-//     B. Add NewComponentClass to the componentTypeArray
-//
+// Commented example component to help with creating a component
 
 import InheritedComponentClass from './InheritedComponentClass';
 
