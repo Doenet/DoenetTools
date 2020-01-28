@@ -33,9 +33,9 @@
     "start": "webpack --mode development --config webpack.local.config.js --watch",
     "start:dev_server": "webpack-dev-server --mode development --open",
     "build": "webpack --mode production --config webpack.deployment.config.js",
-    "test": "cypress run -b 'chrome'",
+    "test": "cypress open", 
     "test:unit": "jest",
-    "test:interactive": "cypress open",
+    "test:all":  "cypress run -b 'chrome'",
     "generate-docs:components": "babel-node generate-components-json.js",
     "docs": "babel-node test2.js"
   },

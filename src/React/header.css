@@ -66,6 +66,10 @@
   align-items: center;
 }
 
+#doenetLogo {
+  cursor: pointer;
+}
+
 #previousPageButton {
   display: flex;
   flex-direction: row;
@@ -236,6 +240,7 @@
 
   #doenetLogo {
     height: 30px;
+    cursor: pointer;
   }
 
   #toolboxButton {
