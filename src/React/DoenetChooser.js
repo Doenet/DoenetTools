@@ -7,7 +7,7 @@ import "./chooser.css";
 import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown, 
-  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave} 
+  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, faLink} 
   from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
@@ -33,11 +33,13 @@ class DoenetChooser extends Component {
 
     this.loadUserContentBranches();
     this.loadUserFoldersAndRepo();
+    this.loadUserUrls();
     this.loadAllCourses();
 
     this.branches_loaded = false;
     this.courses_loaded = false;
     this.folders_loaded = false;
+    this.urls_loaded = false;
 
     this.updateNumber = 0;
 
@@ -69,6 +71,9 @@ class DoenetChooser extends Component {
     this.modifyPublicState = this.modifyPublicState.bind(this);
     this.addContentToRepo = this.addContentToRepo.bind(this);
     this.loadFilteredContent = this.loadFilteredContent.bind(this);
+    this.toggleManageUrlForm = this.toggleManageUrlForm.bind(this);
+    this.saveUrl = this.saveUrl.bind(this);
+    this.handleNewUrlCreated = this.handleNewUrlCreated.bind(this);
   }
 
 
@@ -110,6 +115,10 @@ class DoenetChooser extends Component {
                   <div className="newContentButtonMenuItem" onClick={this.handleNewDocument} data-cy="newDocumentButton">
                     <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#a7a7a7", "marginRight":"18px"}}/>
                     <span>Document</span>
+                  </div>
+                  <div className="newContentButtonMenuItem" onClick={() => this.toggleManageUrlForm("add_url")} data-cy="newUrlButton">
+                    <FontAwesomeIcon icon={faLink} style={{"fontSize":"18px", "color":"#a7a7a7", "marginRight":"18px"}}/>
+                    <span>URL</span>
                   </div>
                   <div className="newContentButtonMenuItem" onClick={this.handleNewFolder} data-cy="newFolderButton">
                     <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#a7a7a7", "marginRight":"18px"}}/>
@@ -176,7 +185,11 @@ class DoenetChooser extends Component {
       toolbarTitle = "Add New Course";
     } else if (this.state.activeSection === "edit_course") {
       toolbarTitle = "Edit Course - " + this.courseInfo[this.state.selectedCourse].courseCode;
-    } 
+    } else if (this.state.activeSection === "add_url") {
+      toolbarTitle = "Add New URL";
+    } else if (this.state.activeSection === "edit_url") {
+      toolbarTitle = "Edit URL - " + this.urlInfo[this.state.selectedItems[0]].title;
+    }
 
     this.topToolbar = <React.Fragment>
       <div id="topToolbar">
@@ -287,6 +300,78 @@ class DoenetChooser extends Component {
       })
       callback();
     })
+  }
+
+  toggleManageUrlForm(mode) {
+    if (this.state.activeSection !== mode) {
+      this.setState({ activeSection: mode });
+    } else {
+      this.setState({ activeSection: "chooser" });
+    }
+  }
+
+  handleNewUrlCreated({urlId, title, url, description, usesDoenetAPI}, callback=(()=>{})) {
+    Promise.all([
+      this.saveUrl({
+        urlId: urlId,
+        title: title,
+        url: url,
+        description: description,
+        usesDoenetAPI: usesDoenetAPI
+      }, () => {
+      // check if in any folder
+        // this.addContentToFolder(),
+        this.saveUserContent([urlId], ["url"], "insert", () => {  // add to user root
+          this.loadUserUrls(() => {
+            // this.setState({
+            //   selectedItems: [urlId],
+            //   selectedItemsType: ["url"],
+            //   activeSection: "chooser",
+            //   selectedDrive: "Content"
+            // }, () => { 
+            //   this.updateNumber++;
+            // });
+          });
+        })  
+      }),
+    ])
+    .then(() => {
+      callback();
+    })
+  }
+
+  saveUrl({urlId, title, url, description, usesDoenetAPI}, callback=(()=>{})){
+    const apiUrl='/api/saveUrl.php';
+    const data={
+      urlId: urlId,
+      title: title,
+      url: url,
+      description: description,
+      usesDoenetAPI: usesDoenetAPI,
+    }
+    axios.post(apiUrl, data)
+    .then(resp => {
+      callback();
+    })
+    .catch(function (error) {
+      this.setState({error:error});
+    })
+  }
+
+  loadUserUrls(callback=(()=>{})) {
+    this.urls_loaded = false;
+
+    const loadUserUrlsUrl ='/api/loadUserUrls.php';
+    const payload = {};
+    
+    axios.get(loadUserUrlsUrl,payload)
+    .then(resp=>{
+      this.urlInfo = Object.assign({}, this.urlInfo, resp.data.urlInfo);
+      this.urlIds = resp.data.urlIds;
+      this.urls_loaded = true;
+      callback();
+      this.forceUpdate();
+    });
   }
 
   loadUserContentBranches(callback=(()=>{})) {
@@ -726,6 +811,7 @@ class DoenetChooser extends Component {
     }
     axios.post(url, data)
     .then(resp => {
+      console.log(resp.data);
       callback();
     })
     .catch(function (error) {
@@ -921,24 +1007,41 @@ class DoenetChooser extends Component {
                           selectedCourse={this.state.selectedCourse}
                           selectedCourseInfo={this.courseInfo[this.state.selectedCourse]}
                           />;
+    } else if (this.state.activeSection === "add_url" || this.state.activeSection === "edit_url") {
+      let selectedUrl = null;
+      let selectedUrlInfo = null;
+
+      this.mainSection = <UrlForm 
+                          mode={this.state.activeSection}
+                          handleBack={this.toggleManageUrlForm}
+                          handleNewUrlCreated={this.handleNewUrlCreated}
+                          saveUrl={this.saveUrl}
+                          selectedUrl={selectedUrl}
+                          selectedUrlInfo={selectedUrlInfo}
+                          />;
     }
     else {
       let folderList = [];
       let contentList = [];
+      let urlList = [];
       if (this.state.selectedDrive == "Content" || this.state.selectedDrive == "Global") {
         folderList = this.folderIds;
         contentList = this.sort_order;
+        urlList = this.urlIds;
       } else if (this.state.selectedDrive == "Courses") {
         folderList = this.courseInfo[this.state.selectedCourse].folders;
         contentList = this.courseInfo[this.state.selectedCourse].content;
+        urlList = this.courseInfo[this.state.selectedCourse].urls;
       }
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
-          loading={!this.folders_loaded && !this.branches_loaded}
+          loading={!this.folders_loaded && !this.branches_loaded && !this.urls_loaded}
           allContentInfo={this.branchId_info}
           allFolderInfo={this.folderInfo}
+          allUrlInfo={this.urlInfo}
           folderList={folderList}
           contentList={contentList}
+          urlList={urlList}
           ref={this.browser}                                      // optional
           key={"browser"+this.updateNumber}                       // optional
           selectedDrive={this.state.selectedDrive}                // optional
@@ -1053,7 +1156,7 @@ class CourseForm extends React.Component {
   handleBack() {
     // popup confirm dialog if form is edited
     if (this.state.edited) {
-      if (!window.confirm('All of your input will be discardeed, are you sure you want to proceed?')) {
+      if (!window.confirm('All of your input will be discarded, are you sure you want to proceed?')) {
         return;
       }
     }
@@ -1071,67 +1174,67 @@ class CourseForm extends React.Component {
 
   render() {
     return (
-      <div id="newCourseFormContainer">
-        <div id="newCourseFormTopbar">
-          <div id="newCourseFormBackButton" onClick={this.handleBack} data-cy="newCourseFormBackButton">
+      <div id="formContainer">
+        <div id="formTopbar">
+          <div id="formBackButton" onClick={this.handleBack} data-cy="newCourseFormBackButton">
             <FontAwesomeIcon icon={faArrowCircleLeft} style={{"fontSize":"17px", "marginRight":"5px"}}/>
             <span>Back to Chooser</span>
           </div>          
         </div>
         <form onSubmit={this.handleSubmit}>
-          <div className="newCourseFormGroup-12">
-            <label className="newCourseFormLabel">COURSE NAME</label>
-            <input className="newCourseFormInput" required type="text" name="courseName" value={this.state.courseName}
+          <div className="formGroup-12">
+            <label className="formLabel">COURSE NAME</label>
+            <input className="formInput" required type="text" name="courseName" value={this.state.courseName}
               placeholder="Course name goes here." onChange={this.handleChange} data-cy="newCourseFormNameInput"/>
           </div>
-          <div className="newCourseFormGroupWrapper">
-            <div className="newCourseFormGroup-4" >
-              <label className="newCourseFormLabel">DEPARTMENT</label>
-              <input className="newCourseFormInput" required type="text" name="department" value={this.state.department}
+          <div className="formGroupWrapper">
+            <div className="formGroup-4" >
+              <label className="formLabel">DEPARTMENT</label>
+              <input className="formInput" required type="text" name="department" value={this.state.department}
               placeholder="DEP" onChange={this.handleChange} data-cy="newCourseFormDepInput"/>
             </div>
-            <div className="newCourseFormGroup-4">
-              <label className="newCourseFormLabel">COURSE CODE</label>
-              <input className="newCourseFormInput" required type="text" name="courseCode" value={this.state.courseCode}
+            <div className="formGroup-4">
+              <label className="formLabel">COURSE CODE</label>
+              <input className="formInput" required type="text" name="courseCode" value={this.state.courseCode}
                 placeholder="MATH 1241" onChange={this.handleChange} data-cy="newCourseFormCodeInput"/>
             </div>
-            <div className="newCourseFormGroup-4">
-              <label className="newCourseFormLabel">SECTION</label>
-              <input className="newCourseFormInput" type="number" name="section" value={this.state.section}
+            <div className="formGroup-4">
+              <label className="formLabel">SECTION</label>
+              <input className="formInput" type="number" name="section" value={this.state.section}
               placeholder="00000" onChange={this.handleChange} data-cy="newCourseFormSectionInput"/>
             </div>
           </div>          
-          <div className="newCourseFormGroupWrapper">
-            <div className="newCourseFormGroup-4" >
-              <label className="newCourseFormLabel">YEAR</label>
-              <input className="newCourseFormInput" required type="number" name="year" value={this.state.year}
+          <div className="formGroupWrapper">
+            <div className="formGroup-4" >
+              <label className="formLabel">YEAR</label>
+              <input className="formInput" required type="number" name="year" value={this.state.year}
               placeholder="2019" onChange={this.handleChange} data-cy="newCourseFormYearInput"/>
             </div>
-            <div className="newCourseFormGroup-4">
-              <label className="newCourseFormLabel">SEMESTER</label>
-              <select className="newCourseFormSelect" required name="semester" onChange={this.handleChange} value={this.state.semester}>
+            <div className="formGroup-4">
+              <label className="formLabel">SEMESTER</label>
+              <select className="formSelect" required name="semester" onChange={this.handleChange} value={this.state.semester}>
                 <option value="Spring">Spring</option>
                 <option value="Summer">Summer</option>
                 <option value="Fall">Fall</option>
               </select>
             </div>
-            <div className="newCourseFormGroup-4">
+            <div className="formGroup-4">
             </div>
           </div> 
-          <div className="newCourseFormGroup-12">
-            <label className="newCourseFormLabel">DESCRIPTION</label>
-            <textarea className="newCourseFormInput" type="text" name="description" value={this.state.description}
+          <div className="formGroup-12">
+            <label className="formLabel">DESCRIPTION</label>
+            <textarea className="formInput" type="text" name="description" value={this.state.description}
               placeholder="Official course description here" onChange={this.handleChange} data-cy="newCourseFormDescInput"/>
           </div>
-          <div className="newCourseFormGroup-12">
-            <label className="newCourseFormLabel">ROLES</label>
+          <div className="formGroup-12">
+            <label className="formLabel">ROLES</label>
               <AddRoleForm addRole={this.addRole}/>
               <RoleList roles={this.state.roles}/>
           </div>
-          <div id="newCourseFormButtonsContainer">
-            <button id="newCourseFormSubmitButton" type="submit" data-cy="newCourseFormSubmitButton">
-              <div className="newCourseFormButtonWrapper">
-                { this.mode == "add_course" ?
+          <div id="formButtonsContainer">
+            <button id="formSubmitButton" type="submit" data-cy="newCourseFormSubmitButton">
+              <div className="formButtonWrapper">
+                { this.props.mode == "add_course" ?
                   <React.Fragment>
                     <span>Create Course</span>
                     <FontAwesomeIcon icon={faPlusCircle} style={{"fontSize":"20px", "color":"#fff", "cursor":"pointer", "marginLeft":"8px"}}/>
@@ -1144,8 +1247,8 @@ class CourseForm extends React.Component {
                 }
               </div>              
             </button>
-            <button id="newCourseFormCancelButton" onClick={this.handleBack} data-cy="newCourseFormCancelButton">
-              <div className="newCourseFormButtonWrapper">
+            <button id="formCancelButton" onClick={this.handleBack} data-cy="newCourseFormCancelButton">
+              <div className="formButtonWrapper">
                 <span>Cancel</span>
                 <FontAwesomeIcon icon={faTimesCircle} style={{"fontSize":"20px", "color":"#fff", "cursor":"pointer", "marginLeft":"8px"}}/>
               </div>
@@ -1192,8 +1295,8 @@ class AddRoleForm extends React.Component {
 
   render() {
     return(
-      <div className="newCourseFormGroup-4" style={{"display":"flex"}}>
-        <input className="newCourseFormInput" type="text" value={this.state.input} onChange={this.handleChange}
+      <div className="formGroup-4" style={{"display":"flex"}}>
+        <input className="formInput" type="text" value={this.state.input} onChange={this.handleChange}
         type="text" placeholder="Admin"/>
         <button type="submit" style={{"whiteSpace":"nowrap"}} onClick={this.addRole}>Add Role</button>
       </div>
@@ -1385,6 +1488,141 @@ const FilterForm = (props) => {
       <button id="applyFilterButton" type="button" onClick={() => handleSearch()}> Apply Filters </button>
     </div>
   );
+}
+
+class UrlForm extends React.Component {
+  static defaultProps = {
+    selectedUrl: null,
+    selectedUrlInfo: null
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      edited: "",
+      title: "",
+      url: "",
+      description: "",
+      usesDoenetAPI: false
+    };
+    
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleBack = this.handleBack.bind(this);
+  }
+
+  componentDidMount() {
+    if (this.props.mode == "edit_url" && this.props.selectedUrlInfo !== null) {
+      this.setState({
+        title: this.props.selectedUrlInfo.title,
+        url: this.props.selectedUrlInfo.url,
+        description: this.props.selectedUrlInfo.description,
+        usesDoenetAPI: this.props.selectedUrlInfo.usesDoenetAPI
+      });
+    }
+  }
+
+  handleChange(event) {
+    // set edited to true once any input is detected
+    this.setState({ edited: true });
+    let name = event.target.name;
+    let value = event.target.value;
+    if (event.target.type == "checkbox") {
+      value = event.target.checked;
+    }
+    this.setState({[name]: value});
+  }
+
+  handleSubmit(event) {
+    if (this.props.mode == "add_url") {
+      let urlId = nanoid();
+      this.props.handleNewUrlCreated({
+        urlId: urlId,
+        title: this.state.title,
+        url: this.state.url,
+        description: this.state.description,
+        usesDoenetAPI: this.state.usesDoenetAPI
+        }, () => {
+          event.preventDefault();
+        });
+    } else {
+      this.props.saveUrl({
+        urlId: this.props.selectedUrl,
+        title: this.state.title,
+        url: this.state.url,
+        description: this.state.description,
+        usesDoenetAPI: this.state.usesDoenetAPI
+      });
+    }
+  }
+
+  handleBack() {
+    // popup confirm dialog if form is edited
+    if (this.state.edited) {
+      if (!window.confirm('All of your input will be discarded, are you sure you want to proceed?')) {
+        return;
+      }
+    }
+    this.props.handleBack(this.props.mode);
+  }
+
+  render() {
+    return (
+      <div id="formContainer">
+        <div id="formTopbar">
+          <div id="formBackButton" onClick={this.handleBack} data-cy="urlFormBackButton">
+            <FontAwesomeIcon icon={faArrowCircleLeft} style={{"fontSize":"17px", "marginRight":"5px"}}/>
+            <span>Back to Chooser</span>
+          </div>          
+        </div>
+        <form onSubmit={this.handleSubmit}>
+          <div className="formGroup-12">
+            <label className="formLabel">TITLE</label>
+            <input className="formInput" required type="text" name="title" value={this.state.title}
+              placeholder="Doenet Homepage" onChange={this.handleChange} data-cy="urlFormTitleInput"/>
+          </div>
+          <div className="formGroup-12" >
+            <label className="formLabel">URL</label>
+            <input className="formInput" required type="text" name="url" value={this.state.url}
+            placeholder="https://www.doenet.org/" onChange={this.handleChange} data-cy="urlFormUrlInput"/>
+          </div>
+          <div className="formGroup-12">
+            <label className="formLabel">DESCRIPTION</label>
+            <textarea className="formInput" type="text" name="description" value={this.state.description}
+              placeholder="URL description here" onChange={this.handleChange} data-cy="urlFormDescInput"/>
+          </div>
+          <div className="formGroup-12" >
+            <label className="formLabel" style={{"display":"inline-block"}}>Uses DoenetML</label>
+            <input className="formInput" type="checkbox" name="usesDoenetAPI" value={this.state.usesDoenetAPI}
+            onChange={this.handleChange} data-cy="urlFormUsesDoenetAPICheckbox" style={{"width":"auto", "marginLeft":"7px"}}/>
+          </div>
+          <div id="formButtonsContainer">
+            <button id="formSubmitButton" type="submit" data-cy="urlFormSubmitButton">
+              <div className="formButtonWrapper">
+                { this.props.mode == "add_url" ?
+                  <React.Fragment>
+                    <span>Add New URL</span>
+                    <FontAwesomeIcon icon={faPlusCircle} style={{"fontSize":"20px", "color":"#fff", "cursor":"pointer", "marginLeft":"8px"}}/>
+                  </React.Fragment>                  
+                  : 
+                  <React.Fragment>
+                    <span>Save Changes</span>
+                    <FontAwesomeIcon icon={faSave} style={{"fontSize":"20px", "color":"#fff", "cursor":"pointer", "marginLeft":"8px"}}/>
+                  </React.Fragment>
+                }
+              </div>              
+            </button>
+            <button id="formCancelButton" onClick={this.handleBack} data-cy="urlFormCancelButton">
+              <div className="formButtonWrapper">
+                <span>Cancel</span>
+                <FontAwesomeIcon icon={faTimesCircle} style={{"fontSize":"20px", "color":"#fff", "cursor":"pointer", "marginLeft":"8px"}}/>
+              </div>
+            </button>
+          </div>          
+        </form>
+      </div>  
+    );
+  }
 }
 
 
