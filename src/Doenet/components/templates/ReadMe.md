@@ -1,14 +1,26 @@
-// Documentation on how to create a component
-// that has complex behaviour
-//
-// Process
-// 1. Duplicate this file and rename it to the component name and end it with .js 
-//    place in the appropriate components directory
-// 2. Edit the InheritedComponentClass, NewComponentClass and newcomponentname in this template 
-// 3. In /src/Doenet/ComponentTypes.js , 
-//     A. Import the NewComponentClass
-//     B. Add NewComponentClass to the componentTypeArray
-//
+# How to make a Doenet component
+
+## Step 1
+Determine which type of component is needed. 
+
+For simpler components start with inheritOnly.js, for most components start with allOptions.js
+
+Duplicate the file and rename it to the component name and end it with .js 
+place in the appropriate components directory
+
+## Step 2
+ In /src/Doenet/ComponentTypes.js  
+A. Import the NewComponentClass
+B. Add NewComponentClass to the componentTypeArray
+
+## Step 3
+Update the placeholders in the component file
+
+ InheritedComponentClass
+ NewComponentClass
+ newcomponentname
+
+## Step 4
 
 import InheritedComponentClass from './InheritedComponentClass';
 
