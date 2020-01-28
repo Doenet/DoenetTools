@@ -63,18 +63,97 @@ class DoenetHomePage extends Component {
     };
 
     this.tabContent = {
-      'editor': {
-      text: 'As the instructor you will be able to provide an innovative learning experience for your students.  Doenet has features that will allow you to create assignments, assessment, and learning activities that are not only innovative, but that can also be customized to the students needs. '
-      },
-      'home': {
-        text: 'An an author, you will be directly influencing the learning of students by creating innovate and interactive content for students.  You will also be able to see how students are interacting with your content using our data.'
-      },
-      'course': {
-        text: 'Doenet provides a unique learning experience for students.  As a student, you will have access to a contextual library of high quality content through which you can do you assignments and learning activities.  Doenet will also offer customizable tools so that you can learn in your own way.  '
-      },
-      'exam': {
-        text: 'Doenet will provide several tools for educational researchers, with access to data being teh most powerful.  Using the data from Doenet, you will be able to see exactly how students interact with content, and perform on assessmentsa and activities.  From here, research can be done to improve and expand this already-innovative tool. '
-      },
+      'editor': [
+        {
+          icon: chalkboardTeacher,
+          head:'Create Lessons',
+          body:'Doenet has features that will allow you to create assignments, assessment, and learning activities that are not only innovative, but that can also be customized to the students needs. ',
+        },
+        {
+          icon: diagnoses,
+          head:'Assign work to students',
+          body:'As the instructor you will be able to provide an innovative learning experience for your students. You are able to assign work to students',
+        },
+        {
+          icon: plusCircle,
+          head:'Create Exams to students',
+          body:'Able to create exams to the students. Innovative learning experience for your students.  Doenet has features that will allow you to create learning activities that are not only innovative, but that can also be customized to the students needs. ',
+        },
+        {
+          icon:chartBarGrading,
+          head:' Automatic Grading System',
+          body:'Automatic Grading system based on students exam results ',
+        }
+
+      ],
+      'home': [
+        {
+          icon:chalkboard,
+          head:'Interactive Classes',
+          body:'Organize classroom discussions. Design highly relevant learning activities. Influencing the learning of students by creating innovate and interactive content for students.',
+        }, 
+        {
+          icon: handHoldingUsd,
+          head:'Paid for Creating Content',
+          body:'An an author, you will be directly influencing the learning of students by creating innovate and interactive content for students.  You will also be able to see how students are interacting with your content using our data.',
+        },
+        {
+          icon: signInAlt,
+          head:'Portfolio Feature',
+          body:'An an author, you will be directly influencing the learning of students by creating innovate and interactive content for students.  You will also be able to see how students are interacting with your content using our data.',
+        },
+        {
+          icon: database,
+          head:'Control on your Data',
+          body:'An an author, you will be directly influencing the learning of students by creating innovate and interactive content for students.  You will also be able to see how students are interacting with your content using our data.',
+        }
+      ],
+      
+      'course': [
+        {
+          icon: Search,
+          head:'Find Effective Content',
+          body:'Unique learning experience for students.  As a student, you will have access to a contextual library of high quality content through which you can do you assignments and learning activities.',
+        }, 
+        {
+          icon: addressCard,
+          head:'',
+          body:'Doenet provides a unique learning experience for students.  As a student, you will have access to a contextual library of high quality content through which you can do you assignments and learning activities.  Doenet will also offer customizable tools so that you can learn in your own way.',
+        },
+        {
+          icon: searchPlus,
+          head:'',
+          body:'Doenet provides a unique learning experience for students.  As a student, you will have access to a contextual library of high quality content through which you can do you assignments and learning activities.  Doenet will also offer customizable tools so that you can learn in your own way.',
+        },
+        {
+          icon: searchPlus,
+          head:'',
+          body:'Doenet provides a unique learning experience for students.  As a student, you will have access to a contextual library of high quality content through which you can do you assignments and learning activities.  Doenet will also offer customizable tools so that you can learn in your own way.',
+        }
+
+      ],
+      'exam': [
+        {
+          icon: addressBook,
+          head:'',
+          body:'Doenet will provide several tools for educational researchers, with access to data being teh most powerful.  Using the data from Doenet, you will be able to see exactly how students interact with content, and perform on assessmentsa and activities.  From here, research can be done to improve and expand this already-innovative tool. ',
+        }, 
+        {
+          icon: book,
+          head:'',
+          body:'Doenet will provide several tools for educational researchers, with access to data being teh most powerful.  Using the data from Doenet, you will be able to see exactly how students interact with content, and perform on assessmentsa and activities.  From here, research can be done to improve and expand this already-innovative tool. ',
+        },
+        {
+          icon: searchPlus,
+          head:'',
+          body:'Doenet will provide several tools for educational researchers, with access to data being teh most powerful.  Using the data from Doenet, you will be able to see exactly how students interact with content, and perform on assessmentsa and activities.  From here, research can be done to improve and expand this already-innovative tool. ',
+        },
+        {
+          icon: searchPlus,
+          head:'',
+          body:'Doenet will provide several tools for educational researchers, with access to data being teh most powerful.  Using the data from Doenet, you will be able to see exactly how students interact with content, and perform on assessmentsa and activities.  From here, research can be done to improve and expand this already-innovative tool. ',
+        }
+      ]
     }
   }
 
@@ -331,12 +410,36 @@ class Tab extends Component {
 class TabContent extends Component {
 
   render() {
+    console.log('tab content is', this.props.tabContent)
+    
     return (
-      <div className="tab-content-wrapper">
-        <div className="tab-content-text"><a className="tab-content-text">{this.props.tabContent.text}</a></div>
-      </div>
+      <>
+      
+        {this.props.tabContent.map((tile, value) => (
+          <div className="tab-content-wrapper" key={value}>
+          <div >
+            <FontAwesomeIcon className="fa-2x" icon={tile.icon}/>
+          </div>
+          <div className="tab-content-head">
+            <a className="tab-content-head"></a> 
+            <h2>{tile.head}</h2> 
+           
+          </div>
+          <div className="tab-content-text">
+          <p className="tab-content-text"> 
+            {tile.body}
+          </p>
+          </div>
+        </div>
+        ))}
+      
+      
+      </>
+      
+     
     )
   }
 }
+
 
 export default DoenetHomePage;
