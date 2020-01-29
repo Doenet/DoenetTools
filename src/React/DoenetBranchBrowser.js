@@ -132,12 +132,11 @@ class DoenetBranchBrowser extends Component {
     let selectedItemsTypeWithoutRepo = [];
     
     this.state.selectedItems.forEach((itemId, index) => {
-      if (this.state.selectedItemsType[index] == "content") {
+      if (this.state.selectedItemsType[index] == "content" || 
+          this.state.selectedItemsType[index] == "url" ||
+          (this.state.selectedItemsType[index] == "folder" && !this.props.allFolderInfo[itemId].isRepo)) {
         selectedItemsWithoutRepo.push(itemId);
-        selectedItemsTypeWithoutRepo.push("content");
-      } else if (!this.props.allFolderInfo[itemId].isRepo) {
-        selectedItemsWithoutRepo.push(itemId);
-        selectedItemsTypeWithoutRepo.push("folder");
+        selectedItemsTypeWithoutRepo.push((this.state.selectedItemsType[index]));
       }
     });
 
@@ -211,6 +210,7 @@ class DoenetBranchBrowser extends Component {
       let title = this.props.allFolderInfo[folderId].title;
       let publishDate = formatTimestamp(this.props.allFolderInfo[folderId].publishDate);
       let childContent = this.props.allFolderInfo[folderId].childContent;
+      let childUrls = this.props.allFolderInfo[folderId].childUrls;
       let childFolder = this.props.allFolderInfo[folderId].childFolder;
       let isRepo = this.props.allFolderInfo[folderId].isRepo;
       let classes = this.state.selectedItems.includes(folderId) ?
@@ -251,6 +251,7 @@ class DoenetBranchBrowser extends Component {
           publishDate={publishDate}
           draftDate={" — "}
           childContent={childContent}
+          childUrls={childUrls}
           childFolder={childFolder}
           folderId={folderId}
           isRepo={isRepo}
@@ -458,7 +459,6 @@ class DoenetBranchBrowser extends Component {
         selectedItemsType: currentSelectedItemsType
       });
 
-      console.log(currentSelectedItemsType)
 
       if (this.props.updateSelectedItems !== null) {
         this.props.updateSelectedItems(currentSelectedItems, currentSelectedItemsType);

@@ -15,7 +15,9 @@ SELECT   -- get personal urls
   u.description as description,
   u.timestamp as publishDate,
   u.removedFlag as removedFlag,
-  u.public as public
+  'root' as rootId, 
+  'root' as parentId,
+  u.public as isPublic
 FROM url AS u
 LEFT JOIN user_urls uu ON uu.urlId = u.urlId
 WHERE uu.username='$remoteuser' AND u.removedFlag=0
@@ -27,7 +29,9 @@ SELECT  -- get children urls
   u.description as description,
   u.timestamp as publishDate,
   u.removedFlag as removedFlag,
-  u.public as public
+  fc.rootId as rootId, 
+  fc.folderId as parentId,
+  u.public as isPublic
 FROM url AS u
 LEFT JOIN folder_content fc ON fc.childId = u.urlId
 WHERE fc.childType='url' AND u.removedFlag=0
@@ -54,13 +58,16 @@ $urlId_arr = array();
 
 if ($result->num_rows > 0){
     while($row = $result->fetch_assoc()){ 
-      array_push($urlId_arr, $row["urlId"]);
+      if ($row["parentId"] == "root") array_push($urlId_arr, $row["urlId"]);
       $url_info_arr[$row["urlId"]] = array(
         "title" => $row["title"],
         "url" => $row["url"],
         "description" => $row["description"],
         "publishDate" => $row["publishDate"],
-        "usesDoenetAPI" => ($row["usesDoenetAPI"] == 1)
+        "usesDoenetAPI" => ($row["usesDoenetAPI"] == 1),
+        "parentId" => $row["parentId"],
+        "rootId" => $row["rootId"],
+        "isPublic" => ($row["isPublic"] == 1)
       );
     }
 }
