@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import axios from 'axios';
 axios.defaults.withCredentials = true;
 import crypto from 'crypto';
@@ -63,7 +63,12 @@ class DoenetChooser extends Component {
     this.jumpToDirectory = this.jumpToDirectory.bind(this);
     this.saveUserContent = this.saveUserContent.bind(this);
     this.modifyRepoAccess = this.modifyRepoAccess.bind(this);
+    this.modifyFolderChildrenRoot = this.modifyFolderChildrenRoot.bind(this);
+    this.flattenFolder = this.flattenFolder.bind(this);
     this.renameFolder = this.renameFolder.bind(this);
+    this.modifyPublicState = this.modifyPublicState.bind(this);
+    this.addContentToRepo = this.addContentToRepo.bind(this);
+    this.loadFilteredContent = this.loadFilteredContent.bind(this);
   }
 
 
@@ -134,11 +139,17 @@ class DoenetChooser extends Component {
           <div className="leftNavPanelMenuItem">
             <Accordion>
               <div label="Courses">
-                <ul style={{"paddingLeft":"20px"}}>
+                <ul style={{"paddingLeft":"20px","margin":"5px 0 0 0"}}>
                   { this.courseList }
                 </ul>
               </div>
             </Accordion>    
+          </div>
+          <div className={"Global" === this.state.selectedDrive ? 
+                    "leftNavPanelMenuItem activeLeftNavPanelMenuItem": "leftNavPanelMenuItem"} 
+            onClick={() => {this.selectDrive("Global")}}>
+            <FontAwesomeIcon className="menuDoughnutIcon" icon={faDotCircle}/>
+            <span>Global</span>
           </div>
         </div>        
       </div>
@@ -155,12 +166,17 @@ class DoenetChooser extends Component {
       } else if (this.state.selectedDrive === "Courses") {
         toolbarTitle = this.courseInfo[this.state.selectedCourse].courseCode + ' - '
         + this.courseInfo[this.state.selectedCourse].courseName;
+      }  else if (this.state.selectedDrive === "Global") {
+        toolbarTitle = <React.Fragment>
+            <FilterPanel loadFilteredContent={this.loadFilteredContent}/>
+          </React.Fragment>
       }
+
     } else if (this.state.activeSection === "add_course") {
       toolbarTitle = "Add New Course";
     } else if (this.state.activeSection === "edit_course") {
       toolbarTitle = "Edit Course - " + this.courseInfo[this.state.selectedCourse].courseCode;
-    }
+    } 
 
     this.topToolbar = <React.Fragment>
       <div id="topToolbar">
@@ -194,9 +210,17 @@ class DoenetChooser extends Component {
         }
       
         // set as selected and redirect to /editor 
-        this.selectDrive("Content");
-        window.location.href=`/editor?branchId=${branchId}`;
-        this.forceUpdate();   
+        this.setState({
+          directoryStack: [],
+          selectedItems: [branchId],
+          selectedItemsType: ["content"],
+          activeSection: "chooser",
+          selectedDrive: "Content"
+        }, () => {
+          // this.forceUpdate();   
+          this.updateNumber++;
+          setTimeout(function(){ window.location.href=`/editor?branchId=${branchId}`;}, 500);
+        });
       })
     });
   }
@@ -382,7 +406,8 @@ class DoenetChooser extends Component {
     axios.get(loadCoursesUrl,payload)
     .then(resp=>{
       this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchInfo);
-      this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
+      // this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
+      this.folderInfo = {...this.folderInfo, ...resp.data.folderInfo};
       this.folders_loaded = true;
       this.branches_loaded = true;
       callback();
@@ -408,19 +433,27 @@ class DoenetChooser extends Component {
   }
 
   selectDrive(drive, courseId=null) {
-    if (drive === "Courses") {      
+    if (drive === "Courses") {
+      this.setState({
+        selectedItems: [],
+        selectedItemsType: [],
+        activeSection: "chooser",
+        selectedDrive: drive,
+        selectedCourse: courseId,
+        directoryStack: []});
       this.folders_loaded = false;
       this.branches_loaded = false;
       this.updateIndexedDBCourseContent(courseId);
-      this.loadCourseContent(courseId, () => {
-        this.setState({
-          selectedItems: [],
-          selectedItemsType: [],
-          activeSection: "chooser",
-          selectedDrive: drive,
-          selectedCourse: courseId,
-          directoryStack: []});
-      });
+      this.loadCourseContent(courseId);
+    } else if (drive === "Global") {
+      this.setState({
+        selectedItems: [],
+        selectedItemsType: [],
+        activeSection: "chooser",
+        selectedDrive: drive,
+        directoryStack: []});
+      this.sort_order = [];
+      this.folderIds = [];
     } else {
       this.setState({
         selectedItems: [],
@@ -452,9 +485,10 @@ class DoenetChooser extends Component {
     });
   }
 
-  saveFolder(folderId, title, childContent, childType, operationType, isRepo, callback=(()=>{})) {
-    // check if new folder
+  saveFolder(folderId, title, childContent, childType, operationType, isRepo, isPublic, callback=(()=>{})) {
+    // get current directory folderId/root
     let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
+    // setup parent
     let parentId = this.folderInfo[folderId] ? this.folderInfo[folderId].parentId : currentFolderId;
     if (isRepo) parentId = "root";  // repo always at root
 
@@ -466,7 +500,8 @@ class DoenetChooser extends Component {
       childType: childType,
       operationType: operationType,
       parentId: parentId,
-      isRepo: isRepo
+      isRepo: isRepo,
+      isPublic: isPublic
     }
     axios.post(url, data)
     .then((resp) => {
@@ -479,12 +514,9 @@ class DoenetChooser extends Component {
 
   loadUserFoldersAndRepo(callback=(()=>{})) {
     this.folders_loaded = false;
-    let currentFolderId = this.state.directoryStack.length === 0 ?
-                            "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
 
     const loadUserFoldersAndRepoUrl='/api/loadUserFoldersAndRepo.php';
-    const data={folderId: currentFolderId};
-    const payload = {params: data};
+    const payload = {};
     
     axios.get(loadUserFoldersAndRepoUrl,payload)
     .then(resp=>{
@@ -492,64 +524,197 @@ class DoenetChooser extends Component {
       this.folderIds = resp.data.folderIds;
       this.folders_loaded = true;
       callback();
-      this.updateNumber++;
       this.forceUpdate();
     });
   }
 
   addNewFolder(title) {
+    // generate new folderId
     let folderId = nanoid();
-    this.saveFolder(folderId, title, [], [], "insert", false, () => {
+
+    // check if new folder is private or isPublic
+    let isPublic = false;
+    // if (this.state.directoryStack.length == 0  // in root
+    //   || this.folderInfo(this.state.directoryStack[0])) {       // in private repo
+    //   isPrivate = true;
+    // }
+
+    this.saveFolder(folderId, title, [], [], "insert", false, false, () => {
       // if not in base dir, add folder to current folder
       if (this.state.directoryStack.length !== 0) {
         let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
-        this.addContentToFolder([folderId], ["folder"], currentFolderId);
+        this.addContentToFolder([folderId], ["folder"], currentFolderId, () => {
+          this.loadUserFoldersAndRepo(() => {
+            this.setState({
+              selectedItems: [folderId],
+              selectedItemsType: ["folder"],
+              activeSection: "chooser",
+              selectedDrive: "Content"
+            }, () => { 
+              this.updateNumber++;
+            });
+          });
+        });        
       } else {
         this.saveUserContent([folderId], ["folder"], "insert", () => {  // add to user root
-          this.setState({
-            selectedItems: [folderId],
-            selectedItemsType: ["folder"],
-            activeSection: "chooser",
-            selectedDrive: "Content",
-          }, () => {
-            this.loadUserFoldersAndRepo();
-            this.loadUserContentBranches();
+          this.loadUserFoldersAndRepo(() => {
+            this.setState({
+              selectedItems: [folderId],
+              selectedItemsType: ["folder"],
+              activeSection: "chooser",
+              selectedDrive: "Content"
+            }, () => { 
+              this.updateNumber++;
+            });
           });
         });  
       }
     });
   }
 
-  addContentToFolder(childId, childType, folderId) {
+  addContentToRepo(childIds, childType, repoId, callback=(()=>{})) {
+    let isPublic = this.folderInfo[repoId].isPublic;
+
+    // modify public/private state if parent is repo
+    if (isPublic) {
+      childIds.forEach(childId => {
+        this.modifyPublicState(isPublic, [].concat(this.flattenFolder(childId).itemIds),
+          [].concat(this.flattenFolder(childId).itemType));
+      });
+      this.addContentToFolder(childIds, childType, repoId);
+    } else {
+      // private (personal / in private repo) -> private allowed
+      // public (in public repo) -> private not allowed
+      childIds.forEach((childId, i) => {
+        if (childType[i] == "folder") {
+          // check if public
+          if (!this.folderInfo[childId].isPublic) {
+            this.modifyPublicState(isPublic, [].concat(this.flattenFolder(childId).itemIds),
+              [].concat(this.flattenFolder(childId).itemType));
+            this.addContentToFolder([childId], ["folder"], repoId);
+          }
+        } else {
+          // check if public
+          if (!this.branchId_info[childId].isPublic) {
+            this.modifyPublicState(isPublic, [childId], ["content"]);
+            this.addContentToFolder([childId], ["content"], repoId);
+          }
+        }
+      });
+    }
+  }
+
+  addContentToFolder(childIds, childType, folderId, callback=(()=>{})) {
     let operationType = "insert";
     let title = this.folderInfo[folderId].title;
     let isRepo = this.folderInfo[folderId].isRepo;
-    if (this.folderInfo[folderId].parentId == "root") {
-      this.saveUserContent(childId, childType, "remove");
-    }
-    this.saveFolder(folderId, title, childId, childType, operationType, isRepo, (folderId) => {
-      this.loadUserFoldersAndRepo();
-      this.loadUserContentBranches();
+    let isPublic = this.folderInfo[folderId].isPublic;
+
+    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (folderId) => {
+      // creating new folder
+      //    in a folder ~ set childItem.rootId = folderId.rootId
+      //    at root ~ addContentToFolder not invoked
+      // moving into folder
+      //    from another root ~ set childItem.rootId = folderId.rootId
+      //    from same root ~ set childItem.rootId = folderId.rootId
+      if (this.folderInfo[folderId].parentId == "root") { 
+        this.saveUserContent(childIds, childType, "remove");
+      }
+      let itemIds = [];
+      childIds.forEach(childId => {
+          itemIds = itemIds.concat(this.flattenFolder(childId).itemIds);
+      });
+      this.modifyFolderChildrenRoot(this.folderInfo[folderId].rootId, itemIds, () => {
+        this.loadUserFoldersAndRepo();
+        this.loadUserContentBranches();
+        callback();
+      });
     });
   }
 
-  removeContentFromFolder(childId, childType, folderId) {
+  removeContentFromFolder(childIds, childType, folderId, callback=(()=>{})) {
     let operationType = "remove";
     let title = this.folderInfo[folderId].title;
     let isRepo = this.folderInfo[folderId].isRepo;
-    if (this.folderInfo[folderId].parentId == "root") {
-      this.saveUserContent(childId, childType, "insert");
+    let isPublic = this.folderInfo[folderId].isPublic;
+
+    // modify public/private state if parent is repo
+    if (isRepo) {
+      if (isPublic) {
+        return; // public -> private not allowed
+      } 
+      // private -> private redundant, continue with removing    
     }
-    this.saveFolder(folderId, title, childId, childType, operationType, isRepo, (folderId) => {
-      this.loadUserFoldersAndRepo();
+
+    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (folderId) => {
+      // within same root ~ set childItem.rootId = folderId.rootId (unchanged)
+      // to diff root ~ set childItem.rootId = folderId.rootId (changed)
+      // to root ~ set childItem.rootId = childItem.id
+      if (this.folderInfo[folderId].parentId == "root") {
+        this.saveUserContent(childIds, childType, "insert");
+        childIds.forEach(folderAtRoot => {
+          this.modifyFolderChildrenRoot(folderAtRoot, [].concat(this.flattenFolder(folderAtRoot).itemIds), () => {
+          });
+        });
+      }
       this.loadUserContentBranches();
+      this.loadUserFoldersAndRepo();
+      // this.forceUpdate();
+      callback();
     });
   }
 
+  modifyPublicState(isPublic, itemIds, itemType, callback=(()=>{})) {
+    const url='/api/modifyPublicState.php';
+    const data={
+      isPublic: isPublic,
+      itemIds: itemIds,
+      itemType: itemType
+    }
+    axios.post(url, data)
+    .then((resp) => {
+      callback();
+    })
+    .catch(function (error) {
+      this.setState({error:error});
+    })
+  }
+
   renameFolder(folderId, newTitle) {
-    this.saveFolder(folderId, newTitle, [], [], "", this.folderInfo[folderId].isRepo, () => {
+    this.saveFolder(folderId, newTitle, [], [], "", 
+      this.folderInfo[folderId].isRepo, this.folderInfo[folderId].isPublic, () => {
       this.loadUserFoldersAndRepo();
     });
+  }
+
+  modifyFolderChildrenRoot(newRoot, itemIds, callback=(()=>{})) {
+    const url='/api/modifyFolderChildrenRoot.php';
+    const data={
+      newRoot: newRoot,
+      itemIds: itemIds
+    }
+    axios.post(url, data)
+    .then((resp) => {
+      callback();
+    })
+    .catch(function (error) {
+      this.setState({error:error});
+    })
+  }
+
+  flattenFolder(folderId) {
+    if (!this.folderInfo[folderId]) return {itemIds: [folderId], itemType: ["content"]};
+    let itemIds = [folderId]; 
+    let itemType = ["folder"];
+    this.folderInfo[folderId].childFolders.forEach((childFolderId) => {
+      itemIds = itemIds.concat(this.flattenFolder(childFolderId).itemIds);
+      itemType = itemType.concat(this.flattenFolder(childFolderId).itemType);
+    })
+    this.folderInfo[folderId].childContent.forEach((childContentId) => {
+      itemIds.push(childContentId);
+      itemType.push("content");
+    })
+    return {itemIds: itemIds, itemType: itemType};
   }
 
   saveUserContent(childIds, childType, operationType, callback=(()=>{})) {
@@ -588,17 +753,18 @@ class DoenetChooser extends Component {
 
   addNewRepo(title) {
     let folderId = nanoid();
-    this.saveFolder(folderId, title, [], [], "insert", true, () => {
+    this.saveFolder(folderId, title, [], [], "insert", true, false, () => {
       this.modifyRepoAccess(folderId, "insert", true, () => {  // add user to repo_access
-        this.setState({
-          directoryStack: [],
-          selectedItems: [folderId],
-          selectedItemsType: ["folder"],
-          activeSection: "chooser",
-          selectedDrive: "Content"
-        }, () => {
-          this.loadUserFoldersAndRepo();
-          this.loadUserContentBranches();
+        this.loadUserFoldersAndRepo(() => {
+          this.setState({
+            directoryStack: [],
+            selectedItems: [folderId],
+            selectedItemsType: ["folder"],
+            activeSection: "chooser",
+            selectedDrive: "Content"
+          }, () => { 
+            this.updateNumber++;
+          });
         });
       });  
     })
@@ -636,13 +802,11 @@ class DoenetChooser extends Component {
   }
 
   updateDirectoryStack(directoryStack) {
-    this.folders_loaded = false;
-    this.branches_loaded = false;
     this.setState({
       directoryStack: directoryStack
     })
-    this.loadUserFoldersAndRepo();
-    this.loadUserContentBranches();
+    // this.loadUserFoldersAndRepo();
+    // this.loadUserContentBranches();
   }
 
   getAllSelectedItems = () => {
@@ -668,6 +832,70 @@ class DoenetChooser extends Component {
         lastSelectedCourse: courseId,
       });
     });
+  }
+
+  loadFilteredContent(filters, callback=(()=>{})) {
+
+    const typeToSQLMap = {
+      "Folder name" : "title",
+      "Content name" : "title",
+      "Author" : "author",
+      "Creation date" : "timestamp"
+    }
+    const operatorsToSQLMap = {
+      "IS" : "=",
+      "IS NOT" : "!=",
+      "IS LIKE" : "LIKE",
+      "IS NOT LIKE" : "NOT LIKE",
+      "ON" : "=",
+      "<" : "<",
+      "<=" : "<=",
+      ">" : ">",
+      ">=" : ">="
+    }
+    // process filters
+    this.branches_loaded = false;
+    let processedFilters = [];
+    let folderOnly = false;
+    let contentOnly = false;
+    filters.forEach(filter => {
+      let sql = "";
+      let filterValue = filter.value;
+      if (filter.type == "Folder name") folderOnly = true;
+      else if (filter.type == "Content name") contentOnly = true;
+      else if (filter.type == "Creation date") filterValue = new Date(filterValue).toISOString().slice(0, 19).replace('T', ' ');
+
+      sql += `${typeToSQLMap[filter.type]} ${operatorsToSQLMap[filter.operator]} `;
+      if (filter.operator == "IS LIKE" || filter.operator == "IS NOT LIKE") {
+        sql += `'%${filterValue}%'`;        
+      } else {
+        sql += `'${filterValue}'`;
+      }
+      if (filterValue != null) processedFilters.push(sql);
+    })
+
+    if (folderOnly && contentOnly) {
+      folderOnly = false;
+      contentOnly = false;
+    }
+
+    const url='/api/loadFilteredContent.php';
+    const data={
+      folderOnly: folderOnly,
+      contentOnly: contentOnly,
+      filters: processedFilters
+    }
+    axios.post(url, data)
+    .then(resp => {
+      callback();
+      this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchId_info);
+      this.sort_order = resp.data.sort_order;
+      this.branches_loaded = true;
+      this.forceUpdate();
+    })
+    .catch(function (error) {
+      this.setState({error:error});
+    })
   }
 
   render(){
@@ -697,10 +925,10 @@ class DoenetChooser extends Component {
     else {
       let folderList = [];
       let contentList = [];
-      if (this.state.selectedDrive === "Content") {
+      if (this.state.selectedDrive == "Content" || this.state.selectedDrive == "Global") {
         folderList = this.folderIds;
         contentList = this.sort_order;
-      } else if (this.state.selectedDrive === "Courses") {
+      } else if (this.state.selectedDrive == "Courses") {
         folderList = this.courseInfo[this.state.selectedCourse].folders;
         contentList = this.courseInfo[this.state.selectedCourse].content;
       }
@@ -719,6 +947,7 @@ class DoenetChooser extends Component {
           updateSelectedItems={this.updateSelectedItems}          // optional
           updateDirectoryStack={this.updateDirectoryStack}        // optional
           addContentToFolder={this.addContentToFolder}            // optional
+          addContentToRepo ={this.addContentToRepo}               // optional
           removeContentFromCourse={this.removeContentFromCourse}  // optional
           removeContentFromFolder={this.removeContentFromFolder}  // optional                  
           directoryData={this.state.directoryStack}               // optional
@@ -1039,6 +1268,123 @@ class AccordionSection extends Component {
       </div>
     );
   }
+}
+
+class FilterPanel extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = { showFilters: false };
+
+    this.togglePanel = this.togglePanel.bind(this);
+  }
+
+  togglePanel = () => {
+    this.setState(prevState => ({
+      showFilters: !prevState.showFilters
+    }));    
+  }
+
+  render() {
+    return (
+      <div id="filterPanel">
+        <span>Search Globally</span>
+        <button id="editFiltersButton" onClick={this.togglePanel}>Edit Filters</button>
+        <FilterForm show={this.state.showFilters} loadFilteredContent={this.props.loadFilteredContent} togglePanel={this.togglePanel}/>
+      </div>
+    );
+  }
+}
+
+const FilterForm = (props) => {
+
+  let filterTypes = ["Content name", "Folder name", "Author", "Creation date"];
+
+  let allowedOperators = {
+    "Content name" : ["IS LIKE", "IS NOT LIKE", "IS", "IS NOT"],
+    "Folder name" : ["IS LIKE", "IS NOT LIKE", "IS", "IS NOT"],
+    "Author" : ["IS", "IS NOT"],
+    "Creation date" : ["ON", "<", "<=", ">", ">="]
+  }
+  
+  const [filters, setFilters] = useState([{ type: "Content name", operator: "IS LIKE", value: null}]);
+
+  function handleChange(i, event, field) {
+    const values = [...filters];
+    if (field == "type") {
+      values[i].type = event.target.value;
+      values[i].operator = allowedOperators[event.target.value][0];
+      if (values[i].type == "Creation date") values[i].value = "2020-01-01T00:00";
+      else values[i].value = "";
+    } else if (field == "operator") {
+      values[i].operator = event.target.value;
+    } else {
+      values[i].value = event.target.value;
+    }
+    setFilters(values);
+  }
+
+  function handleAdd() {
+    const values = [...filters];
+    values.push({ type: "Content name", operator: "IS LIKE", value: null});
+    setFilters(values);
+  }
+
+  function handleRemove(i) {
+    const values = [...filters];
+    if (values.length != 1) {
+      values.splice(i, 1);
+    }
+    setFilters(values);
+  }
+
+  function handleSearch() {
+    const values = [...filters];
+    props.loadFilteredContent(values);
+    props.togglePanel();
+  }
+
+  return (
+    props.show && 
+    <div id="filterForm">
+      <button id="addFilterButton" type="button" onClick={() => handleAdd()}> + </button>
+      {filters.map((filter, idx) => {
+        return (
+          <div className="filter" key={`${filter}-${idx}`}>
+            <select className="filterSelectInput" onChange={e => handleChange(idx, e, "type")} value={filter.type}>
+              {filterTypes.map(filterType => {
+                return <option key={"filterType" + Math.random() * 50} value={filterType}>{filterType}</option>
+              })}
+            </select>
+            <select className="filterSelectInput" onChange={e => handleChange(idx, e, "operator")} value={filter.operator}>
+              {allowedOperators[filter.type].map(operator => {
+                return <option key={"filterType" + Math.random() * 50} value={operator}>{operator}</option>
+              })}
+            </select>
+            { filter.type == "Creation date" ?
+            <input type="datetime-local" id="meeting-time"
+              className="filterValueInput"
+              name="meeting-time" onChange={e => handleChange(idx, e, "value")}
+              value={filter.value || "2020-01-01T00:00"}
+              ></input>
+            :
+            <input
+              type="text"
+              className="filterValueInput"
+              placeholder={filter.type == "Author" ? "Username/Last or First Name" : ""}
+              value={filter.value || ""}
+              onChange={e => handleChange(idx, e, "value")}
+            />
+            }
+            <button id="removeFilterButton" type="button" onClick={() => handleRemove(idx)}>
+              X
+            </button>
+          </div>
+        );
+      })}
+      <button id="applyFilterButton" type="button" onClick={() => handleSearch()}> Apply Filters </button>
+    </div>
+  );
 }
 
 
