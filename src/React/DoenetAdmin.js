@@ -1,1076 +1,63 @@
 import React, { Component } from 'react';
-import DoenetViewer from '../React/DoenetViewer';
-import axios from 'axios';
-import MersenneTwister from 'mersenne-twister';
-import './admin.css';
 import nanoid from 'nanoid';
+import axios from 'axios';
+import './admin.css';
 import DoenetHeader from './DoenetHeader';
-import { faPlus, faDotCircle, faWindowClose, faEdit, faCaretRight, faChalkboard } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-function hashStringToInteger(s) {
-  var hash = 0, i, chr;
-  if (s.length === 0) return hash;
-  for (i = 0; i < s.length; i++) {
-    chr   = s.charCodeAt(i);
-    hash  = ((hash << 5) - hash) + chr;
-    hash |= 0; // Convert to 32bit integer
-  }
-  return hash;
-};
-function assignment_false(){
-  console.log("====calling assignment_false====");
-  window.location.href="/admin/?assignment=false"
-};
-let assignmentID = null;
 
 class DoenetAdmin extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
-     console.log("===RESTART===")
-    this.assignmentIndex = 0;
-    this.loadingScreen = (<React.Fragment><p>Loading...</p></React.Fragment>);
-
-      const envurl='/api/env.php';
-      axios.get(envurl)
+    this.state = {
+      branchIdsSelected: [],
+      assignments: [],
+      courseId: "aI8sK4vmEhC5sdeSP3vNW",
+      keyStorageStatus: null,
+      rename: {},
+      edit: {},
+    };
+    const url='/api/env.php';
+        axios.get(url)
         .then(resp=>{
             this.username = resp.data.user;
             this.access = resp.data.access;
             this.forceUpdate();
         });
-     
-      
-    let url_string = window.location.href;
-    var url = new URL(url_string);
-    
-    this.username = "";
-    this.courseId = "aI8sK4vmEhC5sdeSP3vNW"; //Temporary TODO: Choose courses
-    this.courseName = "Calculus and Dynamical Systems in Biology";
-    this.gradeCategories = ['Gateway','Problem Sets','Projects','Exams','Participation'];
-    this.assignmentId = url.searchParams.get("assignmentId");
-    this.activeSection = url.searchParams.get("active");
-    this.assignment_state_1 = url.searchParams.get("assignment"); // get false
-    if (this.activeSection==='grade'){
-      this.loadGrades()
-    } 
-    this.enableThese=[]
-    this.overview_branchId=""
-    this.syllabus_branchId=""
 
-    this.state = {
-      courseId: "",
-      error: null,
-      errorInfo: null,
-      outlineType:"outline",
-      overview:null,
-      grade:null,
-      assignment:this.assignment_state_1,
-      syllabus:null,
-      newChange:false,
-      loadingTree:false,
-    };
-    if (this.assignment_state_1===undefined || this.assignment_state_1===null){
-      this.assignment_state_1=true
-    } else {
-      this.assignment_state_1=false
-    }
-
-
-    this.assignmentsData = null;
-    this.DoneLoading=false;
-    /**
-         * to construct a tree:
-         * construct an array that contains objects 
-         * (key is id with no pId, value is level, which is 0)
-         * secondly,
-         *  place pointer at first Id and find what id that it is a pId.
-         *  level is value of first id +1. if found
-         *  then add that right after the first Id with the current level
-         *  when reach the end of this.arr_return, place pointer at second.
-         * thirdly, we level is value of second id +1, it will find its children
-         */
-
-    // getting info for creating tree from DB
-     this.result_arr=[];
-    console.log("CREATING SOME ID");
-    console.log(nanoid())
-    const url_header_assignment = "/api/getHeaderAndAssignmentInfo.php";
-     this.arr_return=[];
-     this.id_arr=[];
-     // 3oSXu2L31eZBlZKKc4F7X is a header
-     // null parent should be UltimateHeader with empty assignment and heading contains all other header
-     this.downloadObj = [
-      {"kwpKwEwW144tqROdo9dl5":{name:"header1",attribute:"header",assignmentId:["4P7WK6V4HvxS9fIT8IY4i","yfP_Pslr-WC1D8g2rEqhF"],
-      headingId:["3oSXu2L31eZBlZKKc4F7X"],parent:"null"}},
-      {"Sj7wQR-L2xFIxmS6QFMKn":{name:"header2",attribute:"header",assignmentId:["VffOCH1I0h_ymB9KQHR24"],headingId:[]}},
-      {"3oSXu2L31eZBlZKKc4F7X":{name:"header3",attribute:"header",assignmentId:[],headingId:[],parent:"kwpKwEwW144tqROdo9dl5"}},
-      {"4P7WK6V4HvxS9fIT8IY4i":{name:"Gateway exam practice",attribute:"assignment",parent:"kwpKwEwW144tqROdo9dl5"}},
-     {"yfP_Pslr-WC1D8g2rEqhF":{name:"assignement2",attribute:"assignment",parent:"kwpKwEwW144tqROdo9dl5"}},
-     {"VffOCH1I0h_ymB9KQHR24":{name:"assignment3",attribute:"assignment",parent:"L2xFIxmS6QFMKn"}}
-     ]
-    //  console.log(this.downloadObj)
-
-    // {h2ID:{name:"header2",assignmentId = ["a3ID"],headingId=[]}, parent:null},
-    // {h3ID:{name:"header3",assignmentId=[],headingId=[],parent:"h1ID"}}
-    //5RdWCHX3Z-zHGi3-rupzq
-    //fm3-3BxtVsMA0vqCyAOMA
-     this.heading_obj = [
-      {"kwpKwEwW144tqROdo9dl5":{name:"header1",attribute:"header",assignmentId:["4P7WK6V4HvxS9fIT8IY4i","yfP_Pslr-WC1D8g2rEqhF"],
-      headingId:["Sj7wQR-L2xFIxmS6QFMKn","qAgAnGbEblNmlebe3sJOh"],parent:"null"}},
-      {"Sj7wQR-L2xFIxmS6QFMKn":{name:"header2",attribute:"header",assignmentId:["VffOCH1I0h_ymB9KQHR24","zxVi-pXiUtf3PodIXm45n"],headingId:["5RdWCHX3Z-zHGi3-rupzq"],parent:"kwpKwEwW144tqROdo9dl5"}},
-      {"3oSXu2L31eZBlZKKc4F7X":{name:"header3",attribute:"header",assignmentId:["iaROshxrgaz63vZ5xFdxE"],headingId:[],parent:"null"}},
-      {"qAgAnGbEblNmlebe3sJOh":{name:"header4",attribute:"header",assignmentId:["mBUlzP63SK38l7XrWpyC"],headingId:[],parent:"kwpKwEwW144tqROdo9dl5"}},
-      {"5RdWCHX3Z-zHGi3-rupzq":{name:"header6",attribute:"header",assignmentId:["fm3-3BxtVsMA0vqCyAOMA"],headingId:[],parent:"Sj7wQR-L2xFIxmS6QFMKn"}}
-     ];
-     console.log("this heading obj")
-     console.log(this.heading_obj)
-
-     this.assignment_obj = [
-     {"4P7WK6V4HvxS9fIT8IY4i":{name:"Gateway exam practice",parent:"kwpKwEwW144tqROdo9dl5"}},
-     {"yfP_Pslr-WC1D8g2rEqhF":{name:"assignement2",parent:"kwpKwEwW144tqROdo9dl5"}},
-     {"VffOCH1I0h_ymB9KQHR24":{name:"assignment3",parent:"L2xFIxmS6QFMKn"}},
-      {"iaROshxrgaz63vZ5xFdxE":{name:"assignment4",parent:"3oSXu2L31eZBlZKKc4F7X"}},
-    {"zxVi-pXiUtf3PodIXm45n":{name:"assignment5",parent:"L2xFIxmS6QFMKn"}},
-    {"mBUlzP63SK38l7XrWpyC":{name:"assignment6",parent:"qAgAnGbEblNmlebe3sJOh"}},
-    {"fm3-3BxtVsMA0vqCyAOMA":{name:"assignment7",parent:"5RdWCHX3Z-zHGi3-rupzq"}}
-  ];
-     this.makeTreeArray=[]; // filled in buildTreeArray
-     this.tree=[] // made in buildTree
-     this.buildTreeArray()
-     this.buildTree()
-
-     console.log("this assignment obj")
-     console.log(this.assignment_obj)
-    axios (url_header_assignment)
-      .then (resp=>{
-        console.log("RUNNING PHP")
-        this.arr_return = resp.data;
-        let lengthOfReturnArray = (this.arr_return.length)
-        console.log("arr is")
-        let iterator=0;
-        while (iterator<lengthOfReturnArray){
-          this.id_arr.push(Object.keys(this.arr_return[iterator]));
-          iterator++;
-        }
-        // now we have this.id_arr to access this.arr_return
-        // also we can have a dictionary to look up name
-        //TODO: load AND consolidate obj with the same key
-        
-        console.log(Object.values(this.arr_return))
-        
-        this.setState ({loadingTree:true});
-        this.forceUpdate();
-      }).catch(error=>{this.setState({error:error})});
-      if (this.state.loadingTree){
-        console.log("hell yas")
-      }
-      
-
-
-
-    
-
-      const loadUrl = '/api/loadEnable.php'
-      this.payLoad = {
-        overview:0,
-        syllabus:0,
-        grade:0,
-        assignment:0
-      }
-      
-      axios.get(loadUrl,this.payLoad)
-        .then (resp=>{
-         
-               //!!+ is to convert string to boolean
-          this.payLoad.overview=+(resp.data["overview"])
-          this.payLoad.grade=+(resp.data["grade"])
-          this.payLoad.syllabus=+(resp.data["syllabus"])
-          this.payLoad.assignment=+(resp.data["assignment"])
-          this.overview_branchId=resp.data["overview_branchId"]
-          this.syllabus_branchId=resp.data["syllabus_branchId"]
-          // assignment_state =+(resp.data["assignment"])
-          // this.enabledDisabledArray = {
-          //   overview:!!+payLoad.overview,
-          //   syllabus:!!+payLoad.grade,
-          //   grade:!!+payLoad.syllabus,
-          //   assignment:!!+payLoad.assignment,
-          // }
-
-          this.state.overview=+(resp.data["overview"])
-          this.state.grade=+(resp.data["grade"])
-          this.state.syllabus=+(resp.data["syllabus"])
-          this.state.assignment=+(resp.data["assignment"])
-          if (!this.assignment_state_1){
-            this.state.assignment=false;
-          }
-          Object.keys(this.payLoad).map((e)=>{
-                if (this.payLoad[e]===1 && this.activeSection===null ){
-                    console.log("finding")
-                    console.log(e)
-                    this.activeSection=e
-                    //window.location.href="/admin/?active="+e
-                    }
-                })
-          console.log("ACTIVE is..."+this.activeSection)
-          console.log(`The courseId id is ${this.courseId}`);
-          if (this.assignment_state_1===false){
-            this.state.newChange=true;
-          }
-          this.DoneLoading=true;
-          if(this.activeSection==='overview'){
-            this.loadOverview();
-          }else if(this.activeSection==='syllabus'){
-            this.loadSyllabus();
-          }
-          // console.log("done")
-          // this.forceUpdate()
-
-        });
-         
+    this.sharedContent = {}; //both have this
+    this.loadSharedContent();//both have this
+    this.sharedContent.documentOrder = [];//both have this
     this.courseInfo = {};
-    this.finishedContructor = false;
- 
 
 
-    
-      //Get code and mode from the database
-    const loadOutlineUrl='/api/loadOutline.php';
-    const data={
-      courseId: this.courseId,
-    }
-    const payload = {
-      params: data
-    }
 
-    
-    axios.get(loadOutlineUrl,payload)
-    .then(resp=>{
-      console.log(resp.data);
-      this.finishContruction({data:resp.data});
-      this.setState({assignmentIndex:this.assignmentIndex,code:this.assignmentIdList[this.assignmentIndex].code});
-      if (this.activeSection === "assignments") {
-        this.loadAssignment({assignmentId: this.assignmentId});
-        this.buildAssignment();
-      }
-    });
-    
+    this.gradeCategories = ['Gateway', 'Problem Sets', 'Projects', 'Exams', 'Participation'];
 
-
-    this.updateNumber = 0;
-    this.updateLocationBar = this.updateLocationBar.bind(this);
-    this.buildAssignmentGrades = this.buildAssignmentGrades.bind(this);
-    this.buildItemGrade = this.buildItemGrade.bind(this);
-    this.buildAttemptItemGradesHelper = this.buildAttemptItemGradesHelper.bind(this);
+    this.updateAssignmentName = this.updateAssignmentName.bind(this);
+    this.addAssignments = this.addAssignments.bind(this);
+    this.handleContentChange = this.handleContentChange.bind(this);
+    // this.deleteAssignment = this.deleteAssignment.bind(this);
+    this.buildEditOutline = this.buildEditOutline.bind(this);
+    this.insertHeading = this.insertHeading.bind(this);
+    this.moveHeadingDown = this.moveHeadingDown.bind(this);
+    this.moveHeadingUp = this.moveHeadingUp.bind(this);
+    this.moveHeadingRight = this.moveHeadingRight.bind(this);
+    this.moveHeadingLeft = this.moveHeadingLeft.bind(this);
+    this.handleRenameHeading = this.handleRenameHeading.bind(this);
+    this.saveHeadingName = this.saveHeadingName.bind(this);
+    this.handleEditAssignment = this.handleEditAssignment.bind(this);
+    this.handleAssignmentSave = this.handleAssignmentSave.bind(this);
+    this.handleAssignmentMove = this.handleAssignmentMove.bind(this);
+    this.saveCourseOutlineToAPI = this.saveCourseOutlineToAPI.bind(this);
+    this.storeAccessKeyLocally = this.storeAccessKeyLocally.bind(this);
+    this.saveAccessKeyIntoIndexDB = this.saveAccessKeyIntoIndexDB.bind(this);
+    this.loadSharedContent = this.loadSharedContent.bind(this);//newly added for separation
     this.assignmentDataToCourseInfo = this.assignmentDataToCourseInfo.bind(this);
-    this.buildOutline = this.buildOutline.bind(this);
-    this.buildAssignmentArray = this.buildAssignmentArray.bind(this);
-    this.loadAssignment = this.loadAssignment.bind(this);
-    this.finishContruction = this.finishContruction.bind(this);
-    this.handlePrev = this.handlePrev.bind(this);
-    this.handleNext = this.handleNext.bind(this);
-    this.buildAssignmentList = this.buildAssignmentList.bind(this);
-    this.setAssignmentObj = this.setAssignmentObj.bind(this);
-    this.generateNewAttempt = this.generateNewAttempt.bind(this);
-    this.creditUpdate = this.creditUpdate.bind(this);
-    this.buildAssignment = this.buildAssignment.bind(this);
-    this.updateAssignmentList = this.updateAssignmentList.bind(this);
-    // this.PutInUnPublishList = this.PutInUnPublishList.bind(this);
-    this.ToggleList = this.ToggleList.bind(this);
-    this.loadGrades = this.loadGrades.bind(this);
-    this.EnableThese = this.EnableThese.bind(this);
-    this.loadOverview = this.loadOverview.bind(this);
-    this.buildTree = this.buildTree.bind(this);
-  }
-
-  buildTreeArray(){
-    //console.log(this.arr_return[this.id_arr.indexOf(this.id_arr[0])][this.id_arr[0]])
-    // first get pId that is null
-    // this.result_arr.splice(index,0,obj);=
-    let headerObjectLength = this.heading_obj.length;
-    let assignmentObjectLength = this.assignment_obj.length;
-    let iterator = 0;
-    this.headerId_arr=[]
-    let already_built_header_id = {}
-    this.assignmentId_arr=[]
-    this.makeTreeArray=[]
-    // create a header_id_arr to access header_obj
-    
-    while (iterator < headerObjectLength){
-      let string_id = Object.keys(this.heading_obj[iterator]).toString()
-      this.headerId_arr.push(string_id);
-      already_built_header_id[string_id]=false;
-      iterator++;
-    }
-    console.log("already built arr")
-    console.log(already_built_header_id)
-    iterator=0;
-    while (iterator < assignmentObjectLength){
-      this.assignmentId_arr.push(Object.keys(this.assignment_obj[iterator]).toString());
-      iterator++;
-    }
-    console.log("inside build tree")
-    console.log(this.headerId_arr)
-    console.log(this.assignmentId_arr)
-    iterator = 0;
-    // establish level 0
-    while (iterator < headerObjectLength) {
-      let currentHeaderObject = 
-      this.heading_obj[this.headerId_arr.indexOf(this.headerId_arr[iterator])][this.headerId_arr[iterator]];
-      if (currentHeaderObject["parent"]==="null") {
-        let object = {id:this.headerId_arr[iterator].toString(),name:currentHeaderObject["name"],attribute:"header",level:0}
-        this.makeTreeArray.push(object)
-      }
-      iterator++;
-    }
-    // add header first, level = level's parent + 1
-    iterator = 0;
-    console.log(this.makeTreeArray)
-    console.log(this.makeTreeArray[0]["id"])
-    
-    // .splice(index,0,obj)
-     while (iterator < this.makeTreeArray.length){
-      let indexOfHeader = this.headerId_arr.indexOf(this.makeTreeArray[iterator]["id"])
-      let currentHeaderObject = 
-      this.heading_obj[indexOfHeader][this.makeTreeArray[iterator]["id"]];
-      (currentHeaderObject["headingId"]).forEach(e=>{
-        console.log("id is " + e.toString())
-        e  = e.toString();
-        // check if name built already
-        if (already_built_header_id[e]===false) {  // not built yet
-          let name = this.heading_obj[this.headerId_arr.indexOf(e)][e]["name"];
-          let attribute = this.heading_obj[this.headerId_arr.indexOf(e)][e]["attribute"]
-          let newLevel = this.makeTreeArray[iterator]["level"]+1;
-          let object = {id:e.toString(),name:name,attribute:attribute,level:newLevel}
-          this.makeTreeArray.splice(iterator+1,0,object)
-        }
-      })
-      iterator++;
-    }
-   //add assignments
-    iterator = 0;
-    console.log(this.makeTreeArray)
-    console.log("adding assignment")
-    while (iterator < this.makeTreeArray.length){
-      if (this.makeTreeArray[iterator]["attribute"]==="header"){
-        console.log("iterator is" + iterator)
-        let indexOfHeader = this.headerId_arr.indexOf(this.makeTreeArray[iterator]["id"])
-        let currentHeaderObject = 
-        this.heading_obj[indexOfHeader][this.makeTreeArray[iterator]["id"]];
-      let assignment_list = currentHeaderObject["assignmentId"]
-      if (assignment_list!=[]) {
-      (assignment_list).forEach(e=>{
-        // assume unique assignment has unique headers
-          let name = this.assignment_obj[this.assignmentId_arr.indexOf(e.toString())][e.toString()]["name"];
-          let newLevel = this.makeTreeArray[iterator]["level"]+1;
-          let object1 = {id:e.toString(),name:name,level:newLevel}
-          console.log(object1)
-          this.makeTreeArray.splice(iterator+1,0,object1)
-      })
-    }
-      }
-      iterator++;
-    }
-
-    console.log("make tree")
-    console.log(this.makeTreeArray)
-  }
-buildTree(){
-  console.log("inside build tree array")
-  // making space
-  this.tree = [];
-  this.makeTreeArray.forEach(element=>{
-  let name = element["name"]
-  let level = element["level"];
-  let leftMargin = `${level*20}px`;
-  let tree_branch = (<div style={{marginLeft:leftMargin}}>{name}</div>)
-  this.tree.push(tree_branch)
-  })
-  console.log("YES TREE")
-  console.log(this.tree)
-}
-
-EnableThese(e){
-  let name = e.target.value
-  if (name==="overview"){
-    this.state.overview = true
-  } else if (name==="syllabus") {
-    this.state.syllabus = true
-  }else if (name==="grade") {
-    this.state.grade = true
-  }else if (name==="assignment") {
-    this.state.assignment = true
-  }
-  e.target.value="adding back"
-  // if (this.assignment_state_1===false){
-  //   window.location.href="/admin"
-  // }
-  this.setState({newChange:true})
-  this.forceUpdate()
-}
-
-  ToggleList(){
-    // TODO: why this always get called when reset page ?
-    console.log("=====TOGGLE=====")
-    // this.enabledDisabledArray[this.activeSection]=!this.enabledDisabledArray[this.activeSection];
-    // //console.log("active section is..."+this.activeSection)
-    // if (this.activeSection==="overview"){
-    //   this.setState({overview:this.enabledDisabledArray[this.activeSection]})
-    // }else if (this.activeSection==="grade"){
-    //   this.setState({grade:this.enabledDisabledArray[this.activeSection]})
-    // }else if (this.activeSection==="assignment"){
-    //   this.setState({assignment:this.enabledDisabledArray[this.activeSection]})
-    // }else if (this.activeSection==="syllabus"){
-    //   this.setState({syllabus:this.enabledDisabledArray[this.activeSection]})
-    // }
-    const url = '/api/save_enable_disable_category.php'
-    console.log(this.state.overview)
-    console.log(this.state.grade)
-    console.log(this.state.syllabus)
-    console.log(this.state.assignment)
-
-    const data = {
-      overview:Number(this.state.overview),
-      grade:Number(this.state.grade),
-      syllabus:Number(this.state.syllabus),
-      assignment:Number(this.state.assignment)
-    }
-    console.log(data)
-    axios.post(url, data)
-    .then(function (response) {
-      // console.log(response);
-      // console.log("-------DATA is---------")
-      // console.log(response.data);
-      
-    })
-    .catch(function (error) {
-      this.setState({error:error});
-
-    })
-    // adding list
-    this.setState({newChange:false})
-
-    //this.forceUpdate()
-    if (data[this.activeSection]===0){
-      if (data.overview===1){
-        this.loadOverview();
-        this.buildOverview();
-        this.updateLocationBar({});
-      }else if (data.syllabus===1){
-        this.loadSyllabus();
-        this.buildSyllabus();
-        this.updateLocationBar({});
-      }else if (data.grade===1){
-        this.loadGrades();
-        this.buildGrades();
-        this.updateLocationBar({});
-      }else if (data.assignment===1){
-        this.mainSection=null;
-        this.updateLocationBar({});
-      }else {
-        this.updateLocationBar({activeSection:null})
-      }
-    }
-
-  }
-
-  updateLocationBar(assignmentId=this.assignmentId, activeSection=this.activeSection){
-    history.replaceState({},"title","?active="+activeSection);
-    if (this.activeSection === "assignments") {
-      console.log(this.assignmentId);
-      history.replaceState({},"title","?active="+activeSection+"&assignmentId="+assignmentId);
-    }
-  }
-
-  loadOverview(){
-    this.doenetML="";
-    const phpUrl='/api/getDoenetML.php';
-    const data={        
-      branchId: this.overview_branchId,
-      contentId:"",
-      ListOfContentId:"", //this is to store all contentID of one branchID for publish indication 
-      List_Of_Recent_doenetML:[], // this is to store list of (date:doenetML) 
-    }
-    const payload = {
-      params: data
-    }
-    axios.get(phpUrl,payload)
-      .then(resp=>{
-        let doenetML = resp.data.doenetML;
-        this.updateNumber++;
-        this.doenetML=doenetML;
-        this.forceUpdate();
-      })
-      .catch(error=>{this.setState({error:error})});
-  }
-
-  buildOverview(){
-    this.mainSection = this.loadingScreen;
-    //talk to database to load fresh info
-    this.overview = (<React.Fragment>
-      <h2 data-cy="sectionTitle">Overview</h2> 
-      {this.doenetML!=""?
-      
-      <DoenetViewer 
-              key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
-              free={{doenetCode: this.doenetML}} 
-              mode={{
-                solutionType:this.state.solutionType,
-                allowViewSolutionWithoutRoundTrip:this.state.allowViewSolutionWithoutRoundTrip,
-                showHints:this.state.showHints,
-                showFeedback:this.state.showFeedback,
-                showCorrectness:this.state.showCorrectness,
-              }}           
-            />:null}
-    </React.Fragment>)
-
-    this.mainSection = this.overview;
-  }
-
-  loadSyllabus(){
-    console.log("LOAD Syllabus")
-    this.doenetML="";
-    console.log("branch id...")
-    console.log(this.syllabus_branchId)
-    const phpUrl='/api/getDoenetML.php';
-    const data={        
-      branchId: this.syllabus_branchId,
-      contentId:"",
-      ListOfContentId:"", //this is to store all contentID of one branchID for publish indication 
-      List_Of_Recent_doenetML:[], // this is to store list of (date:doenetML) 
-    }
-    const payload = {
-      params: data
-    }
-    axios.get(phpUrl,payload)
-      .then(resp=>{
-        let doenetML = resp.data.doenetML;
-        console.log("doenetML!!!!!!!!!!!!");
-        console.log(doenetML);
-        this.updateNumber++;
-        this.doenetML=doenetML;
-        this.forceUpdate();
-      })
-      .catch(error=>{this.setState({error:error})});
-  }
-
-  buildSyllabus(){
-    this.mainSection = this.loadingScreen;
-
-    //talk to database to load fresh info
-    this.overview = (<React.Fragment>
-      <h2 data-cy="sectionTitle">Syllabus</h2> 
-      {this.doenetML!=""?
-      <div><button onClick={()=>window.location.href="/editor/?branchId="+this.syllabus_branchId}><FontAwesomeIcon icon={faEdit}/></button><DoenetViewer 
-              key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
-              free={{doenetCode: this.doenetML}} 
-              mode={{
-                solutionType:this.state.solutionType,
-                allowViewSolutionWithoutRoundTrip:this.state.allowViewSolutionWithoutRoundTrip,
-                showHints:this.state.showHints,
-                showFeedback:this.state.showFeedback,
-                showCorrectness:this.state.showCorrectness,
-              }}           
-            /></div>:null}   
-    </React.Fragment>)
-
-    this.mainSection = this.overview;
-  }
-
-  buildAssignment() {
-    this.mainSection = this.loadingScreen;
-    this.activeSection="assignment"; // this is kept 
-    if (this.finishedContructor === false) {return null;}
-
-    let disablePrev = false;
-    if (this.assignmentIndex === 0){disablePrev = true;}
-    let disableNext = false;
-    if (this.assignmentIndex === (this.assignmentIdList.length - 1)){disableNext = true;}
-
-    console.log("-----------this.assignmentObj-------------");
-    
-    console.log(this.assignmentObj);
-
-    let solutionType = "button";
-    if (Number(this.assignmentObj.showSolution) === 0){
-      solutionType = "none";
-    }
-    let showHints = true;
-    if (Number(this.assignmentObj.showHints) === 0){
-      showHints = false;
-    }
-    let showFeedback = true;
-    if (Number(this.assignmentObj.showFeedback) === 0){
-      showFeedback = false;
-    }
-    let showCorrectness = true;
-    if (Number(this.assignmentObj.showCorrectness) === 0){
-      showCorrectness = false;
-    }
-    // TODO: what assignment get un-publish ?
-    console.log("assignment ID OVER HERE !!!!")
-    assignmentID = this.assignmentObj.assignmentId;
-    this.assignmentFragment = <React.Fragment>
-      <div className="assignmentContainer">     
-        <div className="assignmentActivity">
-              {this.assignmentObj.assignmentId?<DoenetViewer 
-              key={"doenetviewer"+this.updateNumber} 
-              free={{
-                doenetCode: this.assignmentObj.code,
-                doenetState: this.assignmentObj.latestDocumentState,
-                requestedVariant:{index:this.assignmentObj.assignedVariant},
-              }} 
-              assignmentId={this.assignmentObj.assignmentId}
-              creditUpdate={this.creditUpdate}
-              attemptNumber={this.assignmentObj.attemptNumber}
-              mode={{
-                solutionType:solutionType,
-                allowViewSolutionWithoutRoundTrip:false,
-                showHints,
-                showFeedback,
-                showCorrectness,
-              }}
-              course={true}
-              />:<p>Loading...</p>}
-        </div>
-      </div>
-    </React.Fragment>;
-
-    this.mainSection = this.assignmentFragment;
-    this.updateLocationBar(this.assignmentObj.assignmentId);
-    this.forceUpdate();
-  }
-
-  loadGrades(){
-    this.scores = {};
-    this.subTotals = {};
-      
-      const loadGradsUrl='/api/loadGradsLearner.php';
-      
-      // this.courseId
-      const data={
-        courseId: this.courseId,
-      }
-      const payload = {
-        params: data
-      }
-      
-      
-      axios.get(loadGradsUrl,payload)
-        .then(resp=>{
-          this.assignmentsData = resp.data.grades;
-          this.student = resp.data.student;
-          this.course = resp.data.course;
-          this.section = resp.data.section;
-          this.group = resp.data.group;
-          this.forceUpdate();
-          
-        })
-        .catch(error=>{this.setState({error:error})});
-  }
-  
-  buildGrades(){
-    
-    if (this.assignmentsData === null){
-      this.mainSection = this.loadingScreen;
-    }else{
-      this.buildGradesHelper();
-    }
-
     
   }
-
-  buildGradesHelper(){
-    
-    this.total = {possible:0,score:0,percentage:'0%'}
-
-    for (let gcat of this.gradeCategories){
-      this.scores[gcat] = [];
-      this.subTotals[gcat] = {possible:0,score:0,percentage:'0%'};
-
-      for (let dObj of this.assignmentsData){
-        if (dObj.gradeCategory === gcat){
-          let possible = dObj.totalPointsOrPercent;
-          let percentFLAG = false;
-          if (possible === null){
-            possible = '--';
-            percentFLAG = true;
-          }else{
-            possible = Number(possible);
-            this.subTotals[gcat].possible += possible;
-          }
-          let score = dObj.credit;
-          if (score === null || possible === null){
-            score = '--';
-            percentFLAG = true;
-          }else{
-            score = Number(score)*possible;
-            if (!isNaN(score)){
-              this.subTotals[gcat].score += score;
-            }
-          }
-          let percentage;
-          if (percentFLAG){
-            percentage = '--';
-          }else{
-            percentage = Math.round(score/possible*1000)/10 + '%';
-          }
-
-          if (isNaN(score)){
-            score = "--";
-          }
-
-          this.scores[gcat].push({gradeItem:dObj.assignmentName,
-            assignmentId:dObj.assignmentId,
-            possible:possible,
-            score:score,
-            percentage:percentage
-          });
-        }
-      }
-
-      if (this.subTotals[gcat].score > 0 && this.subTotals[gcat].possible > 0){
-        this.subTotals[gcat].percentage = Math.round(this.subTotals[gcat].score / this.subTotals[gcat].possible*1000)/10 + '%';
-        this.total.score += Number(this.subTotals[gcat].score);
-        this.total.possible += Number(this.subTotals[gcat].possible);
-      }
-      
-    }
-    this.total.percentage = '0%';
-    if(!isNaN(this.total.score / this.total.possible*1000)/10){
-      this.total.percentage = Math.round(this.total.score / this.total.possible*1000)/10 + '%';
-    }
- 
-    //talk to database to load fresh info
-    this.overview = (<React.Fragment>
-      <h2 data-cy="sectionTitle">Grades</h2>
-      <div style={{marginLeft:"10px"}}>
-        <div>Student: {this.student}</div>
-        {/* <div>Course: {this.course}</div> */}
-        <div>Section: {this.section}</div>
-        {this.group !== '' ? <div>Group: {this.group}</div> : null}
-      </div>
-      
-      
-
-      <table id="grades">
-      <tbody>
-        <tr className="colHeadingsRow">
-          <th width="581">Grade item</th>
-          <th width="75">Possible points</th>
-          <th width="56">Score</th>
-          <th width="95">Percentage</th>
-        </tr>
-
-      { this.gradeCategories.map( cat => <React.Fragment key={'option'+cat}>
-      
-        <tr>
-          <td className="typeHeadingRow" colSpan="4">{cat}</td>
-        </tr>
-     
-
-        {this.scores[cat].map(
-          (score)=><React.Fragment key={'score_row'+score.assignmentId}>
-          <tr className="typeDataRow"> 
-            <td><span className="assignmentLink" onClick={()=>{
-              this.buildAssignmentGrades({assignment:score});
-              
-            }}>{score.gradeItem}</span></td>
-            <td>{score.possible}</td>
-            <td>{score.score}</td>
-            <td>{score.percentage}</td>
-          </tr>
-          </React.Fragment>
-        )}
-
-        <tr className="typeSubTotalDataRow"> 
-          <td><span>Subtotal for {cat}</span></td>
-          <td>{this.subTotals[cat].possible}</td>
-          <td>{this.subTotals[cat].score}</td>
-          <td>{this.subTotals[cat].percentage}</td>
-        </tr>
+  assignmentDataToCourseInfo({courseId,data}){ //newly added
         
-
-      </React.Fragment>)}
-
         
-        <tr className="colTotalRow">
-          <td>Total</td>
-          <td>{this.total.possible}</td>
-          <td>{this.total.score}</td>
-          <td>{this.total.percentage}</td>
-        </tr>
-       
-        </tbody>
-      </table>
-    </React.Fragment>)
-    this.mainSection = this.overview;
-  }
-
-  buildAssignmentGrades({assignment}){
-    this.mainSection = this.loadingScreen;
-    this.assignment = assignment;
-    this.assignmentId = assignment.assignmentId;
-
-      const url='/api/loadItemGrades.php';
-      
-      const data={
-        courseId: this.courseId,
-        assignmentId: assignment.assignmentId,
-      }
-      const payload = {
-        params: data
-      }
-      
-      
-      axios.get(url,payload)
-        .then(resp=>{
-          this.assignmentItems = resp.data.assignmentItems;
-
-          this.latestAttemptNumber = resp.data.attemptNumber;
-          this.latestAttemptCredit = resp.data.attemptCredit;
-
-          this.buildAssignmentGradesHelper();
-        })
-        .catch(error=>{this.setState({error:error})});
-  }
-
-  buildAssignmentGradesHelper(){
-    let latestAttemptPercentage = Math.round(Number(this.latestAttemptCredit)*10000,2)/100;
-    latestAttemptPercentage = `${latestAttemptPercentage}%`;
-    for (var item of this.assignmentItems){
-      let percentage = Math.round(Number(item.credit)*10000,2)/100;
-      item.percentage = `${percentage}%`;
-      
-    }
-
-
-    this.mainSection = (<React.Fragment>
-      <button onClick={()=>{
-        this.buildGradesHelper({data:this.assignmentsData});
-      }}>Back to grades</button>
-      <h2 style={{marginLeft:"10px"}}>{this.assignment.gradeItem}</h2>
-      {this.latestAttemptNumber > 1 ? <p style={{marginLeft:"10px",fontSize:"16px"}}>Attempt Number: {this.latestAttemptNumber} </p>: null }
-
-      <table id="grades" style={{width:"400px"}}>
-      <tbody>
-        <tr className="colHeadingsRow">
-          <th width="581">Grade item</th>
-          <th width="95">Percentage</th>
-        </tr>
-
-        {this.assignmentItems.map(
-          (item)=><React.Fragment key={'assignmentItem'+item.title}>
-          <tr className="typeDataRow"> 
-            <td><span className="assignmentLink" onClick={()=>{
-              // this.buildAssignmentGrades({assignment:score});
-              this.buildItemGrade({item});
-              
-            }}>{item.title}</span></td>
-            <td>{item.percentage}</td>
-          </tr>
-          </React.Fragment>
-        )}
-
-        
-        {this.latestAttemptNumber > 1 ? 
-          <tr className="colTotalRow">
-            <td>Total for attempt {this.latestAttemptNumber}</td>
-          <td>{latestAttemptPercentage}</td>
-          </tr>
-          : null }
-          
-        <tr className="colTotalRow">
-          <td>Total</td>
-          <td>{this.assignment.percentage}</td>
-        </tr>
-        </tbody>
-        </table>
-      </React.Fragment>);
-
-    this.forceUpdate();
-
-  }
-
-  buildItemGrade({item}){
-
-
-    const url='/api/loadItemAttemptGrades.php';
-      
-      // this.courseId
-      const data={
-        assignmentId: this.assignmentId,
-        itemNumber: item.itemNumber,
-        attemptNumber: this.latestAttemptNumber,
-      }
-      const payload = {
-        params: data
-      }
-      
-      
-      axios.get(url,payload)
-        .then(resp=>{
-          
-          this.buildAttemptItemGradesHelper({
-            itemTitle:item.title,
-            itemState:resp.data.itemState,
-            submissionNumber:resp.data.submissionNumber,
-            submittedDate:resp.data.submittedDate,
-            valid:resp.data.valid,
-            });
-        })
-        .catch(error=>{this.setState({error:error})});
-    
-  }
-
-  buildAttemptItemGradesHelper({itemTitle, itemState, submissionNumber, submittedDate, valid, }){
-    console.log('itemState');
-    console.log(itemState);
-    
-    this.mainSection = (<React.Fragment>
-      <button onClick={()=>{
-        this.buildGradesHelper({data:this.assignmentsData});
-      }}>Back to grades</button>
-      <button onClick={()=>{
-        this.buildAssignmentGradesHelper();
-      }}>Back to {this.assignment.gradeItem}</button>
-    <h2 style={{marginLeft:"10px"}}>{this.assignment.gradeItem}: {itemTitle}</h2>
-      {this.latestAttemptNumber > 1 ? <p style={{marginLeft:"10px",fontSize:"16px"}}>Attempt Number: {this.latestAttemptNumber} </p>: null }
-
-            <DoenetViewer 
-            key={"doenetviewer"} 
-            free={{
-            doenetState: itemState,
-          }} 
-          course={true}
-            attemptNumber={this.latestAttemptNumber}
-              mode={{
-                solutionType:"displayed",
-                allowViewSolutionWithoutRoundTrip:false,
-                showHints:false,
-                showFeedback:true,
-                showCorrectness:true,
-                interactive:false,
-              }}
-            />
-
-    </React.Fragment>);
-    this.forceUpdate();
-  }
-
-  setAssignmentObj({outlineType}){
-    if (outlineType === "outline"){
-      this.assignmentObj = this.assignmentIdList[this.assignmentIndex];
-    } else if (outlineType === "assignment"){
-      this.assignmentObj = this.assignmentAssignedList[this.assignmentIndex];
-    } else if (outlineType === "due"){
-      this.assignmentObj = this.assignmentDueList[this.assignmentIndex];
-    } 
-  }
-
-  finishContruction({data}){
-    
-    this.courseAssignmentChoiceList = [];
-    this.assignmentDataToCourseInfo({courseId:this.courseId,data:data});
-    
-    this.assignmentIdList = [];
-    this.buildAssignmentArray({courseId:this.courseId,assignmentId:this.assignmentId});
-    this.assignmentAssignedList = [...this.assignmentIdList];
-    this.assignmentAssignedList.sort(
-        (a,b) => { 
-          return new Date(a.assignedDate) - new Date(b.assignedDate)}
-      );
-    this.assignmentDueList = [...this.assignmentIdList];
-    this.assignmentDueList.sort(
-        (a,b) => { 
-          return new Date(a.dueDate) - new Date(b.dueDate)}
-      );
-  
-    let outlineType = "outline";
-    this.setAssignmentObj({outlineType:outlineType});
-    this.resolveVariant({outlineType:outlineType});
-
-    if (this.state.outlineType === "outline"){
-      this.buildOutline({courseId:this.courseId});
-    }else if (this.state.outlineType === "assignment"){
-      this.buildAssignmentList({courseId:this.courseId});
-    }else{
-      this.buildDueList();
-    }
-    
-    this.finishedContructor = true;
-    
-    // console.log("END OF CONSTRUCTION");
-    // console.log(this.assignmentIdList);
-    // console.log(this.assignmentIdList[this.assignmentIndex].code);
-    // this.setState({code:this.assignmentIdList[this.assignmentIndex].code});
-  }s
-
-  updateAssignmentList({outlineType}) {
-    if (outlineType === "outline"){
-      this.buildOutline({courseId:this.courseId});
-    }else if (outlineType === "assignment"){
-      this.buildAssignmentList({courseId:this.courseId});
-    }else{
-      this.buildDueList();
-    } 
-  }
-
-  resolveVariant({outlineType}){
-    
-    if (this.assignmentObj.assignedVariant === undefined || this.assignmentObj.assignedVariant === null){
-      this.assignmentObj.attemptNumber = 1;
-
-      if (Number(this.assignmentObj.multipleAttempts) === 1){
-
-        //VariantIndex is the same offline and online
-        this.assignmentObj.assignedVariant = this.variantNumberFromAttemptNumber();
-      }else{
-        this.assignmentObj.assignedVariant = 0;
-      }
-
-     
-      //Save assignedVariant to DB
-      // no saveVariant.php
-    //   const url='/api/saveVariant.php';
-    // const data={
-    //   assignmentId: this.assignmentObj.assignmentId,
-    //   assignedVariant:this.assignmentObj.assignedVariant,
-    //   attemptNumber:this.assignmentObj.attemptNumber,
-    //   contentId:this.assignmentObj.contentId,
-    // }
-    // const payload = {
-    //   params: data
-    // }
-    // console.log("saveVariant data");
-    // console.log(data);
-    
-    
-    // axios.get(url,payload)
-    //   .then(resp=>{
-    //     console.log(resp.data);
-    //   });
-      
-    }
-    
-
-  }
-
-  variantNumberFromAttemptNumber(){
-    let preseed = this.assignmentObj.attemptNumber+this.assignmentObj.assignmentId
-    if(Number(this.assignmentObj.individualize) === 1){
-      preseed += this.username;
-    }
-    let seed = hashStringToInteger(preseed);
-
-    let rng = new MersenneTwister(seed);
-    let randomNumber = rng.random();
-    return Math.floor(randomNumber * 1000000000);
-  }
-
-  assignmentDataToCourseInfo({courseId,data}){
-        
-    this.courseInfo[courseId] = {};
-    this.courseInfo[courseId].heading = {};
     let parentHeadingIds = [];
     
     let prevLoopLevel = 1;
@@ -1095,7 +82,6 @@ EnableThese(e){
         for (let headingId of parentHeadingIds){
             baseObj = baseObj.heading[headingId];
         }
-        
         if (baseObj.headingsOrder === undefined){
             baseObj.headingsOrder = [];
             baseObj.heading = {};
@@ -1111,18 +97,53 @@ EnableThese(e){
                 baseObj.heading[headingId].assignmentOrder = [];
                 baseObj.heading[headingId].assignments = {};
                 for (let assignmentInfo of data.assignments[headingId]){
-                baseObj.heading[headingId].assignmentOrder.push(assignmentInfo.assignmentId);  
-                
-                  
-                  baseObj.heading[headingId].assignments[assignmentInfo.assignmentId] = {
+                    if(assignmentInfo.individualize === "1"){
+                        assignmentInfo.individualize = true;
+                    }else if(assignmentInfo.individualize === "0"){
+                        assignmentInfo.individualize = false;
+                    }
+                    if(assignmentInfo.multipleAttempts === "1"){
+                        assignmentInfo.multipleAttempts = true;
+                    }else if(assignmentInfo.multipleAttempts === "0"){
+                        assignmentInfo.multipleAttempts = false;
+                    }
+                    if(assignmentInfo.showSolution === "1"){
+                        assignmentInfo.showSolution = true;
+                    }else if(assignmentInfo.showSolution === "0"){
+                        assignmentInfo.showSolution = false;
+                    }
+                    if(assignmentInfo.showFeedback === "1"){
+                        assignmentInfo.showFeedback = true;
+                    }else if(assignmentInfo.showFeedback === "0"){
+                        assignmentInfo.showFeedback = false;
+                    }
+                    if(assignmentInfo.showHints === "1"){
+                        assignmentInfo.showHints = true;
+                    }else if(assignmentInfo.showHints === "0"){
+                        assignmentInfo.showHints = false;
+                    }
+                    if(assignmentInfo.showCorrectness === "1"){
+                        assignmentInfo.showCorrectness = true;
+                    }else if(assignmentInfo.showCorrectness === "0"){
+                        assignmentInfo.showCorrectness = false;
+                    }
+                    if(assignmentInfo.proctorMakesAvailable === "1"){
+                        assignmentInfo.proctorMakesAvailable = true;
+                    }else if(assignmentInfo.proctorMakesAvailable === "0"){
+                        assignmentInfo.proctorMakesAvailable = false;
+                    }
+                baseObj.heading[headingId].assignmentOrder.push(assignmentInfo.assignmentId);
+                baseObj.heading[headingId].assignments[assignmentInfo.assignmentId] = {
                     documentName:assignmentInfo.assignmentName,
-                    code:assignmentInfo.doenetML,
-                    latestDocumentState: assignmentInfo.latestDocumentState,
                     docTags:[],
                     contentId:assignmentInfo.contentId,
                     sourceBranchId:assignmentInfo.sourceBranchId,
-                    dueDate:assignmentInfo.dueDate,
                     assignedDate:assignmentInfo.assignedDate,
+                    dueDate:assignmentInfo.dueDate,
+                    gradeCategory:assignmentInfo.gradeCategory,
+                    totalPointsOrPercent:assignmentInfo.totalPointsOrPercent,
+                    coverPageHTML:assignmentInfo.coverPageHTML,
+                    latestPublishedContentTest:assignmentInfo.latestPublishedContentTest,
                     individualize:assignmentInfo.individualize,
                     multipleAttempts:assignmentInfo.multipleAttempts,
                     showSolution:assignmentInfo.showSolution,
@@ -1130,20 +151,8 @@ EnableThese(e){
                     showHints:assignmentInfo.showHints,
                     showCorrectness:assignmentInfo.showCorrectness,
                     proctorMakesAvailable:assignmentInfo.proctorMakesAvailable,
-                    dueDateOverride:assignmentInfo.dueDateOverride,
-                    timeLimitOverride:assignmentInfo.timeLimitOverride,
-                    numberOfAttemptsAllowedOverride:assignmentInfo.numberOfAttemptsAllowedOverride,
-                    attemptNumber:assignmentInfo.attemptNumber,
-                    assignedVariant:assignmentInfo.assignedVariant,
-                    generatedVariant:assignmentInfo.generatedVariant,
-                    totalPointsOrPercent:assignmentInfo.totalPointsOrPercent,
-                    credit:assignmentInfo.credit,
-                    proctorMakesAvailable:assignmentInfo.proctorMakesAvailable,
-
-
+                    
                 };
-              
-                
             }
             
         }
@@ -1153,576 +162,1157 @@ EnableThese(e){
         potentialParentHeadingId = headingId;
     }
 
+}
+loadAllCoursesAndTheirAssignments(){ //newly added
+
+  //Hard coded Duane's Math 1241 course for now
+  //Expect in the future we will load just the instructor's current courses here
+  this.courseInfo["aI8sK4vmEhC5sdeSP3vNW"] = {};
+  this.courseInfo.courses = [{courseId:"aI8sK4vmEhC5sdeSP3vNW",shortName:"math1241"}];
+const url='/api/loadCourseOutline.php';
+const data={
+courseId: "aI8sK4vmEhC5sdeSP3vNW",
+//   courseId:this.state.courseId,
+}
+const payload = {
+params: data
+}
+//console.log("load Course Outline data");
+//console.log(data);
+
+
+axios.get(url,payload)
+.then(resp=>{
+  this.assignmentDataToCourseInfo({courseId:"aI8sK4vmEhC5sdeSP3vNW",data:resp.data});
+    this.numberLoaded = this.numberLoaded + 1;
+    this.forceUpdate();
+});
+  //   this.courseInfo.courses = [{courseId:"aI8sK4vmEhC5sdeSP3vNW",shortName:"math1241"}];
+
+  //   //Replace this with an axios call
+  // //   this.courseInfo["aI8sK4vmEhC5sdeSP3vNW"] = {};
+  // //   this.courseInfo["aI8sK4vmEhC5sdeSP3vNW"].assignmentOrder = [];
+  // //   this.courseInfo["aI8sK4vmEhC5sdeSP3vNW"].assignments = {};
+
+  
+  
+}
+  loadSharedContent(){ //newly added for separation //newly added
+    console.log("-----running load shared content-------")
+   const url='/api/loadWithKeywords.php';
+   axios.get(url)
+   .then(resp=>{
+
+   //reset data
+  // console.log("please work..."+resp.data);
+   this.sharedContent = {};
+   this.sharedContent.documentOrder = [];
+
+   for (let data of resp.data){
+
+     let docTags = [];
+     if (data.docTags[0] !== null){
+       docTags = data.docTags;
+     }
+
+     this.sharedContent[data.branchId] = {
+       documentName:data.title,
+       code:data.doenetML,
+       docTags:docTags,
+       contentId:data.contentId,  //TODO: Remove this from all areas
+       publishedContentId:data.contentId,
+   };
+   //console.log("please work..."+this.sharedContent);
+   //console.log("-----PUSHING------")
+   this.sharedContent.documentOrder.push(data.branchId);
+
+   }
+   this.numberLoaded = this.numberLoaded + 1;
+   
+   this.forceUpdate();
+ })
+ .catch(error=>{this.setState({error:error})});
+   
+ //console.log("please work..."+this.sharedContent);
+}
+  handleContentChange(e) {
+    let branchIdsArray = [];
+    for (let option of e.target.options) {
+      if (option.selected) { branchIdsArray.push(option.value); }
+    }
+    this.setState({ branchIdsSelected: branchIdsArray });
   }
 
-  componentDidCatch(error, info){
-    this.setState({error:error,errorInfo:info});
+  updateAssignmentName({ e, assignmentId }) {
+    let newValue = e.target.value;
+    this.courseInfo[this.state.courseId].assignments[assignmentId].documentName = newValue;
+    this.forceUpdate();
   }
 
-  buildAssignmentArray({courseId,headingIdArray=[],assignmentIndex=-1,assignmentId=this.assignmentObj.assignmentId}){
-    
+  addAssignments({ headingIdArray }) {
+    // //if none selected select the first one
+    // let editObj = this.state.edit;
+    // if (editObj[assignmentId].gradeCategory === undefined || editObj[assignmentId].gradeCategory === null){
+    //   editObj[assignmentId].gradeCategory = this.gradeCategories[0];
+    // }
+
+    if (this.state.branchIdsSelected.length === 0) { alert("You need to select content to make an assignment"); return; }
+    let documentNameArray = [];
+    let assignmentIdArray = [];
+    let branchIdArray = [];
+    let gradeCategory = this.gradeCategories[0];
+    let baseObj = this.courseInfo[this.state.courseId];
+    //Adjust the baseObj so it is at the current heading level
+    for (let headingId of headingIdArray) {
+      baseObj = baseObj.heading[headingId];
+    }
+    //define assignmentOrder and assignments
+    if (baseObj.assignmentOrder === undefined) {
+      baseObj.assignmentOrder = [];
+      baseObj.assignments = {};
+    }
+    for (let branchId of this.state.branchIdsSelected) {
+      let assignmentId = nanoid();
+
+      baseObj.assignmentOrder.push(assignmentId);
+      baseObj.assignments[assignmentId] = {};
+
+      let documentName = this.sharedContent[branchId].documentName;
+      baseObj.assignments[assignmentId].documentName = documentName;
+
+      let code = this.sharedContent[branchId].code;
+      baseObj.assignments[assignmentId].code = code;
+
+      let revisionNumber = this.
+      sharedContent[branchId].revisionNumber;
+      baseObj.assignments[assignmentId].revisionNumber = revisionNumber;
+
+      baseObj.assignments[assignmentId].sourceBranchId = branchId;
+
+      baseObj.assignments[assignmentId].gradeCategory = gradeCategory;
+      baseObj.assignments[assignmentId].coverPageHTML = "";
+      baseObj.assignments[assignmentId].totalPointsOrPercent = 0;
+      baseObj.assignments[assignmentId].showCorrectness = 1;
+      baseObj.assignments[assignmentId].showHints = 1;
+      baseObj.assignments[assignmentId].showFeedback = 1;
+
+
+      documentNameArray.push(documentName);
+      assignmentIdArray.push(assignmentId);
+      branchIdArray.push(branchId);
+    }
+
+    //Save in Database
+    // console.log(documentNameArray);
+    // console.log(assignmentIdArray);
+    // console.log(branchIdArray);
+
+
+
+      this.saveCourseOutlineToAPI();
+
+    this.forceUpdate();
+  }
+
+  // deleteAssignment({assignmentId}){
+  //   this.props.courseInfo[this.state.courseId].assignmentOrder =
+  //       this.props.courseInfo[this.state.courseId].assignmentOrder.filter(value => value !== assignmentId);
+  //   delete this.props.courseInfo[this.state.courseId].assignments[assignmentId];
+  //   this.forceUpdate();
+  // }
+
+
+  saveCourseOutlineToAPI() {
+    const url = '/api/saveCourseOutline.php';
+    const data = {
+      courseInfo: this.courseInfo[this.state.courseId],
+      courseId: this.state.courseId,
+    }
+
+    console.log("save course outline data");
+    console.log(data);
+
+
+    axios.post(url, data)
+      .then(resp => {
+        console.log("Saved course outline!");
+        console.log(resp);
+        console.log(resp.data);
+
+
+      })
+      .catch(error => { this.setState({ error: error }) });
+  }
+
+
+
+  insertHeading({ headingIdArray }) {
+    let baseObj = this.courseInfo[this.state.courseId];
+    //Adjust the baseObj so it is at the current heading level
+    for (let headingId of headingIdArray) {
+      baseObj = baseObj.heading[headingId];
+    }
+    //define assignmentOrder and assignments
+    if (baseObj.headingsOrder === undefined) {
+      baseObj.headingsOrder = [];
+      baseObj.heading = {};
+    }
+    let courseHeadingId = nanoid();
+    let defaultHeadingText = "Untitled Heading";
+    baseObj.headingsOrder.unshift({
+      courseHeadingId: courseHeadingId,
+      headingText: defaultHeadingText
+    });
+    baseObj.heading[courseHeadingId] = {};
+    let headingLevel = headingIdArray.length + 1;
+    let parentHeadingId = headingIdArray[(headingIdArray.length - 1)];
+
+      this.saveCourseOutlineToAPI();
+
+    this.forceUpdate();
+  }
+
+  moveHeadingDown({ courseId, headingIdArray, index }) {
     let baseObj = this.courseInfo[courseId];
     //Adjust the baseObj so it is at the current heading level
-    for(let headingId of headingIdArray){
+    for (let headingId of headingIdArray) {
+      baseObj = baseObj.heading[headingId];
+    }
+    let indexHeadingObj = baseObj.headingsOrder[index];
+
+
+    let prevHeadingId = indexHeadingObj.courseHeadingId;
+    let courseHeadingId = baseObj.headingsOrder[index + 1].courseHeadingId;
+    let nextHeadingId = "";
+    //If there is a nextHeading at this level set nextHeadingId
+    if (Number(index) + 2 < baseObj.headingsOrder.length) {
+      nextHeadingId = baseObj.headingsOrder[index + 2].courseHeadingId;
+    }
+    //copy heading below to index's position
+    baseObj.headingsOrder[index] = baseObj.headingsOrder[index + 1];
+    //put index into heading below
+    baseObj.headingsOrder[index + 1] = indexHeadingObj;
+
+
+
+      this.saveCourseOutlineToAPI();
+
+
+    this.forceUpdate();
+  }
+
+  moveHeadingUp({ courseId, headingIdArray, index }) {
+    let baseObj = this.courseInfo[courseId];
+    //Adjust the baseObj so it is at the current heading level
+    for (let headingId of headingIdArray) {
+      baseObj = baseObj.heading[headingId];
+    }
+    let indexHeadingObj = baseObj.headingsOrder[index];
+
+    let courseHeadingId = indexHeadingObj.courseHeadingId;
+    let prevHeadingId = baseObj.headingsOrder[index - 1].courseHeadingId;
+    let nextHeadingId = "";
+    //If there is a nextHeading at this level set nextHeadingId
+    if (Number(index) + 1 < baseObj.headingsOrder.length) {
+      nextHeadingId = baseObj.headingsOrder[index + 1].courseHeadingId;
+    }
+
+    //copy heading below to index's position
+    baseObj.headingsOrder[index] = baseObj.headingsOrder[index - 1];
+    //put index into heading below
+    baseObj.headingsOrder[index - 1] = indexHeadingObj;
+
+
+
+      this.saveCourseOutlineToAPI();
+
+
+    this.forceUpdate();
+  }
+
+  //Find index of parentHeadingId then test if there is one more heading below
+  findNextHeadingId({ courseId, headingIdArray, lastHeadingId }) {
+
+    let nextHeadingId = "";
+
+    let baseObj = this.courseInfo[courseId];
+
+    //Find the next heading if it exists for each level until we find the closest one
+    for (let i = 0; i <= headingIdArray.length; i++) {
+
+      let headingId = headingIdArray[i];
+      if (i == headingIdArray.length) { headingId = lastHeadingId; }
+
+      if (baseObj.headingsOrder !== undefined) {
+        for (let [index, headingObj] of baseObj.headingsOrder.entries()) {
+          let headingOrderId = headingObj.courseHeadingId;
+
+          if (headingId === headingOrderId) {
+
+            if (baseObj.headingsOrder[index + 1] !== undefined) {
+              nextHeadingId = baseObj.headingsOrder[index + 1].courseHeadingId;
+
+            }
+            break;
+          }
+        }
+        baseObj = baseObj.heading[headingId];
+      }
+
+
+    }
+
+
+    return nextHeadingId;
+  }
+
+  moveHeadingLeft({ courseId, headingIdArray, index }) {
+
+    let baseObj = this.courseInfo[courseId];
+    //Adjust the baseObj so it is at the current heading level
+    for (let headingId of headingIdArray) {
       baseObj = baseObj.heading[headingId];
     }
 
-    if (baseObj.assignmentOrder !== undefined){
-      for (let baseObjAssignmentId of baseObj.assignmentOrder){
-
-        // let assignmentInfo = Object.assign({},baseObj.assignments[assignmentId]);
-        let assignmentInfo = baseObj.assignments[baseObjAssignmentId];
-        assignmentInfo.assignmentId = baseObjAssignmentId;
-        
-        
-      this.assignmentIdList.push(assignmentInfo);
-      assignmentIndex++;
-      if (baseObjAssignmentId === assignmentId){
-        this.assignmentIndex = assignmentIndex;
-      }
-      }
+    let parentHeadingObj = this.courseInfo[courseId];
+    //Adjust the parentHeadingObj so it is at the current heading level
+    for (let i = 0; i < headingIdArray.length - 1; i++) {
+      let headingId = headingIdArray[i];
+      parentHeadingObj = parentHeadingObj.heading[headingId];
     }
-    
+    let parentHeadingId = headingIdArray[headingIdArray.length - 1];
+    let movingHeadingObj = baseObj.headingsOrder[index];
+    let movingHeadingId = movingHeadingObj.courseHeadingId;
 
-    if (baseObj.headingsOrder !== undefined){
-      for(let [index,headingObj] of baseObj.headingsOrder.entries()){
-        let headingId = headingObj.courseHeadingId;
-        
-        let nextLevelHeadingIdArray = []; //break the association for recursion
-           for(let headingId of headingIdArray){
-            nextLevelHeadingIdArray.push(headingId);
-           }
-           nextLevelHeadingIdArray.push(headingId);
-          assignmentIndex = this.buildAssignmentArray({courseId:courseId,headingIdArray:nextLevelHeadingIdArray,assignmentIndex:assignmentIndex,assignmentId:assignmentId});
-      }
+    let nextHeadingId = this.findNextHeadingId({ courseId: courseId, headingIdArray: headingIdArray, lastHeadingId: movingHeadingId });
+
+
+    //***** 
+    //add to headingOrder and headings to the parent.
+    //***** 
+
+    //find the index to insert it into the parent headingOrder
+    let parentInsertIndex = 0;
+    for (let [index, obj] of parentHeadingObj.headingsOrder.entries()) {
+      if (obj.courseHeadingId === parentHeadingId) { parentInsertIndex = index; break; }
+
     }
-    return assignmentIndex;
-  }
+    parentHeadingObj.headingsOrder.splice(parentInsertIndex + 1, 0, movingHeadingObj);
+    parentHeadingObj.heading[movingHeadingId] = JSON.parse(JSON.stringify(baseObj.heading[movingHeadingId]));
 
-  buildAssignmentList({courseId}){
+    //***** 
+    //Remove from headingOrder and headings of the base.
+    //***** 
+    delete baseObj.heading[movingHeadingId];
+    baseObj.headingsOrder.splice(index, 1);
 
-    this.courseAssignmentChoiceList = [];
 
-    for (let [index,assignmentObj] of this.assignmentAssignedList.entries()){
-      if (index === this.assignmentIndex){
-        let selectedAssignment = this.buildSelectedAssignment({assignmentObj:assignmentObj});
-        this.courseAssignmentChoiceList.push(selectedAssignment);
-        this.assignmentIndex = index;
-      }else{
-        this.courseAssignmentChoiceList.push(
-          <div 
-          style={{margins:"10px",height:"30px"}} 
-          key={'assignmentList'+assignmentObj.assignmentId}
-          onClick={()=>{this.loadAssignment({assignmentId:assignmentObj.assignmentId})}}
-          >{assignmentObj.documentName}</div>
-        )
-      }
-      
-    }
+      this.saveCourseOutlineToAPI();
+
+    this.forceUpdate();
 
   }
 
-  buildDueList(){
-
-    this.courseAssignmentChoiceList = [];
-
-    for (let [index,assignmentObj] of this.assignmentDueList.entries()){
-      if (index === this.assignmentIndex){
-        let selectedAssignment = this.buildSelectedAssignment({assignmentObj:assignmentObj});
-        this.courseAssignmentChoiceList.push(selectedAssignment);
-        this.assignmentIndex = index;
-      }else{
-        this.courseAssignmentChoiceList.push(
-          <div 
-          style={{margins:"10px",height:"30px"}} 
-          key={'assignmentList'+assignmentObj.assignmentId}
-          onClick={()=>{this.loadAssignment({assignmentId:assignmentObj.assignmentId})}}
-          >{assignmentObj.documentName}</div>
-        )
-      }
+  moveHeadingRight({ courseId, headingIdArray, index }) {
+    let baseObj = this.courseInfo[courseId];
+    //Adjust the baseObj so it is at the current heading level
+    for (let headingId of headingIdArray) {
+      baseObj = baseObj.heading[headingId];
     }
+    let parentHeadingId = baseObj.headingsOrder[index - 1].courseHeadingId;
+    let parentHeadingObj = baseObj.heading[parentHeadingId];
+    let movingHeadingObj = baseObj.headingsOrder[index];
+    let movingHeadingId = movingHeadingObj.courseHeadingId;
+    let nextHeadingId = this.findNextHeadingId({ courseId: courseId, headingIdArray: headingIdArray, lastHeadingId: movingHeadingId });
+
+    //***** 
+    //add to headingOrder and headings to the parent.
+    //***** 
+    if (parentHeadingObj.headingsOrder === undefined) {
+      parentHeadingObj.headingsOrder = [];
+      parentHeadingObj.heading = {};
+    }
+    parentHeadingObj.headingsOrder.push(movingHeadingObj);
+    parentHeadingObj.heading[movingHeadingId] = JSON.parse(JSON.stringify(baseObj.heading[movingHeadingId]));
+    //***** 
+    //Remove from headingOrder and headings of the base.
+    //***** 
+    delete baseObj.heading[movingHeadingId];
+    baseObj.headingsOrder.splice(index, 1);
+
+      this.saveCourseOutlineToAPI();
+
+    this.forceUpdate();
+
   }
 
-  generateNewAttempt(){
-      this.assignmentObj.attemptNumber++;
-      this.assignmentObj.assignedVariant = this.variantNumberFromAttemptNumber();
-      this.assignmentObj.latestDocumentState = null;
-      this.updateNumber++;
-      //Save attempt number to database
-        //Save assignedVariant to DB
-        const url='/api/saveVariant.php';
-      const data={
-        assignmentId: this.assignmentObj.assignmentId,
-        assignedVariant:this.assignmentObj.assignedVariant,
-        attemptNumber:this.assignmentObj.attemptNumber,
-        contentId:this.assignmentObj.contentId,
+  handleRenameHeading({ headingId, initialName }) {
+    let rename = this.state.rename;
+    rename[headingId] = {
+      value: initialName,
+      renameMode: true,
+    }
+
+    this.setState({ rename: rename });
+  }
+
+  saveHeadingName({ headingId, value }) {
+      const url = '/api/renameHeading.php';
+      const data = {
+        headingId: headingId,
+        value: value,
       }
       const payload = {
         params: data
       }
-      console.log("saveVariant on Generate New Attempt data");
+      console.log("data");
       console.log(data);
-      
-      
-      axios.get(url,payload)
-        .then(resp=>{
+
+
+      axios.get(url, payload)
+        .then(resp => {
+          console.log("Saved!");
+          console.log(resp);
           console.log(resp.data);
-        });
-        
-      this.forceUpdate();
+
+
+        })
+        .catch(error => { this.setState({ error: error }) });
+    
   }
 
-  buildSelectedAssignment(){
-    
-    
-    let available = "null";
-    if (this.assignmentObj.assignedDate !== null){
-      available = this.assignmentObj.assignedDate.toLocaleString("en-US");
-    }
-    let due = "null";
-    if (this.assignmentObj.dueDate !== null){
-      due = this.assignmentObj.dueDate.toLocaleString("en-US");
-    }
+  handleAssignmentSave({
+    assignmentId,
+    assignmentName,
+    dueDate,
+    assignedDate,
+    gradeCategory,
+    totalPointsOrPercent,
+    coverPageHTML,
+    individualize,
+    multipleAttempts,
+    showSolution,
+    showFeedback,
+    showHints,
+    showCorrectness,
+    proctorMakesAvailable,
+  }) {
+    let formattedAssignedDate = "null";
+    if (!isNaN(Date.parse(assignedDate))) {
+      console.log("here");
 
-    let newAttemptElements = null;
-    let adjustment = 0;
-    
-
-    // console.log("this.assignmentObj multipleAttempts");
-    // console.log(this.assignmentObj);
-    // console.log(this.assignmentObj.multipleAttempts);
-    
-    if (Number(this.assignmentObj.multipleAttempts) === 1){
-      adjustment = adjustment + 40;
-      newAttemptElements = (<React.Fragment>
-        <div>Attempt Number: {this.assignmentObj.attemptNumber}</div>
-        <button style={{marginTop:"4px"}} onClick={()=>{
-        this.generateNewAttempt();
-        }}>Generate New Attempt</button>
-        </React.Fragment>);
+      formattedAssignedDate = new Date(assignedDate).toISOString().slice(0, 19).replace('T', ' ');
+    }
+    let formattedDueDate = "null";
+    if (!isNaN(Date.parse(dueDate))) {
+      formattedDueDate = new Date(dueDate).toISOString().slice(0, 19).replace('T', ' ');
     }
 
-    let gradeLinkElement = null;
-    if (this.assignmentObj.totalPointsOrPercent){
-      adjustment = adjustment + 20;
-      let percentText = 0;
-      if (this.assignmentObj.credit){
-        percentText = Math.round(this.assignmentObj.credit * 1000)/10;
+
+      const url = '/api/saveAssignmentInfo.php';
+      const data = {
+        assignmentId: assignmentId,
+        assignmentName: assignmentName,
+        dueDate: formattedDueDate,
+        assignedDate: formattedAssignedDate,
+        gradeCategory,
+        totalPointsOrPercent,
+        coverPageHTML,
+        individualize,
+        multipleAttempts,
+        showSolution,
+        showFeedback,
+        showHints,
+        showCorrectness,
+        proctorMakesAvailable,
       }
-      gradeLinkElement = (<React.Fragment>
-        <div style={{cursor:"pointer"}} onClick={()=>{
-          location.href = "/course/?active=grades&assignmentId="+this.assignmentObj.assignmentId;
-        }}>Credit: {percentText}%</div> 
-      </React.Fragment>)
-    }
-    let heightOfOutsideBox = 110 + adjustment + "px";
+      const payload = {
+        params: data
+      }
+      console.log("data");
+      console.log(data);
 
-    return (<React.Fragment key={`selected ${this.assignmentObj.assignmentId}`}>
-      <div style={{margins:"10px",height:heightOfOutsideBox, backgroundColor:"#cce2ff"}} onClick={this.buildAssignment}>
-      <div style={{textAlign:"center", backgroundColor:"grey"}} >
-      <div style={{display:"inline-block",fontWeight:"bold",fontSize:"16px"}}>{this.assignmentObj.documentName}</div>
-      </div>
-      <div>Available</div>
-      <div> {available}</div>
-      <div>Due</div>
-      <div> {due}</div>
-      {gradeLinkElement}
-      {newAttemptElements}
-      </div>
-      </React.Fragment>
-    );
+
+      axios.get(url, payload)
+        .then(resp => {
+          console.log("Saved!");
+          console.log(resp);
+          console.log(resp.data);
+
+
+        })
+        .catch(error => { this.setState({ error: error }) });
+    
   }
 
-  buildOutline({courseId,headingIdArray=[]}){
-    //Initialize the array before building
-    if(headingIdArray.length === 0){
-      this.courseAssignmentChoiceList = [];
+  handleEditAssignment({ assignmentId,
+    assignmentName,
+    dueDate,
+    assignedDate,
+    gradeCategory,
+    totalPointsOrPercent,
+    coverPageHTML,
+    individualize,
+    multipleAttempts,
+    showSolution,
+    showFeedback,
+    showHints,
+    showCorrectness,
+    proctorMakesAvailable,
+
+  }) {
+    let editObj = this.state.edit;
+    let editMode = true;
+    if (editObj[assignmentId] !== undefined && editObj[assignmentId].editMode) {
+      editMode = false;
     }
-    let indentPx = "20";
+
+
+    editObj[assignmentId] = {
+      assignmentName: assignmentName,
+      assignedDate: assignedDate,
+      dueDate: dueDate,
+      editMode: editMode,
+      gradeCategory,
+      totalPointsOrPercent,
+      coverPageHTML,
+      individualize,
+      multipleAttempts,
+      showSolution,
+      showFeedback,
+      showHints,
+      showCorrectness,
+      proctorMakesAvailable,
+    };
+    console.log("editObj[assignmentId]");
+
+    console.log(editObj[assignmentId]);
+
+
+    this.forceUpdate();
+  }
+
+  handleAssignmentMove({ courseId, headingIdArray, assignmentHeadingId, direction, index }) {
     let baseObj = this.courseInfo[courseId];
     //Adjust the baseObj so it is at the current heading level
-    for(let headingId of headingIdArray){
+    for (let headingId of headingIdArray) {
       baseObj = baseObj.heading[headingId];
     }
+    baseObj = baseObj.heading[assignmentHeadingId];
+    let swap1 = baseObj.assignmentOrder[index];
+    let swap2;
+    if (direction === "up") {
+      swap2 = baseObj.assignmentOrder[index - 1];
+      [baseObj.assignmentOrder[index - 1], baseObj.assignmentOrder[index]] =
+        [baseObj.assignmentOrder[index], baseObj.assignmentOrder[index - 1]]
+
+    } else {
+      swap2 = baseObj.assignmentOrder[index + 1];
+      [baseObj.assignmentOrder[index + 1], baseObj.assignmentOrder[index]] =
+        [baseObj.assignmentOrder[index], baseObj.assignmentOrder[index + 1]]
+    }
+
+
+
+      this.saveCourseOutlineToAPI();
+
+    this.forceUpdate();
+
+  }
+
+  handleAssignmentUpdate({ courseId, headingIdArray, assignmentHeadingId, assignmentId }) {
+    let baseObj = this.courseInfo[courseId];
+    //Adjust the baseObj so it is at the current heading level
+    for (let headingId of headingIdArray) {
+      baseObj = baseObj.heading[headingId];
+    }
+    baseObj = baseObj.heading[assignmentHeadingId];
+    let assignmentInfo = baseObj.assignments[assignmentId];
+    let contentInfo = this.sharedContent[assignmentInfo.sourceBranchId];
+    assignmentInfo.revisionNumber = contentInfo.revisionNumber;
+    assignmentInfo.code = contentInfo.code;
+
+      const url = '/api/useMostRecentAssignment.php';
+      const data = {
+        assignmentId: assignmentId,
+      }
+      const payload = {
+        params: data
+      }
+      console.log("data");
+      console.log(data);
+
+
+      axios.get(url, payload)
+        .then(resp => {
+          console.log("Saved!");
+          console.log(resp);
+          console.log(resp.data);
+
+
+        })
+        .catch(error => { this.setState({ error: error }) });
     
-    if (baseObj.headingsOrder !== undefined){
+
+    this.forceUpdate();
+
+  }
+
+  //recursively build the editable outline of the course
+  buildEditOutline({ courseId, headingIdArray = [] }) {
+
+
+
+
+    let indentPx = "20";
+    if (headingIdArray.length === 0) {
+      this.courseOutlineList.push(
+        <div key={"TopInsertHeading"} style={{ marginBottom: "10px" }}>
+          <button onClick={() => this.insertHeading({ headingIdArray: [] })}>Insert Heading</button><br />
+        </div>
+      );
+    }
+
+    let baseObj = this.courseInfo[courseId];
+    //Adjust the baseObj so it is at the current heading level
+    for (let headingId of headingIdArray) {
+      baseObj = baseObj.heading[headingId];
+    }
+    if (baseObj.headingsOrder !== undefined) {
       let headingIndent = headingIdArray.length * Number(indentPx);
-      for(let [index,headingObj] of baseObj.headingsOrder.entries()){
+      for (let [index, headingObj] of baseObj.headingsOrder.entries()) {
+        // for(let headingObj of baseObj.headingsOrder){
         let headingId = headingObj.courseHeadingId;
+
         let headingText = headingObj.headingText;
 
-        var assignmentList = [];
-        let headingInfo = baseObj.heading[headingId];
-        
-        
-        if (headingInfo.assignmentOrder !== undefined){
-          
-          for (let assignmentId of headingInfo.assignmentOrder){
-            let assignmentObj = headingInfo.assignments[assignmentId];
+        if (this.state.rename[headingId] !== undefined && this.state.rename[headingId].renameMode) {
 
-            if (this.assignmentObj.assignmentId === assignmentId){
-              let selectedObj = this.buildSelectedAssignment();
-              assignmentList.push(selectedObj);
-            }else{
-              assignmentList.push(
-                <div 
-                style={{marginLeft:headingIndent+"px",minWidth:"160px"}} 
-                key={'assignmentList'+assignmentId}
-                onClick={()=>{this.loadAssignment({assignmentId:assignmentId})}}
-                >{assignmentObj.documentName}</div>
-              )
+          headingText = <React.Fragment>
+            <input type="text" value={this.state.rename[headingId].value} onChange={(e) => {
+              let renameObj = this.state.rename;
+              renameObj[headingId].value = e.target.value;
+              this.setState({ rename: renameObj });
+            }} />
+            <button onClick={() => {
+              let renameObj = this.state.rename;
+              headingObj.headingText = renameObj[headingId].value;
+              renameObj[headingId].renameMode = false;
+              this.saveHeadingName({ headingId: headingId, value: renameObj[headingId].value });
+              this.setState({ rename: renameObj })
+            }}>done</button>
+            <button onClick={() => {
+              let renameObj = this.state.rename;
+              renameObj[headingId].renameMode = false;
+              this.setState({ rename: renameObj })
             }
-            
-          }
-        }
-        
-        this.courseAssignmentChoiceList.push(
-          <React.Fragment key={"outline"+headingObj.courseHeadingId}>
-            <div style={{marginLeft:headingIndent+"px",fontWeight:"bold",minWidth:"160px"}}>{headingText}</div>
-            { assignmentList }
+            }>cancel</button>
           </React.Fragment>
+        }
+
+        let headingUpButton = <button
+          onClick={() => this.moveHeadingUp({ courseId: courseId, headingIdArray: headingIdArray, index: index })}>
+          up</button>;
+        // if (index === 0 && headingIdArray.length == 0){
+        if (index === 0) { headingUpButton = null; }
+        let headingDownButton = <button
+          onClick={() => this.moveHeadingDown({ courseId: courseId, headingIdArray: headingIdArray, index: index })}>
+          down</button>;
+        if (index === baseObj.headingsOrder.length - 1) { headingDownButton = null; }
+        let headingLeftButton = <button
+          onClick={() => this.moveHeadingLeft({ courseId: courseId, headingIdArray: headingIdArray, index: index })}>
+          left</button>;
+        if (headingIdArray.length === 0) { headingLeftButton = null; }
+        let headingRightButton = <button
+          onClick={() => this.moveHeadingRight({ courseId: courseId, headingIdArray: headingIdArray, index: index })}>
+          right</button>;
+        if (index === 0) { headingRightButton = null; }
+
+        this.courseOutlineList.push(
+          <div key={"OutlineHeading" + headingId} style={{ display: "flex" }}>
+            <span style={{ marginLeft: headingIndent + "px", fontWeight: "bold", marginRight: "10px", display: "block", minWidth: "160px" }} >
+              {headingText}
+            </span>
+            {headingUpButton}
+            {headingDownButton}
+            {headingLeftButton}
+            {headingRightButton}
+            <button onClick={() => this.handleRenameHeading({ headingId: headingId, initialName: headingText })}>rename</button>
+          </div>
         );
 
+        //heading has assignments
+        let assignmentIndent = Number(headingIdArray.length * indentPx) + Number(indentPx);
+        if (baseObj.heading[headingId].assignmentOrder !== undefined) {
+
+          for (let [index, assignmentId] of baseObj.heading[headingId].assignmentOrder.entries()) {
+            let assignmentInfo = baseObj.heading[headingId].assignments[assignmentId];
+            console.log(assignmentInfo);
+
+            let assignmentName = assignmentInfo.documentName;
+            let editBox = null;
+            //{assignmentInfo.assignedDate.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            if (this.state.edit[assignmentId] !== undefined && this.state.edit[assignmentId].editMode) {
+              assignmentName = <React.Fragment>
+                <input type="text" value={this.state.edit[assignmentId].assignmentName} onChange={
+                  (e) => {
+                    let editObj = this.state.edit;
+                    editObj[assignmentId].assignmentName = e.target.value;
+                    this.setState({ edit: editObj });
+                  }
+                } />
+              </React.Fragment>
+
+              editBox = <div style={{ width: "400px", padding: "10px", marginBottom: "10px", marginLeft: assignmentIndent + "px", backgroundColor: "#e8e8e8" }}>
+                <div>Date Format: 6/10/2019, 11:37:26 AM or null</div><br />
+                <div>Assigned Date: <input style={{ width: "200px" }}
+                  type='text'
+                  value={this.state.edit[assignmentId].assignedDate}
+                  onChange={(e) => {
+                    let editObj = this.state.edit;
+                    editObj[assignmentId].assignedDate = e.target.value;
+                    this.setState({ edit: editObj });
+                  }}
+                /></div>
+                <div>Due Date: <input style={{ width: "200px" }}
+                  type='text'
+                  value={this.state.edit[assignmentId].dueDate}
+                  onChange={(e) => {
+                    let editObj = this.state.edit;
+                    editObj[assignmentId].dueDate = e.target.value;
+                    this.setState({ edit: editObj });
+                  }}
+                /></div>
+                <div>Time Limit: N/A</div>
+                <div>Individualize by Student:
+                  <input style={{ marginLeft: "4px" }} type="checkbox"
+                    checked={this.state.edit[assignmentId].individualize}
+                    onChange={(e) => {
+                      let editObj = this.state.edit;
+                      editObj[assignmentId].individualize = e.target.checked;
+                      this.setState({ edit: editObj });
+                    }}
+                  />
+                </div>
+                <div>Allow Multiple Attempts:
+                <input style={{ marginLeft: "4px" }} type="checkbox"
+                    checked={this.state.edit[assignmentId].multipleAttempts}
+                    onChange={(e) => {
+                      let editObj = this.state.edit;
+                      editObj[assignmentId].multipleAttempts = e.target.checked;
+                      this.setState({ edit: editObj });
+                    }}
+                  />
+                </div>
+                <div>Show Solution:
+                <input style={{ marginLeft: "4px" }} type="checkbox"
+                    checked={this.state.edit[assignmentId].showSolution}
+                    onChange={(e) => {
+                      let editObj = this.state.edit;
+                      editObj[assignmentId].showSolution = e.target.checked;
+                      this.setState({ edit: editObj });
+                    }}
+                  />
+                </div>
+                <div>Show Feedback:
+                <input style={{ marginLeft: "4px" }} type="checkbox"
+                    checked={this.state.edit[assignmentId].showFeedback}
+                    onChange={(e) => {
+                      let editObj = this.state.edit;
+                      editObj[assignmentId].showFeedback = e.target.checked;
+                      this.setState({ edit: editObj });
+                    }}
+                  />
+                </div>
+                <div>Show Hints:
+                <input style={{ marginLeft: "4px" }} type="checkbox"
+                    checked={this.state.edit[assignmentId].showHints}
+                    onChange={(e) => {
+                      let editObj = this.state.edit;
+                      editObj[assignmentId].showHints = e.target.checked;
+                      this.setState({ edit: editObj });
+                    }}
+                  />
+                </div>
+                <div>Show Correctness:
+                <input style={{ marginLeft: "4px" }} type="checkbox"
+                    checked={this.state.edit[assignmentId].showCorrectness}
+                    onChange={(e) => {
+                      let editObj = this.state.edit;
+                      editObj[assignmentId].showCorrectness = e.target.checked;
+                      this.setState({ edit: editObj });
+                    }}
+                  />
+                </div>
+                <div>Proctor Makes Available:
+                <input style={{ marginLeft: "4px" }} type="checkbox"
+                    checked={this.state.edit[assignmentId].proctorMakesAvailable}
+                    onChange={(e) => {
+                      let editObj = this.state.edit;
+                      editObj[assignmentId].proctorMakesAvailable = e.target.checked;
+                      this.setState({ edit: editObj });
+                    }}
+                  />
+                </div>
+               
+
+                <div>Grade Category:
+                  <select onChange={(e) => {
+                    let editObj = this.state.edit;
+                    editObj[assignmentId].gradeCategory = e.target.value;
+                    this.setState({ edit: editObj });
+                  }}
+                    value={this.state.edit[assignmentId].gradeCategory}
+                  >
+                    {this.gradeCategories.map(cat => <option key={'option' + assignmentId + cat}>{cat}</option>)}
+
+                  </select></div>
+                  <div>Total points or percent: <input style={{ width: "200px" }}
+                  type='text'
+                  value={this.state.edit[assignmentId].totalPointsOrPercent}
+                  onChange={(e) => {
+                    let editObj = this.state.edit;
+                    editObj[assignmentId].totalPointsOrPercent = e.target.value;
+                    this.setState({ edit: editObj });
+                  }}
+                /></div>
+                  <div>Cover Page HTML<br />
+                    <textarea onChange={(e) => {
+                    let editObj = this.state.edit;
+                    editObj[assignmentId].coverPageHTML = e.target.value;
+                    this.setState({ edit: editObj });
+                  }} 
+                    value={this.state.edit[assignmentId].coverPageHTML}
+                  />
+
+                  </div>
+
+                <br />
+                <br />
+                <button onClick={
+                  () => {
+                    let editObj = this.state.edit;
+                    editObj[assignmentId].editMode = false;
+                    this.setState({ edit: editObj });
+                  }
+                }>cancel</button>
+                <button onClick={
+                  () => {
+                    let editObj = this.state.edit;
+                    baseObj.heading[headingId].assignments[assignmentId].documentName = editObj[assignmentId].assignmentName;
+                    baseObj.heading[headingId].assignments[assignmentId].dueDate = new Date(editObj[assignmentId].dueDate);
+                    baseObj.heading[headingId].assignments[assignmentId].assignedDate = new Date(editObj[assignmentId].assignedDate);
+                    baseObj.heading[headingId].assignments[assignmentId].gradeCategory = editObj[assignmentId].gradeCategory; 
+                    baseObj.heading[headingId].assignments[assignmentId].totalPointsOrPercent = editObj[assignmentId].totalPointsOrPercent; 
+                    baseObj.heading[headingId].assignments[assignmentId].coverPageHTML = editObj[assignmentId].coverPageHTML; 
+                    baseObj.heading[headingId].assignments[assignmentId].individualize = editObj[assignmentId].individualize;
+                    baseObj.heading[headingId].assignments[assignmentId].multipleAttempts = editObj[assignmentId].multipleAttempts;
+                    baseObj.heading[headingId].assignments[assignmentId].showSolution = editObj[assignmentId].showSolution;
+                    baseObj.heading[headingId].assignments[assignmentId].showFeedback = editObj[assignmentId].showFeedback;
+                    baseObj.heading[headingId].assignments[assignmentId].showHints = editObj[assignmentId].showHints;
+                    baseObj.heading[headingId].assignments[assignmentId].showCorrectness = editObj[assignmentId].showCorrectness;
+                    baseObj.heading[headingId].assignments[assignmentId].proctorMakesAvailable = editObj[assignmentId].proctorMakesAvailable;
+
+                    let individualize = 0;
+                    if (editObj[assignmentId].individualize) {
+                      individualize = 1;
+                    }
+                    let multipleAttempts = 0;
+                    if (editObj[assignmentId].multipleAttempts) {
+                      multipleAttempts = 1;
+                    }
+                    let showSolution = 0;
+                    if (editObj[assignmentId].showSolution) {
+                      showSolution = 1;
+                    }
+        
+                    
+                    let showFeedback = 0;
+                    if (editObj[assignmentId].showFeedback) {
+                      showFeedback = 1;
+                    }
+                    let showHints = 0;
+                    if (editObj[assignmentId].showHints) {
+                      showHints = 1;
+                    }
+                    let showCorrectness = 0;
+                    if (editObj[assignmentId].showCorrectness) {
+                      showCorrectness = 1;
+                    }
+                    let proctorMakesAvailable = 0;
+                    if (editObj[assignmentId].proctorMakesAvailable) {
+                      proctorMakesAvailable = 1;
+                    }
+                    this.handleAssignmentSave({
+                      assignmentId: assignmentId,
+                      assignmentName: editObj[assignmentId].assignmentName,
+                      assignedDate: editObj[assignmentId].assignedDate,
+                      dueDate: editObj[assignmentId].dueDate,
+                      gradeCategory: editObj[assignmentId].gradeCategory, 
+                      totalPointsOrPercent: editObj[assignmentId].totalPointsOrPercent, 
+                      coverPageHTML: editObj[assignmentId].coverPageHTML, 
+                      individualize,
+                      multipleAttempts,
+                      showSolution,
+                      showFeedback,
+                      showHints,
+                      showCorrectness,
+                      proctorMakesAvailable,
+                    })
+                    editObj[assignmentId].editMode = false;
+                    console.log("Save Pushed!");
+                    console.log(editObj[assignmentId]);
+                    this.setState({ edit: editObj });
+                  }
+                }>save</button>
+              </div>
+            }
+
+            let updateButton = <button onClick={
+              () => { this.handleAssignmentUpdate({ courseId: courseId, headingIdArray: headingIdArray, assignmentHeadingId: headingId, assignmentId: assignmentId }); }
+            }>update assignment</button>;
+            let sourceBranchId = baseObj.heading[headingId].assignments[assignmentId].sourceBranchId;
+            // console.log(baseObj.heading[headingId].assignments[assignmentId]);
+
+            // console.log(`assignment revision num ${baseObj.heading[headingId].assignments[assignmentId].revisionNumber}`);
+            // console.log(`source ID ${sourceBranchId}`);
+            // console.log(`content revision num ${this.props.sharedContent[sourceBranchId].revisionNumber}`);
+
+            if (baseObj.heading[headingId].assignments[assignmentId].latestPublishedContentTest !== "0") {
+              updateButton = null;
+            }
+            let assignmentUp = <button onClick={() => {
+              this.handleAssignmentMove({ courseId: courseId, headingIdArray: headingIdArray, assignmentHeadingId: headingId, direction: "up", index: index });
+            }}>up</button>;
+            if (index === 0) { assignmentUp = null; }
+            let assignmentDown = <button onClick={() => {
+              this.handleAssignmentMove({ courseId: courseId, headingIdArray: headingIdArray, assignmentHeadingId: headingId, direction: "down", index: index });
+            }}>down</button>;
+            if (index === baseObj.heading[headingId].assignmentOrder.length - 1) {
+              assignmentDown = null;
+            }
+
+            let editAssignedDate = "null";
+            if (!isNaN(Date.parse(assignmentInfo.assignedDate))) {
+              editAssignedDate = assignmentInfo.assignedDate.toLocaleString("en-US");
+            }
+            let editDueDate = "null";
+            if (!isNaN(Date.parse(assignmentInfo.dueDate))) {
+              editDueDate = assignmentInfo.dueDate.toLocaleString("en-US");
+            }
+
+
+
+            this.courseOutlineList.push(
+              <React.Fragment key={"assignmentEditPanel" + assignmentId}>
+                <div key={"assignmentInput" + assignmentId} style={{ display: "flex" }}>
+                  <span style={{ marginLeft: assignmentIndent + "px", marginRight: "10px", display: "block", minWidth: "140px" }} >
+                    {assignmentName}
+                  </span>
+                  {updateButton}
+                  {assignmentUp}
+                  {assignmentDown}
+                  <button onClick={() => {
+                    this.handleEditAssignment({
+                      assignmentName: assignmentName,
+                      assignmentId: assignmentId,
+                      assignedDate: editAssignedDate,
+                      dueDate: editDueDate,
+                      gradeCategory: assignmentInfo.gradeCategory,
+                      totalPointsOrPercent: assignmentInfo.totalPointsOrPercent,
+                      coverPageHTML: assignmentInfo.coverPageHTML,
+                      individualize: assignmentInfo.individualize,
+                      multipleAttempts: assignmentInfo.multipleAttempts,
+                      showSolution: assignmentInfo.showSolution,
+                      showFeedback: assignmentInfo.showFeedback,
+                      showHints: assignmentInfo.showHints,
+                      showCorrectness: assignmentInfo.showCorrectness,
+                      proctorMakesAvailable: assignmentInfo.proctorMakesAvailable,
+                    });
+                  }}>edit</button>
+                </div>
+                {editBox}
+              </React.Fragment>
+            );
+          }
+        }
         let nextLevelHeadingIdArray = []; //break the association for recursion
-           for(let headingId of headingIdArray){
-            nextLevelHeadingIdArray.push(headingId);
-           }
-           nextLevelHeadingIdArray.push(headingId);
-           this.buildOutline({courseId:courseId,headingIdArray:nextLevelHeadingIdArray});
+        for (let headingId of headingIdArray) {
+          nextLevelHeadingIdArray.push(headingId);
+        }
+        nextLevelHeadingIdArray.push(headingId);
 
+        this.courseOutlineList.push(
+          <div key={"OutlineHeadingButtons" + headingId} style={{ marginLeft: assignmentIndent + "px", marginBottom: "10px" }}>
+            <button onClick={() => this.insertHeading({ headingIdArray: nextLevelHeadingIdArray })}>Insert Heading</button><br />
+            <button onClick={() => this.addAssignments({ headingIdArray: nextLevelHeadingIdArray })}>Insert Assignments</button>
+          </div>
+        );
+        if (baseObj.headingsOrder !== undefined && baseObj.headingsOrder.length > 0) {
+
+          this.buildEditOutline({ courseId: courseId, headingIdArray: nextLevelHeadingIdArray })
+        }
       }
     }
 
+  }
+
+  saveAccessKeyIntoIndexDB(courseId,accessKey){
+
+    var request = window.indexedDB.open("DoenetAccess");
+    request.onsuccess = (e) => {
+      let db = e.target.result;
+      var accessKeyObjectStore = db.transaction("accessKeys", "readwrite").objectStore("accessKeys");
+      let request = accessKeyObjectStore.get(courseId);
+      request.onsuccess = (e)=>{
+        let data = e.target.result;
+
+        if (data === undefined){
+          let requestAdd = accessKeyObjectStore.add({courseId,accessKey})
+          requestAdd.onsuccess = (e)=>{
+            this.setState({keyStorageStatus:"Access Key Saved!"});
+          }
+          requestAdd.onerror = (e)=>{
+            this.setState({keyStorageStatus:"Error!"})
+          }
+        }else{
+          data.accessKey = accessKey;
+          let requestUpdate = accessKeyObjectStore.put(data);
+          requestUpdate.onsuccess = (e)=>{
+            this.setState({keyStorageStatus:"Access Key Updated!"});
+          }
+          requestUpdate.onerror = (e)=>{
+            this.setState({keyStorageStatus:"Error!"})
+          }
+
+        }
+        
+      }
+      
+    }
+    request.onupgradeneeded = (e) => {
+      let db = e.target.result;
+      db.createObjectStore("accessKeys", { keyPath: "courseId" });
+    }
+  }
+
+  storeAccessKeyLocally(){
+      const url = '/api/getAccessKey.php';
+      const data = {
+        courseId: this.state.courseId,
+      }
+      const payload = {
+        params: data
+      }
+      console.log("data");
+      console.log(data);
+
+
+      axios.get(url, payload)
+        .then(resp => {
+          console.log("Saved!");
+          console.log(resp);
+          console.log(resp.data);
+          this.saveAccessKeyIntoIndexDB(this.state.courseId,resp.data);
+
+        })
+        .catch(error => { this.setState({ error: error }) });
+  
     
-  }
-
-  loadAssignment({assignmentId,outlineType=this.state.outlineType}){
-    this.updateAssignmentIndex({outlineType:outlineType,assignmentId:assignmentId});
-    this.courseOutlineList = [];
-    this.updateNumber++;
-    this.assignmentId = assignmentId;
-    this.setAssignmentObj({outlineType:this.state.outlineType});
-    this.resolveVariant({outlineType:this.state.outlineType});
-    this.updateAssignmentList({outlineType:this.state.outlineType});
-    this.updateLocationBar();
-    this.forceUpdate();
-  }
-
-  handlePrev(){
-    if (this.assignmentIndex > 0) this.assignmentIndex = this.assignmentIndex-1;
-    this.courseOutlineList = [];
-    this.updateNumber++;
-    this.setAssignmentObj({outlineType:this.state.outlineType});
-    this.resolveVariant({outlineType:this.state.outlineType});
-    this.updateAssignmentList({outlineType:this.state.outlineType});
-    this.updateLocationBar();
-    this.forceUpdate();
-  }
-
-  handleNext(){
-    if (this.assignmentIndex < this.assignmentIdList.length - 1) this.assignmentIndex = this.assignmentIndex+1;
-    console.log(this.assignmentIndex);
-    console.log(this.assignmentIdList.length);
-    this.courseOutlineList = [];
-    this.updateNumber++;
-    this.setAssignmentObj({outlineType:this.state.outlineType});
-    this.resolveVariant({outlineType:this.state.outlineType});
-    this.updateAssignmentList({outlineType:this.state.outlineType});
-    this.updateLocationBar();
-    this.forceUpdate();
-  }
-
-  updateAssignmentIndex({outlineType,assignmentId=this.assignmentObj.assignmentId}){
-    this.assignmentIndex = 0;
-    console.log(assignmentId)
-
-    if (outlineType === "outline"){
-      for (let [index,assignmentObj] of this.assignmentIdList.entries()){
-        if (assignmentObj.assignmentId === assignmentId){
-          this.assignmentIndex = index;
-          break;
-        }
-      }
-
-    }else if (outlineType === "assignment"){
-      for (let [index,assignmentObj] of this.assignmentAssignedList.entries()){
-        if (assignmentObj.assignmentId === assignmentId){
-          this.assignmentIndex = index;
-          break;
-        }
-      }
-    }else if (outlineType === "due"){
-      for (let [index,assignmentObj] of this.assignmentDueList.entries()){
-        if (assignmentObj.assignmentId === assignmentId){
-          this.assignmentIndex = index;
-          break;
-        }
-      }
-    }
-
-
-  }
-
-  creditUpdate({credit}){
-
-    if (credit > this.assignmentObj.credit || !this.assignmentObj.credit){
-      this.assignmentObj.credit = credit;
-    }
-    this.forceUpdate();
   }
 
   render() {
-    console.log("====RENDER====");
-    if (this.state.newChange===true){
-    this.ToggleList();
-    }
-    this.enableThese=[]
-    this.enabledDisabledArray = {
-      "overview":!!+this.state.overview,
-      "syllabus":!!+this.state.syllabus,
-      "grade":!!+this.state.grade,
-      "assignment":!!+this.state.assignment,
-    }
-    Object.keys(this.enabledDisabledArray).map(e=>{
-      if (this.enabledDisabledArray[e]===false){
-        this.enableThese.push(<option value={e}>{e}</option>)
-      }
-    });
-        this.TrueList = []
-    Object.keys(this.enabledDisabledArray).map(e=>{
-      if (this.enabledDisabledArray[e]===true){
-        this.TrueList.push(e)
-      }
-    });
-    let temp = false
-    this.TrueList.forEach(e=>{
-      if (e===this.activeSection && temp===false){
-        temp=true
-      }
-    });
-    if ( this.DoneLoading===true && temp===false && this.activeSection!=null){
-      this.activeSection=this.TrueList[0]
-      this.updateLocationBar() // this make sure it has the correct URL
+    this. loadAllCoursesAndTheirAssignments();
+    //if (this.username === ""){ return null;}
+    //if (this.access !== 1){ return "No Access for "+this.username;}
+    if (this.numberLoaded < 2){ return null;} //wait for the content to load
+    console.log("courseInfo");
+    console.log(this.courseInfo);
+    const contentOptions = [];
+    for (let branchId of this.sharedContent.documentOrder) {
+      contentOptions.push(<option key={"addAssignment" + branchId} value={branchId}>{this.sharedContent[branchId].documentName}</option>);
     }
 
-    //We have an error so doen't show the viewer
-    if (this.state.error){
+    this.courseOutlineList = [];
+    // for (let course of this.props.courseInfo.courses){
+    //   console.log(course);
+    // }
+    let courseId = this.courseInfo.courses[0].courseId;
+    this.buildEditOutline({ courseId: courseId });
+    // for (let assignmentId of this.props.courseInfo[courseId].assignmentOrder ){
+    //   let documentName = this.props.courseInfo[courseId].assignments[assignmentId].documentName;
 
-      return (<React.Fragment>
-        <p style={{color: "red"}}>{this.state.error && this.state.error.toString()}</p>
-        </React.Fragment>);
-    }
+    //   courseOutlineList.push(
+    //     <div key={"assignmentInput"+assignmentId}>
+    //       <input 
+    //       style={{marginLeft:"10px",margineRight:"10px"}} 
+    //       type="text" 
+    //       placeholder="Assignment Name" 
+    //       onChange={(e) => this.updateAssignmentName({e:e,courseId:courseId,assignmentId:assignmentId})}
+    //       value={documentName}></input>
+    //       <button>up</button>
+    //       <button>down</button>
+    //       <button>left</button>
+    //       <button>right</button>
+    //       <button onClick={()=>this.deleteAssignment({assignmentId:assignmentId})}>delete</button>
+    //     </div>
+    //       );
+    // }
 
-    if (this.activeSection === "overview"){
-       this.buildOverview();
-    } else if (this.activeSection === "syllabus"){
-      this.buildSyllabus();
-    } else if (this.activeSection === "grade"){
-      this.buildGrades();
-    }
-    let overview_component=null;
-    let syllabus_component=null;
-    let grade_component=null;
-    let assignment_component=null;
-    let overview_class = "SectionContainer";
-    let syllabus_class = "SectionContainer";
-    let grade_class = "SectionContainer";
-    let assignment_class = "SectionContainer";
-    if (this.activeSection==="overview"){
-      overview_class = "SectionContainer-Active";
-    } else if (this.activeSection === "syllabus"){
-      syllabus_class = "SectionContainer-Active";
-    } else if (this.activeSection === "grade"){
-      grade_class = "SectionContainer-Active";
-    } else if (this.activeSection === "assignment"){
-      assignment_class = "SectionContainer-Active";
-    }
 
-      let tree_component = (<div >{this.tree}</div>)
 
-    if (this.state.overview){
-       overview_component = (<div className={overview_class} data-cy="overviewNavItem" onClick={() => {
-        this.activeSection = "overview";
-        this.loadOverview();
-        this.updateLocationBar({});
-        //this.forceUpdate();
-      }}><span className="Section-Text">Overview</span>
-      <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.overview_branchId} icon={faEdit}/></span>
-      <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({overview:false,newChange:true});}} icon={faWindowClose}/></span>
-      </div>)
-    }
-    if (this.state.syllabus){
-       syllabus_component =(
-        <div className={syllabus_class} data-cy="syllabusNavItem" onClick={() => {
-          this.activeSection = "syllabus";
-          this.loadSyllabus();
-          this.updateLocationBar({});
-          //this.forceUpdate();
-        }}><span className="Section-Text">Syllabus</span>
-          <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.syllabus_branchId} icon={faEdit}/></span>
-      <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({syllabus:false,newChange:true});}} icon={faWindowClose}/></span>
-        </div>)
-    }
-    if (this.state.grade){
-       grade_component = (<div className={grade_class} data-cy="gradesNavItem" onClick={() => {
-        this.activeSection="grade";
-        this.loadGrades();
-        this.updateLocationBar({});
-        // this.forceUpdate();
-        // className="GradeDisableButton" onClick={()=>{this.setState({grade:false,newChange:true});}}
-      }}><span className="Section-Text">Grade</span>
-      <span className="Section-Icon-Box">         
-    <FontAwesomeIcon className="Section-Icon" icon={faEdit}/></span>
-  <span className="Section-Icon-Box">         
-    <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({grade:false,newChange:true});}} icon={faWindowClose}/></span>
-      </div>)
-    }
-    
-
-    
-
-    
-    if (this.state.assignment){
-      assignment_component = (
-        <div className="homeMainMenuItem" data-cy="assignmentsAccordion">            
-          <Accordion>
-            <div label= "Assignments" >
-           
-              <div className="courseLeftNav">
-                <div style={{display:"flex",marginBottom:"10px"}}>
-                  <select style={{fontSize:"16px",width:"320px"}}
-                  value={this.state.outlineType} 
-                  onChange={(e)=>{
-                    this.activeSection="assignment"
-                    this.updateAssignmentIndex({outlineType:e.target.value});
-                    this.setState({outlineType:e.target.value});
-                    this.updateAssignmentList({outlineType:e.target.value});
-                  }}>
-                    <option value="outline" >Course Outline</option>
-                    <option value="assignment" >Assignment Date</option>
-                    <option value="due" >Due Date</option>
-                    </select>
-                  <div style={{marginLeft:"10px"}}>
-                    <button style={{width:"60px"}} disabled={disablePrev} onClick={() => this.handlePrev()}>Prev</button>
-                    <button style={{width:"60px"}} disabled={disableNext} onClick={() => this.handleNext()}>Next</button>
-                  </div>
-                </div>
-                { this.courseAssignmentChoiceList }
-              </div>
-            </div>
-          </Accordion>    
-      </div>) 
-    }
-     
-
-  
     return (<React.Fragment>
-      <div className="courseContainer">
-        
-        <DoenetHeader toolTitle="Admin" headingTitle={this.courseName} />
-        <div className="homeLeftNav">
-          {overview_component}
-          {syllabus_component}
-          {grade_component}
-          {assignment_component}
-          {tree_component}
-          
-        <select style={{marginTop:"10px"}} onChange={this.EnableThese}>
-          <option>Enable Section</option>
-          {this.enableThese }
-        </select>
+      <DoenetHeader toolTitle="Course Administration" headingTitle={this.courseInfo.courses[0].shortName} />
+
+      <div className="appAdminPanel">
+        <div style={{ display: "flex", marginLeft: "10px" }}>
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            height: "440px",
+          }}>
+            <div>
+              <h2>Assignments</h2>
+            </div>
+            <div>
+              <input style={{ margin: "10px" }} type="text" placeholder="CSV tags"></input><button>filter</button>
+            </div>
+            <div>
+              <select onChange={this.handleContentChange} style={{ width: "300px" }} size="20" multiple>
+                {contentOptions}
+              </select>
+            </div>
+          </div>
+
+
+          <div style={{ paddingLeft: "30px" }}>
+            <h2>Course Outline</h2>
+            {this.courseOutlineList}
+
+          </div>
         </div>
-        <div className="homeActiveSection">
-          {this.mainSection}
-        </div>
+
+
       </div>
+
+      {/* <div className="appBottomInfo">
+      </div>
+
+      <div className="doenetappSelectionPanel">
+        <h2>Course Select</h2>
+        <select style={{ width: "180px" }} size="30" >
+          <option value="math1241">math1241</option>
+        </select>
+        <button>Change Course</button>
+
+        <button style={{marginTop:"100px"}} onClick={this.storeAccessKeyLocally}>Store Access Key</button>
+        <div>{this.state.keyStorageStatus}</div>
+
+      </div> */}
+
       
     </React.Fragment>);
-
-    let disablePrev = false;
-    if (this.assignmentIndex === 0){disablePrev = true;}
-    let disableNext = false;
-    if (this.assignmentIndex === (this.assignmentIdList.length - 1)){disableNext = true;}
-  }
-}
-
-
-class AccordionSection extends Component {
-
-  onClick = () => {
-    this.props.onClick(this.props.label);
-  };
-
-  render() {
-    const {
-      onClick,
-      props: { isOpen, label },
-    } = this;
-    return (
-      <div>
-        <div style={{ cursor: 'pointer' }}>
-          <span className="Section-Text" onClick={onClick} >{label}</span>&nbsp;
-          <span><FontAwesomeIcon className="Section-Icon" onClick={()=>{console.log("assignmentID is"+assignmentID);}}icon={faEdit}/></span>
-  <span className="Section-Icon-Box">         
-    <FontAwesomeIcon className="Section-Icon" onClick={()=>{assignment_false()}} icon={faWindowClose}/></span>
-        </div>
-        {isOpen && (
-          <div
-            style={{
-              marginTop: 10,
-            }}>
-            {this.props.children}
-          </div>
-        )}
-      </div>
-    );
-  }
-}
-
-
-class Accordion extends Component {
-
-  constructor(props) {
-    super(props);
-    const openSections = {};
-    this.state = { openSections };
-  }
-
-  onClick = label => {
-    const {
-      state: { openSections },
-    } = this;
-
-    const isOpen = !!openSections[label];
-
-    this.setState({
-      openSections: {
-        [label]: !isOpen
-      }
-    });
-  };
-
-  render() {
-    const {
-      onClick,
-      props: { children },
-      state: { openSections },
-    } = this;
-
-    return (
-      <div>
-        <AccordionSection
-          isOpen={!!openSections[children.props.label]}
-          label={children.props.label}
-          onClick={onClick}>
-          {children.props.children}
-        </AccordionSection>
-      </div>
-    );
   }
 }
 

@@ -1,6 +1,6 @@
 .headingContainerWrapper {
-  height: 90%;
-  margin-bottom: 90px;
+  height: 100%;
+  margin-bottom: 100px;
 }
 
 .headingContainer{
@@ -64,6 +64,10 @@
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
+}
+
+#doenetLogo {
+  cursor: pointer;
 }
 
 #previousPageButton {
@@ -236,6 +240,7 @@
 
   #doenetLogo {
     height: 30px;
+    cursor: pointer;
   }
 
   #toolboxButton {

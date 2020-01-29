@@ -105,7 +105,7 @@ class DoenetHeader extends Component {
         <div className="headingContainerWrapper">
           <div className="headingContainer">
             <div className="toolTitle">
-              <img id="doenetLogo" onClick={()=>location.href = "/"}  src={doenetImage} height='45px' />
+              <img id="doenetLogo" onClick={()=>{location.href = "/";}} src={doenetImage} height='45px' />
               <span>{ toolTitle }</span>
             </div>
             {headingTitle && <div className="headingTitle">
