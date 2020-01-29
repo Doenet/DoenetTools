@@ -309,6 +309,9 @@ export default class Ref extends CompositeComponent {
 
         let dependencies = {};
 
+        // if reffing a prop of a composite for which refPropOfReplacements is set,
+        // then the prop will be based on that composites replacements
+        // so will use state variable replacementClassesForProp for effective target class
         if (stateValues.useProp && compositeClass.isPrototypeOf(refTargetClass) &&
           refTargetClass.refPropOfReplacements
         ) {
@@ -339,134 +342,144 @@ export default class Ref extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.preliminaryReplacementClasses = {
-      additionalStateVariablesDefined: ["propVariableObjs", "stateVariablesRequested", "validProp"],
+
+    stateVariableDefinitions.propVariableObjs = {
       returnDependencies: () => ({
-        effectiveTargetClasses: {
-          dependencyType: "stateVariable",
-          variableName: "effectiveTargetClasses",
-        },
-        refTargetName: {
-          dependencyType: "stateVariable",
-          variableName: "refTargetName",
-        },
         propChild: {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneProp",
-          variableNames: ["propVariableObjs", "propComponentTypes"],
+          variableNames: ["propVariableObjs"],
         },
       }),
-      definition: function ({ dependencyValues, componentInfoObjects }) {
+      definition: function ({ dependencyValues }) {
         if (dependencyValues.propChild.length === 0) {
           return {
             newValues: {
-              preliminaryReplacementClasses: dependencyValues.effectiveTargetClasses,
-              propVariableObjs: null,
-              stateVariablesRequested: null,
-              validProp: null,
+              propVariableObjs: null
             }
-          };
-        }
-
-        let propVariableObjs = dependencyValues.propChild[0].stateValues.propVariableObjs;
-        let propComponentTypes = dependencyValues.propChild[0].stateValues.propComponentTypes;
-
-        let validProp = true;
-
-        let replacementClasses = [];
-
-        if (!propComponentTypes) {
-          validProp = false;
+          }
         } else {
-          for (let propComponentType of propComponentTypes) {
-            if (!propComponentType) {
-              if (propComponentTypes.length !== 1) {
-                console.warn(`Have not implemented case of ref of prop with undefined component type and more than one returned component.`)
-                validProp = false;
-              }
-              replacementClasses.push(null);
-            } else {
-              replacementClasses.push(componentInfoObjects.allComponentClasses[propComponentType.toLowerCase()]);
+          return {
+            newValues: {
+              propVariableObjs: dependencyValues.propChild[0].stateValues.propVariableObjs
             }
           }
         }
+      }
+    }
 
-        if (!validProp) {
+
+    // We break up determining the replacement classes in two steps.
+    // In the first step, we determine the preliminary replacement classes,
+    // which is the effectieTargetClass if there is no prop
+    // If there is a prop, 
+    stateVariableDefinitions.replacementClasses = {
+      additionalStateVariablesDefined: [
+        "stateVariablesRequested", "validProp", "componentTypeByTarget"
+      ],
+      stateVariablesDeterminingDependencies: [
+        "propVariableObjs", "refTargetName",
+      ],
+      returnDependencies: function ({ stateValues }) {
+
+        let dependencies = {
+          effectiveTargetClasses: {
+            dependencyType: "stateVariable",
+            variableName: "effectiveTargetClasses",
+          },
+          refTargetName: {
+            dependencyType: "stateVariable",
+            variableName: "refTargetName",
+          },
+          useProp: {
+            dependencyType: "stateVariable",
+            variableName: "useProp",
+          },
+          propVariableObjs: {
+            dependencyType: "stateVariable",
+            variableName: "propVariableObjs",
+          },
+        };
+
+        // if have a prop variable where couldn't determine componentType
+        // from just the component class, we will get 
+        // componentType of the actual statevariable
+        // of the refTarget
+        if (stateValues.propVariableObjs !== null) {
+          for (let [ind, propVariableObj] of stateValues.propVariableObjs.entries()) {
+            if (!propVariableObj.componentType) {
+              dependencies[`replacementComponentType${ind}`] = {
+                dependencyType: "componentStateVariableComponentType",
+                componentName: stateValues.refTargetName,
+                variableName: propVariableObj.varName,
+              }
+            }
+          }
+        }
+        return dependencies;
+      },
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+
+        if (!dependencyValues.useProp) {
           return {
             newValues: {
-              preliminaryReplacementClasses: null,
-              propVariableObjs,
+              replacementClasses: dependencyValues.effectiveTargetClasses,
               stateVariablesRequested: null,
-              validProp,
+              validProp: null,
+              componentTypeByTarget: null,
             }
           };
         }
 
-        let stateVariablesRequested = [];
 
-        for (let propVariableObj of propVariableObjs) {
+        if (dependencyValues.propVariableObjs == null) {
+          return {
+            newValues: {
+              replacementClasses: null,
+              stateVariablesRequested: null,
+              validProp: false,
+              componentTypeByTarget: null,
+            }
+          };
+        }
+
+        let replacementClasses = [];
+        let stateVariablesRequested = [];
+        let componentTypeByTarget = [];
+
+        for (let [ind, propVariableObj] of dependencyValues.propVariableObjs.entries()) {
+          let componentType = propVariableObj.componentType;
+          if (!componentType) {
+            componentType = dependencyValues[`replacementComponentType${ind}`];
+          }
+
+          if (Array.isArray(componentType)) {
+            replacementClasses.push(...componentType.map(x =>
+              componentInfoObjects.allComponentClasses[x])
+            );
+          } else {
+            replacementClasses.push(componentInfoObjects.allComponentClasses[componentType]);
+          }
+
+          componentTypeByTarget.push(componentType);
+
           stateVariablesRequested.push({
             componentOrReplacementOf: dependencyValues.refTargetName,
             stateVariable: propVariableObj.varName,
           })
         }
+
         return {
           newValues: {
-            preliminaryReplacementClasses: replacementClasses,
-            propVariableObjs,
+            replacementClasses,
             stateVariablesRequested,
-            validProp,
+            validProp: true,
+            componentTypeByTarget,
           }
         };
 
       }
     }
-
-    stateVariableDefinitions.replacementClasses = {
-      stateVariablesDeterminingDependencies: [
-        "preliminaryReplacementClasses", "propVariableObjs", "refTargetName",
-      ],
-      returnDependencies: function ({ stateValues }) {
-
-        let dependencies = {
-          preliminaryReplacementClasses: {
-            dependencyType: "stateVariable",
-            variableName: "preliminaryReplacementClasses",
-          },
-        };
-
-        // if have more than one preliminary replacement class
-        // or the one preliminary replacement class is defined,
-        // then preliminary replacement classes are all we need
-        if (!stateValues.preliminaryReplacementClasses
-          || stateValues.preliminaryReplacementClasses.length > 1
-          || stateValues.preliminaryReplacementClasses[0] !== null
-        ) {
-          return dependencies;
-        }
-
-        dependencies[`replacementComponentType`] = {
-          dependencyType: "componentStateVariableComponentType",
-          componentName: stateValues.refTargetName,
-          variableName: stateValues.propVariableObjs[0].varName,
-        }
-
-        return dependencies;
-      },
-      definition: function ({ dependencyValues, componentInfoObjects }) {
-
-        // if have only one dependency, then had all replacements class to start with
-        if (Object.keys(dependencyValues).length === 1) {
-          return { newValues: { replacementClasses: dependencyValues.preliminaryReplacementClasses } };
-        }
-
-        let replacementClasses = [
-          componentInfoObjects.allComponentClasses[dependencyValues[`replacementComponentType`]]
-        ];
-
-        return { newValues: { replacementClasses } };
-      },
-    };
 
 
     stateVariableDefinitions.replacementClassesForProp = {
@@ -1057,7 +1070,7 @@ export default class Ref extends CompositeComponent {
   // }
 
 
-  static calculateReplacementChanges({ component, componentChanges, components }) {
+  static calculateReplacementChanges({ component, componentChanges, components, getComponentNamesForProp }) {
 
     // console.log("Calculating replacement changes for " + component.componentName);
 
@@ -1066,8 +1079,6 @@ export default class Ref extends CompositeComponent {
     // TODO: determine how to calculate replacement changes with new conventions
 
     // TODO: may need to address the case that the actual refTarget was deleted
-
-    return replacementChanges;
 
     // if (component.state.contentIdChild) {
     //   if (component.state.serializedContentChanged) {
@@ -1162,12 +1173,13 @@ export default class Ref extends CompositeComponent {
     // if ref determined by prop
     // don't change replacements
     // unless have an array
-    if (component.state.propChild !== undefined) {
+    if (component.stateValues.useProp) {
 
       // don't change replacements unless
       // the number of components or their component types changed
       let testReplacementChanges = [];
-      this.recreateReplacements({ component, replacementChanges: testReplacementChanges, components });
+
+      this.recreateReplacements({ component, replacementChanges: testReplacementChanges, components, getComponentNamesForProp });
 
       let newSerializedReplacements = [];
       let redoReplacements = false;
@@ -1245,6 +1257,8 @@ export default class Ref extends CompositeComponent {
       return replacementChanges;
     }
 
+    return replacementChanges;
+
     // ref not determined by a prop
 
     // if(componentChanges.length > 1) {
@@ -1265,58 +1279,57 @@ export default class Ref extends CompositeComponent {
     return replacementChanges;
   }
 
-  static recreateReplacements({ component, replacementChanges, components }) {
-    // give instructions to move dependency to component.state.refTarget
-    if (component.state.previousRefTarget !== undefined &&
-      component.state.previousRefTarget.componentName in component.downstreamDependencies) {
-      if (component.state.previousRefTarget.componentName !== component.state.refTarget.componentName) {
-        let replacementInstruction = {
-          changeType: "moveDependency",
-          dependencyDirection: "downstream",
-          oldComponentName: component.state.previousRefTarget.componentName,
-          newComponentName: component.state.refTarget.componentName,
-          dependencyType: "reference",
-          otherAttributes: { shadowed: true }
-        };
-        if (component.state.propChild === undefined) {
-          replacementInstruction.recurseToChildren = true;
-        } else {
-          replacementInstruction.otherAttributes.prop = component.state.propChild.componentName;
-        }
-        replacementChanges.push(replacementInstruction);
-      }
-    }
-    else {
-      // since no previous refTarget, need to create new dependencies
-      let replacementInstruction = {
-        changeType: "addDependency",
-        dependencyDirection: "downstream",
-        newComponentName: component.state.refTarget.componentName,
-        dependencyType: "reference",
-        otherAttributes: { shadowed: true }
-      };
-      if (component.state.propChild === undefined) {
-        replacementInstruction.recurseToChildren = true;
-      } else {
-        replacementInstruction.otherAttributes.prop = component.state.propChild.componentName;
-      }
-      replacementChanges.push(replacementInstruction);
-    }
+  static recreateReplacements({ component, replacementChanges, components, getComponentNamesForProp }) {
+    // // give instructions to move dependency to component.state.refTarget
+    // if (component.state.previousRefTarget !== undefined &&
+    //   component.state.previousRefTarget.componentName in component.downstreamDependencies) {
+    //   if (component.state.previousRefTarget.componentName !== component.state.refTarget.componentName) {
+    //     let replacementInstruction = {
+    //       changeType: "moveDependency",
+    //       dependencyDirection: "downstream",
+    //       oldComponentName: component.state.previousRefTarget.componentName,
+    //       newComponentName: component.state.refTarget.componentName,
+    //       dependencyType: "reference",
+    //       otherAttributes: { shadowed: true }
+    //     };
+    //     if (component.state.propChild === undefined) {
+    //       replacementInstruction.recurseToChildren = true;
+    //     } else {
+    //       replacementInstruction.otherAttributes.prop = component.state.propChild.componentName;
+    //     }
+    //     replacementChanges.push(replacementInstruction);
+    //   }
+    // }
+    // else {
+    //   // since no previous refTarget, need to create new dependencies
+    //   let replacementInstruction = {
+    //     changeType: "addDependency",
+    //     dependencyDirection: "downstream",
+    //     newComponentName: component.state.refTarget.componentName,
+    //     dependencyType: "reference",
+    //     otherAttributes: { shadowed: true }
+    //   };
+    //   if (component.state.propChild === undefined) {
+    //     replacementInstruction.recurseToChildren = true;
+    //   } else {
+    //     replacementInstruction.otherAttributes.prop = component.state.propChild.componentName;
+    //   }
+    //   replacementChanges.push(replacementInstruction);
+    // }
 
     let newSerializedChildren;
-    if (component.state.propChild !== undefined) {
-      newSerializedChildren = this.refReplacementFromProp({ component, components });
-    } else {
-      newSerializedChildren = component.state.refTarget.serialize({ forReference: true });
-      if (!Array.isArray(newSerializedChildren)) {
-        newSerializedChildren = [newSerializedChildren];
-      }
+    if (component.stateValues.useProp) {
+      let componentOrReplacementNames = getComponentNamesForProp(component.stateValues.refTargetName);
 
-      if (newSerializedChildren.length > 0) {
-        // top level replacement needs any properties specified by ref
-        component.addPropertiesFromRef({ serializedCopy: newSerializedChildren[0] });
-        newSerializedChildren = postProcessRef({ serializedComponents: newSerializedChildren, componentName: component.componentName });
-      }
+      newSerializedChildren = refReplacementFromProp({ component, components, componentOrReplacementNames });
+    } else {
+
+      let target = components[component.stateValues.refTarget.componentName];
+
+      newSerializedChildren = target.serialize({ forReference: true });
+      newSerializedChildren = [newSerializedChildren];
+
+      newSerializedChildren = postProcessRef({ serializedComponents: newSerializedChildren, componentName: component.componentName });
     }
 
     if (newSerializedChildren.length > 0) {
@@ -1348,25 +1361,34 @@ export function refReplacementFromProp({ component, components, componentOrRepla
 
   let serializedReplacements = [];
 
-  // TODO: correctly generalize to more than one component
-  for (let [index, replacementClass] of component.stateValues.replacementClasses.entries()) {
-    let propVariableObj = component.stateValues.propVariableObjs[index];
-    let targetName = componentOrReplacementNames[index];
-    let targetComponent = components[targetName];
+  let replacementInd = -1;
+  for (let [targetInd, componentType] of component.stateValues.componentTypeByTarget.entries()) {
+    let propVariableObj = component.stateValues.propVariableObjs[targetInd];
+    let numReplacementsForTarget = 1;
+    if (Array.isArray(componentType)) {
+      numReplacementsForTarget = componentType.length;
+    }
 
-    let componentType = replacementClass.componentType
+    for (let ind = 0; ind < numReplacementsForTarget; ind++) {
+      replacementInd++;
 
-    if (propVariableObj.isArray) {
-      let arrayStateVarObj = targetComponent.state[propVariableObj.varName];
+      let replacementClass = component.stateValues.replacementClasses[replacementInd];
 
-      // TODO: generalize to multi-dimensional arrays
+      let targetName = componentOrReplacementNames[targetInd];
+      let targetComponent = components[targetName];
 
-      for (let ind in arrayStateVarObj.value) {
+      let componentType = replacementClass.componentType
+
+      if (propVariableObj.isArray) {
+        let arrayStateVarObj = targetComponent.state[propVariableObj.varName];
+
+        // TODO: generalize to multi-dimensional arrays
+
         let arrayKey = arrayStateVarObj.indexToKey(ind);
         serializedReplacements.push({
           componentType,
           downstreamDependencies: {
-            [componentOrReplacementNames[index]]: [{
+            [targetName]: [{
               dependencyType: "referenceShadow",
               refComponentName: component.componentName,
               propVariable: arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey),
@@ -1375,27 +1397,26 @@ export function refReplacementFromProp({ component, components, componentOrRepla
             }]
           }
         })
-      }
-    } else if (propVariableObj.isArrayEntry) {
+      } else if (propVariableObj.isArrayEntry) {
 
-      let arrayStateVarObj = targetComponent.state[propVariableObj.arrayVarName];
-      let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
-        varEnding: propVariableObj.varEnding,
-        arrayEntryPrefix: propVariableObj.arrayEntryPrefix,
-      });
+        let arrayStateVarObj = targetComponent.state[propVariableObj.arrayVarName];
+        let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
+          varEnding: propVariableObj.varEnding,
+          arrayEntryPrefix: propVariableObj.arrayEntryPrefix,
+        });
 
-      // TODO: commented out below two conditiions to get tests to pass
-      // Check why these conditions were added in the first place.
+        // TODO: commented out below two conditiions to get tests to pass
+        // Check why these conditions were added in the first place.
 
-      // let entryValue = targetComponent.state[propVariableObj.varName].value;
+        // let entryValue = targetComponent.state[propVariableObj.varName].value;
 
-      // if (entryValue !== undefined) {
-      for (let arrayKey of arrayKeys) {
+        // if (entryValue !== undefined) {
+        let arrayKey = arrayKeys[ind];
         // if (arrayStateVarObj.getArrayValue({ arrayKey }) !== undefined) {
         serializedReplacements.push({
           componentType,
           downstreamDependencies: {
-            [componentOrReplacementNames[index]]: [{
+            [targetName]: [{
               dependencyType: "referenceShadow",
               refComponentName: component.componentName,
               propVariable: arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey),
@@ -1408,18 +1429,18 @@ export function refReplacementFromProp({ component, components, componentOrRepla
         // }
         // }
 
+      } else {
+        serializedReplacements.push({
+          componentType,
+          downstreamDependencies: {
+            [targetName]: [{
+              dependencyType: "referenceShadow",
+              refComponentName: component.componentName,
+              propVariable: propVariableObj.varName,
+            }]
+          }
+        })
       }
-    } else {
-      serializedReplacements.push({
-        componentType,
-        downstreamDependencies: {
-          [componentOrReplacementNames]: [{
-            dependencyType: "referenceShadow",
-            refComponentName: component.componentName,
-            propVariable: propVariableObj.varName,
-          }]
-        }
-      })
     }
   }
 

@@ -7,9 +7,6 @@ export default class Mathinput extends Input {
     this.updateMathExpression = this.updateMathExpression.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     );
-    this.setRendererValueAsSubmitted = this.setRendererValueAsSubmitted.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    );
   }
   static componentType = "mathinput";
 
@@ -103,11 +100,11 @@ export default class Mathinput extends Input {
       }
     }
 
-    stateVariableDefinitions.componentTypes = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { componentTypes: ["math"] } })
-    }
 
+    stateVariableDefinitions.componentType = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { componentType: "math" } })
+    }
 
 
     stateVariableDefinitions.numberTimesSubmitted = {
@@ -158,7 +155,6 @@ export default class Mathinput extends Input {
     }
 
 
-
     stateVariableDefinitions.submittedValue = {
       defaultValue: me.fromAst('\uFF3F'),
       public: true,
@@ -182,6 +178,7 @@ export default class Mathinput extends Input {
       }
     }
 
+
     stateVariableDefinitions.answerAncestor = {
       returnDependencies: () => ({
         answerAncestor: {
@@ -201,6 +198,7 @@ export default class Mathinput extends Input {
         }
       }
     }
+
 
     stateVariableDefinitions.includeCheckWork = {
       returnDependencies: () => ({
@@ -247,44 +245,12 @@ export default class Mathinput extends Input {
         let valueHasBeenValidated = false;
 
         if (dependencyValues.answerAncestor &&
-          dependencyValues.answerAncestor.stateValues.justSubmitted //&&
-          // dependencyValues.numberTimesSubmitted > 0 &&
-          // dependencyValues.value.equalsViaSyntax(dependencyValues.submittedValue)
-        ) {
+          dependencyValues.answerAncestor.stateValues.justSubmitted) {
           valueHasBeenValidated = true;
         }
         return {
           newValues: { valueHasBeenValidated }
         }
-      }
-    }
-
-
-    stateVariableDefinitions.rendererValueAsSubmitted = {
-      returnDependencies: () => ({
-        valueHasBeenValidated: {
-          dependencyType: "stateVariable",
-          variableName: "valueHasBeenValidated"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          useEssentialOrDefaultValue: {
-            rendererValueAsSubmitted: {
-              variablesToCheck: "rendererValueAsSubmitted",
-              defaultValue: dependencyValues.valueHasBeenValidated
-            }
-          }
-        }
-      },
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "rendererValueAsSubmitted",
-            value: desiredStateVariableValues.rendererValueAsSubmitted
-          }]
-        };
       }
     }
 
@@ -300,11 +266,13 @@ export default class Mathinput extends Input {
           flagName: "collaboration"
         }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          disabled: !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
+      definition: function ({ dependencyValues }) {
+        let disabled = false;
+        if (dependencyValues.collaborateGroups) {
+          disabled = !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
         }
-      })
+        return { newValues: { disabled } }
+      }
     }
 
     return stateVariableDefinitions;
@@ -325,21 +293,6 @@ export default class Mathinput extends Input {
     }
   }
 
-  setRendererValueAsSubmitted(val) {
-    console.log('set renderer value as submitted')
-    console.log(val)
-    this.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
-        componentName: this.componentName,
-        stateVariable: "rendererValueAsSubmitted",
-        value: val,
-      }]
-    })
-  }
-
-
-
   initializeRenderer({ }) {
     if (this.renderer !== undefined) {
       this.updateRenderer();
@@ -348,7 +301,6 @@ export default class Mathinput extends Input {
 
     this.actions = {
       updateMathExpression: this.updateMathExpression,
-      setRendererValueAsSubmitted: this.setRendererValueAsSubmitted,
     }
     if (this.stateValues.answerAncestor !== undefined) {
       this.actions.submitAnswer = () => this.requestAction({
@@ -364,7 +316,6 @@ export default class Mathinput extends Input {
       includeCheckWork: this.stateValues.includeCheckWork,
       creditAchieved: this.stateValues.creditAchieved,
       valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      numberTimesSubmitted: this.stateValues.numberTimesSubmitted,
       size: this.stateValues.size,
       showCorrectness: this.flags.showCorrectness,
       disabled: this.stateValues.disabled,
@@ -374,12 +325,10 @@ export default class Mathinput extends Input {
 
   updateRenderer() {
 
-
     this.renderer.updateMathinputRenderer({
       mathExpression: new Proxy(this.stateValues.value, this.readOnlyProxyHandler),
       creditAchieved: this.stateValues.creditAchieved,
       valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      numberTimesSubmitted: this.stateValues.numberTimesSubmitted,
       disabled: this.stateValues.disabled,
     });
 

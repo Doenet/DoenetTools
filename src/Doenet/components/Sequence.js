@@ -21,7 +21,7 @@ export default class Sequence extends CompositeComponent {
 
     function fromToAsString({ activeChildrenMatched, dependencyValues }) {
 
-      let stringChild = activeChildrenMatched[0];
+      let stringChild = dependencyValues.stringChild[0];
       let stringPieces = stringChild.stateValues.value.split(",").map(x => x.trim());
 
       if (stringPieces.length > 2) {
@@ -98,6 +98,11 @@ export default class Sequence extends CompositeComponent {
         type: {
           dependencyType: "stateVariable",
           variableName: "type",
+        },
+        stringChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneString",
+          variableNames: ["value"]
         }
       },
       affectedBySugar: ["atMostOneFrom", "atMostOneTo"],

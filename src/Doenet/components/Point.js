@@ -311,18 +311,18 @@ export default class Point extends GraphicalComponent {
           return dependencies;
         }
       },
-      markStale: function ({ stateVarObj, changes }) {
+      markStale: function ({ staleByKey, changes }) {
         if (!changes.coords) {
-          // if based on coords, don't need to separately track stateByKey
+          // if based on coords, don't need to separately track staleByKey
           // as all components become stale whenever coords changes
           if (changes.xChild) {
-            stateVarObj.staleByKey[0] = true;
+            staleByKey[0] = true;
           }
           if (changes.yChild) {
-            stateVarObj.staleByKey[1] = true;
+            staleByKey[1] = true;
           }
           if (changes.zChild) {
-            stateVarObj.staleByKey[2] = true;
+            staleByKey[2] = true;
           }
         }
       },
@@ -1045,8 +1045,6 @@ function calculateXs({ dependencyValues, arrayKeys, arrayValues, staleByKey }) {
     }
 
     let { xChild, yChild, zChild, nDimensions } = dependencyValues;
-    // for now, convert nDimensions to number
-    // nDimensions = nDimensions.tree;
 
     if (staleByKey[0] || arrayValues[0] === undefined) {
       if (arrayKey === "0" || arrayKey === undefined) {

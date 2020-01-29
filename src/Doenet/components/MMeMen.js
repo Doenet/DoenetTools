@@ -76,7 +76,7 @@ export class M extends InlineComponent {
         },
 
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, componentInfoObjects }) {
 
         console.log(dependencyValues)
         if (dependencyValues.stringTextMathChildren.length === 0) {

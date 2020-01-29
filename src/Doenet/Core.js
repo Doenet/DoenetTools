@@ -1672,6 +1672,36 @@ export default class Core {
     }
 
 
+
+    if (sugarResults.childChanges) {
+
+      for (let childName in sugarResults.childChanges) {
+        let changes = sugarResults.childChanges[childName];
+
+        if (component.allChildren[childName].definingChildrenIndex === undefined) {
+          throw Error("Invalid sugar logic for component of type " + componentType
+            + ": can change only defining children");
+        }
+
+        let child = this._components[childName];
+
+        let result = this.replaceDefiningChildrenBySugar({
+          component: child,
+          sugarResults: changes,
+        });
+
+        this.deriveChildResultsFromDefiningChildren(child);
+
+        if (!component.childLogicSatisfied) {
+          // TODO: handle case where child logic is no longer satisfied
+          console.error(`Child logic of ${component.componentName} is not satisfied after applying sugar`)
+        }
+
+        this.markChildAndDescendantDependenciesChanged(child);
+
+      }
+    }
+
     for (let change of sugarResults.baseChanges) {
       let result = this.replaceDefiningChildrenBySugar({
         component,
@@ -1688,36 +1718,6 @@ export default class Core {
     }
 
     this.markChildAndDescendantDependenciesChanged(component);
-
-    if (sugarResults.childChanges === undefined) {
-      return;
-    }
-
-    for (let childName in sugarResults.childChanges) {
-      let changes = sugarResults.childChanges[childName];
-
-      if (component.allChildren[childName].definingChildrenIndex === undefined) {
-        throw Error("Invalid sugar logic for component of type " + componentType
-          + ": can change only defining children");
-      }
-
-      let child = this._components[childName];
-
-      let result = this.replaceDefiningChildrenBySugar({
-        component: child,
-        sugarResults: changes,
-      });
-
-      this.deriveChildResultsFromDefiningChildren(child);
-
-      if (!component.childLogicSatisfied) {
-        // TODO: handle case where child logic is no longer satisfied
-        console.error(`Child logic of ${component.componentName} is not satisfied after applying sugar`)
-      }
-
-      this.markChildAndDescendantDependenciesChanged(child);
-
-    }
 
   }
 
@@ -2278,9 +2278,15 @@ export default class Core {
           variableName: redefineDependencies.propVariable,
         },
       });
-      stateDef.definition = function ({ dependencyValues }) {
-        return { newValues: { [primaryStateVariableForDefinition]: dependencyValues.refTargetVariable } };
-      };
+      if (stateDef.set) {
+        stateDef.definition = function ({ dependencyValues }) {
+          return { newValues: { [primaryStateVariableForDefinition]: stateDef.set(dependencyValues.refTargetVariable) } };
+        };
+      } else {
+        stateDef.definition = function ({ dependencyValues }) {
+          return { newValues: { [primaryStateVariableForDefinition]: dependencyValues.refTargetVariable } };
+        };
+      }
       stateDef.inverseDefinition = function ({ desiredStateVariableValues }) {
         return {
           success: true,
@@ -2623,37 +2629,57 @@ export default class Core {
   initializeArrayEntryStateVariable({ stateVarObj, arrayStateVariable, arrayKeys, component, stateVariable }) {
     // This function used for initializing array entry variables
     // (not the original array variable)
+    // It adds many attributes to state variables corresponding to 
+    // array entries, including
+    // - arrayStateVariable: the name of the array for which this is an entry
+    // - arrayKeys: an array of the key(s) that constitute this entry
+    // - markStale: function from array state variable
+    // - getValueFromArrayValues: function used to get this entry's value
 
     stateVarObj.isArrayEntry = true;
-    stateVarObj.arrayStateVariable = arrayStateVariable;
     stateVarObj.arrayKeys = arrayKeys;
-    stateVarObj.markStale = component.state[arrayStateVariable].markStale;
-    let arrayStateVarObj = component.state[arrayStateVariable];
 
+    stateVarObj.arrayStateVariable = arrayStateVariable;
+    let arrayStateVarObj = component.state[arrayStateVariable];
+    stateVarObj.markStale = arrayStateVarObj.markStale;
+
+    // add this entry name to the array's list of its entries
     if (!arrayStateVarObj.arrayEntryNames) {
       arrayStateVarObj.arrayEntryNames = [];
     }
     arrayStateVarObj.arrayEntryNames.push(stateVariable);
 
+    // Each arrayEntry state variable will have a funciton getValueFromArrayValue
+    // that will be used to retrieve the actual value of the components
+    // specified by this entry from the whole array stored in arrayValues
     // Note: getValueFromArrayValues assumes that arrayValues has been populated
     if (arrayStateVarObj.getEntryValues) {
-      stateVarObj.getValueFromArrayValues = function ({ overridesByKey } = {}) {
+      // the function getEntryValues must have been overwritten by the class
+      // so use this function instead
+      stateVarObj.getValueFromArrayValues = function () {//({ overridesByKey } = {}) {
         return arrayStateVarObj.getEntryValues({
           varName: stateVariable,
-          overridesByKey
+          // overridesByKey
         });
       };
     }
     else {
-      stateVarObj.getValueFromArrayValues = function ({ overridesByKey } = {}) {
+      // getValueFromArrayValues returns an array of the values
+      // that correspond to the arrayKeys of this entry state variable
+      // (returning a scalar instead if it is just a single value)
+      // It uses the function getArrayValue, which gets the values
+      // from arrayValues of the corresponding array state variable
+      // Any values in overridesByKey are used instead of values
+      // from the array state variable
+      stateVarObj.getValueFromArrayValues = function () {//({ overridesByKey } = {}) {
         let value = [];
         for (let arrayKey of stateVarObj.arrayKeys) {
-          if (overridesByKey && arrayKey in overridesByKey) {
-            value.push(overridesByKey[arrayKey]);
-          }
-          else {
-            value.push(arrayStateVarObj.getArrayValue({ arrayKey }));
-          }
+          // if (overridesByKey && arrayKey in overridesByKey) {
+          //   value.push(overridesByKey[arrayKey]);
+          // }
+          // else {
+          value.push(arrayStateVarObj.getArrayValue({ arrayKey }));
+          // }
         }
         if (value.length === 1) {
           return value[0];
@@ -2666,14 +2692,49 @@ export default class Core {
   }
 
   initializeArrayStateVariable({ stateVarObj, component, stateVariable }) {
-    // this function used for initializing original array variables
+    // This function used for initializing original array variables
     // (not array entry variables)
+
+    // Arrays values are stored in a (possibly-multidimensional) array
+    // called arrayValues.  However, so that core doesn't have to deal
+    // with special cases for multiple dimensions, array values are typically
+    // referenced with an arrayKey, which is a single string that corresponds
+    // to a single entry in the array. 
+    // For one dimension, index is an integer and arrayKey is its string representation
+    // For multiple dimensions, index is an array of integers, e.g. [i,j,k]
+    // and arrayKey is its string representation, i.e., "i,j,k"
+
+
+    // The function adds attributes to array state variables, including
+    // - arrayValues: the array of the current values of the array
+    //   (i.e., based on index rather than arrayKey)
+    //   arrayValues is used rather than value given that value is
+    //   sometimes deleted and replaced by a getter.  arrayValues is
+    //   never deleted, but entries are marked as stale using stateByKey
+    // - staleByKey: when an entry associated with an arrayKey is stale
+    //   staleByKey for that key should set to true
+    //   Note: component classes are responsible for setting staleByKey
+    //   in the state variable function markStale, but core will
+    //   take care of unsetting staleByKey when new values are calculated
+    //   TODO: should this be a set rather than an object?
+
+    // - keyToIndex: maps arrayKey (single string) to (multi-)index
+    // - indexToKey: maps (multi-)index to arrayKey
+    // - setArrayValue: sets value in arrayValues corresponding to arrayKey
+    // - getArrayValue: gets value in arrayValues corresponding to arrayKey
+    // - getArrayKeysFromVarName: returns array of the arrayKeys that correspond
+    //   to a given variable name of an array entry
+    // - arrayVarNameFromArrayKey: returns the variable name of an array entry
+    //   that contains a given array key (if there are many, just return one)
+    // - allVarNamesThatIncludeArrayKey: returns an array of the variable names
+    //   of all array entries that contain a given array key
 
     stateVarObj.arrayValues = [];
     stateVarObj.staleByKey = {};
-    // key is key for a 1D array so that core doesn't have to worry about dimensions
-    // index is multi-index for the possibly multi-dimensional arrayValues array
+
     if (stateVarObj.nDimensions > 1) {
+      // for multiple dimensions, have to convert from arrayKey
+      // to multi-index when getting or setting
       stateVarObj.keyToIndex = key => key.split(',').map(x => Number(x));
       stateVarObj.setArrayValue = function ({ value, arrayKey }) {
         let index = stateVarObj.keyToIndex(arrayKey);
@@ -2693,6 +2754,8 @@ export default class Core {
       };
     }
     else {
+      // for a single dimension, can just use arrayKey directly
+      // since it is just the string version of the index
       stateVarObj.keyToIndex = key => Number(key);
       stateVarObj.setArrayValue = function ({ value, arrayKey }) {
         stateVarObj.arrayValues[arrayKey] = value;
@@ -2701,9 +2764,16 @@ export default class Core {
         return stateVarObj.arrayValues[arrayKey];
       };
     }
+
+    // converting from index to key is the same for single and multiple
+    // dimensions, as we just want the string representation
     stateVarObj.indexToKey = index => String(index);
+
     if (!stateVarObj.getArrayKeysFromVarName) {
-      stateVarObj.getArrayKeysFromVarName = function ({ varEnding }) {
+      // the default function for getArrayKeysFromVarName ignores the
+      // array entry prefix, but is just based on the variable ending.
+      // A component class's function could use arrayEntryPrefix
+      stateVarObj.getArrayKeysFromVarName = function ({ arrayEntryPrefix, varEnding }) {
         return [String(Number(varEnding) - 1)];
       };
     }
@@ -2723,6 +2793,10 @@ export default class Core {
     for (let prefix of stateVarObj.entryPrefixes) {
       component.arrayEntryPrefixes[prefix] = stateVariable;
     }
+
+    // for array, keep track if each arrayKey is essential
+    stateVarObj.essentialByArrayKey = {};
+
   }
 
   setUpComponentDependencies({ component }) {
@@ -2755,8 +2829,6 @@ export default class Core {
       if (stateVarObj.stateVariablesDeterminingDependencies) {
         let dependencyStateVar = this.createDetermineDependenciesStateVariable({
           stateVariable, component,
-          stateVariablesDeterminingDependencies: stateVarObj.stateVariablesDeterminingDependencies,
-          additionalStateVariablesDefined: stateVarObj.additionalStateVariablesDefined
         });
 
         // make dependencies of actual stateVariable be this
@@ -3273,10 +3345,11 @@ export default class Core {
   }
 
   createDetermineDependenciesStateVariable({
-    stateVariable, component, stateVariablesDeterminingDependencies,
-    additionalStateVariablesDefined,
+    stateVariable, component,
   }) {
 
+    let stateVariablesDeterminingDependencies = component.state[stateVariable].stateVariablesDeterminingDependencies;
+    let additionalStateVariablesDefined = component.state[stateVariable].additionalStateVariablesDefined;
 
     let dependencyStateVar = `__determine_dependencies_${stateVariable}`;
 
@@ -3398,14 +3471,12 @@ export default class Core {
     definitionArgs.componentInfoObjects = this.componentInfoObjects;
     definitionArgs.styleDefinitions = this.styleDefinitions;
 
-    let originalStateVariable = stateVariable;
-
     let definitionFunction = stateVarObj.definition;
 
     if (stateVarObj.isArrayEntry) {
       definitionArgs.arrayKeys = stateVarObj.arrayKeys;
-      originalStateVariable = stateVarObj.arrayStateVariable;
-      let arrayStateVarObj = component.state[originalStateVariable];
+      let arrayStateVariable = stateVarObj.arrayStateVariable;
+      let arrayStateVarObj = component.state[arrayStateVariable];
       definitionArgs.arrayValues = arrayStateVarObj.arrayValues;
       definitionArgs.staleByKey = arrayStateVarObj.staleByKey;
       definitionFunction = arrayStateVarObj.definition;
@@ -3430,8 +3501,6 @@ export default class Core {
     // console.log(`result for ${stateVariable} of ${component.componentName}`)
     // console.log(result);
 
-    let arrayDefaultsUsedByKey = {};
-
     for (let varName in result.useEssentialOrDefaultValue) {
       if (!(varName in component.state)) {
         throw Error(`Definition of state variable ${stateVariable} of ${component.componentName} requested essential or default value of ${varName}, which isn't a state variable.`);
@@ -3448,28 +3517,33 @@ export default class Core {
       receivedValue[varName] = true;
 
       // first determine if can get value from essential state
-      let setToEssentialValue = this.setValueToEssential({
+      let haveEssentialValue = this.setValueToEssential({
         component, varName,
         useEssentialInfo: result.useEssentialOrDefaultValue[varName]
       });
 
       if (component.state[varName].isArray) {
         for (let arrayKey in result.useEssentialOrDefaultValue[varName]) {
-          if (!setToEssentialValue[arrayKey]) {
-            if ("defaultEntryValue" in component.state[varName]) {
-              arrayDefaultsUsedByKey[arrayKey] = component.state[varName].defaultEntryValue;
-              // component.state[varName].setArrayValue({
-              //   value: component.stateVariableDefinitions[varName].defaultEntryValue,
-              //   arrayKey,
-              // });
-              // delete component.state[varName].staleByKey[arrayKey];
-              // // TODO: do we mark the whole array as essential?
-              // component.state[varName].essential = true;
+          if (!haveEssentialValue[arrayKey]) {
+            if ("defaultEntryValue" in result.useEssentialOrDefaultValue[varName]) {
+              component.state[varName].setArrayValue({
+                value: result.useEssentialOrDefaultValue[varName].defaultEntryValue,
+                arrayKey,
+              });
+              delete component.state[varName].staleByKey[arrayKey];
+              component.state[varName].essentialByArrayKey[arrayKey] = true;
+            } else if ("defaultEntryValue" in component.state[varName]) {
+              component.state[varName].setArrayValue({
+                value: component.state[varName].defaultEntryValue,
+                arrayKey,
+              });
+              delete component.state[varName].staleByKey[arrayKey];
+              component.state[varName].essentialByArrayKey[arrayKey] = true;
             }
           }
         }
       } else {
-        if (!setToEssentialValue) {
+        if (!haveEssentialValue) {
           if ("defaultValue" in result.useEssentialOrDefaultValue[varName]) {
             // delete before assigning value to remove any getter for the property
             delete component.state[varName].value;
@@ -3507,24 +3581,24 @@ export default class Core {
       receivedValue[varName] = true;
 
       // first determine if can get value from essential state
-      let setToEssentialValue = this.setValueToEssential({
+      let haveEssentialValue = this.setValueToEssential({
         component, varName,
         useEssentialInfo: result.useEssentialOrFallbackValue[varName]
       });
 
       if (component.state[varName].isArray) {
         for (let arrayKey in result.useEssentialOrFallbackValue[varName]) {
-          if (!setToEssentialValue[arrayKey]) {
+          if (!haveEssentialValue[arrayKey]) {
             component.state[varName].setArrayValue({
               value: result.useEssentialOrFallbackValue[varName][arrayKey].valueIfNotEssential,
               arrayKey,
             });
             delete component.state[varName].staleByKey[arrayKey];
-
+            component.state[varName].essentialByArrayKey[arrayKey] = true;
           }
         }
       } else {
-        if (!setToEssentialValue) {
+        if (!haveEssentialValue) {
 
           // delete before assigning value to remove any getter for the property
           delete component.state[varName].value;
@@ -3633,21 +3707,15 @@ export default class Core {
     }
 
 
+
     if (stateVarObj.isArray) {
       // delete before assigning value to remove any getter for the property
       delete stateVarObj.value;
       stateVarObj.value = stateVarObj.arrayValues;
-      // if actually got the whole array, then we save default results to the array
-      for (let arrayKey in arrayDefaultsUsedByKey) {
-        stateVarObj.setArrayValue({
-          value: arrayDefaultsUsedByKey[arrayKey],
-          arrayKey,
-        });
-        delete stateVarObj.staleByKey[arrayKey];
-      }
+
     } else if (stateVarObj.isArrayEntry) {
       delete stateVarObj.value;
-      stateVarObj.value = stateVarObj.getValueFromArrayValues({ overridesByKey: arrayDefaultsUsedByKey });
+      stateVarObj.value = stateVarObj.getValueFromArrayValues();
     } else {
 
       for (let varName in receivedValue) {
@@ -3663,12 +3731,13 @@ export default class Core {
   }
 
   setValueToEssential({ component, varName, useEssentialInfo }) {
-    let setToEssentialValue = false;
+    let haveEssentialValue = false;
     if (component.state[varName].isArray) {
-      setToEssentialValue = {};
+      haveEssentialValue = {};
       for (let arrayKey in useEssentialInfo) {
-        setToEssentialValue[arrayKey] = false;
+        haveEssentialValue[arrayKey] = false;
       }
+
     }
 
     // if state variable itself is already essential, then don't change the value
@@ -3683,44 +3752,29 @@ export default class Core {
     if (component.potentialEssentialState) {
       if (component.state[varName].isArray) {
         for (let arrayKey in useEssentialInfo) {
-          let variablesToCheck = useEssentialInfo[arrayKey].variablesToCheck;
-          if (!Array.isArray(variablesToCheck)) {
-            variablesToCheck = [variablesToCheck];
-          }
-          for (let essentialVarInfo of variablesToCheck) {
-            let essentialVarName, mathComponentIndex, arrayIndex;
-            if (typeof essentialVarInfo === "string") {
-              essentialVarName = essentialVarInfo;
+          if (component.state[varName].essentialByArrayKey[arrayKey]) {
+            // if already essential, just mark the arrayKey as not stale
+            // so that we use the old value
+            delete component.state[varName].staleByKey[arrayKey];
+            haveEssentialValue[arrayKey] = true;
+          } else {
+            let variablesToCheck = useEssentialInfo[arrayKey].variablesToCheck;
+            if (!Array.isArray(variablesToCheck)) {
+              variablesToCheck = [variablesToCheck];
             }
-            else {
-              essentialVarName = essentialVarInfo.variableName;
-              mathComponentIndex = essentialVarInfo.mathComponentIndex;
-              arrayIndex = essentialVarInfo.arrayIndex;
-            }
-            if (component.potentialEssentialState[essentialVarName] !== undefined) {
-              let value = component.potentialEssentialState[essentialVarName];
-              if (arrayIndex !== undefined) {
-                if (Array.isArray(arrayIndex)) {
-                  for (let ind of arrayIndex) {
-                    value = value[ind];
-                  }
-                }
-                else {
-                  value = value[arrayIndex];
-                }
-              }
-              else if (mathComponentIndex !== undefined && value instanceof me.class) {
-                value = value.get_component(mathComponentIndex);
-              }
+            let { foundEssential, value } = this.findPotentialEssentialValue({
+              variablesToCheck,
+              potentialEssentialState: component.potentialEssentialState
+            });
+
+            if (foundEssential) {
               component.state[varName].setArrayValue({
                 value,
                 arrayKey,
               });
               delete component.state[varName].staleByKey[arrayKey];
-              // TODO: do we mark the whole array as essential?
-              component.state[varName].essential = true;
-              setToEssentialValue[arrayKey] = true;
-              break;
+              component.state[varName].essentialByArrayKey[arrayKey] = true;
+              haveEssentialValue[arrayKey] = true;
             }
           }
         }
@@ -3730,30 +3784,60 @@ export default class Core {
         if (!Array.isArray(variablesToCheck)) {
           variablesToCheck = [variablesToCheck];
         }
-        for (let essentialVarInfo of variablesToCheck) {
-          let essentialVarName, mathComponentIndex;
-          if (typeof essentialVarInfo === "string") {
-            essentialVarName = essentialVarInfo;
-          }
-          else {
-            essentialVarName = essentialVarInfo.variableName;
-            mathComponentIndex = essentialVarInfo.mathComponentIndex;
-          }
-          if (component.potentialEssentialState[essentialVarName] !== undefined) {
-            // delete before assigning value to remove any getter for the property
-            delete component.state[varName].value;
-            component.state[varName].value = component.potentialEssentialState[essentialVarName];
-            if (mathComponentIndex !== undefined && component.state[varName].value instanceof me.class) {
-              component.state[varName].value = component.state[varName].value.get_component(mathComponentIndex);
-            }
-            component.state[varName].essential = true;
-            setToEssentialValue = true;
-            break;
-          }
+
+        let { foundEssential, value } = this.findPotentialEssentialValue({
+          variablesToCheck,
+          potentialEssentialState: component.potentialEssentialState
+        });
+
+        if (foundEssential) {
+
+          // delete before assigning value to remove any getter for the property
+          delete component.state[varName].value;
+          component.state[varName].value = value;
+          component.state[varName].essential = true;
+          haveEssentialValue = true;
         }
       }
     }
-    return setToEssentialValue;
+    return haveEssentialValue;
+  }
+
+  findPotentialEssentialValue({ variablesToCheck, potentialEssentialState }) {
+    for (let essentialVarInfo of variablesToCheck) {
+      let essentialVarName, mathComponentIndex, arrayIndex;
+      if (typeof essentialVarInfo === "string") {
+        essentialVarName = essentialVarInfo;
+      }
+      else {
+        essentialVarName = essentialVarInfo.variableName;
+        mathComponentIndex = essentialVarInfo.mathComponentIndex;
+        arrayIndex = essentialVarInfo.arrayIndex;
+      }
+      if (potentialEssentialState[essentialVarName] !== undefined) {
+        let value = potentialEssentialState[essentialVarName];
+        if (arrayIndex !== undefined) {
+          if (Array.isArray(arrayIndex)) {
+            for (let ind of arrayIndex) {
+              value = value[ind];
+            }
+          }
+          else {
+            value = value[arrayIndex];
+          }
+        }
+        else if (mathComponentIndex !== undefined && value instanceof me.class) {
+          value = value.get_component(mathComponentIndex);
+        }
+
+        return {
+          foundEssential: true,
+          value
+        }
+      }
+    }
+
+    return { foundEssential: false }
   }
 
   getStateVariableDependencyValues({ component, stateVariable }) {
@@ -4164,6 +4248,14 @@ export default class Core {
                     });
                     Object.assign(varsUnresolved, result.varsUnresolved);
                     varsDeleted.push(...result.varsDeleted);
+
+                    if (Object.keys(result.varsUnresolved).length > 0) {
+                      this.addUnresolvedDependencies({
+                        varsUnresolved: result.varsUnresolved,
+                        component: depComponent
+                      });
+                    }
+
                   }
 
                   if (depComponent.state[downVar].isResolved) {
@@ -4621,6 +4713,18 @@ export default class Core {
 
     }
 
+    // TODO: if we do need to update composite replacements here
+    // we need to check if appropriate state variables are resolved
+
+    // // get unique list of components touched
+    // componentsTouched = new Set(componentsTouched);
+
+    // // calculate any replacement changes on composites touched
+    // this.replacementChangesFromComponentsTouched(componentsTouched);
+
+    // // changed componentsTouched back to array
+    // componentsTouched = [...componentsTouched];
+
     return componentsTouched;
 
   }
@@ -4649,6 +4753,13 @@ export default class Core {
 
     for (let varName in component.state) {
       let stateVarObj = component.state[varName];
+
+      if (stateVarObj.isArrayEntry) {
+        // skip array entries, as will get them from whole array
+        // (and they don't have a returnDependencies function directly)
+        continue;
+      }
+
       let stateValues;
       if (stateVarObj.stateVariablesDeterminingDependencies) {
         let missingAValue = false;
@@ -4716,8 +4827,11 @@ export default class Core {
                 // lost a child.  remove dependency
                 // and change any child state variable that refer to parent state variables
                 componentsTouched.push(currentChild);
-                let additionalComponentsTouched = this.changeParentStateVariables(currentChild);
-                componentsTouched.push(...additionalComponentsTouched);
+                if (currentChild in this.components) {
+                  // only change if currentChild has not been deleted
+                  let additionalComponentsTouched = this.changeParentStateVariables(currentChild);
+                  componentsTouched.push(...additionalComponentsTouched);
+                }
                 let childUpDep = this.upstreamDependencies[currentChild];
                 let depNamesToCheck = [];
                 if (currentDep.downstreamVariableNames) {
@@ -4819,7 +4933,7 @@ export default class Core {
             descendantsChanged = true;
           }
           else {
-            for (let [ind, descendantName] of descendants) {
+            for (let [ind, descendantName] of descendants.entries()) {
               if (descendantName !== currentDep.downstreamComponentNames[ind]) {
                 descendantsChanged = true;
                 break;
@@ -5087,7 +5201,6 @@ export default class Core {
   }
 
   markStateVariableAndUpstreamDependentsStale({ component, varName }) {
-
     let componentsTouched = [component.componentName];
     let stateVarObj = component.state[varName];
 
@@ -5193,7 +5306,7 @@ export default class Core {
               stateVarForMarkStale = upDepComponent.state[upVar.arrayStateVariable]
             }
             upVar.markStale({
-              stateVarObj: stateVarForMarkStale,
+              stateByKey: stateVarForMarkStale.staleByKey,
               changes: { [upDep.dependencyName]: depChanges },
               // arrayValues
             });
@@ -5684,6 +5797,7 @@ export default class Core {
       componentChanges,
       components: this.components,
       workspace: component.replacementsWorkspace,
+      getComponentNamesForProp: this.getComponentNamesForProp,
     });
 
     // console.log("replacement changes for " + component.componentName);
@@ -6264,35 +6378,7 @@ export default class Core {
     componentsTouched = new Set(componentsTouched);
 
     // calculate any replacement changes on composites touched
-    let componentChanges = []; // TODO: what to doadditionalComponentsTouched with componentChanges?
-
-    let additionalComponentsTouched = [...componentsTouched];
-
-    while (additionalComponentsTouched.length > 0) {
-      let newTouched = [];
-      for (let cName of additionalComponentsTouched) {
-        if (this._components[cName] instanceof this.allComponentClasses._composite) {
-          let result = this.updateCompositeReplacements({
-            component: this._components[cName],
-            componentChanges
-          });
-          if (result.componentsTouched) {
-            newTouched.push(...result.componentsTouched);
-          }
-        }
-      }
-
-      newTouched = new Set(newTouched);
-
-      additionalComponentsTouched = [];
-
-      for (let cName of newTouched) {
-        if (!componentsTouched.has(cName)) {
-          componentsTouched.add(cName);
-          additionalComponentsTouched.push(cName);
-        }
-      }
-    }
+    this.replacementChangesFromComponentsTouched(componentsTouched);
 
     // TODO: figure out sourceOfUpdate
     let sourceOfUpdate;
@@ -6329,6 +6415,33 @@ export default class Core {
       }
     }
 
+  }
+
+  replacementChangesFromComponentsTouched(componentsTouched) {
+    let componentChanges = []; // TODO: what to doadditionalComponentsTouched with componentChanges?
+    let additionalComponentsTouched = [...componentsTouched];
+    while (additionalComponentsTouched.length > 0) {
+      let newTouched = [];
+      for (let cName of additionalComponentsTouched) {
+        if (this._components[cName] instanceof this.allComponentClasses._composite) {
+          let result = this.updateCompositeReplacements({
+            component: this._components[cName],
+            componentChanges
+          });
+          if (result.componentsTouched) {
+            newTouched.push(...result.componentsTouched);
+          }
+        }
+      }
+      newTouched = new Set(newTouched);
+      additionalComponentsTouched = [];
+      for (let cName of newTouched) {
+        if (!componentsTouched.has(cName)) {
+          componentsTouched.add(cName);
+          additionalComponentsTouched.push(cName);
+        }
+      }
+    }
   }
 
   processNewStateVariableValues({ newStateVariableValues, componentsTouched }) {
@@ -6389,6 +6502,8 @@ export default class Core {
             console.warn(`can't update state variable ${vName} of component ${cName}, as it doesn't exist.`);
             continue;
           }
+          // get value of state variable so it will determine if essential
+          compStateObj.value;
           if (!compStateObj.essential) {
             console.warn(`can't update state variable ${vName} of component ${cName}, as it is not an essential state variable.`);
             continue;
@@ -6435,11 +6550,12 @@ export default class Core {
     inverseDefinitionArgs.workspace = stateVariableWorkspace;
     inverseDefinitionArgs.overrideFixed = instruction.overrideFixed;
 
-    let originalStateVariable = stateVariable;
     let stateVarObj = component.state[stateVariable];
+    let inverseDefinitionFunction = stateVarObj.inverseDefinition;
 
     if (stateVarObj.isArrayEntry) {
-      originalStateVariable = stateVarObj.arrayStateVariable;
+      arrayStateVariable = stateVarObj.arrayStateVariable;
+      inverseDefinitionFunction = component.state[arrayStateVariable].inverseDefinition;
 
       let desiredValuesForArray = {};
       if (stateVarObj.arrayKeys.length === 1) {
@@ -6449,19 +6565,17 @@ export default class Core {
           desiredValuesForArray[arrayKey] = instruction.value[ind];
         }
       }
-      inverseDefinitionArgs.desiredStateVariableValues = { [originalStateVariable]: desiredValuesForArray };
+      inverseDefinitionArgs.desiredStateVariableValues = { [arrayStateVariable]: desiredValuesForArray };
 
     } else {
       inverseDefinitionArgs.desiredStateVariableValues = { [stateVariable]: instruction.value };
     }
 
 
-    let origStateVarObj = component.state[originalStateVariable];
-
     let componentsTouched = [component.componentName];
     let newStateVariableValues = {};
 
-    if (!origStateVarObj.inverseDefinition) {
+    if (!inverseDefinitionFunction) {
       console.warn(`Cannot change state variable ${stateVariable} of ${component.componentName} as it doesn't have an inverse definition`);
       return { newStateVariableValues, componentsTouched };
     }
@@ -6476,7 +6590,7 @@ export default class Core {
       return { newStateVariableValues, componentsTouched };
     }
 
-    let inverseResult = origStateVarObj.inverseDefinition(inverseDefinitionArgs);
+    let inverseResult = inverseDefinitionFunction(inverseDefinitionArgs);
 
     if (!inverseResult.success) {
       console.log(`Changing ${stateVariable} of ${component.componentName} did not succeed.`);

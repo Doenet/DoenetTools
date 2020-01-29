@@ -78,8 +78,9 @@ export default class Award extends BaseComponent {
       ],
       returnDependencies: () => ({
         stringChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "childStateVariables",
           childLogicName: "exactlyOneString",
+          variableNames: ["value"]
         },
         mathChild: {
           dependencyType: "childIdentity",
@@ -178,36 +179,6 @@ export default class Award extends BaseComponent {
 
     }
 
-    // stateVariableDefinitions.justSubmitted = {
-    //   // TODO: not sure how to get this to work
-    //   public: true,
-    //   componentType: "boolean",
-    //   defaultValue: false,
-    //   returnDependencies: () => ({
-    //     ifChild: {
-    //       dependencyType: "childStateVariables",
-    //       childLogicName: "exactlyOneIf",
-    //       variableNames: ["justSubmitted"]
-    //     }
-    //   }),
-    //   definition: ({dependencyValues}) => ({
-    //     newValues: {
-    //       justSubmitted: dependencyValues.ifChild[0].stateValues.justSubmitted,
-    //     }
-    //   }),
-    //   inverseDefinition: function ({ desiredStateVariableValues }) {
-    //     return {
-    //       success: true,
-    //       instructions: [{
-    //         setDependency: "ifChild",
-    //         desiredValue: desiredStateVariableValues.justSubmitted,
-    //         childIndex: 0,
-    //         variableIndex: 0,
-    //       }]
-    //     };
-    //   }
-
-    // }
 
     stateVariableDefinitions.feedback = {
       public: true,
@@ -258,34 +229,6 @@ export default class Award extends BaseComponent {
   }
 
 
-  updateState(args = {}) {
- 
-    let justSubmitted = true;
-    if (args.sourceOfUpdate !== undefined) {
-      justSubmitted = false;
-      let instructionsForThisComponent = args.sourceOfUpdate.instructionsByComponent[this.componentName];
-      if (instructionsForThisComponent !== undefined) {
-        if (instructionsForThisComponent.variableUpdates.justSubmitted !== undefined) {
-          justSubmitted = instructionsForThisComponent.variableUpdates.justSubmitted.changes;
-        }
-      } else if (Object.keys(args.sourceOfUpdate.instructionsByComponent).length === 1) {
-        let val = Object.values(args.sourceOfUpdate.instructionsByComponent)[0];
-        let variableUpdates = val.variableUpdates;
-        if (Object.keys(variableUpdates).length === 1 && Object.keys(variableUpdates)[0] === "rendererValueAsSubmitted") {
-          // if only change was changing renderedValueAsSubmitted on some component
-          // the don't change this.state.justSubmitted
-          // (which we accomplish by setting justSubmitted to true)
-          justSubmitted = true;
-        }
-      }
-    }
-
-    if (!justSubmitted || !this.state.ifChild.state.justSubmitted) {
-      this.state.justSubmitted = false;
-    }
-
-  }
-
   adapters = ["awarded"];
 
 
@@ -295,54 +238,5 @@ export default class Award extends BaseComponent {
     'onesignerror': `Credit reduced because it appears that you made a sign error.`,
     'twosignerrors': `Credit reduced because it appears that you made two sign errors.`,
   }
-
-}
-
-
-
-// return the JSON representing the portion of array determined by the given propChildren
-function returnSerializedComponentsFeedback({
-  stateVariable, variableName,
-  propChildren, propName,
-  componentName,
-}) {
-
-  if (stateVariable.value.length === 0) {
-    return [];
-  }
-
-  return [{
-    componentType: "feedback",
-    children: [
-      {
-        componentType: "if",
-        children: [
-          {
-            componentType: "ref",
-            children: [
-              {
-                componentType: "prop",
-                state: { variableName: "awarded" }
-              },
-              {
-                componentType: "reftarget",
-                state: { refTargetName: componentName }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        componentType: "string",
-        state: { value: stateVariable.value[0] }
-      }
-    ],
-    downstreamDependencies: {
-      [componentName]: [{
-        dependencyType: "referenceShadow",
-        prop: propName,
-      }]
-    },
-  }]
 
 }

@@ -3,12 +3,13 @@ import BaseComponent from './abstract/BaseComponent';
 export default class Prop extends BaseComponent {
   static componentType = "prop";
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
-      name: "exactlyOneString",
+      name: "atMostOneString",
       componentType: 'string',
+      comparison: 'atMost',
       number: 1,
       setAsBase: true,
     });
@@ -20,6 +21,31 @@ export default class Prop extends BaseComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.variableName = {
+      returnDependencies: () => ({
+        stringChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneString",
+          variableNames: ["value"],
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.stringChild.length === 0) {
+          return {
+            useEssentialOrDefaultValue: {
+              variableName: { variablesToCheck: "variableName" }
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              variableName: dependencyValues.stringChild[0].stateValues.value
+            }
+          }
+        }
+      }
+    }
 
     stateVariableDefinitions.effectiveTargetClasses = {
       returnDependencies: () => ({
@@ -33,27 +59,32 @@ export default class Prop extends BaseComponent {
       },
     };
 
-    stateVariableDefinitions.propVariableObjs = {
-      additionalStateVariablesDefined: ["propComponentTypes"],
+
+    // propVariableObjs is an array of length the length of effectiveTargetClasses
+    // (or null if couldn't match a public state variable)
+    // For each effectiveTargetClass, attempts to match variableName (the string child)
+    // to a public state variable of the class (or to an alias or array entry prefix)
+    // Each component of probVariableObjs is an object with possible attributes
+    // - varName: the name of the state variable matched
+    // - componentType: the componentType of the state variable, if specified,
+    //   otherwise, null
+    // - isArray: true if state variable match is an array
+    // - isArrayEntry: true if matched an array entry, which means also have attributes:
+    //   - arrayVarName: name of array state variable for which have entry
+    //   - arrayEntryPrefix: prefix of the array entry
+    //   - varEnding: ending of the array entry
+   stateVariableDefinitions.propVariableObjs = {
       returnDependencies: () => ({
         effectiveTargetClasses: {
           dependencyType: "stateVariable",
           variableName: "effectiveTargetClasses"
         },
-        stringChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneString",
-          variableNames: ["value"],
+        variableName: {
+          dependencyType: "stateVariable",
+          variableName: "variableName"
         },
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
-        // if (dependencyValues.stringChild.length === 0) {
-        //   return {
-        //     useEssentialOrDefaultValue: {
-        //       propVariableObjs: { variablesToCheck: "propVariableObjs" }
-        //     }
-        //   }
-        // }
 
         // have a string.  Need to see if it is a valid public state variable of effectiveTargetClass
         // TODO: arrays and other embellishments
@@ -64,11 +95,10 @@ export default class Prop extends BaseComponent {
           return { newValues: { propVariableObjs: null } };
         }
 
-        let authorProp = dependencyValues.stringChild[0].stateValues.value.toLowerCase();
+        let variableName = dependencyValues.variableName.toLowerCase();
         let propVariableObjs = [];
-        let propComponentTypes = [];
 
-        let authorPropValid = true;
+        let validVariableName = true;
 
         let standardComponentClasses = componentInfoObjects.standardComponentClasses;
         let allPossibleProperties = componentInfoObjects.allPossibleProperties;
@@ -85,12 +115,12 @@ export default class Prop extends BaseComponent {
           let variableNames = Object.keys(stateVarDescrip);
           let matchedObj = null, componentType = null;
           for (let varName of variableNames) {
-            if (authorProp === varName.toLowerCase()) {
+            if (variableName === varName.toLowerCase()) {
               matchedObj = { varName };
               if (stateVarDescrip[varName].isArray) {
                 matchedObj.isArray = true;
               }
-              componentType = stateVarDescrip[varName].componentType
+              componentType = stateVarDescrip[varName].componentType;
               break;
             }
           }
@@ -98,9 +128,9 @@ export default class Prop extends BaseComponent {
           if (matchedObj === null) {
 
             // try to match to alias
-            let propToMatch = authorProp;
+            let propToMatch = variableName;
             for (let aliasName in publicStateVariablesInfo.aliases) {
-              if (authorProp === aliasName.toLowerCase()) {
+              if (variableName === aliasName.toLowerCase()) {
                 let targetVarName = publicStateVariablesInfo.aliases[aliasName];
                 let targetDescription = stateVarDescrip[targetVarName];
                 if (targetDescription && targetDescription.public) {
@@ -124,42 +154,46 @@ export default class Prop extends BaseComponent {
                   let arrayVarName = publicStateVariablesInfo.arrayEntryPrefixes[prefix].arrayVariableName;
                   let varEnding = propToMatch.substring(prefix.length);
                   let varName = prefix + varEnding;
-                  matchedObj = { isArrayEntry: true, arrayVarName, arrayEntryPrefix: prefix, varEnding, varName };
+                  matchedObj = {
+                    varName,
+                    isArrayEntry: true,
+                    arrayVarName,
+                    arrayEntryPrefix: prefix,
+                    varEnding,
+                  };
                   componentType = stateVarDescrip[arrayVarName].componentType;
                   break;
                 }
               }
               if (matchedObj === null) {
-                authorPropValid = false;
-                console.warn(`Invalid prop: ${authorProp}`)
+                validVariableName = false;
+                console.warn(`Invalid prop: ${variableName}`)
                 break;
               }
 
             }
 
-
           }
 
+          if (componentType) {
+            matchedObj.componentType = componentType.toLowerCase()
+          }
 
-          // need to keep the capitalization of the actual public state variable
+          // Note: need to keep the capitalization of the actual public state variable
           // since state variables are case sensitive even though DoenetML is not
           propVariableObjs.push(matchedObj);
-          if(!componentType) {
-            componentType = null;
-          }
-          propComponentTypes.push(componentType);
 
         }
 
-        // console.log("authorPropValid")
-        // console.log(authorPropValid)
+        // console.log("validVariableName")
+        // console.log(validVariableName)
         // console.log(propVariableObjs)
         // console.log(propComponentTypes)
 
-        if (authorPropValid) {
-          return { newValues: { propVariableObjs, propComponentTypes } };
+        if (validVariableName) {
+          return { newValues: { propVariableObjs } };
         } else {
-          return { newValues: { propVariableObjs: null, propComponentTypes: null } };
+          return { newValues: { propVariableObjs: null } };
         }
 
       }

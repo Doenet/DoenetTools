@@ -205,7 +205,7 @@ export default class childLogic {
     matchSugar = true, maxAdapterNumber = 0
   }) {
 
-    if(this.usedSugar) {
+    if (this.usedSugar) {
       matchSugar = false;
     }
 
@@ -293,8 +293,13 @@ export default class childLogic {
         activeChildrenPieces.push(flattenedMatches.map(x => activeChildren[x]));
       }
 
+      let activeChildrenPiecesBasicInfoOnly = activeChildrenPieces.map(x => ({
+        componentType: x.componentType,
+        componentName: x.componentName
+      }))
+
       let result = replacementFunction({
-        activeChildrenPieces: activeChildrenPieces,
+        activeChildrenPieces: activeChildrenPiecesBasicInfoOnly,
         components: this.components,
         dependencyValues,
         allComponentClasses: this.allComponentClasses,
@@ -321,8 +326,13 @@ export default class childLogic {
 
       activeChildrenPieces.push(activeChildrenMatched);
 
+      let activeChildrenMatchedBasicInfoOnly = activeChildrenMatched.map(x => ({
+        componentType: x.componentType,
+        componentName: x.componentName
+      }))
+
       let result = replacementFunction({
-        activeChildrenMatched: activeChildrenMatched,
+        activeChildrenMatched: activeChildrenMatchedBasicInfoOnly,
         components: this.components,
         dependencyValues,
         idRng
@@ -489,11 +499,11 @@ export default class childLogic {
       while (definingChildIndex === undefined) {
         // try to find what child is a replacement or adapter for
         let foundNewPotentialDefiningChild = false;
-        if(potentialDefiningChild.adaptedFrom) {
+        if (potentialDefiningChild.adaptedFrom) {
           foundNewPotentialDefiningChild = true;
           potentialDefiningChild = potentialDefiningChild.adaptedFrom;
           definingChildIndex = allChildren[potentialDefiningChild.componentName].definingChildrenIndex;
-        } else if(potentialDefiningChild.replacementOf) {
+        } else if (potentialDefiningChild.replacementOf) {
           let composite = potentialDefiningChild.replacementOf;
           if (compositesFound[composite.componentName] === undefined) {
             compositesFound[composite.componentName] =

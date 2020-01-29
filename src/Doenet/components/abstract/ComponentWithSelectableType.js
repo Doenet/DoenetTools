@@ -26,7 +26,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
         if (activeChildrenMatched.length === 1) {
           let child = activeChildrenMatched[0];
           if (child.componentType === "string") {
-            let s = child.stateValues.value.trim();
+            let s = dependencyValues.stringChild[0].stateValues.value.trim();
             if (/^[a-zA-Z]+$/.test(s)) {
               selectedType = "letters";
             } else if (Number.isFinite(Number(s))) {
@@ -80,17 +80,35 @@ export default class ComponentWithSelectableType extends BaseComponent {
       }
     }
 
-    let anythingAsSugar = childLogic.newLeaf({
+    let atLeastOneString = childLogic.newLeaf({
+      name: "atLeastOneString",
+      componentType: "string",
+      comparison: "atLeast",
+      number: 1
+    });
+
+    let atLeastOneNonString = childLogic.newLeaf({
+      name: "atLeastOneNonStrings",
+      componentType: "_base",
+      comparison: "atLeast",
+      excludeComponentTypes: ["_composite", "string"],
+      number: 1
+    });
+
+    let anythingAsSugar = childLogic.newOperator({
       name: 'anythingAsSugar',
-      componentType: '_base',
-      excludeComponentTypes: ["_composite"],
-      comparison: 'atLeast',
-      number: 1,
+      operator: "or",
+      propositions: [atLeastOneString, atLeastOneNonString],
       isSugar: true,
       sugarDependencies: {
         type: {
           dependencyType: "stateVariable",
           variableName: "type",
+        },
+        stringChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastOneString",
+          variableNames: ["value"],
         }
       },
       affectedBySugar: ["atMostOneChild"],

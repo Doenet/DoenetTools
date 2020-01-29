@@ -9,15 +9,6 @@ export default class ReactTextInput extends React.Component {
   constructor(props) {
     super(props);
 
-    if (this.props.valueHasBeenValidated) {
-      this.lastSubmittedTextValue = this.props.free.sharedState.textValue;
-      this.valueAsSubmitted = true;
-    }else {
-      this.valueAsSubmitted = false;
-    }
-
-    this.localNumberTimesSubmitted = this.props.numberTimesSubmitted;
-
     this.delayToDisplayError = 2000;
     
     this.handleKeyPress = this.handleKeyPress.bind(this);
@@ -25,25 +16,14 @@ export default class ReactTextInput extends React.Component {
     this.handleBlur = this.handleBlur.bind(this);
     this.handleFocus = this.handleFocus.bind(this);
     this.onChangeHandler = this.onChangeHandler.bind(this);
-    this.localSubmitAnswer = this.localSubmitAnswer.bind(this);
     this.diplayErrorInMathPreview = this.diplayErrorInMathPreview.bind(this);
 
   }
 
   updateValidationState() {
 
-    if(this.localNumberTimesSubmitted !== this.props.numberTimesSubmitted) {
-      // if number of times submitted doesn't match,
-      // it means that the answer has been submitted since last pass
-      this.localNumberTimesSubmitted = this.props.numberTimesSubmitted;
-      this.lastSubmittedTextValue = this.props.free.sharedState.textValue;
-      this.valueAsSubmitted = true;
-    }else if(!this.props.valueHasBeenValidated) {
-      this.valueAsSubmitted = false;
-    }
-
     this.validationState = "unvalidated";
-    if (this.valueAsSubmitted) {
+    if (this.props.valueHasBeenValidated) {
       if (this.props.creditAchieved === 1) {
         this.validationState = "correct";
        } else if (this.props.creditAchieved === 0) {
@@ -106,9 +86,8 @@ export default class ReactTextInput extends React.Component {
 
   handleKeyPress(e) {
     if (e.key === "Enter") {
-      this.props.free.pushNewTextValue();
       if (this.props.includeCheckWork && this.validationState === "unvalidated") {
-        this.localSubmitAnswer();
+        this.props.actions.submitAnswer();
       }
     }
   }
@@ -128,31 +107,12 @@ export default class ReactTextInput extends React.Component {
 
   handleBlur(e) {
     this.focused = false;
-    this.props.free.pushNewTextValue();
     this.forceUpdate();
   }
 
   onChangeHandler(e) {
     this.props.free.sharedState.textValue = e.target.value;
-    if(this.props.valueHasBeenValidated && this.props.numberTimesSubmitted > 0 && this.lastSubmittedTextValue === this.props.free.sharedState.textValue) {
-      if(!this.valueAsSubmitted) {
-        // since changed the value back to the value that was last submitted, need to
-        // 1. call action to let core know this input is back to submitted value
-        //    (for case when the submit button is controlled by other component)
-        // 2. change valueAsSubmitted (for case when submit button is local)
-        this.props.actions.setRendererValueAsSubmitted(true);
-        this.valueAsSubmitted = true;
-      }
-    }else {
-      if(this.valueAsSubmitted) {
-        // since changed the value from last submitted to something different, need to
-        // 1. call action to let core know this input is no longer the submitted value
-        //    (for case when the submit button is controlled by other component)
-        // 2. change valueAsSubmitted (for case when submit button is local)
-        this.props.actions.setRendererValueAsSubmitted(false);
-        this.valueAsSubmitted = false;
-      }
-    }
+    this.props.free.pushNewTextValue();
     this.forceUpdate();
   }
 
@@ -174,11 +134,6 @@ export default class ReactTextInput extends React.Component {
   componentWillUnmount() {
     this.props.free.sharedState = undefined;
     this.props.free.pushNewTextValue = undefined;
-  }
-
-  localSubmitAnswer() {
-    // this.lastSubmittedTextValue = this.props.free.sharedState.textValue;
-    this.props.actions.submitAnswer();
   }
 
   render() {
@@ -206,20 +161,20 @@ export default class ReactTextInput extends React.Component {
  
       if (this.validationState === "unvalidated") {
         checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
-        checkWorkButton = <span
+        checkWorkButton = <button
         id={this.props._key + '_submit'}
         tabIndex="0"
         ref={c => {this.target = c && ReactDOM.findDOMNode(c);}}
         style={checkWorkStyle}
-        onClick={this.localSubmitAnswer}
+        onClick={this.props.actions.submitAnswer}
         onKeyPress={(e)=>{
           if (e.key === 'Enter'){
-            this.localSubmitAnswer();
+            this.props.actions.submitAnswer();
           }
         }}
         >
           <FontAwesomeIcon icon={faLevelDownAlt} transform={{rotate:90}} />
-        </span>
+        </button>
       } else {
         if (this.props.showCorrectness) {
           if (this.validationState === "correct") {
