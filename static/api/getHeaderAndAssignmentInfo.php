@@ -10,7 +10,7 @@ include "db_connection.php";
 $_GET = json_decode(file_get_contents("php://input"),true);
 // $object = (object) ['property' => 'Here we go'];
 // $arrayobj->append('fourth');
- $response_arr = array(); // return the entire tree obj
+ $response_arr = new stdClass(); // return the entire tree obj
 // $List_header_name = array();
 // $id_arr = array();
 // $sql1 = "
@@ -23,30 +23,53 @@ $_GET = json_decode(file_get_contents("php://input"),true);
 
 
 $sql = "
-SELECT * FROM assignment
+SELECT assignmentId,assignmentName,contentId,parentId, sourceBranchId,assignedDate,dueDate,
+timeLimit,
+numberOfAttemptsAllowed
+FROM assignment
+ORDER BY sortOrder
 ";
 $result = $conn->query($sql);
 
 while ($row = $result->fetch_assoc()){ 
-  //property_exists($ob, 'a')
-    $object = [ $row["assignmentId"]=> [
-    "name"=>$row["assignmentName"],
-    "attr"=>"assignment",
-    "pId"=>$row["pId"]]];
-    array_push($response_arr,$object);
+    $id = $row["assignmentId"];
+    $response_arr->$id = new stdClass();
+    $response_arr->$id->name=$row["assignmentName"];
+    $response_arr->$id->attribute="assignment";
+    $response_arr->$id->contentId=$row["contentId"];
+    $response_arr->$id->branchId=$row["sourceBranchId"];
+    $response_arr->$id->assignedDate=$row["assignedDate"];
+    $response_arr->$id->dueDate=$row["dueDate"];
+    $response_arr->$id->numberOfAttemptsAllowed=$row["numberOfAttemptsAllowed"];
+    $response_arr->$id->parent=$row["parentId"];
+    // $object = [ $row["assignmentId"]=> [
+    // "name"=>$row["assignmentName"],
+    // "attr"=>"assignment",
+    // "pId"=>$row["pId"]]];
+    // array_push($response_arr,$object);
 } 
 $sql = "
-SELECT * FROM course_heading
+SELECT courseHeadingId,headingText,parentId,childrenId
+FROM course_heading
+ORDER BY sortOrder
 ";
 $result = $conn->query($sql);
 while ($row = $result->fetch_assoc()){ 
   //property_exists($ob, 'a')
-    $object = [ $row["courseHeadingId"]=> [
-    "name"=>$row["headingText"],
-    "attr"=>"header",
-    "pId"=>$row["pId"],
-    "childrenId"=>$row["childrenId"]]];
-    array_push($response_arr,$object);
+  $id = $row["courseHeadingId"];
+  if (!property_exists($response_arr,$id)){
+
+    $response_arr->$id = new stdClass();
+    $response_arr->$id->name=$row["headingText"];
+    $response_arr->$id->attribute="header";
+    $response_arr->$id->childrenId=[$row["childrenId"]];
+    $response_arr->$id->headingId=array();
+    $response_arr->$id->assignmentId=array();
+    $response_arr->$id->parent=$row["parentId"];
+  }else {
+    array_push($response_arr->$id->childrenId,$row["childrenId"]);    
+  } 
+
 } 
 
     
