@@ -51,6 +51,7 @@ function formatTimestamp(date) {
 class DoenetBranchBrowser extends Component {
   static defaultProps = {
     addContentToFolder: null,
+    addContentToRepo: null,
     removeContentFromFolder: null,
     selectedDrive: "Content",
     selectedCourse: null,
@@ -111,7 +112,7 @@ class DoenetBranchBrowser extends Component {
 
   flattenFolder(folderId) {
     let itemIds = [];
-    let childFolder = this.props.allFolderInfo[folderId].childFolder;
+    let childFolder = this.props.allFolderInfo[folderId].childFolders;
     childFolder.forEach((childFolderId) => {
       itemIds = itemIds.concat(this.flattenFolder(childFolderId));
     })
@@ -136,9 +137,13 @@ class DoenetBranchBrowser extends Component {
         selectedItemsWithoutRepo.push(itemId);
         selectedItemsTypeWithoutRepo.push("folder");
       }
-    }); 
-    
-    this.props.addContentToFolder(selectedItemsWithoutRepo, selectedItemsTypeWithoutRepo, folderId);
+    });
+
+    if (this.props.allFolderInfo[folderId].isRepo) {
+      this.props.addContentToRepo(selectedItemsWithoutRepo, selectedItemsTypeWithoutRepo, folderId);
+    } else {
+      this.props.addContentToFolder(selectedItemsWithoutRepo, selectedItemsTypeWithoutRepo, folderId);
+    }
     this.setState({selectedItems: [], selectedItemType: []});
   }
 
@@ -191,6 +196,11 @@ class DoenetBranchBrowser extends Component {
   buildFolderItems() {
     this.folderItems = [];
     this.folderList = this.props.folderList;
+    // show items in current directory
+    if (this.state.directoryStack.length !== 0) {
+      let folderId = this.peekDirectoryStack();
+      this.folderList = this.props.allFolderInfo[folderId].childFolders;
+    }
     this.sortFolders();
     
     this.tableIndex = 0;
@@ -259,6 +269,11 @@ class DoenetBranchBrowser extends Component {
   buildContentItems(){
     this.contentItems = [];
     this.contentList = this.props.contentList;
+    // show items in current directory
+    if (this.state.directoryStack.length !== 0) {
+      let folderId = this.peekDirectoryStack();
+      this.contentList = this.props.allFolderInfo[folderId].childContent;
+    }
     this.sortContent();
 
     // build files
@@ -619,7 +634,6 @@ class File extends React.Component {
 
   render() {
 
-    // console.log(formatDate(new Date("2015-12-13 17:32:36")));
     return(
       <tr
       className={this.props.classes}
