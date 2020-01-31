@@ -319,20 +319,25 @@ class DoenetChooser extends Component {
         description: description,
         usesDoenetAPI: usesDoenetAPI
       }, () => {
-      // check if in any folder
-        // this.addContentToFolder(),
-        this.saveUserContent([urlId], ["url"], "insert", () => {  // add to user root
-          this.loadUserUrls(() => {
-            this.setState({
-              selectedItems: [urlId],
-              selectedItemsType: ["url"],
-              activeSection: "chooser",
-              selectedDrive: "Content"
-            }, () => { 
-              this.updateNumber++;
+        if (this.state.directoryStack.length !== 0) {
+          let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
+          this.addContentToFolder([urlId], ["url"], currentFolderId, () => {
+            this.loadUserUrls();
+          });        
+        } else {
+          this.saveUserContent([urlId], ["url"], "insert", () => {  // add to user root
+            this.loadUserUrls(() => {
+              this.setState({
+                selectedItems: [urlId],
+                selectedItemsType: ["url"],
+                activeSection: "chooser",
+                selectedDrive: "Content"
+              }, () => { 
+                this.updateNumber++;
+              });
             });
-          });
-        })  
+          })  
+        }        
       }),
     ])
     .then(() => {
@@ -709,6 +714,7 @@ class DoenetChooser extends Component {
     let isRepo = this.folderInfo[folderId].isRepo;
     let isPublic = this.folderInfo[folderId].isPublic;
 
+
     this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (folderId) => {
       // creating new folder
       //    in a folder ~ set childItem.rootId = folderId.rootId
@@ -723,6 +729,8 @@ class DoenetChooser extends Component {
       childIds.forEach(childId => {
           itemIds = itemIds.concat(this.flattenFolder(childId).itemIds);
       });
+      console.log(itemIds);
+      
       this.modifyFolderChildrenRoot(this.folderInfo[folderId].rootId, itemIds, () => {
         this.loadUserFoldersAndRepo();
         this.loadUserContentBranches();
@@ -1557,6 +1565,7 @@ class UrlForm extends React.Component {
   handleSubmit(event) {
     if (this.props.mode == "add_url") {
       let urlId = nanoid();
+      event.preventDefault();
       this.props.handleNewUrlCreated({
         urlId: urlId,
         title: this.state.title,
@@ -1564,7 +1573,7 @@ class UrlForm extends React.Component {
         description: this.state.description,
         usesDoenetAPI: this.state.usesDoenetAPI
         }, () => {
-          event.preventDefault();
+          this.props.handleBack();
         });
     } else {
       this.props.saveUrl({
