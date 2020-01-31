@@ -42,6 +42,7 @@ if ($result->num_rows > 0){
           "section" => $row["section"],
           "content" => array(),
           "folders" => array(),
+          "urls" => array(),
     );
   }
 }
@@ -65,6 +66,8 @@ if ($result->num_rows > 0){
       array_push($courseId_info_arr[$row["courseId"]]["content"], $row["itemId"]);
     } else if ($row["itemType"] == "folder"){
       array_push($courseId_info_arr[$row["courseId"]]["folders"], $row["itemId"]);
+    } else if ($row["itemType"] == "url"){
+      array_push($courseId_info_arr[$row["courseId"]]["urls"], $row["itemId"]);
     }
   }
 }

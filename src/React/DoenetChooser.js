@@ -1541,7 +1541,6 @@ class UrlForm extends React.Component {
         usesDoenetAPI: this.props.selectedUrlInfo.usesDoenetAPI
       });
     }
-    console.log(this.props.selectedUrlInfo);
   }
 
   handleChange(event) {
