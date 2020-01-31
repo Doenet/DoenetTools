@@ -15,6 +15,7 @@ SELECT   -- get personal urls
   u.description as description,
   u.timestamp as publishDate,
   u.removedFlag as removedFlag,
+  u.usesDoenetAPI as usesDoenetAPI,
   'root' as rootId, 
   'root' as parentId,
   u.public as isPublic
@@ -29,6 +30,7 @@ SELECT  -- get children urls
   u.description as description,
   u.timestamp as publishDate,
   u.removedFlag as removedFlag,
+  u.usesDoenetAPI as usesDoenetAPI,
   fc.rootId as rootId, 
   fc.folderId as parentId,
   u.public as isPublic

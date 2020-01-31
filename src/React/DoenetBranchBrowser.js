@@ -93,6 +93,7 @@ class DoenetBranchBrowser extends Component {
     this.sortContent = this.sortContent.bind(this);
     this.sortFolders = this.sortFolders.bind(this);
     this.sortUrls = this.sortUrls.bind(this);
+    this.openEditUrlForm = this.openEditUrlForm.bind(this);
   }
 
   getAllSelectedItems() {
@@ -490,7 +491,7 @@ class DoenetBranchBrowser extends Component {
   }
 
   handleUrlItemDoubleClick(urlId) {
-    
+      window.location.href = this.props.allUrlInfo[urlId].url;
   }
 
   pushDirectoryStack(folderId) {
@@ -535,6 +536,12 @@ class DoenetBranchBrowser extends Component {
     while (this.state.directoryStack.length > 0 && this.peekDirectoryStack() !== folderId) {
       this.upOneDirectory();      
     }
+  }
+
+  openEditUrlForm() {
+    this.props.updateSelectedItems([this.state.selectedItems[this.state.selectedItems.length - 1]],
+      [this.state.selectedItemsType[this.state.selectedItemsType.length - 1]]);
+    this.props.openEditUrlForm();
   }
 
   updateSortOrder(colName) {
@@ -729,6 +736,7 @@ class DoenetBranchBrowser extends Component {
             allCourseInfo={this.props.allCourseInfo}
             disableEditing={this.disableEditing}
             openEditCourseForm={this.props.openEditCourseForm}
+            openEditUrlForm={this.openEditUrlForm}
           />
         </div>
       </React.Fragment>
@@ -1119,7 +1127,7 @@ class InfoPanel extends Component {
         {!this.props.disableEditing &&
         <div id="editContentButtonContainer">
           <div id="editContentButton" data-cy="editContentButton"
-          onClick={()=> {}}>
+          onClick={this.props.openEditUrlForm}>
             <FontAwesomeIcon icon={faEdit} style={{"fontSize":"20px", "color":"#43aa90"}}/>
             <span>Edit Link</span>
           </div>

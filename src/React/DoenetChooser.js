@@ -1031,16 +1031,13 @@ class DoenetChooser extends Component {
                           selectedCourseInfo={this.courseInfo[this.state.selectedCourse]}
                           />;
     } else if (this.state.activeSection === "add_url" || this.state.activeSection === "edit_url") {
-      let selectedUrl = null;
-      let selectedUrlInfo = null;
-
       this.mainSection = <UrlForm 
                           mode={this.state.activeSection}
                           handleBack={this.toggleManageUrlForm}
                           handleNewUrlCreated={this.handleNewUrlCreated}
                           saveUrl={this.saveUrl}
-                          selectedUrl={selectedUrl}
-                          selectedUrlInfo={selectedUrlInfo}
+                          selectedUrl={this.state.selectedItems[this.state.selectedItems.length - 1]}
+                          selectedUrlInfo={this.urlInfo[this.state.selectedItems[this.state.selectedItems.length - 1]]}
                           />;
     }
     else {
@@ -1081,7 +1078,7 @@ class DoenetChooser extends Component {
           selectedItemsType={this.state.selectedItemsType}        // optional
           renameFolder={this.renameFolder}                        // optional
           openEditCourseForm={() => this.toggleManageCourseForm("edit_course")}
-          openEditLinkForm={() => this.toggleManageUrlForm("edit_link")}
+          openEditUrlForm={() => this.toggleManageUrlForm("edit_url")}
         />
       </React.Fragment>
     }
@@ -1544,6 +1541,7 @@ class UrlForm extends React.Component {
         usesDoenetAPI: this.props.selectedUrlInfo.usesDoenetAPI
       });
     }
+    console.log(this.props.selectedUrlInfo);
   }
 
   handleChange(event) {
@@ -1591,6 +1589,7 @@ class UrlForm extends React.Component {
   }
 
   render() {
+    
     return (
       <div id="formContainer">
         <div id="formTopbar">
@@ -1617,7 +1616,7 @@ class UrlForm extends React.Component {
           </div>
           <div className="formGroup-12" >
             <label className="formLabel" style={{"display":"inline-block"}}>Uses DoenetML</label>
-            <input className="formInput" type="checkbox" name="usesDoenetAPI" value={this.state.usesDoenetAPI}
+            <input className="formInput" type="checkbox" name="usesDoenetAPI" checked={this.state.usesDoenetAPI}
             onChange={this.handleChange} data-cy="urlFormUsesDoenetAPICheckbox" style={{"width":"auto", "marginLeft":"7px"}}/>
           </div>
           <div id="formButtonsContainer">
