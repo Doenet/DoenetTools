@@ -1107,6 +1107,8 @@ class InfoPanel extends Component {
       itemDetails = {
         "Location" : "Content",
         "Published" : formatTimestamp(this.props.allUrlInfo[selectedItemId].publishDate),
+        "Description" : this.props.allUrlInfo[selectedItemId].description,
+        "Uses DoenetAPI" : this.props.allUrlInfo[selectedItemId].usesDoenetAPI == true ? "Yes" : "No",
       };
 
       Object.keys(itemDetails).map(itemDetailsKey => {
@@ -1122,6 +1124,10 @@ class InfoPanel extends Component {
         <table id="infoPanelDetailsTable">
           <tbody>
             {this.infoPanelDetails}
+            <tr key={"contentDetailsItemUrl"}>
+              <td className="itemDetailsKey">URL</td>
+              <td className="itemDetailsValue"><a href={this.props.allUrlInfo[selectedItemId].url}>{this.props.allUrlInfo[selectedItemId].url}</a></td>
+            </tr>
           </tbody>
         </table>
         {!this.props.disableEditing &&
