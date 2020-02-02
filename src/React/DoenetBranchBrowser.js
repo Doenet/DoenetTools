@@ -3,7 +3,7 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faFolder, faArrowUp, 
-  faArrowDown, faDotCircle, faEdit, faArrowRight} from '@fortawesome/free-solid-svg-icons';
+  faArrowDown, faDotCircle, faEdit, faArrowRight, faFolderOpen} from '@fortawesome/free-solid-svg-icons';
 import "./branchBrowser.css";
 import SpinningLoader from './SpinningLoader';
 
@@ -211,6 +211,8 @@ class DoenetBranchBrowser extends Component {
       let childContent = this.props.allFolderInfo[folderId].childContent;
       let childFolder = this.props.allFolderInfo[folderId].childFolder;
       let isRepo = this.props.allFolderInfo[folderId].isRepo;
+      let isPublic = this.props.allFolderInfo[folderId].isPublic;
+      let isShared = this.props.allFolderInfo[this.props.allFolderInfo[folderId].rootId].isRepo;
       let classes = this.state.selectedItems.includes(folderId) ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
       
@@ -252,6 +254,8 @@ class DoenetBranchBrowser extends Component {
           childFolder={childFolder}
           folderId={folderId}
           isRepo={isRepo}
+          isPublic={isPublic}
+          isShared={isShared}
           classes={classes}
           key={"folder" + folderId}
           tableIndex={this.tableIndex++}
@@ -281,6 +285,9 @@ class DoenetBranchBrowser extends Component {
       let title = this.props.allContentInfo[branchId].title;
       let publishDate = formatTimestamp(this.props.allContentInfo[branchId].publishDate);
       let draftDate = formatTimestamp(this.props.allContentInfo[branchId].draftDate);
+      let isShared = this.props.allContentInfo[branchId].rootId == "root" ? false :
+        this.props.allFolderInfo[this.props.allContentInfo[branchId].rootId].isRepo;
+      let isPublic = this.props.allContentInfo[branchId].isPublic;
       let classes = this.state.selectedItems.includes(branchId) ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
       
@@ -312,6 +319,8 @@ class DoenetBranchBrowser extends Component {
         title={title}
         publishDate={publishDate}
         draftDate={draftDate}
+        isShared={isShared}
+        isPublic={isPublic}
         key={"contentItem" + branchId}
         tableIndex={this.tableIndex++}
         showRemoveItemIcon={showRemoveItemIcon}
@@ -641,7 +650,9 @@ class File extends React.Component {
       onDoubleClick={() => this.props.onDoubleClick(this.props.branchId)}
       data-cy={this.props.branchId}>
         <td className="browserItemName">
-          <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3D6EC9", "margin": "0px 15px"}}/>
+          {this.props.isShared && this.props.isPublic ? 
+            <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/> :
+            <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3D6EC9", "margin": "0px 15px"}}/>}
           <span>{this.props.title}</span>
         </td>
         <td className="draftDate">
@@ -696,6 +707,15 @@ class Folder extends React.Component {
   }
 
   render() {
+    let folderIcon = <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>;
+    if (this.props.isRepo) {
+      folderIcon = this.props.isPublic ?
+          <FontAwesomeIcon icon={faFolderOpen} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/> :
+          <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/>;
+    } else if (this.props.isShared && this.props.isPublic) {
+      folderIcon = <FontAwesomeIcon icon={faFolderOpen} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>;
+    }
+
     return(
       <tr
       className={this.props.classes}
@@ -710,10 +730,7 @@ class Folder extends React.Component {
               onClick={() => this.props.handleAddContentToFolder(this.props.folderId)}/>
               <div className="addContentButtonInfo"><span>Move to Folder</span></div>
             </div>}
-            {this.props.isRepo ? 
-            <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/> :
-            <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
-            }
+            {folderIcon}
             <span
             contentEditable="true"
             onKeyDown={(e) => {this.handleKeyPress(e)}}
@@ -750,6 +767,7 @@ class InfoPanel extends Component {
     let selectedItemId = null;
     let selectedItemType = null;
     let itemTitle = "";
+    let itemIcon = <FontAwesomeIcon icon={faDotCircle} style={{"fontSize":"18px", "color":"#737373"}}/>;
 
     if (this.props.selectedItems.length === 0) {
       // handle when no file selected, show folder/drive info
@@ -769,8 +787,12 @@ class InfoPanel extends Component {
       // get title
       if (selectedItemType === "folder") {
         itemTitle = this.props.allFolderInfo[selectedItemId].title;
+        itemIcon = this.props.allFolderInfo[selectedItemId].isRepo ?
+          <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#3aac90"}}/> :
+          <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373"}}/>;
       } else {
         itemTitle = this.props.allContentInfo[selectedItemId].title;
+        itemIcon = <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3D6EC9"}}/>;
       }
 
       this.buildInfoPanelItemDetails(selectedItemId, selectedItemType);  
@@ -779,13 +801,7 @@ class InfoPanel extends Component {
     this.infoPanel = <React.Fragment>
       <div className="infoPanel">
         <div className="infoPanelTitle">
-          <div className="infoPanelItemIcon">
-            {selectedItemType === "content" ? 
-              <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3D6EC9"}}/> :
-              selectedItemType === "folder" ?
-              <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373"}}/> :
-              <FontAwesomeIcon icon={faDotCircle} style={{"fontSize":"18px", "color":"#737373"}}/>}
-          </div>
+          <div className="infoPanelItemIcon">{itemIcon}</div>
           <span>{ itemTitle }</span>
         </div>
         <div className="infoPanelPreview">
@@ -864,6 +880,11 @@ class InfoPanel extends Component {
         "Published" : formatTimestamp(this.props.allFolderInfo[selectedItemId].publishDate),
       };
 
+      let isShared = this.props.allFolderInfo[this.props.allFolderInfo[selectedItemId].rootId].isRepo;
+      if (this.props.allFolderInfo[selectedItemId].isRepo || isShared) {
+        itemDetails = Object.assign(itemDetails, {"Public": this.props.allFolderInfo[selectedItemId].isPublic ? "Yes" : "No"});
+      }
+
       Object.keys(itemDetails).map(itemDetailsKey => {
         let itemDetailsValue = itemDetails[itemDetailsKey];
         // add only if content not empty
@@ -920,6 +941,13 @@ class InfoPanel extends Component {
         "Versions" : versions,
         // "Related content" : relatedContent,
       };
+
+      let isShared = this.props.allContentInfo[selectedItemId].rootId == "root" ? false :
+        this.props.allFolderInfo[this.props.allContentInfo[selectedItemId].rootId].isRepo;
+
+      if (isShared) {
+        itemDetails = Object.assign(itemDetails, {"Public": this.props.allContentInfo[selectedItemId].isPublic ? "Yes" : "No"});
+      }
 
       Object.keys(itemDetails).map(itemDetailsKey => {
         let itemDetailsValue = itemDetails[itemDetailsKey];
