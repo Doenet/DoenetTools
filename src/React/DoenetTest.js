@@ -132,6 +132,7 @@ class DoenetTest extends Component {
     
             <DoenetViewer 
             key={"doenetviewer"+this.updateNumber} 
+            // collaborate={true}
             free={{doenetCode: this.state.code, requestedVariant: this.state.requestedVariant}} 
             mode={{
               solutionType:this.state.solutionType,

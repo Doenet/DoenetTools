@@ -11,7 +11,4 @@ export default class Feedback extends ConditionalContent {
     }
   }
 
-  updateRenderer(){
-
-  }
 }

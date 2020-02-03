@@ -1,83 +1,295 @@
-import MathComponent from './Math';
+import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 
-export default class NumberComponent extends MathComponent {
+export default class NumberComponent extends InlineComponent {
   static componentType = "number";
 
-  static stateVariableForPropertyValue = "number";
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
+    properties.displayDigits = { default: 10 };
+    properties.displaySmallAsZero = { default: false };
+    properties.renderMode = { default: "text" };
+    return properties;
+  }
 
-  updateState(args={}) {
-    if(args.init) {
-      this.makePublicStateVariable({
-        variableName: "number",
-        componentType: "number",
-      })
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
+
+    let atMostOneString = childLogic.newLeaf({
+      name: "atMostOneString",
+      componentType: 'string',
+      comparison: 'atMost',
+      number: 1,
+    });
+    let exactlyOneNumber = childLogic.newLeaf({
+      name: "exactlyOneNumber",
+      componentType: 'number',
+      number: 1,
+    });
+    childLogic.newOperator({
+      name: "stringXorNumber",
+      operator: 'xor',
+      propositions: [atMostOneString, exactlyOneNumber],
+      setAsBase: true,
+    });
+    return childLogic;
+  }
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.value = {
+      public: true,
+      componentType: this.componentType,
+      returnDependencies: () => ({
+        numberChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneNumber",
+          variableNames: ["value", "canBeModified"],
+        },
+        stringChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneString",
+          variableNames: ["value"],
+        },
+      }),
+      defaultValue: NaN,
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.numberChild.length === 0) {
+          if (dependencyValues.stringChild.length === 0) {
+            return { useEssentialOrDefaultValue: { value: { variablesToCheck: ["value"] } } }
+          }
+          let number = Number(dependencyValues.stringChild[0].stateValues.value);
+          if (Number.isNaN(number)) {
+            try {
+              number = me.fromText(dependencyValues.stringChild[0].stateValues.value).evaluate_to_constant();
+              if (number === null) {
+                number = NaN;
+              }
+            } catch (e) {
+              number = NaN;
+            }
+          }
+          return { newValues: { value: number } };
+        } else {
+          return { newValues: { value: dependencyValues.numberChild[0].stateValues.value } }
+        }
+      },
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues, overrideFixed }) {
+
+        if (!stateValues.canBeModified && !overrideFixed) {
+          return { success: false };
+        }
+
+        let desiredValue = desiredStateVariableValues.value;
+        if (desiredValue instanceof me.class) {
+          desiredValue = desiredValue.evaluate_to_constant();
+        } else {
+          desiredValue = Number(desiredValue);
+        }
+
+        let instructions;
+
+        if (dependencyValues.numberChild.length === 0) {
+          if (dependencyValues.stringChild.length === 0) {
+            instructions = [{
+              setStateVariable: "value",
+              value: desiredValue,
+            }];
+          } else {
+            // TODO: would it be more efficient to defer setting value of string?
+            instructions = [{
+              setDependency: "stringChild",
+              desiredValue: desiredValue.toString(),
+              childIndex: 0,
+              variableIndex: 0,
+            }];
+          }
+        } else {
+          instructions = [{
+            setDependency: "numberChild",
+            desiredValue: desiredValue,
+            childIndex: 0,
+            variableIndex: 0,
+          }];
+        }
+
+        return {
+          success: true,
+          instructions,
+        }
+      },
     }
-    super.updateState(args);
 
-    if(!this.childLogicSatisfied || this.unresolvedState.value) {
-      this.unresolvedState.number = true;
-      return;
+    stateVariableDefinitions.valueForDisplay = {
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displaySmallAsZero: {
+          dependencyType: "stateVariable",
+          variableName: "displaySmallAsZero"
+        },
+      }),
+      definition: function ({ dependencyValues }) {//value, displayDigits, displaySmallAsZero, simplify, expand }) {
+        // for display via latex and text, round any decimal numbers to the significant digits
+        // determined by displaydigits
+        let rounded = me.round_numbers_to_precision(dependencyValues.value, dependencyValues.displayDigits).tree;
+        if (dependencyValues.displaySmallAsZero) {
+          if (Math.abs(rounded) < 1E-14) {
+            rounded = 0;
+          }
+        }
+        return {
+          newValues: {
+            valueForDisplay: rounded
+          }
+        }
+      }
     }
 
-
-
-    delete this.unresolvedState.number;
-
-    // calculate number from value
-    let constantValue = null;
-   
-    if(this.state.value !== undefined) {
-      // evaluate_to_constant returns null if value doesn't represent a number
-      constantValue = this.state.value.evaluate_to_constant();
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        valueForDisplay: {
+          dependencyType: "stateVariable",
+          variableName: "valueForDisplay"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { text: dependencyValues.valueForDisplay.toString() } };
+      }
     }
 
-    if(constantValue === null) {
-      this.state.value = me.fromAst('\uFF3F');  // long underscore
-      this.state.number = NaN;
-      this.state.latex = '\uFF3F';
-      this.state.text = '\uFF3F';
-    } else {
-      this.state.number = constantValue;
-      this.state.value = me.fromAst(constantValue);
+    stateVariableDefinitions.math = {
+      public: true,
+      componentType: "math",
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { math: me.fromAst(dependencyValues.value) } };
+      },
+      inverseDefinition: function ({ desiredStateVariableValues }) {
 
-      let rounded = this.state.value
-        .round_numbers_to_precision(this.state.displaydigits);
-      this.state.latex = rounded.toLatex();
-      this.state.text = rounded.toString();
+        let desiredNumber = desiredStateVariableValues.math.evaluate_to_constant();
+        if (desiredNumber === null) {
+          desiredNumber = NaN;
+        }
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "value",
+            desiredValue: desiredNumber,
+          }],
+        }
+
+      },
     }
+
+    // Note: don't need canBeModified for number logic, as core will already
+    // be able to determine from modifyIndirectly and fixed that it cannot be modified
+    // However, include this state variable for case when number is included in math
+    stateVariableDefinitions.canBeModified = {
+      returnDependencies: () => ({
+        numberChildModifiable: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneNumber",
+          variableNames: ["canBeModified"]
+        },
+        modifyIndirectly: {
+          dependencyType: "stateVariable",
+          variableName: "modifyIndirectly",
+        },
+        fixed: {
+          dependencyType: "stateVariable",
+          variableName: "fixed",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        if (!dependencyValues.modifyIndirectly || dependencyValues.fixed) {
+          return { newValues: { canBeModified: false } };
+        }
+
+        if (dependencyValues.numberChildModifiable.length === 1 &&
+          !dependencyValues.numberChildModifiable[0].stateValues.canBeModified) {
+          return { newValues: { canBeModified: false } };
+        }
+
+        return { newValues: { canBeModified: true } };
+
+      },
+    }
+
+    return stateVariableDefinitions;
 
   }
 
-  updateStateVariable({variable, value}) {
-    let varObj = this._state[variable];
-    if(varObj === undefined) {
-      console.log("Variable " + variable + " not a variable for " + this.componentName);
-      return {success: false};
+
+  useChildrenForReference = false;
+
+  get stateVariablesForReference() {
+    return ["value"];
+  }
+
+  returnSerializeInstructions() {
+    let stringMatches =  this.childLogic.returnMatches("atMostOneString");
+    let skipChildren = stringMatches && stringMatches.length === 1;
+    if (skipChildren) {
+      let stateVariables = ["value"];
+      return { skipChildren, stateVariables };
     }
-    if(varObj.essential !== true) {
-      console.log("Disallowing direct change to variable " + variable + " of " + this.componentName);
-      return {success: false};
+    return {};
+  }
+
+
+  adapters = ["math", "text"];
+
+  initializeRenderer({ }) {
+    if (this.renderer !== undefined) {
+      this.updateRenderer();
+      return;
     }
 
-    if(variable === "value") {
-      if(Number.isFinite(value)) {
+    if (this.stateValues.renderMode === "text") {
+      this.renderer = new this.availableRenderers.text({
+        key: this.componentName,
+        text: this.stateValues.text,
+      });
+    } else {
+      this.renderer = new this.availableRenderers.math({
+        key: this.componentName,
+        mathLatex: this.stateValues.text,
+        renderMode: this.stateValues.renderMode,
+      });
+    }
+  }
 
-        // was passed in value as a number
-        // make that the number attribute
-        this.state.number = value;
-
-        // make value be a math expression with that number
-        this.state.value = me.fromAst(this.state.number);
-      }else {
-        console.log("Number refusing to change to non-finite value");
+  updateRenderer() {
+    if (this.stateValues.renderMode === "text") {
+      if (!(this.renderer instanceof this.availableRenderers.text)) {
+        delete this.renderer;
+        this.initializeRenderer();
+      } else {
+        this.renderer.updateText(this.stateValues.text);
       }
-    }else {
-      // use proxy so changes will be tracked
-      this.state[variable] = value;
+    } else if (!(this.renderer instanceof this.availableRenderers.math)) {
+      delete this.renderer;
+      this.initializeRenderer();
+    } else {
+      this.renderer.updateMathLatex(this.stateValues.text);
     }
-
-    return {success: true};
   }
 
 }

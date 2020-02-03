@@ -3,10 +3,8 @@ import Input from './abstract/Input';
 export default class Choiceinput extends Input {
   static componentType = "choiceinput";
 
-  static createPropertiesObject({ standardComponentTypes }) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.selectmultiple = { default: false };
     properties.assignpartialcredit = { default: false };
     properties.inline = { default: false };
@@ -14,12 +12,8 @@ export default class Choiceinput extends Input {
     return properties;
   }
 
-  static returnChildLogic({ standardComponentTypes, allComponentClasses, components }) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
       name: "atLeastZeroChoices",
@@ -133,11 +127,11 @@ export default class Choiceinput extends Input {
       });
 
       this.makePublicStateVariable({
-        variableName: "creditachieved",
+        variableName: "creditAchieved",
         componentType: "number"
       });
       this.makePublicStateVariable({
-        variableName: "numbertimessubmitted",
+        variableName: "numberTimesSubmitted",
         componentType: "number"
       });
       this.makePublicStateVariable({
@@ -170,21 +164,21 @@ export default class Choiceinput extends Input {
       if (this._state.submittedvalues.essential !== true) {
         this.state.submittedindices = []
       }
-      if (this._state.numbertimessubmitted.essential !== true) {
-        this.state.numbertimessubmitted = 0
+      if (this._state.numberTimesSubmitted.essential !== true) {
+        this.state.numberTimesSubmitted = 0
       }
-      if (this._state.creditachieved.essential !== true) {
-        this.state.creditachieved = 0;
+      if (this._state.creditAchieved.essential !== true) {
+        this.state.creditAchieved = 0;
       }
 
-      // make selectedindices, submittedindices, creditachieved, numbertimessubmitted essential
+      // make selectedindices, submittedindices, creditAchieved, numberTimesSubmitted essential
       // as they are used to store changed quantities
       this._state.selectedindices.essential = true;
       this._state.selectedvalues.essential = true;
       this._state.submittedindices.essential = true;
       this._state.submittedvalues.essential = true;
-      this._state.creditachieved.essential = true;
-      this._state.numbertimessubmitted.essential = true;
+      this._state.creditAchieved.essential = true;
+      this._state.numberTimesSubmitted.essential = true;
       this._state.numberchoices.essential = true;
 
       this.updateSelectedIndices = this.updateSelectedIndices.bind(
@@ -258,7 +252,7 @@ export default class Choiceinput extends Input {
         this.state.choiceChildrenComponentNames = this.state.choiceChildren.map(v => v.componentName);
       } else if(this.state.choiceChildren === undefined){
         // in case started with choiceChildrenComponentNames in essential state
-        this.state.choiceChildren = this.state.choiceChildrenComponentNames.map(x => this.components[x]);
+        this.state.choiceChildren = this.state.choiceChildrenComponentNames.map(x => this.allChildren[x].component);
       }
 
       if (actuallyHaveNewChoices) {
@@ -329,33 +323,33 @@ export default class Choiceinput extends Input {
       delete this.unresolvedState.includeCheckWork;
       delete this.unresolvedDependencies;
 
-      if (this.ancestorsWhoGathered === undefined) {
+      // if (this.ancestorsWhoGathered === undefined) {
         //mathinput not inside an answer component
         this.state.includeCheckWork = false;
-      } else {
-        this.state.answerAncestor = undefined;
-        for (let componentName of this.ancestorsWhoGathered) {
-          if (this.components[componentName].componentType === "answer") {
-            this.state.answerAncestor = this.components[componentName];
-            break;
-          }
-        }
-        if (this.state.answerAncestor === undefined) {
-          //mathinput not inside an answer component
-          this.state.includeCheckWork = false;
-        } else {
-          this.state.allAwardsJustSubmitted = this.state.answerAncestor.state.allAwardsJustSubmitted;
-          if (this.state.answerAncestor.state.delegateCheckWork) {
-            this.state.includeCheckWork = true;
-          } else {
-            this.state.includeCheckWork = false;
-          }
-        }
-      }
+      // } else {
+      //   this.state.answerAncestor = undefined;
+      //   for (let componentName of this.ancestorsWhoGathered) {
+      //     if (this.components[componentName].componentType === "answer") {
+      //       this.state.answerAncestor = this.components[componentName];
+      //       break;
+      //     }
+      //   }
+      //   if (this.state.answerAncestor === undefined) {
+      //     //mathinput not inside an answer component
+      //     this.state.includeCheckWork = false;
+      //   } else {
+      //     this.state.allAwardsJustSubmitted = this.state.answerAncestor.state.allAwardsJustSubmitted;
+      //     if (this.state.answerAncestor.state.delegateCheckWork) {
+      //       this.state.includeCheckWork = true;
+      //     } else {
+      //       this.state.includeCheckWork = false;
+      //     }
+      //   }
+      // }
     }
     this.state.valueHasBeenValidated = false;
 
-    if (this.state.allAwardsJustSubmitted && this.state.numbertimessubmitted > 0 &&
+    if (this.state.allAwardsJustSubmitted && this.state.numberTimesSubmitted > 0 &&
       this.state.selectedindices.length === this.state.submittedindices.length &&
       this.state.selectedindices.every((v, i) => v === this.state.submittedindices[i])
     ) {
@@ -403,7 +397,7 @@ export default class Choiceinput extends Input {
   allowDownstreamUpdates(status) {
     // since can't change via parents, 
     // only non-initial change can be due to reference
-    return (status.initialChange === true || this.state.modifybyreference === true);
+    return (status.initialChange === true || this.state.modifyIndirectly === true);
   }
 
   get variablesUpdatableDownstream() {
@@ -411,7 +405,7 @@ export default class Choiceinput extends Input {
     return [
       "selectedindices", "selectedvalues",
       "submittedindices", "submittedoriginalindices", "submittedvalues",
-      "creditachieved", "numbertimessubmitted",
+      "creditAchieved", "numberTimesSubmitted",
       "rendererValueAsSubmitted"
     ];
   }
@@ -478,9 +472,9 @@ export default class Choiceinput extends Input {
       inline: this.state.inline,
       key: this.componentName,
       includeCheckWork: this.state.includeCheckWork,
-      creditachieved: this.state.creditachieved,
+      creditAchieved: this.state.creditAchieved,
       valueHasBeenValidated: this.state.valueHasBeenValidated,
-      numbertimessubmitted: this.state.numbertimessubmitted,
+      numberTimesSubmitted: this.state.numberTimesSubmitted,
       returnChoiceRenderers: this.returnChoiceRenderers,
       showCorrectness: this.flags.showCorrectness,
     });
@@ -491,9 +485,9 @@ export default class Choiceinput extends Input {
       choiceChildren: this.state.choiceChildrenOrdered,
       choicetexts: this.state.choicetexts,
       selectedindices: this.state.selectedindices,
-      creditachieved: this.state.creditachieved,
+      creditAchieved: this.state.creditAchieved,
       valueHasBeenValidated: this.state.valueHasBeenValidated,
-      numbertimessubmitted: this.state.numbertimessubmitted,
+      numberTimesSubmitted: this.state.numberTimesSubmitted,
       inline: this.state.inline,
     });
 
@@ -590,10 +584,10 @@ function returnSerializedComponentsAward({
         }
       ],
       downstreamDependencies: {
-        [componentName]: {
+        [componentName]: [{
           dependencyType: "referenceShadow",
           prop: propName,
-        }
+        }]
       },
     }
   }

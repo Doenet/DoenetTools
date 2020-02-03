@@ -7,18 +7,18 @@ import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortaw
 
 class AnswerRenderer extends BaseRenderer {
   constructor({ actions, key, includeCheckWork,
-    creditachieved, valuesAsSubmitted, showCorrectness }) {
+    creditAchieved, valuesAsSubmitted, showCorrectness }) {
     super({ key: key });
     this.actions = actions;
     this._key = key;
     this.includeCheckWork = includeCheckWork;
-    this.creditachieved = creditachieved;
+    this.creditAchieved = creditAchieved;
     this.valuesAsSubmitted = valuesAsSubmitted;
     this.showCorrectness = showCorrectness;
   }
 
-  updateAnswerRenderer({ creditachieved, valuesAsSubmitted }) {
-    this.creditachieved = creditachieved;
+  updateAnswerRenderer({ creditAchieved, valuesAsSubmitted }) {
+    this.creditAchieved = creditAchieved;
     this.valuesAsSubmitted = valuesAsSubmitted;
   }
 
@@ -26,9 +26,9 @@ class AnswerRenderer extends BaseRenderer {
   updateValidationState() {
     this.validationState = "unvalidated";
     if (this.valuesAsSubmitted) {
-      if (this.creditachieved === 1) {
+      if (this.creditAchieved === 1) {
         this.validationState = "correct";
-      } else if (this.creditachieved === 0) {
+      } else if (this.creditAchieved === 0) {
         this.validationState = "incorrect";
       } else {
         this.validationState = "partialcorrect";
@@ -95,7 +95,7 @@ class AnswerRenderer extends BaseRenderer {
             </span>);
         } else if (this.validationState === "partialcorrect") {
           checkWorkStyle.backgroundColor = "#efab34";
-          let percent = Math.round(this.creditachieved * 100);
+          let percent = Math.round(this.creditAchieved * 100);
           let partialCreditContents = `${percent}% Correct`;
 
           checkworkComponent = (

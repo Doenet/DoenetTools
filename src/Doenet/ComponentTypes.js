@@ -1,5 +1,4 @@
 import * as PropertyComponents from './components/PropertyComponents';
-import * as TemplateOnly from './components/TemplateOnly';
 import * as MMeMen from './components/MMeMen';
 import * as MdMdnMrow from './components/MdMdnMrow';
 import * as BooleanOperators from './components/BooleanOperators';
@@ -20,6 +19,7 @@ import Text from './components/Text';
 import Letters from './components/Letters';
 import TextList from './components/TextList';
 import MathList from './components/MathList';
+import NumberList from './components/NumberList';
 import P from './components/P';
 import BooleanComponent from './components/Boolean';
 import BooleanList from './components/BooleanList';
@@ -56,6 +56,7 @@ import Booleaninput from './components/Booleaninput';
 import Choiceinput from './components/Choiceinput';
 import Choice from './components/Choice';
 import NumberComponent from './components/Number';
+import Integer from './components/Integer';
 import Graph from './components/Graph';
 import Variables from './components/Variables';
 import Variable from './components/Variable';
@@ -64,6 +65,9 @@ import Template from './components/Template';
 import Sequence from './components/Sequence';
 import Map from './components/Map';
 import Substitutions from './components/Substitutions';
+import Subsref from './components/Subsref';
+import Subsindex from './components/Subsindex';
+import FromMapAncestor from './components/FromMapAncestor';
 import Slider from './components/Slider';
 import Markers from './components/Markers';
 import ConstrainToGrid from './components/ConstrainToGrid';
@@ -114,6 +118,9 @@ import IntComma from './components/IntComma';
 import Pluralize from './components/Pluralize';
 import Feedback from './components/Feedback';
 import Container from './components/Container';
+import CollaborateGroups from './components/CollaborateGroups';
+import CollaborateGroupSetup from './components/CollaborateGroupSetup';
+import Div from './components/Div';
 
 
 //Extended
@@ -143,7 +150,6 @@ import InlineRenderInlineChildren from './components/abstract/InlineRenderInline
 
 const componentTypeArray = [
   ...Object.values(PropertyComponents),
-  ...Object.values(TemplateOnly),
   ...Object.values(MMeMen),
   ...Object.values(MdMdnMrow),
   ...Object.values(BooleanOperators),
@@ -164,6 +170,7 @@ const componentTypeArray = [
   P,
   BooleanComponent, BooleanList,
   MathComponent, MathList,
+  NumberList,
   Ref, RefTarget,
   Prop,
   Extract,
@@ -183,7 +190,7 @@ const componentTypeArray = [
   Answer, Award, IfComponent,
   Mathinput, Textinput, Booleaninput, Choiceinput,
   Choice,
-  NumberComponent,
+  NumberComponent, Integer,
   Graph,
   Variables,
   Variable,
@@ -199,7 +206,7 @@ const componentTypeArray = [
   Table,
   Markers,
   Panel,
-  Map, Substitutions, 
+  Map, Substitutions, Subsref, Subsindex, FromMapAncestor,
   ConstrainToGrid,
   AttractToGrid,
   ConstrainTo,
@@ -234,6 +241,9 @@ const componentTypeArray = [
   Pluralize,
   Feedback,
   Container,
+  CollaborateGroups,
+  CollaborateGroupSetup,
+  Div,
 ];
 
 const componentTypeArrayExtended = [
@@ -264,60 +274,73 @@ const componentTypeArrayExtended = [
   InlineRenderInlineChildren,
 ];
 
-const takingAliasArray = [
-  Ref, RefTarget, Collect,
-];
-
-const creatingVariantsArray = [
-  Document, Select, SelectFromSequence, VariantControl,
-];
-
-export function createComponentTypes() {
-  const componentTypes = {};
-  for(let ct of componentTypeArray) {
-    if(ct.componentType === undefined) {
+export function standardComponentClasses() {
+  const componentClasses = {};
+  for (let ct of componentTypeArray) {
+    let newComponentType = ct.componentType;
+    if (newComponentType === undefined) {
       throw Error("Cannot create component as componentType is undefined for class " + ct)
     }
-    if(ct.componentType in componentTypes) {
-      throw Error("component type " + ct.componentType + " defined in two classes");
+    newComponentType = newComponentType.toLowerCase();
+    if (newComponentType in componentClasses) {
+      throw Error("component type " + newComponentType + " defined in two classes");
     }
-    if(!(/[a-zA-Z]/.test(ct.componentType.substring(0,1)))) {
-      throw Error("Invalid component type " + ct.componentType + ". Component types must begin with a letter.");
+    if (!(/[a-z]/.test(newComponentType.substring(0, 1)))) {
+      throw Error("Invalid component type " + newComponentType + ". Component types must begin with a letter.");
     }
-    componentTypes[ct.componentType] = {maxIndex: 0, class: ct};
+    componentClasses[newComponentType] = ct;
   }
-  return componentTypes;
+  return componentClasses;
 }
 
 export function allComponentClasses() {
   const componentClasses = {};
-  for(let ct of componentTypeArrayExtended) {
-    if(ct.componentType in componentClasses) {
-      throw Error("component type " + ct.componentType + " defined in two classes");
+  for (let ct of componentTypeArrayExtended) {
+    let newComponentType = ct.componentType;
+    if (newComponentType === undefined) {
+      throw Error("Cannot create component as componentType is undefined for class " + ct)
     }
-    componentClasses[ct.componentType] = ct;
+    newComponentType = newComponentType.toLowerCase();
+    if (newComponentType in componentClasses) {
+      throw Error("component type " + newComponentType + " defined in two classes");
+    }
+    componentClasses[newComponentType] = ct;
   }
   return componentClasses;
 }
 
-export function componentTypesTakingAliases(){
+export function componentTypesTakingComponentNames() {
   const componentClasses = {};
-  for(let ct of takingAliasArray) {
-    if(ct.componentType in componentClasses) {
-      throw Error("component type " + ct.componentType + " defined in two classes");
+  for (let ct of componentTypeArray) {
+    if (ct.takesComponentName) {
+      let newComponentType = ct.componentType;
+      if (newComponentType === undefined) {
+        throw Error("Cannot create component as componentType is undefined for class " + ct)
+      }
+      newComponentType = newComponentType.toLowerCase();
+      if (newComponentType in componentClasses) {
+        throw Error("component type " + newComponentType + " defined in two classes");
+      }
+      componentClasses[newComponentType] = ct;
     }
-    componentClasses[ct.componentType] = ct;
   }
   return componentClasses;
 }
 
-export function componentTypesCreatingVariants(){
+export function componentTypesCreatingVariants() {
   const componentClasses = {};
-  for(let ct of creatingVariantsArray) {
-    if(ct.componentType in componentClasses) {
-      throw Error("component type " + ct.componentType + " defined in two classes");
+  for (let ct of componentTypeArray) {
+    if (ct.createsVariants) {
+      let newComponentType = ct.componentType;
+      if (newComponentType === undefined) {
+        throw Error("Cannot create component as componentType is undefined for class " + ct)
+      }
+      newComponentType = newComponentType.toLowerCase();
+      if (newComponentType in componentClasses) {
+        throw Error("component type " + newComponentType + " defined in two classes");
+      }
+      componentClasses[newComponentType] = ct;
     }
-    componentClasses[ct.componentType] = ct;
   }
   return componentClasses;
 }

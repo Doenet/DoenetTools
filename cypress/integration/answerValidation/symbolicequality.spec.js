@@ -50,10 +50,10 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(0);
-      expect(components['/_answer4'].state.creditachieved).eq(0);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(0);
+      expect(components['/_answer4'].state.creditAchieved).eq(0);
     });
   
     cy.log("The sum isn't correct for symbolic")
@@ -68,10 +68,10 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(1);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(1);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
     });
 
     cy.log("3+1")
@@ -86,10 +86,10 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
-      expect(components['/_answer3'].state.creditachieved).eq(1);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
+      expect(components['/_answer3'].state.creditAchieved).eq(1);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
     });
 
     cy.log("1+3")
@@ -104,10 +104,10 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(1);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(1);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
     });
 
     cy.log("1+1+1+1")
@@ -122,10 +122,10 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(0);
-      expect(components['/_answer3'].state.creditachieved).eq(1);
-      expect(components['/_answer4'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(0);
+      expect(components['/_answer3'].state.creditAchieved).eq(1);
+      expect(components['/_answer4'].state.creditAchieved).eq(1);
     });
 
 
@@ -158,8 +158,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Plus negative to subtraction")
@@ -170,8 +170,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Parentheses")
@@ -182,8 +182,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Positive zero")
@@ -194,8 +194,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Remove zero term")
@@ -206,8 +206,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Remove one coefficient")
@@ -218,8 +218,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Reorder terms")
@@ -230,8 +230,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
   });
@@ -263,8 +263,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Simplify numbers")
@@ -275,8 +275,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Permute adjacent numbers")
@@ -287,8 +287,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Permute adjacent variable terms")
@@ -299,8 +299,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Combine adjacent variable terms")
@@ -311,8 +311,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Combine all numbers")
@@ -323,8 +323,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Combine all terms")
@@ -335,8 +335,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
   });
@@ -368,8 +368,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Simplify numbers")
@@ -380,8 +380,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Permute terms")
@@ -392,8 +392,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Combine variable terms")
@@ -404,8 +404,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Combine adjacent variable terms")
@@ -416,8 +416,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Combine all terms")
@@ -428,8 +428,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
   });
@@ -461,8 +461,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Combine terms")
@@ -473,8 +473,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Permute terms and factors")
@@ -485,8 +485,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Expand polynomial")
@@ -497,8 +497,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Expand and simplify")
@@ -509,8 +509,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Factor polynomial")
@@ -521,8 +521,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
   });
@@ -554,8 +554,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Expand polynomial")
@@ -566,8 +566,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(1);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(1);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
     cy.log("Simplify trig")
@@ -578,8 +578,8 @@ describe('Symbolic equality tests',function() {
 
     cy.window().then((win) => {
       let components = Object.assign({},win.state.components);
-      expect(components['/_answer1'].state.creditachieved).eq(0);
-      expect(components['/_answer2'].state.creditachieved).eq(1);
+      expect(components['/_answer1'].state.creditAchieved).eq(0);
+      expect(components['/_answer2'].state.creditAchieved).eq(1);
     });
 
   });

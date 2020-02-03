@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './header.css'
-import doenetImage from '../media/doenet.png';
+import doenetImage from '../media/Doenet_Logo_cloud_only.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTh , faUser, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
@@ -21,7 +21,7 @@ class DoenetHeader extends Component {
       "Chooser" : "/chooser/",
       "Course" : "/course/",
       "Documentation" : "/docs/",
-      "Editor" : "/editor/",
+      // "Editor" : "/editor/",
       "Gradebook": "/gradebook/",
     }
 
@@ -105,7 +105,7 @@ class DoenetHeader extends Component {
         <div className="headingContainerWrapper">
           <div className="headingContainer">
             <div className="toolTitle">
-              <img id="doenetLogo"src={doenetImage} height='30px' />
+              <img id="doenetLogo" onClick={()=>{location.href = "/";}} src={doenetImage} height='45px' />
               <span>{ toolTitle }</span>
             </div>
             {headingTitle && <div className="headingTitle">

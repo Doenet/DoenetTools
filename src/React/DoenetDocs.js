@@ -26,9 +26,12 @@ class DoenetDocs extends Component {
 
   render() {
     const filteredComponents = Object.keys(componentDocs).filter(component =>{
-      if (component.includes(this.state.searchField)) {
-        return component.toString(); 
+      if (component.toString().charAt(0) !== "_"){
+        if (component.includes(this.state.searchField)) {
+          return component.toString(); 
+        }
       }
+      
     })
     return(
       <React.Fragment>

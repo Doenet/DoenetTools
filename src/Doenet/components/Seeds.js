@@ -3,12 +3,8 @@ import InlineComponent from './abstract/InlineComponent';
 export default class Seeds extends InlineComponent {
   static componentType = "seeds";
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroSeeds = childLogic.newLeaf({
       name: "atLeastZeroSeeds",
@@ -17,11 +13,11 @@ export default class Seeds extends InlineComponent {
       number: 0
     });
 
-    let breakStringIntoSeedsByCommas = function({activeChildrenMatched}) {
+    let breakStringIntoSeedsByCommas = function ({ activeChildrenMatched }) {
       let stringChild = activeChildrenMatched[0];
-      let newChildren = stringChild.state.value.split(",").map(x=> ({
+      let newChildren = stringChild.stateValues.value.split(",").map(x => ({
         componentType: "seed",
-        state: {value: x.trim()}
+        state: { value: x.trim() }
       }));
       return {
         success: true,
@@ -29,74 +25,64 @@ export default class Seeds extends InlineComponent {
         toDelete: [stringChild.componentName],
       }
     }
-    
+
     let exactlyOneString = childLogic.newLeaf({
       name: "exactlyOneString",
       componentType: 'string',
       number: 1,
       isSugar: true,
+      affectedBySugar: ["atLeastZeroSeeds"],
       replacementFunction: breakStringIntoSeedsByCommas,
     });
-    
+
     childLogic.newOperator({
       name: "SeedsXorSugar",
       operator: 'xor',
-      propositions: [exactlyOneString,atLeastZeroSeeds],
+      propositions: [exactlyOneString, atLeastZeroSeeds],
       setAsBase: true,
     });
 
     return childLogic;
   }
 
-  updateState(args={}) {
-    if(args.init === true) {
-      this.makePublicStateVariableArray({
-        variableName: "seeds",
-        componentType: "seed",
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "seed",
-        arrayVariableName: "seeds",
-      });
-      this.makePublicStateVariable({
-        variableName: "nseeds",
-        componentType: "number",
-      })
-    }
 
-    super.updateState(args);
 
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.seeds = true;
-      this.unresolvedState.nseeds = true;
-      return;
-    }
+  static returnStateVariableDefinitions() {
 
-    delete this.unresolvedState.seeds;
-    delete this.unresolvedState.nseeds;
+    let stateVariableDefinitions = {};
 
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-      let seedChildrenInds = this.childLogic.returnMatches("atLeastZeroSeeds");
-      if(seedChildrenInds.length > 0) {
-        this.state.seedChildren = seedChildrenInds.map(x => this.activeChildren[x]);
-        this.state.nseeds = this.state.seedChildren.length;
-      }else {
-        delete this.state.seedChildren;
-        this.state.nseeds = 0;
+    stateVariableDefinitions.seeds = {
+      public: true,
+      componentType: "seed",
+      isArray: true,
+      entryPrefixes: ["seed"],
+      returnDependencies: () => ({
+        seedChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroSeeds",
+          variableNames: ["value"],
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { seeds: dependencyValues.seedChildren.map(x => x.stateValues.value) } }
       }
     }
 
-    if(this.state.seedChildren) {
-      if(childrenChanged || this.state.seedChildren.some(x=>trackChanges.getVariableChanges({
-          component: x, variable: "value"}))) {
-        this.state.seeds = this.state.seedChildren.map(x => x.state.value);
+    stateVariableDefinitions.nSeeds = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        seeds: {
+          dependencyType: "stateVariable",
+          variableName: "seeds"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { nSeeds: dependencyValues.seeds.length } }
       }
-    }else {
-      this.state.seeds = [];
     }
 
+    return stateVariableDefinitions;
   }
+
 }

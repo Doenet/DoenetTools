@@ -10,6 +10,7 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
+      <text>a</text>
       <sum name="numbers"><math>3</math><number>17</number><number>5-4</number></sum>
       <sum name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></sum>
       <ref>numbers</ref>
@@ -17,24 +18,32 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3x+2y+z')
-    });
-    cy.get('#__sum1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('21')
-    });
-    cy.get('#__sum2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3x+2y+z')
-    });
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/numbers'].state.value.tree).eq(21);
-      expect(components['/vars'].state.value.tree).eqls(['+', ['*', 3, 'x'], ['*', 2, 'y'], 'z']);
-      expect(components['/_ref1'].replacements[0].state.value.tree).eq(21);
-      expect(components['/_ref2'].replacements[0].state.value.tree).eqls(['+', ['*', 3, 'x'], ['*', 2, 'y'], 'z']);
+      let replacement1 = components['/_ref1'].replacements[0];
+      let replacement1Anchor = '#' + replacement1.componentName;
+      let replacement2 = components['/_ref2'].replacements[0];
+      let replacement2Anchor = '#' + replacement2.componentName;
+
+      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('21')
+      });
+      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x+2y+z')
+      });
+      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('21')
+      });
+      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x+2y+z')
+      });
+      cy.window().then((win) => {
+        expect(components['/numbers'].stateValues.value.tree).eq(21);
+        expect(components['/vars'].stateValues.value.tree).eqls(['+', ['*', 3, 'x'], ['*', 2, 'y'], 'z']);
+        expect(replacement1.stateValues.value.tree).eq(21);
+        expect(replacement2.stateValues.value.tree).eqls(['+', ['*', 3, 'x'], ['*', 2, 'y'], 'z']);
+      })
     })
   })
 
@@ -42,6 +51,8 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
+      <text>a</text>
+
       <product name="numbers"><math>3</math><number>17</number><number>5-4</number></product>
       <product name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></product>
       <ref>numbers</ref>
@@ -49,24 +60,33 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x(x+y)(x+y+z)')
-    });
-    cy.get('#__product1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('51')
-    });
-    cy.get('#__product2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x(x+y)(x+y+z)')
-    });
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/numbers'].state.value.tree).eq(51);
-      expect(components['/vars'].state.value.tree).eqls(['*', 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]);
-      expect(components['/_ref1'].replacements[0].state.value.tree).eq(51);
-      expect(components['/_ref2'].replacements[0].state.value.tree).eqls(['*', 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]);
+      let replacement1 = components['/_ref1'].replacements[0];
+      let replacement1Anchor = '#' + replacement1.componentName;
+      let replacement2 = components['/_ref2'].replacements[0];
+      let replacement2Anchor = '#' + replacement2.componentName;
+
+      cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('51')
+      });
+      cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x(x+y)(x+y+z)')
+      });
+      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('51')
+      });
+      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x(x+y)(x+y+z)')
+      });
+      cy.window().then((win) => {
+        expect(components['/numbers'].stateValues.value.tree).eq(51);
+        expect(components['/vars'].stateValues.value.tree).eqls(['*', 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]);
+        expect(replacement1.stateValues.value.tree).eq(51);
+        expect(replacement2.stateValues.value.tree).eqls(['*', 'x', ['+', 'x', 'y'], ['+', 'x', 'y', 'z']]);
+      })
     })
   })
 
@@ -74,6 +94,8 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
+      <text>a</text>
+
       <clampNumber>55.3</clampNumber>
       <clampNumber>-55.3</clampNumber>
       <clampNumber>0.3</clampNumber>
@@ -96,66 +118,77 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_clampnumber1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/_clampnumber2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0')
-    });
-    cy.get('#\\/_clampnumber3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0.3')
-    });
-    cy.get('#\\/_clampnumber4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('40')
-    });
-    cy.get('#\\/_clampnumber5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('10')
-    });
-    cy.get('#\\/_clampnumber6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('12')
-    });
-    cy.get('#\\/_clampnumber7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('40')
-    });
-    cy.get('#\\/_clampnumber8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('10')
-    });
-    cy.get('#\\/_clampnumber9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('12')
-    });
-    cy.get('#\\/_clampnumber10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x+y')
-    });
-    cy.get('#\\/_clampnumber11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x+y')
-    });
-    cy.get('#__clampnumber1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#__clampnumber2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('10')
-    });
-    cy.get('#__clampnumber3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('12')
-    });
-
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_clampnumber1'].state.value.tree).eq(1);
-      expect(components['/_clampnumber2'].state.value.tree).eq(0);
-      expect(components['/_clampnumber3'].state.value.tree).eq(0.3);
-      expect(components['/_clampnumber4'].state.value.tree).eq(40);
-      expect(components['/_clampnumber5'].state.value.tree).eq(10);
-      expect(components['/_clampnumber6'].state.value.tree).eq(12);
-      expect(components['/_clampnumber7'].state.value.tree).eq(40);
-      expect(components['/_clampnumber8'].state.value.tree).eq(10);
-      expect(components['/_clampnumber9'].state.value.tree).eq(12);
-      expect(components['/_clampnumber10'].state.value.tree).eqls(['+', 'x', 'y']);
-      expect(components['/_clampnumber11'].state.value.tree).eqls(['+', 'x', 'y']);
-      expect(components['/_ref1'].replacements[0].state.value.tree).eq(1);
-      expect(components['/_ref2'].replacements[0].state.value.tree).eq(10);
-      expect(components['/_ref3'].replacements[0].state.value.tree).eq(12);
+      let replacement1 = components['/_ref1'].replacements[0];
+      let replacement1Anchor = '#' + replacement1.componentName;
+      let replacement2 = components['/_ref2'].replacements[0];
+      let replacement2Anchor = '#' + replacement2.componentName;
+      let replacement3 = components['/_ref3'].replacements[0];
+      let replacement3Anchor = '#' + replacement3.componentName;
+
+      cy.get('#\\/_clampnumber1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      });
+      cy.get('#\\/_clampnumber2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('0')
+      });
+      cy.get('#\\/_clampnumber3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('0.3')
+      });
+      cy.get('#\\/_clampnumber4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('40')
+      });
+      cy.get('#\\/_clampnumber5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('10')
+      });
+      cy.get('#\\/_clampnumber6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('12')
+      });
+      cy.get('#\\/_clampnumber7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('40')
+      });
+      cy.get('#\\/_clampnumber8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('10')
+      });
+      cy.get('#\\/_clampnumber9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('12')
+      });
+      cy.get('#\\/_clampnumber10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+y')
+      });
+      cy.get('#\\/_clampnumber11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+y')
+      });
+      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      });
+      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('10')
+      });
+      cy.get(replacement3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('12')
+      });
+
+
+      cy.window().then((win) => {
+        expect(components['/_clampnumber1'].stateValues.value.tree).eq(1);
+        expect(components['/_clampnumber2'].stateValues.value.tree).eq(0);
+        expect(components['/_clampnumber3'].stateValues.value.tree).eq(0.3);
+        expect(components['/_clampnumber4'].stateValues.value.tree).eq(40);
+        expect(components['/_clampnumber5'].stateValues.value.tree).eq(10);
+        expect(components['/_clampnumber6'].stateValues.value.tree).eq(12);
+        expect(components['/_clampnumber7'].stateValues.value.tree).eq(40);
+        expect(components['/_clampnumber8'].stateValues.value.tree).eq(10);
+        expect(components['/_clampnumber9'].stateValues.value.tree).eq(12);
+        expect(components['/_clampnumber10'].stateValues.value.tree).eqls(['+', 'x', 'y']);
+        expect(components['/_clampnumber11'].stateValues.value.tree).eqls(['+', 'x', 'y']);
+        expect(replacement1.stateValues.value.tree).eq(1);
+        expect(replacement2.stateValues.value.tree).eq(10);
+        expect(replacement3.stateValues.value.tree).eq(12);
+      })
     })
   })
 
@@ -163,6 +196,8 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
+      <text>a</text>
+
       <wrapnumberperiodic>55.3</wrapnumberperiodic>
       <wrapnumberperiodic>-55.3</wrapnumberperiodic>
       <wrapnumberperiodic>0.3</wrapnumberperiodic>
@@ -185,65 +220,77 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_wrapnumberperiodic1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0.3')
-    });
-    cy.get('#\\/_wrapnumberperiodic2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0.7')
-    });
-    cy.get('#\\/_wrapnumberperiodic3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0.3')
-    });
-    cy.get('#\\/_wrapnumberperiodic4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('25.3')
-    });
-    cy.get('#\\/_wrapnumberperiodic5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('34.7')
-    });
-    cy.get('#\\/_wrapnumberperiodic6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('12')
-    });
-    cy.get('#\\/_wrapnumberperiodic7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('25.3')
-    });
-    cy.get('#\\/_wrapnumberperiodic8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('34.7')
-    });
-    cy.get('#\\/_wrapnumberperiodic9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('12')
-    });
-    cy.get('#\\/_wrapnumberperiodic10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x+y')
-    });
-    cy.get('#\\/_wrapnumberperiodic11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x+y')
-    });
-    cy.get('#__wrapnumberperiodic1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0.3')
-    });
-    cy.get('#__wrapnumberperiodic2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('34.7')
-    });
-    cy.get('#__wrapnumberperiodic3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('12')
-    });
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_wrapnumberperiodic1'].state.value.tree).closeTo(0.3, 1E-12);
-      expect(components['/_wrapnumberperiodic2'].state.value.tree).closeTo(0.7, 1E-12);
-      expect(components['/_wrapnumberperiodic3'].state.value.tree).closeTo(0.3, 1E-12);
-      expect(components['/_wrapnumberperiodic4'].state.value.tree).closeTo(25.3, 1E-12);
-      expect(components['/_wrapnumberperiodic5'].state.value.tree).closeTo(34.7, 1E-12);
-      expect(components['/_wrapnumberperiodic6'].state.value.tree).closeTo(12, 1E-12);
-      expect(components['/_wrapnumberperiodic7'].state.value.tree).closeTo(25.3, 1E-12);
-      expect(components['/_wrapnumberperiodic8'].state.value.tree).closeTo(34.7, 1E-12);
-      expect(components['/_wrapnumberperiodic9'].state.value.tree).closeTo(12, 1E-12);
-      expect(components['/_wrapnumberperiodic10'].state.value.tree).eqls(['+', 'x', 'y']);
-      expect(components['/_wrapnumberperiodic11'].state.value.tree).eqls(['+', 'x', 'y']);
-      expect(components['/_ref1'].replacements[0].state.value.tree).closeTo(0.3, 1E-12);
-      expect(components['/_ref2'].replacements[0].state.value.tree).closeTo(34.7, 1E-12);
-      expect(components['/_ref3'].replacements[0].state.value.tree).closeTo(12, 1E-12);
+      let replacement1 = components['/_ref1'].replacements[0];
+      let replacement1Anchor = '#' + replacement1.componentName;
+      let replacement2 = components['/_ref2'].replacements[0];
+      let replacement2Anchor = '#' + replacement2.componentName;
+      let replacement3 = components['/_ref3'].replacements[0];
+      let replacement3Anchor = '#' + replacement3.componentName;
+
+      cy.get('#\\/_wrapnumberperiodic1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('0.3')
+      });
+      cy.get('#\\/_wrapnumberperiodic2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('0.7')
+      });
+      cy.get('#\\/_wrapnumberperiodic3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('0.3')
+      });
+      cy.get('#\\/_wrapnumberperiodic4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('25.3')
+      });
+      cy.get('#\\/_wrapnumberperiodic5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('34.7')
+      });
+      cy.get('#\\/_wrapnumberperiodic6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('12')
+      });
+      cy.get('#\\/_wrapnumberperiodic7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('25.3')
+      });
+      cy.get('#\\/_wrapnumberperiodic8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('34.7')
+      });
+      cy.get('#\\/_wrapnumberperiodic9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('12')
+      });
+      cy.get('#\\/_wrapnumberperiodic10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+y')
+      });
+      cy.get('#\\/_wrapnumberperiodic11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+y')
+      });
+      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('0.3')
+      });
+      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('34.7')
+      });
+      cy.get(replacement3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('12')
+      });
+
+      cy.window().then((win) => {
+        expect(components['/_wrapnumberperiodic1'].stateValues.value.tree).closeTo(0.3, 1E-12);
+        expect(components['/_wrapnumberperiodic2'].stateValues.value.tree).closeTo(0.7, 1E-12);
+        expect(components['/_wrapnumberperiodic3'].stateValues.value.tree).closeTo(0.3, 1E-12);
+        expect(components['/_wrapnumberperiodic4'].stateValues.value.tree).closeTo(25.3, 1E-12);
+        expect(components['/_wrapnumberperiodic5'].stateValues.value.tree).closeTo(34.7, 1E-12);
+        expect(components['/_wrapnumberperiodic6'].stateValues.value.tree).closeTo(12, 1E-12);
+        expect(components['/_wrapnumberperiodic7'].stateValues.value.tree).closeTo(25.3, 1E-12);
+        expect(components['/_wrapnumberperiodic8'].stateValues.value.tree).closeTo(34.7, 1E-12);
+        expect(components['/_wrapnumberperiodic9'].stateValues.value.tree).closeTo(12, 1E-12);
+        expect(components['/_wrapnumberperiodic10'].stateValues.value.tree).eqls(['+', 'x', 'y']);
+        expect(components['/_wrapnumberperiodic11'].stateValues.value.tree).eqls(['+', 'x', 'y']);
+        expect(replacement1.stateValues.value.tree).closeTo(0.3, 1E-12);
+        expect(replacement2.stateValues.value.tree).closeTo(34.7, 1E-12);
+        expect(replacement3.stateValues.value.tree).closeTo(12, 1E-12);
+      })
     })
   })
 
@@ -251,6 +298,7 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
+      <text>a</text>
       <graph>
         <point layer="1">(6,7)</point>
         <point>
@@ -268,10 +316,10 @@ describe('Math Operator Tag Tests', function () {
         <point>(<ref prop="y">_point2</ref>, <ref prop="x">_point2</ref>)</point>
       </graph>
 
-      <ref>_graph1</ref>
+      <ref name="g2">_graph1</ref>
       `}, "*");
     });
-    cy.get('#__graph1_foreignObj') //wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     let clamp = x => Math.min(5, Math.max(-2, x));
     let wrap = x => -2 + me.math.mod((x + 2), 7);
@@ -279,19 +327,20 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let x = 6, y = 7;
-      expect(components['/_point1'].state.xs[0].tree).eq(x);
-      expect(components['/_point1'].state.xs[1].tree).eq(y);
-      expect(components['/_point2'].state.xs[0].tree).eq(clamp(x));
-      expect(components['/_point2'].state.xs[1].tree).eq(wrap(y));
-      expect(components['/_point3'].state.xs[0].tree).eq(wrap(y));
-      expect(components['/_point3'].state.xs[1].tree).eq(clamp(x));
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect(components['/_point2'].stateValues.xs[0].tree).eq(clamp(x));
+      expect(components['/_point2'].stateValues.xs[1].tree).eq(wrap(y));
+      expect(components['/_point3'].stateValues.xs[0].tree).eq(wrap(y));
+      expect(components['/_point3'].stateValues.xs[1].tree).eq(clamp(x));
 
-      expect(components.__point1.state.xs[0].tree).eq(x);
-      expect(components.__point1.state.xs[1].tree).eq(y);
-      expect(components.__point2.state.xs[0].tree).eq(clamp(x));
-      expect(components.__point2.state.xs[1].tree).eq(wrap(y));
-      expect(components.__point3.state.xs[0].tree).eq(wrap(y));
-      expect(components.__point3.state.xs[1].tree).eq(clamp(x));
+      let g2children = components['/g2'].replacements[0].activeChildren
+      expect(g2children[0].stateValues.xs[0].tree).eq(x);
+      expect(g2children[0].stateValues.xs[1].tree).eq(y);
+      expect(g2children[1].stateValues.xs[0].tree).eq(clamp(x));
+      expect(g2children[1].stateValues.xs[1].tree).eq(wrap(y));
+      expect(g2children[2].stateValues.xs[0].tree).eq(wrap(y));
+      expect(g2children[2].stateValues.xs[1].tree).eq(clamp(x));
 
     })
 
@@ -300,19 +349,20 @@ describe('Math Operator Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let x = -5, y = 0;
       components['/_point1'].movePoint({ x: x, y: y });
-      expect(components['/_point1'].state.xs[0].tree).eq(x);
-      expect(components['/_point1'].state.xs[1].tree).eq(y);
-      expect(components['/_point2'].state.xs[0].tree).eq(clamp(x));
-      expect(components['/_point2'].state.xs[1].tree).eq(wrap(y));
-      expect(components['/_point3'].state.xs[0].tree).eq(wrap(y));
-      expect(components['/_point3'].state.xs[1].tree).eq(clamp(x));
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect(components['/_point2'].stateValues.xs[0].tree).eq(clamp(x));
+      expect(components['/_point2'].stateValues.xs[1].tree).eq(wrap(y));
+      expect(components['/_point3'].stateValues.xs[0].tree).eq(wrap(y));
+      expect(components['/_point3'].stateValues.xs[1].tree).eq(clamp(x));
 
-      expect(components.__point1.state.xs[0].tree).eq(x);
-      expect(components.__point1.state.xs[1].tree).eq(y);
-      expect(components.__point2.state.xs[0].tree).eq(clamp(x));
-      expect(components.__point2.state.xs[1].tree).eq(wrap(y));
-      expect(components.__point3.state.xs[0].tree).eq(wrap(y));
-      expect(components.__point3.state.xs[1].tree).eq(clamp(x));
+      let g2children = components['/g2'].replacements[0].activeChildren
+      expect(g2children[0].stateValues.xs[0].tree).eq(x);
+      expect(g2children[0].stateValues.xs[1].tree).eq(y);
+      expect(g2children[1].stateValues.xs[0].tree).eq(clamp(x));
+      expect(g2children[1].stateValues.xs[1].tree).eq(wrap(y));
+      expect(g2children[2].stateValues.xs[0].tree).eq(wrap(y));
+      expect(g2children[2].stateValues.xs[1].tree).eq(clamp(x));
 
     })
 
@@ -322,19 +372,20 @@ describe('Math Operator Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let x = 9, y = -3;
       components['/_point2'].movePoint({ x: x, y: y });
-      expect(components['/_point1'].state.xs[0].tree).eq(clamp(x));
-      expect(components['/_point1'].state.xs[1].tree).eq(wrap(y));
-      expect(components['/_point2'].state.xs[0].tree).eq(clamp(x));
-      expect(components['/_point2'].state.xs[1].tree).eq(wrap(y));
-      expect(components['/_point3'].state.xs[0].tree).eq(wrap(y));
-      expect(components['/_point3'].state.xs[1].tree).eq(clamp(x));
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(clamp(x));
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(wrap(y));
+      expect(components['/_point2'].stateValues.xs[0].tree).eq(clamp(x));
+      expect(components['/_point2'].stateValues.xs[1].tree).eq(wrap(y));
+      expect(components['/_point3'].stateValues.xs[0].tree).eq(wrap(y));
+      expect(components['/_point3'].stateValues.xs[1].tree).eq(clamp(x));
 
-      expect(components.__point1.state.xs[0].tree).eq(clamp(x));
-      expect(components.__point1.state.xs[1].tree).eq(wrap(y));
-      expect(components.__point2.state.xs[0].tree).eq(clamp(x));
-      expect(components.__point2.state.xs[1].tree).eq(wrap(y));
-      expect(components.__point3.state.xs[0].tree).eq(wrap(y));
-      expect(components.__point3.state.xs[1].tree).eq(clamp(x));
+      let g2children = components['/g2'].replacements[0].activeChildren
+      expect(g2children[0].stateValues.xs[0].tree).eq(clamp(x));
+      expect(g2children[0].stateValues.xs[1].tree).eq(wrap(y));
+      expect(g2children[1].stateValues.xs[0].tree).eq(clamp(x));
+      expect(g2children[1].stateValues.xs[1].tree).eq(wrap(y));
+      expect(g2children[2].stateValues.xs[0].tree).eq(wrap(y));
+      expect(g2children[2].stateValues.xs[1].tree).eq(clamp(x));
 
     })
 
@@ -343,19 +394,21 @@ describe('Math Operator Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let x = -4, y = 8;
       components['/_point3'].movePoint({ x: y, y: x });
-      expect(components['/_point1'].state.xs[0].tree).eq(clamp(x));
-      expect(components['/_point1'].state.xs[1].tree).eq(wrap(y));
-      expect(components['/_point2'].state.xs[0].tree).eq(clamp(x));
-      expect(components['/_point2'].state.xs[1].tree).eq(wrap(y));
-      expect(components['/_point3'].state.xs[0].tree).eq(wrap(y));
-      expect(components['/_point3'].state.xs[1].tree).eq(clamp(x));
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(clamp(x));
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(wrap(y));
+      expect(components['/_point2'].stateValues.xs[0].tree).eq(clamp(x));
+      expect(components['/_point2'].stateValues.xs[1].tree).eq(wrap(y));
+      expect(components['/_point3'].stateValues.xs[0].tree).eq(wrap(y));
+      expect(components['/_point3'].stateValues.xs[1].tree).eq(clamp(x));
 
-      expect(components.__point1.state.xs[0].tree).eq(clamp(x));
-      expect(components.__point1.state.xs[1].tree).eq(wrap(y));
-      expect(components.__point2.state.xs[0].tree).eq(clamp(x));
-      expect(components.__point2.state.xs[1].tree).eq(wrap(y));
-      expect(components.__point3.state.xs[0].tree).eq(wrap(y));
-      expect(components.__point3.state.xs[1].tree).eq(clamp(x));
+
+      let g2children = components['/g2'].replacements[0].activeChildren
+      expect(g2children[0].stateValues.xs[0].tree).eq(clamp(x));
+      expect(g2children[0].stateValues.xs[1].tree).eq(wrap(y));
+      expect(g2children[1].stateValues.xs[0].tree).eq(clamp(x));
+      expect(g2children[1].stateValues.xs[1].tree).eq(wrap(y));
+      expect(g2children[2].stateValues.xs[0].tree).eq(wrap(y));
+      expect(g2children[2].stateValues.xs[1].tree).eq(clamp(x));
 
     })
 
@@ -364,40 +417,47 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let x = 10, y = -10;
-      components.__point1.movePoint({ x: x, y: y });
-      expect(components['/_point1'].state.xs[0].tree).eq(x);
-      expect(components['/_point1'].state.xs[1].tree).eq(y);
-      expect(components['/_point2'].state.xs[0].tree).eq(clamp(x));
-      expect(components['/_point2'].state.xs[1].tree).eq(wrap(y));
-      expect(components['/_point3'].state.xs[0].tree).eq(wrap(y));
-      expect(components['/_point3'].state.xs[1].tree).eq(clamp(x));
 
-      expect(components.__point1.state.xs[0].tree).eq(x);
-      expect(components.__point1.state.xs[1].tree).eq(y);
-      expect(components.__point2.state.xs[0].tree).eq(clamp(x));
-      expect(components.__point2.state.xs[1].tree).eq(wrap(y));
-      expect(components.__point3.state.xs[0].tree).eq(wrap(y));
-      expect(components.__point3.state.xs[1].tree).eq(clamp(x));
+      let g2children = components['/g2'].replacements[0].activeChildren
+      g2children[0].movePoint({ x: x, y: y });
+
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(x);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(y);
+      expect(components['/_point2'].stateValues.xs[0].tree).eq(clamp(x));
+      expect(components['/_point2'].stateValues.xs[1].tree).eq(wrap(y));
+      expect(components['/_point3'].stateValues.xs[0].tree).eq(wrap(y));
+      expect(components['/_point3'].stateValues.xs[1].tree).eq(clamp(x));
+
+      expect(g2children[0].stateValues.xs[0].tree).eq(x);
+      expect(g2children[0].stateValues.xs[1].tree).eq(y);
+      expect(g2children[1].stateValues.xs[0].tree).eq(clamp(x));
+      expect(g2children[1].stateValues.xs[1].tree).eq(wrap(y));
+      expect(g2children[2].stateValues.xs[0].tree).eq(wrap(y));
+      expect(g2children[2].stateValues.xs[1].tree).eq(clamp(x));
+
     })
 
     cy.log("move point 5");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let x = 11, y = -13;
-      components.__point2.movePoint({ x: x, y: y });
-      expect(components['/_point1'].state.xs[0].tree).eq(clamp(x));
-      expect(components['/_point1'].state.xs[1].tree).eq(wrap(y));
-      expect(components['/_point2'].state.xs[0].tree).eq(clamp(x));
-      expect(components['/_point2'].state.xs[1].tree).eq(wrap(y));
-      expect(components['/_point3'].state.xs[0].tree).eq(wrap(y));
-      expect(components['/_point3'].state.xs[1].tree).eq(clamp(x));
 
-      expect(components.__point1.state.xs[0].tree).eq(clamp(x));
-      expect(components.__point1.state.xs[1].tree).eq(wrap(y));
-      expect(components.__point2.state.xs[0].tree).eq(clamp(x));
-      expect(components.__point2.state.xs[1].tree).eq(wrap(y));
-      expect(components.__point3.state.xs[0].tree).eq(wrap(y));
-      expect(components.__point3.state.xs[1].tree).eq(clamp(x));
+      let g2children = components['/g2'].replacements[0].activeChildren
+      g2children[1].movePoint({ x: x, y: y });
+
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(clamp(x));
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(wrap(y));
+      expect(components['/_point2'].stateValues.xs[0].tree).eq(clamp(x));
+      expect(components['/_point2'].stateValues.xs[1].tree).eq(wrap(y));
+      expect(components['/_point3'].stateValues.xs[0].tree).eq(wrap(y));
+      expect(components['/_point3'].stateValues.xs[1].tree).eq(clamp(x));
+
+      expect(g2children[0].stateValues.xs[0].tree).eq(clamp(x));
+      expect(g2children[0].stateValues.xs[1].tree).eq(wrap(y));
+      expect(g2children[1].stateValues.xs[0].tree).eq(clamp(x));
+      expect(g2children[1].stateValues.xs[1].tree).eq(wrap(y));
+      expect(g2children[2].stateValues.xs[0].tree).eq(wrap(y));
+      expect(g2children[2].stateValues.xs[1].tree).eq(clamp(x));
 
     })
 
@@ -405,20 +465,23 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let x = -3, y = 12;
-      components.__point3.movePoint({ x: y, y: x });
-      expect(components['/_point1'].state.xs[0].tree).eq(clamp(x));
-      expect(components['/_point1'].state.xs[1].tree).eq(wrap(y));
-      expect(components['/_point2'].state.xs[0].tree).eq(clamp(x));
-      expect(components['/_point2'].state.xs[1].tree).eq(wrap(y));
-      expect(components['/_point3'].state.xs[0].tree).eq(wrap(y));
-      expect(components['/_point3'].state.xs[1].tree).eq(clamp(x));
 
-      expect(components.__point1.state.xs[0].tree).eq(clamp(x));
-      expect(components.__point1.state.xs[1].tree).eq(wrap(y));
-      expect(components.__point2.state.xs[0].tree).eq(clamp(x));
-      expect(components.__point2.state.xs[1].tree).eq(wrap(y));
-      expect(components.__point3.state.xs[0].tree).eq(wrap(y));
-      expect(components.__point3.state.xs[1].tree).eq(clamp(x));
+      let g2children = components['/g2'].replacements[0].activeChildren
+      g2children[2].movePoint({ x: y, y: x });
+
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(clamp(x));
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(wrap(y));
+      expect(components['/_point2'].stateValues.xs[0].tree).eq(clamp(x));
+      expect(components['/_point2'].stateValues.xs[1].tree).eq(wrap(y));
+      expect(components['/_point3'].stateValues.xs[0].tree).eq(wrap(y));
+      expect(components['/_point3'].stateValues.xs[1].tree).eq(clamp(x));
+
+      expect(g2children[0].stateValues.xs[0].tree).eq(clamp(x));
+      expect(g2children[0].stateValues.xs[1].tree).eq(wrap(y));
+      expect(g2children[1].stateValues.xs[0].tree).eq(clamp(x));
+      expect(g2children[1].stateValues.xs[1].tree).eq(wrap(y));
+      expect(g2children[2].stateValues.xs[0].tree).eq(wrap(y));
+      expect(g2children[2].stateValues.xs[1].tree).eq(clamp(x));
     })
 
   });
@@ -427,6 +490,7 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
+      <text>a</text>
       <round>55.3252326</round>
       <round>log(31)</round>
       <round>0.5</round>
@@ -451,70 +515,81 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_round1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('55')
-    });
-    cy.get('#\\/_round2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    });
-    cy.get('#\\/_round3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/_round4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('55.3')
-    });
-    cy.get('#\\/_round5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3.43')
-    });
-    cy.get('#\\/_round6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0.556')
-    });
-    cy.get('#\\/_round7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('55.3')
-    });
-    cy.get('#\\/_round8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3.434')
-    });
-    cy.get('#\\/_round9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0.55556')
-    });
-    cy.get('#\\/_round10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('sin(55.3x)')
-    });
-    cy.get('#\\/_round11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('62.7')
-    });
-    cy.get('#\\/_round12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1524000000')
-    });
-    cy.get('#__round1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('55')
-    });
-    cy.get('#__round2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3.43')
-    });
-    cy.get('#__round3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('62.7')
-    });
-
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_round1'].state.value.tree).eq(55);
-      expect(components['/_round2'].state.value.tree).eq(3);
-      expect(components['/_round3'].state.value.tree).eq(1);
-      expect(components['/_round4'].state.value.tree).eq(55.3);
-      expect(components['/_round5'].state.value.tree).eq(3.43);
-      expect(components['/_round6'].state.value.tree).eq(0.556);
-      expect(components['/_round7'].state.value.tree).eq(55.3);
-      expect(components['/_round8'].state.value.tree).eq(3.434);
-      expect(components['/_round9'].state.value.tree).eq(0.55556);
-      expect(components['/_round10'].state.value.tree).eqls(['apply', 'sin', ['*', 55.3, 'x']]);
-      expect(components['/_round11'].state.value.tree).eq(62.7);
-      expect(components['/_round12'].state.value.tree).eq(1524000000);
-      expect(components['/_ref1'].replacements[0].state.value.tree).eq(55);
-      expect(components['/_ref2'].replacements[0].state.value.tree).eq(3.43);
-      expect(components['/_ref3'].replacements[0].state.value.tree).eq(62.7);
+      let replacement1 = components['/_ref1'].replacements[0];
+      let replacement1Anchor = '#' + replacement1.componentName;
+      let replacement2 = components['/_ref2'].replacements[0];
+      let replacement2Anchor = '#' + replacement2.componentName;
+      let replacement3 = components['/_ref3'].replacements[0];
+      let replacement3Anchor = '#' + replacement3.componentName;
+
+      cy.get('#\\/_round1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('55')
+      });
+      cy.get('#\\/_round2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get('#\\/_round3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      });
+      cy.get('#\\/_round4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('55.3')
+      });
+      cy.get('#\\/_round5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3.43')
+      });
+      cy.get('#\\/_round6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('0.556')
+      });
+      cy.get('#\\/_round7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('55.3')
+      });
+      cy.get('#\\/_round8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3.434')
+      });
+      cy.get('#\\/_round9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('0.55556')
+      });
+      cy.get('#\\/_round10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('sin(55.3x)')
+      });
+      cy.get('#\\/_round11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('62.7')
+      });
+      cy.get('#\\/_round12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1524000000')
+      });
+      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('55')
+      });
+      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3.43')
+      });
+      cy.get(replacement3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('62.7')
+      });
+
+
+      cy.window().then((win) => {
+        expect(components['/_round1'].stateValues.value.tree).eq(55);
+        expect(components['/_round2'].stateValues.value.tree).eq(3);
+        expect(components['/_round3'].stateValues.value.tree).eq(1);
+        expect(components['/_round4'].stateValues.value.tree).eq(55.3);
+        expect(components['/_round5'].stateValues.value.tree).eq(3.43);
+        expect(components['/_round6'].stateValues.value.tree).eq(0.556);
+        expect(components['/_round7'].stateValues.value.tree).eq(55.3);
+        expect(components['/_round8'].stateValues.value.tree).eq(3.434);
+        expect(components['/_round9'].stateValues.value.tree).eq(0.55556);
+        expect(components['/_round10'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 55.3, 'x']]);
+        expect(components['/_round11'].stateValues.value.tree).eq(62.7);
+        expect(components['/_round12'].stateValues.value.tree).eq(1524000000);
+        expect(replacement1.stateValues.value.tree).eq(55);
+        expect(replacement2.stateValues.value.tree).eq(3.43);
+        expect(replacement3.stateValues.value.tree).eq(62.7);
+      })
     })
   })
 
@@ -532,9 +607,9 @@ describe('Math Operator Tag Tests', function () {
       <p><convertSetToList><ref>_math2</ref></convertSetToList></p>
       <p><convertSetToList><ref>_math3</ref></convertSetToList></p>
 
-      <p><ref>_convertSetToList1</ref></p>
-      <p><ref>_convertSetToList2</ref></p>
-      <p><ref>_convertSetToList3</ref></p>
+      <p><ref name="r1">_convertSetToList1</ref></p>
+      <p><ref name="r2">_convertSetToList2</ref></p>
+      <p><ref name="r3">_convertSetToList3</ref></p>
 
 
       `}, "*");
@@ -542,52 +617,62 @@ describe('Math Operator Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('{1,2,3,2,1}')
-    });
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(1,2,3,2,1)')
-    });
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1,2,3,2,1')
-    });
-    cy.get('#\\/_convertsettolist1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1,2,3')
-    });
-    cy.get('#\\/_convertsettolist2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(1,2,3,2,1)')
-    });
-    cy.get('#\\/_convertsettolist3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1,2,3,2,1')
-    });
-    cy.get('#__convertsettolist1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1,2,3')
-    });
-    cy.get('#__convertsettolist2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(1,2,3,2,1)')
-    });
-    cy.get('#__convertsettolist3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1,2,3,2,1')
-    });
-
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].state.value.tree).eqls(['set',1,2,3,2,1]);
-      expect(components['/_math2'].state.value.tree).eqls(['tuple',1,2,3,2,1]);
-      expect(components['/_math3'].state.value.tree).eqls(['list',1,2,3,2,1]);
-      expect(components['/_convertsettolist1'].state.value.tree).eqls(['list',1,2,3]);
-      expect(components['/_convertsettolist2'].state.value.tree).eqls(['tuple',1,2,3,2,1]);
-      expect(components['/_convertsettolist3'].state.value.tree).eqls(['list',1,2,3,2,1]);
-      expect(components['__convertsettolist1'].state.value.tree).eqls(['list',1,2,3]);
-      expect(components['__convertsettolist2'].state.value.tree).eqls(['tuple',1,2,3,2,1]);
-      expect(components['__convertsettolist3'].state.value.tree).eqls(['list',1,2,3,2,1]);
-      expect(components['/_convertsettolist1'].state.unordered).eq(true);
-      expect(components['/_convertsettolist2'].state.unordered).eq(true);
-      expect(components['/_convertsettolist3'].state.unordered).eq(true);
-      expect(components['__convertsettolist1'].state.unordered).eq(true);
-      expect(components['__convertsettolist2'].state.unordered).eq(true);
-      expect(components['__convertsettolist3'].state.unordered).eq(true);
+      let replacement1 = components['/r1'].replacements[0];
+      let replacement1Anchor = '#' + replacement1.componentName;
+      let replacement2 = components['/r2'].replacements[0];
+      let replacement2Anchor = '#' + replacement2.componentName;
+      let replacement3 = components['/r3'].replacements[0];
+      let replacement3Anchor = '#' + replacement3.componentName;
+
+      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('{1,2,3,2,1}')
+      });
+      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(1,2,3,2,1)')
+      });
+      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1,2,3,2,1')
+      });
+      cy.get('#\\/_convertsettolist1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1,2,3')
+      });
+      cy.get('#\\/_convertsettolist2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(1,2,3,2,1)')
+      });
+      cy.get('#\\/_convertsettolist3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1,2,3,2,1')
+      });
+      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1,2,3')
+      });
+      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(1,2,3,2,1)')
+      });
+      cy.get(replacement3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1,2,3,2,1')
+      });
+
+
+      cy.window().then((win) => {
+        expect(components['/_math1'].stateValues.value.tree).eqls(['set', 1, 2, 3, 2, 1]);
+        expect(components['/_math2'].stateValues.value.tree).eqls(['tuple', 1, 2, 3, 2, 1]);
+        expect(components['/_math3'].stateValues.value.tree).eqls(['list', 1, 2, 3, 2, 1]);
+        expect(components['/_convertsettolist1'].stateValues.value.tree).eqls(['list', 1, 2, 3]);
+        expect(components['/_convertsettolist2'].stateValues.value.tree).eqls(['tuple', 1, 2, 3, 2, 1]);
+        expect(components['/_convertsettolist3'].stateValues.value.tree).eqls(['list', 1, 2, 3, 2, 1]);
+        expect(replacement1.stateValues.value.tree).eqls(['list', 1, 2, 3]);
+        expect(replacement2.stateValues.value.tree).eqls(['tuple', 1, 2, 3, 2, 1]);
+        expect(replacement3.stateValues.value.tree).eqls(['list', 1, 2, 3, 2, 1]);
+        expect(components['/_convertsettolist1'].stateValues.unordered).eq(true);
+        expect(components['/_convertsettolist2'].stateValues.unordered).eq(true);
+        expect(components['/_convertsettolist3'].stateValues.unordered).eq(true);
+        expect(replacement1.stateValues.unordered).eq(true);
+        expect(replacement2.stateValues.unordered).eq(true);
+        expect(replacement3.stateValues.unordered).eq(true);
+      })
     })
   })
 
@@ -607,12 +692,12 @@ describe('Math Operator Tag Tests', function () {
       </p>
 
       <p><convertSetToList><math>{<ref>m</ref>,<ref>n</ref>,<ref>p</ref>, <ref>m</ref>}</math></convertSetToList></p>
-      <p><ref>_convertSetToList1</ref></p>
+      <p><ref name="csl2">_convertSetToList1</ref></p>
 
       <p><ref name="n2">n3</ref>
       <ref name="n">num1</ref>
-      <number name="num1"><ref>n2</ref>+<ref>num2</ref></number>
-      <number name="num2"><ref>n3</ref>+<ref>num3</ref></number>
+      <math name="num1" simplify><ref>n2</ref>+<ref>num2</ref></math>
+      <math name="num2" simplify><ref>n3</ref>+<ref>num3</ref></math>
       <ref name="n3">num3</ref>
       <number name="num3">1</number></p>
       `}, "*");
@@ -620,13 +705,14 @@ describe('Math Operator Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
+
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let p = components['/p'].state.number;
-      expect(components['/_convertsettolist1'].state.value.tree).eqls(['list',7,3,p]);
-      expect(components['__convertsettolist1'].state.value.tree).eqls(['list',7,3,p]);
-      expect(components['/_convertsettolist1'].state.unordered).eq(true);
-      expect(components['__convertsettolist1'].state.unordered).eq(true);
+      let p = components['/p'].stateValues.value;
+      expect(components['/_convertsettolist1'].stateValues.value.tree).eqls(['list', 7, 3, p]);
+      expect(components['/csl2'].replacements[0].stateValues.value.tree).eqls(['list', 7, 3, p]);
+      expect(components['/_convertsettolist1'].stateValues.unordered).eq(true);
+      expect(components['/csl2'].replacements[0].stateValues.unordered).eq(true);
     })
   })
 
@@ -634,6 +720,7 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
+      <text>a</text>
       <floor>55.3252326</floor>
       <ceil>log(31)</ceil>
 
@@ -645,8 +732,8 @@ describe('Math Operator Tag Tests', function () {
       <ceil>-6999.999999999999</ceil>
       </p>
 
-      <ref>_floor2</ref>
-      <ref>_ceil2</ref>
+      <ref name="f2a">_floor2</ref>
+      <ref name="c2a">_ceil2</ref>
 
       <floor>2.1x</floor>
       <ceil>-3.2y</ceil>
@@ -654,49 +741,58 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    cy.get('#\\/_floor1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('55')
-    });
-    cy.get('#\\/_ceil1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('4')
-    });
-    cy.get('#\\/_floor2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('13')
-    });
-    cy.get('#\\/_ceil2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/_floor3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('4')
-    });
-    cy.get('#\\/_ceil3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−7000')
-    });
-    cy.get('#__floor3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('13')
-    });
-    cy.get('#__ceil3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    });
-    cy.get('#\\/_floor4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2.1x')
-    });
-    cy.get('#\\/_ceil4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('−3.2y')
-    });
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_floor1'].state.value.tree).eq(55);
-      expect(components['/_ceil1'].state.value.tree).eq(4);
-      expect(components['/_floor2'].state.value.tree).eq(13);
-      expect(components['/_ceil2'].state.value.tree).eq(1);
-      expect(components['/_floor3'].state.value.tree).eq(4);
-      expect(components['/_ceil3'].state.value.tree).eq(-7000);
-      expect(components['/_ref5'].replacements[0].state.value.tree).eq(13);
-      expect(components['/_ref6'].replacements[0].state.value.tree).eq(1);
-      expect(components['/_floor4'].state.value.tree).eqls(['*', 2.1, 'x']);
-      expect(components['/_ceil4'].state.value.tree).eqls(['-', ['*', 3.2, 'y']]);
+      let replacement1 = components['/f2a'].replacements[0];
+      let replacement1Anchor = '#' + replacement1.componentName;
+      let replacement2 = components['/c2a'].replacements[0];
+      let replacement2Anchor = '#' + replacement2.componentName;
+
+      cy.get('#\\/_floor1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('55')
+      });
+      cy.get('#\\/_ceil1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      });
+      cy.get('#\\/_floor2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('13')
+      });
+      cy.get('#\\/_ceil2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      });
+      cy.get('#\\/_floor3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4')
+      });
+      cy.get('#\\/_ceil3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−7000')
+      });
+      cy.get(replacement1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('13')
+      });
+      cy.get(replacement2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1')
+      });
+      cy.get('#\\/_floor4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2.1x')
+      });
+      cy.get('#\\/_ceil4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('−3.2y')
+      });
+
+      cy.window().then((win) => {
+        expect(components['/_floor1'].stateValues.value.tree).eq(55);
+        expect(components['/_ceil1'].stateValues.value.tree).eq(4);
+        expect(components['/_floor2'].stateValues.value.tree).eq(13);
+        expect(components['/_ceil2'].stateValues.value.tree).eq(1);
+        expect(components['/_floor3'].stateValues.value.tree).eq(4);
+        expect(components['/_ceil3'].stateValues.value.tree).eq(-7000);
+        expect(replacement1.stateValues.value.tree).eq(13);
+        expect(replacement2.stateValues.value.tree).eq(1);
+        expect(components['/_floor4'].stateValues.value.tree).eqls(['*', 2.1, 'x']);
+        expect(components['/_ceil4'].stateValues.value.tree).eqls(['-', ['*', 3.2, 'y']]);
+      })
     })
   })
 
@@ -722,8 +818,8 @@ describe('Math Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_abs1'].state.value.tree).eq(5.3);
-      expect(components['/_abs2'].state.value.tree).eqls(['apply','abs', ['-', 'x']]);
+      expect(components['/_abs1'].stateValues.value.tree).eq(5.3);
+      expect(components['/_abs2'].stateValues.value.tree).eqls(['apply', 'abs', ['-', 'x']]);
     })
   })
 

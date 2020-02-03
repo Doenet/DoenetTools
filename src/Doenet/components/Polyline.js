@@ -4,20 +4,14 @@ import me from 'math-expressions';
 export default class Polyline extends GraphicalComponent {
   static componentType = "polyline";
 
-  static createPropertiesObject({standardComponentTypes}) {
-    let properties = super.createPropertiesObject({
-      standardComponentTypes: standardComponentTypes
-    });
+  static createPropertiesObject(args) {
+    let properties = super.createPropertiesObject(args);
     properties.draggable = {default: true};
     return properties;
   }
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let addVertices = function({activeChildrenMatched}) {
       // add <vertices> around points
@@ -341,7 +335,7 @@ export default class Polyline extends GraphicalComponent {
 
   allowDownstreamUpdates(status) {
     return ((status.initialChange === true && this.state.draggable === true) ||
-    (status.initialChange !== true && this.state.modifybyreference === true));
+    (status.initialChange !== true && this.state.modifyIndirectly === true));
   }
 
   get variablesUpdatableDownstream() {

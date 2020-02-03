@@ -3,12 +3,8 @@ import ConstraintComponent from './abstract/ConstraintComponent';
 export default class ConstrainToAngles extends ConstraintComponent {
   static componentType = "constraintoangles";
 
-  static returnChildLogic ({standardComponentTypes, allComponentClasses, components}) {
-    let childLogic = super.returnChildLogic({
-      standardComponentTypes: standardComponentTypes,
-      allComponentClasses: allComponentClasses,
-      components: components,
-    });
+  static returnChildLogic (args) {
+    let childLogic = super.returnChildLogic(args);
 
     let addAngles = function({activeChildrenMatched}) {
       // add <angles> around children
