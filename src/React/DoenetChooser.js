@@ -532,14 +532,15 @@ class DoenetChooser extends Component {
     // generate new folderId
     let folderId = nanoid();
 
-    // check if new folder is private or isPublic
+    // check if parent folder is private or isPublic
     let isPublic = false;
-    // if (this.state.directoryStack.length == 0  // in root
-    //   || this.folderInfo(this.state.directoryStack[0])) {       // in private repo
-    //   isPrivate = true;
-    // }
+    if (this.state.directoryStack.length != 0  // not in root
+      && this.folderInfo[this.state.directoryStack[0]].isRepo  // in repo
+      && this.folderInfo[this.state.directoryStack[0]].isPublic) {  // in public repo
+      isPublic = true;
+    }
 
-    this.saveFolder(folderId, title, [], [], "insert", false, false, () => {
+    this.saveFolder(folderId, title, [], [], "insert", false, isPublic, () => {
       // if not in base dir, add folder to current folder
       if (this.state.directoryStack.length !== 0) {
         let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
