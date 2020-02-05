@@ -6,7 +6,7 @@ export default class TextList extends InlineComponent {
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.unordered = { default: false };
-    properties.maximumNumber = { default: undefined };
+    properties.maximumNumber = { default: null };
     return properties;
   }
 
@@ -27,8 +27,8 @@ export default class TextList extends InlineComponent {
       number: 0
     });
 
-    let breakStringIntoTextsByCommas = function ({ activeChildrenMatched }) {
-      let stringChild = activeChildrenMatched[0];
+    let breakStringIntoTextsByCommas = function ({ dependencyValues }) {
+      let stringChild = dependencyValues.stringChildren[0];
       let newChildren = stringChild.stateValues.value.split(",").map(x => ({
         componentType: "text",
         state: { value: x.trim() }
@@ -45,6 +45,13 @@ export default class TextList extends InlineComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
+      sugarDependencies: {
+        stringChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneString",
+          variableNames: ["value"]
+        }
+      },
       affectedBySugar: ["atLeastZeroTexts"],
       replacementFunction: breakStringIntoTextsByCommas,
     });
@@ -70,23 +77,6 @@ export default class TextList extends InlineComponent {
 
     let stateVariableDefinitions = {};
 
-    stateVariableDefinitions.textAndTextlistChildren = {
-      returnDependencies: () => ({
-        textAndTextlistChildren: {
-          dependencyType: "childIdentity",
-          childLogicName: "textAndTextLists",
-          variableNames: ["value"],
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            textAndTextlistChildren: dependencyValues.textAndTextlistChildren
-          }
-        }
-      }
-    }
-
     stateVariableDefinitions.texts = {
       public: true,
       componentType: "text",
@@ -94,43 +84,29 @@ export default class TextList extends InlineComponent {
       entryPrefixes: ["text"],
       returnDependencies: () => ({
         textAndTextlistChildren: {
-          dependencyType: "stateVariable",
-          variableName: "textAndTextlistChildren",
-        },
-        textChildren: {
           dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroTexts",
-          variableNames: ["value"],
-        },
-        textlistChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroTextlists",
-          variableNames: ["texts"],
+          childLogicName: "textAndTextLists",
+          variableNames: ["value", "texts"],
+          variablesOptional: true,
         },
         maximumNumber: {
           dependencyType: "stateVariable",
           variableName: "maximumNumber",
         }
       }),
-      definition: function ({ dependencyValues, componentInfoObjects }) {
-        let textNumber = 0;
-        let textlistNumber = 0;
+      definition: function ({ dependencyValues }) {
         let texts = [];
 
         for (let child of dependencyValues.textAndTextlistChildren) {
-          if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: child.componentType,
-            baseComponentType: "text"
-          })) {
-            texts.push(dependencyValues.textChildren[textNumber].stateValues.value);
-            textNumber++;
+          if (child.stateValues.texts) {
+            texts.push(...child.stateValues.texts);
           } else {
-            texts.push(...dependencyValues.textlistChildren[textlistNumber].stateValues.texts);
+            texts.push(child.stateValues.value);
           }
         }
 
         let maxNum = dependencyValues.maximumNumber;
-        if (maxNum !== undefined && texts.length > maxNum) {
+        if (maxNum !== null && texts.length > maxNum) {
           maxNum = Math.max(0, Math.floor(maxNum));
           texts = texts.slice(0, maxNum)
         }
@@ -138,6 +114,20 @@ export default class TextList extends InlineComponent {
         return { newValues: { texts } }
 
       }
+    }
+
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        texts: {
+          dependencyType: "stateVariable",
+          variableName: "texts"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { text: dependencyValues.texts.join(", ") }
+      })
     }
 
     stateVariableDefinitions.nComponents = {
@@ -157,44 +147,30 @@ export default class TextList extends InlineComponent {
     stateVariableDefinitions.childrenWhoRender = {
       returnDependencies: () => ({
         textAndTextlistChildren: {
-          dependencyType: "stateVariable",
-          variableName: "textAndTextlistChildren",
-        },
-        textChildren: {
-          dependencyType: "childIdentity",
-          childLogicName: "atLeastZeroTexts",
-        },
-        textlistChildren: {
           dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroTextlists",
+          childLogicName: "textAndTextLists",
           variableNames: ["childrenWhoRender"],
+          variablesOptional: true,
         },
         maximumNumber: {
           dependencyType: "stateVariable",
           variableName: "maximumNumber",
         },
       }),
-      definition: function ({ dependencyValues, componentInfoObjects }) {
-        let textNumber = 0;
-        let textlistNumber = 0;
+      definition: function ({ dependencyValues }) {
         let childrenWhoRender = [];
 
         for (let child of dependencyValues.textAndTextlistChildren) {
 
-          if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: child.componentType,
-            baseComponentType: "text"
-          })) {
-            childrenWhoRender.push(dependencyValues.textChildren[textNumber].componentName);
-            textNumber++;
+          if (child.stateValues.childrenWhoRender) {
+            childrenWhoRender.push(...child.stateValues.childrenWhoRender);
           } else {
-            childrenWhoRender.push(...dependencyValues.textlistChildren[textlistNumber].stateValues.childrenWhoRender);
-            textlistNumber++;
+            childrenWhoRender.push(child.componentName);
           }
         }
 
         let maxNum = dependencyValues.maximumNumber;
-        if (maxNum !== undefined && texts.length > maxNum) {
+        if (maxNum !== null && childrenWhoRender.length > maxNum) {
           maxNum = Math.max(0, Math.floor(maxNum));
           childrenWhoRender = childrenWhoRender.slice(0, maxNum)
         }
@@ -203,7 +179,7 @@ export default class TextList extends InlineComponent {
 
       }
     }
-    
+
     return stateVariableDefinitions;
   }
 

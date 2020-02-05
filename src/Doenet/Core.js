@@ -1848,6 +1848,7 @@ export default class Core {
           // to the copied state variable definition
           if (typeof otherVarObj === "object") {
             otherVarName = otherVarObj.variableName;
+            otherVarObj = Object.assign({}, otherVarObj);
             delete otherVarObj.variableName;
             Object.assign(defCopy, otherVarObj);
           }
@@ -3031,6 +3032,9 @@ export default class Core {
             throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${depName}: variableNames must be an array`)
           }
           varNames = newDep.downstreamVariableNames = dep.variableNames;
+          if (dep.variablesOptional) {
+            newDep.variablesOptional = true;
+          }
         } else {
           varNames = ['__identity'];
         }
@@ -3064,7 +3068,19 @@ export default class Core {
               childUp = this.upstreamDependencies[childName] = {};
             }
             // varNames is ['__identity'] if child identity
-            for (let varName of varNames) {
+            let childVarNames = varNames;
+            if (dep.variablesOptional && dep.dependencyType === "childStateVariables") {
+              childVarNames = [];
+              for (let varName of varNames) {
+                if (varName in this._components[childName].state) {
+                  childVarNames.push(varName)
+                }
+              }
+              if (childVarNames.length === 0) {
+                childVarNames = ['__identity'];
+              }
+            }
+            for (let varName of childVarNames) {
               if (childUp[varName] === undefined) {
                 childUp[varName] = [];
               }
@@ -3880,13 +3896,15 @@ export default class Core {
 
           if (dep.downstreamVariableNames) {
             for (let varName of dep.downstreamVariableNames) {
-              if (!depComponent.state[varName].deferred) {
-                childObj.stateValues[varName] = depComponent.stateValues[varName];
-                if (dep.valuesChanged && dep.valuesChanged[childInd] && dep.valuesChanged[childInd].includes(varName)) {
-                  if (!newChanges.valuesChanged) {
-                    newChanges.valuesChanged = {};
+              if (!dep.variablesOptional || varName in depComponent.state) {
+                if (!depComponent.state[varName].deferred) {
+                  childObj.stateValues[varName] = depComponent.stateValues[varName];
+                  if (dep.valuesChanged && dep.valuesChanged[childInd] && dep.valuesChanged[childInd].includes(varName)) {
+                    if (!newChanges.valuesChanged) {
+                      newChanges.valuesChanged = {};
+                    }
+                    newChanges.valuesChanged[childInd] = true;
                   }
-                  newChanges.valuesChanged[childInd] = true;
                 }
               }
             }
@@ -4066,6 +4084,17 @@ export default class Core {
         } else if (dep.downstreamVariableNames) {
           vNames = dep.downstreamVariableNames;
           multipleVariables = true;
+          if (dep.variablesOptional) {
+            vNames = [];
+            for (let vName of dep.downstreamVariableNames) {
+              if (vName in this._components[cName].state) {
+                vNames.push(vName);
+              }
+            }
+            if (vNames.length === 0) {
+              vNames = ['__identity'];
+            }
+          }
         }
 
 
@@ -4242,6 +4271,9 @@ export default class Core {
                 } else {
 
                   if (!depComponent.state[downVar]) {
+                    if (dep.variablesOptional) {
+                      continue;
+                    }
                     let result = this.createFromAliasOrArrayEntry({
                       stateVariable: downVar,
                       component: depComponent
@@ -4833,19 +4865,19 @@ export default class Core {
                   componentsTouched.push(...additionalComponentsTouched);
                 }
                 let childUpDep = this.upstreamDependencies[currentChild];
-                let depNamesToCheck = [];
+                let depNamesToCheck = ['__identity'];
                 if (currentDep.downstreamVariableNames) {
-                  depNamesToCheck = currentDep.downstreamVariableNames;
-                }
-                else {
-                  depNamesToCheck = ['__identity'];
+                  depNamesToCheck.push(...currentDep.downstreamVariableNames);
                 }
                 for (let vName of depNamesToCheck) {
+
                   let upDeps = childUpDep[vName];
-                  for (let [ind, u] of upDeps.entries()) {
-                    if (u === currentDep) {
-                      upDeps.splice(ind, 1);
-                      break;
+                  if (upDeps) {
+                    for (let [ind, u] of upDeps.entries()) {
+                      if (u === currentDep) {
+                        upDeps.splice(ind, 1);
+                        break;
+                      }
                     }
                   }
                 }
@@ -4864,7 +4896,19 @@ export default class Core {
                   childUpDep = this.upstreamDependencies[newChild] = {};
                 }
                 if (currentDep.downstreamVariableNames) {
-                  for (let vName of currentDep.downstreamVariableNames) {
+                  let childVarNames = currentDep.downstreamVariableNames;
+                  if (currentDep.variablesOptional) {
+                    childVarNames = [];
+                    for (let varName of currentDep.downstreamVariableNames) {
+                      if (varName in this._components[newChild].state) {
+                        childVarNames.push(varName)
+                      }
+                    }
+                    if (childVarNames.length === 0) {
+                      childVarNames = ['__identity'];
+                    }
+                  }
+                  for (let vName of childVarNames) {
                     if (childUpDep[vName] === undefined) {
                       childUpDep[vName] = [];
                     }
@@ -6328,6 +6372,8 @@ export default class Core {
       let newStateVariableValues = {};
       let workspace = {};
 
+      let originalComponents = [];
+
       for (let instruction of updateInstructions) {
 
         let additionalChanges = this.requestComponentChanges({ instruction, workspace });
@@ -6338,14 +6384,30 @@ export default class Core {
           }
           Object.assign(newStateVariableValues[cName], additionalChanges.newStateVariableValues[cName]);
         }
+
+        originalComponents.push(instruction.componentName);
       }
 
       if (this.externalFunctions.localStateChanged) {
         // TODO: make this call asynchronous
-        this.externalFunctions.localStateChanged({ newStateVariableValues, contentId: this.contentId });
+        this.externalFunctions.localStateChanged({
+          newStateVariableValues,
+          contentId: this.contentId,
+          sourceOfUpdate: {
+            originalComponents
+          }
+        });
       }
 
-      this.executeUpdateStateVariables({ newStateVariableValues, componentsTouched, saveSerializedState });
+      this.executeUpdateStateVariables({
+        newStateVariableValues,
+        componentsTouched,
+        saveSerializedState,
+        sourceOfUpdate: {
+          originalComponents,
+          local: true,
+        }
+      });
 
     }
     else if (updateType === "updateRendererOnly") {
@@ -6355,7 +6417,9 @@ export default class Core {
     return returnValue;
   }
 
-  executeUpdateStateVariables({ newStateVariableValues, componentsTouched, saveSerializedState = true }) {
+  executeUpdateStateVariables({ newStateVariableValues, componentsTouched,
+    saveSerializedState = true, sourceOfUpdate
+  }) {
 
     // merege newStateVariableValues into changedStateVariables
     for (let cName in newStateVariableValues) {
@@ -6379,9 +6443,6 @@ export default class Core {
 
     // calculate any replacement changes on composites touched
     this.replacementChangesFromComponentsTouched(componentsTouched);
-
-    // TODO: figure out sourceOfUpdate
-    let sourceOfUpdate;
 
     this.updateRenderers({
       componentNames: componentsTouched,
@@ -6912,8 +6973,10 @@ function validatePropertyValue({ value, propertySpecification, property }) {
   }
 
   if (propertySpecification.validValues) {
-    if (!propertySpecification.validValues.has(value)) {
-      throw Error(`Invalid value ${value} for property ${property}`)
+    if (!propertySpecification.validValues.includes(value)) {
+      let firstValue = propertySpecification.validValues[0]
+      console.warn(`Invalid value ${value} for property ${property}, using value ${firstValue}`);
+      value = firstValue;
     }
   }
 

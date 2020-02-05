@@ -28,6 +28,8 @@ class MathinputRenderer extends BaseRenderer {
     }
 
     this.mathExpression = mathExpression;
+    this.changeInitiatedWithThisComponent = false;
+
   }
 
   pushNewTextValue() {
@@ -48,7 +50,9 @@ class MathinputRenderer extends BaseRenderer {
     return JSON.stringify(mathExpression1.tree) === JSON.stringify(mathExpression2.tree);
   }
 
-  updateMathinputRenderer({ mathExpression, creditAchieved, valueHasBeenValidated, disabled }) {
+  updateMathinputRenderer({ mathExpression, creditAchieved, valueHasBeenValidated,
+    disabled, changeInitiatedWithThisComponent
+  }) {
 
     if (mathExpression !== undefined) {
       // TODO: what should happen when have an invalid expression?
@@ -66,6 +70,7 @@ class MathinputRenderer extends BaseRenderer {
     this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
     this.disabled = disabled;
+    this.changeInitiatedWithThisComponent = changeInitiatedWithThisComponent;
 
   }
 
@@ -95,6 +100,7 @@ class MathinputRenderer extends BaseRenderer {
       size={this.size}
       showCorrectness={this.showCorrectness}
       disabled={this.disabled}
+      changeInitiatedWithThisComponent={this.changeInitiatedWithThisComponent}
     />
   }
 

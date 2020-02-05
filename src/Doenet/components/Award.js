@@ -14,7 +14,7 @@ export default class Award extends BaseComponent {
       default: "none",
       toLowerCase: true,
       valueTransformations: { "": "full", "true": "full" },
-      validValues: new Set(["full", "numbers", "numbersepreserveorder", "none"]),
+      validValues: ["none", "full", "numbers", "numbersepreserveorder"],
       propagateToDescendants: true,
     };
     properties.unorderedCompare = { default: false, propagateToDescendants: true };

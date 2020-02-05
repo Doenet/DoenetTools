@@ -17,6 +17,7 @@ class TextinputRenderer extends BaseRenderer {
 
     this.initialTextValue = text;
     this.text = text;
+    this.changeInitiatedWithThisComponent = false;
 
     this.sharedState = {
       textValue: this.initialTextValue
@@ -35,7 +36,9 @@ class TextinputRenderer extends BaseRenderer {
     }
   }
 
-  updateTextinputRenderer({ text, creditAchieved, valueHasBeenValidated }) {
+  updateTextinputRenderer({ text, creditAchieved, valueHasBeenValidated,
+    changeInitiatedWithThisComponent
+  }) {
 
     if (text !== this.text) {
       this.text = text;
@@ -44,6 +47,7 @@ class TextinputRenderer extends BaseRenderer {
 
     this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
+    this.changeInitiatedWithThisComponent = changeInitiatedWithThisComponent;
 
   }
 
@@ -73,6 +77,7 @@ class TextinputRenderer extends BaseRenderer {
       showMathPreview={false}
       size={this.size}
       showCorrectness={this.showCorrectness}
+      changeInitiatedWithThisComponent={this.changeInitiatedWithThisComponent}
     />
   }
 

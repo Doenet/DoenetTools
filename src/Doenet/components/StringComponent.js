@@ -13,12 +13,18 @@ export default class StringComponent extends InlineComponent {
     let stateVariableDefinitions = {};
 
     stateVariableDefinitions.value = {
+      additionalStateVariablesDefined: [{
+        variableName: "text",
+        public: true,
+        componentType: "text"
+      }],
       returnDependencies: () => ({}),
       defaultValue: "",
       definition: function () {
         return {
           useEssentialOrDefaultValue: {
-            value: { variablesToCheck: "value" }
+            value: { variablesToCheck: "value" },
+            text: { variablesToCheck: "value" }
           }
         }
       },

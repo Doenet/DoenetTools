@@ -90,6 +90,20 @@ export default class Text extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { text: dependencyValues.value }
+      })
+    }
+
     return stateVariableDefinitions;
 
   }

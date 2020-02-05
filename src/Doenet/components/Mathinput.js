@@ -100,6 +100,19 @@ export default class Mathinput extends Input {
       }
     }
 
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { text: dependencyValues.value.toString() } }
+      }
+    }
 
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
@@ -323,13 +336,17 @@ export default class Mathinput extends Input {
   }
 
 
-  updateRenderer() {
+  updateRenderer({ sourceOfUpdate }) {
+
+    let changeInitiatedWithThisComponent = sourceOfUpdate.local &&
+      sourceOfUpdate.originalComponents.includes(this.componentName);
 
     this.renderer.updateMathinputRenderer({
       mathExpression: new Proxy(this.stateValues.value, this.readOnlyProxyHandler),
       creditAchieved: this.stateValues.creditAchieved,
       valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
       disabled: this.stateValues.disabled,
+      changeInitiatedWithThisComponent,
     });
 
   }

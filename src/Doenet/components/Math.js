@@ -17,7 +17,7 @@ export default class MathComponent extends InlineComponent {
       default: "none",
       toLowerCase: true,
       valueTransformations: { "": "full", "true": "full" },
-      validValues: new Set(["full", "numbers", "numberspreserveorder", "none"])
+      validValues: ["none", "full", "numbers", "numberspreserveorder"]
     };
     properties.expand = { default: false };
     properties.displayDigits = { default: 10 };
@@ -574,7 +574,10 @@ function calculateMathValue({ dependencyValues } = {}) {
   }
 
 
-  return { newValues: { unnormalizedValue: value } };
+  return {
+    newValues: { unnormalizedValue: value },
+    makeEssential: ["unnormalizedValue"]  // make essential since inverseDef sets it
+  };
 }
 
 function calculateCodesAdjacentToStrings({ dependencyValues }) {

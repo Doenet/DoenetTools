@@ -78,7 +78,6 @@ export class M extends InlineComponent {
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
 
-        console.log(dependencyValues)
         if (dependencyValues.stringTextMathChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
@@ -130,22 +129,29 @@ export class M extends InlineComponent {
       definition: () => ({ newValues: { renderMode: "inline" } })
     }
 
+
+    stateVariableDefinitions.text = {
+      returnDependencies: () => ({
+        latex: {
+          dependencyType: "stateVariable",
+          variableName: "latex"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        let expression;
+        try {
+          expression = me.fromLatex(dependencyValues.stateValues.latex);
+        } catch (e) {
+          // just return latex if can't parse with math-expressions
+          return dependencyValues.stateValues.latex;
+        }
+        return expression.toString();
+      }
+    }
+
     return stateVariableDefinitions;
   }
 
-  toText() {
-    let expression;
-    if (!this.stateValues.latex) {
-      return;
-    }
-    try {
-      expression = me.fromLatex(this.stateValues.latex);
-    } catch (e) {
-      // just return latex if can't parse with math-expression
-      return this.stateValues.latex;
-    }
-    return expression.toString();
-  }
 
   initializeRenderer({ }) {
     if (this.renderer !== undefined) {

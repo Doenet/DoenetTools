@@ -84,6 +84,20 @@ export default class Textinput extends Input {
       }
     }
 
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { text: dependencyValues.value } }
+      }
+    }
+
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { componentType: "text" } })
@@ -302,12 +316,16 @@ export default class Textinput extends Input {
       showCorrectness: this.flags.showCorrectness,
     });
   }
+  updateRenderer({ sourceOfUpdate }) {
 
-  updateRenderer() {
+    let changeInitiatedWithThisComponent = sourceOfUpdate.local &&
+      sourceOfUpdate.originalComponents.includes(this.componentName);
+
     this.renderer.updateTextinputRenderer({
       text: this.stateValues.value,
       creditAchieved: this.stateValues.creditAchieved,
       valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
+      changeInitiatedWithThisComponent
     });
 
   }
