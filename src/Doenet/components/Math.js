@@ -5,7 +5,12 @@ import me from 'math-expressions';
 export default class MathComponent extends InlineComponent {
   static componentType = "math";
 
+  // used when creating new component via adapter or ref prop
   static primaryStateVariableForDefinition = "unnormalizedValue";
+
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static stateVariablesForReference = ["unnormalizedValue"];
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -384,12 +389,6 @@ export default class MathComponent extends InlineComponent {
 
   }
 
-
-  useChildrenForReference = false;
-
-  get stateVariablesForReference() {
-    return ["unnormalizedValue"];
-  }
 
   returnSerializeInstructions() {
     let skipChildren = this.childLogic.returnMatches("atLeastZeroStrings").length === 1 &&

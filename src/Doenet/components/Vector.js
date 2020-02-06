@@ -4,16 +4,23 @@ import me from 'math-expressions';
 export default class Vector extends GraphicalComponent {
   static componentType = "vector";
 
+  // used when referencing this component without prop
+  // reference via the head/tail plus keep track of how defined
+  static useChildrenForReference = false;
+  static stateVariablesForReference = [
+    "head", "tail", "displacement", "basedOnHead", "basedOnTail", "basedOnDisplacement"
+  ];
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.draggable = {default: true};
+    properties.draggable = { default: true };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addHead = function({activeChildrenMatched}) {
+    let addHead = function ({ activeChildrenMatched }) {
       // add <head> around point
       return {
         success: true,
@@ -27,7 +34,7 @@ export default class Vector extends GraphicalComponent {
       }
     }
 
-    let addTail = function({activeChildrenMatched}) {
+    let addTail = function ({ activeChildrenMatched }) {
       // add <tail> around point
       return {
         success: true,
@@ -41,10 +48,10 @@ export default class Vector extends GraphicalComponent {
       }
     }
 
-    let addEndpoints = function({activeChildrenMatched}) {
+    let addEndpoints = function ({ activeChildrenMatched }) {
       // add <endpoints> around points
       let endpointChildren = [];
-      for(let child of activeChildrenMatched) {
+      for (let child of activeChildrenMatched) {
         endpointChildren.push({
           createdComponent: true,
           componentName: child.componentName
@@ -78,7 +85,7 @@ export default class Vector extends GraphicalComponent {
       comparison: 'atLeast',
       number: 1,
     });
-    
+
     let atLeastOneMath = childLogic.newLeaf({
       name: "atLeastOneMath",
       componentType: 'math',
@@ -188,12 +195,9 @@ export default class Vector extends GraphicalComponent {
     return childLogic;
   }
 
-  updateState(args={}) {
-    if(args.init === true) {
+  updateState(args = {}) {
+    if (args.init === true) {
 
-      // reference via the head/tail plus keep track of how defined
-      this.stateVariablesForReference = [
-        "head", "tail", "displacement", "basedOnHead", "basedOnTail", "basedOnDisplacement"];
 
       this.moveVector = this.moveVector.bind(
         new Proxy(this, this.readOnlyProxyHandler)
@@ -242,20 +246,20 @@ export default class Vector extends GraphicalComponent {
         componentType: "text",
       });
 
-      if(this._state.basedOnHead === undefined) {
+      if (this._state.basedOnHead === undefined) {
         this._state.basedOnHead = {};
       }
-      if(this._state.basedOnTail === undefined) {
+      if (this._state.basedOnTail === undefined) {
         this._state.basedOnTail = {};
       }
-      if(this._state.basedOnDisplacement === undefined) {
+      if (this._state.basedOnDisplacement === undefined) {
         this._state.basedOnDisplacement = {};
       }
     }
 
     super.updateState(args);
 
-    if(!this.childLogicSatisfied) {
+    if (!this.childLogicSatisfied) {
       this.unresolvedState.head = true;
       this.unresolvedState.tail = true;
       this.unresolvedState.displacement = true;
@@ -269,19 +273,19 @@ export default class Vector extends GraphicalComponent {
     delete this.unresolvedState.xs;
 
     this.state.selectedStyle = this.styleDefinitions[this.state.stylenumber];
-    if(this.state.selectedStyle === undefined) {
+    if (this.state.selectedStyle === undefined) {
       this.state.selectedStyle = this.styleDefinitions[1];
     }
 
     let lineDescription = "";
-    if(this.state.selectedStyle.lineWidth >= 4) {
+    if (this.state.selectedStyle.lineWidth >= 4) {
       lineDescription += "thick ";
-    }else if(this.state.selectedStyle.lineWidth <= 1) {
+    } else if (this.state.selectedStyle.lineWidth <= 1) {
       lineDescription += "thin ";
     }
-    if(this.state.selectedStyle.lineStyle === "dashed") {
+    if (this.state.selectedStyle.lineStyle === "dashed") {
       lineDescription += "dashed ";
-    } else if(this.state.selectedStyle.lineStyle === "dotted") {
+    } else if (this.state.selectedStyle.lineStyle === "dotted") {
       lineDescription += "dotted ";
     }
 
@@ -301,28 +305,28 @@ export default class Vector extends GraphicalComponent {
     let trackChanges = this.currentTracker.trackChanges;
     let childrenChanged = trackChanges.childrenChanged(this.componentName);
 
-    if(childrenChanged) {
+    if (childrenChanged) {
 
       // collect information for children
       let displacementInds = this.childLogic.returnMatches("exactlyOneDisplacement");
-      if(displacementInds.length === 0) {
+      if (displacementInds.length === 0) {
         delete this.displacementChild;
         let endpointsInds = this.childLogic.returnMatches("exactlyOneEndpoints");
-        if(endpointsInds.length === 0) {
+        if (endpointsInds.length === 0) {
           delete this.endpointsChild;
           let headInds = this.childLogic.returnMatches("exactlyOneHead");
           let tailInds = this.childLogic.returnMatches("exactlyOneTail");
-          if(headInds.length === 0) {
+          if (headInds.length === 0) {
             delete this.state.headChild;
-          }else {
+          } else {
             this.state.headChild = this.activeChildren[headInds[0]];
           }
-          if(tailInds.length == 0) {
+          if (tailInds.length == 0) {
             delete this.state.tailChild;
-          }else {
+          } else {
             this.state.tailChild = this.activeChildren[tailInds[0]];
           }
-          if(!this.state.headChild && !this.state.tailChild &&
+          if (!this.state.headChild && !this.state.tailChild &&
             this._state.head.essential !== true &&
             this._state.tail.essential !== true &&
             this._state.displacement.essential !== true) {
@@ -330,28 +334,28 @@ export default class Vector extends GraphicalComponent {
             this.state.head = me.fromAst(0);
             this.state.tail = me.fromAst(0);
             this.state.displacement = me.fromAst(0);
-            
+
           }
-        }else {
+        } else {
           // have a endpoints child
           this.state.endpointsChild = this.activeChildren[endpointsInds[0]];
         }
-      }else {
+      } else {
         // have a displacement child
         this.state.displacementChild = this.activeChildren[displacementInds[0]];
 
         let headInds = this.childLogic.returnMatches("exactlyOneHeadForDisplacement");
-        
-        if(headInds.length === 0) {
+
+        if (headInds.length === 0) {
           delete this.state.headChild;
 
           let tailInds = this.childLogic.returnMatches("exactlyOneTailForDisplacement");
-          if(tailInds.length === 0) {
+          if (tailInds.length === 0) {
             delete this.state.tailChild;
-          }else {
+          } else {
             this.state.tailChild = this.activeChildren[tailInds[0]];
           }
-        }else {
+        } else {
           // have a head child
           this.state.headChild = this.activeChildren[headInds[0]];
         }
@@ -360,86 +364,89 @@ export default class Vector extends GraphicalComponent {
 
     let foundChange = childrenChanged;
 
-    if(this.state.headChild) {
-      if(this.state.headChild.unresolvedState.coords) {
+    if (this.state.headChild) {
+      if (this.state.headChild.unresolvedState.coords) {
         this.unresolvedState.head = true;
-      }else if(childrenChanged || trackChanges.getVariableChanges({
-          component: this.state.headChild, variable: "coords"})) {
+      } else if (childrenChanged || trackChanges.getVariableChanges({
+        component: this.state.headChild, variable: "coords"
+      })) {
         this.state.head = this.state.headChild.state.coords.copy();
         foundChange = true;
       }
     }
 
-    if(this.state.tailChild) {
-      if(this.state.tailChild.unresolvedState.coords) {
+    if (this.state.tailChild) {
+      if (this.state.tailChild.unresolvedState.coords) {
         this.unresolvedState.tail = true;
-      }else if(childrenChanged || trackChanges.getVariableChanges({
-          component: this.state.tailChild, variable: "coords"})) {
+      } else if (childrenChanged || trackChanges.getVariableChanges({
+        component: this.state.tailChild, variable: "coords"
+      })) {
         this.state.tail = this.state.tailChild.state.coords.copy();
         foundChange = true;
       }
     }
 
-    if(this.state.displacementChild) {
-      if(this.state.displacementChild.unresolvedState.coords) {
+    if (this.state.displacementChild) {
+      if (this.state.displacementChild.unresolvedState.coords) {
         this.unresolvedState.displacement = true;
-      }else if(childrenChanged || trackChanges.getVariableChanges({
-          component: this.state.displacementChild, variable: "displacement"})) {
+      } else if (childrenChanged || trackChanges.getVariableChanges({
+        component: this.state.displacementChild, variable: "displacement"
+      })) {
         this.state.displacement = this.state.displacementChild.state.displacement.copy();
         foundChange = true;
       }
     }
-    
+
     // since didn't return if found an unresolved variable, above,
     // return now if found unresolved
-    if(Object.keys(this.unresolvedState).length > 0) {
+    if (Object.keys(this.unresolvedState).length > 0) {
       return;
     }
 
-    if(this.state.endpointsChild) {
+    if (this.state.endpointsChild) {
       let endpointsState = this.state.endpointsChild.state;
 
-      if(this.state.endpointsChild.unresolvedState.points ||
-        endpointsState.points.some(x =>x.unresolvedState.coords)) {
+      if (this.state.endpointsChild.unresolvedState.points ||
+        endpointsState.points.some(x => x.unresolvedState.coords)) {
         this.unresolvedState.head = true;
         this.unresolvedState.tail = true;
         this.unresolvedState.displacement = true;
         return;
-      }else {
+      } else {
 
         let pointsChanged = childrenChanged || trackChanges.childrenChanged(this.state.endpointsChild.componentName);
 
-        if(pointsChanged) {
+        if (pointsChanged) {
           foundChange = true;
 
-          if(endpointsState.nPoints === 0) {
+          if (endpointsState.nPoints === 0) {
             console.warn("Vector can't be determined by zero endpoints");
             this.state.head = me.fromAst(0);
             this.state.tail = me.fromAst(0);
-          }else if(endpointsState.nPoints === 1) {
+          } else if (endpointsState.nPoints === 1) {
             this.state.head = endpointsState.points[0].state.coords.copy();
-          }else if(endpointsState.nPoints === 2) {
+          } else if (endpointsState.nPoints === 2) {
             this.state.tail = endpointsState.points[0].state.coords.copy();
             this.state.head = endpointsState.points[1].state.coords.copy();
-          }else {
+          } else {
             throw Error("Vector cannot must be determined more than two endpoints (" + endpointsState.nPoints + " given)");
           }
 
-        }else {
-          if(trackChanges.getVariableChanges({
+        } else {
+          if (trackChanges.getVariableChanges({
             component: endpointsState.points[0],
             variable: "coords"
           })) {
             foundChange = true;
 
-            if(endpointsState.nPoints === 2) {
+            if (endpointsState.nPoints === 2) {
               this.state.tail = endpointsState.points[0].state.coords.copy();
-            }else {
+            } else {
               this.state.head = endpointsState.points[0].state.coords.copy();
             }
           }
 
-          if(endpointsState.nPoints === 2 && trackChanges.getVariableChanges({
+          if (endpointsState.nPoints === 2 && trackChanges.getVariableChanges({
             component: endpointsState.points[1],
             variable: "coords"
           })) {
@@ -452,59 +459,59 @@ export default class Vector extends GraphicalComponent {
 
     // if didn't have change via children
     // check if essential state variables changed
-    if(!foundChange) {
-      if(this._state.head.essential && trackChanges.getVariableChanges({component: this,variable: "head"})) {
+    if (!foundChange) {
+      if (this._state.head.essential && trackChanges.getVariableChanges({ component: this, variable: "head" })) {
         foundChange = true
-      } else if(this._state.tail.essential && trackChanges.getVariableChanges({component: this,variable: "tail"})) {
+      } else if (this._state.tail.essential && trackChanges.getVariableChanges({ component: this, variable: "tail" })) {
         foundChange = true
-      } else if(this._state.displacement.essential && trackChanges.getVariableChanges({component: this,variable: "displacement"})) {
+      } else if (this._state.displacement.essential && trackChanges.getVariableChanges({ component: this, variable: "displacement" })) {
         foundChange = true
       }
     }
-    
+
     // if didn't find any changes, we're done
-    if(!foundChange) {
+    if (!foundChange) {
       return;
     }
-    
+
     // recalculate what based on
     // Having an essential state variable (head, tail, or displacement)
     // isn't enough to determined what based on, unless basedOnX isn't essential
     // Having a child is sufficient, since a child will override essential
 
-    if(!this._state.basedOnHead.essential) {
+    if (!this._state.basedOnHead.essential) {
       this.state.basedOnHead = this._state.head.essential;
     }
-    if(this.state.headChild !== undefined) {
+    if (this.state.headChild !== undefined) {
       this.state.basedOnHead = true;
     }
-    if(!this._state.basedOnTail.essential) {
+    if (!this._state.basedOnTail.essential) {
       this.state.basedOnTail = this._state.tail.essential;
     }
-    if(this.state.tailChild !== undefined) {
+    if (this.state.tailChild !== undefined) {
       this.state.basedOnTail = true;
     }
-    if(!this._state.basedOnDisplacement.essential) {
+    if (!this._state.basedOnDisplacement.essential) {
       this.state.basedOnDisplacement = this._state.displacement.essential;
     }
-    if(this.state.displacementChild !== undefined) {
+    if (this.state.displacementChild !== undefined) {
       this.state.basedOnDisplacement = true;
     }
-    
-    if(this.state.endpointsChild) {
+
+    if (this.state.endpointsChild) {
       this.state.basedOnHead = true;
-      if(this.state.endpointsChild.state.nPoints === 2) {
+      if (this.state.endpointsChild.state.nPoints === 2) {
         this.state.basedOnTail = true;
       }
     }
 
-    if(!this.state.basedOnHead) {
+    if (!this.state.basedOnHead) {
       this.state.head = undefined;
     }
-    if(!this.state.basedOnTail) {
+    if (!this.state.basedOnTail) {
       this.state.tail = undefined;
     }
-    if(!this.state.basedOnDisplacement) {
+    if (!this.state.basedOnDisplacement) {
       this.state.displacement = undefined;
     }
 
@@ -514,13 +521,13 @@ export default class Vector extends GraphicalComponent {
     // (ie., just head or just displacement),
     // set tail to be essential so that can save changes
 
-    if(this.state.displacement === undefined) {
-      if(this.state.tail === undefined) {
+    if (this.state.displacement === undefined) {
+      if (this.state.tail === undefined) {
         // only head defined, so make tail be zero of same size as head
         // but just the first time through, so later changes will be saved
-        if(this._state.tail.essential !== true) {
+        if (this._state.tail.essential !== true) {
           let tailTree = ["tuple"]
-          for(let i=1; i<this.state.head.tree.length ; i++) {
+          for (let i = 1; i < this.state.head.tree.length; i++) {
             tailTree.push(0);
           }
           this.state.tail = me.fromAst(tailTree);
@@ -531,32 +538,32 @@ export default class Vector extends GraphicalComponent {
         }
         // displacement is the same as head
         this.state.displacement = this.state.head.copy();
-      }else {
+      } else {
         // tail but no displacement is defined
-        if(this.state.head) {
+        if (this.state.head) {
           // calculate displacement from head and tail
-          if(this.state.head.tree.length !== this.state.tail.tree.length) {
+          if (this.state.head.tree.length !== this.state.tail.tree.length) {
             console.warn("Dimensions of head and tail don't match for vector");
             this.unresolvedState.head = true;
             this.unresolvedState.tail = true;
             this.unresolvedState.displacement = true;
             return;
           }
-          let displacementTree=["tuple"]
-          for(let i=1; i<this.state.head.tree.length; i++) {
+          let displacementTree = ["tuple"]
+          for (let i = 1; i < this.state.head.tree.length; i++) {
             displacementTree.push(
-              this.state.head.get_component(i-1).subtract(
-                this.state.tail.get_component(i-1)
+              this.state.head.get_component(i - 1).subtract(
+                this.state.tail.get_component(i - 1)
               ).simplify().tree
             );
           }
           this.state.displacement = me.fromAst(displacementTree);
-        }else {
+        } else {
           // only tail is defined, so make head be zero of same size as tail
           // but just the first time through, so later changes will be saved
-          if(this._state.head.essential !== true) {
+          if (this._state.head.essential !== true) {
             let headTree = ["tuple"]
-            for(let i=1; i<this.state.tail.tree.length ; i++) {
+            for (let i = 1; i < this.state.tail.tree.length; i++) {
               headTree.push(0);
             }
             this.state.head = me.fromAst(headTree);
@@ -566,23 +573,23 @@ export default class Vector extends GraphicalComponent {
             this.state.headChangedToEssential = true;
           }
           // displacement is negative the tail
-          let displacementTree=["tuple"]
-          for(let i=1; i<this.state.tail.tree.length; i++) {
+          let displacementTree = ["tuple"]
+          for (let i = 1; i < this.state.tail.tree.length; i++) {
             displacementTree.push(['-', this.state.tail.tree[i]]);
           }
           this.state.displacement = me.fromAst(displacementTree);
 
         }
       }
-    }else {
+    } else {
       // displacement is defined
-      if(this.state.head === undefined) {
-        if(this.state.tail === undefined) {
+      if (this.state.head === undefined) {
+        if (this.state.tail === undefined) {
 
           // first time through, set tailcoords to be zero
-          if(this._state.tail.essential !== true) {
+          if (this._state.tail.essential !== true) {
             let tailTree = ["tuple"]
-            for(let i=1; i<this.state.displacement.tree.length; i++) {
+            for (let i = 1; i < this.state.displacement.tree.length; i++) {
               tailTree.push(0);
             }
             this.state.tail = me.fromAst(tailTree);
@@ -594,40 +601,40 @@ export default class Vector extends GraphicalComponent {
 
           // since tail may no longer be zero
           // add it to displacement to get head
-          if(this.state.displacement.tree.length !== this.state.tail.tree.length) {
+          if (this.state.displacement.tree.length !== this.state.tail.tree.length) {
             console.warn("Dimensions of displacement and tail don't match for vector");
             this.unresolvedState.head = true;
             this.unresolvedState.tail = true;
             this.unresolvedState.displacement = true;
             return;
           }
-          let headTree=["tuple"]
-          for(let i=1; i<this.state.displacement.tree.length; i++) {
+          let headTree = ["tuple"]
+          for (let i = 1; i < this.state.displacement.tree.length; i++) {
             headTree.push(
-              this.state.tail.get_component(i-1).add(this.state.displacement.get_component(i-1)).simplify()
+              this.state.tail.get_component(i - 1).add(this.state.displacement.get_component(i - 1)).simplify()
             );
           }
           this.state.head = me.fromAst(headTree);
-        }else {
+        } else {
           // displacement and tail: add to create head
-          if(this.state.displacement.tree.length !== this.state.tail.tree.length) {
+          if (this.state.displacement.tree.length !== this.state.tail.tree.length) {
             console.warn("Dimensions of displacement and tail don't match for vector");
             this.unresolvedState.head = true;
             this.unresolvedState.tail = true;
             this.unresolvedState.displacement = true;
             return;
           }
-          let headTree=["tuple"]
-          for(let i=1; i<this.state.displacement.tree.length; i++) {
+          let headTree = ["tuple"]
+          for (let i = 1; i < this.state.displacement.tree.length; i++) {
             headTree.push(
-              this.state.tail.get_component(i-1).add(this.state.displacement.get_component(i-1)).simplify()
+              this.state.tail.get_component(i - 1).add(this.state.displacement.get_component(i - 1)).simplify()
             );
           }
           this.state.head = me.fromAst(headTree);
         }
-      }else {
+      } else {
         // displacement and head: subtract to create tail
-        if(this.state.displacement.tree.length !== this.state.head.tree.length) {
+        if (this.state.displacement.tree.length !== this.state.head.tree.length) {
           console.warn("Dimensions of displacement and head don't match for vector");
           this.unresolvedState.head = true;
           this.unresolvedState.tail = true;
@@ -635,9 +642,9 @@ export default class Vector extends GraphicalComponent {
           return;
         }
         let tailTree = ["tuple"];
-        for(let i=1; i<this.state.displacement.tree.length; i++) {
+        for (let i = 1; i < this.state.displacement.tree.length; i++) {
           tailTree.push(
-            this.state.head.get_component(i-1).subtract(this.state.displacement.get_component(i-1)).simplify()
+            this.state.head.get_component(i - 1).subtract(this.state.displacement.get_component(i - 1)).simplify()
           );
         }
         this.state.tail = me.fromAst(tailTree);
@@ -648,54 +655,54 @@ export default class Vector extends GraphicalComponent {
 
     this.state.ndimensions = 1;
     let headtree = this.state.head.tree;
-    if(headtree[0] === "tuple" || headtree[0] === "vector") {
-      this.state.ndimensions = headtree.length-1;
+    if (headtree[0] === "tuple" || headtree[0] === "vector") {
+      this.state.ndimensions = headtree.length - 1;
     }
     let ndim2 = 1;
     let tailtree = this.state.tail.tree;
-    if(tailtree[0] === "tuple" || tailtree[0] === "vector") {
-      ndim2 = tailtree.length-1;
+    if (tailtree[0] === "tuple" || tailtree[0] === "vector") {
+      ndim2 = tailtree.length - 1;
     }
-    if(ndim2 !== this.state.ndimensions) {
+    if (ndim2 !== this.state.ndimensions) {
       console.warn("Invalid format for vector: heand and tail dimensions must agree");
       this.unresolvedState.head = true;
       this.unresolvedState.tail = true;
       this.unresolvedState.displacement = true;
-    return;
+      return;
     }
 
     ndim2 = 1;
     let displacementtree = this.state.displacement.tree;
-    if(displacementtree[0] === "tuple" || displacementtree[0] === "vector") {
-      ndim2 = displacementtree.length-1;
+    if (displacementtree[0] === "tuple" || displacementtree[0] === "vector") {
+      ndim2 = displacementtree.length - 1;
     }
-    if(ndim2 !== this.state.ndimensions) {
+    if (ndim2 !== this.state.ndimensions) {
       console.warn("Invalid format for vector: dimensions must agree");
       this.unresolvedState.head = true;
       this.unresolvedState.tail = true;
       this.unresolvedState.displacement = true;
-    return;
+      return;
     }
 
     // we'll build xs from displacement
     this.state.xs = [];
 
     let x = this.state.displacement;
-    if(this.state.ndimensions > 1) {
+    if (this.state.ndimensions > 1) {
       x = me.fromAst(this.state.displacement.tree[1])
     }
     this.state.xs[0] = x;
 
-    if(this.state.ndimensions > 1) {
+    if (this.state.ndimensions > 1) {
       this.state.xs[1] = me.fromAst(this.state.displacement.tree[2]);
     }
 
-    if(this.state.ndimensions > 2) {
+    if (this.state.ndimensions > 2) {
       this.state.xs[2] = me.fromAst(this.state.displacement.tree[3]);
     }
 
-    for(let i=4; i<=this.state.ndimensions; i++) {
-      this.state.xs[i-1] = me.fromAst(this.state.displacement.tree[i]);
+    for (let i = 4; i <= this.state.ndimensions; i++) {
+      this.state.xs[i - 1] = me.fromAst(this.state.displacement.tree[i]);
     }
 
   }
@@ -707,15 +714,15 @@ export default class Vector extends GraphicalComponent {
     stateVariableForNewComponent: "value",
   }];
 
-  moveVector({tailcoords, headcoords}) {
-   
+  moveVector({ tailcoords, headcoords }) {
+
     let variableUpdates = {};
 
-    if(tailcoords !== undefined) {
-      variableUpdates.tail = {changes: me.fromAst(["tuple", ...tailcoords])};
+    if (tailcoords !== undefined) {
+      variableUpdates.tail = { changes: me.fromAst(["tuple", ...tailcoords]) };
     }
-    if(headcoords !== undefined) {
-      variableUpdates.head = {changes: me.fromAst(["tuple", ...headcoords])};
+    if (headcoords !== undefined) {
+      variableUpdates.head = { changes: me.fromAst(["tuple", ...headcoords]) };
     }
 
     this.requestUpdate({
@@ -729,13 +736,13 @@ export default class Vector extends GraphicalComponent {
   }
 
 
-  initializeRenderer({}){
-    if(this.renderer !== undefined) {
+  initializeRenderer({ }) {
+    if (this.renderer !== undefined) {
       this.updateRenderer();
       return;
     }
-    
-    if(this.state.ndimensions === 2) {
+
+    if (this.state.ndimensions === 2) {
       const actions = {
         moveVector: this.moveVector,
       }
@@ -745,15 +752,15 @@ export default class Vector extends GraphicalComponent {
         draggable: this.state.draggable,
         layer: this.state.layer,
         tailcoords:
-        [
-          this.state.tail.get_component(0).evaluate_to_constant(),
-          this.state.tail.get_component(1).evaluate_to_constant()
-        ],
+          [
+            this.state.tail.get_component(0).evaluate_to_constant(),
+            this.state.tail.get_component(1).evaluate_to_constant()
+          ],
         headcoords:
-        [
-          this.state.head.get_component(0).evaluate_to_constant(),
-          this.state.head.get_component(1).evaluate_to_constant()
-        ],
+          [
+            this.state.head.get_component(0).evaluate_to_constant(),
+            this.state.head.get_component(1).evaluate_to_constant()
+          ],
         actions: actions,
         color: this.state.selectedStyle.lineColor,
         width: this.state.selectedStyle.lineWidth,
@@ -762,30 +769,30 @@ export default class Vector extends GraphicalComponent {
     }
   }
 
-  updateRenderer(){
+  updateRenderer() {
     this.renderer.setPointCoordinates({
       tailcoords:
-      [
-        this.state.tail.get_component(0).evaluate_to_constant(),
-        this.state.tail.get_component(1).evaluate_to_constant()
-      ],
+        [
+          this.state.tail.get_component(0).evaluate_to_constant(),
+          this.state.tail.get_component(1).evaluate_to_constant()
+        ],
       headcoords:
-      [
-        this.state.head.get_component(0).evaluate_to_constant(),
-        this.state.head.get_component(1).evaluate_to_constant()
-      ],
+        [
+          this.state.head.get_component(0).evaluate_to_constant(),
+          this.state.head.get_component(1).evaluate_to_constant()
+        ],
     });
   }
 
-  updateChildrenWhoRender(){
-    if(this.state.endpointsChild !== undefined) {
+  updateChildrenWhoRender() {
+    if (this.state.endpointsChild !== undefined) {
       this.childrenWhoRender = [this.state.endpointsChild.componentName];
     } else {
       this.childrenWhoRender = [];
-      if(this.state.headChild !== undefined) {
+      if (this.state.headChild !== undefined) {
         this.childrenWhoRender.push(this.state.headChild.componentName);
       }
-      if(this.state.tailChild !== undefined) {
+      if (this.state.tailChild !== undefined) {
         this.childrenWhoRender.push(this.state.tailChild.componentName);
       }
     }
@@ -793,7 +800,7 @@ export default class Vector extends GraphicalComponent {
 
   allowDownstreamUpdates(status) {
     return ((status.initialChange === true && this.state.draggable === true) ||
-    (status.initialChange !== true && this.state.modifyIndirectly === true));
+      (status.initialChange !== true && this.state.modifyIndirectly === true));
   }
 
   get variablesUpdatableDownstream() {
@@ -801,48 +808,48 @@ export default class Vector extends GraphicalComponent {
   }
 
 
-  calculateDownstreamChanges({stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate, initialChange}) {
+  calculateDownstreamChanges({ stateVariablesToUpdate, stateVariableChangesToSave,
+    dependenciesToUpdate, initialChange }) {
 
 
     let newHeadArray = Array(this.state.ndimensions);
     let newTailArray = Array(this.state.ndimensions);
     let newDisplacementArray = Array(this.state.ndimensions);
 
-    if("head" in stateVariablesToUpdate) {
-      if(this.state.ndimensions === 1) {
+    if ("head" in stateVariablesToUpdate) {
+      if (this.state.ndimensions === 1) {
         newHeadArray = [stateVariablesToUpdate.head.changes.tree];
-      }else {
+      } else {
         newHeadArray = [...stateVariablesToUpdate.head.changes.tree.slice(1)];
       }
     }
 
-    if("tail" in stateVariablesToUpdate) {
-      if(this.state.ndimensions === 1) {
+    if ("tail" in stateVariablesToUpdate) {
+      if (this.state.ndimensions === 1) {
         newTailArray = [stateVariablesToUpdate.tail.changes.tree];
-      }else {
+      } else {
         newTailArray = [...stateVariablesToUpdate.tail.changes.tree.slice(1)];
       }
     }
 
-    if("displacement" in stateVariablesToUpdate) {
-      if(this.state.ndimensions === 1) {
+    if ("displacement" in stateVariablesToUpdate) {
+      if (this.state.ndimensions === 1) {
         newDisplacementArray = [stateVariablesToUpdate.displacement.changes.tree];
-      }else {
+      } else {
         newDisplacementArray = [...stateVariablesToUpdate.displacement.changes.tree.slice(1)];
       }
     }
 
     // if have xs in stateVariablesToUpdate
     // just merge them into any empty coordinates of displacement
-    if(stateVariablesToUpdate.xs !== undefined) {
-      for(let ind in stateVariablesToUpdate.xs.changes.arrayComponents) {
-        if(newDisplacementArray[ind] === undefined) {
+    if (stateVariablesToUpdate.xs !== undefined) {
+      for (let ind in stateVariablesToUpdate.xs.changes.arrayComponents) {
+        if (newDisplacementArray[ind] === undefined) {
           // found a component that hasn't been specified directly by displacement
           let x = stateVariablesToUpdate.xs.changes.arrayComponents[ind];
-          if(x === undefined) {
-            x=1;
-          }else if(x.tree !== undefined) {
+          if (x === undefined) {
+            x = 1;
+          } else if (x.tree !== undefined) {
             x = x.tree;
           }
           newDisplacementArray[ind] = x;
@@ -852,12 +859,12 @@ export default class Vector extends GraphicalComponent {
 
     // merge head/tail/displacement for any coordinates
     // where at least one is defined
-    for(let ind=0; ind < this.state.ndimensions; ind++) {
-      if(newHeadArray[ind] === undefined) {
-        if(newTailArray[ind] === undefined) {
-          if(newDisplacementArray[ind] !== undefined) {
+    for (let ind = 0; ind < this.state.ndimensions; ind++) {
+      if (newHeadArray[ind] === undefined) {
+        if (newTailArray[ind] === undefined) {
+          if (newDisplacementArray[ind] !== undefined) {
             // just displacement changed
-            if(this.state.basedOnDisplacement && !this.state.basedOnTail && !initialChange) {
+            if (this.state.basedOnDisplacement && !this.state.basedOnTail && !initialChange) {
               // keep head fixed and calculate new tail of head
               // only in case where have vector based on just head and displacement
               // and change wasn't initiated from vector itself
@@ -865,16 +872,16 @@ export default class Vector extends GraphicalComponent {
               // on all three, tail would take precedence over displacement)
               let oldHead = this.state.head.get_component(ind).tree;
               newTailArray[ind] = ['+', oldHead, ['-', newDisplacementArray[ind]]];
-            }else {
+            } else {
               // calculate new value of head
               let oldTail = this.state.tail.get_component(ind).tree;
               newHeadArray[ind] = ['+', oldTail, newDisplacementArray[ind]];
             }
           }
-        }else {
-          if(newDisplacementArray[ind] === undefined) {
+        } else {
+          if (newDisplacementArray[ind] === undefined) {
             // just tail changed
-            if(this.state.basedOnDisplacement && !this.state.basedOnHead && !initialChange) {
+            if (this.state.basedOnDisplacement && !this.state.basedOnHead && !initialChange) {
               // keep displacement fixed and calculate new value of head
               // only in case where have vector based on just tail and displacement
               // and change wasn't initiated from vector itself
@@ -882,22 +889,22 @@ export default class Vector extends GraphicalComponent {
               // on all three, head would take precedence over displacement)
               let oldDisplacement = this.state.displacement.get_component(ind).tree;
               newHeadArray[ind] = ['+', newTailArray[ind], oldDisplacement];
-            }else {
+            } else {
               // calculate new value of displacement
               let oldHead = this.state.head.get_component(ind).tree;
               newDisplacementArray[ind] = ['+', oldHead, ['-', newTailArray[ind]]];
             }
-          }else {
+          } else {
             // tail and displacement changed
             // calculate new value of head
             newHeadArray[ind] = ['+', newTailArray[ind], newDisplacementArray[ind]];
           }
         }
-      }else {
-        if(newTailArray[ind] === undefined) {
-          if(newDisplacementArray[ind] === undefined) {
+      } else {
+        if (newTailArray[ind] === undefined) {
+          if (newDisplacementArray[ind] === undefined) {
             // just head changed
-            if(this.state.basedOnDisplacement && !this.state.basedOnTail && !initialChange) {
+            if (this.state.basedOnDisplacement && !this.state.basedOnTail && !initialChange) {
               // keep displacement fixed and calculate new value of tail
               // only in case where have vector based on just head and displacement
               // and change wasn't initiated from vector itself
@@ -905,17 +912,17 @@ export default class Vector extends GraphicalComponent {
               // on all three, tail would take precedence over displacement)
               let oldDisplacement = this.state.displacement.get_component(ind).tree;
               newTailArray[ind] = ['+', newHeadArray[ind], ['-', oldDisplacement]];
-            }else {
+            } else {
               // calculate new value of displacement
               let oldTail = this.state.tail.get_component(ind).tree;
               newDisplacementArray[ind] = ['+', newHeadArray[ind], ['-', oldTail]];
             }
-          }else {
+          } else {
             // head and displacement change
             // calculate new value of tail
             newTailArray[ind] = ['+', newHeadArray[ind], ['-', newDisplacementArray[ind]]];
           }
-        }else {
+        } else {
           // head and tail changed
           // calculate new value of displacement
           // (which overrides any displacement given)
@@ -925,68 +932,68 @@ export default class Vector extends GraphicalComponent {
     }
 
     let newHead, newTail, newDisplacement;
-    if(newHeadArray.some(x=>x!==undefined)) {
-      if(this.state.ndimensions === 1) {
+    if (newHeadArray.some(x => x !== undefined)) {
+      if (this.state.ndimensions === 1) {
         newHead = me.fromAst(newHeadArray[0]);
-      }else {
+      } else {
         newHead = me.fromAst(["tuple", ...newHeadArray]);
       }
     }
-    if(newTailArray.some(x=>x!==undefined)) {
-      if(this.state.ndimensions === 1) {
+    if (newTailArray.some(x => x !== undefined)) {
+      if (this.state.ndimensions === 1) {
         newTail = me.fromAst(newTailArray[0]);
-      }else {
+      } else {
         newTail = me.fromAst(["tuple", ...newTailArray]);
       }
     }
-    if(newDisplacementArray.some(x=>x!==undefined)) {
-      if(this.state.ndimensions === 1) {
+    if (newDisplacementArray.some(x => x !== undefined)) {
+      if (this.state.ndimensions === 1) {
         newDisplacement = me.fromAst(newDisplacementArray[0]);
-      }else {
+      } else {
         newDisplacement = me.fromAst(["tuple", ...newDisplacementArray]);
       }
     }
 
     // check if based on endpoints child
-    if(this.state.endpointsChild !== undefined) {
+    if (this.state.endpointsChild !== undefined) {
       let endpoints = this.state.endpointsChild.state.points;
 
-      for(let ind=0; ind < endpoints.length; ind++) {
+      for (let ind = 0; ind < endpoints.length; ind++) {
         let pointName = endpoints[ind].componentName;
-        if(endpoints.length === 1 || ind===1) {
-          if(newHead !== undefined) {
-            dependenciesToUpdate[pointName] = {coords: {changes: newHead}};
+        if (endpoints.length === 1 || ind === 1) {
+          if (newHead !== undefined) {
+            dependenciesToUpdate[pointName] = { coords: { changes: newHead } };
           }
-        }else {
-          if(newTail !== undefined) {
-            dependenciesToUpdate[pointName] = {coords: {changes: newTail}};
+        } else {
+          if (newTail !== undefined) {
+            dependenciesToUpdate[pointName] = { coords: { changes: newTail } };
           }
         }
       }
-    }else {
-      if(this.state.headChild !== undefined && newHead !== undefined) {
+    } else {
+      if (this.state.headChild !== undefined && newHead !== undefined) {
         let headName = this.state.headChild.componentName;
-        dependenciesToUpdate[headName] = {coords: {changes: newHead}};
+        dependenciesToUpdate[headName] = { coords: { changes: newHead } };
       }
-      if(this.state.tailChild !== undefined && newTail !== undefined) {
+      if (this.state.tailChild !== undefined && newTail !== undefined) {
         let tailName = this.state.tailChild.componentName;
-        dependenciesToUpdate[tailName] = {coords: {changes: newTail}};
+        dependenciesToUpdate[tailName] = { coords: { changes: newTail } };
       }
-      if(this.state.displacementChild !== undefined && newDisplacement !== undefined) {
+      if (this.state.displacementChild !== undefined && newDisplacement !== undefined) {
         let displacementName = this.state.displacementChild.componentName;
-        dependenciesToUpdate[displacementName] = {displacement: {changes: newDisplacement}};
+        dependenciesToUpdate[displacementName] = { displacement: { changes: newDisplacement } };
       }
     }
 
     let newStateVariables = {};
-    if(newHead !== undefined) {
-      newStateVariables.head = {changes: newHead};
+    if (newHead !== undefined) {
+      newStateVariables.head = { changes: newHead };
     }
-    if(newTail !== undefined) {
-      newStateVariables.tail = {changes: newTail};
+    if (newTail !== undefined) {
+      newStateVariables.tail = { changes: newTail };
     }
-    if(newDisplacement !== undefined) {
-      newStateVariables.displacement = {changes: newDisplacement};
+    if (newDisplacement !== undefined) {
+      newStateVariables.displacement = { changes: newDisplacement };
     }
 
     let shadowedResult = this.updateShadowSources({
@@ -999,13 +1006,13 @@ export default class Vector extends GraphicalComponent {
 
     // add stateVariable to stateVariableChangesToSave if is essential
     // and no shadow sources were updated
-    for(let varname in newStateVariables) {
-      if(this._state[varname].essential === true &&
-          !shadowedStateVariables.has(varname)) {
-        if(isReplacement) {
+    for (let varname in newStateVariables) {
+      if (this._state[varname].essential === true &&
+        !shadowedStateVariables.has(varname)) {
+        if (isReplacement) {
           // for replacement, only allow changes if variable is tail and
           // it wasn't originally essential
-          if(varname === "tail" && this.state.tailChangedToEssential === true) {
+          if (varname === "tail" && this.state.tailChangedToEssential === true) {
             stateVariableChangesToSave[varname] = newStateVariables[varname];
           }
         } else {
@@ -1025,10 +1032,10 @@ export default class Vector extends GraphicalComponent {
   }
 
 
-  nearestPoint({x1, x2, x3}) {
+  nearestPoint({ x1, x2, x3 }) {
 
     // only implemented in 2D for now
-    if(this.state.ndimensions !== 2) {
+    if (this.state.ndimensions !== 2) {
       return;
     }
 
@@ -1038,35 +1045,35 @@ export default class Vector extends GraphicalComponent {
     let B2 = this.state.tail.get_component(1).evaluate_to_constant();
 
     // only implement for constants
-    if(!(Number.isFinite(A1) && Number.isFinite(A2) && 
-        Number.isFinite(B1) && Number.isFinite(B2))) {
+    if (!(Number.isFinite(A1) && Number.isFinite(A2) &&
+      Number.isFinite(B1) && Number.isFinite(B2))) {
       return {};
     }
 
-    let BA1 = B1-A1;
-    let BA2 = B2-A2;
-    let denom = (BA1*BA1+BA2*BA2);
+    let BA1 = B1 - A1;
+    let BA2 = B2 - A2;
+    let denom = (BA1 * BA1 + BA2 * BA2);
 
-    if(denom===0) {
+    if (denom === 0) {
       return {};
     }
 
-    let t = ((x1-A1)*BA1+(x2-A2)*BA2)/denom;
+    let t = ((x1 - A1) * BA1 + (x2 - A2) * BA2) / denom;
 
     let result = {};
 
-    if(t<=0) {
-      result = {x1: A1, x2: A2};
-    }else if(t >= 1) {
-      result = {x1: B1, x2: B2};
-    }else {
+    if (t <= 0) {
+      result = { x1: A1, x2: A2 };
+    } else if (t >= 1) {
+      result = { x1: B1, x2: B2 };
+    } else {
       result = {
-        x1: A1 + t*BA1,
-        x2: A2 + t*BA2,
+        x1: A1 + t * BA1,
+        x2: A2 + t * BA2,
       };
     }
 
-    if(x3 !== undefined) {
+    if (x3 !== undefined) {
       result.x3 = 0;
     }
 

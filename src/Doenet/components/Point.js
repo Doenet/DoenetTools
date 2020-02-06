@@ -11,6 +11,10 @@ export default class Point extends GraphicalComponent {
   }
   static componentType = "point";
 
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static stateVariablesForReference = ["xs"];
+
   static primaryStateVariableForDefinition = "coords";
 
   static createPropertiesObject(args) {
@@ -19,7 +23,7 @@ export default class Point extends GraphicalComponent {
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let exactlyOneX = childLogic.newLeaf({
@@ -377,11 +381,6 @@ export default class Point extends GraphicalComponent {
     return stateVariableDefinitions;
   }
 
-  useChildrenForReference = false;
-
-  get stateVariablesForReference() {
-    return ["xs"];
-  }
 
   updateState(args = {}) {
     if (args.init === true) {
@@ -429,13 +428,6 @@ export default class Point extends GraphicalComponent {
       if (!this._state.constraintused.essential) {
         this.state.constraintused = me.fromAst('\uFF3F');
       }
-
-      // make default reference (with no prop) be coords
-      this.stateVariablesForReference = ["coords"];
-
-      this.movePoint = this.movePoint.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      );
 
       this.state.firstTimeThrough = true;
 

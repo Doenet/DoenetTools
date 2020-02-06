@@ -1,39 +1,36 @@
 import BaseComponent from './BaseComponent';
 
 export default class ComponentSize extends BaseComponent {
-  constructor(args){
-    super(args);
-
-    // make default reference (with no prop) be value
-    this.stateVariablesForReference = ["value","isAbsolute"];
-
-  }
   static componentType = "_componentsize";
 
-  updateState(args={}) {
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static stateVariablesForReference = ["value", "isAbsolute"];
+
+  updateState(args = {}) {
     super.updateState(args);
 
     let MathAndStringInds = this.childLogic.returnMatches("MathAndString");
-    if (MathAndStringInds.length === 0){
+    if (MathAndStringInds.length === 0) {
       let AtMostOneComponentSizeInds = this.childLogic.returnMatches("AtMostOneComponentSize");
-      if (AtMostOneComponentSizeInds.length === 0){
-        if(this._state.value.essential !== true || this._state.isAbsolute.essential !== true ) {
+      if (AtMostOneComponentSizeInds.length === 0) {
+        if (this._state.value.essential !== true || this._state.isAbsolute.essential !== true) {
           throw Error(this.componentType + " needs a value")
         }
-        
-      }else{
+
+      } else {
         //The case where we have componentsize child
         this.state.componentSizeChild = this.activeChildren[AtMostOneComponentSizeInds[0]];
         this.state.value = this.state.componentSizeChild.state.value;
         this.state.isAbsolute = this.state.componentSizeChild.state.isAbsolute;
       }
 
-    }else{
+    } else {
       //The case where we have math and a string
-      let mathAndStringChildren = MathAndStringInds.map( x => this.activeChildren[x]);
+      let mathAndStringChildren = MathAndStringInds.map(x => this.activeChildren[x]);
 
       // console.log(mathAndStringChildren);
-      if (mathAndStringChildren.length === 1){
+      if (mathAndStringChildren.length === 1) {
         //Only have a string
         // <width>100px</width>
         // <width>100 px</width>
@@ -43,26 +40,26 @@ export default class ComponentSize extends BaseComponent {
         // <width>100pixel</width>
 
         let result = mathAndStringChildren[0].state.value.match(/^\s*(\d+)\s*([a-zA-Z]+|%+)\s*$/);
-        if (result === null){ throw Error(this.componentType + " must have a number and a unit.");}
+        if (result === null) { throw Error(this.componentType + " must have a number and a unit."); }
         this.state.originalValue = result[1];
         this.state.originalUnit = result[2];
-        
-      }else{
+
+      } else {
         //Have a math followed by a string
         this.state.originalValue = mathAndStringChildren[0].state.value.evaluate_to_constant();
         if (!Number.isFinite(this.state.originalValue)) {
           throw Error(this.componentType + " must have a number");
         }
         let result = mathAndStringChildren[1].state.value.match(/^\s*([a-zA-Z]+|%+)\s*$/);
-        if (result === null){ throw Error(this.componentType + " must have a number and a unit.");}
+        if (result === null) { throw Error(this.componentType + " must have a number and a unit."); }
         this.state.originalUnit = result[1];
 
       }
- 
+
       //Set isAbsolute and value (this.state)
-      if (this.state.originalUnit === '%' || this.state.originalUnit === 'em'){
+      if (this.state.originalUnit === '%' || this.state.originalUnit === 'em') {
         this.state.isAbsolute = false;
-      }else{
+      } else {
         this.state.isAbsolute = true;
       }
 
@@ -83,23 +80,23 @@ export default class ComponentSize extends BaseComponent {
         'centimeter': 37.795296,
         'centimeters': 37.795296,
       }
-      if (conversionFactor[this.state.originalUnit] === undefined){
+      if (conversionFactor[this.state.originalUnit] === undefined) {
         throw Error(this.state.originalUnit + ' is not a defined unit of measure.');
       }
       this.state.value = conversionFactor[this.state.originalUnit] * this.state.originalValue;
 
- 
+
       // console.log(this.state.originalValue);
       // console.log(this.state.originalUnit);
       // console.log(this.state.isAbsolute);
       // console.log(this.state.value);
-      
-      
+
+
     }
 
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let ExactlyOneString = childLogic.newLeaf({
@@ -119,7 +116,7 @@ export default class ComponentSize extends BaseComponent {
     let MathAndString = childLogic.newOperator({
       name: "MathAndString",
       operator: 'and',
-      propositions: [AtMostOneMath,ExactlyOneString],
+      propositions: [AtMostOneMath, ExactlyOneString],
       requireConsecutive: true,
       sequenceMatters: true,
     });
@@ -134,7 +131,7 @@ export default class ComponentSize extends BaseComponent {
     childLogic.newOperator({
       name: "MathAndStringXorComponentSize",
       operator: 'xor',
-      propositions: [MathAndString,AtMostOneComponentSize],
+      propositions: [MathAndString, AtMostOneComponentSize],
       setAsBase: true
     });
 

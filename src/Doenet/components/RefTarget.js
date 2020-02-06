@@ -6,11 +6,15 @@ export default class RefTarget extends BaseComponent {
   static takesComponentName = true;
   static stateVariableForTakingComponentName = 'refTargetName';
 
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static stateVariablesForReference = ["refTargetName"];
+
   static createPropertiesObject() {
     return {};
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
@@ -65,12 +69,6 @@ export default class RefTarget extends BaseComponent {
 
   }
 
-
-  useChildrenForReference = false;
-
-  get stateVariablesForReference() {
-    return ["refTargetName"];
-  }
 
   returnSerializeInstructions() {
     return { skipChildren: true, stateVariables: ["refTargetName"] };

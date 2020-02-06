@@ -12,6 +12,10 @@ export default class Select extends CompositeComponent {
 
   // static selectedVariantVariable = "selectedIndices";
 
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static stateVariablesForReference = ["selectedIndices"];
+
 
   static keepChildrenSerialized({ serializedComponent, allComponentClasses }) {
     if (serializedComponent.children === undefined) {
@@ -61,9 +65,6 @@ export default class Select extends CompositeComponent {
   // don't need additional child logic
   // as all non-property children will remain serialized
 
-  get stateVariablesForReference() {
-    return ["selectedIndices"];
-  }
 
   static returnStateVariableDefinitions() {
 

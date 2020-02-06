@@ -4,13 +4,17 @@ import me from 'math-expressions';
 export default class Line extends GraphicalComponent {
   static componentType = "line";
 
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static stateVariablesForReference = ["points", "var1", "var2"];
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.draggable = { default: true };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let exactlyOneEquation = childLogic.newLeaf({
@@ -260,8 +264,6 @@ export default class Line extends GraphicalComponent {
         componentType: "text",
       });
 
-      // reference via the point coords and vars
-      this.stateVariablesForReference = ["points", "var1", "var2"];
 
       this.moveLine = this.moveLine.bind(
         new Proxy(this, this.readOnlyProxyHandler)
@@ -271,7 +273,7 @@ export default class Line extends GraphicalComponent {
 
     super.updateState(args);
 
-    if(!this.childLogicSatisfied) {
+    if (!this.childLogicSatisfied) {
       this.unresolvedState.slope = true;
       this.unresolvedState.xintercept = true;
       this.unresolvedState.yintercept = true;
@@ -297,19 +299,19 @@ export default class Line extends GraphicalComponent {
     delete this.unresolvedState.points;
 
     this.state.selectedStyle = this.styleDefinitions[this.state.stylenumber];
-    if(this.state.selectedStyle === undefined) {
+    if (this.state.selectedStyle === undefined) {
       this.state.selectedStyle = this.styleDefinitions[1];
     }
 
     let lineDescription = "";
-    if(this.state.selectedStyle.lineWidth >= 4) {
+    if (this.state.selectedStyle.lineWidth >= 4) {
       lineDescription += "thick ";
-    }else if(this.state.selectedStyle.lineWidth <= 1) {
+    } else if (this.state.selectedStyle.lineWidth <= 1) {
       lineDescription += "thin ";
     }
-    if(this.state.selectedStyle.lineStyle === "dashed") {
+    if (this.state.selectedStyle.lineStyle === "dashed") {
       lineDescription += "dashed ";
-    } else if(this.state.selectedStyle.lineStyle === "dotted") {
+    } else if (this.state.selectedStyle.lineStyle === "dotted") {
       lineDescription += "dotted ";
     }
 
@@ -320,13 +322,13 @@ export default class Line extends GraphicalComponent {
     let trackChanges = this.currentTracker.trackChanges;
     let childrenChanged = trackChanges.childrenChanged(this.componentName);
 
-    if(childrenChanged) {
+    if (childrenChanged) {
 
       // get variables from variable activeChildren if not from essential state variables
       let varResult = this.childLogic.returnMatches("atMostOneVariables");
       if (varResult.length === 1) {
         this.state.variableChild = this.activeChildren[varResult[0]];
-      }else {
+      } else {
         delete this.state.variableChild;
         // default variables are x and y
         if (this._state.var1.essential !== true) {
@@ -341,11 +343,11 @@ export default class Line extends GraphicalComponent {
       let exactlyOneEquation = this.childLogic.returnMatches("exactlyOneEquation");
       let exactlyOneThrough = this.childLogic.returnMatches("exactlyOneThrough");
 
-      if(exactlyOneEquation.length === 1) {
+      if (exactlyOneEquation.length === 1) {
         this.state.definitionFrom = "equation";
         this.state.equationChild = this.activeChildren[exactlyOneEquation[0]];
         delete this.state.throughChild;
-      }else if(exactlyOneThrough.length === 1) {
+      } else if (exactlyOneThrough.length === 1) {
         this.state.definitionFrom = "points";
         this.state.throughChild = this.activeChildren[exactlyOneThrough[0]];
         delete this.state.equationChild;
@@ -371,22 +373,23 @@ export default class Line extends GraphicalComponent {
       }
     }
 
-    if(this.state.variableChild) {
-      if(this.state.variableChild.unresolvedState.variables) {
+    if (this.state.variableChild) {
+      if (this.state.variableChild.unresolvedState.variables) {
         this.unresolvedState.var1 = true;
         this.unresolvedState.var2 = true;
-      }else if(childrenChanged || trackChanges.getVariableChanges({
-        component: this.state.variableChild, variable: "variables"})) {
+      } else if (childrenChanged || trackChanges.getVariableChanges({
+        component: this.state.variableChild, variable: "variables"
+      })) {
         if (this.state.variableChild.state.ncomponents < 2) {
           console.warn("Invalid format for variables of line: must have at least two variables");
           if (this.state.variableChild.state.ncomponents === 1) {
             this.state.var1 = this.state.variableChild.state.variables[0];
-            if(this.state.var1.tree === "y") {
+            if (this.state.var1.tree === "y") {
               this.state.var2 = me.fromAst("z");
-            }else {
+            } else {
               this.state.var2 = me.fromAst("y");
             }
-          }else {
+          } else {
             this.state.var1 = me.fromAst("x");
             this.state.var2 = me.fromAst("y");
           }
@@ -398,8 +401,8 @@ export default class Line extends GraphicalComponent {
 
     let recalculateLine = childrenChanged;
 
-    if(this.state.equationChild) {
-      if(this.state.equationChild.unresolvedState.value) {
+    if (this.state.equationChild) {
+      if (this.state.equationChild.unresolvedState.value) {
         this.unresolvedState.slope = true;
         this.unresolvedState.xintercept = true;
         this.unresolvedState.yintercept = true;
@@ -409,16 +412,16 @@ export default class Line extends GraphicalComponent {
         this.unresolvedState.coeffvar2 = true;
         this.unresolvedState.points = true;
         return;
-      }else if(childrenChanged || trackChanges.getVariableChanges({
+      } else if (childrenChanged || trackChanges.getVariableChanges({
         component: this.state.equationChild, variable: "value"
       })) {
         recalculateLine = true;
         this.state.equation = this.state.equationChild.state.value;
       }
-    }else if(this.state.throughChild) {
+    } else if (this.state.throughChild) {
       let throughState = this.state.throughChild.state;
-      if(this.state.throughChild.unresolvedState.points ||
-          throughState.points.some(x =>x.unresolvedState.coords)) {
+      if (this.state.throughChild.unresolvedState.points ||
+        throughState.points.some(x => x.unresolvedState.coords)) {
         this.unresolvedState.slope = true;
         this.unresolvedState.xintercept = true;
         this.unresolvedState.yintercept = true;
@@ -432,10 +435,10 @@ export default class Line extends GraphicalComponent {
 
       // calculate line from through points
 
-      let pointsChanged = childrenChanged || this.state.points === undefined || 
+      let pointsChanged = childrenChanged || this.state.points === undefined ||
         trackChanges.childrenChanged(this.state.throughChild.componentName);
-      
-      if(pointsChanged) {
+
+      if (pointsChanged) {
         recalculateLine = true;
 
         if (throughState.nPoints === 0) {
@@ -443,24 +446,24 @@ export default class Line extends GraphicalComponent {
           this.state.points = [
             me.fromAst(0), me.fromAst(0)
           ]
-        }else if(throughState.nPoints === 1) {
+        } else if (throughState.nPoints === 1) {
           console.warn("Line through just one point, can't determine line");
           this.state.points = [
             throughState.points[0].state.coords.copy(),
             throughState.points[0].state.coords.copy(),
           ]
-        }else if(throughState.nPoints === 2) {
+        } else if (throughState.nPoints === 2) {
           this.state.points = [
             throughState.points[0].state.coords.copy(),
             throughState.points[1].state.coords.copy(),
           ];
-        }else {
+        } else {
           throw Error(`Can't create a line through more than 2 points (${throughState.nPoints} given)`);
         }
-      }else {
+      } else {
 
-        if(throughState.nPoints > 0) {
-          if(trackChanges.getVariableChanges({
+        if (throughState.nPoints > 0) {
+          if (trackChanges.getVariableChanges({
             component: throughState.points[0],
             variable: "coords"
           })) {
@@ -468,8 +471,8 @@ export default class Line extends GraphicalComponent {
             this.state.points[0] = throughState.points[0].state.coords.copy();
           }
 
-          if(throughState.nPoints > 1) {
-            if(trackChanges.getVariableChanges({
+          if (throughState.nPoints > 1) {
+            if (trackChanges.getVariableChanges({
               component: throughState.points[1],
               variable: "coords"
             })) {
@@ -480,25 +483,25 @@ export default class Line extends GraphicalComponent {
         }
       }
 
-    }else {
+    } else {
 
-      if(this.state.definitionFrom === "coeffs") {
+      if (this.state.definitionFrom === "coeffs") {
         // no children
-        if(this.state.equation === undefined ||
-          trackChanges.getVariableChanges({ component: this, variable: "coeffvar1"}) ||
-          trackChanges.getVariableChanges({ component: this, variable: "coeffvar2"}) ||
-          trackChanges.getVariableChanges({ component: this, variable: "coeff0"})
+        if (this.state.equation === undefined ||
+          trackChanges.getVariableChanges({ component: this, variable: "coeffvar1" }) ||
+          trackChanges.getVariableChanges({ component: this, variable: "coeffvar2" }) ||
+          trackChanges.getVariableChanges({ component: this, variable: "coeff0" })
         ) {
           recalculateLine = true;
-        
+
         }
       } else if (this.state.definitionFrom === "equation") {
-        if(trackChanges.getVariableChanges({ component: this, variable: "equation"})
+        if (trackChanges.getVariableChanges({ component: this, variable: "equation" })
         ) {
           recalculateLine = true;
         }
       } else {
-        if(trackChanges.getVariableChanges({ component: this, variable: "points"})) {
+        if (trackChanges.getVariableChanges({ component: this, variable: "points" })) {
           recalculateLine = true;
         }
 
@@ -506,7 +509,7 @@ export default class Line extends GraphicalComponent {
 
     }
 
-    if(recalculateLine) {
+    if (recalculateLine) {
       let result;
       if (this.state.definitionFrom === "coeffs") {
         result = this.calculateStateFromCoeffs()
@@ -515,8 +518,8 @@ export default class Line extends GraphicalComponent {
       } else {
         result = this.calculateStateFromPoints();
       }
-      
-      if(!result.success) {
+
+      if (!result.success) {
         return;
       }
 
@@ -554,8 +557,8 @@ export default class Line extends GraphicalComponent {
 
     for (let term of terms) {
       let coeffs = getTermCoeffs(term);
-      if(!coeffs.success) {
-        return {success: false}
+      if (!coeffs.success) {
+        return { success: false }
       }
       coeffvar1 = coeffvar1.add(coeffs.coeffvar1);
       coeffvar2 = coeffvar2.add(coeffs.coeffvar2);
@@ -586,15 +589,15 @@ export default class Line extends GraphicalComponent {
       }
       else if (!Array.isArray(term)) {
         console.warn("Invalid format for equation of line in variables " + var1 + " and " + var2);
-        return {success: false};
+        return { success: false };
       }
       else {
         let operator = term[0];
         let operands = term.slice(1);
         if (operator === '-') {
           let coeffs = getTermCoeffs(operands[0]);
-          if(!coeffs.success) {
-            return {success: false}
+          if (!coeffs.success) {
+            return { success: false }
           }
           cv1 = ['-', coeffs.coeffvar1.tree];
           cv2 = ['-', coeffs.coeffvar2.tree];
@@ -602,7 +605,7 @@ export default class Line extends GraphicalComponent {
         }
         else if (operator === '+') {
           console.warn("Invalid format for equation of line in variables " + var1 + " and " + var2);
-          return {success: false};
+          return { success: false };
         }
         else if (operator === '*') {
           let var1ind = -1, var2ind = -1;
@@ -640,8 +643,8 @@ export default class Line extends GraphicalComponent {
         }
         else if (operator === "/") {
           let coeffs = getTermCoeffs(operands[0]);
-          if(!coeffs.success) {
-            return {success: false}
+          if (!coeffs.success) {
+            return { success: false }
           }
           cv1 = ['/', coeffs.coeffvar1.tree, operands[1]];
           cv2 = ['/', coeffs.coeffvar2.tree, operands[1]];
@@ -674,7 +677,7 @@ export default class Line extends GraphicalComponent {
     if (this.state.variableChild) {
       if (this.state.variableChild.state.ncomponents !== 2) {
         console.warn("Only two variables can be specified for equation of a line");
-        return {success: false};
+        return { success: false };
       }
     }
 
@@ -689,7 +692,7 @@ export default class Line extends GraphicalComponent {
     let var1String = var1.toString();
     let var2String = var2.toString();
 
-    if(calculateEquation) {
+    if (calculateEquation) {
       this.state.equation = me.fromAst(
         ['=',
           ['+', ['*', coeffvar1.tree, var1.tree],
@@ -706,12 +709,12 @@ export default class Line extends GraphicalComponent {
       || coeff0.variables(true).indexOf(var1String) !== -1
       || coeff0.variables(true).indexOf(var2String) !== -1) {
       console.warn("Invalid format for equation of line in variables " + var1String + " and " + var2String);
-      return {success: false};
+      return { success: false };
     }
     let zero = me.fromAst(0);
     if (coeffvar1.equals(zero) && coeffvar2.equals(zero)) {
       console.warn("Invalid format for equation of line in variables " + var1String + " and " + var2String);
-      return {success: false};
+      return { success: false };
     }
 
     // console.log("coefficient of " + var1 + " is " + coeffvar1.toString());
@@ -730,15 +733,15 @@ export default class Line extends GraphicalComponent {
     this.state.points.push(me.fromAst(["tuple", point1x, point1y]));
     this.state.points.push(me.fromAst(["tuple", point2x, point2y]));
 
-    return {success: true};
+    return { success: true };
 
   }
 
   calculateStateFromPoints() {
 
-    if(this.state.points.length !== 2) {
+    if (this.state.points.length !== 2) {
       console.warn("Line not through two points");
-      return {success: false};
+      return { success: false };
     }
 
     let point1 = this.state.points[0];
@@ -748,18 +751,18 @@ export default class Line extends GraphicalComponent {
 
     if (point2.tree.length - 1 !== ndimens) {
       console.warn("Line through points of different dimensions");
-      return {success: false};
+      return { success: false };
     }
 
     if (ndimens === 1) {
       console.warn("Line must be through points of at least two dimensions");
-      return {success: false};
+      return { success: false };
     }
 
     if (this.state.variableChild) {
       if (this.state.variableChild.state.ncomponents !== ndimens) {
         console.warn("For a line, number of variables specified must match dimension of points");
-        return {success: false};
+        return { success: false };
       }
     }
 
@@ -788,13 +791,13 @@ export default class Line extends GraphicalComponent {
       if (point1.variables().indexOf(varStrings[i]) !== -1 ||
         point2.variables().indexOf(varStrings[i]) !== -1) {
         console.warn("Points through line depend on variables: " + varStrings.join(", "));
-        return {success: false};
+        return { success: false };
       }
     }
 
     if (ndimens !== 2) {
       // no equation if not in 2D
-      return {success: true};
+      return { success: true };
     }
 
     if (point1.equals(point2)) {
@@ -803,7 +806,7 @@ export default class Line extends GraphicalComponent {
       this.state.coeff0 = zero;
       this.state.coeffvar1 = zero;
       this.state.coeffvar2 = zero;
-      return {success: true};
+      return { success: true };
     }
 
     let point1x, point1y, point2x, point2y;
@@ -812,9 +815,9 @@ export default class Line extends GraphicalComponent {
       point1y = point1.get_component(1);
       point2x = point2.get_component(0);
       point2y = point2.get_component(1);
-    } catch(e) {
+    } catch (e) {
       console.warn("Point through line don't have two dimensions");
-      return {success: false};
+      return { success: false };
     }
 
     this.state.coeffvar1 = point1y.subtract(point2y).simplify();
@@ -825,7 +828,7 @@ export default class Line extends GraphicalComponent {
       a: this.state.coeffvar1, b: this.state.coeffvar2, c: this.state.coeff0, x: var1, y: var2
     }).simplify();
 
-    return {success: true};
+    return { success: true };
 
   }
 
@@ -885,7 +888,7 @@ export default class Line extends GraphicalComponent {
         point1y = this.state.points[0].get_component(1);
         point2x = this.state.points[1].get_component(0);
         point2y = this.state.points[1].get_component(1);
-      } catch(e) {
+      } catch (e) {
         console.warn("Points through line don't have two dimensions");
         return;
       }
@@ -921,7 +924,7 @@ export default class Line extends GraphicalComponent {
       point1y = this.state.points[0].get_component(1);
       point2x = this.state.points[1].get_component(0);
       point2y = this.state.points[1].get_component(1);
-    } catch(e) {
+    } catch (e) {
       console.warn("Point through line don't have two dimensions");
       return;
     }
@@ -990,7 +993,7 @@ export default class Line extends GraphicalComponent {
         for (let ind = 0; ind < 2; ind++) {
           if (pointsChanged.has(ind)) {
             let pointName = throughPoints[ind].componentName;
-            dependenciesToUpdate[pointName] = { coords: {changes: newPoints[ind] }};
+            dependenciesToUpdate[pointName] = { coords: { changes: newPoints[ind] } };
           }
         }
       }
@@ -1030,9 +1033,9 @@ export default class Line extends GraphicalComponent {
         }).simplify();
 
         if (this.state.equationChild !== undefined) {
-          dependenciesToUpdate[this.state.equationChild.componentName] = { value: {changes: equation }};
+          dependenciesToUpdate[this.state.equationChild.componentName] = { value: { changes: equation } };
         } else {
-          newStateVariables.equation = {changes: equation };
+          newStateVariables.equation = { changes: equation };
         }
       }
     }

@@ -3,6 +3,10 @@ import BaseComponent from './BaseComponent';
 export default class ComponentWithSelectableType extends BaseComponent {
   static componentType = "_componentwithselectabletype";
 
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static stateVariablesForReference = ["value", "selectedType"];
+
   static modifySharedParameters({ sharedParameters }) {
     // since sequence turns defaultToPrescribedParameters on,
     // turn it off here so it doesn't propagate further
@@ -15,7 +19,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
     let standardComponentClasses = args.standardComponentClasses;
 
@@ -182,10 +186,5 @@ export default class ComponentWithSelectableType extends BaseComponent {
     return stateVariableDefinitions;
   }
 
-  useChildrenForReference = false;
-
-  get stateVariablesForReference() {
-    return ["value", "selectedType"];
-  }
 
 }

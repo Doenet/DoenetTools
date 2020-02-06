@@ -2327,7 +2327,7 @@ export default class Core {
 
     }
 
-    let stateVariablesToShadow = refTargetComponent.stateVariablesForReference;
+    let stateVariablesToShadow = refTargetComponent.constructor.stateVariablesForReference;
     if (!stateVariablesToShadow) {
       stateVariablesToShadow = [];
     }

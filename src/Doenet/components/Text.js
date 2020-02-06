@@ -5,7 +5,11 @@ export default class Text extends InlineComponent {
 
   static includeBlankStringChildren = true;
 
-  static returnChildLogic (args) {
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static stateVariablesForReference = ["value"];
+
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroStrings = childLogic.newLeaf({
@@ -108,11 +112,6 @@ export default class Text extends InlineComponent {
 
   }
 
-  useChildrenForReference = false;
-
-  get stateVariablesForReference() {
-    return ["value"];
-  }
 
   returnSerializeInstructions() {
     let skipChildren = this.childLogic.returnMatches("atLeastZeroStrings").length === 1 &&

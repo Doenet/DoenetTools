@@ -3,6 +3,10 @@ import InlineComponent from './abstract/InlineComponent';
 export default class StringComponent extends InlineComponent {
   static componentType = "string";
 
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static stateVariablesForReference = ["value"];
+
   static createPropertiesObject() {
     return {};
   }
@@ -43,9 +47,6 @@ export default class StringComponent extends InlineComponent {
 
   }
 
-  get stateVariablesForReference() {
-    return ["value"];
-  }
 
   initializeRenderer({ }) {
     if (this.renderer !== undefined) {

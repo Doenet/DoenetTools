@@ -4,6 +4,10 @@ import me from 'math-expressions';
 export default class NumberComponent extends InlineComponent {
   static componentType = "number";
 
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static stateVariablesForReference = ["value"];
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.displayDigits = { default: 10 };
@@ -12,7 +16,7 @@ export default class NumberComponent extends InlineComponent {
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let atMostOneString = childLogic.newLeaf({
@@ -237,14 +241,9 @@ export default class NumberComponent extends InlineComponent {
   }
 
 
-  useChildrenForReference = false;
-
-  get stateVariablesForReference() {
-    return ["value"];
-  }
 
   returnSerializeInstructions() {
-    let stringMatches =  this.childLogic.returnMatches("atMostOneString");
+    let stringMatches = this.childLogic.returnMatches("atMostOneString");
     let skipChildren = stringMatches && stringMatches.length === 1;
     if (skipChildren) {
       let stateVariables = ["value"];

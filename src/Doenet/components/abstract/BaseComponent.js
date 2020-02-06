@@ -787,11 +787,9 @@ export default class BaseComponent {
   updateRenderer() {
   }
 
-  useChildrenForReference = true;
+  static useChildrenForReference = true;
 
-  get stateVariablesForReference() {
-    return [];
-  }
+  static stateVariablesForReference = [];
 
   returnSerializeInstructions() {
     return {};
@@ -805,7 +803,7 @@ export default class BaseComponent {
 
     if (parameters.forReference) {
       includePropertyChildren = false;
-      includeOtherDefiningChildren = this.useChildrenForReference;
+      includeOtherDefiningChildren = this.constructor.useChildrenForReference;
     } else {
       let instructions = this.returnSerializeInstructions();
       if (instructions.skipChildren) {
