@@ -292,37 +292,40 @@ class DoenetViewer extends Component {
     // this.worksheet.state = {};
     // console.log("CLEAR!!!");
     // return;
-
+    if (this.doenetAPIAvailable){
+      
     let theState;
 
-    if (this.group) {
-      this.worksheet.globalState.contentId = contentId;
-      theState = this.worksheet.globalState.doenetMLState;
+      if (this.group) {
+        this.worksheet.globalState.contentId = contentId;
+        theState = this.worksheet.globalState.doenetMLState;
 
-      if (theState === undefined) {
-        theState = this.worksheet.globalState.doenetMLState = {};
-      }
-    } else {
-      this.worksheet.state.contentId = contentId;
-      theState = this.worksheet.state.doenetMLState;
+        if (theState === undefined) {
+          theState = this.worksheet.globalState.doenetMLState = {};
+        }
+      } else {
+        this.worksheet.state.contentId = contentId;
+        theState = this.worksheet.state.doenetMLState;
 
-      if (theState === undefined) {
-        theState = this.worksheet.state.doenetMLState = {};
+        if (theState === undefined) {
+          theState = this.worksheet.state.doenetMLState = {};
+        }
       }
+
+      for (let componentName in newStateVariableValues) {
+        let componentState = theState[componentName];
+        if (componentState === undefined) {
+          componentState = theState[componentName] = {};
+        }
+
+        //Stringify for serializing when functions that are in variables
+        for (let varName in newStateVariableValues[componentName]) {
+          componentState[varName] = JSON.stringify(newStateVariableValues[componentName][varName], serializedStateReplacer);
+        }
+      }
+
     }
 
-
-    for (let componentName in newStateVariableValues) {
-      let componentState = theState[componentName];
-      if (componentState === undefined) {
-        componentState = theState[componentName] = {};
-      }
-
-      //Stringify for serializing when functions that are in variables
-      for (let varName in newStateVariableValues[componentName]) {
-        componentState[varName] = JSON.stringify(newStateVariableValues[componentName][varName], serializedStateReplacer);
-      }
-    }
 
   }
 
