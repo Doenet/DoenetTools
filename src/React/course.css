@@ -3,134 +3,148 @@ body{
     padding: 0;
     margin: 0;
     font-family: 'Droid Serif','Georgia', 'Times New Roman', 'Times', 'serif';
-}
-
-.courseContainer{
+  }
+  .selectedEnableButton{
+    background-color: rgb(94, 197, 94); 
+    color: black; 
+    border: 2px solid rgb(94, 197, 94);
+    margin: 2 2 2 2
+  }
+  .courseContainer{
     display:grid;
     /* grid-template-columns: 120px 130px auto 140px; */
-    grid-template-columns: 250px auto;
+    grid-template-columns: 250px auto 250px;
     grid-template-rows: 60px auto;
     width: 100vw;
     height: 100vh;
     padding: 0;
     margin: 0;
     overflow: hidden;
-}
-
-.homeLeftNav{
+  }
+  
+  .homeLeftNav{
+      /* display: flex; */
     background-color: rgb(228, 228, 228);
     padding: 6px;
     grid-column: 1 / 2;
     grid-row: 2 /  3;
     overflow: scroll;
-}
-.homeActiveSection{
+  }
+  .homeActiveSection{
     /* background-color: rgb(243, 0, 0); */
-    grid-column: 2 / span 3;
+    grid-column: 2 / 3;
     grid-row: 2 / 3;
     padding: 5px;
     overflow: scroll;
-}
-
-.homeMainMenuItem{
+  }
+  
+  .info {
+    grid-column: 3 / 4;
+    grid-row: 2 / 3;
+    padding: 5px;
+    overflow: scroll;
+  }
+  
+  .homeMainMenuItem{
+      display: flex;
     padding: 5px;
     border-bottom: 1px solid rgb(110, 110, 110);
     cursor: pointer;
-}
-.homeMainMenuItem:hover{
+  }
+  .homeMainMenuItem:hover{
     background-color: rgb(173, 173, 173);
-}
-
-
-#grades {
+  }
+  
+  
+  #grades {
   border-spacing: 0;
   border-collapse: separate;
   width: 807px;
   margin: 10px;
-}
-
-#grades td {
+  }
+  
+  #grades td {
     padding: 7px;
     text-align: left;
     
-}
-/* #grades .typeDataRow :hover{
+  }
+  /* #grades .typeDataRow :hover{
     background-color: brown;
-} */
-
-#grades .typeSubTotalDataRow td {
+  } */
+  
+  #grades .typeSubTotalDataRow td {
     border-bottom-color: rgb(179, 178, 178);
     border-bottom-style: solid;
     border-bottom-width: 1px;
     text-align: center;
-}
-#grades .typeSubTotalDataRow td:first-child {
+  }
+  #grades .typeSubTotalDataRow td:first-child {
     text-align: left;
-}
- 
-
-#grades .typeDataRow td {
+  }
+  
+  
+  #grades .typeDataRow td {
     border-bottom-color: rgb(179, 178, 178);
     border-bottom-style: dashed;
     border-bottom-width: 1px;
     text-align: center;
-
-}
-#grades .typeDataRow td:first-child {
+  
+  }
+  #grades .typeDataRow td:first-child {
     text-align: left;
-}
-#grades .assignmentLink {
+  }
+  #grades .assignmentLink {
     color:rgb(102, 0, 102);
     cursor: pointer;
-
-}
-#grades .assignmentLink:hover {
+  
+  }
+  #grades .assignmentLink:hover {
     text-decoration: underline;
-}
-/* #grades .typeDataRow td {
+  }
+  /* #grades .typeDataRow td {
     text-align: center;
-} */
-
-
-#grades th {
+  } */
+  
+  
+  #grades th {
     padding: 7px;
     text-align: left;
     border-bottom-color: rgb(184, 184, 184);
     border-bottom-style: solid;
     border-bottom-width: 1px;
-}
-.colHeadingsRow {
+  }
+  .colHeadingsRow {
     background-color: rgb(224, 224, 224);
     font-weight: bold;
     color: rgb(0,0,0);
     font-size: 14px;
     line-height: 21px;
     /* border-color: rgb(204, 204, 204); */
-}
-
-#grades .colTotalRow {
+  }
+  
+  #grades .colTotalRow {
     background-color: rgb(224, 224, 224);
     font-weight: bold;
     color: rgb(0,0,0);
     font-size: 14px;
     line-height: 21px;
-}
-#grades .colTotalRow td {
+  }
+  #grades .colTotalRow td {
     text-align: center;
     border-bottom: 1px solid rgb(184, 184, 184);
-
-}
-#grades .colTotalRow td:first-child {
+  
+  }
+  #grades .colTotalRow td:first-child {
     text-align: left;
-}
-
-
-.typeHeadingRow {
+  }
+  
+  
+  .typeHeadingRow {
     background-color: rgb(240, 240, 240);
     border-bottom-color: rgb(179, 178, 178);
     border-bottom-style: dashed;
     border-bottom-width: 1px;
-
+  
     color: rgb(51, 51, 51);
     font-size: 14px;
     line-height: 21px;
@@ -138,10 +152,10 @@ body{
     text-align: left;
     font-weight: bold;
     
-}
-
-/* Style the accordion section */
-.accordion__section {
+  }
+  
+  /* Style the accordion section */
+  .accordion__section {
     display: flex;
     flex-direction: column;
   }
@@ -197,7 +211,7 @@ body{
     font-size: 14px;
     padding: 18px;
   }
-
+  
   .assignmentContainer{
     display:block;
     height: 100vh;
@@ -205,9 +219,61 @@ body{
     padding: 0;
     margin: 0;
     overflow: scroll;
-}
-
-@media only screen and (max-width: 600px) {
+  }
+  
+  .SectionContainer {
+    display:flex;
+    justify-content: flex-end;
+    padding: 2;
+    margin: 1px 0px 1px 0px;
+    cursor: pointer;
+  
+  }
+  .SectionContainer-Active {
+    display:flex;
+    justify-content: flex-end;
+    background-color: rgb(151, 155, 151);
+    padding: 2;
+  
+  }
+  .Section-Text {
+    display:flex;
+    flex-grow: 1;
+    font-size: 18px;
+    padding:6px;
+    border-right:167px;
+  }
+  .Section-Icon {
+    font-size:18px;
+  }
+  .Section-Icon-Box {
+    padding:6px;
+  }
+  .AssignmentSelection {
+  cursor:pointer
+  }
+  .AssignmentSelection-Active {
+    cursor:pointer;
+    display:flex;
+    justify-content: flex-end;
+    background-color: rgb(151, 155, 151);
+    padding: 2;
+  }
+  .headerSelection {
+  
+  }
+  
+  .button {
+    background-color: white; 
+    color: black; 
+    border: 2px solid rgb(94, 197, 94);
+    margin: 2 2 2 2
+  }
+  .button:hover {
+    background-color: rgb(94, 197, 94);
+    color: white;
+  }
+  @media only screen and (max-width: 600px) {
     .courseContainer{
         grid-template-rows: 120px auto;
     }
