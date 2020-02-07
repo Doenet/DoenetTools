@@ -577,47 +577,50 @@ class DoenetBranchBrowser extends Component {
         <div id="branchBrowser">
           <div id="contentList">
             {this.breadcrumb}
-            <table id="browser">
-              <tbody>
-                <tr className="browserHeadingsRow" key="browserHeadingsRow">
-                  <th 
-                  className={this.state.sortBy === "title" ? "browserItemName browserSelectedHeading" : "browserItemName"}
-                  onClick={() => this.updateSortOrder("title")}>
-                    Name   {this.state.sortBy === "title" ? this.state.sortOrderAsc ? 
-                                                          <FontAwesomeIcon icon={faArrowUp} className="sortOrderIcon"/> :
-                                                          <FontAwesomeIcon icon={faArrowDown} className="sortOrderIcon"/> : ""}
-                  </th>
-                  <th 
-                  className={this.state.sortBy === "draftDate" ? "draftDate browserSelectedHeading" : "draftDate"}
-                  onClick={() => this.updateSortOrder("draftDate")}>
-                    Draft Date   {this.state.sortBy === "draftDate" ? this.state.sortOrderAsc ? 
-                                                          <FontAwesomeIcon icon={faArrowUp} className="sortOrderIcon"/> :
-                                                          <FontAwesomeIcon icon={faArrowDown} className="sortOrderIcon"/> : ""}
-                  </th>
-                  <th 
-                  className={this.state.sortBy === "publishedDate" ? "publishDate browserSelectedHeading" : "publishDate"}
-                  onClick={() => this.updateSortOrder("publishedDate")}>
-                    Published Date  {this.state.sortBy === "publishedDate" ? this.state.sortOrderAsc ? 
-                                                          <FontAwesomeIcon icon={faArrowUp} className="sortOrderIcon"/> :
-                                                          <FontAwesomeIcon icon={faArrowDown} className="sortOrderIcon"/> : ""}
-                  </th>
-                </tr>
-                {this.state.directoryStack.length !== 0 &&
-                <tr
-                className="browserDataRow"
-                data-cy="upOneDirectory"
-                onDoubleClick={this.upOneDirectory}>
-                  <td className="browserItemName">
-                    <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
-                    <span>{"..."}</span>
-                  </td>
-                  <td className="draftDate"></td>
-                  <td className="publishDate"></td>
-                </tr>}
-                {this.folderItems}
-                {this.contentItems}
-              </tbody>
-            </table>
+            {this.folderList.length == 0 && this.contentList == 0 ? 
+              <div id="browserEmptyMessage"><span>Create new files or folders using the New button</span></div> :
+              <table id="browser">
+                <tbody>
+                  <tr className="browserHeadingsRow" key="browserHeadingsRow">
+                    <th 
+                    className={this.state.sortBy === "title" ? "browserItemName browserSelectedHeading" : "browserItemName"}
+                    onClick={() => this.updateSortOrder("title")}>
+                      Name   {this.state.sortBy === "title" ? this.state.sortOrderAsc ? 
+                                                            <FontAwesomeIcon icon={faArrowUp} className="sortOrderIcon"/> :
+                                                            <FontAwesomeIcon icon={faArrowDown} className="sortOrderIcon"/> : ""}
+                    </th>
+                    <th 
+                    className={this.state.sortBy === "draftDate" ? "draftDate browserSelectedHeading" : "draftDate"}
+                    onClick={() => this.updateSortOrder("draftDate")}>
+                      Draft Date   {this.state.sortBy === "draftDate" ? this.state.sortOrderAsc ? 
+                                                            <FontAwesomeIcon icon={faArrowUp} className="sortOrderIcon"/> :
+                                                            <FontAwesomeIcon icon={faArrowDown} className="sortOrderIcon"/> : ""}
+                    </th>
+                    <th 
+                    className={this.state.sortBy === "publishedDate" ? "publishDate browserSelectedHeading" : "publishDate"}
+                    onClick={() => this.updateSortOrder("publishedDate")}>
+                      Published Date  {this.state.sortBy === "publishedDate" ? this.state.sortOrderAsc ? 
+                                                            <FontAwesomeIcon icon={faArrowUp} className="sortOrderIcon"/> :
+                                                            <FontAwesomeIcon icon={faArrowDown} className="sortOrderIcon"/> : ""}
+                    </th>
+                  </tr>
+                  {this.state.directoryStack.length !== 0 &&
+                  <tr
+                  className="browserDataRow"
+                  data-cy="upOneDirectory"
+                  onDoubleClick={this.upOneDirectory}>
+                    <td className="browserItemName">
+                      <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
+                      <span>{"..."}</span>
+                    </td>
+                    <td className="draftDate"></td>
+                    <td className="publishDate"></td>
+                  </tr>}
+                  {this.folderItems}
+                  {this.contentItems}
+                </tbody>
+              </table>
+            }
           </div>
           <InfoPanel
             selectedItems={this.state.selectedItems}
