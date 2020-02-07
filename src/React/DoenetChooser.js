@@ -69,6 +69,7 @@ class DoenetChooser extends Component {
     this.modifyPublicState = this.modifyPublicState.bind(this);
     this.addContentToRepo = this.addContentToRepo.bind(this);
     this.loadFilteredContent = this.loadFilteredContent.bind(this);
+    this.publicizeRepo = this.publicizeRepo.bind(this);
   }
 
 
@@ -665,6 +666,27 @@ class DoenetChooser extends Component {
     });
   }
 
+  publicizeRepo(repoId) {
+    // display alert message
+    if (window.confirm('This change is irreversible, proceed?')) {
+      let repoChildren = [];
+      let repoChildrenType = [];
+
+      this.folderInfo[repoId].childFolders.forEach((childId, i) => {
+        repoChildren = repoChildren.concat(this.flattenFolder(childId).itemIds);
+        repoChildrenType = repoChildrenType.concat(this.flattenFolder(childId).itemType);
+      });
+      this.folderInfo[repoId].childContent.forEach((childId, i) => {
+        repoChildren.push(childId);
+        repoChildrenType.push("content");
+      });
+      this.modifyPublicState(true, [repoId].concat(repoChildren), ["folder"].concat(repoChildrenType), () => {
+        this.loadUserFoldersAndRepo();
+        this.loadUserContentBranches();
+      });
+    }
+  }
+
   modifyPublicState(isPublic, itemIds, itemType, callback=(()=>{})) {
     const url='/api/modifyPublicState.php';
     const data={
@@ -955,7 +977,8 @@ class DoenetChooser extends Component {
           selectedItems={this.state.selectedItems}                // optional
           selectedItemsType={this.state.selectedItemsType}        // optional
           renameFolder={this.renameFolder}                        // optional
-          openEditCourseForm={() => this.toggleManageCourseForm("edit_course")}
+          openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
+          publicizeRepo={this.publicizeRepo}                      // optional
         />
       </React.Fragment>
     }

@@ -629,6 +629,7 @@ class DoenetBranchBrowser extends Component {
             allCourseInfo={this.props.allCourseInfo}
             disableEditing={this.disableEditing}
             openEditCourseForm={this.props.openEditCourseForm}
+            publicizeRepo={this.props.publicizeRepo}
           />
         </div>
       </React.Fragment>
@@ -883,6 +884,12 @@ class InfoPanel extends Component {
       let isShared = this.props.allFolderInfo[this.props.allFolderInfo[selectedItemId].rootId].isRepo;
       if (this.props.allFolderInfo[selectedItemId].isRepo || isShared) {
         itemDetails = Object.assign(itemDetails, {"Public": this.props.allFolderInfo[selectedItemId].isPublic ? "Yes" : "No"});
+      }
+      // show change to public button if private repo
+      if (this.props.allFolderInfo[selectedItemId].isRepo && !this.props.allFolderInfo[selectedItemId].isPublic) {
+        itemDetails["Public"] = <React.Fragment>
+            <span>No</span><button id="publicizeRepoButton" onClick={() => this.props.publicizeRepo(selectedItemId)}>Make Public</button>
+        </React.Fragment>
       }
 
       Object.keys(itemDetails).map(itemDetailsKey => {
