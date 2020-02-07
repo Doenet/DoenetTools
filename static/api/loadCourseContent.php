@@ -46,6 +46,7 @@ $result = $conn->query($sql);
 $response_arr = array();
 $folder_info_arr = array();
 $branch_info_arr = array();
+$url_info_arr = array();
 $all_fi_array = array();
          
 if ($result->num_rows > 0){
@@ -58,6 +59,7 @@ if ($result->num_rows > 0){
       "rootId" => $row["rootId"],
       "childContent" => array(),
       "childFolders" => array(),
+      "childUrls" => array(),
       "isRepo" => ($row["isRepo"] == 1),
       "isPublic" => ($row["isPublic"] == 1)
     );
@@ -84,6 +86,8 @@ if ($result->num_rows > 0){
       array_push($folder_info_arr[$row["folderId"]]["childContent"], $row["childId"]);
     } else if ($row["childType"] == "folder"){
       array_push($folder_info_arr[$row["folderId"]]["childFolders"], $row["childId"]);
+    } else if ($row["childType"] == "url"){
+      array_push($folder_info_arr[$row["folderId"]]["childUrls"], $row["childId"]);
     }
   }
 }
@@ -175,9 +179,67 @@ if ($result->num_rows > 0){
     }
 }
 
+$sql="
+SELECT   -- get course urls
+  u.urlId as urlId,
+  u.title as title,
+  u.url as url,
+  u.description as description,
+  u.timestamp as publishDate,
+  u.removedFlag as removedFlag,
+  u.usesDoenetAPI as usesDoenetAPI,
+  'root' as rootId, 
+  'root' as parentId,
+  u.public as isPublic
+FROM url AS u
+LEFT JOIN course_content cc ON cc.itemId = u.urlId
+  WHERE cc.courseId='$courseId'
+UNION
+SELECT  -- get children urls 
+  u.urlId as urlId,
+  u.title as title,
+  u.url as url,
+  u.description as description,
+  u.timestamp as publishDate,
+  u.removedFlag as removedFlag,
+  u.usesDoenetAPI as usesDoenetAPI,
+  fc.rootId as rootId, 
+  fc.folderId as parentId,
+  u.public as isPublic
+FROM url AS u
+LEFT JOIN folder_content fc ON fc.childId = u.urlId
+WHERE fc.childType='url' AND u.removedFlag=0
+AND rootId IN (
+  SELECT 
+  fc.rootId as rootId
+  FROM folder_content AS fc
+  LEFT JOIN course_content cc ON fc.folderId=cc.itemId
+  WHERE cc.courseId='$courseId'
+)
+ORDER BY title
+";
+
+$result = $conn->query($sql); 
+
+if ($result->num_rows > 0){
+    while($row = $result->fetch_assoc()){ 
+      $url_info_arr[$row["urlId"]] = array(
+        "title" => $row["title"],
+        "url" => $row["url"],
+        "description" => $row["description"],
+        "publishDate" => $row["publishDate"],
+        "usesDoenetAPI" => ($row["usesDoenetAPI"] == 1),
+        "parentId" => $row["parentId"],
+        "rootId" => $row["rootId"],
+        "isPublic" => ($row["isPublic"] == 1)
+      );
+    }
+}
+
 $response_arr = array(
   "folderInfo"=>$folder_info_arr,
-  "branchInfo"=>$branchId_info_arr
+  "branchInfo"=>$branchId_info_arr,
+  "urlInfo" => $url_info_arr
 );
     
 // set response code - 200 OK

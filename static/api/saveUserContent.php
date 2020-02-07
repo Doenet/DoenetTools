@@ -69,7 +69,35 @@ for ($i = 0; $i < $number_children; $i++) {
         $result = $conn->query($sql);   
       }
     }
-  }   
+  } else if ($childType == "url") {
+    //TEST if url exists
+    $sql = "
+    SELECT id
+    FROM url
+    WHERE urlId='$childId'
+    ";
+    $result = $conn->query($sql); 
+    if ($result->num_rows > 0){
+      if ($operationType == "insert") {
+        $sql = "
+        INSERT INTO user_urls
+        (username, urlId)
+        VALUES
+        ('$remoteuser','$childId')
+        ";
+        echo $sql;
+        $result = $conn->query($sql);   
+      } else if($operationType == "remove") {
+        $sql = "
+        DELETE FROM user_urls
+        WHERE username='$remoteuser' 
+        AND urlId='$childId'
+        ";
+        echo $sql;
+        $result = $conn->query($sql);   
+      }
+    }
+  } 
 }
 
 if ($result === TRUE) {

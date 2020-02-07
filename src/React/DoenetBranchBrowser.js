@@ -3,7 +3,7 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faFolder, faArrowUp, 
-  faArrowDown, faDotCircle, faEdit, faArrowRight, faFolderOpen} from '@fortawesome/free-solid-svg-icons';
+  faArrowDown, faDotCircle, faEdit, faArrowRight, faFolderOpen, faLink} from '@fortawesome/free-solid-svg-icons';
 import "./branchBrowser.css";
 import SpinningLoader from './SpinningLoader';
 
@@ -80,6 +80,7 @@ class DoenetBranchBrowser extends Component {
     this.handleContentItemClick = this.handleContentItemClick.bind(this);
     this.handleContentItemDoubleClick = this.handleContentItemDoubleClick.bind(this);
     this.handleFolderDoubleClick = this.handleFolderDoubleClick.bind(this);
+    this.handleUrlItemDoubleClick = this.handleUrlItemDoubleClick.bind(this);
     this.upOneDirectory = this.upOneDirectory.bind(this);
     this.openFolder = this.openFolder.bind(this);
     this.pushDirectoryStack = this.pushDirectoryStack.bind(this);
@@ -91,6 +92,8 @@ class DoenetBranchBrowser extends Component {
     this.updateSortOrder = this.updateSortOrder.bind(this);
     this.sortContent = this.sortContent.bind(this);
     this.sortFolders = this.sortFolders.bind(this);
+    this.sortUrls = this.sortUrls.bind(this);
+    this.openEditUrlForm = this.openEditUrlForm.bind(this);
   }
 
   getAllSelectedItems() {
@@ -130,12 +133,11 @@ class DoenetBranchBrowser extends Component {
     let selectedItemsTypeWithoutRepo = [];
     
     this.state.selectedItems.forEach((itemId, index) => {
-      if (this.state.selectedItemsType[index] == "content") {
+      if (this.state.selectedItemsType[index] == "content" || 
+          this.state.selectedItemsType[index] == "url" ||
+          (this.state.selectedItemsType[index] == "folder" && !this.props.allFolderInfo[itemId].isRepo)) {
         selectedItemsWithoutRepo.push(itemId);
-        selectedItemsTypeWithoutRepo.push("content");
-      } else if (!this.props.allFolderInfo[itemId].isRepo) {
-        selectedItemsWithoutRepo.push(itemId);
-        selectedItemsTypeWithoutRepo.push("folder");
+        selectedItemsTypeWithoutRepo.push((this.state.selectedItemsType[index]));
       }
     });
 
@@ -209,6 +211,7 @@ class DoenetBranchBrowser extends Component {
       let title = this.props.allFolderInfo[folderId].title;
       let publishDate = formatTimestamp(this.props.allFolderInfo[folderId].publishDate);
       let childContent = this.props.allFolderInfo[folderId].childContent;
+      let childUrls = this.props.allFolderInfo[folderId].childUrls;
       let childFolder = this.props.allFolderInfo[folderId].childFolder;
       let isRepo = this.props.allFolderInfo[folderId].isRepo;
       let isPublic = this.props.allFolderInfo[folderId].isPublic;
@@ -251,6 +254,7 @@ class DoenetBranchBrowser extends Component {
           publishDate={publishDate}
           draftDate={" — "}
           childContent={childContent}
+          childUrls={childUrls}
           childFolder={childFolder}
           folderId={folderId}
           isRepo={isRepo}
@@ -331,6 +335,69 @@ class DoenetBranchBrowser extends Component {
     }
   }
 
+  buildUrlItems(){
+    this.urlItems = [];
+    this.urlList = this.props.urlList;
+    // show items in current directory
+    if (this.state.directoryStack.length !== 0) {
+      let folderId = this.peekDirectoryStack();
+      this.urlList = this.props.allFolderInfo[folderId].childUrls;
+    }
+    this.sortUrls();
+
+    // build urls
+    for (let urlId of this.urlList){
+      let title = this.props.allUrlInfo[urlId].title;
+      let url = this.props.allUrlInfo[urlId].url;
+      let description = this.props.allUrlInfo[urlId].description;
+      let publishDate = formatTimestamp(this.props.allUrlInfo[urlId].publishDate);
+      let isShared = this.props.allUrlInfo[urlId].rootId == "root" ? false :
+        this.props.allFolderInfo[this.props.allUrlInfo[urlId].rootId].isRepo;
+      let isPublic = this.props.allUrlInfo[urlId].isPublic;
+      let classes = this.state.selectedItems.includes(urlId) ?
+                      "browserDataRow browserSelectedRow": "browserDataRow";
+      
+      let showRemoveItemIcon = false;
+      if (this.props.selectedDrive === "Content") {
+        // disable remove content in base dir when in mycontent
+        let notInBaseDirOfContent = this.state.directoryStack.length !== 0;
+        showRemoveItemIcon = !this.hideAddRemoveButtons && 
+                              notInBaseDirOfContent &&
+                              this.state.selectedItems.length !== 0 &&
+                              this.state.selectedItems.includes(urlId);
+
+      } else if (this.props.selectedDrive === "Courses") {
+        // disable remove content when not in base dir
+        let inBaseDir = this.state.directoryStack.length === 0;
+        showRemoveItemIcon = !this.hideAddRemoveButtons &&
+                              inBaseDir &&
+                              this.state.selectedItems.length !== 0 &&
+                              this.state.selectedItems.includes(urlId);
+      }
+
+      // create table row items to be rendered in chooser
+      this.urlItems.push(
+        <Url
+        urlId={urlId}
+        classes={classes}
+        onClick={this.handleContentItemClick}
+        onDoubleClick={this.handleUrlItemDoubleClick}
+        title={title}
+        url={url}
+        publishDate={publishDate}
+        description={description}
+        isShared={isShared}
+        isPublic={isPublic}
+        key={"urlItem" + urlId}
+        tableIndex={this.tableIndex++}
+        showRemoveItemIcon={showRemoveItemIcon}
+        handleRemoveContent={this.props.selectedDrive === "Content" ? 
+                            this.handleRemoveContentFromCurrentFolder :
+                            this.handleRemoveContentFromCourse}/>);
+        
+    }
+  }
+
   handleContentItemClick (itemId, type, tableIndex) {
     // show content/folder info on infoPanel
     // check for keystroke
@@ -358,7 +425,7 @@ class DoenetBranchBrowser extends Component {
       let currentSelectedItems = this.state.selectedItems;
       let currentSelectedItemsType = this.state.selectedItemsType;
       
-      let allTableItems = this.folderList.concat(this.contentList);
+      let allTableItems = this.folderList.concat(this.contentList, this.urlList);
 
       // if no previous items selected
       if (currentSelectedItems.length === 0) {
@@ -390,7 +457,9 @@ class DoenetBranchBrowser extends Component {
         // get id and type of item to be selected
         let currentItemId = allTableItems[lastSelectedItemIndex];
         let currentItemType = "content";
-        if (this.props.allContentInfo[currentItemId] === undefined) currentItemType = "folder";
+        if (this.props.allContentInfo[currentItemId] === undefined) {
+          currentItemType =  this.props.allFolderInfo[currentItemId] === undefined ? "url" : "folder";
+        }
 
         // check if already inside, if true then continue
         if (!currentSelectedItems.includes(currentItemId)) {
@@ -404,6 +473,7 @@ class DoenetBranchBrowser extends Component {
         selectedItems: currentSelectedItems,
         selectedItemsType: currentSelectedItemsType
       });
+
 
       if (this.props.updateSelectedItems !== null) {
         this.props.updateSelectedItems(currentSelectedItems, currentSelectedItemsType);
@@ -432,6 +502,10 @@ class DoenetBranchBrowser extends Component {
     this.setState({
       currentDirectory: folderId
     });
+  }
+
+  handleUrlItemDoubleClick(urlId) {
+      window.location.href = this.props.allUrlInfo[urlId].url;
   }
 
   pushDirectoryStack(folderId) {
@@ -478,6 +552,12 @@ class DoenetBranchBrowser extends Component {
     }
   }
 
+  openEditUrlForm() {
+    this.props.updateSelectedItems([this.state.selectedItems[this.state.selectedItems.length - 1]],
+      [this.state.selectedItemsType[this.state.selectedItemsType.length - 1]]);
+    this.props.openEditUrlForm();
+  }
+
   updateSortOrder(colName) {
     if (colName !== this.state.sortBy) {
       this.setState({sortBy: colName, sortOrderAsc: true});
@@ -519,6 +599,44 @@ class DoenetBranchBrowser extends Component {
         this.contentList.sort(
           (b,a) => { 
             return (this.props.allContentInfo[a].title.localeCompare(this.props.allContentInfo[b].title))}
+        );
+      }
+    }
+  }
+
+  sortUrls() {
+    if (this.state.sortOrderAsc) {
+      if (this.state.sortBy === "publishedDate") {
+        this.urlList.sort(
+          (a,b) => { 
+            return new Date(this.props.allUrlInfo[a].publishDate) - new Date(this.props.allUrlInfo[b].publishDate)}
+        );
+      } else if (this.state.sortBy === "draftDate") {
+        this.urlList.sort(
+          (a,b) => { 
+            return new Date(this.props.allUrlInfo[a].draftDate) - new Date(this.props.allUrlInfo[b].draftDate)}
+        );
+      } else if (this.state.sortBy === "title") {
+        this.urlList.sort(
+          (a,b) => { 
+            return (this.props.allUrlInfo[a].title.localeCompare(this.props.allUrlInfo[b].title))}
+        );
+      }
+    } else {
+      if (this.state.sortBy === "publishedDate") {
+        this.urlList.sort(
+          (b,a) => { 
+            return new Date(this.props.allUrlInfo[a].publishDate) - new Date(this.props.allUrlInfo[b].publishDate)}
+        );
+      } else if (this.state.sortBy === "draftDate") {
+        this.urlList.sort(
+          (b,a) => { 
+            return new Date(this.props.allUrlInfo[a].draftDate) - new Date(this.props.allUrlInfo[b].draftDate)}
+        );
+      } else if (this.state.sortBy === "title") {
+        this.urlList.sort(
+          (b,a) => { 
+            return (this.props.allUrlInfo[a].title.localeCompare(this.props.allUrlInfo[b].title))}
         );
       }
     }
@@ -571,14 +689,13 @@ class DoenetBranchBrowser extends Component {
     this.buildBreadcrumb();
     this.buildFolderItems();
     this.buildContentItems();
+    this.buildUrlItems();
 
     return(
       <React.Fragment>
         <div id="branchBrowser">
           <div id="contentList">
             {this.breadcrumb}
-            {this.folderList.length == 0 && this.contentList == 0 ? 
-              <div id="browserEmptyMessage"><span>Create new files or folders using the New button</span></div> :
               <table id="browser">
                 <tbody>
                   <tr className="browserHeadingsRow" key="browserHeadingsRow">
@@ -616,11 +733,13 @@ class DoenetBranchBrowser extends Component {
                     <td className="draftDate"></td>
                     <td className="publishDate"></td>
                   </tr>}
+                  {this.folderList.length == 0 && this.contentList.length == 0 && this.urlList.length == 0 &&
+                    <div id="browserEmptyMessage"><span>Create new files or folders using the New button</span></div>}
                   {this.folderItems}
                   {this.contentItems}
+                  {this.urlItems}
                 </tbody>
               </table>
-            }
           </div>
           <InfoPanel
             selectedItems={this.state.selectedItems}
@@ -629,10 +748,12 @@ class DoenetBranchBrowser extends Component {
             selectedCourse={this.props.selectedCourse}
             allFolderInfo={this.props.allFolderInfo}
             allContentInfo={this.props.allContentInfo}
+            allUrlInfo={this.props.allUrlInfo}
             allCourseInfo={this.props.allCourseInfo}
             disableEditing={this.disableEditing}
             openEditCourseForm={this.props.openEditCourseForm}
             publicizeRepo={this.props.publicizeRepo}
+            openEditUrlForm={this.openEditUrlForm}
           />
         </div>
       </React.Fragment>
@@ -668,6 +789,44 @@ class File extends React.Component {
             <div className="removeContentButtonWrapper">
               <FontAwesomeIcon icon={faArrowRight} className="removeContentButton" 
               onClick={() => this.props.handleRemoveContent(this.props.branchId)}/>
+              <div className="removeContentButtonInfo"><span>Move out folder</span></div>
+            </div>}
+            <span>{this.props.publishDate}</span>
+          </div>          
+        </td>
+      </tr>
+    );
+  }
+}
+
+class Url extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+
+    return(
+      <tr
+      className={this.props.classes}
+      onClick={() => this.props.onClick(this.props.urlId, "url", this.props.tableIndex)}
+      onDoubleClick={() => this.props.onDoubleClick(this.props.urlId)}
+      data-cy={this.props.urlId}>
+        <td className="browserItemName">
+          {this.props.isShared && this.props.isPublic ? 
+            <FontAwesomeIcon icon={faLink} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/> :
+            <FontAwesomeIcon icon={faLink} style={{"fontSize":"18px", "color":"#3D6EC9", "margin": "0px 15px"}}/>}
+          <span>{this.props.title}</span>
+        </td>
+        <td className="draftDate">
+          <span>-</span>
+        </td>
+        <td className="publishDate">
+          <div style={{"position":"relative"}}>
+            {this.props.showRemoveItemIcon && 
+            <div className="removeContentButtonWrapper">
+              <FontAwesomeIcon icon={faArrowRight} className="removeContentButton" 
+              onClick={() => this.props.handleRemoveContent(this.props.urlId)}/>
               <div className="removeContentButtonInfo"><span>Move out folder</span></div>
             </div>}
             <span>{this.props.publishDate}</span>
@@ -794,6 +953,8 @@ class InfoPanel extends Component {
         itemIcon = this.props.allFolderInfo[selectedItemId].isRepo ?
           <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#3aac90"}}/> :
           <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373"}}/>;
+      } else if (selectedItemType === "url") {
+        itemTitle = this.props.allUrlInfo[selectedItemId].title;
       } else {
         itemTitle = this.props.allContentInfo[selectedItemId].title;
         itemIcon = <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3D6EC9"}}/>;
@@ -913,7 +1074,7 @@ class InfoPanel extends Component {
         </table>
       </React.Fragment>
 
-    } else {
+    } else if (selectedItemType === "content") {
       // populate table with selected item info / drive info  
       let itemRelatedContent = [];
       // build related content
@@ -980,6 +1141,50 @@ class InfoPanel extends Component {
           onClick={()=> {window.location.href=`/editor?branchId=${selectedItemId}`}}>
             <FontAwesomeIcon icon={faEdit} style={{"fontSize":"20px", "color":"#43aa90"}}/>
             <span>Edit Draft</span>
+          </div>
+        </div> 
+        }
+      </React.Fragment>
+    } else {
+      itemDetails = {
+        "Location" : "Content",
+        "Published" : formatTimestamp(this.props.allUrlInfo[selectedItemId].publishDate),
+        "Description" : this.props.allUrlInfo[selectedItemId].description,
+        "Uses DoenetAPI" : this.props.allUrlInfo[selectedItemId].usesDoenetAPI == true ? "Yes" : "No",
+      };
+
+      let isShared = this.props.allUrlInfo[selectedItemId].rootId == "root" ? false :
+        this.props.allFolderInfo[this.props.allUrlInfo[selectedItemId].rootId].isRepo;
+
+      if (isShared) {
+        itemDetails = Object.assign(itemDetails, {"Public": this.props.allUrlInfo[selectedItemId].isPublic ? "Yes" : "No"});
+      }
+
+      Object.keys(itemDetails).map(itemDetailsKey => {
+        let itemDetailsValue = itemDetails[itemDetailsKey];
+        this.infoPanelDetails.push(
+        <tr key={"contentDetailsItem" + itemDetailsKey}>
+          <td className="itemDetailsKey">{ itemDetailsKey }</td>
+          <td className="itemDetailsValue">{ itemDetailsValue }</td>
+        </tr>);
+      })
+
+      this.infoPanelDetails = <React.Fragment>
+        <table id="infoPanelDetailsTable">
+          <tbody>
+            {this.infoPanelDetails}
+            <tr key={"contentDetailsItemUrl"}>
+              <td className="itemDetailsKey">URL</td>
+              <td className="itemDetailsValue"><a href={this.props.allUrlInfo[selectedItemId].url}>{this.props.allUrlInfo[selectedItemId].url}</a></td>
+            </tr>
+          </tbody>
+        </table>
+        {!this.props.disableEditing &&
+        <div id="editContentButtonContainer">
+          <div id="editContentButton" data-cy="editContentButton"
+          onClick={this.props.openEditUrlForm}>
+            <FontAwesomeIcon icon={faEdit} style={{"fontSize":"20px", "color":"#43aa90"}}/>
+            <span>Edit Link</span>
           </div>
         </div> 
         }

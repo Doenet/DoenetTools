@@ -21,11 +21,17 @@ for ($i = 0; $i < $number_items; $i++) {
       SET public='$public'
       WHERE branchId='$itemId'
     ";
-  } else {  // $itemType == "folder"
+  } else if ($itemType == "folder") {
     $sql = "
       UPDATE folder
       SET public='$public'
       WHERE folderId='$itemId'
+    ";
+  }  else if ($itemType == "url") { 
+    $sql = "
+      UPDATE url
+      SET public='$public'
+      WHERE urlId='$itemId'
     ";
   }
   

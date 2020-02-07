@@ -357,6 +357,7 @@ tbody::-webkit-scrollbar-thumb {
   height: 85%;
   justify-content: center;
   align-items: center;
+  padding-top: 10em;
 }
 
 #browserEmptyMessage span {
