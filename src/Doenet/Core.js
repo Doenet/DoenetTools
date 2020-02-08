@@ -770,6 +770,9 @@ export default class Core {
     if (serializedComponent.downstreamDependencies) {
       Object.assign(prescribedDependencies, serializedComponent.downstreamDependencies);
     }
+
+    // propertiesPropagated contains those properties for which this component
+    // has received a propagated value from its ancestors
     for (let property in propertiesPropagated) {
       let ancestorName = propertiesPropagated[property];
       if (prescribedDependencies[ancestorName] === undefined) {
@@ -1938,7 +1941,18 @@ export default class Core {
             propertySpecification, property
           })
 
-          return { newValues: { [property]: childVariable } };
+          // if mergeArrays specified and both ancetor prop and child value
+          // are arrays, then property value will combine those arrays
+          if (propertySpecification.mergeArrays
+            && Array.isArray(dependencyValues.ancestorProp)
+            && Array.isArray(childVariable)
+          ) {
+            let mergedArray = [...childVariable, ...dependencyValues.ancestorProp];
+            return { newValues: { [property]: mergedArray } }
+          } else {
+            return { newValues: { [property]: childVariable } };
+          }
+
         };
         inverseDefinition = function ({ desiredStateVariableValues, dependencyValues, usedDefault }) {
           if (dependencyValues[childLogicName].length === 0) {
@@ -3167,6 +3181,9 @@ export default class Core {
             throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${depName}: variableNames must be an array`)
           }
           varNames = newDep.downstreamVariableNames = dep.variableNames;
+          if (dep.variablesOptional) {
+            newDep.variablesOptional = true;
+          }
         } else {
           varNames = ['__identity'];
         }
@@ -3183,7 +3200,19 @@ export default class Core {
             descendantUp = this.upstreamDependencies[descendantName] = {};
           }
           // varNames is ['__identity'] if identity
-          for (let varName of varNames) {
+          let descendantVarNames = varNames;
+          if (dep.variablesOptional && requestStateVariables) {
+            descendantVarNames = [];
+            for (let varName of varNames) {
+              if (varName in this._components[descendantName].state) {
+                descendantVarNames.push(varName)
+              }
+            }
+            if (descendantVarNames.length === 0) {
+              descendantVarNames = ['__identity'];
+            }
+          }
+          for (let varName of descendantVarNames) {
             if (descendantUp[varName] === undefined) {
               descendantUp[varName] = [];
             }
@@ -3649,6 +3678,11 @@ export default class Core {
 
 
       if (component.state[varName].isArray) {
+        // if new value is an array, then reset arrayValues to be empty
+        // TODO: how should this work with multi-dimensional arrays?
+        if (Array.isArray(result.newValues[varName])) {
+          component.state[varName].arrayValues = [];
+        }
         for (let arrayKey in result.newValues[varName]) {
           component.state[varName].setArrayValue({
             value: result.newValues[varName][arrayKey],
@@ -4856,7 +4890,7 @@ export default class Core {
             // change upstream dependencies
             for (let currentChild of currentDep.downstreamComponentNames) {
               if (!children.includes(currentChild)) {
-                // lost a child.  remove dependency
+                // lost a child that matched this childLogic component.  remove dependency
                 // and change any child state variable that refer to parent state variables
                 componentsTouched.push(currentChild);
                 if (currentChild in this.components) {
@@ -4886,7 +4920,7 @@ export default class Core {
 
             for (let newChild of children) {
               if (!currentDep.downstreamComponentNames.includes(newChild)) {
-                // gained a child.  add dependency
+                // gained a child that matched this childLogic component.  add dependency
                 // and change any child state variable that refer to parent state variables
                 componentsTouched.push(newChild);
                 let additionalComponentsTouched = this.changeParentStateVariables(newChild);
@@ -5026,7 +5060,19 @@ export default class Core {
                   descendantUpDep = this.upstreamDependencies[newDescendant] = {};
                 }
                 if (currentDep.downstreamVariableNames) {
-                  for (let vName of currentDep.downstreamVariableNames) {
+                  let descendantVarNames = currentDep.downstreamVariableNames;
+                  if (currentDep.variablesOptional) {
+                    descendantVarNames = [];
+                    for (let varName of currentDep.downstreamVariableNames) {
+                      if (varName in this._components[newDescendant].state) {
+                        descendantVarNames.push(varName)
+                      }
+                    }
+                    if (descendantVarNames.length === 0) {
+                      descendantVarNames = ['__identity'];
+                    }
+                  }
+                  for (let vName of descendantVarNames) {
                     if (descendantUpDep[vName] === undefined) {
                       descendantUpDep[vName] = [];
                     }
@@ -5138,23 +5184,22 @@ export default class Core {
           if (!component.parentName) {
             throw Error(`cannot have state variable ${stateVariable} of ${component.componentName} depend on parentStateVariables when parent isn't defined.`);
           }
-          if (dep.variableName === undefined) {
+          if (depDef.variableName === undefined) {
             throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${depName}: variableName is not defined`);
           }
 
           // delete updep from previous parent
           let previousParentName = currentDep.downstreamComponentName;
 
-          // TODO: Not sure if this is the right behavior
-          // Another option is to just continue if the parentName hasn't changed
-          // Is it possible this is called when previousParentName is undefined?
+          // (It's possible this gets called when a component switches child logic
+          // components for the same parent)
           if (previousParentName === component.parentName) {
-            throw Error(`Something's wrong.  Shouldn't be calling this function if parent hasn't changed`)
+            continue;
           }
 
           varDepsChanged = true;
 
-          let parentUpDep = this.upstreamDependencies[previousParentName][dep.variableName];
+          let parentUpDep = this.upstreamDependencies[previousParentName][depDef.variableName];
           for (let [ind, u] of parentUpDep.entries()) {
             if (u === currentDep) {
               parentUpDep.splice(ind, 1);
@@ -5168,10 +5213,10 @@ export default class Core {
 
           let depUp = this.upstreamDependencies[component.parentName];
           if (!depUp) {
-            depUp = this.upstreamDependencies[dep.componentName] = {};
+            depUp = this.upstreamDependencies[depDef.componentName] = {};
           }
-          if (depUp[dep.variableName] === undefined) {
-            depUp[dep.variableName] = [];
+          if (depUp[depDef.variableName] === undefined) {
+            depUp[depDef.variableName] = [];
           }
 
           let foundCurrentDep = false;
@@ -5182,7 +5227,7 @@ export default class Core {
             }
           }
           if (!foundCurrentDep) {
-            depUp[dep.variableName].push(currentDep);
+            depUp[depDef.variableName].push(currentDep);
           }
 
         }
@@ -5823,7 +5868,7 @@ export default class Core {
     // TODO: this function is only partially converted to the new system
 
 
-    // console.log("upstream composites " + component.componentName);
+    // console.log("updateCompositeReplacements " + component.componentName);
 
     let deletedComponents = {};
     let addedComponents = {};
@@ -6565,7 +6610,7 @@ export default class Core {
           }
           // get value of state variable so it will determine if essential
           compStateObj.value;
-          if (!compStateObj.essential) {
+          if (!compStateObj.essential && !compStateObj.isArray) {
             console.warn(`can't update state variable ${vName} of component ${cName}, as it is not an essential state variable.`);
             continue;
           }

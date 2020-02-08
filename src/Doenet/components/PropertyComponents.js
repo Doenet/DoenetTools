@@ -626,6 +626,10 @@ export class FeedbackText extends TextComponent {
   static componentType = "feedbacktext";
 }
 
+export class FeedbackCodes extends TextList {
+  static componentType = "feedbackcodes";
+}
+
 export class TextType extends TextComponent {
   static componentType = "texttype";
 }

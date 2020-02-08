@@ -15,7 +15,6 @@ export default class Mathinput extends Input {
     properties.prefill = { default: "" };
     properties.format = { default: "text" };
     properties.size = { default: 10 };
-    properties.collaborateGroups = { default: undefined };
     return properties;
   }
 
@@ -36,7 +35,7 @@ export default class Mathinput extends Input {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.value = {
       public: true,
@@ -120,54 +119,6 @@ export default class Mathinput extends Input {
     }
 
 
-    stateVariableDefinitions.numberTimesSubmitted = {
-      public: true,
-      componentType: "number",
-      defaultValue: 0,
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          numberTimesSubmitted: {
-            variablesToCheck: ["numberTimesSubmitted"]
-          }
-        }
-      }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "numberTimesSubmitted",
-            value: desiredStateVariableValues.numberTimesSubmitted
-          }]
-        };
-      }
-    }
-
-
-    stateVariableDefinitions.creditAchieved = {
-      defaultValue: 0,
-      public: true,
-      componentType: "number",
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          creditAchieved: {
-            variablesToCheck: ["creditAchieved"]
-          }
-        }
-      }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "creditAchieved",
-            value: desiredStateVariableValues.creditAchieved
-          }]
-        };
-      }
-    }
-
-
     stateVariableDefinitions.submittedValue = {
       defaultValue: me.fromAst('\uFF3F'),
       public: true,
@@ -191,102 +142,6 @@ export default class Mathinput extends Input {
       }
     }
 
-
-    stateVariableDefinitions.answerAncestor = {
-      returnDependencies: () => ({
-        answerAncestor: {
-          dependencyType: "ancestorStateVariables",
-          componentType: "answer",
-          variableNames: ["delegateCheckWork", "justSubmitted"]
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        let answerAncestor = null;
-
-        if (dependencyValues.answerAncestor.length === 1) {
-          answerAncestor = dependencyValues.answerAncestor[0];
-        }
-        return {
-          newValues: { answerAncestor }
-        }
-      }
-    }
-
-
-    stateVariableDefinitions.includeCheckWork = {
-      returnDependencies: () => ({
-        answerAncestor: {
-          dependencyType: "stateVariable",
-          variableName: "answerAncestor"
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        let includeCheckWork = false;
-        if (dependencyValues.answerAncestor) {
-          includeCheckWork = dependencyValues.answerAncestor.stateValues.delegateCheckWork;
-        }
-        return {
-          newValues: { includeCheckWork }
-        }
-      }
-
-    }
-
-
-    stateVariableDefinitions.valueHasBeenValidated = {
-      returnDependencies: () => ({
-        answerAncestor: {
-          dependencyType: "stateVariable",
-          variableName: "answerAncestor"
-        },
-        numberTimesSubmitted: {
-          dependencyType: "stateVariable",
-          variableName: "numberTimesSubmitted"
-        },
-        value: {
-          dependencyType: "stateVariable",
-          variableName: "value"
-        },
-        submittedValue: {
-          dependencyType: "stateVariable",
-          variableName: "submittedValue"
-        },
-
-      }),
-      definition: function ({ dependencyValues }) {
-
-        let valueHasBeenValidated = false;
-
-        if (dependencyValues.answerAncestor &&
-          dependencyValues.answerAncestor.stateValues.justSubmitted) {
-          valueHasBeenValidated = true;
-        }
-        return {
-          newValues: { valueHasBeenValidated }
-        }
-      }
-    }
-
-
-    stateVariableDefinitions.disabled = {
-      returnDependencies: () => ({
-        collaborateGroups: {
-          dependencyType: "stateVariable",
-          variableName: "collaborateGroups"
-        },
-        collaboration: {
-          dependencyType: "flag",
-          flagName: "collaboration"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        let disabled = false;
-        if (dependencyValues.collaborateGroups) {
-          disabled = !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
-        }
-        return { newValues: { disabled } }
-      }
-    }
 
     return stateVariableDefinitions;
 

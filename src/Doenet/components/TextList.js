@@ -3,6 +3,10 @@ import InlineComponent from './abstract/InlineComponent';
 export default class TextList extends InlineComponent {
   static componentType = "textlist";
 
+  // when another component has a property that is a textlist,
+  // use the texts state variable to populate that property
+  static stateVariableForPropertyValue = "texts";
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.unordered = { default: false };

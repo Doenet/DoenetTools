@@ -23,8 +23,8 @@ export default class Award extends BaseComponent {
     properties.allowedErrorIsAbsolute = { default: false, propagateToDescendants: true };
     properties.splitIntoOptions = { default: false, propagateToDescendants: true };
     properties.nSignErrorsMatched = { default: 0, propagateToDescendants: true };
-    properties.feedbackCode = { default: undefined };
-    properties.feedbackText = { default: undefined };
+    properties.feedbackCodes = { default: [] };
+    properties.feedbackText = { default: null };
 
     return properties;
 
@@ -180,18 +180,23 @@ export default class Award extends BaseComponent {
     }
 
 
-    stateVariableDefinitions.feedback = {
+    stateVariableDefinitions.feedbacks = {
       public: true,
-      componentType: "feedback",
-
+      componentType: "feedbacktext",
+      isArray: true,
+      entryPrefixes: ['feedback'],
       returnDependencies: () => ({
         feedbackText: {
           dependencyType: "stateVariable",
           variableName: "feedbackText",
         },
-        feedbackCode: {
+        feedbackCodes: {
           dependencyType: "stateVariable",
-          variableName: "feedbackCode",
+          variableName: "feedbackCodes",
+        },
+        feedbackDefinitions: {
+          dependencyType: "parentStateVariable",
+          variableName: "feedbackDefinitions"
         },
         awarded: {
           dependencyType: "stateVariable",
@@ -201,26 +206,26 @@ export default class Award extends BaseComponent {
       definition: function ({ dependencyValues }) {
 
         if (!dependencyValues.awarded) {
-          return { newValues: { feedback: "" } }
+          return { newValues: { feedbacks: [] } }
         }
 
-        let feedback;
+        let feedbacks = [];
 
-        if (dependencyValues.feedbackText === undefined) {
-
-          // TODO: mechanism for specifying standardized feedback
-          // and for authors to modify it
-          let feedback = this.constructor.standardizedFeedback[dependencyValues.feedbackCode];
-          if (feedback === undefined) {
-            feedback = "";
-          } else {
-            feedback = feedback;
+        for (let feedbackCode of dependencyValues.feedbackCodes) {
+          let code = feedbackCode.toLowerCase();
+          for(let feedbackDefinition of dependencyValues.feedbackDefinitions) {
+            if(code === feedbackDefinition.feedbackCode) {
+              feedbacks.push(feedbackDefinition.feedbackText);
+              break;  // just take first match
+            }
           }
-        } else {
-          feedback = dependencyValues.feedbackText;
         }
 
-        return { newValues: feedback }
+        if(dependencyValues.feedbackText !== null) {
+          feedbacks.push(dependencyValues.feedbackText);
+        }
+
+        return { newValues: { feedbacks } }
 
       }
     };

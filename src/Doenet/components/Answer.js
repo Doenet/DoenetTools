@@ -18,7 +18,7 @@ export default class Answer extends InlineComponent {
     properties.inline = { default: false, propagateToDescendants: true };
     properties.type = { default: "math", propagateToDescendants: true };
     properties.splitIntoOptions = { default: false, propagateToDescendants: true };
-    properties.fixedOrder = { default: false };
+    properties.fixedOrder = { default: false, propagateToDescendants: true };
     properties.size = { default: 10, propagateToDescendants: true };
     properties.forceFullCheckworkButton = { default: false };
     properties.expandOnCompare = { default: false, propagateToDescendants: true };
@@ -30,6 +30,7 @@ export default class Answer extends InlineComponent {
       propagateToDescendants: true,
     };
     properties.unorderedCompare = { default: false, propagateToDescendants: true };
+    properties.feedbackDefinitions = { propagateToDescendants: true, mergeArrays: true }
 
     return properties;
   }
@@ -316,7 +317,6 @@ export default class Answer extends InlineComponent {
                 state: { variableName: "awards" }
               }
             ],
-            // state: { useReplacementsWhenSerialize: true }
           }
         ]
       };
@@ -371,7 +371,6 @@ export default class Answer extends InlineComponent {
                 state: { variableName: "awards" }
               }
             ],
-            // state: { useReplacementsWhenSerialize: true }
           }
         ]
       };
@@ -637,8 +636,8 @@ export default class Answer extends InlineComponent {
         inputDescendants: {
           dependencyType: "descendantStateVariables",
           componentTypes: ["_input"],
-          variableNames: ["componentType", "value",
-            "numberTimesSubmitted"]
+          variableNames: ["componentType", "value", "values"],
+          variablesOptional: true,
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -670,19 +669,37 @@ export default class Answer extends InlineComponent {
           arrayKey = arrayKeys[0];
         }
 
-        for (let ind in componentType) {
-          // Note: ind is a string, starting with "0"
-          if (arrayKey === ind || arrayKey === undefined) {
-            currentResponses[ind] = dependencyValues.inputDescendants[ind].stateValues.value;
+        let numberValuesSoFar = 0;
+        let matchedArrayKey = false;
+
+        for (let [inputNumber, inputDescendant] of dependencyValues.inputDescendants.entries()) {
+
+          let values;
+          // if have a values state variable that is an array
+          // then each component is considered a response
+          if (Array.isArray(inputDescendant.stateValues.values)) {
+            values = inputDescendant.stateValues.values
+          } else {
+            values = [inputDescendant.stateValues.value];
           }
+
+          for (let [ind, value] of values.entries()) {
+            let valueKey = String(numberValuesSoFar + ind);
+            if (arrayKey === valueKey || arrayKey === undefined) {
+              currentResponses[valueKey] = value;
+              if (arrayKey !== undefined) {
+                componentType = componentType[inputNumber];
+                matchedArrayKey = true;
+              }
+            }
+          }
+
+          numberValuesSoFar += values.length;
+
         }
 
-        if (arrayKey !== undefined) {
-          if(arrayKey in componentType) {
-            componentType = componentType[arrayKey];
-          } else {
-            componentType = [];
-          }
+        if (arrayKey !== undefined && !matchedArrayKey) {
+          componentType = [];
         }
 
         return {
@@ -722,7 +739,7 @@ export default class Answer extends InlineComponent {
         for (let ind in componentType) {
           // Note: ind is a string, starting with "0"
 
-          // Note: since we never set stateByKey (there is no markStale function)
+          // Note: since we never set staleByKey (there is no markStale function)
           // this function doesn't return anything once the arrayValues are set
           // (The values will just be set using the inverse function)
           if (arrayValues[ind] === undefined) {
@@ -738,7 +755,7 @@ export default class Answer extends InlineComponent {
         }
 
         if (arrayKey !== undefined) {
-          if(arrayKey in componentType) {
+          if (arrayKey in componentType) {
             componentType = componentType[arrayKey];
           } else {
             componentType = [];
@@ -943,6 +960,32 @@ export default class Answer extends InlineComponent {
       },
     }
 
+    stateVariableDefinitions.feedbacks = {
+      public: true,
+      componentType: "feedbacktext",
+      isArray: true,
+      entryPrefixes: ["feedback"],
+      returnDependencies: () => ({
+        awardChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastOneCompleteAward",
+          variableNames: ["feedbacks"]
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        let feedbacks = [];
+        
+        for(let award of dependencyValues.awardChildren) {
+          feedbacks.push(...award.stateValues.feedbacks);
+        }
+        return {
+          newValues: {
+            feedbacks
+          }
+        }
+      }
+    }
+
     stateVariableDefinitions.childrenWhoRender = {
       returnDependencies: () => ({
         blockOrInlineChildren: {
@@ -1000,9 +1043,6 @@ export default class Answer extends InlineComponent {
       delete this.additionalComponentsToUpdate;
     }
 
-    this.state.feedbacks = this.state.awardChildren
-      .filter(x => x.state.feedback.length === 1)
-      .map(x => x.componentName);
 
   }
 
@@ -1046,30 +1086,17 @@ export default class Answer extends InlineComponent {
 
     for (let input of this.stateValues.inputDescendants) {
       if (input.componentType === "choiceinput") {
-        let submittedIndicesArrayComponents = {};
-        let submittedOriginalIndicesArrayComponents = {};
-        let submittedValuesArrayComponents = {};
-        for (let i in input.state.selectedindices) {
-          submittedIndicesArrayComponents[i] = input.state.selectedindices[i];
-          submittedOriginalIndicesArrayComponents[i] = input.state.choiceOrder[input.state.selectedindices[i] - 1] + 1;
-          submittedValuesArrayComponents[i] = input.state.choicetexts[input.state.selectedindices[i] - 1];
-        }
-        submittedIndicesArrayComponents.length = input.state.selectedindices.length;
-        submittedOriginalIndicesArrayComponents.length = input.state.selectedindices.length;
-        submittedValuesArrayComponents.length = input.state.selectedindices.length;
         instructions.push({
           componentName: input.componentName,
-          variableUpdates: {
-            submittedindices: { changes: { arrayComponents: submittedIndicesArrayComponents } },
-            submittedoriginalindices: { changes: { arrayComponents: submittedOriginalIndicesArrayComponents } },
-            submittedvalues: { changes: { arrayComponents: submittedValuesArrayComponents } },
-            numberTimesSubmitted: { changes: input.state.numberTimesSubmitted + 1 },
-            creditAchieved: { changes: creditAchievedForInput },
-          }
-        })
-        for (let value of input.state.selectedvalues) {
-          submittedResponses.push(value);
-        }
+          stateVariable: "submittedIndices",
+          value: input.stateValues.selectedIndices
+        });
+        instructions.push({
+          componentName: input.componentName,
+          stateVariable: "creditAchieved",
+          value: creditAchievedForInput,
+        });
+        submittedResponses.push(...input.stateValues.selectedValues);
       } else {
         instructions.push({
           componentName: input.componentName,
@@ -1078,15 +1105,9 @@ export default class Answer extends InlineComponent {
         });
         instructions.push({
           componentName: input.componentName,
-          stateVariable: "numberTimesSubmitted",
-          value: input.stateValues.numberTimesSubmitted + 1,
-        });
-        instructions.push({
-          componentName: input.componentName,
           stateVariable: "creditAchieved",
           value: creditAchievedForInput,
         });
-
 
         submittedResponses.push(input.stateValues.value);
       }

@@ -4,6 +4,10 @@ import me from 'math-expressions';
 export default class MathList extends InlineComponent {
   static componentType = "mathlist";
 
+  // when another component has a property that is a textlist,
+  // use the maths state variable to populate that property
+  static stateVariableForPropertyValue = "maths";
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.simplify = {

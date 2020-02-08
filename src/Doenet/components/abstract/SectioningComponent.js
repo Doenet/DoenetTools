@@ -13,7 +13,7 @@ export default class SectioningComponent extends BlockComponent {
     properties.weight = { default: 1 };
     // properties.possiblepoints = {default: undefined};
     // properties.aggregatebypoints = {default: false};
-
+    properties.feedbackDefinitions = { propagateToDescendants: true, mergeArrays: true }
     return properties;
   }
 

@@ -73,7 +73,7 @@ export default class Prop extends BaseComponent {
     //   - arrayVarName: name of array state variable for which have entry
     //   - arrayEntryPrefix: prefix of the array entry
     //   - varEnding: ending of the array entry
-   stateVariableDefinitions.propVariableObjs = {
+    stateVariableDefinitions.propVariableObjs = {
       returnDependencies: () => ({
         effectiveTargetClasses: {
           dependencyType: "stateVariable",
@@ -167,7 +167,7 @@ export default class Prop extends BaseComponent {
               }
               if (matchedObj === null) {
                 validVariableName = false;
-                console.warn(`Invalid prop: ${variableName}`)
+                console.error(`Invalid prop: ${variableName}`)
                 break;
               }
 
@@ -176,7 +176,11 @@ export default class Prop extends BaseComponent {
           }
 
           if (componentType) {
-            matchedObj.componentType = componentType.toLowerCase()
+            if (Array.isArray(componentType)) {
+              matchedObj.componentType = componentType.map(x => x.toLowerCase())
+            } else {
+              matchedObj.componentType = componentType.toLowerCase()
+            }
           }
 
           // Note: need to keep the capitalization of the actual public state variable
@@ -188,7 +192,6 @@ export default class Prop extends BaseComponent {
         // console.log("validVariableName")
         // console.log(validVariableName)
         // console.log(propVariableObjs)
-        // console.log(propComponentTypes)
 
         if (validVariableName) {
           return { newValues: { propVariableObjs } };

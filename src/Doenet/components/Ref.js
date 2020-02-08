@@ -369,10 +369,11 @@ export default class Ref extends CompositeComponent {
     }
 
 
-    // We break up determining the replacement classes in two steps.
-    // In the first step, we determine the preliminary replacement classes,
-    // which is the effectieTargetClass if there is no prop
-    // If there is a prop, 
+    // If there is no prop, replacementClasses are the effectiveTargetClasses
+    // If there is a prop, replacement classes are determined by componentType
+    // of propVariableObjs
+    // Except that, if propVariableObjs doesn't have componentType specified,
+    // then the componentType is determined by 
     stateVariableDefinitions.replacementClasses = {
       additionalStateVariablesDefined: [
         "stateVariablesRequested", "validProp", "componentTypeByTarget"
@@ -405,11 +406,19 @@ export default class Ref extends CompositeComponent {
         // from just the component class, we will get 
         // componentType of the actual statevariable
         // of the refTarget
+        // Also, get actual statevariable for arrays so that can determine their size
         if (stateValues.propVariableObjs !== null) {
           for (let [ind, propVariableObj] of stateValues.propVariableObjs.entries()) {
             if (!propVariableObj.componentType) {
               dependencies[`replacementComponentType${ind}`] = {
                 dependencyType: "componentStateVariableComponentType",
+                componentName: stateValues.refTargetName,
+                variableName: propVariableObj.varName,
+              }
+            }
+            if(propVariableObj.isArray) {
+              dependencies[`targetArray${ind}`] = {
+                dependencyType: "componentStateVariable",
                 componentName: stateValues.refTargetName,
                 variableName: propVariableObj.varName,
               }
@@ -432,7 +441,7 @@ export default class Ref extends CompositeComponent {
         }
 
 
-        if (dependencyValues.propVariableObjs == null) {
+        if (dependencyValues.propVariableObjs === null) {
           return {
             newValues: {
               replacementClasses: null,
@@ -457,6 +466,12 @@ export default class Ref extends CompositeComponent {
             replacementClasses.push(...componentType.map(x =>
               componentInfoObjects.allComponentClasses[x])
             );
+          } else if(propVariableObj.isArray) {
+            // TODO: what about multi-dimensional arrays?
+            let arrayLength = dependencyValues[`targetArray${ind}`].length;
+            let componentClass = componentInfoObjects.allComponentClasses[componentType];
+            replacementClasses.push(...Array(arrayLength).fill(componentClass));
+            componentType = Array(arrayLength).fill(componentType);
           } else {
             replacementClasses.push(componentInfoObjects.allComponentClasses[componentType]);
           }
