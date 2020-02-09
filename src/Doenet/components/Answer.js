@@ -288,50 +288,6 @@ export default class Answer extends InlineComponent {
     });
 
 
-    let replaceFromOneChoiceinput = function ({ activeChildrenMatched }) {
-      // answer where only child is a choiceinput (other than activeChildren from properties)
-      // for each choice of choiceinput
-      // create an award of the form
-      // <award><credit>[creditfromchoice]</credit>
-      //   <if><ref prop="selectedindex">[thechoiceinput]</ref>=[indexofchoice]</if>
-      // </award>
-
-      let choiceinput = activeChildrenMatched[0];
-
-      return {
-        success: true,
-        newChildren: [
-          {
-            createdComponent: true,
-            componentName: choiceinput.componentName
-          },
-          {
-            componentType: "ref",
-            children: [
-              {
-                componentType: "reftarget",
-                state: { refTargetName: choiceinput.componentName }
-              },
-              {
-                componentType: "prop",
-                state: { variableName: "awards" }
-              }
-            ],
-          }
-        ]
-      };
-
-    }
-
-    let exactlyOneChoiceinput = childLogic.newLeaf({
-      name: "exactlyOneChoiceinput",
-      componentType: 'choiceinput',
-      number: 1,
-      isSugar: true,
-      affectedBySugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
-      replacementFunction: replaceFromOneChoiceinput,
-    });
-
     let replaceFromJustChoices = function ({ activeChildrenMatched, idRng }) {
       // answer where only children are choices (other than activeChildren from properties)
       // wrap choices in a choiceinput
@@ -359,19 +315,6 @@ export default class Answer extends InlineComponent {
         success: true,
         newChildren: [
           choiceinputComponent,
-          {
-            componentType: "ref",
-            children: [
-              {
-                componentType: "reftarget",
-                state: { refTargetName: componentName }
-              },
-              {
-                componentType: "prop",
-                state: { variableName: "awards" }
-              }
-            ],
-          }
         ]
       };
 
@@ -383,7 +326,7 @@ export default class Answer extends InlineComponent {
       comparison: 'atLeast',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
+      affectedBySugar: ["anyInlineComponents"],
       replacementFunction: replaceFromJustChoices,
     });
 
@@ -606,6 +549,34 @@ export default class Answer extends InlineComponent {
       propositions: [incompleteXorCompleteAwards, anyBlockOrInlineComponents]
     });
 
+    let anyBlockComponentsForNoAward = childLogic.newLeaf({
+      name: "anyBlockComponentsForNoAward",
+      componentType: '_block',
+      comparison: 'atLeast',
+      number: 0,
+    });
+
+    let anyInlineComponentsForNoAward = childLogic.newLeaf({
+      name: "anyInlineComponentsForNoAward",
+      componentType: '_inline',
+      comparison: 'atLeast',
+      number: 0,
+    });
+
+    let noAward = childLogic.newLeaf({
+      name: "noAward",
+      componentType: 'award',
+      comparison: 'exactly',
+      number: 0,
+      allowSpillover: false,
+    });
+
+    let anyBlockOrInlineComponentsWithNoAward = childLogic.newOperator({
+      name: "anyBlockOrInlineComponentsWithNoAward",
+      operator: 'and',
+      propositions: [noAward, anyBlockComponentsForNoAward, anyInlineComponentsForNoAward]
+    });
+
     childLogic.newOperator({
       name: "completeXorSugared",
       operator: 'xor',
@@ -614,8 +585,8 @@ export default class Answer extends InlineComponent {
         exactlyOneString,
         exactlyOneMath,
         exactlyOneText,
-        exactlyOneChoiceinput,
         atLeastOneChoice,
+        anyBlockOrInlineComponentsWithNoAward
       ],
       setAsBase: true,
     });
@@ -636,7 +607,8 @@ export default class Answer extends InlineComponent {
         inputDescendants: {
           dependencyType: "descendantStateVariables",
           componentTypes: ["_input"],
-          variableNames: ["componentType", "value", "values"],
+          variableNames: ["componentType", "value", "values",
+            "selectedIndices", "creditAchievedIfSubmit"],
           variablesOptional: true,
         },
       }),
@@ -816,25 +788,40 @@ export default class Answer extends InlineComponent {
           dependencyType: "childStateVariables",
           childLogicName: "atLeastOneCompleteAward",
           variableNames: ["credit", "creditAchieved", "fractionSatisfied"]
-        }
+        },
+        inputDescendants: {
+          dependencyType: "stateVariable",
+          variableName: "inputDescendants"
+        },
       }),
       definition: function ({ dependencyValues }) {
 
         let creditAchieved = 0;
         let awardUsed = "";
 
-        // awardUsed with be component name of first award
-        // that gives the maximum credit (which will be creditAchieved)
-        // Always process awards if creditAchieved is still zero in case want to
-        // use an award with credit=0 to trigger feedback
-        for (let child of dependencyValues.awardChildren) {
-          let childMaxCredit = Math.max(0, Math.min(1, child.stateValues.credit))
-          if (childMaxCredit > creditAchieved || creditAchieved === 0) {
-            let creditFromChild = child.stateValues.creditAchieved;
-            let fractionFromChild = child.stateValues.fractionSatisfied;
-            if (fractionFromChild > 0 && (creditFromChild > creditAchieved || awardUsed === "")) {
-              creditAchieved = creditFromChild;
-              awardUsed = child.componentName;
+        if (dependencyValues.awardChildren.length === 0) {
+          if (dependencyValues.inputDescendants.length === 1) {
+            let inputDescendant = dependencyValues.inputDescendants[0];
+            // if inputDescendant has a state variable creditAchievedIfSubmit
+            // that is a positive number, use that value
+            if (inputDescendant.stateValues.creditAchievedIfSubmit > 0) {
+              creditAchieved = inputDescendant.stateValues.creditAchievedIfSubmit;
+            }
+          }
+        } else {
+          // awardUsed with be component name of first award
+          // that gives the maximum credit (which will be creditAchieved)
+          // Always process awards if creditAchieved is still zero in case want to
+          // use an award with credit=0 to trigger feedback
+          for (let child of dependencyValues.awardChildren) {
+            let childMaxCredit = Math.max(0, Math.min(1, child.stateValues.credit))
+            if (childMaxCredit > creditAchieved || creditAchieved === 0) {
+              let creditFromChild = child.stateValues.creditAchieved;
+              let fractionFromChild = child.stateValues.fractionSatisfied;
+              if (fractionFromChild > 0 && (creditFromChild > creditAchieved || awardUsed === "")) {
+                creditAchieved = creditFromChild;
+                awardUsed = child.componentName;
+              }
             }
           }
         }
@@ -970,13 +957,24 @@ export default class Answer extends InlineComponent {
           dependencyType: "childStateVariables",
           childLogicName: "atLeastOneCompleteAward",
           variableNames: ["feedbacks"]
-        }
+        },
+        inputDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: ["_input"],
+          variableNames: ["feedbacks"],
+          variablesOptional: true,
+        },
       }),
       definition: function ({ dependencyValues }) {
         let feedbacks = [];
-        
-        for(let award of dependencyValues.awardChildren) {
+
+        for (let award of dependencyValues.awardChildren) {
           feedbacks.push(...award.stateValues.feedbacks);
+        }
+        for (let inputDescendant of dependencyValues.inputDescendants) {
+          if (Array.isArray(inputDescendant.stateValues.feedbacks)) {
+            feedbacks.push(...inputDescendant.stateValues.feedbacks)
+          }
         }
         return {
           newValues: {
@@ -991,13 +989,19 @@ export default class Answer extends InlineComponent {
         blockOrInlineChildren: {
           dependencyType: "childIdentity",
           childLogicName: "anyBlockOrInlineComponents"
-        }
+        },
+        anyBlockOrInlineComponentsWithNoAward: {
+          dependencyType: "childIdentity",
+          childLogicName: "anyBlockOrInlineComponentsWithNoAward"
+        },
       }),
       definition: function ({ dependencyValues }) {
+        let childrenWhoRender = [
+          ...dependencyValues.blockOrInlineChildren.map(x => x.componentName),
+          ...dependencyValues.anyBlockOrInlineComponentsWithNoAward.map(x => x.componentName)
+        ]
         return {
-          newValues: {
-            childrenWhoRender: dependencyValues.blockOrInlineChildren.map(x => x.componentName)
-          }
+          newValues: { childrenWhoRender }
         }
       }
     }
@@ -1047,9 +1051,6 @@ export default class Answer extends InlineComponent {
   }
 
 
-  calculatecreditachieved() {
-
-  }
 
   actions = {
     submitAnswer: this.submitAnswer.bind(
@@ -1085,30 +1086,25 @@ export default class Answer extends InlineComponent {
     }
 
     for (let input of this.stateValues.inputDescendants) {
+      instructions.push({
+        componentName: input.componentName,
+        stateVariable: "creditAchieved",
+        value: creditAchievedForInput,
+      });
+
       if (input.componentType === "choiceinput") {
         instructions.push({
           componentName: input.componentName,
           stateVariable: "submittedIndices",
           value: input.stateValues.selectedIndices
-        });
-        instructions.push({
-          componentName: input.componentName,
-          stateVariable: "creditAchieved",
-          value: creditAchievedForInput,
-        });
-        submittedResponses.push(...input.stateValues.selectedValues);
+        })
+        submittedResponses.push(...input.stateValues.values);
       } else {
         instructions.push({
           componentName: input.componentName,
           stateVariable: "submittedValue",
           value: input.stateValues.value,
         });
-        instructions.push({
-          componentName: input.componentName,
-          stateVariable: "creditAchieved",
-          value: creditAchievedForInput,
-        });
-
         submittedResponses.push(input.stateValues.value);
       }
     }

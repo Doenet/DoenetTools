@@ -1,18 +1,33 @@
 import Input from './abstract/Input';
+import { deepCompare } from '../utils/deepFunctions';
 
 export default class Choiceinput extends Input {
+  constructor(args) {
+    super(args);
+
+    this.updateSelectedIndices = this.updateSelectedIndices.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    );
+
+    this.returnChoiceRenderers = this.returnChoiceRenderers.bind(this);
+  }
+
   static componentType = "choiceinput";
+
+  // used when referencing this component without prop
+  static stateVariablesForReference = ["choiceOrder"];
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.selectmultiple = { default: false };
-    properties.assignpartialcredit = { default: false };
+    properties.selectMultiple = { default: false };
+    properties.assignPartialCredit = { default: false };
     properties.inline = { default: false };
-    properties.fixedorder = { default: false };
+    properties.fixedOrder = { default: false };
+    properties.feedbackDefinitions = { propagateToDescendants: true, mergeArrays: true }
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
@@ -27,427 +42,415 @@ export default class Choiceinput extends Input {
   }
 
 
-  updateState(args = {}) {
-    super.updateState(args);
 
-    if (args.init) {
+  static returnStateVariableDefinitions() {
 
-      this.state.rng = new this.sharedParameters.rngClass();
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-      this.additionalStateVariablesForReference = ["choiceOrder"];
-
-      this.makePublicStateVariableArray({
-        variableName: "selectedindices",
-        componentType: "number",
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "selectedindex",
-        arrayVariableName: "selectedindices",
-      })
-      this.makePublicStateVariableAlias({
-        variableName: "selectedindex",
-        targetName: "selectedindex",
-        arrayIndex: '1',
-      });
-
-      this.makePublicStateVariableArray({
-        variableName: "selectedoriginalindices",
-        componentType: "number",
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "selectedoriginalindex",
-        arrayVariableName: "selectedoriginalindices",
-      })
-      this.makePublicStateVariableAlias({
-        variableName: "selectedoriginalindex",
-        targetName: "selectedoriginalindex",
-        arrayIndex: '1',
-      });
-
-      this.makePublicStateVariableArray({
-        variableName: "selectedvalues",
-        componentType: "text",
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "selectedvalue",
-        arrayVariableName: "selectedvalues",
-      })
-      this.makePublicStateVariableAlias({
-        variableName: "selectedvalue",
-        targetName: "selectedvalue",
-        arrayIndex: '1',
-      });
-
-      this.makePublicStateVariableArray({
-        variableName: "submittedindices",
-        componentType: "number",
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "submittedindex",
-        arrayVariableName: "submittedindices",
-      })
-      this.makePublicStateVariableAlias({
-        variableName: "submittedindex",
-        targetName: "submittedindex",
-        arrayIndex: '1',
-      });
-
-      this.makePublicStateVariableArray({
-        variableName: "submittedoriginalindices",
-        componentType: "number",
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "submittedoriginalindex",
-        arrayVariableName: "submittedoriginalindices",
-      })
-      this.makePublicStateVariableAlias({
-        variableName: "submittedoriginalindex",
-        targetName: "submittedoriginalindex",
-        arrayIndex: '1',
-      });
-
-      this.makePublicStateVariableArray({
-        variableName: "submittedvalues",
-        componentType: "text",
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "submittedvalue",
-        arrayVariableName: "submittedvalues",
-      })
-      this.makePublicStateVariableAlias({
-        variableName: "submittedvalue",
-        targetName: "submittedvalue",
-        arrayIndex: '1',
-      });
-
-      this.makePublicStateVariable({
-        variableName: "creditAchieved",
-        componentType: "number"
-      });
-      this.makePublicStateVariable({
-        variableName: "numberTimesSubmitted",
-        componentType: "number"
-      });
-      this.makePublicStateVariable({
-        variableName: "numberchoices",
-        componentType: "number"
-      });
-      this.makePublicStateVariableArray({
-        variableName: "choicetexts",
-        componentType: "text",
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "choicetext",
-        arrayVariableName: "choicetexts",
-      });
-
-      this.makePublicStateVariableArray({
-        variableName: "awards",
-        componentType: "award",
-        returnSerializedComponents: returnSerializedComponentsAward,
-        emptyForOutOfBounds: true,
-      });
-
-      this._state.awards.version = 0;
-
-      // if not essential, initialize submittedindices, submitedvalues to empty array
-      if (this._state.submittedindices.essential !== true) {
-        this.state.submittedindices = []
-      }
-      if (this._state.submittedvalues.essential !== true) {
-        this.state.submittedindices = []
-      }
-      if (this._state.numberTimesSubmitted.essential !== true) {
-        this.state.numberTimesSubmitted = 0
-      }
-      if (this._state.creditAchieved.essential !== true) {
-        this.state.creditAchieved = 0;
-      }
-
-      // make selectedindices, submittedindices, creditAchieved, numberTimesSubmitted essential
-      // as they are used to store changed quantities
-      this._state.selectedindices.essential = true;
-      this._state.selectedvalues.essential = true;
-      this._state.submittedindices.essential = true;
-      this._state.submittedvalues.essential = true;
-      this._state.creditAchieved.essential = true;
-      this._state.numberTimesSubmitted.essential = true;
-      this._state.numberchoices.essential = true;
-
-      this.updateSelectedIndices = this.updateSelectedIndices.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      );
-      this.setRendererValueAsSubmitted = this.setRendererValueAsSubmitted.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      );
-
-      this.returnChoiceRenderers = this.returnChoiceRenderers.bind(this);
-
-      if(this._state.rendererValueAsSubmitted === undefined) {
-        this._state.rendererValueAsSubmitted = {essential: true};
-      }
-
-      if(this._state.choiceChildrenComponentNames === undefined) {
-        this._state.choiceChildrenComponentNames = {essential: true};
-      }
-
-      if (this.state.choiceOrder === undefined) {
-        this.state.choiceOrder = [];
-      }
-      this._state.choiceOrder.essential = true;
-
-    }
-
-    if (!this.childLogicSatisfied) {
-      this.unresolvedState.selectedindices = true;
-      this.unresolvedState.selectedoriginalindices = true;
-      this.unresolvedState.selectedvalues = true;
-      return;
-    }
-
-    delete this.unresolvedState.selectedindices;
-    delete this.unresolvedState.selectedoriginalindices;
-    delete this.unresolvedState.selectedvalues;
-
-    // override default fixedorder from shared parameters
-    if (this._state.fixedorder.usedDefault) {
-      let fixedorderChild = this.sharedParameters.fixedorderChild;
-      if (fixedorderChild) {
-        if (fixedorderChild.unresolvedState.value) {
-          this.unresolvedState.fixedorder = true;
-          return;
+    stateVariableDefinitions.choiceOrder = {
+      returnDependencies: ({ sharedParameters }) => ({
+        choiceChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroChoices",
+          variableNames: ["text"]
+        },
+        fixedOrder: {
+          dependencyType: "stateVariable",
+          variableName: "fixedOrder"
+        },
+        selectRng: {
+          dependencyType: "value",
+          value: sharedParameters.selectRng,
+          doNotProxy: true,
         }
-        this.state.fixedorder = fixedorderChild.state.value;
-      } else if (this.sharedParameters.fixedorder) {
-        this.state.fixedorder = this.sharedParameters.fixedorder;
+      }),
+      definition: function ({ dependencyValues }) {
+        let numberChoices = dependencyValues.choiceChildren.length;
+        let choiceOrder;
+        if (dependencyValues.fixedOrder) {
+          choiceOrder = [...Array(numberChoices).keys()]
+        } else {
+          // shuffle order every time get new children
+          // https://stackoverflow.com/a/12646864
+          choiceOrder = [...Array(numberChoices).keys()]
+          for (let i = numberChoices - 1; i > 0; i--) {
+            const rand = dependencyValues.selectRng.random();
+            const j = Math.floor(rand * (i + 1));
+            [choiceOrder[i], choiceOrder[j]] = [choiceOrder[j], choiceOrder[i]];
+          }
+        }
+        return { newValues: { choiceOrder } }
       }
-      delete this.unresolvedState.fixedorder;
-      // delete usedDefault so logic isn't repeated
-      delete this._state.fixedorder.usedDefault;
     }
 
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
+    stateVariableDefinitions.choiceChildrenOrdered = {
+      additionalStateVariablesDefined: [
+        { variableName: "numberChoices", public: true, componentType: "number" },
+      ],
+      returnDependencies: () => ({
+        choiceOrder: {
+          dependencyType: "stateVariable",
+          variableName: "choiceOrder"
+        },
+        choiceChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroChoices",
+          // variableNames: ["text", "selected", "submitted", "credit"]
+        },
+      }),
+      definition: function ({ dependencyValues }) {
 
-    if (childrenChanged) {
-      let atLeastZeroChoices = this.childLogic.returnMatches("atLeastZeroChoices");
-      let newChoiceChildren = atLeastZeroChoices.map(x => this.activeChildren[x]);
+        let numberChoices = dependencyValues.choiceChildren.length;
+        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
 
-      let actuallyHaveNewChoices = false;
-      // check if actually have new choice children
+        return {
+          newValues: {
+            choiceChildrenOrdered, numberChoices
+          }
+        }
+      },
+    }
 
-      if (this.state.choiceChildrenComponentNames === undefined ||
-        newChoiceChildren.length !== this.state.choiceChildrenComponentNames.length ||
-        this.state.choiceChildrenComponentNames.some((v, i) => v !== newChoiceChildren[i].componentName)
-      ) {
-        actuallyHaveNewChoices = true;
-        this.state.choiceChildren = newChoiceChildren;
-        this.state.choiceChildrenComponentNames = this.state.choiceChildren.map(v => v.componentName);
-      } else if(this.state.choiceChildren === undefined){
-        // in case started with choiceChildrenComponentNames in essential state
-        this.state.choiceChildren = this.state.choiceChildrenComponentNames.map(x => this.allChildren[x].component);
+    stateVariableDefinitions.choiceTexts = {
+      public: true,
+      componentType: "text",
+      isArray: true,
+      entryPrefixes: ["choiceText"],
+      returnDependencies: () => ({
+        choiceOrder: {
+          dependencyType: "stateVariable",
+          variableName: "choiceOrder"
+        },
+        choiceChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroChoices",
+          variableNames: ["text"]
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
+
+        return {
+          newValues: {
+            choiceTexts: choiceChildrenOrdered.map(x => x.stateValues.text)
+          }
+        }
       }
 
-      if (actuallyHaveNewChoices) {
-        this.state.numberchoices = this.state.choiceChildren.length;
+    }
 
-        if (this.state.fixedorder) {
-          this.state.choiceChildrenOrdered = this.state.choiceChildren;
-          this.state.choiceOrder = [...Array(this.state.numberchoices).keys()]
-        } else {
-          if (this.state.choiceOrder.length !== this.state.numberchoices) {
-            // shuffle order every time get new children
-            // https://stackoverflow.com/a/12646864
-            this.state.choiceOrder = [...Array(this.state.numberchoices).keys()]
-            for (let i = this.state.numberchoices - 1; i > 0; i--) {
-              const rand = this.state.rng.random();
-              const j = Math.floor(rand * (i + 1));
-              [this.state.choiceOrder[i], this.state.choiceOrder[j]] = [this.state.choiceOrder[j], this.state.choiceOrder[i]];
+    stateVariableDefinitions.componentType = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { componentType: "text" } })
+    }
+
+
+    stateVariableDefinitions.selectedIndices = {
+      public: true,
+      componentType: "number",
+      isArray: true,
+      entryPrefixes: ["selectedIndex"],
+      returnDependencies: () => ({
+        choiceOrder: {
+          dependencyType: "stateVariable",
+          variableName: "choiceOrder"
+        },
+        choiceChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroChoices",
+          variableNames: ["selected"]
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        let selectedIndices = [];
+        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
+
+        for (let [ind, choiceChild] of choiceChildrenOrdered.entries()) {
+          if (choiceChild.stateValues.selected) {
+            selectedIndices.push(ind + 1)
+          }
+        }
+        return { newValues: { selectedIndices } }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+
+        let instructions = [];
+        for (let [ind, choiceChild] of dependencyValues.choiceChildren.entries()) {
+
+          let indexInOrder = dependencyValues.choiceOrder.indexOf(ind) + 1;
+          let choiceSelected = desiredStateVariableValues.selectedIndices.includes(indexInOrder);
+          if (choiceChild.stateValues.selected !== choiceSelected) {
+            instructions.push({
+              setDependency: "choiceChildren",
+              desiredValue: choiceSelected,
+              childIndex: ind,
+              variableIndex: 0,
+            });
+          }
+        }
+
+        return {
+          success: true,
+          instructions,
+        };
+
+      }
+    }
+
+    stateVariableDefinitions.selectedIndex = {
+      isAlias: true,
+      targetVariableName: "selectedIndex1"
+    };
+
+
+    stateVariableDefinitions.selectedValues = {
+      public: true,
+      componentType: "text",
+      isArray: true,
+      entryPrefixes: ["selectedValue"],
+      returnDependencies: () => ({
+        selectedIndices: {
+          dependencyType: "stateVariable",
+          variableName: "selectedIndices"
+        },
+        choiceTexts: {
+          dependencyType: "stateVariable",
+          variableName: "choiceTexts"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          selectedValues: dependencyValues.selectedIndices
+            .map(i => dependencyValues.choiceTexts[i - 1])
+        }
+      })
+    }
+
+    stateVariableDefinitions.selectedValue = {
+      isAlias: true,
+      targetVariableName: "selectedValue1"
+    };
+
+    stateVariableDefinitions.values = {
+      isAlias: true,
+      targetVariableName: "selectedValues"
+    };
+
+
+    stateVariableDefinitions.submittedIndices = {
+      public: true,
+      componentType: "number",
+      isArray: true,
+      entryPrefixes: ["submittedIndex"],
+      returnDependencies: () => ({
+        choiceOrder: {
+          dependencyType: "stateVariable",
+          variableName: "choiceOrder"
+        },
+        choiceChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroChoices",
+          variableNames: ["submitted"]
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        let submittedIndices = [];
+        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
+
+        for (let [ind, choiceChild] of choiceChildrenOrdered.entries()) {
+          if (choiceChild.stateValues.submitted) {
+            submittedIndices.push(ind + 1)
+          }
+        }
+        return { newValues: { submittedIndices } }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+
+        let instructions = [];
+        for (let [ind, choiceChild] of dependencyValues.choiceChildren.entries()) {
+
+          let indexInOrder = dependencyValues.choiceOrder.indexOf(ind) + 1;
+          let choiceSubmitted = desiredStateVariableValues.submittedIndices.includes(indexInOrder);
+          if (choiceChild.stateValues.submitted !== choiceSubmitted) {
+            instructions.push({
+              setDependency: "choiceChildren",
+              desiredValue: choiceSubmitted,
+              childIndex: ind,
+              variableIndex: 0,
+            });
+          }
+        }
+
+        return {
+          success: true,
+          instructions,
+        };
+
+      }
+    }
+
+    stateVariableDefinitions.submittedIndex = {
+      isAlias: true,
+      targetVariableName: "submittedIndex1"
+    };
+
+
+    stateVariableDefinitions.submittedValues = {
+      public: true,
+      componentType: "text",
+      isArray: true,
+      entryPrefixes: ["submittedValue"],
+      returnDependencies: () => ({
+        submittedIndices: {
+          dependencyType: "stateVariable",
+          variableName: "submittedIndices"
+        },
+        choiceTexts: {
+          dependencyType: "stateVariable",
+          variableName: "choiceTexts"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          submittedValues: dependencyValues.submittedIndices
+            .map(i => dependencyValues.choiceTexts[i - 1])
+        }
+      })
+
+    }
+
+    stateVariableDefinitions.submittedValue = {
+      isAlias: true,
+      targetVariableName: "submittedValue1"
+    };
+
+
+    stateVariableDefinitions.creditAchievedIfSubmit = {
+      returnDependencies: () => ({
+        choiceChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroChoices",
+          variableNames: ["selected", "credit"]
+        },
+        selectMultiple: {
+          dependencyType: "stateVariable",
+          variableName: "selectMultiple"
+        },
+        assignPartialCredit: {
+          dependencyType: "stateVariable",
+          variableName: "assignPartialCredit"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        let creditAchievedIfSubmit = 0;
+        if (dependencyValues.selectMultiple) {
+          let nCorrectlySelected = 0;
+          let nIncorrectlySelected = 0;
+          let nIncorrectlyUnselected = 0;
+          for (let choiceChild of dependencyValues.choiceChildren) {
+            if (choiceChild.stateValues.selected) {
+              if (choiceChild.stateValues.credit === 1) {
+                nCorrectlySelected++;
+              } else {
+                nIncorrectlySelected++;
+              }
+            } else {
+              if (choiceChild.stateValues.credit === 1) {
+                nIncorrectlyUnselected++;
+              }
             }
-
-
           }
-          this.state.choiceChildrenOrdered = this.state.choiceOrder.map(i => this.state.choiceChildren[i]);
-        }
-
-        this.state.selectedindices = [];
-        this.state.selectedoriginalindices = [];
-        this.state.selectedvalues = [];
-
-        this.state.awards = this.state.choiceChildrenOrdered;
-
-        // include a version in awards
-        // so that ref can know when it should recreate all components
-        // (ref typically just looks at componentType, so can't detect order change)
-        if (!this.state.fixedorder) {
-          this._state.awards.version++;
-        }
-      } else {
-        // don't have new choices, but may need to populate this.state.choiceChildrenOrdered
-        // in case starting off with choices from essential state
-        if(this.state.choiceChildrenOrdered === undefined) {
-          this.state.choiceChildrenOrdered = this.state.choiceOrder.map(i => this.state.choiceChildren[i]);
-          this.state.awards = this.state.choiceChildrenOrdered;
-        }
-      }
-    }
-
-
-    if (this.state.choiceChildrenOrdered.some(x => x.unresolvedState.value)) {
-      this.unresolvedState.selectedindices = true;
-      this.unresolvedState.selectedoriginalindices = true;
-      this.unresolvedState.selectedvalues = true;
-      return;
-    }
-
-    if (childrenChanged || this.state.choiceChildrenOrdered.some(x => {
-      trackChanges.getVariableChanges({ component: x, variable: "textvalue" })
-    })) {
-      this.state.choicetexts = this.state.choiceChildrenOrdered.map(x => x.state.textvalue);
-    }
-
-    this.state.selectedoriginalindices = this.state.selectedindices.map(x => this.state.choiceOrder[x - 1] + 1);
-    this.state.selectedvalues = this.state.selectedindices.map(x => this.state.choicetexts[x - 1]);
-
-    if (this.ancestors === undefined) {
-      this.unresolvedState.includeCheckWork = true;
-      this.unresolvedDependencies = { [this.state.includeCheckWork]: true };
-    } else {
-      delete this.unresolvedState.includeCheckWork;
-      delete this.unresolvedDependencies;
-
-      // if (this.ancestorsWhoGathered === undefined) {
-        //mathinput not inside an answer component
-        this.state.includeCheckWork = false;
-      // } else {
-      //   this.state.answerAncestor = undefined;
-      //   for (let componentName of this.ancestorsWhoGathered) {
-      //     if (this.components[componentName].componentType === "answer") {
-      //       this.state.answerAncestor = this.components[componentName];
-      //       break;
-      //     }
-      //   }
-      //   if (this.state.answerAncestor === undefined) {
-      //     //mathinput not inside an answer component
-      //     this.state.includeCheckWork = false;
-      //   } else {
-      //     this.state.allAwardsJustSubmitted = this.state.answerAncestor.state.allAwardsJustSubmitted;
-      //     if (this.state.answerAncestor.state.delegateCheckWork) {
-      //       this.state.includeCheckWork = true;
-      //     } else {
-      //       this.state.includeCheckWork = false;
-      //     }
-      //   }
-      // }
-    }
-    this.state.valueHasBeenValidated = false;
-
-    if (this.state.allAwardsJustSubmitted && this.state.numberTimesSubmitted > 0 &&
-      this.state.selectedindices.length === this.state.submittedindices.length &&
-      this.state.selectedindices.every((v, i) => v === this.state.submittedindices[i])
-    ) {
-      this.state.valueHasBeenValidated = true;
-    }
-
-    if (this.state.rendererValueAsSubmitted === undefined) {
-      // first time through, use valueHasBeenValidated
-      this.state.rendererValueAsSubmitted = this.state.valueHasBeenValidated;
-    }
-  }
-
-  updateSelectedIndices({ selectedindices }) {
-    let arrayComponents = {};
-    for (let i in selectedindices) {
-      arrayComponents[i] = selectedindices[i];
-    }
-    arrayComponents.length = selectedindices.length;
-    this.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
-        componentName: this.componentName,
-        variableUpdates: {
-          selectedindices: {
-            isArray: true,
-            changes: { arrayComponents: arrayComponents }
+          if (dependencyValues.assignPartialCredit) {
+            let denominator = nCorrectlySelected + nIncorrectlySelected + nIncorrectlyUnselected;
+            if (denominator === 0) {
+              creditAchievedIfSubmit = 1;
+            } else {
+              creditAchievedIfSubmit = nCorrectlySelected / denominator;
+            }
+          } else {
+            if (nIncorrectlySelected + nIncorrectlyUnselected === 0) {
+              creditAchievedIfSubmit = 1;
+            }
           }
-        }
-      }]
-    })
-  }
-
-  setRendererValueAsSubmitted(val) {
-    this.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
-        componentName: this.componentName,
-        variableUpdates: {
-          rendererValueAsSubmitted: { changes: val },
-        }
-      }]
-    })
-  }
-
-  allowDownstreamUpdates(status) {
-    // since can't change via parents, 
-    // only non-initial change can be due to reference
-    return (status.initialChange === true || this.state.modifyIndirectly === true);
-  }
-
-  get variablesUpdatableDownstream() {
-    // only allowed to change these state variables
-    return [
-      "selectedindices", "selectedvalues",
-      "submittedindices", "submittedoriginalindices", "submittedvalues",
-      "creditAchieved", "numberTimesSubmitted",
-      "rendererValueAsSubmitted"
-    ];
-  }
-
-  calculateDownstreamChanges({ stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate }) {
-
-    if ("submittedindices" in stateVariablesToUpdate) {
-      let arrayComponents = stateVariablesToUpdate.submittedindices.changes.arrayComponents;
-      let theIndices = [];
-      for (let ind in arrayComponents) {
-        if (ind !== "length") {
-          theIndices.push(arrayComponents[ind]);
-        }
-      }
-      for (let [index, child] of this.state.choiceChildrenOrdered.entries()) {
-        if (theIndices.includes(index + 1)) {
-          dependenciesToUpdate[child.componentName] = { submittedchoice: { changes: true } };
         } else {
-          dependenciesToUpdate[child.componentName] = { submittedchoice: { changes: false } };
+          for (let choiceChild of dependencyValues.choiceChildren) {
+            if (choiceChild.stateValues.selected) {
+              creditAchievedIfSubmit = choiceChild.stateValues.credit;
+              break;
+            }
+          }
+        }
+
+        return { newValues: { creditAchievedIfSubmit } }
+      }
+    }
+
+
+    stateVariableDefinitions.feedbacks = {
+      public: true,
+      componentType: "feedbacktext",
+      isArray: true,
+      entryPrefixes: ["feedback"],
+      returnDependencies: () => ({
+        choiceOrder: {
+          dependencyType: "stateVariable",
+          variableName: "choiceOrder"
+        },
+        choiceChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroChoices",
+          variableNames: ["feedbacks"]
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
+
+        let feedbacks = [];
+
+        for (let choiceChild of choiceChildrenOrdered) {
+          feedbacks.push(...choiceChild.stateValues.feedbacks);
+        }
+        return {
+          newValues: {
+            feedbacks
+          }
         }
       }
     }
 
-    let shadowedResult = this.updateShadowSources({
-      newStateVariables: stateVariablesToUpdate,
-      dependenciesToUpdate: dependenciesToUpdate,
-    });
-    let shadowedStateVariables = shadowedResult.shadowedStateVariables;
-    let isReplacement = shadowedResult.isReplacement;
 
-    // if didn't update a downstream referenceShadow and didn't have mathChild
-    // then this mathinput is at the bottom
-    // and we need to give core instructions to update its state variables explicitly
-    // if the the update is successful
-    if (shadowedStateVariables.size === 0) {
-      Object.assign(stateVariableChangesToSave, stateVariablesToUpdate);
+    stateVariableDefinitions.childrenWhoRender = {
+      returnDependencies: () => ({
+        choiceChildrenOrdered: {
+          dependencyType: "stateVariable",
+          variableName: "choiceChildrenOrdered"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          childrenWhoRender: dependencyValues.choiceChildrenOrdered.map(x => x.componentName)
+        }
+      })
     }
 
-    return true;
+
+    return stateVariableDefinitions;
 
   }
+
+  updateSelectedIndices({ selectedIndices }) {
+    if (!this.stateValues.disabled) {
+      this.requestUpdate({
+        updateType: "updateValue",
+        updateInstructions: [{
+          componentName: this.componentName,
+          stateVariable: "selectedIndices",
+          value: selectedIndices
+        }]
+      })
+    }
+  }
+
 
   initializeRenderer({ }) {
     if (this.renderer !== undefined) {
@@ -455,55 +458,49 @@ export default class Choiceinput extends Input {
       return;
     }
 
-    const actions = {
+    this.actions = {
       updateSelectedIndices: this.updateSelectedIndices,
-      setRendererValueAsSubmitted: this.setRendererValueAsSubmitted,
     }
-    if (this.state.answerAncestor !== undefined) {
-      actions.submitAnswer = this.state.answerAncestor.submitAnswer;
+
+    if (this.stateValues.answerAncestor !== undefined) {
+      this.actions.submitAnswer = () => this.requestAction({
+        componentName: this.stateValues.answerAncestor.componentName,
+        actionName: "submitAnswer"
+      })
     }
 
     this.renderer = new this.availableRenderers.choiceinput({
-      actions: actions,
-      choiceChildren: this.state.choiceChildrenOrdered,
-      choicetexts: this.state.choicetexts,
-      selectedindices: this.state.selectedindices,
-      selectmultiple: this.state.selectmultiple,
-      inline: this.state.inline,
+      actions: this.actions,
+      choiceTexts: this.stateValues.choiceTexts,
+      selectedIndices: this.stateValues.selectedIndices,
+      selectMultiple: this.stateValues.selectMultiple,
+      inline: this.stateValues.inline,
       key: this.componentName,
-      includeCheckWork: this.state.includeCheckWork,
-      creditAchieved: this.state.creditAchieved,
-      valueHasBeenValidated: this.state.valueHasBeenValidated,
-      numberTimesSubmitted: this.state.numberTimesSubmitted,
+      includeCheckWork: this.stateValues.includeCheckWork,
+      creditAchieved: this.stateValues.creditAchieved,
+      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
       returnChoiceRenderers: this.returnChoiceRenderers,
       showCorrectness: this.flags.showCorrectness,
+      disabled: this.stateValues.disabled,
     });
   }
 
   updateRenderer() {
     this.renderer.updateChoiceinputRenderer({
-      choiceChildren: this.state.choiceChildrenOrdered,
-      choicetexts: this.state.choicetexts,
-      selectedindices: this.state.selectedindices,
-      creditAchieved: this.state.creditAchieved,
-      valueHasBeenValidated: this.state.valueHasBeenValidated,
-      numberTimesSubmitted: this.state.numberTimesSubmitted,
-      inline: this.state.inline,
+      choiceTexts: this.stateValues.choiceTexts,
+      selectedIndices: this.stateValues.selectedIndices,
+      creditAchieved: this.stateValues.creditAchieved,
+      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
+      inline: this.stateValues.inline,
+      disabled: this.stateValues.disabled,
     });
 
   }
 
-  updateChildrenWhoRender() {
-    if(this.state.choiceChildrenOrdered === undefined) {
-      this.childrenWhoRender = [];
-    } else {
-      this.childrenWhoRender = this.state.choiceChildrenOrdered.map(x => x.componentName);
-    }
-  }
 
   returnChoiceRenderers() {
     let choiceRenderers = [];
-    for (let [index, child] of this.state.choiceChildrenOrdered.entries()) {
+    for (let [index, child] of this.stateValues.choiceChildrenOrdered.entries()) {
       let componentRenderer = this.allRenderComponents[child.componentName];
       if (componentRenderer !== undefined) {
         componentRenderer.keyFromInput = this.componentName + "_choice" + index
@@ -511,108 +508,5 @@ export default class Choiceinput extends Input {
       }
     }
     return choiceRenderers;
-  }
-}
-
-
-// return the JSON representing the portion of array determined by the given propChildren
-function returnSerializedComponentsAward({
-  stateVariable, variableName,
-  propChildren, propName,
-  componentName,
-}) {
-
-  let propertiesOfChoiceToRefIntoAward = ["credit", "feedbacktext", "feedbackcode"];
-
-  function returnSerializedAward(index) {
-
-    let reffedProperties = [];
-    let choiceComponentName = stateVariable.value[index].componentName;
-    for (let prop of propertiesOfChoiceToRefIntoAward) {
-      reffedProperties.push(
-        {
-          componentType: "ref",
-          children: [
-            {
-              componentType: "prop",
-              state: { variableName: prop }
-            },
-            {
-              componentType: "reftarget",
-              state: { refTargetName: choiceComponentName }
-            }
-          ]
-        }
-      )
-    }
-
-    return {
-      componentType: "award",
-      children: [
-        ...reffedProperties,
-        {
-          componentType: "if",
-          children: [
-            {
-              componentType: "ref",
-              children: [
-                {
-                  componentType: "prop",
-                  state: { variableName: "selectedindices" },
-                  children: [
-                    {
-                      componentType: "index",
-                      state: { value: 0 }
-                    }
-                  ]
-                },
-                {
-                  componentType: "reftarget",
-                  state: { refTargetName: componentName }
-                }
-              ]
-            },
-            {
-              componentType: "string",
-              state: { value: "=" }
-            },
-            {
-              componentType: "number",
-              state: { value: index + 1 }
-            }
-          ]
-        }
-      ],
-      downstreamDependencies: {
-        [componentName]: [{
-          dependencyType: "referenceShadow",
-          prop: propName,
-        }]
-      },
-    }
-  }
-
-  if (propChildren === undefined || propChildren.length === 0) {
-    let numComponents = stateVariable.value.length;
-    let newComponents = [];
-    for (let index = 0; index < numComponents; index++) {
-      newComponents.push(returnSerializedAward(index));
-    }
-    return newComponents;
-  } else {
-    let numComponents = stateVariable.value.length;
-    let index = propChildren[0].state.number;
-
-    // already know index is a non-negative integer
-    // else would have failed validateParameters
-
-    let outOfBounds = index >= numComponents;
-    if (outOfBounds) {
-      return [];
-    }
-    let newComponents = [returnSerializedAward(index)];
-
-    return newComponents;
-
   }
 }

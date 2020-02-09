@@ -3086,7 +3086,12 @@ export default class Core {
             if (dep.variablesOptional && dep.dependencyType === "childStateVariables") {
               childVarNames = [];
               for (let varName of varNames) {
-                if (varName in this._components[childName].state) {
+                if (varName in this._components[childName].state ||
+                  this.checkIfAliasOrArrayEntry({
+                    stateVariable: varName,
+                    component: this._components[childName]
+                  })
+                ) {
                   childVarNames.push(varName)
                 }
               }
@@ -3204,7 +3209,12 @@ export default class Core {
           if (dep.variablesOptional && requestStateVariables) {
             descendantVarNames = [];
             for (let varName of varNames) {
-              if (varName in this._components[descendantName].state) {
+              if (varName in this._components[descendantName].state ||
+                this.checkIfAliasOrArrayEntry({
+                  stateVariable: varName,
+                  component: this._components[descendantName]
+                })
+              ) {
                 descendantVarNames.push(varName)
               }
             }
@@ -3930,7 +3940,12 @@ export default class Core {
 
           if (dep.downstreamVariableNames) {
             for (let varName of dep.downstreamVariableNames) {
-              if (!dep.variablesOptional || varName in depComponent.state) {
+              if (!dep.variablesOptional || varName in depComponent.state ||
+                this.checkIfAliasOrArrayEntry({
+                  stateVariable: varName,
+                  component: depComponent
+                })
+              ) {
                 if (!depComponent.state[varName].deferred) {
                   childObj.stateValues[varName] = depComponent.stateValues[varName];
                   if (dep.valuesChanged && dep.valuesChanged[childInd] && dep.valuesChanged[childInd].includes(varName)) {
@@ -4121,7 +4136,12 @@ export default class Core {
           if (dep.variablesOptional) {
             vNames = [];
             for (let vName of dep.downstreamVariableNames) {
-              if (vName in this._components[cName].state) {
+              if (vName in this._components[cName].state ||
+                this.checkIfAliasOrArrayEntry({
+                  stateVariable: vName,
+                  component: this._components[cName]
+                })
+              ) {
                 vNames.push(vName);
               }
             }
@@ -4230,7 +4250,7 @@ export default class Core {
     let componentName = component.componentName;
 
     let varsUnresolved = {};
-    let varsDeleted = [];
+    let componentVarsDeleted = {};
 
     let numInternalUnresolved = Infinity;
     let prevUnresolved = [];
@@ -4254,7 +4274,7 @@ export default class Core {
         }];
       }
 
-      return { varsUnresolved, varsDeleted };
+      return { varsUnresolved, componentVarsDeleted };
     }
 
 
@@ -4263,7 +4283,9 @@ export default class Core {
       let onlyInternalDependenciesUnresolved = [];
 
       for (let varName of prevUnresolved) {
-        if (varsDeleted.includes(varName)) {
+        if (componentVarsDeleted[componentName] &&
+          componentVarsDeleted[componentName].includes(varName)
+        ) {
           continue;
         }
 
@@ -4305,26 +4327,46 @@ export default class Core {
                 } else {
 
                   if (!depComponent.state[downVar]) {
-                    if (dep.variablesOptional) {
+                    if (dep.variablesOptional &&
+                      !this.checkIfAliasOrArrayEntry({
+                        stateVariable: downVar,
+                        component: depComponent
+                      })
+                    ) {
                       continue;
                     }
-                    let result = this.createFromAliasOrArrayEntry({
-                      stateVariable: downVar,
-                      component: depComponent
-                    });
-                    Object.assign(varsUnresolved, result.varsUnresolved);
-                    varsDeleted.push(...result.varsDeleted);
 
-                    if (Object.keys(result.varsUnresolved).length > 0) {
-                      this.addUnresolvedDependencies({
-                        varsUnresolved: result.varsUnresolved,
+
+                    if (depComponent.componentName in this.downstreamDependencies) {
+                      // if depComponent is at least in downstreadDependencies,
+                      // meaning that it at least has started to resolve its state variables
+                      // (as opposed to, for example, when its child logic is not satisfied)
+                      // then see if can create the variable downVar from an alias or array entry
+
+                      let result = this.createFromAliasOrArrayEntry({
+                        stateVariable: downVar,
                         component: depComponent
                       });
-                    }
 
+
+                      for (let cName in result.componentVarsDeleted) {
+                        if (!componentVarsDeleted[cName]) {
+                          componentVarsDeleted[cName] = [];
+                        }
+                        componentVarsDeleted[cName].push(...result.componentVarsDeleted[cName])
+                      }
+
+                      if (Object.keys(result.varsUnresolved).length > 0) {
+                        this.addUnresolvedDependencies({
+                          varsUnresolved: result.varsUnresolved,
+                          component: depComponent
+                        });
+                      }
+
+                    }
                   }
 
-                  if (depComponent.state[downVar].isResolved) {
+                  if (depComponent.state[downVar] && depComponent.state[downVar].isResolved) {
                     thisDownVarResolved = true;
                   }
                 }
@@ -4376,7 +4418,10 @@ export default class Core {
             let result = component.state[varName].action(actionArgs);
 
             if (result && result.varsDeleted) {
-              varsDeleted.push(...result.varsDeleted);
+              if (!componentVarsDeleted[componentName]) {
+                componentVarsDeleted[componentName] = [];
+              }
+              componentVarsDeleted[componentName].push(...result.varsDeleted);
             }
 
           }
@@ -4396,15 +4441,29 @@ export default class Core {
 
     }
 
-    return { varsUnresolved, varsDeleted };
+    return { varsUnresolved, componentVarsDeleted };
 
+  }
+
+  checkIfAliasOrArrayEntry({ stateVariable, component }) {
+    if (component.stateVarAliases && stateVariable in component.stateVarAliases) {
+      return true;
+    }
+    // check if stateVariable begins when an arrayEntry
+    for (let arrayEntryPrefix in component.arrayEntryPrefixes) {
+      if (stateVariable.substring(0, arrayEntryPrefix.length) === arrayEntryPrefix) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   createFromAliasOrArrayEntry({ stateVariable, component }) {
     // console.log(`create from alias or array entry: ${stateVariable} of ${component.componentName}`);
 
     let varsUnresolved = {};
-    let varsDeleted = [];
+    let componentVarsDeleted = {};
 
     if (component.stateVarAliases && stateVariable in component.stateVarAliases) {
       let aliasVar = component.stateVarAliases[stateVariable];
@@ -4413,7 +4472,12 @@ export default class Core {
         let result = this.createFromAliasOrArrayEntry({ stateVariable: aliasVar, component });
         // this.resolveStateVariables({ component: component, stateVariable: aliasVar });
         Object.assign(varsUnresolved, result.varsUnresolved);
-        varsDeleted.push(...result.varsDeleted);
+        for (let cName in result.componentVarsDeleted) {
+          if (!componentVarsDeleted[cName]) {
+            componentVarsDeleted[cName] = [];
+          }
+          componentVarsDeleted[cName].push(...results.componentVarsDeleted[cName])
+        }
 
         if (aliasVar in varsUnresolved) {
           varsUnresolved[stateVariable] = varsUnresolved[aliasVar];
@@ -4422,10 +4486,10 @@ export default class Core {
         if (!component.state[aliasVar].isResolved) {
           // TODO: if it is possible that aliasVar is already in state
           // but it is still the first round where this.unresolvedDependencies
-          // it not yet population, then need to propagate unresolved
+          // it not yet populated, then need to propagate unresolved
           // info via another mechanism
           if (!this.unresolvedDependencies[component.componentName]) {
-            throw Error(`must implement case where already crated alias isn't resolved during first pass`)
+            throw Error(`must implement case where already created alias isn't resolved during first pass`)
           }
           varsUnresolved[stateVariable] = this.unresolvedDependencies[component.componentName][aliasVar];
         }
@@ -4467,7 +4531,12 @@ export default class Core {
             let result = this.resolveStateVariables({ component: component, stateVariable: stateVariable });
 
             Object.assign(varsUnresolved, result.varsUnresolved);
-            varsDeleted.push(...result.varsDeleted);
+            for (let cName in result.componentVarsDeleted) {
+              if (!componentVarsDeleted[cName]) {
+                componentVarsDeleted[cName] = [];
+              }
+              componentVarsDeleted[cName].push(...results.componentVarsDeleted[cName])
+            }
           } else {
             // arrayStateVariable doesn't yet have setUpArrayEntryDependencies
             // (meaning child logic wasn't satisfied when it was created)
@@ -4491,47 +4560,79 @@ export default class Core {
       }
     }
 
-    return { varsUnresolved, varsDeleted };
+    return { varsUnresolved, componentVarsDeleted };
   }
 
   resolveAllDependencies() {
+    // attempt to resolve all dependencies of all components
+    // Does not return anything, but if this.unresolvedDependencies
+    // is not empty when the function finishes,
+    // it did not succeed in resolving all dependencies
+
+    // The key data structures are
+    // - this.unresolvedDependencies and
+    // - this.unresolvedByDependent
+    // Both are keyed by componentName and stateVariable
+    // with values that are arrays of {componentName, stateVariable}
+
+    // this.unresolvedDependencies is keyed by the unresolved name/variable
+    // and contains an array of dependent name/variables that were
+    // preventing the variable from being resolved
+
+    // this.unresolvedByDependent is keyed by the dependendent name/variable
+    // and contains an array of name/variables that it was preventing
+    // from being resolved
+
+    // Note: varName in unresolvedByDependent could also be
+    // "__identity", "__childLogic", "__replacements"
+
 
     console.log('resolving all dependencies');
 
-    let resolvedADependency = true;
+    // for each component, keep an array of state variables deleted
+    let componentVarsDeleted = {};
 
-    let varsDeletedByComponent = {};
-
+    // keep track of unresolved references to component names
+    // so that can give an appropriate error message
+    // in the case that the component name is never resolved
     let unResolvedRefToComponentNames = [];
 
-    while (resolvedADependency && Object.keys(this.unresolvedDependencies).length > 0) {
+    // keep looping until
+    // - we have resolved all dependencies, or
+    // - we are no longer resolving additional dependencies
+    let resolvedAnotherDependency = true;
+    while (resolvedAnotherDependency && Object.keys(this.unresolvedDependencies).length > 0) {
       // console.log(JSON.parse(JSON.stringify(this.unresolvedDependencies)));
       // console.log(JSON.parse(JSON.stringify(this.unresolvedByDependent)));
 
-      resolvedADependency = false;
+      resolvedAnotherDependency = false;
 
-      // find a component/state variable in this.unresolvedByDependent
-      // that isn't in this.unresolvedDependencies
+      // find component/state variable that 
+      // - had been preventing others from being resolved
+      //   (i.e., is in this.unresolvedByDependent), and
+      // - is now resolved (i.e., isn't in this.unresolvedDependencies)
       for (let componentName in this.unresolvedByDependent) {
         if (!(componentName in this.components)) {
           // componentName doesn't exist yet, but it may be created later
           // as a replacement of a composite
-          // TODO: how do we get this error message out for the case
-          // when componentName actually doesn't exist?
           unResolvedRefToComponentNames.push(componentName);
           continue;
         }
         for (let varName in this.unresolvedByDependent[componentName]) {
+          // check if componentName/varName is a resolved state variable
+
+          // if components hasn't been expanded, then its replacements aren't resolved
           if (varName === "__replacements" && !this.components[componentName].isExpanded) {
             continue;
           }
 
+          // newly successful childLogic will be processed right after it is processed
           if (varName === "__childLogic") {
             continue;
           }
 
-          let deleted = varsDeletedByComponent[componentName] &&
-            varsDeletedByComponent[componentName].includes(varName);
+          let deleted = componentVarsDeleted[componentName] &&
+            componentVarsDeleted[componentName].includes(varName);
 
           if (varName !== "__identity" && !(varName in this.components[componentName].state) && !deleted) {
             throw Error(`Reference to invalid state variable ${varName} of ${componentName}`);
@@ -4541,7 +4642,13 @@ export default class Core {
             varName === "__identity" || deleted ||
             !(varName in this.unresolvedDependencies[componentName])
           ) {
+            // found a componentName/state variable that
+            // - is now resolved or
+            // - represent a component that now exists (for __identity) or
+            // - is now deleted (so can't prevent others from being resolved)
 
+            // Now, go through the array of state variables that were being blocked
+            // by componentName/varName to see if we can resolved them
             for (let dep of this.unresolvedByDependent[componentName][varName]) {
 
               let depComponent = this._components[dep.componentName];
@@ -4551,10 +4658,11 @@ export default class Core {
                 // if already resolved (by another dependency), skip
                 continue;
               }
-              if (varsDeletedByComponent[dep.componentName] &&
-                varsDeletedByComponent[dep.componentName].includes(dep.stateVariable)) {
-                // if deleted when processing another dependency
-                // removed from unresolvedDepenencies and skip
+              if (componentVarsDeleted[dep.componentName] &&
+                componentVarsDeleted[dep.componentName].includes(dep.stateVariable)) {
+                // if depComponent's variable was already deleted 
+                // (from when we processed another dependency)
+                // remove it from unresolvedDepenencies and skip
                 delete this.unresolvedDependencies[dep.componentName][dep.stateVariable];
                 if (Object.keys(this.unresolvedDependencies[dep.componentName]).length === 0) {
                   delete this.unresolvedDependencies[dep.componentName];
@@ -4563,143 +4671,64 @@ export default class Core {
                 continue;
               }
 
-              let { varsUnresolved, varsDeleted } = this.resolveStateVariables({
+              // see if we can resolve depComponent's state variable
+              let resolveResult = this.resolveStateVariables({
                 component: depComponent,
                 stateVariable: dep.stateVariable
               });
 
-              if (varsDeleted.length > 0) {
-                if (varsDeletedByComponent[dep.componentName]) {
-                  varsDeletedByComponent[dep.componentName].push(...varsDeleted);
-                } else {
-                  varsDeletedByComponent[dep.componentName] = varsDeleted;
+              for (let cName in resolveResult.componentVarsDeleted) {
+                if (!componentVarsDeleted[cName]) {
+                  componentVarsDeleted[cName] = [];
                 }
-
+                componentVarsDeleted[cName].push(...resolveResult.componentVarsDeleted[cName])
               }
 
-              if (Object.keys(varsUnresolved).length === 0) {
+
+              if (Object.keys(resolveResult.varsUnresolved).length === 0) {
                 // we have resolved just the one state variable dep.stateVariable
 
-                resolvedADependency = true;
-                // console.log(`resolved ${dep.stateVariable} of ${dep.componentName}`)
+                resolvedAnotherDependency = true;
+
+                // delete state from unresolvedDependencies
                 delete this.unresolvedDependencies[dep.componentName][dep.stateVariable];
                 if (Object.keys(this.unresolvedDependencies[dep.componentName]).length === 0) {
                   delete this.unresolvedDependencies[dep.componentName];
                 }
 
-                // TODO: pretty sure don't need this as wouldn't be able to resolve
-                // variable if had circular dependence here.  But should think
-                // through this more carefully.
-                // It may be possible to get circular dependency if add extra dependence
-                // after the initial dependence structure is finished....
-                // try {
-                //   this.checkForCircularDependency({ componentName, varName });
-                // } catch (e) {
-                //   if (e.message === "foundCircular") {
-                //     throw Error(`Circular dependency involving ${componentName}`)
-                //   } else {
-                //     throw e;
-                //   }
-                // }
+                // TODO: do we have to worry about circular dependence here?
+
+                // The state variable readyToExpandWhenResolved is a special state variable
+                // for composite components.
+                // Once this variable is newly resolved,
+                // we may expand the composite component into its replacements
 
                 if (dep.stateVariable === "readyToExpandWhenResolved" &&
                   depComponent instanceof this._allComponentClasses['_composite']) {
 
-                  let parent = this._components[depComponent.parent];
-                  let newChildrenResult;
+                  let result = this.expandNewlyResolvedComposite(depComponent);
 
-                  try {
-                    newChildrenResult = this.processNewDefiningChildren({
-                      parent,
-                      applySugar: true,
-                    });
-                  } catch (e) {
-                    if (e.message === "foundCircular") {
-                      throw Error(`Circular dependency involving ${depComponent.componentName}`)
-                    } else {
-                      throw e;
+                  if (result.varsDeleted && result.varsDeleted.length > 0) {
+                    if (componentVarsDeleted[compositeComponent.parent]) {
+                      componentVarsDeleted[compositeComponent.parent].push(...result.varsDeleted);
                     }
-                  }
-
-                  if (newChildrenResult.success) {
-
-                    let result = this.createAndResolveDependencies(parent);
-
-                    if (result.varsDeleted.length > 0) {
-                      if (varsDeletedByComponent[depComponent.parent]) {
-                        varsDeletedByComponent[depComponent.parent].push(...result.varsDeleted);
-                      } else {
-                        varsDeletedByComponent[depComponent.parent] = result.varsDeleted;
-                      }
+                    else {
+                      componentVarsDeleted[compositeComponent.parent] = result.varsDeleted;
                     }
-
-
-                    if (Object.keys(result.varsUnresolved).length === 0) {
-                      delete this.unresolvedDependencies[depComponent.parent];
-                    } else {
-                      this.unresolvedDependencies[depComponent.parent] = [];
-                      this.addUnresolvedDependencies({
-                        varsUnresolved: result.varsUnresolved,
-                        component: parent
-                      });
-                    }
-
                   }
 
                 }
               } else {
                 // dep.stateVariable still not resolved.  Delete old unresolved dependencies
                 // and add back new ones
+                this.recalculateUnresolvedForDep({ dep, componentName, varName, varsUnresolved: resolveResult.varsUnresolved });
 
-                for (let currentDep of this.unresolvedDependencies[dep.componentName][dep.stateVariable]) {
-                  let cName2 = currentDep.componentName;
-                  let varName2 = currentDep.stateVariable;
-
-                  if (cName2 !== componentName || varName2 !== varName) {
-                    // delete any other dependencies that current depended on
-                    // (will re-add at end if still have this dependency)
-
-                    let indexOfDep;
-                    for (let [ind, oDep] of this.unresolvedByDependent[cName2][varName2].entries()) {
-                      if (oDep.componentName === dep.componentName && oDep.stateVariable === dep.stateVariable) {
-                        indexOfDep = ind;
-                        break;
-                      }
-                    }
-                    if (indexOfDep === undefined) {
-                      throw Error(`Something went wrong with unresolved dependencies....`);
-                    }
-
-                    this.unresolvedByDependent[cName2][varName2].splice(indexOfDep, 1);
-
-                  }
-                }
-
-                this.unresolvedDependencies[dep.componentName][dep.stateVariable] = varsUnresolved[dep.stateVariable];
-
-                // add any new (or possibly deleted above) unresolved dependencies
-                for (let unresDep of varsUnresolved[dep.stateVariable]) {
-
-                  let cName2 = unresDep.componentName;
-                  let varName2 = unresDep.stateVariable;
-
-                  if (cName2 === componentName && varName2 === varName) {
-                    throw Error(`State variable ${varName2} of ${cName2} reported as unresolved after already being resolved.`)
-                  }
-
-                  if (this.unresolvedByDependent[cName2] === undefined) {
-                    this.unresolvedByDependent[cName2] = {};
-                  }
-                  if (this.unresolvedByDependent[cName2][varName2] === undefined) {
-                    this.unresolvedByDependent[cName2][varName2] = [];
-                  }
-                  this.unresolvedByDependent[cName2][varName2].push({
-                    componentName: dep.componentName,
-                    stateVariable: dep.stateVariable
-                  });
-                }
               }
             }
+
+            // We finished processing the array of state variables that we being blocked
+            // by componentName/varName
+            // Delete the records that componentName/varName is blocking any variables
 
             delete this.unresolvedByDependent[componentName][varName];
             if (Object.keys(this.unresolvedByDependent[componentName]).length === 0) {
@@ -4709,51 +4738,168 @@ export default class Core {
           }
         }
       }
+
+      // We finished 
+      // - looping through all componentName/varNames of this.unresolvedByDependent
+      // - finding those varNames that were resolved, and
+      // - attempting to resolve those variables that depend on it
+
+      // We'll repeat this process as long as we're making progress
+      // and there are still unresolved variables left
+
     }
 
+    // All attempts to resolve variables have finished
+    // Either we resolved all variables or we stopped making progress
 
     if (Object.keys(this.unresolvedDependencies).length > 0) {
       // still didn't resolve all state variables
-      // display message, separating out those due to unsatisfied childlogic
-      let childLogicMessage = "";
-      let unresolvedVarMessage = "";
-      let unresolvedReferenceMessage = "";
-
-      if (unResolvedRefToComponentNames.length > 0) {
-        unResolvedRefToComponentNames = new Set(unResolvedRefToComponentNames);
-        for (let componentName of unResolvedRefToComponentNames) {
-          if (!(componentName in this.components)) {
-            unresolvedReferenceMessage += `Reference to invalid component name ${componentName}. `
-          }
-
-        }
-      }
-
-      if (unresolvedReferenceMessage) {
-        this.unresolvedMessage = unresolvedReferenceMessage;
-      } else {
-
-        for (let componentName in this.unresolvedDependencies) {
-          let component = this.components[componentName];
-          if (!component.childLogicSatisfied) {
-            childLogicMessage += `Invalid children for ${componentName}: ${component.childLogic.logicResult.message} `
-          } else {
-            for (let varName in this.unresolvedDependencies[componentName]) {
-              unresolvedVarMessage += `Could not resolve state variable ${varName} of ${componentName}. `
-            }
-          }
-        }
-
-        if (childLogicMessage) {
-          this.unresolvedMessage = childLogicMessage;
-        } else {
-          this.unresolvedMessage = unresolvedVarMessage;
-        }
-      }
+      this.createUnresolvedMessage(unResolvedRefToComponentNames);
     }
 
   }
 
+
+  createUnresolvedMessage(unResolvedRefToComponentNames) {
+    // create message about the unresolved variable,
+    // separating out those due to unsatisfied childlogic
+
+    let childLogicMessage = "";
+    let unresolvedVarMessage = "";
+    let unresolvedReferenceMessage = "";
+    if (unResolvedRefToComponentNames.length > 0) {
+      unResolvedRefToComponentNames = new Set(unResolvedRefToComponentNames);
+      for (let componentName of unResolvedRefToComponentNames) {
+        if (!(componentName in this.components)) {
+          unresolvedReferenceMessage += `Reference to invalid component name ${componentName}. `;
+        }
+      }
+    }
+    if (unresolvedReferenceMessage) {
+      this.unresolvedMessage = unresolvedReferenceMessage;
+    }
+    else {
+      for (let componentName in this.unresolvedDependencies) {
+        let component = this.components[componentName];
+        if (!component.childLogicSatisfied) {
+          childLogicMessage += `Invalid children for ${componentName}: ${component.childLogic.logicResult.message} `;
+        }
+        else {
+          for (let varName in this.unresolvedDependencies[componentName]) {
+            unresolvedVarMessage += `Could not resolve state variable ${varName} of ${componentName}. `;
+          }
+        }
+      }
+      if (childLogicMessage) {
+        this.unresolvedMessage = childLogicMessage;
+      }
+      else {
+        this.unresolvedMessage = unresolvedVarMessage;
+      }
+    }
+  }
+
+  recalculateUnresolvedForDep({ dep, componentName, varName, varsUnresolved }) {
+
+    // Note: we have two componentName/stateVariables in play now
+    // 1. componentName/varName: the variable that is resolved
+    // 2. dep.componentName/dep.stateVariable: the variable that depends on
+    //    componentName/varName but still was not able to be resolved
+
+    // We have completely recalculated those stateVariables that are
+    // preventing dep.stateVariable from being resolved
+    // (they are in varsUnresolved[dep.stateVariable])
+    // This will be the new unresolvedDependencies for dep.stateVariable
+    // but we also need to adjust unresolvedByDependent to keep it consisteent
+
+    // Loop through a third componentName/stateVariable,
+    // i.e., other stateVariables that used to be the ones that prevented
+    // dep.stateVariable from being resolved
+
+    for (let currentDep of this.unresolvedDependencies[dep.componentName][dep.stateVariable]) {
+      let cName2 = currentDep.componentName;
+      let varName2 = currentDep.stateVariable;
+      if (cName2 !== componentName || varName2 !== varName) {
+        // delete any other dependencies that current depended on
+        // (will re-add at end if still have this dependency)
+        let indexOfDep;
+        for (let [ind, oDep] of this.unresolvedByDependent[cName2][varName2].entries()) {
+          if (oDep.componentName === dep.componentName && oDep.stateVariable === dep.stateVariable) {
+            indexOfDep = ind;
+            break;
+          }
+        }
+        if (indexOfDep === undefined) {
+          throw Error(`Something went wrong with unresolved dependencies....`);
+        }
+        this.unresolvedByDependent[cName2][varName2].splice(indexOfDep, 1);
+      }
+    }
+    this.unresolvedDependencies[dep.componentName][dep.stateVariable] = varsUnresolved[dep.stateVariable];
+    // add any new (or possibly deleted above) unresolved dependencies
+    // that we calculate from the new varsUnresolved
+    for (let unresDep of varsUnresolved[dep.stateVariable]) {
+      let cName2 = unresDep.componentName;
+      let varName2 = unresDep.stateVariable;
+      if (cName2 === componentName && varName2 === varName) {
+        throw Error(`State variable ${varName2} of ${cName2} reported as unresolved after already being resolved.`);
+      }
+      if (this.unresolvedByDependent[cName2] === undefined) {
+        this.unresolvedByDependent[cName2] = {};
+      }
+      if (this.unresolvedByDependent[cName2][varName2] === undefined) {
+        this.unresolvedByDependent[cName2][varName2] = [];
+      }
+      this.unresolvedByDependent[cName2][varName2].push({
+        componentName: dep.componentName,
+        stateVariable: dep.stateVariable
+      });
+    }
+  }
+
+  expandNewlyResolvedComposite(compositeComponent) {
+
+    let parent = this._components[compositeComponent.parent];
+
+    let newChildrenResult;
+    try {
+      newChildrenResult = this.processNewDefiningChildren({
+        parent,
+        applySugar: true,
+      });
+    }
+    catch (e) {
+      if (e.message === "foundCircular") {
+        throw Error(`Circular dependency involving ${compositeComponent.componentName}`);
+      }
+      else {
+        throw e;
+      }
+    }
+    if (!newChildrenResult.success) {
+      return {};
+    }
+
+    // recreate the dependencies for parent
+    // TODO: understand exactly why we have to do this here
+    // Presumably due to fact that new replacements might not
+    // be completely resolved?
+    let result = this.createAndResolveDependencies(parent);
+
+    if (Object.keys(result.varsUnresolved).length === 0) {
+      delete this.unresolvedDependencies[compositeComponent.parent];
+    }
+    else {
+      this.unresolvedDependencies[compositeComponent.parent] = [];
+      this.addUnresolvedDependencies({
+        varsUnresolved: result.varsUnresolved,
+        component: parent
+      });
+    }
+
+    return result;
+
+  }
 
   markChildAndDescendantDependenciesChanged(component) {
 
@@ -4934,7 +5080,12 @@ export default class Core {
                   if (currentDep.variablesOptional) {
                     childVarNames = [];
                     for (let varName of currentDep.downstreamVariableNames) {
-                      if (varName in this._components[newChild].state) {
+                      if (varName in this._components[newChild].state ||
+                        this.checkIfAliasOrArrayEntry({
+                          stateVariable: varName,
+                          component: this._components[newChild]
+                        })
+                      ) {
                         childVarNames.push(varName)
                       }
                     }
@@ -5064,7 +5215,12 @@ export default class Core {
                   if (currentDep.variablesOptional) {
                     descendantVarNames = [];
                     for (let varName of currentDep.downstreamVariableNames) {
-                      if (varName in this._components[newDescendant].state) {
+                      if (varName in this._components[newDescendant].state ||
+                        this.checkIfAliasOrArrayEntry({
+                          stateVariable: varName,
+                          component: this._components[newDescendant]
+                        })
+                      ) {
                         descendantVarNames.push(varName)
                       }
                     }
@@ -5541,18 +5697,6 @@ export default class Core {
     this.parameterStack.push(parent.sharedParameters, false);
     let childResult = this.deriveChildResultsFromDefiningChildren(parent);
     this.parameterStack.pop();
-
-    // parent.gatherDescendants();
-
-    // console.log("new children for " + parent.componentName);
-    // this.resolveAllDependencies();
-
-
-    // // gather descendants of ancestors
-    // for (let ancestor of parent.ancestors) {
-    //   let unproxiedAncestor = this._components[ancestor];
-    //   unproxiedAncestor.gatherDescendants();
-    // }
 
     let ancestorsForChildren = [
       {
