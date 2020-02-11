@@ -658,10 +658,6 @@ export class DisplaySmallAsZero extends BooleanComponent {
   static componentType = "displaysmallaszero";
 }
 
-export class StyleNumber extends NumberComponent {
-  static componentType = "stylenumber";
-}
-
 export class MaximumNumber extends NumberComponent {
   static componentType = "maximumnumber";
 }

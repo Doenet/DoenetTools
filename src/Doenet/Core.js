@@ -819,7 +819,6 @@ export default class Core {
       externalFunctions: this.externalFunctions,
       allowSugarForChildren: applySugar,
       flags: this.flags,
-      styleDefinitions: this.styleDefinitions,
     });
 
     this.registerComponent(newComponent);
@@ -1977,15 +1976,23 @@ export default class Core {
               };
             }
           }
+
           // property based on child
-          return {
-            success: true,
-            instructions: [{
-              setDependency: childLogicName,
-              desiredValue: [desiredStateVariableValues[property]],
-              childIndex: 0,
-            }]
-          };
+
+          if (propertySpecification.mergeArrays) {
+            // can't invert if we merged arrays to get the value
+            return { success: false }
+          } else {
+
+            return {
+              success: true,
+              instructions: [{
+                setDependency: childLogicName,
+                desiredValue: [desiredStateVariableValues[property]],
+                childIndex: 0,
+              }]
+            };
+          }
         };
       }
       else {
@@ -2011,6 +2018,15 @@ export default class Core {
             value: propertyChildVariables[0].stateValues[stateVariableForPropertyValue],
             propertySpecification, property
           })
+
+          if(propertySpecification.mergeArrayWithDefault && Array.isArray(childVariable)) {
+            let defaultValue = propertySpecification.default;
+            if(Array.isArray(defaultValue)) {
+              let mergedArray = [...childVariable, ...defaultValue];
+              return { newValues: { [property]: mergedArray } }
+            }
+          }
+
           return { newValues: { [property]: childVariable } };
         };
         inverseDefinition = function ({ desiredStateVariableValues, dependencyValues }) {
@@ -2341,7 +2357,7 @@ export default class Core {
 
     }
 
-    let stateVariablesToShadow = refTargetComponent.constructor.stateVariablesForReference;
+    let stateVariablesToShadow = [...refTargetComponent.constructor.stateVariablesForReference];
     if (!stateVariablesToShadow) {
       stateVariablesToShadow = [];
     }
@@ -3535,7 +3551,6 @@ export default class Core {
 
     let definitionArgs = this.getStateVariableDependencyValues({ component, stateVariable });
     definitionArgs.componentInfoObjects = this.componentInfoObjects;
-    definitionArgs.styleDefinitions = this.styleDefinitions;
 
     let definitionFunction = stateVarObj.definition;
 
@@ -6694,7 +6709,7 @@ export default class Core {
             newTouched.push(...result.componentsTouched);
           }
 
-          for(let componentName in result.addedComponents) {
+          for (let componentName in result.addedComponents) {
             this.changedStateVariables[componentName] = Object.assign({}, this._components[componentName].state);
           }
         }
@@ -7108,59 +7123,6 @@ export default class Core {
     }
     this.animationIDs = {};
   }
-
-
-  styleDefinitions = {
-    1: {
-      lineColor: "blue",
-      lineWidth: 4,
-      lineStyle: "solid",
-      markerColor: "blue",
-      markerStyle: "circle",
-      markerSize: 3
-    },
-    2: {
-      lineColor: "green",
-      lineWidth: 1,
-      lineStyle: "solid",
-      markerColor: "green",
-      markerStyle: "square",
-      markerSize: 4
-    },
-    3: {
-      lineColor: "red",
-      lineWidth: 3,
-      lineStyle: "solid",
-      markerColor: "red",
-      markerStyle: "triangle",
-      markerSize: 5
-    },
-    4: {
-      lineColor: "purple",
-      lineWidth: 2,
-      lineStyle: "solid",
-      markerColor: "purple",
-      markerStyle: "diamond",
-      markerSize: 4
-    },
-    5: {
-      lineColor: "black",
-      lineWidth: 1,
-      lineStyle: "solid",
-      markerColor: "black",
-      markerStyle: "circle",
-      markerSize: 2
-    },
-    6: {
-      lineColor: "lightgray",
-      lineWidth: 1,
-      lineStyle: "dotted",
-      markerColor: "lightgray",
-      markerStyle: "circle",
-      markerSize: 2
-    },
-  }
-
 
 }
 

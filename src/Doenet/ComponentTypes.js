@@ -14,6 +14,8 @@ import * as Sectioning from './components/Sectioning';
 import * as Lists from './components/Lists';
 import * as DynamicalSystems from './components/dynamicalSystems';
 import * as FeedbackDefinition from './components/FeedbackDefinition';
+import * as StyleDefinition from './components/StyleDefinition';
+import * as StyleDefinitionComponents from './components/StyleDefinitionComponents';
 import Document from './components/Document';
 import StringComponent from './components/StringComponent';
 import Text from './components/Text';
@@ -166,6 +168,8 @@ const componentTypeArray = [
   ...Object.values(Lists),
   ...Object.values(DynamicalSystems),
   ...Object.values(FeedbackDefinition),
+  ...Object.values(StyleDefinition),
+  ...Object.values(StyleDefinitionComponents),
   Document,
   StringComponent,
   Text, Letters, TextList,

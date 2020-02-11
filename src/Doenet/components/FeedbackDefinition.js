@@ -3,6 +3,9 @@ import BaseComponent from './abstract/BaseComponent';
 export class FeedbackDefinition extends BaseComponent {
   static componentType = "feedbackdefinition";
 
+  static createPropertiesObject() {
+    return {};
+  }
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -69,6 +72,9 @@ export class FeedbackDefinition extends BaseComponent {
 export class FeedbackDefinitions extends BaseComponent {
   static componentType = "feedbackdefinitions";
 
+  static createPropertiesObject() {
+    return {};
+  }
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);

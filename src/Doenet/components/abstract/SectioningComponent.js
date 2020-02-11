@@ -14,6 +14,7 @@ export default class SectioningComponent extends BlockComponent {
     // properties.possiblepoints = {default: undefined};
     // properties.aggregatebypoints = {default: false};
     properties.feedbackDefinitions = { propagateToDescendants: true, mergeArrays: true }
+    properties.styleDefinitions = { propagateToDescendants: true, mergeArrays: true }
     return properties;
   }
 
