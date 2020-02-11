@@ -3,7 +3,7 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faFolder, faArrowUp, 
-  faArrowDown, faDotCircle, faEdit, faArrowRight, faLink} from '@fortawesome/free-solid-svg-icons';
+  faArrowDown, faDotCircle, faEdit, faArrowRight, faFolderOpen, faLink} from '@fortawesome/free-solid-svg-icons';
 import "./branchBrowser.css";
 import SpinningLoader from './SpinningLoader';
 
@@ -214,6 +214,8 @@ class DoenetBranchBrowser extends Component {
       let childUrls = this.props.allFolderInfo[folderId].childUrls;
       let childFolder = this.props.allFolderInfo[folderId].childFolder;
       let isRepo = this.props.allFolderInfo[folderId].isRepo;
+      let isPublic = this.props.allFolderInfo[folderId].isPublic;
+      let isShared = this.props.allFolderInfo[this.props.allFolderInfo[folderId].rootId].isRepo;
       let classes = this.state.selectedItems.includes(folderId) ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
       
@@ -256,6 +258,8 @@ class DoenetBranchBrowser extends Component {
           childFolder={childFolder}
           folderId={folderId}
           isRepo={isRepo}
+          isPublic={isPublic}
+          isShared={isShared}
           classes={classes}
           key={"folder" + folderId}
           tableIndex={this.tableIndex++}
@@ -285,6 +289,9 @@ class DoenetBranchBrowser extends Component {
       let title = this.props.allContentInfo[branchId].title;
       let publishDate = formatTimestamp(this.props.allContentInfo[branchId].publishDate);
       let draftDate = formatTimestamp(this.props.allContentInfo[branchId].draftDate);
+      let isShared = this.props.allContentInfo[branchId].rootId == "root" ? false :
+        this.props.allFolderInfo[this.props.allContentInfo[branchId].rootId].isRepo;
+      let isPublic = this.props.allContentInfo[branchId].isPublic;
       let classes = this.state.selectedItems.includes(branchId) ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
       
@@ -316,6 +323,8 @@ class DoenetBranchBrowser extends Component {
         title={title}
         publishDate={publishDate}
         draftDate={draftDate}
+        isShared={isShared}
+        isPublic={isPublic}
         key={"contentItem" + branchId}
         tableIndex={this.tableIndex++}
         showRemoveItemIcon={showRemoveItemIcon}
@@ -342,6 +351,9 @@ class DoenetBranchBrowser extends Component {
       let url = this.props.allUrlInfo[urlId].url;
       let description = this.props.allUrlInfo[urlId].description;
       let publishDate = formatTimestamp(this.props.allUrlInfo[urlId].publishDate);
+      let isShared = this.props.allUrlInfo[urlId].rootId == "root" ? false :
+        this.props.allFolderInfo[this.props.allUrlInfo[urlId].rootId].isRepo;
+      let isPublic = this.props.allUrlInfo[urlId].isPublic;
       let classes = this.state.selectedItems.includes(urlId) ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
       
@@ -374,6 +386,8 @@ class DoenetBranchBrowser extends Component {
         url={url}
         publishDate={publishDate}
         description={description}
+        isShared={isShared}
+        isPublic={isPublic}
         key={"urlItem" + urlId}
         tableIndex={this.tableIndex++}
         showRemoveItemIcon={showRemoveItemIcon}
@@ -682,48 +696,50 @@ class DoenetBranchBrowser extends Component {
         <div id="branchBrowser">
           <div id="contentList">
             {this.breadcrumb}
-            <table id="browser">
-              <tbody>
-                <tr className="browserHeadingsRow" key="browserHeadingsRow">
-                  <th 
-                  className={this.state.sortBy === "title" ? "browserItemName browserSelectedHeading" : "browserItemName"}
-                  onClick={() => this.updateSortOrder("title")}>
-                    Name   {this.state.sortBy === "title" ? this.state.sortOrderAsc ? 
-                                                          <FontAwesomeIcon icon={faArrowUp} className="sortOrderIcon"/> :
-                                                          <FontAwesomeIcon icon={faArrowDown} className="sortOrderIcon"/> : ""}
-                  </th>
-                  <th 
-                  className={this.state.sortBy === "draftDate" ? "draftDate browserSelectedHeading" : "draftDate"}
-                  onClick={() => this.updateSortOrder("draftDate")}>
-                    Draft Date   {this.state.sortBy === "draftDate" ? this.state.sortOrderAsc ? 
-                                                          <FontAwesomeIcon icon={faArrowUp} className="sortOrderIcon"/> :
-                                                          <FontAwesomeIcon icon={faArrowDown} className="sortOrderIcon"/> : ""}
-                  </th>
-                  <th 
-                  className={this.state.sortBy === "publishedDate" ? "publishDate browserSelectedHeading" : "publishDate"}
-                  onClick={() => this.updateSortOrder("publishedDate")}>
-                    Published Date  {this.state.sortBy === "publishedDate" ? this.state.sortOrderAsc ? 
-                                                          <FontAwesomeIcon icon={faArrowUp} className="sortOrderIcon"/> :
-                                                          <FontAwesomeIcon icon={faArrowDown} className="sortOrderIcon"/> : ""}
-                  </th>
-                </tr>
-                {this.state.directoryStack.length !== 0 &&
-                <tr
-                className="browserDataRow"
-                data-cy="upOneDirectory"
-                onDoubleClick={this.upOneDirectory}>
-                  <td className="browserItemName">
-                    <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
-                    <span>{"..."}</span>
-                  </td>
-                  <td className="draftDate"></td>
-                  <td className="publishDate"></td>
-                </tr>}
-                {this.folderItems}
-                {this.contentItems}
-                {this.urlItems}
-              </tbody>
-            </table>
+              <table id="browser">
+                <tbody>
+                  <tr className="browserHeadingsRow" key="browserHeadingsRow">
+                    <th 
+                    className={this.state.sortBy === "title" ? "browserItemName browserSelectedHeading" : "browserItemName"}
+                    onClick={() => this.updateSortOrder("title")}>
+                      Name   {this.state.sortBy === "title" ? this.state.sortOrderAsc ? 
+                                                            <FontAwesomeIcon icon={faArrowUp} className="sortOrderIcon"/> :
+                                                            <FontAwesomeIcon icon={faArrowDown} className="sortOrderIcon"/> : ""}
+                    </th>
+                    <th 
+                    className={this.state.sortBy === "draftDate" ? "draftDate browserSelectedHeading" : "draftDate"}
+                    onClick={() => this.updateSortOrder("draftDate")}>
+                      Draft Date   {this.state.sortBy === "draftDate" ? this.state.sortOrderAsc ? 
+                                                            <FontAwesomeIcon icon={faArrowUp} className="sortOrderIcon"/> :
+                                                            <FontAwesomeIcon icon={faArrowDown} className="sortOrderIcon"/> : ""}
+                    </th>
+                    <th 
+                    className={this.state.sortBy === "publishedDate" ? "publishDate browserSelectedHeading" : "publishDate"}
+                    onClick={() => this.updateSortOrder("publishedDate")}>
+                      Published Date  {this.state.sortBy === "publishedDate" ? this.state.sortOrderAsc ? 
+                                                            <FontAwesomeIcon icon={faArrowUp} className="sortOrderIcon"/> :
+                                                            <FontAwesomeIcon icon={faArrowDown} className="sortOrderIcon"/> : ""}
+                    </th>
+                  </tr>
+                  {this.state.directoryStack.length !== 0 &&
+                  <tr
+                  className="browserDataRow"
+                  data-cy="upOneDirectory"
+                  onDoubleClick={this.upOneDirectory}>
+                    <td className="browserItemName">
+                      <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
+                      <span>{"..."}</span>
+                    </td>
+                    <td className="draftDate"></td>
+                    <td className="publishDate"></td>
+                  </tr>}
+                  {this.folderList.length == 0 && this.contentList.length == 0 && this.urlList.length == 0 &&
+                    <div id="browserEmptyMessage"><span>Create new files or folders using the New button</span></div>}
+                  {this.folderItems}
+                  {this.contentItems}
+                  {this.urlItems}
+                </tbody>
+              </table>
           </div>
           <InfoPanel
             selectedItems={this.state.selectedItems}
@@ -736,6 +752,7 @@ class DoenetBranchBrowser extends Component {
             allCourseInfo={this.props.allCourseInfo}
             disableEditing={this.disableEditing}
             openEditCourseForm={this.props.openEditCourseForm}
+            publicizeRepo={this.props.publicizeRepo}
             openEditUrlForm={this.openEditUrlForm}
           />
         </div>
@@ -758,7 +775,9 @@ class File extends React.Component {
       onDoubleClick={() => this.props.onDoubleClick(this.props.branchId)}
       data-cy={this.props.branchId}>
         <td className="browserItemName">
-          <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3D6EC9", "margin": "0px 15px"}}/>
+          {this.props.isShared && this.props.isPublic ? 
+            <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/> :
+            <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3D6EC9", "margin": "0px 15px"}}/>}
           <span>{this.props.title}</span>
         </td>
         <td className="draftDate">
@@ -794,7 +813,9 @@ class Url extends React.Component {
       onDoubleClick={() => this.props.onDoubleClick(this.props.urlId)}
       data-cy={this.props.urlId}>
         <td className="browserItemName">
-          <FontAwesomeIcon icon={faLink} style={{"fontSize":"18px", "color":"#3D6EC9", "margin": "0px 15px"}}/>
+          {this.props.isShared && this.props.isPublic ? 
+            <FontAwesomeIcon icon={faLink} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/> :
+            <FontAwesomeIcon icon={faLink} style={{"fontSize":"18px", "color":"#3D6EC9", "margin": "0px 15px"}}/>}
           <span>{this.props.title}</span>
         </td>
         <td className="draftDate">
@@ -849,6 +870,15 @@ class Folder extends React.Component {
   }
 
   render() {
+    let folderIcon = <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>;
+    if (this.props.isRepo) {
+      folderIcon = this.props.isPublic ?
+          <FontAwesomeIcon icon={faFolderOpen} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/> :
+          <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/>;
+    } else if (this.props.isShared && this.props.isPublic) {
+      folderIcon = <FontAwesomeIcon icon={faFolderOpen} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>;
+    }
+
     return(
       <tr
       className={this.props.classes}
@@ -863,10 +893,7 @@ class Folder extends React.Component {
               onClick={() => this.props.handleAddContentToFolder(this.props.folderId)}/>
               <div className="addContentButtonInfo"><span>Move to Folder</span></div>
             </div>}
-            {this.props.isRepo ? 
-            <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/> :
-            <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
-            }
+            {folderIcon}
             <span
             contentEditable="true"
             onKeyDown={(e) => {this.handleKeyPress(e)}}
@@ -903,6 +930,7 @@ class InfoPanel extends Component {
     let selectedItemId = null;
     let selectedItemType = null;
     let itemTitle = "";
+    let itemIcon = <FontAwesomeIcon icon={faDotCircle} style={{"fontSize":"18px", "color":"#737373"}}/>;
 
     if (this.props.selectedItems.length === 0) {
       // handle when no file selected, show folder/drive info
@@ -922,10 +950,14 @@ class InfoPanel extends Component {
       // get title
       if (selectedItemType === "folder") {
         itemTitle = this.props.allFolderInfo[selectedItemId].title;
+        itemIcon = this.props.allFolderInfo[selectedItemId].isRepo ?
+          <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#3aac90"}}/> :
+          <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373"}}/>;
       } else if (selectedItemType === "url") {
         itemTitle = this.props.allUrlInfo[selectedItemId].title;
       } else {
         itemTitle = this.props.allContentInfo[selectedItemId].title;
+        itemIcon = <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3D6EC9"}}/>;
       }
 
       this.buildInfoPanelItemDetails(selectedItemId, selectedItemType);  
@@ -934,15 +966,7 @@ class InfoPanel extends Component {
     this.infoPanel = <React.Fragment>
       <div className="infoPanel">
         <div className="infoPanelTitle">
-          <div className="infoPanelItemIcon">
-            {selectedItemType === "content" ? 
-              <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3D6EC9"}}/> :
-              selectedItemType === "folder" ?
-              <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373"}}/> :
-              selectedItemType === "url" ?
-              <FontAwesomeIcon icon={faLink} style={{"fontSize":"18px", "color":"#3D6EC9"}}/> :
-              <FontAwesomeIcon icon={faDotCircle} style={{"fontSize":"18px", "color":"#737373"}}/>}
-          </div>
+          <div className="infoPanelItemIcon">{itemIcon}</div>
           <span>{ itemTitle }</span>
         </div>
         <div className="infoPanelPreview">
@@ -1021,6 +1045,17 @@ class InfoPanel extends Component {
         "Published" : formatTimestamp(this.props.allFolderInfo[selectedItemId].publishDate),
       };
 
+      let isShared = this.props.allFolderInfo[this.props.allFolderInfo[selectedItemId].rootId].isRepo;
+      if (this.props.allFolderInfo[selectedItemId].isRepo || isShared) {
+        itemDetails = Object.assign(itemDetails, {"Public": this.props.allFolderInfo[selectedItemId].isPublic ? "Yes" : "No"});
+      }
+      // show change to public button if private repo
+      if (this.props.allFolderInfo[selectedItemId].isRepo && !this.props.allFolderInfo[selectedItemId].isPublic) {
+        itemDetails["Public"] = <React.Fragment>
+            <span>No</span><button id="publicizeRepoButton" onClick={() => this.props.publicizeRepo(selectedItemId)}>Make Public</button>
+        </React.Fragment>
+      }
+
       Object.keys(itemDetails).map(itemDetailsKey => {
         let itemDetailsValue = itemDetails[itemDetailsKey];
         // add only if content not empty
@@ -1078,6 +1113,13 @@ class InfoPanel extends Component {
         // "Related content" : relatedContent,
       };
 
+      let isShared = this.props.allContentInfo[selectedItemId].rootId == "root" ? false :
+        this.props.allFolderInfo[this.props.allContentInfo[selectedItemId].rootId].isRepo;
+
+      if (isShared) {
+        itemDetails = Object.assign(itemDetails, {"Public": this.props.allContentInfo[selectedItemId].isPublic ? "Yes" : "No"});
+      }
+
       Object.keys(itemDetails).map(itemDetailsKey => {
         let itemDetailsValue = itemDetails[itemDetailsKey];
         this.infoPanelDetails.push(
@@ -1110,6 +1152,13 @@ class InfoPanel extends Component {
         "Description" : this.props.allUrlInfo[selectedItemId].description,
         "Uses DoenetAPI" : this.props.allUrlInfo[selectedItemId].usesDoenetAPI == true ? "Yes" : "No",
       };
+
+      let isShared = this.props.allUrlInfo[selectedItemId].rootId == "root" ? false :
+        this.props.allFolderInfo[this.props.allUrlInfo[selectedItemId].rootId].isRepo;
+
+      if (isShared) {
+        itemDetails = Object.assign(itemDetails, {"Public": this.props.allUrlInfo[selectedItemId].isPublic ? "Yes" : "No"});
+      }
 
       Object.keys(itemDetails).map(itemDetailsKey => {
         let itemDetailsValue = itemDetails[itemDetailsKey];

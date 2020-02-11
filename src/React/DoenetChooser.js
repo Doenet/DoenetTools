@@ -71,6 +71,7 @@ class DoenetChooser extends Component {
     this.modifyPublicState = this.modifyPublicState.bind(this);
     this.addContentToRepo = this.addContentToRepo.bind(this);
     this.loadFilteredContent = this.loadFilteredContent.bind(this);
+    this.publicizeRepo = this.publicizeRepo.bind(this);
     this.toggleManageUrlForm = this.toggleManageUrlForm.bind(this);
     this.saveUrl = this.saveUrl.bind(this);
     this.handleNewUrlCreated = this.handleNewUrlCreated.bind(this);
@@ -624,14 +625,15 @@ class DoenetChooser extends Component {
     // generate new folderId
     let folderId = nanoid();
 
-    // check if new folder is private or isPublic
+    // check if parent folder is private or isPublic
     let isPublic = false;
-    // if (this.state.directoryStack.length == 0  // in root
-    //   || this.folderInfo(this.state.directoryStack[0])) {       // in private repo
-    //   isPrivate = true;
-    // }
+    if (this.state.directoryStack.length != 0  // not in root
+      && this.folderInfo[this.state.directoryStack[0]].isRepo  // in repo
+      && this.folderInfo[this.state.directoryStack[0]].isPublic) {  // in public repo
+      isPublic = true;
+    }
 
-    this.saveFolder(folderId, title, [], [], "insert", false, false, () => {
+    this.saveFolder(folderId, title, [], [], "insert", false, isPublic, () => {
       // if not in base dir, add folder to current folder
       if (this.state.directoryStack.length !== 0) {
         let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
@@ -771,6 +773,32 @@ class DoenetChooser extends Component {
       // this.forceUpdate();
       callback();
     });
+  }
+
+  publicizeRepo(repoId) {
+    // display alert message
+    if (window.confirm('This change is irreversible, proceed?')) {
+      let repoChildren = [];
+      let repoChildrenType = [];
+
+      this.folderInfo[repoId].childFolders.forEach((childId, i) => {
+        repoChildren = repoChildren.concat(this.flattenFolder(childId).itemIds);
+        repoChildrenType = repoChildrenType.concat(this.flattenFolder(childId).itemType);
+      });
+      this.folderInfo[repoId].childContent.forEach((childId, i) => {
+        repoChildren.push(childId);
+        repoChildrenType.push("content");
+      });
+      this.folderInfo[repoId].childUrls.forEach((childId, i) => {
+        repoChildren.push(childId);
+        repoChildrenType.push("url");
+      });
+      this.modifyPublicState(true, [repoId].concat(repoChildren), ["folder"].concat(repoChildrenType), () => {
+        this.loadUserFoldersAndRepo();
+        this.loadUserContentBranches();
+        this.loadUserUrls();
+      });
+    }
   }
 
   modifyPublicState(isPublic, itemIds, itemType, callback=(()=>{})) {
@@ -1061,6 +1089,7 @@ class DoenetChooser extends Component {
         contentList = this.courseInfo[this.state.selectedCourse].content;
         urlList = this.courseInfo[this.state.selectedCourse].urls;
       }
+      console.log(this.urlInfo);
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
           loading={!this.folders_loaded && !this.branches_loaded && !this.urls_loaded}
@@ -1085,7 +1114,8 @@ class DoenetChooser extends Component {
           selectedItems={this.state.selectedItems}                // optional
           selectedItemsType={this.state.selectedItemsType}        // optional
           renameFolder={this.renameFolder}                        // optional
-          openEditCourseForm={() => this.toggleManageCourseForm("edit_course")}
+          openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
+          publicizeRepo={this.publicizeRepo}                      // optional
           openEditUrlForm={() => this.toggleManageUrlForm("edit_url")}
         />
       </React.Fragment>
