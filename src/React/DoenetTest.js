@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import DoenetViewer from '../React/DoenetViewer';
 import doenetDefaultCode from '../defaultCode.doenet';
-import { Button, Dropdown, Icon, Menu } from 'semantic-ui-react';
 
 class DoenetTest extends Component {
   constructor(props){
@@ -80,15 +79,11 @@ class DoenetTest extends Component {
     }
 
     return (<React.Fragment>
-      <Menu attached='top'>
-    
-  
-      <Menu.Item>
-        <Button onClick={this.modeToggle} data-cy="viewerModeButton">Mode</Button>
-      </Menu.Item>
+
+   
+        <button onClick={this.modeToggle} data-cy="viewerModeButton">Mode</button>
   
 
-      </Menu>
       {this.state.modeOpen ? <div style={{backgroundColor:"#cce2ff", padding:"10px",borderBottom:"1px solid grey"}}>
         <b>Modes</b><br />
 
