@@ -1,6 +1,5 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import me from 'math-expressions';
-import { deepCompare } from '../utils/deepFunctions';
 
 export default class Sequence extends CompositeComponent {
   static componentType = "sequence";

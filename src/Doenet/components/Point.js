@@ -13,7 +13,7 @@ export default class Point extends GraphicalComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static stateVariablesForReference = ["xs"];
+  static get stateVariablesForReference() { return ["xs"] };
 
   static primaryStateVariableForDefinition = "coords";
 

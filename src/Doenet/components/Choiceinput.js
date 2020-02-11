@@ -15,7 +15,7 @@ export default class Choiceinput extends Input {
   static componentType = "choiceinput";
 
   // used when referencing this component without prop
-  static stateVariablesForReference = ["choiceOrder"];
+  static get stateVariablesForReference() { return ["choiceOrder"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);

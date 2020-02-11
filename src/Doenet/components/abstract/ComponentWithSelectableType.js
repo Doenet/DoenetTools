@@ -5,7 +5,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static stateVariablesForReference = ["value", "selectedType"];
+  static get stateVariablesForReference() { return ["value", "selectedType"] };
 
   static modifySharedParameters({ sharedParameters }) {
     // since sequence turns defaultToPrescribedParameters on,
@@ -15,7 +15,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.type = { default: undefined };
+    properties.type = { default: null };
     return properties;
   }
 
@@ -26,11 +26,11 @@ export default class ComponentWithSelectableType extends BaseComponent {
     function addType({ activeChildrenMatched, dependencyValues }) {
 
       let selectedType = dependencyValues.type;
-      if (selectedType === undefined) {
+      if (selectedType === null) {
         if (activeChildrenMatched.length === 1) {
           let child = activeChildrenMatched[0];
           if (child.componentType === "string") {
-            let s = dependencyValues.stringChild[0].stateValues.value.trim();
+            let s = dependencyValues.stringChildren[0].stateValues.value.trim();
             if (/^[a-zA-Z]+$/.test(s)) {
               selectedType = "letters";
             } else if (Number.isFinite(Number(s))) {
@@ -153,7 +153,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
       definition({ dependencyValues }) {
         if (dependencyValues.atMostOneChild.length === 0) {
           return {
-            newValues: { value: undefined }
+            newValues: { value: null }
           }
         }
         return {
@@ -175,7 +175,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.atMostOneChild.length === 0) {
-          return { newValues: { selectedType: undefined } }
+          return { newValues: { selectedType: null } }
         }
         return {
           newValues: { selectedType: dependencyValues.atMostOneChild[0].componentType }

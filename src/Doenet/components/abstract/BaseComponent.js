@@ -789,7 +789,7 @@ export default class BaseComponent {
 
   static useChildrenForReference = true;
 
-  static stateVariablesForReference = [];
+  static get stateVariablesForReference() { return [] };
 
   returnSerializeInstructions() {
     return {};

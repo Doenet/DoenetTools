@@ -6,7 +6,7 @@ export default class LineSegment extends GraphicalComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static stateVariablesForReference = ["endpoints"];
+  static get stateVariablesForReference() { return ["endpoints"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);

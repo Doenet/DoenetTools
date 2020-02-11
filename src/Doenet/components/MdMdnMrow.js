@@ -7,7 +7,7 @@ export class Md extends BlockComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static stateVariablesForReference = ["value"];
+  static get stateVariablesForReference() { return ["value"] };
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);

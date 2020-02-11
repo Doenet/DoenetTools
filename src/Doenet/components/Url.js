@@ -5,7 +5,7 @@ export default class Url extends InlineComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static stateVariablesForReference = ["linktext"];
+  static get stateVariablesForReference() { return ["linktext"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);

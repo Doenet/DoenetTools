@@ -8,7 +8,7 @@ export default class RefTarget extends BaseComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static stateVariablesForReference = ["refTargetName"];
+  static get stateVariablesForReference() { return ["refTargetName"] };
 
   static createPropertiesObject() {
     return {};

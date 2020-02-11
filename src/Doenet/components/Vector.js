@@ -7,9 +7,11 @@ export default class Vector extends GraphicalComponent {
   // used when referencing this component without prop
   // reference via the head/tail plus keep track of how defined
   static useChildrenForReference = false;
-  static stateVariablesForReference = [
-    "head", "tail", "displacement", "basedOnHead", "basedOnTail", "basedOnDisplacement"
-  ];
+  static get stateVariablesForReference() {
+    return [
+      "head", "tail", "displacement", "basedOnHead", "basedOnTail", "basedOnDisplacement"
+    ]
+  };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);

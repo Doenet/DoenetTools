@@ -6,7 +6,7 @@ export default class Polyline extends GraphicalComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static stateVariablesForReference = ["vertices"];
+  static get stateVariablesForReference() { return ["vertices"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);

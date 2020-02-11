@@ -14,7 +14,7 @@ export default class Select extends CompositeComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static stateVariablesForReference = ["selectedIndices"];
+  static get stateVariablesForReference() { return ["selectedIndices"] };
 
 
   static keepChildrenSerialized({ serializedComponent, allComponentClasses }) {
@@ -259,7 +259,7 @@ export default class Select extends CompositeComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        if (dependencyValues.essentialSelectedIndices !== undefined) {
+        if (dependencyValues.essentialSelectedIndices !== null) {
           return {
             makeEssential: ["selectedIndices"],
             newValues: {

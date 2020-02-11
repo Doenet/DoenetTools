@@ -10,7 +10,7 @@ export default class MathComponent extends InlineComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static stateVariablesForReference = ["unnormalizedValue"];
+  static get stateVariablesForReference() { return ["unnormalizedValue"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);

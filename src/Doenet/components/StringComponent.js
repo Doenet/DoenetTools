@@ -5,7 +5,7 @@ export default class StringComponent extends InlineComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static stateVariablesForReference = ["value"];
+  static get stateVariablesForReference() { return ["value"] };
 
   static createPropertiesObject() {
     return {};

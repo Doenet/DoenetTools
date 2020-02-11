@@ -10,11 +10,11 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
     childLogic.deleteAllLogic();
 
     function breakIntoTypesByCommas({ activeChildrenMatched, dependencyValues }) {
-      let stringChild = activeChildrenMatched[0];
+      let stringChild = dependencyValues.stringChild[0];
       let stringPieces = stringChild.stateValues.value.split(",").map(s => s.trim());
 
       let selectedType = dependencyValues.type;
-      if (selectedType === undefined) {
+      if (selectedType === null) {
         if (stringPieces.every(s => /^[a-zA-Z]+$/.test(s))) {
           selectedType = "letters";
         } else if (stringPieces.every(s => Number.isFinite(Number(s)))) {
@@ -48,6 +48,11 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
         type: {
           dependencyType: "stateVariable",
           variableName: "type",
+        },
+        stringChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneString",
+          variableNames: ["value"],
         }
       },
       affectedBySugar: ["anythingForSelectedType"],
@@ -57,7 +62,7 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
     function addType({ activeChildrenMatched, dependencyValues }) {
 
       let selectedType = dependencyValues.type;
-      if (selectedType === undefined) {
+      if (selectedType === null) {
         if (activeChildrenMatched.length === 1) {
           let child = activeChildrenMatched[0];
           if (child.componentType === "string") {
@@ -228,7 +233,7 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
       this.state.valueChildren = anythingForSelectedType.map(x => this.activeChildren[x]);
       if (this.state.valueChildren.length > 0) {
         this.state.stateVariableForPropertyValue = this.state.valueChildren[0].constructor.stateVariableForPropertyValue;
-        if (this.state.stateVariableForPropertyValue === undefined) {
+        if (this.state.stateVariableForPropertyValue === null) {
           this.state.stateVariableForPropertyValue = "value";
         }
       }
