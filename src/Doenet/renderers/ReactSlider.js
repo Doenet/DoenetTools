@@ -1,6 +1,5 @@
 import React from 'react';
-import { Style } from 'radium';
-
+import styled from 'styled-components';
 
 
 export default class ReactSlider extends React.Component {
@@ -14,9 +13,6 @@ export default class ReactSlider extends React.Component {
     this.fontFamily = "Times New Roman";
     this.fontSize = "14px";
     
-
-    
-
     this.trackClick = this.trackClick.bind(this);
     // this.createTicksForRendering = this.createTicksForRendering.bind(this);
     this.updateValue = this.updateValue.bind(this);
@@ -405,20 +401,14 @@ export default class ReactSlider extends React.Component {
 
     if (this.props.showControls === true && !this.props.disabled) {
 
+      const SlideControl = styled.button`
+      height: 20px;
+      margin-top: 20px;
+      `;
+
       showControls = <React.Fragment>
-        <Style rules={{
-          ".sliderControl": {
-            height: "20px",
-            marginTop: "20px",
-          },
-          ':focus': {
-            // backgroundColor: 'blue',
-            outline: 'none'
-          },
-        }} />
-        <button style={{marginLeft:"16px"}} 
-        className="sliderControl" onClick={this.clickLeftControl} >&lt;</button>
-        <button className="sliderControl" onClick={this.clickRightControl} >&gt;</button>
+        <SlideControl style={{marginLeft:"24px"}} onClick={this.clickLeftControl} >&lt;</SlideControl>
+        <SlideControl onClick={this.clickRightControl} >&gt;</SlideControl>
       </React.Fragment>
     }
 
