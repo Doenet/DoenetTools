@@ -103,14 +103,21 @@ export class NewComponentClass extends InheritedComponentClass {
         this.state.coordsChildren = atLeastZeroCoords.map(x => this.activeChildren[x]);
         this.state.coords = this.state.coordsChildren.map(x => x.state.value);
       }
-      //#############
-      //TODO: Essential state
-      //#############
+ 
+
     }
+    //State Variables
+    static returnStateVariableDefinitions() {
+      
+      let stateVariableDefinitions = {};
+      
+      return stateVariableDefinitions;
+
+  }
 
   
     static includeBlankStringChildren = true;
 
     //TODO: Renderer/Action
-    //TODO: Downstream Updates
+ 
   }
