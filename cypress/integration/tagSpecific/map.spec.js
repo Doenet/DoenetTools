@@ -1755,7 +1755,7 @@ describe('Map Tag Tests', function () {
     </graph>
     
     <ref name="graph4">_graph1</ref>
-    <p><collect components="point">_graph1</collect></p>
+    <p><collect componentTypes="point">_graph1</collect></p>
     `}, "*");
     });
 

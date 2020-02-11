@@ -13,8 +13,9 @@ export default class Variants extends InlineComponent {
       number: 0
     });
 
-    let breakStringIntoVariantsByCommas = function ({ activeChildrenMatched }) {
-      let stringChild = activeChildrenMatched[0];
+    let breakStringIntoVariantsByCommas = function ({ dependencyValues }) {
+
+      let stringChild = dependencyValues.stringChild[0];
       let newChildren = stringChild.stateValues.value.split(",").map(x => ({
         componentType: "variant",
         state: { value: x.trim() }
@@ -31,6 +32,13 @@ export default class Variants extends InlineComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
+      sugarDependencies: {
+        stringChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneString",
+          variableNames: ["value"]
+        }
+      },
       affectedBySugar: ["atLeastZeroVariants"],
       replacementFunction: breakStringIntoVariantsByCommas,
     });

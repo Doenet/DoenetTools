@@ -18,7 +18,7 @@ export default class Sequence extends CompositeComponent {
     let childLogic = super.returnChildLogic(args);
     let standardComponentClasses = args.standardComponentClasses;
 
-    function fromToAsString({ activeChildrenMatched, dependencyValues }) {
+    function fromToAsString({ dependencyValues }) {
 
       let stringChild = dependencyValues.stringChild[0];
       let stringPieces = stringChild.stateValues.value.split(",").map(x => x.trim());
@@ -764,24 +764,23 @@ export default class Sequence extends CompositeComponent {
 
     let replacementChanges = [];
 
-    // if invalid, have no replacements
+    // if invalid, withhold any previous replacementsreplacements
     if (!component.stateValues.validSequence) {
-      if (component.replacements.length > 0) {
-        let replacementInstruction = {
-          changeType: "delete",
-          changeTopLevelReplacements: true,
-          firstReplacementInd: 0,
-          numberReplacementsToDelete: component.replacements.length,
-        }
 
+      if (component.replacements.length > 0) {
+        let replacementsToWithhold = component.replacements.length;
+        let replacementInstruction = {
+          changeType: "changedReplacementsToWithhold",
+          replacementsToWithhold,
+        };
         replacementChanges.push(replacementInstruction);
       }
 
-      lrp.selectedType = null;
-      lrp.count = null;
-      lrp.from = null;
-      lrp.step = null;
-      lrp.exclude = [];
+      // leave all previous replacement parameters as they were before
+      // except make count zero.
+      // That way, if later restore to previous parameter set,
+      // we can restore the old replacements
+      lrp.count = 0;
 
       return replacementChanges;
     }

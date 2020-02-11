@@ -423,6 +423,9 @@ export default class Map extends CompositeComponent {
     let prevMinNIterates = lrp.minNIterates;
     let newReplacementsToWithhold = 0;
     let currentReplacementsToWithhold = component.replacementsToWithhold;
+    if(!currentReplacementsToWithhold) {
+      currentReplacementsToWithhold = 0;
+    }
     let withheldSubstitutionChildNames = lrp.withheldSubstitutionChildNames;
 
     // Check if any previous substitution child names 
@@ -478,7 +481,7 @@ export default class Map extends CompositeComponent {
     if (currentMinNIterates < prevMinNIterates) {
 
       if (!foundDeletedSubstitutionsChild) {
-        newReplacementsToWithhold = component.replacementsToWithhold +
+        newReplacementsToWithhold = currentReplacementsToWithhold +
           (prevMinNIterates - currentMinNIterates) * component.stateValues.numberTemplateComponents;
 
         let replacementInstruction = {

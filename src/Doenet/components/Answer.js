@@ -924,9 +924,8 @@ export default class Answer extends InlineComponent {
     stateVariableDefinitions.justSubmitted = {
       returnDependencies: () => ({
         currentCreditAchievedDependencies: {
-          dependencyType: "recursiveDependencyValues",
-          variableName: "creditAchievedIfSubmit",
-          changedValuesOnly: true,
+          dependencyType: "stateVariable",
+          variableName: "creditAchievedDependencies",
         },
         creditAchievedDependenciesAtSubmit: {
           dependencyType: "stateVariable",

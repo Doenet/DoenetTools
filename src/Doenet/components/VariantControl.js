@@ -210,7 +210,7 @@ export default class VariantControl extends BaseComponent {
         //    then use the variantNumber corresponding to that value
         // 4. else, random generate variantNumber
 
-        if (dependencyValues.essentialSelectedVariantNumber !== undefined) {
+        if (dependencyValues.essentialSelectedVariantNumber !== null) {
           return {
             makeEssential: ["selectedVariantNumber"],
             newValues: {

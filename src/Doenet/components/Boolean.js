@@ -76,7 +76,7 @@ export default class BooleanComponent extends InlineComponent {
         ifChild: {
           dependencyType: "childStateVariables",
           childLogicName: "exactlyOneIf",
-          variableNames: ["value"],
+          variableNames: ["conditionSatisfied"],
         },
       }),
       defaultValue: false,
@@ -90,7 +90,7 @@ export default class BooleanComponent extends InlineComponent {
                 }
               }
             } else {
-              throw Error("Haven't implemented <if> yet for boolean")
+              return { newValues: { value: dependencyValues.ifChild[0].stateValues.conditionSatisfied } }
             }
           } else {
             return { newValues: { value: dependencyValues.booleanChild[0].stateValues.value } }
@@ -106,7 +106,50 @@ export default class BooleanComponent extends InlineComponent {
         }
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
-        throw Error("Need to implement inverse definition for boolean")
+        if (dependencyValues.stringTextChildren.length === 0) {
+          if (dependencyValues.booleanChild.length === 0) {
+            if (dependencyValues.ifChild.length === 0) {
+              // no children, so value is essential and give it the desired value
+              return {
+                success: true,
+                instructions: [{
+                  setStateVariable: "value",
+                  value: desiredStateVariableValues.value
+                }]
+              };
+            } else {
+              // can't invert if have if child
+              return { success: false }
+            }
+          } else {
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "booleanChild",
+                desiredValue: desiredStateVariableValues.value,
+                childIndex: 0,
+                variableIndex: 0,
+              }]
+            };
+          }
+        } else {
+
+          let numChildren = dependencyValues.stringTextChildren.length;
+          if (numChildren > 1) {
+            return { success: false };
+          }
+          if (numChildren === 1) {
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "stringTextChildren",
+                desiredValue: desiredStateVariableValues.value.toString(),
+                childIndex: 0,
+                variableIndex: 0,
+              }]
+            };
+          }
+        }
       }
     }
 

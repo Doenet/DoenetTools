@@ -5638,7 +5638,7 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it.only('answer with variable number of choices', () => {
+  it('answer with variable number of choices', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
@@ -5649,7 +5649,7 @@ describe('Answer Tag Tests', function () {
     <choiceinput>
       <map>
         <template>
-          <choice><credit><subsref/></credit>Get <subsref displaydigits="3"/>, plus a bit is <math displaydigits="3" simplify><subsref/>+0.001</math></choice>
+          <choice><credit><subsref/></credit>Get <number displaydigits="3"><subsref /></number>, plus a bit is <math displaydigits="3" simplify><subsref/>+0.001</math></choice>
         </template>
         <substitutions>
           <sequence from="0" to="1"><count><ref prop="value">num</ref></count></sequence>
@@ -5660,7 +5660,7 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    <text>a</text>
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.get('#\\/_choiceinput1').should('have.value', '');
     cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
@@ -6020,6 +6020,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
+      <text>a</text>
       <p>Credit for cat: <mathinput name="catcredit" prefill="0.3" /> </p>
       <p>Last option: <textinput prefill="bird" name="last" /></p>
       <answer>
@@ -6031,148 +6032,160 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get(choiceinputAnchor).should('have.value', '');
-    cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('check work')
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let choiceinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName;
+      let choiceinputAnchor = '#' + choiceinputName;
+      let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
+      let choiceinputCorrectAnchor = '#' + choiceinputName + '_correct';
+      let choiceinputIncorrectAnchor = '#' + choiceinputName + '_incorrect';
+      let choiceinputPartialAnchor = '#' + choiceinputName + '_partial';
+
+      cy.get(choiceinputAnchor).should('have.value', '');
+      cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('check work')
+      })
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log("Select correct answer")
+      cy.get(choiceinputAnchor).contains(`dog`).click({ force: true });
+      cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('check work')
+      })
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log("Click submit button")
+      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputSubmitAnchor).should('not.exist');
+      cy.get(choiceinputCorrectAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('correct')
+      })
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log('Change partial credit for cat')
+      cy.get('#\\/catcredit_input').clear().type('0.4{enter}')
+      cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('check work')
+      })
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log("Click submit button")
+      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputSubmitAnchor).should('not.exist');
+      cy.get(choiceinputCorrectAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('correct')
+      })
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log('Change last choice')
+      cy.get('#\\/last_input').clear().type('mouse{enter}')
+      cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('check work')
+      })
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log("Click submit button")
+      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputSubmitAnchor).should('not.exist');
+      cy.get(choiceinputCorrectAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('correct')
+      })
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+
+      cy.log("Select partially correct answer")
+      cy.get(choiceinputAnchor).contains(`cat`).click({ force: true });
+      cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('check work')
+      })
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log("Press enter on submit button")
+      cy.get(choiceinputSubmitAnchor).type(`{enter}`, { force: true });
+      cy.get(choiceinputSubmitAnchor).should('not.exist');
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('40% correct')
+      })
+
+      cy.log('Change partial credit for cat')
+      cy.get('#\\/catcredit_input').clear().type('0.2{enter}')
+      cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('check work')
+      })
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log("Click submit button")
+      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputSubmitAnchor).should('not.exist');
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('20% correct')
+      })
+
+
+      cy.log("Select variable answer")
+      cy.get(choiceinputAnchor).contains(`mouse`).click({ force: true });
+      cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('check work')
+      })
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log("Press enter on submit button")
+      cy.get(choiceinputSubmitAnchor).type(`{enter}`, { force: true });
+      cy.get(choiceinputSubmitAnchor).should('not.exist');
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('incorrect')
+      });
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log('Change animal name')
+      cy.get('#\\/last_input').clear().type('rabbit{enter}')
+      cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('check work')
+      })
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log("Click submit button")
+      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputSubmitAnchor).should('not.exist');
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('incorrect')
+      });
+      cy.get(choiceinputPartialAnchor).should('not.exist');
     })
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log("Select correct answer")
-    cy.get(choiceinputAnchor).contains(`dog`).click({ force: true });
-    cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('check work')
-    })
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log("Click submit button")
-    cy.get(choiceinputSubmitAnchor).click();
-    cy.get(choiceinputSubmitAnchor).should('not.exist');
-    cy.get(choiceinputCorrectAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('correct')
-    })
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log('Change partial credit for cat')
-    cy.get('#\\/catcredit_input').clear().type('0.4{enter}')
-    cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('check work')
-    })
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log("Click submit button")
-    cy.get(choiceinputSubmitAnchor).click();
-    cy.get(choiceinputSubmitAnchor).should('not.exist');
-    cy.get(choiceinputCorrectAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('correct')
-    })
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log('Change last choice')
-    cy.get('#\\/last_input').clear().type('mouse{enter}')
-    cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('check work')
-    })
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log("Click submit button")
-    cy.get(choiceinputSubmitAnchor).click();
-    cy.get(choiceinputSubmitAnchor).should('not.exist');
-    cy.get(choiceinputCorrectAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('correct')
-    })
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-
-    cy.log("Select partially correct answer")
-    cy.get(choiceinputAnchor).contains(`cat`).click({ force: true });
-    cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('check work')
-    })
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log("Press enter on submit button")
-    cy.get(choiceinputSubmitAnchor).type(`{enter}`, { force: true });
-    cy.get(choiceinputSubmitAnchor).should('not.exist');
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('40% correct')
-    })
-
-    cy.log('Change partial credit for cat')
-    cy.get('#\\/catcredit_input').clear().type('0.2{enter}')
-    cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('check work')
-    })
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log("Click submit button")
-    cy.get(choiceinputSubmitAnchor).click();
-    cy.get(choiceinputSubmitAnchor).should('not.exist');
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('20% correct')
-    })
-
-
-    cy.log("Select variable answer")
-    cy.get(choiceinputAnchor).contains(`mouse`).click({ force: true });
-    cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('check work')
-    })
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log("Press enter on submit button")
-    cy.get(choiceinputSubmitAnchor).type(`{enter}`, { force: true });
-    cy.get(choiceinputSubmitAnchor).should('not.exist');
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('incorrect')
-    });
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log('Change animal name')
-    cy.get('#\\/last_input').clear().type('rabbit{enter}')
-    cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('check work')
-    })
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log("Click submit button")
-    cy.get(choiceinputSubmitAnchor).click();
-    cy.get(choiceinputSubmitAnchor).should('not.exist');
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('incorrect')
-    });
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
   });
 
   it('switch answer between inline and block', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `
+      <text>a</text>
       <p>Inline: <booleaninput name="inline" /> </p>
       <answer>
         <inline><ref prop="value">inline</ref></inline>
@@ -6183,84 +6196,82 @@ describe('Answer Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get(choiceinputAnchor).should('have.value', '');
-    cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('check work')
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let choiceinputName = components['/_answer1'].stateValues.inputDescendants[0].componentName;
+      let choiceinputAnchor = '#' + choiceinputName;
+      let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
+      let choiceinputCorrectAnchor = '#' + choiceinputName + '_correct';
+      let choiceinputIncorrectAnchor = '#' + choiceinputName + '_incorrect';
+      let choiceinputPartialAnchor = '#' + choiceinputName + '_partial';
+
+
+      cy.get(choiceinputAnchor).should('have.value', '');
+      cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('check work')
+      })
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log("toggle inline")
+      cy.get('#\\/inline_input').click();
+      cy.get(choiceinputAnchor).should('have.value', '');
+      cy.get(choiceinputSubmitAnchor).should('be.visible');
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log("Select correct answer")
+      cy.get(choiceinputAnchor).select(`dog`);
+      cy.get(choiceinputSubmitAnchor).should('be.visible');
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log("Click submit button")
+      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputSubmitAnchor).should('not.exist');
+      cy.get(choiceinputCorrectAnchor).should('be.visible');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log("toggle inline")
+      cy.get('#\\/inline_input').click();
+      cy.get(choiceinputSubmitAnchor).should('not.exist');
+      cy.get(choiceinputCorrectAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('correct')
+      })
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log('Select partial credit answer')
+      cy.get(choiceinputAnchor).contains(`cat`).click({ force: true });
+      cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('check work')
+      })
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('not.exist');
+
+      cy.log("Click submit button")
+      cy.get(choiceinputSubmitAnchor).click();
+      cy.get(choiceinputSubmitAnchor).should('not.exist');
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('50% correct')
+      })
+
+      cy.log("toggle inline")
+      cy.get('#\\/inline_input').click();
+      cy.get(choiceinputSubmitAnchor).should('not.exist');
+      cy.get(choiceinputCorrectAnchor).should('not.exist');
+      cy.get(choiceinputIncorrectAnchor).should('not.exist');
+      cy.get(choiceinputPartialAnchor).should('have.text', '50 %');
     })
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log("toggle inline")
-    cy.get('#\\/inline_input').click();
-    cy.get(choiceinputAnchor).should('have.value', '');
-    cy.get(choiceinputSubmitAnchor).should('be.visible');
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log("Select correct answer")
-    cy.get(choiceinputAnchor).select(`dog`);
-    cy.get(choiceinputSubmitAnchor).should('be.visible');
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log("Click submit button")
-    cy.get(choiceinputSubmitAnchor).click();
-    cy.get(choiceinputSubmitAnchor).should('not.exist');
-    cy.get(choiceinputCorrectAnchor).should('be.visible');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log("toggle inline")
-    cy.get('#\\/inline_input').click();
-    cy.get(choiceinputSubmitAnchor).should('be.visible');
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log("Click submit button")
-    cy.get(choiceinputSubmitAnchor).click();
-    cy.get(choiceinputSubmitAnchor).should('not.exist');
-    cy.get(choiceinputCorrectAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('correct')
-    })
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log('Select partial credit answer')
-    cy.get(choiceinputAnchor).contains(`cat`).click({ force: true });
-    cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('check work')
-    })
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log("Click submit button")
-    cy.get(choiceinputSubmitAnchor).click();
-    cy.get(choiceinputSubmitAnchor).should('not.exist');
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('50% correct')
-    })
-
-    cy.log("toggle inline")
-    cy.get('#\\/inline_input').click();
-    cy.get(choiceinputSubmitAnchor).should('be.visible');
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('not.exist');
-
-    cy.log("Click submit button")
-    cy.get(choiceinputSubmitAnchor).click();
-    cy.get(choiceinputSubmitAnchor).should('not.exist');
-    cy.get(choiceinputCorrectAnchor).should('not.exist');
-    cy.get(choiceinputIncorrectAnchor).should('not.exist');
-    cy.get(choiceinputPartialAnchor).should('have.text', '50 %');
-
   });
 
   it('answer math from one string, split into options', () => {

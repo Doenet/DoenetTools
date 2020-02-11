@@ -2725,7 +2725,7 @@ export default class Core {
     //   (i.e., based on index rather than arrayKey)
     //   arrayValues is used rather than value given that value is
     //   sometimes deleted and replaced by a getter.  arrayValues is
-    //   never deleted, but entries are marked as stale using stateByKey
+    //   never deleted, but entries are marked as stale using staleByKey
     // - staleByKey: when an entry associated with an arrayKey is stale
     //   staleByKey for that key should set to true
     //   Note: component classes are responsible for setting staleByKey
@@ -2874,6 +2874,17 @@ export default class Core {
         this.setUpDependenciesOfArrayEntries({ component, stateVariable, dependencyOverride });
       }
     }
+
+    if (component.aliasesToCopyDependencies) {
+      for (let stateVariable in component.aliasesToCopyDependencies) {
+        this.downstreamDependencies[component.componentName][stateVariable]
+          = this.downstreamDependencies[component.componentName][component.aliasesToCopyDependencies[stateVariable]];
+        this.upstreamDependencies[component.componentName][stateVariable]
+          = this.upstreamDependencies[component.componentName][component.aliasesToCopyDependencies[stateVariable]];
+      }
+      delete component.aliasesToCopyDependencies;
+    }
+
   }
 
   setUpDependenciesOfArrayEntries({ component, dependencyOverride, stateVariable, stateValues }) {
@@ -4337,33 +4348,27 @@ export default class Core {
                     }
 
 
-                    if (depComponent.componentName in this.downstreamDependencies) {
-                      // if depComponent is at least in downstreadDependencies,
-                      // meaning that it at least has started to resolve its state variables
-                      // (as opposed to, for example, when its child logic is not satisfied)
-                      // then see if can create the variable downVar from an alias or array entry
+                    // see if can create the variable downVar from an alias or array entry
 
-                      let result = this.createFromAliasOrArrayEntry({
-                        stateVariable: downVar,
+                    let result = this.createFromAliasOrArrayEntry({
+                      stateVariable: downVar,
+                      component: depComponent
+                    });
+
+                    for (let cName in result.componentVarsDeleted) {
+                      if (!componentVarsDeleted[cName]) {
+                        componentVarsDeleted[cName] = [];
+                      }
+                      componentVarsDeleted[cName].push(...result.componentVarsDeleted[cName])
+                    }
+
+                    if (Object.keys(result.varsUnresolved).length > 0) {
+                      this.addUnresolvedDependencies({
+                        varsUnresolved: result.varsUnresolved,
                         component: depComponent
                       });
-
-
-                      for (let cName in result.componentVarsDeleted) {
-                        if (!componentVarsDeleted[cName]) {
-                          componentVarsDeleted[cName] = [];
-                        }
-                        componentVarsDeleted[cName].push(...result.componentVarsDeleted[cName])
-                      }
-
-                      if (Object.keys(result.varsUnresolved).length > 0) {
-                        this.addUnresolvedDependencies({
-                          varsUnresolved: result.varsUnresolved,
-                          component: depComponent
-                        });
-                      }
-
                     }
+
                   }
 
                   if (depComponent.state[downVar] && depComponent.state[downVar].isResolved) {
@@ -4496,11 +4501,18 @@ export default class Core {
       }
       component.state[stateVariable] = component.state[aliasVar];
 
-      // copy downstream and upstream deps
-      this.downstreamDependencies[component.componentName][stateVariable] = this.downstreamDependencies[component.componentName][aliasVar];
-      this.upstreamDependencies[component.componentName][stateVariable] = this.upstreamDependencies[component.componentName][aliasVar];
-      // note: don't need to copy dependencies that point to alias
-      // as don't need to actually update alias
+      if (component.componentName in this.downstreamDependencies) {
+        // copy downstream and upstream deps
+        this.downstreamDependencies[component.componentName][stateVariable] = this.downstreamDependencies[component.componentName][aliasVar];
+        this.upstreamDependencies[component.componentName][stateVariable] = this.upstreamDependencies[component.componentName][aliasVar];
+        // note: don't need to copy dependencies that point to alias
+        // as don't need to actually update alias
+      } else {
+        if (!component.aliasesToCopyDependencies) {
+          component.aliasesToCopyDependencies = {}
+        }
+        component.aliasesToCopyDependencies[stateVariable] = aliasVar
+      }
     }
     else {
 
@@ -5551,7 +5563,7 @@ export default class Core {
               stateVarForMarkStale = upDepComponent.state[upVar.arrayStateVariable]
             }
             upVar.markStale({
-              stateByKey: stateVarForMarkStale.staleByKey,
+              staleByKey: stateVarForMarkStale.staleByKey,
               changes: { [upDep.dependencyName]: depChanges },
               // arrayValues
             });
@@ -6681,6 +6693,10 @@ export default class Core {
           if (result.componentsTouched) {
             newTouched.push(...result.componentsTouched);
           }
+
+          for(let componentName in result.addedComponents) {
+            this.changedStateVariables[componentName] = Object.assign({}, this._components[componentName].state);
+          }
         }
       }
       newTouched = new Set(newTouched);
@@ -6804,7 +6820,7 @@ export default class Core {
     let inverseDefinitionFunction = stateVarObj.inverseDefinition;
 
     if (stateVarObj.isArrayEntry) {
-      arrayStateVariable = stateVarObj.arrayStateVariable;
+      let arrayStateVariable = stateVarObj.arrayStateVariable;
       inverseDefinitionFunction = component.state[arrayStateVariable].inverseDefinition;
 
       let desiredValuesForArray = {};

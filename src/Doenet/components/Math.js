@@ -14,7 +14,7 @@ export default class MathComponent extends InlineComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.format = { default: "text", validValues: new Set(["text", "latex"]) };
+    properties.format = { default: "text", validValues: ["text", "latex"] };
 
     // let simply==="" be full simplify so that can simplify <math simplify /> to get full simplification
     // TODO: do we want to support simplify===""?
@@ -547,7 +547,10 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
     }
   }
 
-  return { newValues: { expressionWithCodes } };
+  return {
+    newValues: { expressionWithCodes },
+    makeEssential: ["expressionWithCodes"]
+  };
 
 }
 

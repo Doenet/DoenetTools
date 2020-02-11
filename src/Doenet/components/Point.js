@@ -808,7 +808,7 @@ export default class Point extends GraphicalComponent {
   updateRenderer({ sourceOfUpdate } = {}) {
     let changeInitiatedWithPoint = false;
     if (sourceOfUpdate !== undefined &&
-      this.componentName in sourceOfUpdate.instructionsByComponent) {
+      sourceOfUpdate.originalComponents.includes(this.componentName)) {
       changeInitiatedWithPoint = true;
     }
     let x = this.stateValues.xs[0].evaluate_to_constant();
