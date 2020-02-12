@@ -691,6 +691,8 @@ class DoenetChooser extends Component {
               [].concat(this.flattenFolder(childId).itemType));
             itemsToBeAdded.push(childId);
             typeOfItemsToBeAdded.push("folder");
+          } else {
+            this.displayToast(`Public content cannot be made private: ${this.folderInfo[childId].title}`);
           }
         } else if (childType[i] == "content") {
           // check if public
@@ -698,6 +700,8 @@ class DoenetChooser extends Component {
             this.modifyPublicState(isPublic, [childId], ["content"]);
             itemsToBeAdded.push(childId);
             typeOfItemsToBeAdded.push("content");
+          } else {
+            this.displayToast(`Public content cannot be made private: ${this.branchId_info[childId].title}`);
           }
         } else if (childType[i] == "url") {
           // check if public
@@ -705,6 +709,8 @@ class DoenetChooser extends Component {
             this.modifyPublicState(isPublic, [childId], ["url"]);
             itemsToBeAdded.push(childId);
             typeOfItemsToBeAdded.push("url");
+          } else {
+            this.displayToast(`Public content cannot be made private: ${this.folderInfo[childId].title}`);
           }
         }
       });
@@ -752,6 +758,7 @@ class DoenetChooser extends Component {
     // modify public/private state if parent is repo
     if (isRepo) {
       if (isPublic) {
+        this.displayToast(`Public content cannot be made private`);
         return; // public -> private not allowed
       } 
       // private -> private redundant, continue with removing    
@@ -1101,7 +1108,6 @@ class DoenetChooser extends Component {
         contentList = this.courseInfo[this.state.selectedCourse].content;
         urlList = this.courseInfo[this.state.selectedCourse].urls;
       }
-      console.log(this.urlInfo);
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
           loading={!this.folders_loaded && !this.branches_loaded && !this.urls_loaded}
