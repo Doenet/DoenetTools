@@ -81,8 +81,6 @@ export function ToastProvider({ children }) {
 		setToasts(newToasts);
 	};
 
-	console.log(toasts);
-
 	return (
 		<ToastContext.Provider value={{ add, remove }}>
 			{children}
@@ -99,5 +97,4 @@ export function ToastProvider({ children }) {
 
 // Consumer
 // ==============================
-
 export const useToasts = () => React.useContext(ToastContext);

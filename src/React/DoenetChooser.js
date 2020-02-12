@@ -12,6 +12,7 @@ import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown,
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
 import SpinningLoader from './SpinningLoader';
+import { ToastContext, useToasts, ToastProvider } from './ToastManager';
 
 
 class DoenetChooser extends Component {
@@ -74,8 +75,9 @@ class DoenetChooser extends Component {
     this.toggleManageUrlForm = this.toggleManageUrlForm.bind(this);
     this.saveUrl = this.saveUrl.bind(this);
     this.handleNewUrlCreated = this.handleNewUrlCreated.bind(this);
+    this.ToastWrapper = this.ToastWrapper.bind(this);
+    this.displayToast = this.displayToast.bind(this);
   }
-
 
   buildCourseList() {
     this.courseList = [];
@@ -729,7 +731,6 @@ class DoenetChooser extends Component {
       childIds.forEach(childId => {
           itemIds = itemIds.concat(this.flattenFolder(childId).itemIds);
       });
-      console.log(itemIds);
       
       this.modifyFolderChildrenRoot(this.folderInfo[folderId].rootId, itemIds, () => {
         this.loadUserFoldersAndRepo();
@@ -859,6 +860,7 @@ class DoenetChooser extends Component {
       num++;
       title = "New Folder " + num; 
     }
+    this.displayToast("New folder created.");
     this.addNewFolder(title);
   }
 
@@ -1015,6 +1017,16 @@ class DoenetChooser extends Component {
     })
   }
 
+  ToastWrapper() {
+    const { add } = useToasts();
+    this.addToast = add;
+    return <React.Fragment></React.Fragment>
+  }
+
+  displayToast(message) {
+    this.addToast(message);
+  }
+
   render(){
 
     if (!this.courses_loaded){
@@ -1093,11 +1105,14 @@ class DoenetChooser extends Component {
 
     return (<React.Fragment>
       <DoenetHeader toolTitle="Chooser" headingTitle={"Choose Branches"} />
-      <div id="chooserContainer">
-        { this.leftNavPanel }
-        { this.topToolbar }
-        { this.mainSection }     
-      </div>
+      <ToastProvider>
+        <div id="chooserContainer">
+          <this.ToastWrapper/>
+          { this.leftNavPanel }
+          { this.topToolbar }
+          { this.mainSection }     
+        </div>
+      </ToastProvider>
     </React.Fragment>);
   }
 }
