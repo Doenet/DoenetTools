@@ -142,6 +142,13 @@ export class NewComponentClass extends InheritedComponentClass {
       return childLogic;
     }
 
+    //State Variables are used to store the primary information needed to produce the results needed by 
+    //the component.
+
+    static returnStateVariableDefinitions() {
+
+    }
+
     //updateState is called on construction and....
     updateState(args={}) {
       
@@ -153,4 +160,23 @@ export class NewComponentClass extends InheritedComponentClass {
 
 
     }
+
+    initializeRenderer({ }) {
+    if (this.renderer !== undefined) {
+      this.updateRenderer();
+      return;
+    }
+
+    this.renderer = new this.availableRenderers.slider({
+      *** parameters here ***
+    });
+  }
+
+  updateRenderer() {
+
+    this.renderer.updateSlider({
+           *** parameters here ***
+    })
+
+  }
   }

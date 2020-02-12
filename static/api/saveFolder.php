@@ -12,7 +12,7 @@ $folderId = mysqli_real_escape_string($conn,$_POST["folderId"]);
 $parentId = mysqli_real_escape_string($conn,$_POST["parentId"]);
 $rootId = mysqli_real_escape_string($conn,$_POST["rootId"]);
 $isRepo = (mysqli_real_escape_string($conn,$_POST["isRepo"]) == true) ? 1 : 0;
-$public = (mysqli_real_escape_string($conn,$_POST["isPublic"]) == true) ? 1 : 0;
+$isPublic = (mysqli_real_escape_string($conn,$_POST["isPublic"]) == true) ? 1 : 0;
 $number_children = count($_POST["childContent"]);
 $operationType =  mysqli_real_escape_string($conn,$_POST["operationType"]);
 
@@ -27,9 +27,9 @@ if ($result->num_rows < 1){
   //No previous information on this folder so store new folder
   $sql = "
   INSERT INTO folder
-  (folderId,title ,parentId, creationDate, isRepo)
+  (folderId,title ,parentId, creationDate, isRepo, public)
   VALUES
-  ('$folderId','$title','$parentId' ,NOW(), '$isRepo')
+  ('$folderId','$title','$parentId' ,NOW(), '$isRepo', '$isPublic')
   ";
   $result = $conn->query($sql); 
 } else {
