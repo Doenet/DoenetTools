@@ -1184,6 +1184,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 showCorrectness:this.state.showCorrectness,
               }}           
             />)
+
+              this.mainSection=null
+
             this.activeSection="assignment"
             console.log("here in loading assignment content")
             this.updateLocationBar({assignmentId:assignmentId,activeSection:this.activeSection})
@@ -1202,6 +1205,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         showCorrectness:this.state.showCorrectness,
       }}           
     />)
+    this.mainSection=null
+
   }
   
 }
@@ -1311,7 +1316,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     //talk to database to load fresh info
     this.overview = (<div className="assignmentContent">
       {/* <h2 data-cy="sectionTitle">Overview</h2>  */}
-      {this.doenetML!=""?
+      {this.doenetML==""?
       
       <DoenetViewer 
               key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
@@ -1362,7 +1367,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     //talk to database to load fresh info
     this.overview = (<React.Fragment>
       {/* <h2 data-cy="sectionTitle">Syllabus</h2>  */}
-      {this.doenetML!=""?
+      {this.doenetML==""?
       <div><DoenetViewer 
               key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
               free={{doenetCode: this.doenetML}} 
@@ -1416,7 +1421,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.assignmentFragment = <React.Fragment>
       <div className="assignmentContainer">     
         <div className="assignmentActivity">
-              {this.assignmentObj.assignmentId?<DoenetViewer 
+              {!this.assignmentObj.assignmentId?<DoenetViewer 
               key={"doenetviewer"+this.updateNumber} 
               free={{
                 doenetCode: this.assignmentObj.code,
@@ -1741,7 +1746,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     <h2 style={{marginLeft:"10px"}}>{this.assignment.gradeItem}: {itemTitle}</h2>
       {this.latestAttemptNumber > 1 ? <p style={{marginLeft:"10px",fontSize:"16px"}}>Attempt Number: {this.latestAttemptNumber} </p>: null }
 
-            <DoenetViewer 
+            {/* <DoenetViewer 
             key={"doenetviewer"} 
             free={{
             doenetState: itemState,
@@ -1756,7 +1761,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 showCorrectness:true,
                 interactive:false,
               }}
-            />
+            /> */}
 
     </React.Fragment>);
     this.forceUpdate();
@@ -2033,6 +2038,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       this.assignmentObj.credit = credit;
     }
     this.forceUpdate();
+  }
+  componentWillUnmount(){
+    this.activeSection=null;
   }
   loadThisAssignmentInfo(){
     const urlDownload="/api/loadAssignmentInfo.php";
