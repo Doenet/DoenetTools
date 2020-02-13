@@ -101,6 +101,7 @@ class DoenetAdmin extends Component {
     const url_header_assignment = "/api/getHeaderAndAssignmentInfo.php";
      this.arr_return=[];
      this.id_arr=[];
+     this.thisAssignmentInfo=""
      this.assignmentName="";
      this.individualize=false;
      this.multipleAttempts=false;
@@ -553,7 +554,11 @@ buildTree(){
       let tree_branch = 
       (
         <div key={"tree_branch"+index} data-cy={data_cy} className={ClassName} style={styleAssignment}>
-        <span className="Section-Text" onClick={()=>{this.loadAssignmentContent({contentId:contentID,branchId:branchID,assignmentId:id})}}>
+        <span className="Section-Text" 
+        // onClick={()=>{this.loadAssignmentContent({contentId:contentID,branchId:branchID,assignmentId:id})}}
+        onClick={()=>{this.thisAssignmentInfo = id;this.loadThisAssignmentInfo()}}
+        
+        >
             {name}
             </span>
             {leftArrow}
@@ -1147,6 +1152,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   console.log(assignmentId)
   // given contentId, get me doenetML
   if (contentId!=null && branchId!=null){
+
     this.selectedAssignmentId = assignmentId
     this.assignmentName = this.assignment_obj[assignmentId]['name']
     this.assignment_branchId = this.assignment_obj[assignmentId]['branchId']
@@ -2096,7 +2102,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     console.log("DATA IS")
     console.log(data)
 
-    console.log("this.thisAssignmentInfo: "+this.thisAssignmentInfo)
     axios.post(urlDownload,data)
       .then(resp=>{
         console.log(resp.data)
@@ -2192,6 +2197,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     (<div>
       <div className={assignment_class} data-cy="assignmentsNavItem" onClick={()=>{
       this.activeSection = "assignment";
+      this.thisAssignmentInfo=""
       this.updateLocationBar({});
       this.forceUpdate()
       this.mainSection=(<div><h4>Assignments</h4><p>Select an assignment</p></div>);
@@ -2219,9 +2225,10 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       let tree_component = (<div >{this.tree}</div>)
 
     if (this.state.overview){
-       overview_component = (<div className={overview_class} data-cy="overviewNavItem" onClick={() => {
+       overview_component = (<div className={overview_class} data-cy="overviewNavItem" 
+       onClick={() => {
         this.activeSection = "overview";
-        this.selectedAssignmentId=""
+        this.thisAssignmentInfo=""
         this.loadOverview();
         this.updateLocationBar({});
         this.forceUpdate();
@@ -2238,7 +2245,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
           this.activeSection = "syllabus";
           this.loadSyllabus();
           this.updateLocationBar({});
-          this.selectedAssignmentId=""
+          this.thisAssignmentInfo=""
           this.buildTree()
           this.forceUpdate();
         }}><span className="Section-Text">Syllabus</span>
@@ -2251,7 +2258,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     if (this.state.grade){
        grade_component = (<div className={grade_class} data-cy="gradesNavItem" onClick={() => {
         this.activeSection="grade";
-        this.selectedAssignmentId=""
+        this.thisAssignmentInfo=""
         this.loadGrades();
         this.updateLocationBar({});
          this.forceUpdate();
@@ -2272,10 +2279,11 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
             {overview_component}
             {syllabus_component}
             {grade_component}
-            {assignment03}
-            {assignment04}
-            {/* {assignment_component} */}
-            {/* {this.state.assignment?ModifyTreeInsertAssignmentHeadingModeComponent:null} */}
+            
+            {assignment_component}
+            {/* {assignment03} */}
+            {/* {assignment04} */}
+            {this.state.assignment?ModifyTreeInsertAssignmentHeadingModeComponent:null}
             {/* {this.state.assignment?tree_component:null} */}
             
           <select style={{marginTop:"10px"}} onChange={this.EnableThese}>
@@ -2284,19 +2292,20 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
           </select>
           </div>
           <div className="homeActiveSection">
-            {this.mainSection}
+            {this.activeSection==="assignment"?tree_component:null}
+            {/* {this.mainSection} */}
             {/* {this.state.loading ? (<div>Loading...</div>): this.mainSection} */}
           </div>
-          <div className="info">
+
+          {this.thisAssignmentInfo!=""?(
+            <div className="info">
           <span className="Section-Icon-Box">         
           <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.assignment_branchId} icon={faEdit}/></span>
-            
-            <p>Assignment Name: <input onChange={(e)=>{this.assignmentName=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.assignmentName?this.assignmentName:""}></input></p>
+
+          <p>Assignment Name: <input onChange={(e)=>{this.assignmentName=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.assignmentName?this.assignmentName:""}></input></p>
             <p>Due Date:  <input onChange={(e)=>{this.dueDate=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.dueDate?this.dueDate:""}></input></p>
             <p>assigned Date: <input onChange={(e)=>{this.assignedDate=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.assignedDate?this.assignedDate:""}></input></p>
             <p>number Of Attempts Allowed: <input onChange={(e)=>{this.numberOfAttemptsAllowed=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="number" value={this.numberOfAttemptsAllowed?this.numberOfAttemptsAllowed:""}></input></p>
-            {/* ['Gateway','Problem Sets','Projects','Exams','Participation']; */}
-            {/* <p>grade Category: <input onChange={(e)=>{this.gradeCategories=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.gradeCategories===null?"":this.gradeCategories}></input></p> */}
             <p>grade Category: 
               <select onChange={(e)=>{this.gradeCategories=e.target.value
               this.AssignmentInfoChanged=true;this.forceUpdate()}}>
@@ -2317,10 +2326,12 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
             <p>show hints: <input onChange={()=>{this.showHints= !this.showHints;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showHints}></input></p>
             <p>show correctness: <input onChange={()=>{this.showCorrectness= !this.showCorrectness;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showCorrectness}></input></p>
             <p>proctor make available: <input onChange={()=>{this.proctorMakesAvailable= !this.proctorMakesAvailable;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.proctorMakesAvailable}></input></p>
-
+</div>):null}
+          
+            
 
           </div>
-        </div>
+
         
       </React.Fragment>);
     } else {
