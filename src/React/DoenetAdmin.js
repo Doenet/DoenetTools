@@ -33,9 +33,10 @@ class DoenetAdmin extends Component {
         .then(resp=>{
             this.username = resp.data.user;
             this.access = resp.data.access;
-            console.log("FROM ENV.PHP")
-            console.log(this.username)
+            this.adminAccess=resp.data.adminAccess;
+            console.log("from ENV")
             console.log(resp.data)
+            console.log(this.adminAccess)
             this.forceUpdate();
         });
      
@@ -50,10 +51,9 @@ class DoenetAdmin extends Component {
     this.assignmentId = url.searchParams.get("assignmentId");
     this.activeSection = url.searchParams.get("active");
     this.assignment_state_1 = url.searchParams.get("assignment"); // get false
-    // if (this.activeSection==='grade'){
-    //   this.loadGrades()
-    // } 
+
     this.enableThese=[]
+    this.AssignmentInfoChanged=false;
     this.overview_branchId=""
     this.syllabus_branchId=""
     this.selectedAssignmentId=""
@@ -102,9 +102,19 @@ class DoenetAdmin extends Component {
      this.arr_return=[];
      this.id_arr=[];
      this.assignmentName="";
+     this.individualize=false;
+     this.multipleAttempts=false;
+     this.showSolution=false;
+     this.showFeedback=false;
+     this.showHints=false;
+     this.showCorrectness=false;
+     this.proctorMakesAvailable=false;
      this.assignment_branchId = null;
-     this.dueDate=null;
-     this.assignedDate=null;
+     this.dueDate="";
+     this.gradeCategories=""
+     this.totalPointsOrPercent=""
+     this.assignedDate="";
+     this.timeLimit=null;
      this.numberOfAttemptsAllowed=null;
 
      this.AddedAssignmentObjArray = [ 
@@ -165,15 +175,16 @@ class DoenetAdmin extends Component {
               })
                                    
             this.heading_obj [currentId]={name:name,attribute:"header",parent:parent,headingId:headingId,assignmentId:assignmentId}
-          } else {
+          } 
+          else {
             let contentId = this.obj_return[currentId]['contentId']
             let branchId = this.obj_return[currentId]['branchId']
-            let assignedDate = this.obj_return[currentId]['assignedDate']
-            let dueDate = this.obj_return[currentId]['dueDate']
-            let numberOfAttemptsAllowed = this.obj_return[currentId]['numberOfAttemptsAllowed']
+            // let assignedDate = this.obj_return[currentId]['assignedDate']
+            // let dueDate = this.obj_return[currentId]['dueDate']
+            // let numberOfAttemptsAllowed = this.obj_return[currentId]['numberOfAttemptsAllowed']
             this.assignment_obj [currentId]={name:name,attribute:"assignment",
             parent:parent,branchId:branchId,contentId:contentId,
-            assignedDate:assignedDate,dueDate:dueDate,numberOfAttemptsAllowed:numberOfAttemptsAllowed
+            // assignedDate:assignedDate,dueDate:dueDate,numberOfAttemptsAllowed:numberOfAttemptsAllowed
           }
           }
           iterator++;
@@ -2023,10 +2034,75 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     }
     this.forceUpdate();
   }
+  loadThisAssignmentInfo(){
+    const urlDownload="/api/loadAssignmentInfo.php";
+    const data={assignmentId:this.thisAssignmentInfo}
+    const payload = {
+      params: data
+    }
+    console.log("this.thisAssignmentInfo: "+this.thisAssignmentInfo)
+    axios.get(urlDownload,payload)
+        .then(resp=>{
+            console.log("FROM loadAssignmentInfo.php")
+            console.log(resp.data)
+            this.assignmentName=resp.data['assignmentName']
+            this.assignedDate=resp.data['assignedDate']
+            this.dueDate=resp.data['dueDate']
+            this.numberOfAttemptsAllowed=resp.data['numberOfAttemptsAllowed']
+            this.timeLimit=resp.data['timeLimit']
+            this.gradeCategories=resp.data['gradeCategory']
+            this.totalPointsOrPercent=resp.data['totalPointsOrPercent']
 
+            this.individualize=resp.data['individualize']==="1"?true:false
+            this.multipleAttempts=resp.data['multipleAttempts']==="1"?true:false
+            this.showSolution=resp.data['showSolution']==="1"?true:false
+            this.showFeedback=resp.data['showFeedback']==="1"?true:false
+            this.showHints=resp.data['showHints']==="1"?true:false
+            this.showCorrectness=resp.data['showCorrectness']==="1"?true:false
+            this.proctorMakesAvailable=resp.data['proctorMakesAvailable']==="1"?true:false
+            this.forceUpdate();
+        });
+  }
+  saveAssignmentInfo(){
+    const urlDownload="/api/saveAssignmentInfo.php";
+    console.log("saveAssignmentInfo")
+    const data={
+      assignmentId:this.thisAssignmentInfo,
+      assignmentName:this.assignmentName,
+      assignedDate:this.assignedDate,
+
+      gradeCategory:this.gradeCategories,
+      totalPointsOrPercent:this.totalPointsOrPercent,
+      individualize:(this.individualize===true?1:0),
+      multipleAttempts:(this.multipleAttempts===true?1:0),
+      showSolution:(this.showSolution===true?1:0),
+      showFeedback:(this.showFeedback===true?1:0),
+      showHints:(this.showHints===true?1:0),
+      showCorrectness:(this.showCorrectness===true?1:0),
+      proctorMakesAvailable:(this.proctorMakesAvailable===true?1:0),
+
+      dueDate:this.dueDate,
+      numberOfAttemptsAllowed:this.numberOfAttemptsAllowed,
+      timeLimit:this.timeLimit
+    }
+    console.log("DATA IS")
+    console.log(data)
+
+    console.log("this.thisAssignmentInfo: "+this.thisAssignmentInfo)
+    axios.post(urlDownload,data)
+      .then(resp=>{
+        console.log(resp.data)
+      })
+      .catch(error=>{this.setState({error:error})});
+  }
   render() {
-
     console.log("====RENDER====");
+    console.log("this.individualize: "+this.individualize)
+    if (this.AssignmentInfoChanged){
+      this.AssignmentInfoChanged=false;
+      this.saveAssignmentInfo()
+    }
+    console.log(this.adminAccess)
     if (this.state.newChange===true){
     this.ToggleList();
     }
@@ -2084,6 +2160,12 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     let syllabus_class = "SectionContainer";
     let grade_class = "SectionContainer";
     let assignment_class = "SectionContainer";
+    let assignment03=(<div onClick={()=>{this.thisAssignmentInfo="VffOCH1I0h_ymB9KQHR24";
+    this.loadThisAssignmentInfo()}}>
+      <span>Assignment03</span></div>)
+      let assignment04=(<div onClick={()=>{this.thisAssignmentInfo="zxVi-pXiUtf3PodIXm45n";
+      this.loadThisAssignmentInfo()}}>
+        <span>Assignment04</span></div>)
     /**
      * how can we tell that the current tree is saved ?
      * answer: maybe we need a flag to indicate you have saved the current tree
@@ -2100,7 +2182,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     }
     let ModifyTreeInsertAssignmentHeadingModeComponent=
     (<div>
-      <div className={assignment_class} onClick={()=>{
+      <div className={assignment_class} data-cy="assignmentsNavItem" onClick={()=>{
       this.activeSection = "assignment";
       this.updateLocationBar({});
       this.forceUpdate()
@@ -2173,40 +2255,73 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({grade:false,newChange:true});}} icon={faWindowClose}/></span>
       </div>)
     }
-
-  
-    return (<React.Fragment>
-      <div className="courseContainer">
-        
-        <DoenetHeader toolTitle="Admin" headingTitle={this.courseName} />
-        <div className="homeLeftNav">
-          {overview_component}
-          {syllabus_component}
-          {grade_component}
-          {/* {assignment_component} */}
-          {this.state.assignment?ModifyTreeInsertAssignmentHeadingModeComponent:null}
-          {this.state.assignment?tree_component:null}
+    if (this.adminAccess!=0){
+      return (<React.Fragment>
+        <div className="courseContainer">
           
-        <select style={{marginTop:"10px"}} onChange={this.EnableThese}>
-          <option>Enable Section</option>
-          {this.enableThese }
-        </select>
+          <DoenetHeader toolTitle="Admin" headingTitle={this.courseName} />
+          <div className="homeLeftNav">
+            {overview_component}
+            {syllabus_component}
+            {grade_component}
+            {assignment03}
+            {assignment04}
+            {/* {assignment_component} */}
+            {/* {this.state.assignment?ModifyTreeInsertAssignmentHeadingModeComponent:null} */}
+            {/* {this.state.assignment?tree_component:null} */}
+            
+          <select style={{marginTop:"10px"}} onChange={this.EnableThese}>
+            <option>Enable Section</option>
+            {this.enableThese }
+          </select>
+          </div>
+          <div className="homeActiveSection">
+            {this.mainSection}
+            {/* {this.state.loading ? (<div>Loading...</div>): this.mainSection} */}
+          </div>
+          <div className="info">
+          <span className="Section-Icon-Box">         
+          <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.assignment_branchId} icon={faEdit}/></span>
+            
+            <p>Assignment Name: <input onChange={(e)=>{this.assignmentName=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.assignmentName?this.assignmentName:""}></input></p>
+            <p>Due Date:  <input onChange={(e)=>{this.dueDate=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.dueDate?this.dueDate:""}></input></p>
+            <p>assigned Date: <input onChange={(e)=>{this.assignedDate=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.assignedDate?this.assignedDate:""}></input></p>
+            <p>number Of Attempts Allowed: <input onChange={(e)=>{this.numberOfAttemptsAllowed=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="number" value={this.numberOfAttemptsAllowed?this.numberOfAttemptsAllowed:""}></input></p>
+            {/* ['Gateway','Problem Sets','Projects','Exams','Participation']; */}
+            {/* <p>grade Category: <input onChange={(e)=>{this.gradeCategories=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.gradeCategories===null?"":this.gradeCategories}></input></p> */}
+            <p>grade Category: 
+              <select onChange={(e)=>{this.gradeCategories=e.target.value
+              this.AssignmentInfoChanged=true;this.forceUpdate()}}>
+                <option value="Gateway" selected={this.gradeCategories==="Gateway"?true:false}>Gateway</option>
+                <option value="Problem Sets" selected={this.gradeCategories==="Problem Sets"?true:false}>Problem Sets</option>
+                <option value="Projects" selected={this.gradeCategories==="Projects"?true:false}>Projects</option>
+                <option value="Exams" selected={this.gradeCategories==="Exams"?true:false}>Exams</option>
+                <option value="Participation" selected={this.gradeCategories==="Participation"?true:false}>Participation</option>
+              </select>
+              </p>            
+            <p>total Points Or Percent: <input onChange={(e)=>{this.totalPointsOrPercent=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="number" value={this.totalPointsOrPercent===null?"":this.totalPointsOrPercent}></input></p>
+            
+            <p>Time Limit: <input onChange={(e)=>{this.timeLimit=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.timeLimit===null?"":this.timeLimit}></input></p>
+            <p>Individualize: <input onChange={()=>{this.individualize= !this.individualize;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.individualize}></input></p>
+            <p>multiple Attempts: <input onChange={()=>{this.multipleAttempts= !this.multipleAttempts;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.multipleAttempts}></input></p>
+            <p>show solution: <input onChange={()=>{this.showSolution= !this.showSolution;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showSolution}></input></p>
+            <p>show feedback: <input onChange={()=>{this.showFeedback= !this.showFeedback;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showFeedback}></input></p>
+            <p>show hints: <input onChange={()=>{this.showHints= !this.showHints;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showHints}></input></p>
+            <p>show correctness: <input onChange={()=>{this.showCorrectness= !this.showCorrectness;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showCorrectness}></input></p>
+            <p>proctor make available: <input onChange={()=>{this.proctorMakesAvailable= !this.proctorMakesAvailable;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.proctorMakesAvailable}></input></p>
+
+
+          </div>
         </div>
-        <div className="homeActiveSection">
-          {this.mainSection}
-          {/* {this.state.loading ? (<div>Loading...</div>): this.mainSection} */}
-        </div>
-        <div className="info">
-        <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.assignment_branchId} icon={faEdit}/></span>
-          <p>Assignment Name: {this.assignmentName?this.assignmentName:"not yet assigned"}</p>
-          <p>Due Date: {this.dueDate?this.dueDate:"not yet assigned"}</p>
-          <p>assigned Date: {this.assignedDate?this.assignedDate:"not yet assigned"}</p>
-          <p>number Of Attempts Allowed: {this.numberOfAttemptsAllowed?this.numberOfAttemptsAllowed:"not yet assigned"}</p>
-        </div>
-      </div>
-      
-    </React.Fragment>);
+        
+      </React.Fragment>);
+    } else {
+      return (<React.Fragment>
+        <DoenetHeader toolTitle="Admin" headingTitle={this.courseName} />
+        <div>PERMISSION DENIED</div>
+      </React.Fragment>)
+    }
+    
 
     let disablePrev = false;
     if (this.assignmentIndex === 0){disablePrev = true;}
