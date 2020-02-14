@@ -7,6 +7,8 @@ import nanoid from 'nanoid';
 import DoenetHeader from './DoenetHeader';
 import { faWindowClose, faEdit, faArrowUp,faArrowDown,faArrowLeft,faArrowRight,faPlus,faFolderPlus} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {DatePicker} from 'react';
+import { useState } from 'react'
 
 function hashStringToInteger(s) {
   var hash = 0, i, chr;
@@ -53,6 +55,7 @@ class DoenetAdmin extends Component {
     this.assignment_state_1 = url.searchParams.get("assignment"); // get false
 
     this.enableThese=[]
+    this.calendar=null
     this.AssignmentInfoChanged=false;
     this.overview_branchId=""
     this.syllabus_branchId=""
@@ -112,11 +115,11 @@ class DoenetAdmin extends Component {
      this.proctorMakesAvailable=false;
      this.assignment_branchId = null;
      this.dueDate="";
-     this.gradeCategories=""
+     this.gradeCategory=""
      this.totalPointsOrPercent=""
      this.assignedDate="";
      this.timeLimit=null;
-     this.numberOfAttemptsAllowed=null;
+     this.numberOfAttemptsAllowed=0;
 
      this.AddedAssignmentObjArray = [ 
        // this contains contentIds NOT assignmentId,
@@ -1191,7 +1194,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
               }}           
             />)
 
-              this.mainSection=null
+              //this.mainSection=null
 
             this.activeSection="assignment"
             console.log("here in loading assignment content")
@@ -1211,7 +1214,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         showCorrectness:this.state.showCorrectness,
       }}           
     />)
-    this.mainSection=null
+    // this.mainSection=null
 
   }
   
@@ -1319,10 +1322,12 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
 
   buildOverview(){
     this.mainSection = this.loadingScreen;
+    console.log("building overview")
+    console.log(this.doenetML)
     //talk to database to load fresh info
     this.overview = (<div className="assignmentContent">
       {/* <h2 data-cy="sectionTitle">Overview</h2>  */}
-      {this.doenetML==""?
+      {this.doenetML!=""?
       
       <DoenetViewer 
               key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
@@ -1336,8 +1341,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
               }}           
             />:null}
     </div>)
-
     this.mainSection = this.overview;
+    console.log(this.mainSection)
   }
 
   loadSyllabus(){
@@ -1373,7 +1378,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     //talk to database to load fresh info
     this.overview = (<React.Fragment>
       {/* <h2 data-cy="sectionTitle">Syllabus</h2>  */}
-      {this.doenetML==""?
+      {this.doenetML!=""?
       <div><DoenetViewer 
               key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
               free={{doenetCode: this.doenetML}} 
@@ -1427,7 +1432,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.assignmentFragment = <React.Fragment>
       <div className="assignmentContainer">     
         <div className="assignmentActivity">
-              {!this.assignmentObj.assignmentId?<DoenetViewer 
+              {this.assignmentObj.assignmentId?<DoenetViewer 
               key={"doenetviewer"+this.updateNumber} 
               free={{
                 doenetCode: this.assignmentObj.code,
@@ -1752,7 +1757,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     <h2 style={{marginLeft:"10px"}}>{this.assignment.gradeItem}: {itemTitle}</h2>
       {this.latestAttemptNumber > 1 ? <p style={{marginLeft:"10px",fontSize:"16px"}}>Attempt Number: {this.latestAttemptNumber} </p>: null }
 
-            {/* <DoenetViewer 
+            <DoenetViewer 
             key={"doenetviewer"} 
             free={{
             doenetState: itemState,
@@ -1767,7 +1772,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 showCorrectness:true,
                 interactive:false,
               }}
-            /> */}
+            />
 
     </React.Fragment>);
     this.forceUpdate();
@@ -2046,7 +2051,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.forceUpdate();
   }
   componentWillUnmount(){
-    this.activeSection=null;
+    this.mainSection=null;
   }
   loadThisAssignmentInfo(){
     const urlDownload="/api/loadAssignmentInfo.php";
@@ -2055,6 +2060,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       params: data
     }
     console.log("this.thisAssignmentInfo: "+this.thisAssignmentInfo)
+    this.assignment_branchId = this.assignment_obj[this.thisAssignmentInfo]['branchId']
     axios.get(urlDownload,payload)
         .then(resp=>{
             console.log("FROM loadAssignmentInfo.php")
@@ -2064,7 +2070,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
             this.dueDate=resp.data['dueDate']
             this.numberOfAttemptsAllowed=resp.data['numberOfAttemptsAllowed']
             this.timeLimit=resp.data['timeLimit']
-            this.gradeCategories=resp.data['gradeCategory']
+            this.gradeCategory=resp.data['gradeCategory']
             this.totalPointsOrPercent=resp.data['totalPointsOrPercent']
 
             this.individualize=resp.data['individualize']==="1"?true:false
@@ -2080,13 +2086,14 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   saveAssignmentInfo(){
     const urlDownload="/api/saveAssignmentInfo.php";
     console.log("saveAssignmentInfo")
+    console.log(this.totalPointsOrPercent)
     const data={
       assignmentId:this.thisAssignmentInfo,
       assignmentName:this.assignmentName,
       assignedDate:this.assignedDate,
 
-      gradeCategory:this.gradeCategories,
-      totalPointsOrPercent:this.totalPointsOrPercent,
+      gradeCategory:this.gradeCategory,
+      totalPointsOrPercent:(this.totalPointsOrPercent===null?0:this.totalPointsOrPercent),
       individualize:(this.individualize===true?1:0),
       multipleAttempts:(this.multipleAttempts===true?1:0),
       showSolution:(this.showSolution===true?1:0),
@@ -2096,8 +2103,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       proctorMakesAvailable:(this.proctorMakesAvailable===true?1:0),
 
       dueDate:this.dueDate,
-      numberOfAttemptsAllowed:this.numberOfAttemptsAllowed,
-      timeLimit:this.timeLimit
+      numberOfAttemptsAllowed:(this.numberOfAttemptsAllowed===""?0:this.numberOfAttemptsAllowed),
+      timeLimit:(this.timeLimit===""?"00:00:00":this.timeLimit)
     }
     console.log("DATA IS")
     console.log(data)
@@ -2107,6 +2114,18 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         console.log(resp.data)
       })
       .catch(error=>{this.setState({error:error})});
+  }
+  openCalendar(){
+  //  const [startDate, setStartDate] = useState(new Date());
+    this.calendar=(<DatePicker
+      selected={new Date()}
+      onChange={date => {new Date()}}
+      showTimeSelect
+      timeFormat="HH:mm:00"
+      timeIntervals={15}
+      timeCaption="time"
+      dateFormat="yyyy-MM-d HH:mm:00"
+    />)
   }
   render() {
     console.log("====RENDER====");
@@ -2165,14 +2184,26 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     } else if (this.activeSection === "grade"){
       this.buildGrades();
     }
-    let overview_component=null;
-    let syllabus_component=null;
-    let grade_component=null;
-    let assignment_component=null;
+    // let overview_component=null;
+    // let syllabus_component=null;
+    // let grade_component=null;
+    // let assignment_component=null;
     let overview_class = "SectionContainer";
     let syllabus_class = "SectionContainer";
     let grade_class = "SectionContainer";
     let assignment_class = "SectionContainer";
+    if (!this.state.overview){
+      overview_class+=" disabled"
+    }
+    if (!this.state.syllabus){
+      syllabus_class+=" disabled"
+    }
+    if (!this.state.grade){
+      grade_class+=" disabled"
+    }
+    if (!this.state.assignment){
+      assignment_class+=" disabled"
+    }
     let assignment03=(<div onClick={()=>{this.thisAssignmentInfo="VffOCH1I0h_ymB9KQHR24";
     this.loadThisAssignmentInfo()}}>
       <span>Assignment03</span></div>)
@@ -2205,8 +2236,12 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       <span className="Section-Text">Assignments</span>
       <span className="Section-Icon-Box">         
         <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.overview_branchId} icon={faEdit}/></span>
-      <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({assignment:false,newChange:true});}} icon={faWindowClose}/></span>
+      {/* <span className="Section-Icon-Box">          */}
+        {/* <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({assignment:false,newChange:true});}} icon={faWindowClose}/></span> */}
+        <label className="switch">
+          <input checked={this.state.assignment} onChange={(e)=>{this.setState({assignment:e.target.checked,newChange:true})}} type="checkbox"/>
+        <span className="slider round"></span>
+      </label>
         </div>
 
       <button className={this.enableMode==="position"?"selectedEnableButton":"button"} data-cy="modifyTree"
@@ -2224,8 +2259,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     </div>);
       let tree_component = (<div >{this.tree}</div>)
 
-    if (this.state.overview){
-       overview_component = (<div className={overview_class} data-cy="overviewNavItem" 
+    // if (this.state.overview){
+       let overview_component = (<div className={overview_class} data-cy="overviewNavItem" 
        onClick={() => {
         this.activeSection = "overview";
         this.thisAssignmentInfo=""
@@ -2235,12 +2270,17 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       }}><span className="Section-Text">Overview</span>
       <span className="Section-Icon-Box">         
         <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.overview_branchId} icon={faEdit}/></span>
-      <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({overview:false,newChange:true});}} icon={faWindowClose}/></span>
+        <label class="switch">
+          <input checked={this.state.overview} onChange={(e)=>{this.setState({overview:e.target.checked,newChange:true})}} type="checkbox"/>
+        <span class="slider round"></span>
+      </label>
+      {/* <span className="Section-Icon-Box">         
+        <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({overview:false,newChange:true});}} icon={faWindowClose}/>
+        </span> */}
       </div>)
-    }
-    if (this.state.syllabus){
-       syllabus_component =(
+    // }
+    // if (this.state.syllabus){
+       let syllabus_component =(
         <div className={syllabus_class} data-cy="syllabusNavItem" onClick={() => {
           this.activeSection = "syllabus";
           this.loadSyllabus();
@@ -2251,12 +2291,16 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         }}><span className="Section-Text">Syllabus</span>
           <span className="Section-Icon-Box">         
         <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.syllabus_branchId} icon={faEdit}/></span>
-      <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({syllabus:false,newChange:true});}} icon={faWindowClose}/></span>
+      {/* <span className="Section-Icon-Box">          */}
+        {/* <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({syllabus:false,newChange:true});}} icon={faWindowClose}/></span> */}
+        <label className="switch">
+          <input checked={this.state.syllabus} onChange={(e)=>{this.setState({syllabus:e.target.checked,newChange:true})}} type="checkbox"/>
+        <span className="slider round"></span>
+      </label>
         </div>)
-    }
-    if (this.state.grade){
-       grade_component = (<div className={grade_class} data-cy="gradesNavItem" onClick={() => {
+    // }
+    // if (this.state.grade){
+       let grade_component = (<div className={grade_class} data-cy="gradesNavItem" onClick={() => {
         this.activeSection="grade";
         this.thisAssignmentInfo=""
         this.loadGrades();
@@ -2266,10 +2310,14 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       }}><span className="Section-Text">Grade</span>
       <span className="Section-Icon-Box">         
     <FontAwesomeIcon className="Section-Icon" icon={faEdit}/></span>
-  <span className="Section-Icon-Box">
-    <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({grade:false,newChange:true});}} icon={faWindowClose}/></span>
+  {/* <span className="Section-Icon-Box"> */}
+    {/* <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({grade:false,newChange:true});}} icon={faWindowClose}/></span> */}
+    <label className="switch">
+          <input checked={this.state.grade} onChange={(e)=>{this.setState({grade:e.target.checked,newChange:true})}} type="checkbox"/>
+        <span className="slider round"></span>
+      </label>
       </div>)
-    }
+    // }
     if (this.adminAccess!=0){
       return (<React.Fragment>
         <div className="courseContainer">
@@ -2280,10 +2328,10 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
             {syllabus_component}
             {grade_component}
             
-            {assignment_component}
+            {/* {assignment_component} */}
             {/* {assignment03} */}
             {/* {assignment04} */}
-            {this.state.assignment?ModifyTreeInsertAssignmentHeadingModeComponent:null}
+            {ModifyTreeInsertAssignmentHeadingModeComponent}
             {/* {this.state.assignment?tree_component:null} */}
             
           <select style={{marginTop:"10px"}} onChange={this.EnableThese}>
@@ -2305,15 +2353,17 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
           <p>Assignment Name: <input onChange={(e)=>{this.assignmentName=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.assignmentName?this.assignmentName:""}></input></p>
             <p>Due Date:  <input onChange={(e)=>{this.dueDate=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.dueDate?this.dueDate:""}></input></p>
             <p>assigned Date: <input onChange={(e)=>{this.assignedDate=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.assignedDate?this.assignedDate:""}></input></p>
+            
             <p>number Of Attempts Allowed: <input onChange={(e)=>{this.numberOfAttemptsAllowed=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="number" value={this.numberOfAttemptsAllowed?this.numberOfAttemptsAllowed:""}></input></p>
             <p>grade Category: 
-              <select onChange={(e)=>{this.gradeCategories=e.target.value
+              <select onChange={(e)=>{this.gradeCategory=e.target.value
               this.AssignmentInfoChanged=true;this.forceUpdate()}}>
-                <option value="Gateway" selected={this.gradeCategories==="Gateway"?true:false}>Gateway</option>
-                <option value="Problem Sets" selected={this.gradeCategories==="Problem Sets"?true:false}>Problem Sets</option>
-                <option value="Projects" selected={this.gradeCategories==="Projects"?true:false}>Projects</option>
-                <option value="Exams" selected={this.gradeCategories==="Exams"?true:false}>Exams</option>
-                <option value="Participation" selected={this.gradeCategories==="Participation"?true:false}>Participation</option>
+                <option value="None" selected={this.gradeCategory==="None"?true:false}>None</option>
+                <option value="Gateway" selected={this.gradeCategory==="Gateway"?true:false}>Gateway</option>
+                <option value="Problem Sets" selected={this.gradeCategory==="Problem Sets"?true:false}>Problem Sets</option>
+                <option value="Projects" selected={this.gradeCategory==="Projects"?true:false}>Projects</option>
+                <option value="Exams" selected={this.gradeCategory==="Exams"?true:false}>Exams</option>
+                <option value="Participation" selected={this.gradeCategory==="Participation"?true:false}>Participation</option>
               </select>
               </p>            
             <p>total Points Or Percent: <input onChange={(e)=>{this.totalPointsOrPercent=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="number" value={this.totalPointsOrPercent===null?"":this.totalPointsOrPercent}></input></p>
@@ -2348,7 +2398,22 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     if (this.assignmentIndex === (this.assignmentIdList.length - 1)){disableNext = true;}
   }
 }
-
+/**
+ * () => {
+  const [startDate, setStartDate] = useState(new Date());
+  return (
+    <DatePicker
+      selected={startDate}
+      onChange={date => setStartDate(date)}
+      showTimeSelect
+      timeFormat="HH:mm:00"
+      timeIntervals={15}
+      timeCaption="time"
+      dateFormat="yyyy-MM-d HH:mm:00"
+    />
+  );
+};
+ */
 
 
 
