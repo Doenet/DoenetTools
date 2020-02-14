@@ -1089,10 +1089,9 @@ class DoenetChooser extends Component {
         contentList = this.courseInfo[this.state.selectedCourse].content;
         urlList = this.courseInfo[this.state.selectedCourse].urls;
       }
-      console.log(this.urlInfo);
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
-          loading={!this.folders_loaded && !this.branches_loaded && !this.urls_loaded}
+          loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
           allContentInfo={this.branchId_info}
           allFolderInfo={this.folderInfo}
           allUrlInfo={this.urlInfo}
