@@ -7,7 +7,7 @@ export default class Vector extends GraphicalComponent {
   // used when referencing this component without prop
   // reference via the head/tail plus keep track of how defined
   static useChildrenForReference = false;
-  static get stateVariablesForReference() {
+  static get stateVariablesShadowedForReference() {
     return [
       "head", "tail", "displacement", "basedOnHead", "basedOnTail", "basedOnDisplacement"
     ]

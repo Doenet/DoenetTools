@@ -5,7 +5,7 @@ export default class BooleanComponent extends InlineComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesForReference() { return ["value"] };
+  static get stateVariablesShadowedForReference() { return ["value"] };
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);

@@ -8,8 +8,16 @@ export default class ConstraintComponent extends BaseComponent {
     return {};
   }
 
-  applyTheConstraint() {
-    return {};
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.independentComponentConstraints = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { independentComponentConstraints: false } })
+    }
+
+    return stateVariableDefinitions;
   }
 
 }

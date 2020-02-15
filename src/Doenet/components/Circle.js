@@ -6,7 +6,7 @@ export default class Circle extends Curve {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesForReference() { return ["center", "radius"] };
+  static get stateVariablesShadowedForReference() { return ["center", "radius"] };
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);

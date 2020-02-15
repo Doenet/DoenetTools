@@ -5,7 +5,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesForReference() { return ["value", "selectedType"] };
+  static get stateVariablesShadowedForReference() { return ["value", "selectedType"] };
 
   static modifySharedParameters({ sharedParameters }) {
     // since sequence turns defaultToPrescribedParameters on,
@@ -158,7 +158,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
         }
         return {
           newValues: { value: dependencyValues.atMostOneChild[0].stateValues.value },
-          setComponentType: dependencyValues.atMostOneChild[0].componentType,
+          setComponentType: { value: dependencyValues.atMostOneChild[0].componentType },
         };
       }
     }

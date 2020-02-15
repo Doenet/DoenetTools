@@ -6,7 +6,7 @@ export default class NumberComponent extends InlineComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesForReference() { return ["value"] };
+  static get stateVariablesShadowedForReference() { return ["value"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);

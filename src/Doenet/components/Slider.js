@@ -127,7 +127,7 @@ export default class Slider extends BaseComponent {
 
         return {
           newValues: { items },
-          setComponentType: dependencyValues.sliderType,
+          setComponentType: { items: dependencyValues.sliderType },
         };
       }
     }
@@ -238,7 +238,7 @@ export default class Slider extends BaseComponent {
         return {
           newValues: { value: dependencyValues.items[dependencyValues.index] },
           makeEssential: ["value"],
-          setComponentType: dependencyValues.sliderType,
+          setComponentType: { value: dependencyValues.sliderType },
         }
       },
       inverseDefinition: invertSliderValue,

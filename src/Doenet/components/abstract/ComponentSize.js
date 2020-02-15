@@ -5,7 +5,7 @@ export default class ComponentSize extends BaseComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesForReference() { return ["value", "isAbsolute"] };
+  static get stateVariablesShadowedForReference() { return ["value", "isAbsolute"] };
 
 
   static returnChildLogic(args) {

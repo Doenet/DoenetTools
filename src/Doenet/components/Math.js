@@ -1,5 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
+import { convertValueToMathExpression } from '../utils/math';
 
 
 export default class MathComponent extends InlineComponent {
@@ -10,7 +11,7 @@ export default class MathComponent extends InlineComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesForReference() { return ["unnormalizedValue"] };
+  static get stateVariablesShadowedForReference() { return ["unnormalizedValue"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -443,19 +444,6 @@ export default class MathComponent extends InlineComponent {
 
 }
 
-
-export function convertValueToMathExpression(value) {
-  if (value === undefined || value === null) {
-    return me.fromAst('\uFF3F');  // long underscore
-  } else if (value instanceof me.class) {
-    return value;
-  } else if (typeof value === "number" || typeof value === "string") {
-    // let value be math-expression based on value
-    return me.fromAst(value);
-  } else {
-    return me.fromAst('\uFF3F');  // long underscore
-  }
-}
 
 function calculateCodePre({ dependencyValues }) {
 
@@ -905,7 +893,7 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
       let notAffected = [];
       let foundNotAffected = false;
       for (let [ind, value] of desiredExpression.tree.entries()) {
-        if (value === null) {
+        if (value === undefined) {
           foundNotAffected = true;
           notAffected.push(ind);
         } else {

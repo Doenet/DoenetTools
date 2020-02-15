@@ -676,7 +676,7 @@ export default class Answer extends InlineComponent {
 
         return {
           newValues: { currentResponses },
-          setComponentType: componentType,
+          setComponentType: { currentResponses: componentType },
         }
       }
     }
@@ -738,7 +738,7 @@ export default class Answer extends InlineComponent {
           useEssentialOrDefaultValue: {
             submittedResponses: essentialSubmittedResponses,
           },
-          setComponentType: componentType,
+          setComponentType: { submittedResponses: componentType },
         }
       },
       inverseDefinition: function ({ desiredStateVariableValues }) {

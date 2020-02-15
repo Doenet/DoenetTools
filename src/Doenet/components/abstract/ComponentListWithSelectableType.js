@@ -3,7 +3,7 @@ import ComponentWithSelectableType from './ComponentWithSelectableType';
 export default class ComponentListWithSelectableType extends ComponentWithSelectableType {
   static componentType = "_componentlistwithselectabletype";
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
     let standardComponentClasses = args.standardComponentClasses;
 
@@ -151,6 +151,8 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
       setAsBase: true,
     })
 
+    childLogic.excludeMultipleSugar = true;
+
     return childLogic;
   }
 
@@ -159,6 +161,30 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = {};
+
+
+    stateVariableDefinitions.selectedType = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        anythingForSelectedType: {
+          dependencyType: "childIdentity",
+          childLogicName: "anythingForSelectedType",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        if (dependencyValues.anythingForSelectedType.length === 0) {
+          return {
+            newValues: { selectedType: "number" } // placeholder
+          };
+        } else {
+          return {
+            newValues: { selectedType: dependencyValues.anythingForSelectedType[0].componentType }
+          };
+        }
+      }
+    }
 
     stateVariableDefinitions.values = {
       public: true,
@@ -170,81 +196,21 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
           childLogicName: "anythingForSelectedType",
           variableNames: ["value"],
         },
+        selectedType: {
+          dependencyType: "stateVariable",
+          variableName: "selectedType"
+        }
       }),
-      definition({ dependencyValues }) {
+      definition: function ({ dependencyValues }) {
         return {
           newValues: { values: dependencyValues.anythingForSelectedType.map(x => x.stateValues.value) },
-          setComponentType: dependencyValues.anythingForSelectedType[0].componentType,
+          setComponentType: { values: dependencyValues.selectedType },
         };
       }
     }
 
-    stateVariableDefinitions.selectedType = {
-      public: true,
-      componentType: "text",
-      returnDependencies: () => ({
-        anythingForSelectedType: {
-          dependencyType: "childStateVariables",
-          childLogicName: "anythingForSelectedType",
-          variableNames: ["value"],
-        },
-      }),
-      definition({ dependencyValues }) {
-        return {
-          newValues: { selectedType: dependencyValues.anythingForSelectedType[0].componentType }
-        };
-      }
-    }
 
     return stateVariableDefinitions;
   }
 
-
-  updateState(args = {}) {
-    if (args.init === true) {
-      this.makePublicStateVariableArray({
-        variableName: "values",
-        componentType: "number", // placeholder until know type, below
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "value",
-        arrayVariableName: "values",
-      });
-    }
-
-    args.isAList = true;
-    super.updateState(args);
-
-    if (!this.childLogicSatisfied || this.unresolvedState.type) {
-      this.unresolvedState.values = true;
-      delete this.unresolvedState.value; // from ComponentWithSelectableType
-      return;
-    }
-
-    delete this.unresolvedState.values;
-
-    this._state.values.componentType = this.state.type;
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if (childrenChanged) {
-      let anythingForSelectedType = this.childLogic.returnMatches("anythingForSelectedType");
-      this.state.valueChildren = anythingForSelectedType.map(x => this.activeChildren[x]);
-      if (this.state.valueChildren.length > 0) {
-        this.state.stateVariableForPropertyValue = this.state.valueChildren[0].constructor.stateVariableForPropertyValue;
-        if (this.state.stateVariableForPropertyValue === null) {
-          this.state.stateVariableForPropertyValue = "value";
-        }
-      }
-    }
-
-    if (childrenChanged || this.state.valueChildren.some(
-      x => trackChanges.getVariableChanges({
-        component: x, variable: this.state.stateVariableForPropertyValue
-      }))) {
-      this.state.values = this.state.valueChildren.map(x => x.state[this.state.stateVariableForPropertyValue]);
-    }
-
-  }
 }

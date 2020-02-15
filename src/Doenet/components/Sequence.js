@@ -1,5 +1,6 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import me from 'math-expressions';
+import { findFiniteNumericalValue } from '../utils/math';
 
 export default class Sequence extends CompositeComponent {
   static componentType = "sequence";
@@ -378,6 +379,14 @@ export default class Sequence extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "specifiedStep",
         },
+        specifiedFrom: {
+          dependencyType: "stateVariable",
+          variableName: "specifiedFrom",
+        },
+        specifiedTo: {
+          dependencyType: "stateVariable",
+          variableName: "specifiedTo",
+        },
         selectedType: {
           dependencyType: "stateVariable",
           variableName: "selectedType",
@@ -400,9 +409,30 @@ export default class Sequence extends CompositeComponent {
 
         if (dependencyValues.specifiedStep !== null) {
           // step must be number if not math
-          if (dependencyValues.selectedType !== "math" && !Number.isFinite(dependencyValues.specifiedStep)) {
-            if (!(dependencyValues.specifiedStep instanceof me.class && Number.isFinite(dependencyValues.specifiedStep.evaluate_to_constant()))) {
+          if (dependencyValues.selectedType !== "math") {
+            let numericalStep = findFiniteNumericalValue(dependencyValues.specifiedStep);
+            if(!Number.isFinite(numericalStep)) {
               console.log("Invalid step of sequence.  Must be a number for sequence of type " + dependencyValues.selectedType + ".")
+              validSequence = false;
+            }
+          }
+        }
+
+        if (dependencyValues.specifiedFrom !== null) {
+          if (dependencyValues.selectedType === "number") {
+            let numericalFrom = findFiniteNumericalValue(dependencyValues.specifiedFrom);
+            if(!Number.isFinite(numericalFrom)) {
+              console.log("Invalid from of number sequence.  Must be a number")
+              validSequence = false;
+            }
+          }
+        }
+
+        if (dependencyValues.specifiedTo !== null) {
+          if (dependencyValues.selectedType === "number") {
+            let numericalTo = findFiniteNumericalValue(dependencyValues.specifiedTo);
+            if(!Number.isFinite(numericalTo)) {
+              console.log("Invalid from of number sequence.  Must be a number")
               validSequence = false;
             }
           }

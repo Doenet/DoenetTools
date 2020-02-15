@@ -73,6 +73,7 @@ import Subsindex from './components/Subsindex';
 import FromMapAncestor from './components/FromMapAncestor';
 import Slider from './components/Slider';
 import Markers from './components/Markers';
+import Constraints from './components/Constraints';
 import ConstrainToGrid from './components/ConstrainToGrid';
 import AttractToGrid from './components/AttractToGrid';
 import ConstrainTo from './components/ConstrainTo';
@@ -213,6 +214,7 @@ const componentTypeArray = [
   Markers,
   Panel,
   Map, Substitutions, Subsref, Subsindex, FromMapAncestor,
+  Constraints,
   ConstrainToGrid,
   AttractToGrid,
   ConstrainTo,

@@ -12,7 +12,7 @@ export default class Spreadsheet extends Table {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesForReference() { return ["cells"] };
+  static get stateVariablesShadowedForReference() { return ["cells"] };
 
 
   onChange(changes, source) {

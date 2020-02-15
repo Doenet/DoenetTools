@@ -789,7 +789,7 @@ export default class BaseComponent {
 
   static useChildrenForReference = true;
 
-  static get stateVariablesForReference() { return [] };
+  static get stateVariablesShadowedForReference() { return [] };
 
   returnSerializeInstructions() {
     return {};
@@ -1036,29 +1036,6 @@ export default class BaseComponent {
       constrained: constrained,
       constraintIndices: constraintIndices,
     }
-  }
-
-  findFiniteNumericalValue(value) {
-    // return undefined if value is undefined
-    // returns null if value has a non-numerical value (including Infinity)
-    // otherwise, returns numerical value
-
-    if (value === undefined) {
-      return undefined;
-    }
-
-    if (Number.isFinite(value)) {
-      return value;
-    }
-    if (value.evaluate_to_constant !== undefined) {
-      value = value.evaluate_to_constant();
-      if (Number.isFinite(value)) {
-        return value;
-      }
-    }
-
-    // couldn't find numerical value
-    return null;
   }
 
   makePublicStateVariable({ variableName, componentType, stateVariableForRef,

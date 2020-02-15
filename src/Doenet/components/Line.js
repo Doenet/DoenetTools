@@ -6,7 +6,7 @@ export default class Line extends GraphicalComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesForReference() { return ["points", "var1", "var2"] };
+  static get stateVariablesShadowedForReference() { return ["points", "var1", "var2"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);

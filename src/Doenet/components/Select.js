@@ -14,7 +14,7 @@ export default class Select extends CompositeComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesForReference() { return ["selectedIndices"] };
+  static get stateVariablesShadowedForReference() { return ["selectedIndices"] };
 
 
   static keepChildrenSerialized({ serializedComponent, allComponentClasses }) {

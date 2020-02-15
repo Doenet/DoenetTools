@@ -20,11 +20,11 @@ export class NewComponentClass extends InheritedComponentClass {
   constructor(args){
     super(args);
     
-    //setting stateVariablesForReference causes refs to only copy the variables listed
+    //setting stateVariablesShadowedForReference causes refs to only copy the variables listed
     //it disables refs default behavior of copying children
     //choosing this option requires setting child logic to accept no children and
     //requires making updateState check for these essential state variables in lieu of children
-    this.stateVariablesForReference = ["value"];
+    this.stateVariablesShadowedForReference = ["value"];
 
     //A constructor could be used to bind this to a function
     this.actionName = this.actionName.bind(this);

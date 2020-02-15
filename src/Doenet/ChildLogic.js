@@ -934,6 +934,9 @@ class ChildLogicLeaf extends ChildLogicBase {
     maxAdapterNumber
   }) {
 
+    if (this.usedSugar) {
+      matchSugar = false;
+    }
 
     // Note: it is OK if componentType is not a valid component type
     // In this case, componentClass will be undefined,
@@ -1140,6 +1143,10 @@ class ChildLogicOperator extends ChildLogicBase {
   applyLogic({ activeChildren,
     matchSugar, previouslyMatched = [],
     maxAdapterNumber }) {
+
+    if (this.usedSugar) {
+      matchSugar = false;
+    }
 
     if (matchSugar === false && this.isSugar === true) {
       return { success: false, message: "Sugar not allowed." };

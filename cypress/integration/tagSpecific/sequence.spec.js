@@ -1029,5 +1029,43 @@ describe('Sequence Tag Tests', function () {
     })
   });
 
+  it('initially invalid to', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetCode: `
+  <text>a</text>
+  <mathinput name="n"/>
+  <aslist><sequence from="2"><to><ref prop="value">n</ref></to></sequence></aslist>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.log('sequence starts off invalid')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_sequence1'].stateValues.validSequence).eq(false);
+      expect(components['/_sequence1'].replacements.length).eq(0);
+
+    })
+
+    cy.get('#\\/n_input').clear().type("2{enter}");
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let number1 = components['/_sequence1'].replacements[0];
+      let number1Name = number1.componentName;
+      let number1Anchor = '#' + number1Name;
+
+      cy.get(number1Anchor).should('have.text', '2')
+
+      cy.window().then((win) => {
+        expect(components['/_sequence1'].stateValues.validSequence).eq(true);
+        expect(components['/_sequence1'].replacements.length).eq(1);
+      })
+    })
+  })
+
+
 });
 

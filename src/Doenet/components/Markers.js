@@ -118,8 +118,8 @@ export default class Markers extends BaseComponent {
         }
 
         return {
-          newValues: {markers},
-          setComponentType: componentType,
+          newValues: { markers },
+          setComponentType: { markers: componentType },
         }
       }
     }

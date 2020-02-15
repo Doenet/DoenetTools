@@ -1,4 +1,5 @@
 import ConstraintComponent from './abstract/ConstraintComponent';
+import { findFiniteNumericalValue } from '../utils/math';
 
 export default class ConstrainToGrid extends ConstraintComponent {
   static componentType = "constraintogrid";
@@ -14,7 +15,7 @@ export default class ConstrainToGrid extends ConstraintComponent {
     };
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
@@ -28,89 +29,168 @@ export default class ConstrainToGrid extends ConstraintComponent {
     return childLogic;
   }
 
-  updateState(args = {}) {
-    super.updateState(args);
 
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.constraintInactive = true;
-      return;
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.independentComponentConstraints = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { independentComponentConstraints: true } })
     }
 
-    delete this.unresolvedState.constraintInactive;
-
-    if(Object.keys(this.unresolvedState).length > 0) {
-      // if have some properties that aren't resolved
-      // we can't determine constraint
-      this.unresolvedState.constraintInactive = true;
-      return;
-    }
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-      this.state.constraintInactive = false;
-      let stringChildInds = this.childLogic.returnMatches("atMostOneString");
-      if (stringChildInds.length === 1) {
-        let stringValue = this.activeChildren[stringChildInds[0]].state.value;
-        if (stringValue === false ||
-          (typeof stringValue === "string" && ["false", "f"].includes(stringValue.trim().toLowerCase()))) {
-          this.state.constraintInactive = true;
+    stateVariableDefinitions.constraintInactive = {
+      returnDependencies: () => ({
+        stringChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneString",
+          variableNames: ["value"],
         }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.stringChild.length === 1) {
+          let stringValue = dependencyValues.stringChild[0].stateValues.value;
+          if (stringValue === false ||
+            (typeof stringValue === "string" && ["false", "f"].includes(stringValue.trim().toLowerCase()))) {
+            return { newValues: { constraintInactive: true } }
+          }
+        }
+
+        return { newValues: { constraintInactive: false } }
+
       }
+
+
     }
-  }
 
+    // Since state variable independentComponentConstraints is true,
+    // expect function applyComponentConstraint to be called with 
+    // a single component value as the object, for example,  {x1: 13}
 
-  applyTheConstraint({ x1, x2, x3 }) {
     // use the convention of x1, x2, and x3 for variable names
     // so that components can call constraints generically for n-dimensions
     // use x,y,z for properties so that authors can use the more familar tag names
 
-    if (this.state.constraintInactive) {
-      return {};
+    stateVariableDefinitions.applyComponentConstraint = {
+      returnDependencies: () => ({
+        constraintInactive: {
+          dependencyType: "stateVariable",
+          variableName: "constraintInactive"
+        },
+        dx: {
+          dependencyType: "stateVariable",
+          variableName: "dx"
+        },
+        dy: {
+          dependencyType: "stateVariable",
+          variableName: "dy"
+        },
+        dz: {
+          dependencyType: "stateVariable",
+          variableName: "dz"
+        },
+        xoffset: {
+          dependencyType: "stateVariable",
+          variableName: "xoffset"
+        },
+        yoffset: {
+          dependencyType: "stateVariable",
+          variableName: "yoffset"
+        },
+        zoffset: {
+          dependencyType: "stateVariable",
+          variableName: "zoffset"
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          applyComponentConstraint: function (variables) {
+            
+            if (dependencyValues.constraintInactive) {
+              return {};
+            }
+
+            // if given the value of x1, apply to constraint to x1
+            // and ignore any other arguments (which shouldn't be given)
+            if ("x1" in variables) {
+              let x1 = findFiniteNumericalValue(variables.x1);
+
+              // if found a non-numerical value, return no constraint
+              if (x1 === null) {
+                return {};
+              }
+
+              let dx = dependencyValues.dx;
+              let xoffset = dependencyValues.xoffset;
+              let x1constrained = Math.round((variables.x1 - xoffset) / dx) * dx + xoffset;
+              if (Number.isFinite(x1constrained)) {
+                return {
+                  constrained: true,
+                  variables: { x1: x1constrained }
+                }
+              } else {
+                return {};
+              }
+            }
+
+
+            // if given the value of x2, apply to constraint to x2
+            // and ignore any other arguments (which shouldn't be given)
+            if ("x2" in variables) {
+              let x2 = findFiniteNumericalValue(variables.x2);
+              // if found a non-numerical value, return no constraint
+              if (x2 === null) {
+                return {};
+              }
+
+              let dy = dependencyValues.dy;
+              let yoffset = dependencyValues.yoffset;
+              let x2constrained = Math.round((variables.x2 - yoffset) / dy) * dy + yoffset;
+              if (Number.isFinite(x2constrained)) {
+                return {
+                  constrained: true,
+                  variables: { x2: x2constrained }
+                }
+              } else {
+                return {};
+              }
+            }
+
+
+
+            // if given the value of x3, apply to constraint to x3
+            // and ignore any other arguments (which shouldn't be given)
+            if ("x3" in variables) {
+              let x3 = findFiniteNumericalValue(variables.x3);
+              // if found a non-numerical value, return no constraint
+              if (x3 === null) {
+                return {};
+              }
+
+              let dz = dependencyValues.dz;
+              let zoffset = dependencyValues.zoffset;
+              let x3constrained = Math.round((variables.x3 - zoffset) / dz) * dz + zoffset;
+              if (Number.isFinite(x3constrained)) {
+                return {
+                  constrained: true,
+                  variables: { x3: x3constrained }
+                }
+              } else {
+                return {};
+              }
+            }
+
+            // if didn't get x1, x2, or x3 as argument, don't constrain anything
+            return {};
+
+          }
+        }
+      })
     }
 
-    // only works for numerical x1, x2, and x3
-    x1 = this.findFiniteNumericalValue(x1);
-    x2 = this.findFiniteNumericalValue(x2);
-    x3 = this.findFiniteNumericalValue(x3);
 
-    // if found any non-numerical value, return no constraint
-    // (It's OK if some were undefined, so don't check for undefined)
-    if (x1 === null || x2 === null || x3 === null) {
-      return {};
-    }
-
-    let result = { variables: {}};
-    let rvars = result.variables;
-    if (x1 !== undefined) {
-      let dx = this.state.dx;
-      let xoffset = this.state.xoffset;
-      x1 = Math.round((x1 - xoffset) / dx) * dx + xoffset;
-      if (Number.isFinite(x1)) {
-        rvars.x1 = x1;
-      }
-    }
-    if (x2 !== undefined) {
-      let dy = this.state.dy;
-      let yoffset = this.state.yoffset;
-      x2 = Math.round((x2 - yoffset) / dy) * dy + yoffset;
-      if (Number.isFinite(x2)) {
-        rvars.x2 = x2;
-      }
-    }
-    if (x3 !== undefined) {
-      let dz = this.state.dz;
-      let zoffset = this.state.zoffset;
-      x3 = Math.round((x3 - zoffset) / dz) * dz + zoffset;
-      if (Number.isFinite(x3)) {
-        rvars.x3 = x3;
-      }
-    }
-
-    result.constrained = true;
-    
-    return result;
+    return stateVariableDefinitions;
   }
+
+
 }
