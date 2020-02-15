@@ -697,7 +697,7 @@ export default class Answer extends InlineComponent {
           variableName: "inputDescendants"
         },
       }),
-      definition: function ({ dependencyValues, arrayKeys, arrayValues }) {
+      definition: function ({ dependencyValues, arrayKeys, freshByKey }) {
 
         let componentType = dependencyValues.inputDescendants.map(x => x.stateValues.componentType);
 
@@ -711,10 +711,10 @@ export default class Answer extends InlineComponent {
         for (let ind in componentType) {
           // Note: ind is a string, starting with "0"
 
-          // Note: since we never set staleByKey (there is no markStale function)
-          // this function doesn't return anything once the arrayValues are set
-          // (The values will just be set using the inverse function)
-          if (arrayValues[ind] === undefined) {
+          // Note: since we never unset freshByKey (there is no markStale function)
+          // this function doesn't return anything once the values are set for the first time
+          // (The values will just be changed using the inverse function)
+          if (!freshByKey[ind]) {
             if (arrayKey === ind || arrayKey === undefined) {
               essentialSubmittedResponses[ind] = {
                 variablesToCheck: [
@@ -724,6 +724,13 @@ export default class Answer extends InlineComponent {
             }
           }
 
+        }
+
+        // if this is second pass through (i.e., freshByKey was set)
+        // then don't change anything
+        // (For array state variables, don't need to return noChanges)
+        if(Object.keys(essentialSubmittedResponses).length === 0) {
+          return {}
         }
 
         if (arrayKey !== undefined) {

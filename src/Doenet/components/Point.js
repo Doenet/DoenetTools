@@ -20,7 +20,6 @@ export default class Point extends GraphicalComponent {
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.draggable = { default: true };
-    properties.styleDefinitions = { propagateToDescendants: true, mergeArrays: true }
     return properties;
   }
 
@@ -130,6 +129,7 @@ export default class Point extends GraphicalComponent {
       comparison: 'atLeast',
       number: 1,
       isSugar: true,
+      requireConsecutive: true,
       affectedBySugar: ["atMostOneConstraints"],
       replacementFunction: addConstraints,
 
@@ -161,41 +161,7 @@ export default class Point extends GraphicalComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
-
-    stateVariableDefinitions.selectedStyle = {
-      returnDependencies: () => ({
-        styleNumber: {
-          dependencyType: "stateVariable",
-          variableName: "styleNumber",
-        },
-        styleDefinitions: {
-          dependencyType: "stateVariable",
-          variableName: "styleDefinitions"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-
-        let selectedStyle;
-
-        for (let styleDefinition of dependencyValues.styleDefinitions) {
-          if (dependencyValues.styleNumber === styleDefinition.styleNumber) {
-            if (selectedStyle === undefined) {
-              selectedStyle = styleDefinition;
-            } else {
-              // attributes from earlier matches take precedence
-              selectedStyle = Object.assign(Object.assign({}, styleDefinition), selectedStyle)
-            }
-          }
-        }
-
-        if (selectedStyle === undefined) {
-          selectedStyle = dependencyValues.styleDefinitions[0];
-        }
-        return { newValues: { selectedStyle } };
-      }
-    }
-
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.styleDescription = {
       public: true,

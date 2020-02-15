@@ -46,13 +46,8 @@ export default class Input extends InlineComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        let answerAncestor = null;
-
-        if (dependencyValues.answerAncestor.length === 1) {
-          answerAncestor = dependencyValues.answerAncestor[0];
-        }
         return {
-          newValues: { answerAncestor }
+          newValues: { answerAncestor: dependencyValues.answerAncestor }
         }
       }
     }
