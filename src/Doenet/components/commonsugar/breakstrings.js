@@ -4,26 +4,33 @@
 // returns a sugar replacement function that
 // - expects string and other children,
 // - breaks the children by commas in strings not enclosed in parenthesis,
-// - returns an array of components created by mapping the childrenToComponent
+// - returns an array of components created by mapping the childrenToComponentFunction
 //   function onto each of the pieces
 // - other children are not examined or altered, so they could be anything
 //
-// For example, to create points with coordinates determined by the pieces
+// For example, to take the dependency "stringAndMathChildren"
+// and create points with coordinates determined by the pieces
 // one could use the sugar replacement function
-//
-// breakStringsAndOthersIntoComponentsByStringCommas(x => ({
+// let childrenToComponentFunction = x => ({
 //   componentType: "point", children: [{
 //     componentType: "coords", children: x}]
-// }))
+// })
+// returnBreakStringsSugarFunction({
+//   childrenToComponentFunction,
+//   dependencyNameWithChildren: "stringAndMathChildren"
+//  })
 
-export function breakStringsAndOthersIntoComponentsByStringCommas(childrenToComponent) {
-  return function ({ activeChildrenMatched }) {
+export function returnBreakStringsSugarFunction({
+  childrenToComponentFunction,
+  dependencyNameWithChildren
+}) {
+  return function ({ dependencyValues }) {
     let Nparens = 0;
     let pieces = [];
     let currentPiece = [];
     let toDelete = [];
 
-    for (let component of activeChildrenMatched) {
+    for (let component of dependencyValues[dependencyNameWithChildren]) {
       if (component.componentType !== "string") {
         currentPiece.push({
           createdComponent: true,
@@ -89,7 +96,7 @@ export function breakStringsAndOthersIntoComponentsByStringCommas(childrenToComp
 
     pieces.push(currentPiece);
 
-    let newChildren = pieces.map(childrenToComponent);
+    let newChildren = pieces.map(childrenToComponentFunction);
 
     return {
       success: true,

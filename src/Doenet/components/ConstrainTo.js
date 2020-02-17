@@ -17,22 +17,27 @@ export default class ConstrainTo extends ConstraintComponent {
     return childLogic;
   }
 
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.independentComponentConstraints = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { independentComponentConstraints: false } })
+    }
+
+
+    return stateVariableDefinitions;
+
+  }
+
+
   updateState(args = {}) {
     super.updateState(args);
 
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.childComponents = true;
-      return;
-    }
 
-    delete this.unresolvedState.childComponents;
-
-    if(Object.keys(this.unresolvedState).length > 0) {
-      // if have some properties that aren't resolved
-      // we can't determine constraint
-      this.unresolvedState.childComponents = true;
-      return;
-    }
 
     let trackChanges = this.currentTracker.trackChanges;
     let childrenChanged = trackChanges.childrenChanged(this.componentName);
@@ -42,12 +47,7 @@ export default class ConstrainTo extends ConstraintComponent {
       this.state.childComponents = childIndices.map(x=>this.activeChildren[x]);
     }
 
-    // if a child has unresolved state, then the constraint should be unresolved
-    if(this.state.childComponents.some(x=> Object.keys(x.unresolvedState).length >0)) {
-      this.unresolvedState.childComponents = true;
-      return;
-    }
-
+ 
     // if identity of children changed or a state variable in a child changed
     // mark the fact that there was a change in the constraint
     // by indicating a change in the state variable childComponents

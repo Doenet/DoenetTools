@@ -323,18 +323,36 @@ export default class Point extends GraphicalComponent {
         return dependencies;
       },
       markStale: function ({ freshByKey, changes }) {
-        if (!changes.coords) {
-          // if based on coords, don't need to separately track freshByKey
-          // as all components become stale whenever coords changes
+        if (changes.coords) {
+          // if based on coords, always have entire array changed
+          for (let key in freshByKey) {
+            delete freshByKey[key];
+          }
+          return { partialArrayChange: false }
+
+        } else {
+
+          let partialArrayChange = true;
           if (changes.xChild) {
             delete freshByKey[0];
+            if (changes.xChild.componentIdentityChanged) {
+              partialArrayChange = false;
+            }
           }
           if (changes.yChild) {
             delete freshByKey[1];
+            if (changes.yChild.componentIdentityChanged) {
+              partialArrayChange = false;
+            }
           }
           if (changes.zChild) {
             delete freshByKey[2];
+            if (changes.zChild.componentIdentityChanged) {
+              partialArrayChange = false;
+            }
           }
+
+          return { partialArrayChange };
         }
       },
       definition: calculateUnconstrainedXs,
@@ -757,11 +775,13 @@ function calculateUnconstrainedXs({ dependencyValues, arrayKeys, freshByKey }) {
 
     let coordsTree = coords.tree;
     if (Array.isArray(coordsTree) && ["tuple", "vector"].includes(coordsTree[0])) {
+      // make it array so know whole array changed
+      newXs = [];
       for (let i = 0; i < coordsTree.length - 1; i++) {
         newXs[i] = coords.get_component(i).simplify();
       }
     } else {
-      newXs[0] = coords.simplify();
+      newXs = [coords.simplify()];
     }
 
   } else {

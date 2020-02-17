@@ -1,5 +1,5 @@
 import BaseComponent from './BaseComponent';
-import { breakStringsAndOthersIntoComponentsByStringCommas } from '../commonsugar/breakstrings';
+import { returnBreakStringsSugarFunction } from '../commonsugar/breakstrings';
 
 export default class PointListComponent extends BaseComponent {
   static componentType = "_pointlistcomponent";
@@ -20,11 +20,15 @@ export default class PointListComponent extends BaseComponent {
       number: 0
     });
 
-    let breakIntoPointsByCommas = breakStringsAndOthersIntoComponentsByStringCommas(x => ({
+    let childrenToComponentFunction = x => ({
       componentType: "point", children: [{
         componentType: "coords", children: x
       }]
-    }));
+    })
+    let breakIntoPointsByCommas = returnBreakStringsSugarFunction({
+      childrenToComponentFunction,
+      dependencyNameWithChildren: "stringsAndMaths"
+    });
 
     let atLeastOneString = childLogic.newLeaf({
       name: "atLeastOneString",
@@ -46,6 +50,13 @@ export default class PointListComponent extends BaseComponent {
       propositions: [atLeastOneString, atLeastOneMath],
       requireConsecutive: true,
       isSugar: true,
+      sugarDependencies: {
+        stringsAndMaths: {
+          dependencyType: "childStateVariables",
+          childLogicName: "stringsAndMaths",
+          variableNames: ["value"]
+        }
+      },
       affectedBySugar: ["atLeastZeroPoints"],
       replacementFunction: breakIntoPointsByCommas,
     });
@@ -68,34 +79,98 @@ export default class PointListComponent extends BaseComponent {
 
 
     stateVariableDefinitions.points = {
-      additionalStateVariablesDefined: ["nPoints"],
+      isArray: true,
+      entryPrefixes: ["point"],
       returnDependencies: () => ({
         pointChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "atLeastZeroPoints",
-          variableNames: ["xs", "coords", "nDimensions"]
+          variableNames: ["coords"]
         }
       }),
-      definition: function ({ dependencyValues, changes }) {
-        return {
-          newValues: {
-            points: dependencyValues.pointChildren,
-            nPoints: dependencyValues.pointChildren.length
+      definition: function ({ dependencyValues, arrayKeys, freshByKey, partialArrayChange }) {
+
+        if (!partialArrayChange) {
+          // send array so that now should overwrite entire array
+          return {
+            newValues: {
+              points: dependencyValues.pointChildren.map(x => x.stateValues.coords),
+            }
           }
         }
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = arrayKeys[0];
+        }
+        if (arrayKey === undefined) {
+          let newPointValues = {};
+          for (let arrayKey in dependencyValues.pointChildren) {
+            if (!freshByKey[arrayKey]) {
+              newPointValues[arrayKey] = dependencyValues.pointChildren[arrayKey].stateValues.coords
+            }
+          }
+          return { newValues: { points: newPointValues } }
+        } else {
+          if (!freshByKey[arrayKey]) {
+            return {
+              newValues: {
+                points: {
+                  [arrayKey]: dependencyValues.pointChildren[arrayKey].stateValues.coords
+                }
+              }
+            }
+          } else {
+            // arrayKey asked for didn't change
+            // don't need to report noChanges for array state variable
+            return {};
+          }
+        }
+      },
+      markStale: function ({ freshByKey, changes }) {
+        if (changes.pointChildren) {
+          if (changes.pointChildren.componentIdentitiesChanged) {
+            for (let key in freshByKey) {
+              delete freshByKey[key];
+            }
+            return { partialArrayChange: false }
+          } else {
+            for (let key in changes.pointChildren.valuesChanged) {
+              delete freshByKey[key];
+            }
+            return { partialArrayChange: true }
+
+          }
+        }
+
+        return { partialArrayChange: true }
+
       }
     }
 
+    stateVariableDefinitions.nPoints = {
+      returnDependencies: () => ({
+        pointChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroPoints",
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { nPoints: dependencyValues.pointChildren.length }
+      })
+    }
+
+
     stateVariableDefinitions.childrenWhoRender = {
       returnDependencies: () => ({
-        points: {
-          dependencyType: "stateVariable",
-          variableName: "points"
+        pointChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroPoints",
         }
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          childrenWhoRender: dependencyValues.points.map(x => x.componentName)
+          childrenWhoRender: dependencyValues.pointChildren.map(x => x.componentName)
         }
       })
     }
