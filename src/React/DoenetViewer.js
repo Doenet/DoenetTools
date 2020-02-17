@@ -50,9 +50,12 @@ class DoenetViewer extends Component {
     this.leaveGroup = this.leaveGroup.bind(this);
     this.continueConstruction = this.continueConstruction.bind(this);
 
-
-    //Integration with Doenet Library
-    this.worksheet = new window.doenet.Worksheet();
+    this.doenetAPIAvailable = false;
+    if (window.doenet){
+      //Integration with DoenetAPI
+      this.worksheet = new window.doenet.Worksheet();
+      this.doenetAPIAvailable = true;
+    
 
 
     let collaborationPanelState = "join or create";
@@ -70,6 +73,14 @@ class DoenetViewer extends Component {
       collaborationPanelState: collaborationPanelState,
     }
 
+  }else{
+    this.state = {
+      apiStateReady: false,
+    }
+
+  }
+
+
     if (this.props.functionsSuppliedByChild) {
 
       this.props.functionsSuppliedByChild.submitAllAnswers = () => this.core.document.submitAllAnswers();
@@ -78,31 +89,39 @@ class DoenetViewer extends Component {
 
   }
 
+  componentDidMount(){
+    if (!this.doenetAPIAvailable){
+      this.continueConstruction();
+    }
+    
+  }
+
   continueConstruction(event, state) {
 
 
     if(this.core) {
       return;
     }
+    if (this.doenetAPIAvailable){
 
-    if (this.group) {
+      if (this.group) {
 
-      if (!this.worksheet.globalState.users) {
-        this.worksheet.globalState.users = [];
+        if (!this.worksheet.globalState.users) {
+          this.worksheet.globalState.users = [];
+        }
+
+        let index = this.worksheet.globalState.users.indexOf(this.worksheet.userId);
+        if (index === -1) {
+          this.worksheet.globalState.users.push(this.worksheet.userId);
+          this.playerNumber = this.worksheet.globalState.users.length;
+        } else {
+          this.playerNumber = index + 1;
+        }
+        // let numberOfPlayers = this.worksheet.globalState.users.length;
+        console.log(`Your userid ${this.worksheet.userId}`);
+        console.log(this.worksheet.globalState.users);
       }
-
-      let index = this.worksheet.globalState.users.indexOf(this.worksheet.userId);
-      if (index === -1) {
-        this.worksheet.globalState.users.push(this.worksheet.userId);
-        this.playerNumber = this.worksheet.globalState.users.length;
-      } else {
-        this.playerNumber = index + 1;
-      }
-      // let numberOfPlayers = this.worksheet.globalState.users.length;
-      console.log(`Your userid ${this.worksheet.userId}`);
-      console.log(this.worksheet.globalState.users);
     }
-
 
     //Modes Listed:
     //Gradebook
@@ -126,8 +145,10 @@ class DoenetViewer extends Component {
     this.flags.showCorrectness = true;
     this.flags.solutionType = "button";
 
-    if (this.group) {
-      this.flags.collaboration = { numberOfGroups: 3, groupNumber: this.playerNumber }
+    if (this.doenetAPIAvailable){
+      if (this.group) {
+        this.flags.collaboration = { numberOfGroups: 3, groupNumber: this.playerNumber }
+      }
     }
 
     this.allowViewSolutionWithoutRoundTrip = true;
@@ -169,6 +190,8 @@ class DoenetViewer extends Component {
       postConstructionCallBack: this.update
     });
 
+    if (this.doenetAPIAvailable){
+
     if (this.group) {
       this.worksheet.addEventListener('globalState', this.remoteStateChanged);
       this.remoteStateChanged(null, this.worksheet.globalState)
@@ -209,6 +232,8 @@ class DoenetViewer extends Component {
       }
 
     }
+  }
+  
 
 
     this.setState({ apiStateReady: true });
@@ -267,37 +292,40 @@ class DoenetViewer extends Component {
     // this.worksheet.state = {};
     // console.log("CLEAR!!!");
     // return;
-
+    if (this.doenetAPIAvailable){
+      
     let theState;
 
-    if (this.group) {
-      this.worksheet.globalState.contentId = contentId;
-      theState = this.worksheet.globalState.doenetMLState;
+      if (this.group) {
+        this.worksheet.globalState.contentId = contentId;
+        theState = this.worksheet.globalState.doenetMLState;
 
-      if (theState === undefined) {
-        theState = this.worksheet.globalState.doenetMLState = {};
-      }
-    } else {
-      this.worksheet.state.contentId = contentId;
-      theState = this.worksheet.state.doenetMLState;
+        if (theState === undefined) {
+          theState = this.worksheet.globalState.doenetMLState = {};
+        }
+      } else {
+        this.worksheet.state.contentId = contentId;
+        theState = this.worksheet.state.doenetMLState;
 
-      if (theState === undefined) {
-        theState = this.worksheet.state.doenetMLState = {};
+        if (theState === undefined) {
+          theState = this.worksheet.state.doenetMLState = {};
+        }
       }
+
+      for (let componentName in newStateVariableValues) {
+        let componentState = theState[componentName];
+        if (componentState === undefined) {
+          componentState = theState[componentName] = {};
+        }
+
+        //Stringify for serializing when functions that are in variables
+        for (let varName in newStateVariableValues[componentName]) {
+          componentState[varName] = JSON.stringify(newStateVariableValues[componentName][varName], serializedStateReplacer);
+        }
+      }
+
     }
 
-
-    for (let componentName in newStateVariableValues) {
-      let componentState = theState[componentName];
-      if (componentState === undefined) {
-        componentState = theState[componentName] = {};
-      }
-
-      //Stringify for serializing when functions that are in variables
-      for (let varName in newStateVariableValues[componentName]) {
-        componentState[varName] = JSON.stringify(newStateVariableValues[componentName][varName], serializedStateReplacer);
-      }
-    }
 
   }
 

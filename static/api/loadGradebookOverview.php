@@ -14,19 +14,26 @@ if (!isset($_REQUEST["courseId"])) {
     $courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 
     $sql = "
-        SELECT a.assignmentId, a.assignmentName, ua.credit, ua.username
-        FROM assignment AS a
-        LEFT JOIN user_assignment AS ua
-        ON a.assignmentId = ua.assignmentId
-        WHERE a.courseId = '$courseId'
-        ORDER BY a.dueDate
+        SELECT courseId
+        FROM course
+        WHERE course.courseId = '$courseId'
     ";
 
-    $result = $conn->query($sql); 
-    $response_arr = array();
+    $result = $conn->query($sql);
 
+    if ($result->num_rows == 1) {
+        $sql = "
+            SELECT a.assignmentId, a.assignmentName, ua.credit, ua.username
+            FROM assignment AS a
+            RIGHT  JOIN user_assignment AS ua
+            ON a.assignmentId = ua.assignmentId
+            WHERE a.courseId = '$courseId'
+            ORDER BY a.dueDate
+        ";
 
-    if ($result->num_rows > 0){
+        $result = $conn->query($sql); 
+        $response_arr = array();
+
         while ($row = $result->fetch_assoc()) {
             array_push($response_arr,
                 array(
@@ -45,7 +52,7 @@ if (!isset($_REQUEST["courseId"])) {
         echo json_encode($response_arr);
     } else {
         http_response_code(404);
-        echo "Database Retrieval Error: No such course: '$courseId'";
+        echo "Database Retrieval Error: No such course: '$courseId', or courseId exists more than once.";
     }
 
     

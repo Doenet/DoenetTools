@@ -4,7 +4,7 @@ describe('Answer Tag Tests', function () {
     cy.visit('/test')
   })
 
-  it('answer sugar from one string', () => {
+  it.only('answer sugar from one string', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetCode: `

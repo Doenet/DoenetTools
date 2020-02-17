@@ -10,7 +10,9 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 $title =  mysqli_real_escape_string($conn,$_POST["title"]);
 $folderId = mysqli_real_escape_string($conn,$_POST["folderId"]);
 $parentId = mysqli_real_escape_string($conn,$_POST["parentId"]);
+$rootId = mysqli_real_escape_string($conn,$_POST["rootId"]);
 $isRepo = (mysqli_real_escape_string($conn,$_POST["isRepo"]) == true) ? 1 : 0;
+$isPublic = (mysqli_real_escape_string($conn,$_POST["isPublic"]) == true) ? 1 : 0;
 $number_children = count($_POST["childContent"]);
 $operationType =  mysqli_real_escape_string($conn,$_POST["operationType"]);
 
@@ -25,9 +27,18 @@ if ($result->num_rows < 1){
   //No previous information on this folder so store new folder
   $sql = "
   INSERT INTO folder
-  (folderId,title ,parentId, creationDate, isRepo)
+  (folderId,title ,parentId, creationDate, isRepo, public)
   VALUES
-  ('$folderId','$title','$parentId' ,NOW(), '$isRepo')
+  ('$folderId','$title','$parentId' ,NOW(), '$isRepo', '$isPublic')
+  ";
+  $result = $conn->query($sql); 
+} else {
+  // update folder
+  $sql = "
+  UPDATE folder
+  SET title='$title',
+      parentId='$parentId'
+  WHERE folderId='$folderId'
   ";
   $result = $conn->query($sql); 
 }
@@ -46,9 +57,9 @@ for ($i = 0; $i < $number_children; $i++) {
     // Store if not already in folder
     $sql = "
     INSERT INTO folder_content
-    (folderId, childId, childType, timestamp)
+    (folderId, rootId, childId, childType, timestamp)
     VALUES
-    ('$folderId','$childId' ,'$childType', NOW())
+    ('$folderId', '$rootId', '$childId' ,'$childType', NOW())
     ";
     $result = $conn->query($sql); 
 
@@ -85,7 +96,7 @@ for ($i = 0; $i < $number_children; $i++) {
     $sql = "
     UPDATE folder_content
     SET folderId='$parentId',
-    timestamp=NOW()
+        timestamp=NOW()
     WHERE childId='$childId'
     ";
     $result = $conn->query($sql); 

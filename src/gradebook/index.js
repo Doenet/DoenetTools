@@ -3,4 +3,4 @@ import ReactDOM from 'react-dom';
 
 import DoenetGradebook from "../React/DoenetGradebook";
 
-    ReactDOM.render(<DoenetGradebook />, document.getElementById('root'));
+ReactDOM.render(<DoenetGradebook />, document.getElementById('root'));
