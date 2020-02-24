@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import DoenetApp from "../React/DoenetAdmin";
+import DoenetAdmin from "../React/DoenetAdmin";
 
     ReactDOM.render(
-      <DoenetApp />
+      <DoenetAdmin />
   ,document.getElementById('root'));

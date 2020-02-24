@@ -19,7 +19,7 @@ SELECT   -- get personal content
   c.draft as draft,
   'root' as rootId, 
   'root' as parentId,
-  c.public as public
+  c.public as isPublic
 FROM content AS c
 LEFT JOIN user_content uc ON uc.branchId = c.branchId
 WHERE uc.username='$remoteuser' AND c.removedFlag=0
@@ -33,7 +33,7 @@ SELECT  -- get children content
   c.draft as draft,
   fc.rootId as rootId, 
   fc.folderId as parentId,
-  c.public as public
+  c.public as isPublic
 FROM content AS c
 LEFT JOIN folder_content fc ON fc.childId = c.branchId
 WHERE fc.childType='content' AND c.removedFlag=0
@@ -84,7 +84,9 @@ if ($result->num_rows > 0){
                 "title"=>$row["title"],
                 "publishDate" => "",
                 "draftDate" => "",
-                "parentId" => $row["parentId"]
+                "parentId" => $row["parentId"],
+                "rootId" => $row["rootId"],
+                "isPublic" => ($row["isPublic"] == 1)
                 );
                 array_push($sort_order_arr,$bi);
         }

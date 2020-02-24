@@ -72,6 +72,7 @@ if ($result->num_rows > 0){
           "parentId" => $row["parentId"],
           "rootId" => $row["rootId"],
           "childContent" => array(),
+          "childUrls" => array(),
           "childFolders" => array(),
           "isRepo" => ($row["isRepo"] == 1),
           "isPublic" => ($row["isPublic"] == 1)
@@ -99,6 +100,8 @@ if ($result->num_rows > 0){
       array_push($folder_info_arr[$row["folderId"]]["childContent"], $row["childId"]);
     } else if ($row["childType"] == "folder"){
       array_push($folder_info_arr[$row["folderId"]]["childFolders"], $row["childId"]);
+    } else if ($row["childType"] == "url"){
+      array_push($folder_info_arr[$row["folderId"]]["childUrls"], $row["childId"]);
     }
   }
 }

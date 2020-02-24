@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import DoenetViewer from '../React/DoenetViewer';
 import ErrorBoundary from './ErrorBoundary';
 
-// import { Button, Dropdown, Icon, Menu } from 'semantic-ui-react';
-
 class DoenetViewerWindow extends Component {
   constructor(props){
     super(props);
