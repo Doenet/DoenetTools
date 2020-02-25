@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import DoenetViewer from '../React/DoenetViewer';
+import DoenetBox from '../React/DoenetBox';
 import axios from 'axios';
 import MersenneTwister from 'mersenne-twister';
 import './admin.css';
@@ -8,7 +9,7 @@ import DoenetHeader from './DoenetHeader';
 import { faWindowClose, faEdit, faArrowUp,faArrowDown,faArrowLeft,faArrowRight,faPlus,faFolderPlus} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {DatePicker} from 'react';
-import { useState } from 'react'
+import styled from 'styled-components';
 
 function hashStringToInteger(s) {
   var hash = 0, i, chr;
@@ -29,7 +30,8 @@ class DoenetAdmin extends Component {
      console.log("===RESTART===")
     this.assignmentIndex = 0;
     this.loadingScreen = (<React.Fragment><p>Loading...</p></React.Fragment>);
-
+    this.doenetML="";
+    this.listOfOptions=["None","Gateway","Problem Sets","Projects","Exams","Participation"]
       const envurl='/api/env.php';
       axios.get(envurl)
         .then(resp=>{
@@ -53,9 +55,24 @@ class DoenetAdmin extends Component {
     this.assignmentId = url.searchParams.get("assignmentId");
     this.activeSection = url.searchParams.get("active");
     this.assignment_state_1 = url.searchParams.get("assignment"); // get false
-
+    this.months = {
+    "Jan":"01",
+    "Feb":"02",
+    "Mar":"03",
+    "Apr":"04",
+    "May":"05",
+    "June":"06",
+    "Jul":"07",
+    "Aug":"08",
+    "Sep":"09",
+    "Oct":"10",
+    "Nov":"11",
+    "Dec":"12"
+  }
     this.enableThese=[]
-    this.calendar=null
+    // this.calendar=null
+    this.rightSideInfoColumn = null
+    this.AssignmentInfoPackageReady = false
     this.AssignmentInfoChanged=false;
     this.overview_branchId=""
     this.syllabus_branchId=""
@@ -105,7 +122,7 @@ class DoenetAdmin extends Component {
      this.arr_return=[];
      this.id_arr=[];
      this.thisAssignmentInfo=""
-     this.assignmentName="";
+     this.assignmentName=null;
      this.individualize=false;
      this.multipleAttempts=false;
      this.showSolution=false;
@@ -1155,7 +1172,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   console.log(assignmentId)
   // given contentId, get me doenetML
   if (contentId!=null && branchId!=null){
-
     this.selectedAssignmentId = assignmentId
     this.assignmentName = this.assignment_obj[assignmentId]['name']
     this.assignment_branchId = this.assignment_obj[assignmentId]['branchId']
@@ -1183,7 +1199,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       //this.doenetML=doenetML
       this.doenetML=(doenetML?doenetML:"<p>Empty</p>");
       this.mainSection=(<DoenetViewer 
-              key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
+              key={"loadAssignment"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
+              // key={"doenetviewer"}              
               free={{doenetCode: this.doenetML}} 
               mode={{
                 solutionType:this.state.solutionType,
@@ -1193,9 +1210,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 showCorrectness:this.state.showCorrectness,
               }}           
             />)
-
-              //this.mainSection=null
-
             this.activeSection="assignment"
             console.log("here in loading assignment content")
             this.updateLocationBar({assignmentId:assignmentId,activeSection:this.activeSection})
@@ -1204,7 +1218,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     .catch(error=>{this.setState({error:error})});
   } else {
     this.mainSection=(<DoenetViewer 
-      key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
+      // key={"doenetviewer"}      
+      key={"loadassignmentContent"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
       free={{doenetCode: "<p>Empty</p>"}} 
       mode={{
         solutionType:this.state.solutionType,
@@ -1214,8 +1229,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         showCorrectness:this.state.showCorrectness,
       }}           
     />)
-    // this.mainSection=null
-
   }
   
 }
@@ -1263,7 +1276,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     if (data[this.activeSection]===0){
       if (data.overview===1){
         this.loadOverview();
-        this.buildOverview();
+        this.buildOverview()
+        // (!this.overview?this.buildOverview():null);
         this.updateLocationBar({});
       }else if (data.syllabus===1){
         this.loadSyllabus();
@@ -1322,15 +1336,14 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
 
   buildOverview(){
     this.mainSection = this.loadingScreen;
-    console.log("building overview")
-    console.log(this.doenetML)
     //talk to database to load fresh info
     this.overview = (<div className="assignmentContent">
       {/* <h2 data-cy="sectionTitle">Overview</h2>  */}
       {this.doenetML!=""?
       
       <DoenetViewer 
-              key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
+        // key={"doenetviewer"}              
+              key={"buildOverview"+(this.updateNumber+=1)} //each component has their own key, change the key will trick Reach to look for new component
               free={{doenetCode: this.doenetML}} 
               mode={{
                 solutionType:this.state.solutionType,
@@ -1342,7 +1355,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
             />:null}
     </div>)
     this.mainSection = this.overview;
-    console.log(this.mainSection)
   }
 
   loadSyllabus(){
@@ -1376,11 +1388,12 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.mainSection = this.loadingScreen;
 
     //talk to database to load fresh info
-    this.overview = (<React.Fragment>
+    this.syllabus = (<React.Fragment>
       {/* <h2 data-cy="sectionTitle">Syllabus</h2>  */}
       {this.doenetML!=""?
       <div><DoenetViewer 
-              key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
+              // key={"doenetviewer"}
+              //key={"buildSyllabus"+(this.updateNumber+=1)} //each component has their own key, change the key will trick Reach to look for new component
               free={{doenetCode: this.doenetML}} 
               mode={{
                 solutionType:this.state.solutionType,
@@ -1392,7 +1405,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
             /></div>:null}   
     </React.Fragment>)
 
-    this.mainSection = this.overview;
+    this.mainSection = this.syllabus;
   }
 
   buildAssignment() {
@@ -1432,8 +1445,10 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.assignmentFragment = <React.Fragment>
       <div className="assignmentContainer">     
         <div className="assignmentActivity">
-              {this.assignmentObj.assignmentId?<DoenetViewer 
-              key={"doenetviewer"+this.updateNumber} 
+              {this.assignmentObj.assignmentId?
+              <DoenetViewer 
+              // key={"doenetviewer"}
+              key={"buildAssignment"+this.updateNumber} 
               free={{
                 doenetCode: this.assignmentObj.code,
                 doenetState: this.assignmentObj.latestDocumentState,
@@ -1562,7 +1577,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     }
  
     //talk to database to load fresh info
-    this.overview = (<React.Fragment>
+    this.Grade = (<React.Fragment>
       <h2 data-cy="sectionTitle">Grades</h2>
       <div style={{marginLeft:"10px"}}>
         <div>Student: {this.student}</div>
@@ -1624,7 +1639,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         </tbody>
       </table>
     </React.Fragment>)
-    this.mainSection = this.overview;
+    this.mainSection = this.Grade;
   }
 
   buildAssignmentGrades({assignment}){
@@ -1757,8 +1772,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     <h2 style={{marginLeft:"10px"}}>{this.assignment.gradeItem}: {itemTitle}</h2>
       {this.latestAttemptNumber > 1 ? <p style={{marginLeft:"10px",fontSize:"16px"}}>Attempt Number: {this.latestAttemptNumber} </p>: null }
 
-            <DoenetViewer 
-            key={"doenetviewer"} 
+            {/* <DoenetViewer 
+              // key={"doenetviewer"}
+              key={"buildGrade"+this.updateNumber}             
             free={{
             doenetState: itemState,
           }} 
@@ -1772,7 +1788,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 showCorrectness:true,
                 interactive:false,
               }}
-            />
+            /> */}
 
     </React.Fragment>);
     this.forceUpdate();
@@ -2050,10 +2066,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     }
     this.forceUpdate();
   }
-  componentWillUnmount(){
-    this.mainSection=null;
-  }
+
   loadThisAssignmentInfo(){
+    this.rightSideInfoColumn=null
     const urlDownload="/api/loadAssignmentInfo.php";
     const data={assignmentId:this.thisAssignmentInfo}
     const payload = {
@@ -2080,8 +2095,218 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
             this.showHints=resp.data['showHints']==="1"?true:false
             this.showCorrectness=resp.data['showCorrectness']==="1"?true:false
             this.proctorMakesAvailable=resp.data['proctorMakesAvailable']==="1"?true:false
+            // this.buildRightSideInfoColumn()
+            this.AssignmentInfoPackageReady=true
             this.forceUpdate();
         });
+  }
+  buildRightSideInfoColumn(){
+
+    console.log("BUILDING ightSideInfoColumn")
+    console.log(this.assignmentName)
+    let evenOrOdd = 0
+    const SettingContainer = styled.button`
+    display:flex;
+    justify-content:space-between;
+    flex-direction: column;
+    `
+    this.rightSideInfoColumn = (          
+    <div className="info">
+
+    <span className="Section-Icon-Box">         
+    <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.assignment_branchId} icon={faEdit}/>
+    </span>
+      <SettingContainer>
+        
+      <DoenetBox key={"name"+(this.updateNumber++)} 
+      evenOrOdd = {evenOrOdd+=1}
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.assignmentName = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="text" 
+         title="Assignment Name: "
+         value={this.assignmentName?this.assignmentName:""}/>
+
+         <DoenetBox key={"duedate"+(this.updateNumber++)}
+         evenOrOdd = {evenOrOdd+=1}
+         parentFunction={(e)=>{
+          this.updateNumber+=1
+            let date = e.split(" ")
+            let result = date[3]+"-"+this.months[date[1]]+"-"+date[2]+" "+date[4]
+            this.dueDate = result;
+            this.AssignmentInfoChanged=true;
+             this.forceUpdate()}} 
+        type="Calendar" 
+        title="Due Date: "
+        value={this.dueDate?this.dueDate:""}
+        />
+
+    <DoenetBox key={"assignedDate"+(this.updateNumber++)} 
+      evenOrOdd = {evenOrOdd+=1}    
+    parentFunction={(e)=>{
+      this.updateNumber+=1
+        let date = e.split(" ")
+        let result = date[3]+"-"+this.months[date[1]]+"-"+date[2]+" "+date[4]
+        this.assignedDate = result;
+
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="Calendar" 
+         title="Assigned Date: " 
+         value={this.assignedDate?this.assignedDate:""}/>
+
+      <DoenetBox key={"TimeLimit"+(this.updateNumber++)} 
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.timeLimit = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="text" 
+         title="Time Limit: " 
+         value={this.timeLimit?this.timeLimit:""}/>
+
+    <DoenetBox key={"attempts"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}    
+    parentFunction={(e)=>{
+      this.updateNumber+=1
+        this.numberOfAttemptsAllowed = e;
+        if (!this.multipleAttempts){
+          this.numberOfAttemptsAllowed = 0
+        }
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="number" 
+         title="Number Of Attempts: " 
+         value={this.numberOfAttemptsAllowed?this.numberOfAttemptsAllowed:""}/>
+
+      {/* <p>number Of Attempts Allowed: <input onChange={(e)=>{this.numberOfAttemptsAllowed=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="number" value={this.numberOfAttemptsAllowed?this.numberOfAttemptsAllowed:""}></input></p> */}
+      <DoenetBox key={"points"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.totalPointsOrPercent = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="number" 
+         title="Total Points Or Percent: " 
+         value={this.totalPointsOrPercent?this.totalPointsOrPercent:""}/>
+      {/* <p>total Points Or Percent: <input onChange={(e)=>{this.totalPointsOrPercent=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="number" value={this.totalPointsOrPercent===null?"":this.totalPointsOrPercent}></input></p> */}
+
+      <DoenetBox key={"category"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.gradeCategory = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="select" 
+         options={this.listOfOptions}
+         title="Grade Category: " 
+         value={this.gradeCategory}/>
+      {/* <p>grade Category: 
+        <select onChange={(e)=>{this.gradeCategory=e.target.value
+        this.AssignmentInfoChanged=true;this.forceUpdate()}}>
+          <option value="None" selected={this.gradeCategory==="None"?true:false}>None</option>
+          <option value="Gateway" selected={this.gradeCategory==="Gateway"?true:false}>Gateway</option>
+          <option value="Problem Sets" selected={this.gradeCategory==="Problem Sets"?true:false}>Problem Sets</option>
+          <option value="Projects" selected={this.gradeCategory==="Projects"?true:false}>Projects</option>
+          <option value="Exams" selected={this.gradeCategory==="Exams"?true:false}>Exams</option>
+          <option value="Participation" selected={this.gradeCategory==="Participation"?true:false}>Participation</option>
+        </select>
+        </p>  */}
+      {/*IMPLEMENTED <p>Due Date:  <input onChange={(e)=>{this.dueDate=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.dueDate?this.dueDate:""}></input></p> */}
+      {/*IMPLEMENTED <p>assigned Date: <input onChange={(e)=>{this.assignedDate=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.assignedDate?this.assignedDate:""}></input></p>
+                 
+         NOT YET <p>Time Limit: <input onChange={(e)=>{this.timeLimit=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.timeLimit===null?"":this.timeLimit}></input></p>
+       */}
+      <DoenetBox key={"indiv"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.individualize = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="checkbox" 
+         title="Individualize: " 
+         value={this.individualize}/>
+      {/* <p>Individualize: <input onChange={()=>{this.individualize= !this.individualize;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.individualize}></input></p> */}
+      <DoenetBox key={"multiple att"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.multipleAttempts = e;
+        if (!this.multipleAttempts){
+          this.numberOfAttemptsAllowed = 0
+        }
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="checkbox" 
+         title="Multiple Attempts: " 
+         value={this.multipleAttempts}/>
+      {/* <p>multiple Attempts: <input onChange={()=>{this.multipleAttempts= !this.multipleAttempts;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.multipleAttempts}></input></p> */}
+      <DoenetBox key={"show sol"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.showSolution = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="checkbox" 
+         title="Show solution: " 
+         value={this.showSolution}/>
+      {/* <p>show solution: <input onChange={()=>{this.showSolution= !this.showSolution;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showSolution}></input></p> */}
+      <DoenetBox key={"show fback"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.showFeedback = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="checkbox" 
+         title="Show feedback: " 
+         value={this.showFeedback}/>
+      {/* <p>show feedback: <input onChange={()=>{this.showFeedback= !this.showFeedback;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showFeedback}></input></p> */}
+      <DoenetBox key={"show hints"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.showHints = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="checkbox" 
+         title="Show hints: " 
+         value={this.showHints}/>
+      {/* <p>show hints: <input onChange={()=>{this.showHints= !this.showHints;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showHints}></input></p> */}
+      <DoenetBox key={"show corr"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.showCorrectness = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="checkbox" 
+         title="Show correctness: " 
+         value={this.showCorrectness}/>
+      {/* <p>Show correctness: <input onChange={()=>{this.showCorrectness= !this.showCorrectness;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showCorrectness}></input></p> */}
+      <DoenetBox key={"proctor"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}
+      lastComponet = {true}     
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.proctorMakesAvailable = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="checkbox" 
+         title="Proctor make available: " 
+         value={this.proctorMakesAvailable}/>
+      {/* <p>Proctor make available: <input onChange={()=>{this.proctorMakesAvailable= !this.proctorMakesAvailable;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.proctorMakesAvailable}></input></p> */}
+      </SettingContainer>
+</div>)
+this.AssignmentInfoPackageReady = false
+this.forceUpdate()
   }
   saveAssignmentInfo(){
     const urlDownload="/api/saveAssignmentInfo.php";
@@ -2115,26 +2340,31 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       })
       .catch(error=>{this.setState({error:error})});
   }
-  openCalendar(){
-  //  const [startDate, setStartDate] = useState(new Date());
-    this.calendar=(<DatePicker
-      selected={new Date()}
-      onChange={date => {new Date()}}
-      showTimeSelect
-      timeFormat="HH:mm:00"
-      timeIntervals={15}
-      timeCaption="time"
-      dateFormat="yyyy-MM-d HH:mm:00"
-    />)
-  }
+  // openCalendar(){
+  // //  const [startDate, setStartDate] = useState(new Date());
+  //   this.calendar=(<DatePicker
+  //     selected={new Date()}
+  //     onChange={date => {new Date()}}
+  //     showTimeSelect
+  //     timeFormat="HH:mm:00"
+  //     timeIntervals={15}
+  //     timeCaption="time"
+  //     dateFormat="yyyy-MM-d HH:mm:00"
+  //   />)
+  // }
+  // componentWillUnmount(){
+  //   <DoenetViewer componentWillUnmount />
+  // }
   render() {
     console.log("====RENDER====");
-    console.log("this.individualize: "+this.individualize)
+    console.log(this.dueDate)
+    if (this.AssignmentInfoPackageReady){
+      this.buildRightSideInfoColumn()
+    }
     if (this.AssignmentInfoChanged){
       this.AssignmentInfoChanged=false;
       this.saveAssignmentInfo()
     }
-    console.log(this.adminAccess)
     if (this.state.newChange===true){
     this.ToggleList();
     }
@@ -2204,12 +2434,12 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     if (!this.state.assignment){
       assignment_class+=" disabled"
     }
-    let assignment03=(<div onClick={()=>{this.thisAssignmentInfo="VffOCH1I0h_ymB9KQHR24";
-    this.loadThisAssignmentInfo()}}>
-      <span>Assignment03</span></div>)
-      let assignment04=(<div onClick={()=>{this.thisAssignmentInfo="zxVi-pXiUtf3PodIXm45n";
-      this.loadThisAssignmentInfo()}}>
-        <span>Assignment04</span></div>)
+    // let assignment03=(<div onClick={()=>{this.thisAssignmentInfo="VffOCH1I0h_ymB9KQHR24";
+    // this.loadThisAssignmentInfo()}}>
+    //   <span>Assignment03</span></div>)
+    //   let assignment04=(<div onClick={()=>{this.thisAssignmentInfo="zxVi-pXiUtf3PodIXm45n";
+    //   this.loadThisAssignmentInfo()}}>
+    //     <span>Assignment04</span></div>)
     /**
      * how can we tell that the current tree is saved ?
      * answer: maybe we need a flag to indicate you have saved the current tree
@@ -2245,16 +2475,16 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         </div>
 
       <button className={this.enableMode==="position"?"selectedEnableButton":"button"} data-cy="modifyTree"
-      onClick={()=>{this.enableMode='position';this.buildTree();this.forceUpdate()}}>Modify position</button>
+      onClick={()=>{this.enableMode='position';this.activeSection="assignment";this.buildTree();this.forceUpdate()}}>Modify position</button>
 
       <button className={this.enableMode==="remove"?"selectedEnableButton":"button"} data-cy="removeTree"
-      onClick={()=>{this.enableMode='remove';this.buildTree();this.forceUpdate()}}>Remove tree</button>
+      onClick={()=>{this.enableMode='remove';this.activeSection="assignment";this.buildTree();this.forceUpdate()}}>Remove tree</button>
 
       <button className={this.enableMode==='header'?"selectedEnableButton":"button"} data-cy="addHeader"
-      onClick={()=>{this.enableMode='header';this.buildTree();this.forceUpdate()}}>Add Header</button>
+      onClick={()=>{this.enableMode='header';this.activeSection="assignment";this.buildTree();this.forceUpdate()}}>Add Header</button>
 
       <button className={this.enableMode==='assignment'?"selectedEnableButton":"button"} data-cy="addAssignment"
-      onClick={()=>{this.enableMode='assignment';this.buildTree();this.forceUpdate()}}>Add Assignment</button>
+      onClick={()=>{this.enableMode='assignment';this.activeSection="assignment";this.buildTree();this.forceUpdate()}}>Add Assignment</button>
 
     </div>);
       let tree_component = (<div >{this.tree}</div>)
@@ -2291,6 +2521,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         }}><span className="Section-Text">Syllabus</span>
           <span className="Section-Icon-Box">         
         <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.syllabus_branchId} icon={faEdit}/></span>
+      
       {/* <span className="Section-Icon-Box">          */}
         {/* <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({syllabus:false,newChange:true});}} icon={faWindowClose}/></span> */}
         <label className="switch">
@@ -2334,49 +2565,19 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
             {ModifyTreeInsertAssignmentHeadingModeComponent}
             {/* {this.state.assignment?tree_component:null} */}
             
-          <select style={{marginTop:"10px"}} onChange={this.EnableThese}>
+          {/* <select style={{marginTop:"10px"}} onChange={this.EnableThese}>
             <option>Enable Section</option>
             {this.enableThese }
-          </select>
+          </select> */}
           </div>
           <div className="homeActiveSection">
             {this.activeSection==="assignment"?tree_component:null}
-            {/* {this.mainSection} */}
+            {this.activeSection!="assignment"?this.mainSection:null}
             {/* {this.state.loading ? (<div>Loading...</div>): this.mainSection} */}
           </div>
+          {this.thisAssignmentInfo!=""?
 
-          {this.thisAssignmentInfo!=""?(
-            <div className="info">
-          <span className="Section-Icon-Box">         
-          <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.assignment_branchId} icon={faEdit}/></span>
-
-          <p>Assignment Name: <input onChange={(e)=>{this.assignmentName=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.assignmentName?this.assignmentName:""}></input></p>
-            <p>Due Date:  <input onChange={(e)=>{this.dueDate=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.dueDate?this.dueDate:""}></input></p>
-            <p>assigned Date: <input onChange={(e)=>{this.assignedDate=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.assignedDate?this.assignedDate:""}></input></p>
-            
-            <p>number Of Attempts Allowed: <input onChange={(e)=>{this.numberOfAttemptsAllowed=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="number" value={this.numberOfAttemptsAllowed?this.numberOfAttemptsAllowed:""}></input></p>
-            <p>grade Category: 
-              <select onChange={(e)=>{this.gradeCategory=e.target.value
-              this.AssignmentInfoChanged=true;this.forceUpdate()}}>
-                <option value="None" selected={this.gradeCategory==="None"?true:false}>None</option>
-                <option value="Gateway" selected={this.gradeCategory==="Gateway"?true:false}>Gateway</option>
-                <option value="Problem Sets" selected={this.gradeCategory==="Problem Sets"?true:false}>Problem Sets</option>
-                <option value="Projects" selected={this.gradeCategory==="Projects"?true:false}>Projects</option>
-                <option value="Exams" selected={this.gradeCategory==="Exams"?true:false}>Exams</option>
-                <option value="Participation" selected={this.gradeCategory==="Participation"?true:false}>Participation</option>
-              </select>
-              </p>            
-            <p>total Points Or Percent: <input onChange={(e)=>{this.totalPointsOrPercent=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="number" value={this.totalPointsOrPercent===null?"":this.totalPointsOrPercent}></input></p>
-            
-            <p>Time Limit: <input onChange={(e)=>{this.timeLimit=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.timeLimit===null?"":this.timeLimit}></input></p>
-            <p>Individualize: <input onChange={()=>{this.individualize= !this.individualize;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.individualize}></input></p>
-            <p>multiple Attempts: <input onChange={()=>{this.multipleAttempts= !this.multipleAttempts;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.multipleAttempts}></input></p>
-            <p>show solution: <input onChange={()=>{this.showSolution= !this.showSolution;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showSolution}></input></p>
-            <p>show feedback: <input onChange={()=>{this.showFeedback= !this.showFeedback;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showFeedback}></input></p>
-            <p>show hints: <input onChange={()=>{this.showHints= !this.showHints;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showHints}></input></p>
-            <p>show correctness: <input onChange={()=>{this.showCorrectness= !this.showCorrectness;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showCorrectness}></input></p>
-            <p>proctor make available: <input onChange={()=>{this.proctorMakesAvailable= !this.proctorMakesAvailable;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.proctorMakesAvailable}></input></p>
-</div>):null}
+  this.rightSideInfoColumn:null}
           
             
 
