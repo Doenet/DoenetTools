@@ -39,3 +39,8 @@ cypress/videos
 cypress/screenshots
 
 src/tempcodes
+
+
+# Docker testing environment
+docker/dist_local_docker/*
+!docker/dist_local_docker/.touch
