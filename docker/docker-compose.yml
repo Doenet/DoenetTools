@@ -1,31 +1,29 @@
 version: '3'
 services:
-    php-apache:
-        image: php:7.4-apache
-        # build:
-        #   context: ./php-apache
-        ports:
-            - 3001:80
-        volumes:
-            - ./dist_local_docker:/var/www/html:z
-        links:
-            - 'mariadb'
+  php-apache:
+    image: php:7.4-apache
+    # build:
+    #   context: ./php-apache
+    ports:
+      - 3001:80
+    volumes:
+      - ./dist_local_docker:/var/www/html:z
+    links:
+      - 'mysql'
 
-    mariadb:
-        # image: mariadb:10.4
-        build:
-            context: ./remove_bad_files
-        ports:
-          - 3307:3306
-        volumes:
-            - doenet_db:/var/lib/mysql
-        environment:
-            TZ: "America/Chicago"
-            MYSQL_ALLOW_EMPTY_PASSWORD: "no"
-            MYSQL_ROOT_PASSWORD: "root"
-            MYSQL_USER: 'root'
-            MYSQL_PASSWORD: 'root'
-            MYSQL_DATABASE: 'doenet_local'
+  mysql:
+    image: mysql:8.0
+    ports:
+      - 3307:3306
+    volumes:
+      - doenet_db:/var/lib/mysql
+    environment:
+      TZ: "America/Chicago"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+      MYSQL_ROOT_PASSWORD: "root"
+      # MYSQL_USER: 'root'
+      # MYSQL_PASSWORD: 'root'
+      MYSQL_DATABASE: 'doenet_local'
 
 volumes:
-    doenet_db:
+  doenet_db:
