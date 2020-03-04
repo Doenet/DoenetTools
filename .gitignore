@@ -44,3 +44,9 @@ src/tempcodes
 # Docker testing environment
 docker/dist_local_docker/*
 !docker/dist_local_docker/.touch
+
+docker/db/*
+!docker/db/.touch
+
+docker\ deb/
+docker\ alp/

@@ -5,8 +5,8 @@ $remoteuser = $_SERVER[ 'REMOTE_USER' ];
 $db_temp = "cse_doenet";
 
 
-if ($_SERVER['HTTP_HOST'] == 'localhost:3000'){
-  $env_path = "../../env.ini";
+if ($_SERVER['HTTP_HOST'] == 'localhost:3001'){
+  $env_path = "/var/doenet_php_config/env.ini"; //beep
   $remoteuser = "devuser";
   $db_temp = "doenet_local";
 }

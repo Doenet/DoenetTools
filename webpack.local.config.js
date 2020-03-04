@@ -22,7 +22,7 @@ module.exports = {
   },
 
   output: {
-    path: resolve(__dirname, 'docker/dist_local_docker/'),
+    path: "/var/www/html",
     filename: '[name]',
   },
 
