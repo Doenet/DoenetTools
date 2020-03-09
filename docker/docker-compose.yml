@@ -1,44 +1,41 @@
-version: '3'
-services:
-  php-apache:
-    # image: php:7.4-apache
-    build:
-      context: ./php-apache
-    ports:
-      - 3001:80
-    volumes:
-      - ./dist_local_docker:/var/www/html:z
-      - ../php_config:/var/doenet_php_config
-    links:
-      - 'db'
+version: '3.7'
 
-  db:
-    image: mysql:5.7
-    # build:
-    #   context: ./mysql
+services:
+  apache:
+    build: './apache'
     ports:
-      - 3307:3306
+      - 80:80
+      # - 443:443
     volumes:
-      - doenet_db:/var/lib/mysql:Z
-    expose:
-      - "3306"
-    environment:
-      TZ: 'America/Chicago'
-      # MYSQL_ALLOW_EMPTY_PASSWORD: "no"
-      MYSQL_ROOT_PASSWORD: helloworld
-      # MYSQL_USER: 'docker'
-      # MYSQL_PASSWORD: 'docker'
-      MYSQL_DATABASE: doenet_local
-  
+      - ./volumes/dist_local:/usr/local/apache2/htdocs
+    depends_on:
+      - php
+      - mysql
+    restart: always
+
+  php:
+    build: './php'
+    volumes:
+      - ./volumes/dist_local:/usr/local/apache2/htdocs
+      - ../php_config/env.ini:/var/doenet_php_config/env.ini
+    restart: always
+
+  mysql:
+    build: './mysql'
+    ports:
+      - 3306:3306
+    volumes:
+      - ./volumes/db:/var/lib/mysql
+    restart: always
+
   node:
-    image: node:13.8
+    build: './node'
     user: 'node'
     working_dir: /home/node/app
     volumes:
-      - ../:/home/node/app
-      - ./dist_local_docker:/var/www/html:z
-    # command: 'npm start'
-    command: 'npm --version'
+      - ..:/home/node/app
+      - ./volumes/dist_local:/var/www/html
 
-volumes:
-  doenet_db:
+    command: 'npm start'
+    restart: always
+    # command: 'npm --version'
