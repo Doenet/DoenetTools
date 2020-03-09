@@ -28,7 +28,7 @@ export default class MathComponent extends InlineComponent {
     properties.expand = { default: false };
     properties.displayDigits = { default: 10 };
     properties.displaySmallAsZero = { default: false };
-    properties.renderMode = { default: "inline" };
+    properties.renderMode = { default: "inline", forRenderer: true };
     properties.unordered = { default: false };
     properties.createVectors = { default: false };
     properties.createIntervals = { default: false };
@@ -247,6 +247,7 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.latex = {
       public: true,
       componentType: "text",
+      forRenderer: true,
       returnDependencies: () => ({
         valueForDisplay: {
           dependencyType: "stateVariable",

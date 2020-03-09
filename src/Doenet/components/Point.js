@@ -742,6 +742,7 @@ export default class Point extends GraphicalComponent {
       componentType: "number",
       isArray: true,
       entryPrefixes: ["numericalX"],
+      forRenderer: true,
       returnDependencies: function ({ arrayKeys }) {
         let dependencies = {};
 

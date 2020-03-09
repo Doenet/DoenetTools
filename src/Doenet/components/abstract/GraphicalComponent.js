@@ -5,9 +5,9 @@ export default class GraphicalComponent extends BaseComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.label = { default: "" };
-    properties.showlabel = { default: true };
-    properties.layer = { default: 0 };
+    properties.label = { default: "", forRenderer: true };
+    properties.showlabel = { default: true, forRenderer: true };
+    properties.layer = { default: 0, forRenderer: true };
     return properties;
 
   }
@@ -18,6 +18,7 @@ export default class GraphicalComponent extends BaseComponent {
     let stateVariableDefinitions = {};
 
     stateVariableDefinitions.selectedStyle = {
+      forRenderer: true,
       returnDependencies: () => ({
         styleNumber: {
           dependencyType: "stateVariable",

@@ -44,6 +44,7 @@ export default class Text extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: this.componentType,
+      forRenderer: true,
       // deferCalculation: false,
       returnDependencies: () => ({
         stringTextChildren: {

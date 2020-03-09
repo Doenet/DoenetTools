@@ -91,7 +91,7 @@ export default class BaseComponent {
   static createPropertiesObject() {
 
     return {
-      hide: { default: false },
+      hide: { default: false, forRenderer: true },
       modifyIndirectly: { default: true },
       fixed: { default: false },
       styleNumber: { default: 1 },

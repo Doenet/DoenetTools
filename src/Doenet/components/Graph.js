@@ -74,7 +74,7 @@ export default class Graph extends BlockComponent {
     let stateVariableDefinitions = {};
 
     stateVariableDefinitions.graphicalDescendants = {
-
+      forRenderer: true,
       returnDependencies: () => ({
         graphicalDescendants: {
           dependencyType: "descendantIdentity",

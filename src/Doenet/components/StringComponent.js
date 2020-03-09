@@ -24,6 +24,7 @@ export default class StringComponent extends InlineComponent {
       }],
       returnDependencies: () => ({}),
       defaultValue: "",
+      forRenderer: true,
       definition: function () {
         return {
           useEssentialOrDefaultValue: {

@@ -10,6 +10,7 @@ import * as serializeFunctions from './utils/serializedStateProcessing';
 import { gatherDescendants } from './utils/descendants';
 import crypto from 'crypto';
 import { deepClone } from './utils/deepFunctions';
+import createStateProxyHandler from './StateProxyHandler';
 
 // string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -135,6 +136,9 @@ export default class Core {
     serializedState[0].doenetAttributes.contentId = this.contentId;
 
     this._components = {};
+    this.renderedComponents = {};
+    this.renderedComponentTypes = [];
+
     this.downstreamDependencies = {};
     this.upstreamDependencies = {};
     this.deletedStateVariables = {};
@@ -153,7 +157,14 @@ export default class Core {
     this.setUpVariants(serializedState);
 
     //Make these variables available for cypress
-    window.state = { components: this._components, downstreamDependencies: this.downstreamDependencies, upstreamDependencies: this.upstreamDependencies, core: this }
+    window.state = {
+      components: this._components,
+      renderedComponents: this.renderedComponents,
+      renderedComponentTypes: this.renderedComponentTypes,
+      downstreamDependencies: this.downstreamDependencies,
+      upstreamDependencies: this.upstreamDependencies,
+      core: this
+    }
 
     this.changedStateVariables = {};
 
@@ -429,35 +440,88 @@ export default class Core {
   }
 
   updateRenderers({ componentNames, sourceOfUpdate, recurseToChildren = true }) {
-    for (let name of componentNames) {
-      let unproxiedComponent = this._components[name];
+    // create shallow copy so can add components to end
+    // if parent comes after child
+
+    let componentNamesToUpdate = [...componentNames];
+    for (let [ind, componentName] of componentNamesToUpdate.entries()) {
+      let unproxiedComponent = this._components[componentName];
       if (unproxiedComponent !== undefined) {
         // could be undefined if deleted since last updated
-        if (unproxiedComponent.renderer === undefined) {
-          // don't have a renderer.  Initialize only if 
+
+        if (componentName in this.renderedComponents) {
+
+          // TODO: tell renderer it must update, or at least it is stale
+
+          console.log(`************ Need to call update renderer for ${componentName}`);
+          //unproxiedComponent.updateRenderer({ sourceOfUpdate: sourceOfUpdate });
+
+
+        } else {
+
+          // component currently not being renderered
+          // flag to be rendered only if 
           // - component is not hidden and
           // - either
-          //   - component is the document document or 
-          //   - have parent and component is a child who renders
+          //   - component is the document or 
+          //   - have a rendered parent and component is a child who renders
 
-          let createRenderer = name === this.documentName;
+          let addToRenderedComponents = componentName === this.documentName;
+          let parentName = unproxiedComponent.parentName;
+          let indexForParent = -1;
 
-          if (!createRenderer) {
-            let parent = this._components[unproxiedComponent.parentName];
-            if (parent && parent.stateValues.childrenWhoRender &&
-              parent.stateValues.childrenWhoRender.includes(name) &&
-              !unproxiedComponent.stateValues.hide
-            ) {
-              createRenderer = true;
+          if (!addToRenderedComponents) {
+            // Note: will add to renderedComponents only if parent is already there
+            // so order of components in componentNames matters
+            if (parentName in this.renderedComponents) {
+              let parent = this._components[parentName];
+              if (parent && parent.stateValues.childrenWhoRender) {
+                indexForParent = parent.stateValues.childrenWhoRender.indexOf(componentName);
+
+                // Note: we don't look up state variable hide until it is the last
+                // item to check so that don't unnecessarily compute state variable value
+                // (hide may be a getter)
+                if (indexForParent !== -1 && !unproxiedComponent.stateValues.hide) {
+                  addToRenderedComponents = true;
+                }
+
+              }
+            } else {
+              // parent is not in renderedComponents
+              // But, if parent is in componentNamesToUpdate after component
+              // add componentName to end of componentNamesToUpdate so will come back
+              // component after parent is added
+              if (componentNamesToUpdate.slice(ind + 1).includes(parentName)) {
+                componentNamesToUpdate.push(componentName);
+              }
             }
           }
 
-          if (createRenderer) {
-            unproxiedComponent.initializeRenderer({ sourceOfUpdate: sourceOfUpdate });
+          if (addToRenderedComponents) {
+
+            let stateForRenderer = {};
+            for (let stateVariable in unproxiedComponent.state) {
+              if (unproxiedComponent.state[stateVariable].forRenderer) {
+                stateForRenderer[stateVariable] = unproxiedComponent.state[stateVariable];
+              }
+            }
+
+            this.renderedComponents[componentName] = {
+              componentName: componentName,
+              componentType: unproxiedComponent.componentType,
+              stateValues: new Proxy(stateForRenderer, createStateProxyHandler()),
+              children: [],
+            }
+            if (indexForParent !== -1) {
+              this.renderedComponents[parentName].children[indexForParent] = this.renderedComponents[componentName];
+            }
+
+            if(!this.renderedComponentTypes.includes(unproxiedComponent.componentType)) {
+              this.renderedComponentTypes.push(unproxiedComponent.componentType)
+            }
+            // unproxiedComponent.initializeRenderer({ sourceOfUpdate: sourceOfUpdate });
           }
 
-        } else {
-          unproxiedComponent.updateRenderer({ sourceOfUpdate: sourceOfUpdate });
         }
 
 
@@ -2013,6 +2077,10 @@ export default class Core {
         definition,
         inverseDefinition
       };
+
+      if (propertySpecification.forRenderer) {
+        stateVariableDefinitions[property].forRenderer = true;
+      }
     }
   }
 
