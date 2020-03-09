@@ -76,7 +76,7 @@ export default class Graph extends BlockComponent {
     stateVariableDefinitions.graphicalDescendants = {
 
       returnDependencies: () => ({
-        descendants: {
+        graphicalDescendants: {
           dependencyType: "descendantIdentity",
           componentTypes: ["_graphical"]
         },
@@ -84,7 +84,7 @@ export default class Graph extends BlockComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues: {
-            graphicalDescendants: dependencyValues.descendants
+            graphicalDescendants: dependencyValues.graphicalDescendants
           }
         }
       },

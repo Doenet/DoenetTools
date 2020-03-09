@@ -81,6 +81,24 @@ export default class NumberComponent extends InlineComponent {
           return { newValues: { value: dependencyValues.numberChild[0].stateValues.value } }
         }
       },
+      set: function (value) {
+        // this function is called when
+        // - definition is overridden by a ref prop
+        // - when processing new state variable values
+        //   (which could be from outside sources)
+        let number = Number(value);
+        if (Number.isNaN(number)) {
+          try {
+            number = me.fromText(value).evaluate_to_constant();
+            if (number === null) {
+              number = NaN;
+            }
+          } catch (e) {
+            number = NaN;
+          }
+        }
+        return number;
+      },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues, overrideFixed }) {
 
         if (!stateValues.canBeModified && !overrideFixed) {

@@ -4,7 +4,7 @@ import createStateProxyHandler from '../../StateProxyHandler';
 
 export default class BaseComponent {
   constructor({
-    componentName, parentName, ancestors,
+    componentName, ancestors,
     serializedState,
     definingChildren,
     serializedChildren, childLogic,
@@ -31,7 +31,6 @@ export default class BaseComponent {
     this.graphRenderComponents = graphRenderComponents;
 
     this.componentName = componentName;
-    this.parentName = parentName;
     this.ancestors = ancestors;
 
     this.componentType = this.constructor.componentType;
@@ -68,7 +67,7 @@ export default class BaseComponent {
     }
     this.stateValues = new Proxy(this.state, createStateProxyHandler());
 
-    if(serializedState.state) {
+    if (serializedState.state) {
       this.potentialEssentialState = new Proxy(serializedState.state, readOnlyProxyHandler);
     }
 
@@ -117,6 +116,72 @@ export default class BaseComponent {
     return {};
   }
 
+  static returnNormalizedStateVariableDefinitions({ propertyNames }) {
+    // return state variable definitions
+    // where have added additionalStateVariablesDefined
+
+
+    //  add state variable definitions from component class
+    let newDefinitions = this.returnStateVariableDefinitions({
+      propertyNames,
+    });
+
+
+    let cleanAdditionalStateVariableDefined = function (additionalStateVariablesDefined) {
+      for (let [ind, varObj] of additionalStateVariablesDefined.entries()) {
+        if (typeof varObj === "object") {
+          additionalStateVariablesDefined[ind] = varObj.variableName
+        }
+      }
+    }
+
+    let defAttributesToCopy = [
+      "returnDependencies", "definition",
+      "inverseDefinition", "stateVariablesDeterminingDependencies"
+    ];
+
+    let stateVariableDefinitions = {};
+
+    for (let varName in newDefinitions) {
+      let thisDef = newDefinitions[varName];
+      stateVariableDefinitions[varName] = thisDef;
+
+      if (thisDef.additionalStateVariablesDefined) {
+        for (let [ind, otherVarObj] of thisDef.additionalStateVariablesDefined.entries()) {
+          let defCopy = {};
+          for (let attr of defAttributesToCopy) {
+            defCopy[attr] = thisDef[attr];
+          }
+          defCopy.additionalStateVariablesDefined = [...thisDef.additionalStateVariablesDefined];
+          defCopy.additionalStateVariablesDefined[ind] = varName;
+          cleanAdditionalStateVariableDefined(defCopy.additionalStateVariablesDefined);
+
+          let otherVarName = otherVarObj;
+
+          // if otherVarObj is actually an object (rather than a string)
+          // then get variableName and assign other attributes 
+          // to the copied state variable definition
+          if (typeof otherVarObj === "object") {
+            otherVarName = otherVarObj.variableName;
+            otherVarObj = Object.assign({}, otherVarObj);
+            delete otherVarObj.variableName;
+            Object.assign(defCopy, otherVarObj);
+          }
+
+          stateVariableDefinitions[otherVarName] = defCopy;
+
+        }
+
+        cleanAdditionalStateVariableDefined(thisDef.additionalStateVariablesDefined);
+
+      }
+
+    }
+
+    return stateVariableDefinitions;
+
+  }
+
   static returnStateVariableInfo({ onlyPublic = false, standardComponentClasses, allPossibleProperties }) {
     let propertyObject = this.createPropertiesObject({ standardComponentClasses, allPossibleProperties });
 
@@ -133,7 +198,7 @@ export default class BaseComponent {
       }
     }
 
-    let stateDef = this.returnStateVariableDefinitions({ propertyNames: Object.keys(stateVariableDescriptions) });
+    let stateDef = this.returnNormalizedStateVariableDefinitions({ propertyNames: Object.keys(stateVariableDescriptions) });
 
     let arrayEntryPrefixes = {};
     let aliases = {};
@@ -164,7 +229,7 @@ export default class BaseComponent {
 
   }
 
-  get parent() {
+  get parentName() {
     if (this.ancestors === undefined || this.ancestors.length === 0) {
       return;
     }

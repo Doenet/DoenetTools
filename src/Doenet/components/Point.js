@@ -225,32 +225,42 @@ export default class Point extends GraphicalComponent {
           childLogicName: "exactlyOneZ",
         }
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, changes }) {
 
-        let haveCoords = false;
+        let basedOnCoords = false;
         let coords;
         let nDimensions;
 
         if (dependencyValues.coordsChild.length == 1) {
-          haveCoords = true;
+          basedOnCoords = true;
           coords = dependencyValues.coordsChild[0].stateValues.value;
         } else if (dependencyValues.coordsShadow !== null) {
-          haveCoords = true;
+          basedOnCoords = true;
           coords = dependencyValues.coordsShadow;
         }
 
-        if (haveCoords) {
+        if (basedOnCoords) {
 
           let coordsTree = coords.tree;
           if (Array.isArray(coordsTree) && ["tuple", "vector"].includes(coordsTree[0])) {
             nDimensions = coordsTree.length - 1;
           } else {
-            nDimensions = dependencyValues.coords;
+            nDimensions = 1;
           }
+
+          // if based on coords, should check to for actual change
+          // as frequently the dimension doesn't change
+          return { newValues: { nDimensions }, checkForActualChange: ["nDimensions"] };
+
 
         } else {
 
           // don't have coords, so determine from which component children have
+
+          // Note: wouldn't have been marked stale (so wouldn't get to definution)
+          // if identities of one of the children hadn't changed
+          // so don't need to check if identity changed
+
           if (dependencyValues.zChild.length === 1) {
             nDimensions = 3;
           } else if (dependencyValues.yChild.length === 1) {
@@ -259,7 +269,8 @@ export default class Point extends GraphicalComponent {
             nDimensions = 1;
           }
         }
-        return { newValues: { nDimensions } };
+
+        return { newValues: { nDimensions }, checkForActualChange: ["nDimensions"] };
 
       }
     }
@@ -322,37 +333,61 @@ export default class Point extends GraphicalComponent {
         }
         return dependencies;
       },
-      markStale: function ({ freshByKey, changes }) {
-        if (changes.coords) {
-          // if based on coords, always have entire array changed
+      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
+
+        // TODO: is there a reason to bother with calculating
+        // details of this freshness
+        // as xs won't be able to take advantage of it due
+        // possible constraints that could introduce dependencies among components? 
+
+        let freshByKey = freshnessInfo.freshByKey
+        if (changes.coordsShadow || changes.coordsChild || changes.nDimensions) {
+          // if based on coords or number of dimensions changed
+          // always regard as the whole entry changed
+          // (although fressByKey isn't set when based on coords
+          // delete these values just in case the depedencies changed)
+
           for (let key in freshByKey) {
             delete freshByKey[key];
           }
-          return { partialArrayChange: false }
+
+          // since returning fresh as false, it is important that we deleted
+          // all entries of freshByKey,
+          // as core will recurse markStale to upstream dependents now
+          // but won't recurse again if there are additional changes
+          // (as fresh===false indicates everything is already stale)
+          return { fresh: false }
 
         } else {
 
-          let partialArrayChange = true;
           if (changes.xChild) {
             delete freshByKey[0];
-            if (changes.xChild.componentIdentityChanged) {
-              partialArrayChange = false;
-            }
           }
           if (changes.yChild) {
             delete freshByKey[1];
-            if (changes.yChild.componentIdentityChanged) {
-              partialArrayChange = false;
-            }
           }
           if (changes.zChild) {
             delete freshByKey[2];
-            if (changes.zChild.componentIdentityChanged) {
-              partialArrayChange = false;
-            }
           }
 
-          return { partialArrayChange };
+          let arrayKey;
+          if (arrayKeys) {
+            arrayKey = arrayKeys[0];
+          }
+
+          if (arrayKey === undefined) {
+            if (Object.keys(freshByKey).length === 0) {
+              // asked for entire array and it is all stale
+              return { fresh: false }
+            } else {
+              // asked for entire array, but it has some fresh elements
+              return { partiallyFresh: true }
+            }
+          } else {
+            // asked for just one component
+            return { fresh: freshByKey[arrayKey] === true }
+          }
+
         }
       },
       definition: calculateUnconstrainedXs,
@@ -401,8 +436,52 @@ export default class Point extends GraphicalComponent {
         }
         return dependencies;
       },
+      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
 
-      definition: function ({ dependencyValues, arrayKeys, freshByKey }) {
+        let freshByKey = freshnessInfo.freshByKey
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+
+        if (changes.constraintsChild) {
+          // if have constraint, mark all entries as stale
+          for (let key in freshByKey) {
+            delete freshByKey[key];
+          }
+        } else if (changes.unconstrainedXs) {
+          // if no constraint, mark any keys that were stale in unconstrainedXs
+          // as stale for xs
+          let unconstrainedFreshByKey = changes.unconstrainedXs.valuesChanged.unconstrainedXs.freshnessInfo.freshByKey;
+          for (let key in freshByKey) {
+            if (!unconstrainedFreshByKey[key]) {
+              delete freshByKey[key];
+            }
+          }
+        }
+
+
+        if (arrayKey === undefined) {
+          if (Object.keys(freshByKey).length === 0) {
+            // asked for entire array and it is all stale
+            return { fresh: false }
+          } else {
+            // asked for entire array, but it has some fresh elements
+            // (we don't know here how many elements xs has, 
+            // so can't determine if completely fresh)
+            return { partiallyFresh: true }
+          }
+        } else {
+          // asked for just one component
+          return { fresh: freshByKey[arrayKey] === true }
+        }
+
+      },
+
+      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
+
+        let freshByKey = freshnessInfo.freshByKey
 
         let arrayKey;
         if (arrayKeys) {
@@ -411,19 +490,54 @@ export default class Point extends GraphicalComponent {
 
         if (arrayKey === undefined) {
           if (dependencyValues.constraintsChild.length === 1) {
+            let xs = dependencyValues.constraintsChild[0].stateValues.constraintResults
+              .map(x => convertValueToMathExpression(x));
+
+            for (let key in xs) {
+              freshByKey[key] = true;
+            }
+
             return {
-              newValues: {
-                xs:
-                  dependencyValues.constraintsChild[0].stateValues.constraintResults
-                    .map(x => convertValueToMathExpression(x))
-              }
+              newValues: { xs }
             }
           } else {
+            let xs = {};
+            if (changes.unconstrainedXs) {
+              let changedXs = changes.unconstrainedXs.valuesChanged.unconstrainedXs.changed;
+
+              if (changedXs === true || changedXs.changedEntireArray === true) {
+                // whole array changes
+                xs = dependencyValues.unconstrainedXs;
+
+                for (let key in xs) {
+                  freshByKey[key] = true;
+                }
+
+              } else if (changedXs) {
+                // if changedXs exists but isn't true, then is object of arrayKeys
+                for (let key in changedXs.arrayKeysChanged) {
+                  xs[key] = dependencyValues.unconstrainedXs[key];
+                  freshByKey[key] = true;
+                }
+              }
+            }
+
             return {
-              newValues: { xs: dependencyValues.unconstrainedXs }
+              newValues: { xs }
             }
           }
         } else {
+
+          // arrayKey is defined
+
+          if (freshByKey[arrayKey]) {
+            // Already calculated this value, so no need to calculate it again.
+            // Since is array state variable, don't need to send noChanges
+            return {};
+          }
+
+          freshByKey[arrayKey] = true;
+
           if (dependencyValues.constraintsChild.length === 1) {
             return {
               newValues: {
@@ -445,6 +559,7 @@ export default class Point extends GraphicalComponent {
               }
             }
           }
+
 
         }
 
@@ -622,7 +737,6 @@ export default class Point extends GraphicalComponent {
     }
 
 
-
     stateVariableDefinitions.numericalXs = {
       public: true,
       componentType: "number",
@@ -648,8 +762,9 @@ export default class Point extends GraphicalComponent {
         }
         return dependencies;
       },
+      markStale({ freshnessInfo, changes, arrayKeys }) {
 
-      definition: function ({ dependencyValues, arrayKeys, freshByKey }) {
+        let freshByKey = freshnessInfo.freshByKey;
 
         let arrayKey;
         if (arrayKeys) {
@@ -657,20 +772,129 @@ export default class Point extends GraphicalComponent {
         }
 
         if (arrayKey === undefined) {
-          return {
-            newValues: { numericalXs: dependencyValues.xs.map(x => x.evaluate_to_constant()) }
+          if (changes.xs) {
+            let xsFreshByKey = changes.xs.valuesChanged.xs.freshnessInfo.freshByKey;
+            for (let key in freshByKey) {
+              if (!xsFreshByKey[key]) {
+                delete freshByKey[key];
+              }
+            }
+          }
+          if (Object.keys(freshByKey).length === 0) {
+            // asked for entire array and it is all stale
+            return { fresh: false }
+          } else {
+            // asked for entire array, but it has some fresh elements
+            // (we don't know here how many elements numericalXs has, 
+            // so can't determine if completely fresh)
+            return { partiallyFresh: true }
           }
         } else {
+
+          // have arrayKey
+          // so asked for just one component
+
+          if (changes[`x${arrayKey + 1}`]) {
+            delete freshByKey[arrayKey];
+          }
+
+          return { fresh: freshByKey[arrayKey] === true };
+        }
+
+      },
+      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
+
+        let freshByKey = freshnessInfo.freshByKey
+
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+
+        if (arrayKey === undefined) {
+
+          let numericalXs = {};
+          if (changes.xs) {
+            let changedXs = changes.xs.valuesChanged.xs.changed;
+
+            if (changedXs === true || changedXs.changedEntireArray == true) {
+              // changed true means whole array changes
+              numericalXs = dependencyValues.xs.map(x => x.evaluate_to_constant());
+              for (let key in numericalXs) {
+                freshByKey[key] = true;
+              }
+
+            } else if (changedXs) {
+              // if changedXs exists but isn't true, then is object of arrayKeys
+              for (let key in changedXs.arrayKeysChanged) {
+                numericalXs[key] = dependencyValues.xs[key].evaluate_to_constant();
+                freshByKey[key] = true;
+              }
+            }
+          }
+
+          return {
+            newValues: { numericalXs }
+          }
+        } else {
+
+          // arrayKey is defined
+
+          if (freshByKey[arrayKey]) {
+            // Already calculated this value, so no need to calculate it again.
+            // Since is array state variable, don't need to send noChanges
+            return {};
+          }
+
+          freshByKey[arrayKey] = true;
+
           return {
             newValues: {
               numericalXs: {
-                [arrayKey]: dependencyValues[`xs${arrayKey + 1}`].evaluate_to_constant()
+                [arrayKey]: dependencyValues[`x${arrayKey + 1}`].evaluate_to_constant()
               }
             }
           }
         }
       },
 
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues,
+        stateValues, initialChange, arrayKeys }) {
+
+        // if not draggable, then disallow initial change 
+        if (initialChange && !stateValues.draggable) {
+          return { success: false };
+        }
+
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+
+        if (arrayKey === undefined) {
+          // working with entire array
+
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "xs",
+              desiredValue: desiredStateVariableValues.numericalXs,
+            }]
+          }
+        } else {
+
+          return {
+            success: true,
+            instructions: [{
+              setDependency: `x${arrayKey + 1}`,
+              desiredValue: desiredStateVariableValues.xs[arrayKey],
+            }]
+          }
+
+        }
+      }
     }
 
 
@@ -750,7 +974,7 @@ export default class Point extends GraphicalComponent {
 
 }
 
-function calculateUnconstrainedXs({ dependencyValues, arrayKeys, freshByKey }) {
+function calculateUnconstrainedXs({ dependencyValues, arrayKeys, freshnessInfo }) {
 
   // console.log('calculate unconstrained xs')
   // console.log(dependencyValues);
@@ -760,18 +984,21 @@ function calculateUnconstrainedXs({ dependencyValues, arrayKeys, freshByKey }) {
   let essentialXs = {};
 
 
-  let haveCoords = false;
+  let basedOnCoords = false;
   let coords;
 
   if (dependencyValues.coordsChild.length == 1) {
-    haveCoords = true;
+    basedOnCoords = true;
     coords = dependencyValues.coordsChild[0].stateValues.value;
   } else if (dependencyValues.coordsShadow !== null) {
-    haveCoords = true;
+    basedOnCoords = true;
     coords = dependencyValues.coordsShadow;
   }
 
-  if (haveCoords) {
+  if (basedOnCoords) {
+
+    // Note: if based on coords, don't set anything in freshnessInfo
+    // as any change will cause whole array to be considered stale
 
     let coordsTree = coords.tree;
     if (Array.isArray(coordsTree) && ["tuple", "vector"].includes(coordsTree[0])) {
@@ -786,6 +1013,8 @@ function calculateUnconstrainedXs({ dependencyValues, arrayKeys, freshByKey }) {
 
   } else {
 
+    let freshByKey = freshnessInfo.freshByKey
+
     let arrayKey;
     if (arrayKeys) {
       arrayKey = arrayKeys[0];
@@ -793,47 +1022,47 @@ function calculateUnconstrainedXs({ dependencyValues, arrayKeys, freshByKey }) {
 
     let { xChild, yChild, zChild, nDimensions } = dependencyValues;
 
-    if (!freshByKey[0]) {
-      if (arrayKey === "0" || arrayKey === undefined) {
-        if (xChild && xChild.length === 1) {
-          newXs[0] = xChild[0].stateValues.value.simplify();
-        } else {
-          essentialXs[0] = {
-            variablesToCheck: [
-              { variableName: "xs", arrayIndex: 0 },
-              { variableName: "coords", mathComponentIndex: 0 }
-            ]
-          };
-        }
-      }
-    }
-    if (!freshByKey[1]) {
-      if (arrayKey === "1" || arrayKey === undefined) {
-        if (yChild && yChild.length === 1) {
-          newXs[1] = yChild[0].stateValues.value.simplify();
-        } else if (nDimensions > 1) {
-          essentialXs[1] = {
-            variablesToCheck: [
-              { variableName: "xs", arrayIndex: 1 },
-              { variableName: "coords", mathComponentIndex: 1 }
-            ]
-          };
-        }
+    if (!freshByKey[0] && (arrayKey === "0" || arrayKey === undefined)) {
+      freshByKey[0] = true;
+      if (xChild && xChild.length === 1) {
+        newXs[0] = xChild[0].stateValues.value.simplify();
+      } else {
+        essentialXs[0] = {
+          variablesToCheck: [
+            { variableName: "xs", arrayIndex: 0 },
+            { variableName: "coords", mathComponentIndex: 0 }
+          ]
+        };
       }
     }
 
-    if (!freshByKey[2]) {
-      if (arrayKey === "2" || arrayKey === undefined) {
-        if (zChild && zChild.length === 1) {
-          newXs[2] = zChild[0].stateValues.value.simplify();
-        } else if (nDimensions > 2) {
-          essentialXs[2] = {
-            variablesToCheck: [
-              { variableName: "xs", arrayIndex: 2 },
-              { variableName: "coords", mathComponentIndex: 2 }
-            ]
-          };
-        }
+    if (!freshByKey[1] && (arrayKey === "1" || arrayKey === undefined)) {
+      if (yChild && yChild.length === 1) {
+        freshByKey[1] = true;
+        newXs[1] = yChild[0].stateValues.value.simplify();
+      } else if (nDimensions > 1) {
+        freshByKey[1] = true;
+        essentialXs[1] = {
+          variablesToCheck: [
+            { variableName: "xs", arrayIndex: 1 },
+            { variableName: "coords", mathComponentIndex: 1 }
+          ]
+        };
+      }
+    }
+
+    if (!freshByKey[2] && (arrayKey === "2" || arrayKey === undefined)) {
+      if (zChild && zChild.length === 1) {
+        freshByKey[2] = true;
+        newXs[2] = zChild[0].stateValues.value.simplify();
+      } else if (nDimensions > 2) {
+        freshByKey[2] = true;
+        essentialXs[2] = {
+          variablesToCheck: [
+            { variableName: "xs", arrayIndex: 2 },
+            { variableName: "coords", mathComponentIndex: 2 }
+          ]
+        };
       }
     }
   }
@@ -862,18 +1091,18 @@ function invertUnconstrainedXs({ desiredStateVariableValues, dependencyValues,
   // console.log(stateValues);
 
   let instructions = [];
-  let haveCoords = false;
+  let basedOnCoords = false;
   let coordsDependency;
 
   if (dependencyValues.coordsChild.length == 1) {
-    haveCoords = true;
+    basedOnCoords = true;
     coordsDependency = "coordsChild";
   } else if (dependencyValues.coordsShadow !== null) {
-    haveCoords = true;
+    basedOnCoords = true;
     coordsDependency = "coordsShadow"
   }
 
-  if (haveCoords) {
+  if (basedOnCoords) {
     let currentCoordsTree = Array(stateValues.nDimensions + 1);
     currentCoordsTree[0] = "tuple";
     for (let arrayKey in desiredStateVariableValues.unconstrainedXs) {

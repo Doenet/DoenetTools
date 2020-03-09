@@ -88,10 +88,57 @@ export default class PointListComponent extends BaseComponent {
           variableNames: ["coords"]
         }
       }),
-      definition: function ({ dependencyValues, arrayKeys, freshByKey, partialArrayChange }) {
+      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
+        let freshByKey = freshnessInfo.freshByKey;
 
-        if (!partialArrayChange) {
+        if (changes.pointChildren) {
+          if (changes.pointChildren.componentIdentitiesChanged) {
+            for (let key in freshByKey) {
+              delete freshByKey[key];
+            }
+          } else {
+            for (let key in changes.pointChildren.valuesChanged) {
+              delete freshByKey[key];
+            }
+          }
+        }
+
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+
+        if (arrayKey === undefined) {
+          if (Object.keys(freshByKey).length === 0) {
+            // asked for entire array and it is all stale
+            return { fresh: false }
+          } else {
+            // asked for entire array, but it has some fresh elements
+            // (we don't know here how many elements points has, 
+            // so can't determine if completely fresh)
+            return { partiallyFresh: true }
+          }
+        } else {
+
+          // have arrayKey
+          // so asked for just one component
+
+          return { fresh: freshByKey[arrayKey] === true };
+        }
+
+
+      },
+      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
+
+        let freshByKey = freshnessInfo.freshByKey;
+
+        if (changes.pointChildren && changes.pointChildren.componentIdentitiesChanged) {
           // send array so that now should overwrite entire array
+          for (let key in dependencyValues.pointChildren) {
+            freshByKey[key] = true;
+          }
+
           return {
             newValues: {
               points: dependencyValues.pointChildren.map(x => x.stateValues.coords),
@@ -107,12 +154,14 @@ export default class PointListComponent extends BaseComponent {
           let newPointValues = {};
           for (let arrayKey in dependencyValues.pointChildren) {
             if (!freshByKey[arrayKey]) {
+              freshByKey[arrayKey] = true;
               newPointValues[arrayKey] = dependencyValues.pointChildren[arrayKey].stateValues.coords
             }
           }
           return { newValues: { points: newPointValues } }
         } else {
           if (!freshByKey[arrayKey]) {
+            freshByKey[arrayKey] = true;
             return {
               newValues: {
                 points: {
@@ -127,23 +176,50 @@ export default class PointListComponent extends BaseComponent {
           }
         }
       },
-      markStale: function ({ freshByKey, changes }) {
-        if (changes.pointChildren) {
-          if (changes.pointChildren.componentIdentitiesChanged) {
-            for (let key in freshByKey) {
-              delete freshByKey[key];
-            }
-            return { partialArrayChange: false }
-          } else {
-            for (let key in changes.pointChildren.valuesChanged) {
-              delete freshByKey[key];
-            }
-            return { partialArrayChange: true }
+      inverseDefinition: function ({ desiredStateVariableValues,
+        stateValues, arrayKeys
+      }) {
 
-          }
+        // console.log('inverse definition of points of pointlist')
+        // console.log(desiredStateVariableValues)
+        // console.log(arrayKeys);
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
         }
 
-        return { partialArrayChange: true }
+        if (arrayKey === undefined) {
+          // working with entire array
+
+          let instructions = [];
+          for(let key in desiredStateVariableValues.points) {
+            instructions.push({
+              setDependency: "pointChildren",
+              desiredValue: desiredStateVariableValues.points[key],
+              childIndex: key,
+              variableIndex: 0
+            })
+          }
+
+          return {
+            success: true,
+            instructions
+          }
+        } else {
+
+          // just have one arrayKey
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "pointChildren",
+              desiredValue: desiredStateVariableValues.points[arrayKey],
+              childIndex: arrayKey,
+              variableIndex: 0
+            }]
+          }
+
+        }
 
       }
     }
@@ -156,7 +232,8 @@ export default class PointListComponent extends BaseComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { nPoints: dependencyValues.pointChildren.length }
+        newValues: { nPoints: dependencyValues.pointChildren.length },
+        checkForActualChange: ["nPoints"]
       })
     }
 

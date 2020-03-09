@@ -14,12 +14,14 @@ export default class Equation extends MathComponent {
 
       let tree = value.tree;
       if (!Array.isArray(tree) || tree[0] !== "=" || tree.length !== 3) {
-        throw Error("Invalid format for equation");
+        console.warn("Invalid format for equation");
       }
 
       return { newValues: { value } }
 
     }
+
+    return stateVariableDefinitions;
 
   }
 
