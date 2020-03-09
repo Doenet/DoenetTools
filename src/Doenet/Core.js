@@ -179,10 +179,17 @@ export default class Core {
     console.log("** components at the end of the core constructor **");
     console.log(this._components);
 
-    this.postConstructionCallBack({
-      doenetTags: this.doenetState,
-      init: !calledAsynchronously,
-    })
+    if (calledAsynchronously) {
+      this.postConstructionCallBack({
+        doenetTags: this.doenetState,
+        init: !calledAsynchronously,
+      })
+    } else {
+      setTimeout(() => this.postConstructionCallBack({
+        doenetTags: this.doenetState,
+        init: !calledAsynchronously,
+      }), 0)
+    }
 
   }
 
@@ -516,7 +523,7 @@ export default class Core {
               this.renderedComponents[parentName].children[indexForParent] = this.renderedComponents[componentName];
             }
 
-            if(!this.renderedComponentTypes.includes(unproxiedComponent.componentType)) {
+            if (!this.renderedComponentTypes.includes(unproxiedComponent.componentType)) {
               this.renderedComponentTypes.push(unproxiedComponent.componentType)
             }
             // unproxiedComponent.initializeRenderer({ sourceOfUpdate: sourceOfUpdate });
