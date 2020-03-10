@@ -9,15 +9,15 @@ export default class Graph extends BlockComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.xmin = { default: -10 };
-    properties.xmax = { default: 10 };
-    properties.ymin = { default: -10 };
-    properties.ymax = { default: 10 };
+    properties.xmin = { default: -10, forRenderer: true };
+    properties.xmax = { default: 10, forRenderer: true };
+    properties.ymin = { default: -10, forRenderer: true };
+    properties.ymax = { default: 10, forRenderer: true };
     properties.width = { default: 300 };
     properties.height = { default: 300 };
-    properties.displayaxes = { default: true };
-    properties.xlabel = { default: "" };
-    properties.ylabel = { default: "" };
+    properties.displayAxes = { default: true, forRenderer: true };
+    properties.xlabel = { default: "", forRenderer: true };
+    properties.ylabel = { default: "", forRenderer: true };
     return properties;
   }
 
@@ -90,6 +90,31 @@ export default class Graph extends BlockComponent {
       },
     };
 
+    stateVariableDefinitions.numericalWidth = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        width: {
+          dependencyType: "stateVariable",
+          variableName: "width"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { numericalWidth: parseInt(dependencyValues.width) }
+      })
+    }
+
+    stateVariableDefinitions.numericalHeight = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        height: {
+          dependencyType: "stateVariable",
+          variableName: "height"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { numericalHeight: parseInt(dependencyValues.height) }
+      })
+    }
 
     stateVariableDefinitions.childrenWhoRender = {
       returnDependencies: () => ({

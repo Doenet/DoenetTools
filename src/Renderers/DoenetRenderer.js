@@ -8,19 +8,28 @@ export default class DoenetRenderer extends Component {
     this.removeChildren = this.removeChildren.bind(this);
     this.update = this.update.bind(this);
 
-    this.children = this.props.children;
+    this.childrenToCreate = props.componentInstructions.children;
+    this.componentName = props.componentInstructions.componentName;
 
-    this.doenetSvData = {};
-    Object.assign(this.doenetSvData, props.svData);
+    // TODO: this keeps the proxy in place so that state variables
+    // aren't calculated unless asked for
+    // Is this what we want?
+    // Also means it will always have the new values when they are changed....
+    this.doenetSvData = props.componentInstructions.stateValues;
 
-    this.props.updateObject.update = this.update;
-    this.props.updateObject.addChildren = this.addChildren;
-    this.props.updateObject.removeChildren = this.removeChildren;
+    props.rendererUpdateObjects[this.componentName] = this.update;
+    props.updateObject.addChildren = this.addChildren;
+    props.updateObject.removeChildren = this.removeChildren;
 
   }
 
-  update(newStateVariables) {
-    Object.assign(this.doenetSvData, newStateVariables);
+  update() {
+
+    console.log(`calling update for ${this.componentName}`);
+
+    // TODO: if doenetSvData is still proxy, don't need to set values
+    // just do the update?
+    // Object.assign(this.doenetSvData, newStateVariables);
     this.forceUpdate();
   }
 
@@ -34,5 +43,33 @@ export default class DoenetRenderer extends Component {
     this.forceUpdate();
   }
 
- 
+  createChildren(additionalprops = {}) {
+    this.children = [];
+
+    for (let childInstructions of this.childrenToCreate) {
+
+      // TODO: how does updateObject work in this model????
+      let updateObject = {};
+
+      let propsForChild = {
+        key: childInstructions.componentName,
+        componentInstructions: childInstructions,
+        updateObject,
+        rendererClasses: this.props.rendererClasses,
+        requestUpdate: this.props.requestUpdate,
+        rendererUpdateObjects: this.props.rendererUpdateObjects,
+      }
+
+      Object.assign(propsForChild, additionalprops);
+
+      let child = React.createElement(
+        this.rendererClasses[childInstructions.componentType],
+        propsForChild
+      );
+      this.children.push(child);
+    }
+
+    return this.children;
+  }
+
 }

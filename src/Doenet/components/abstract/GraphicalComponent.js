@@ -6,7 +6,7 @@ export default class GraphicalComponent extends BaseComponent {
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.label = { default: "", forRenderer: true };
-    properties.showlabel = { default: true, forRenderer: true };
+    properties.showLabel = { default: true, forRenderer: true };
     properties.layer = { default: 0, forRenderer: true };
     return properties;
 

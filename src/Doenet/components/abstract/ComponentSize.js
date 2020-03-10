@@ -72,8 +72,8 @@ export default class ComponentSize extends BaseComponent {
       }),
       definition({ dependencyValues }) {
 
-        console.log('value dependencyValues')
-        console.log(dependencyValues);
+        // console.log('value dependencyValues')
+        // console.log(dependencyValues);
 
         if (dependencyValues.numberAndStringChildren.length === 0) {
           if (dependencyValues.componentSizeChild.length === 0) {
@@ -144,7 +144,7 @@ export default class ComponentSize extends BaseComponent {
           }
           let value = conversionFactor[originalUnit] * originalValue;
 
-          console.log(`value: ${value}, isAbsolute: ${isAbsolute}`);
+          // console.log(`value: ${value}, isAbsolute: ${isAbsolute}`);
 
           return {
             newValues: { value, isAbsolute }

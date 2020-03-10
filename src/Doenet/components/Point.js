@@ -19,7 +19,7 @@ export default class Point extends GraphicalComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.draggable = { default: true };
+    properties.draggable = { default: true, forRenderer: true };
     return properties;
   }
 

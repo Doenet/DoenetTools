@@ -18,8 +18,8 @@ import createStateProxyHandler from './StateProxyHandler';
 
 
 export default class Core {
-  constructor({ doenetML, doenetState, update, parameters, requestedVariant,
-    externalFunctions, flags = {}, postConstructionCallBack }) {
+  constructor({ doenetML, doenetState, parameters, requestedVariant,
+    externalFunctions, flags = {}, coreReadyCallback, coreUpdatedCallback }) {
     // console.time('start up time');
 
     this.numerics = new Numerics();
@@ -41,7 +41,7 @@ export default class Core {
     this.setUpStateVariableDependencies = this.setUpStateVariableDependencies.bind(this);
     this.getComponentNamesForProp = this.getComponentNamesForProp.bind(this);
 
-    this.update = update;
+    this.coreUpdatedCallback = coreUpdatedCallback;
     this._standardComponentClasses = ComponentTypes.standardComponentClasses();
     this._allComponentClasses = ComponentTypes.allComponentClasses();
     this._componentTypesTakingComponentNames = ComponentTypes.componentTypesTakingComponentNames();
@@ -61,7 +61,7 @@ export default class Core {
     this.animationIDs = {};
     this.lastAnimationID = 0;
     this.requestedVariant = requestedVariant;
-    this.postConstructionCallBack = postConstructionCallBack;
+    this.coreReadyCallback = coreReadyCallback;
 
     // console.time('serialize doenetML');
 
@@ -180,14 +180,12 @@ export default class Core {
     console.log(this._components);
 
     if (calledAsynchronously) {
-      this.postConstructionCallBack({
+      this.coreReadyCallback({
         doenetTags: this.doenetState,
-        init: !calledAsynchronously,
       })
     } else {
-      setTimeout(() => this.postConstructionCallBack({
+      setTimeout(() => this.coreReadyCallback({
         doenetTags: this.doenetState,
-        init: !calledAsynchronously,
       }), 0)
     }
 
@@ -450,6 +448,8 @@ export default class Core {
     // create shallow copy so can add components to end
     // if parent comes after child
 
+    let renderersToUpdate = [];
+
     let componentNamesToUpdate = [...componentNames];
     for (let [ind, componentName] of componentNamesToUpdate.entries()) {
       let unproxiedComponent = this._components[componentName];
@@ -459,6 +459,10 @@ export default class Core {
         if (componentName in this.renderedComponents) {
 
           // TODO: tell renderer it must update, or at least it is stale
+
+
+          // TODO: do we need to put state variables here?
+          renderersToUpdate.push(componentName);
 
           console.log(`************ Need to call update renderer for ${componentName}`);
           //unproxiedComponent.updateRenderer({ sourceOfUpdate: sourceOfUpdate });
@@ -542,6 +546,16 @@ export default class Core {
           });
         }
       }
+    }
+
+    if(renderersToUpdate.length > 0) {
+      console.log("renderersToUpdate")
+      console.log(renderersToUpdate)
+      let instruction = {
+        instructionType: "updateStateVariable",
+        renderersToUpdate
+      }
+      this.coreUpdatedCallback([instruction])
     }
   }
 
@@ -6158,11 +6172,11 @@ export default class Core {
 
     //this.initializeRenderers([this._components['__document1']]);
 
-    this.rebuildRenderComponents();
+    // this.rebuildRenderComponents();
 
-    if (init === false) {
-      this.update({ doenetTags: this._renderComponents });
-    }
+    // if (init === false) {
+    //   this.update({ doenetTags: this._renderComponents });
+    // }
   }
 
   deleteComponents({ components, deleteUpstreamDependencies = true,
@@ -7009,7 +7023,7 @@ export default class Core {
 
     }
     else if (updateType === "updateRendererOnly") {
-      this.update({ doenetTags: this._renderComponents });
+      this.coreUpdatedCallback({ doenetTags: this._renderComponents });
     }
 
     return returnValue;
@@ -7060,19 +7074,22 @@ export default class Core {
       }
     }
 
-    if (saveSerializedState) {
-      if (saveSerializedStateImmediately) {
-        this.externalFunctions.saveSerializedState({
-          document: this.components[this.documentName],
-          contentId: this.contentId,
-        })
-      } else {
-        this.externalFunctions.delayedSaveSerializedState({
-          document: this.components[this.documentName],
-          contentId: this.contentId,
-        })
-      }
-    }
+
+    // TODO: implement saving serialized state
+
+    // if (saveSerializedState) {
+    //   if (saveSerializedStateImmediately) {
+    //     this.externalFunctions.saveSerializedState({
+    //       document: this.components[this.documentName],
+    //       contentId: this.contentId,
+    //     })
+    //   } else {
+    //     this.externalFunctions.delayedSaveSerializedState({
+    //       document: this.components[this.documentName],
+    //       contentId: this.contentId,
+    //     })
+    //   }
+    // }
 
   }
 
