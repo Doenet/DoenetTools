@@ -24,6 +24,7 @@ module.exports = {
   output: {
     path: resolve(__dirname, 'dist_local'),
     filename: '[name]',
+    publicPath: '/',
   },
 
   module: {

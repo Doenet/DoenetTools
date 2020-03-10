@@ -26,16 +26,12 @@ class DoenetViewer extends Component {
     let renderPromises = [];
     let rendererNames = [];
     for (let rendererName of this.core.renderedComponentTypes) {
-      console.log(rendererName)
       rendererNames.push(rendererName);
       renderPromises.push(import(/* webpackMode: "lazy", webpackChunkName: "./renderers/[request]" */ `../Renderers/${rendererName}`));
     }
 
-    console.log(rendererNames);
 
     renderersloadComponent(renderPromises, rendererNames).then((renderers) => {
-      console.log("renderers inside laod component")
-      console.log(renderers)
       this.renderers = renderers;
       this.buildTree();
     });
@@ -43,8 +39,6 @@ class DoenetViewer extends Component {
   }
 
   buildTree() {
-    console.log("renderers")
-    console.log(this.renderers)
     this.doenetRenders = this.buildTreeHelper([this.core.renderedComponents[this.core.documentName]]);
     this.forceUpdate();
   }
@@ -59,8 +53,6 @@ class DoenetViewer extends Component {
         children = this.buildTreeHelper(node.children);
       }
       let updateObject = {};
-      console.log("node")
-      console.log(node)
       let reactComponent = React.createElement(this.renderers[node.componentType],
         {
           key: node.componentName,
