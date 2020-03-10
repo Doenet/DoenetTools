@@ -269,13 +269,13 @@ body{
   .disabled{
     color: #C0C0C0;
   }
-  .SectionContainer-Active {
+  /* .SectionContainer-Active {
     display:flex;
     justify-content: flex-end;
     background-color: rgb(151, 155, 151);
     padding: 2;
   
-  }
+  } */
   .Section-Text {
     display:flex;
     flex-grow: 1;

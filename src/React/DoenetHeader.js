@@ -16,12 +16,32 @@ class DoenetHeader extends Component {
     this.state = {
       showToolbox: false,
     }
-    const {arrayIds,courseInfo,defaultId} = this.props
-    this.currentCourseId = defaultId
-    console.log("from header")
-    console.log(arrayIds)
-    console.log(defaultId)
+    const envurl='/api/env01.php';
+    this.adminAccess = 0;
+    this.accessAllowed = 0;
+    this.rightToView = this.props.rightToView
+    this.rightToEdit = this.props.rightToEdit
+    this.instructorRights = this.props.instructorRights
+    this.selectPermission = null
+    this.coursesPermissions = {}
+    if (this.props.downloadPermission){
+      axios.get(envurl)
+      .then(resp=>{
+          console.log("downloading header permission")
+          this.coursesPermissions = resp.data
+          this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+          this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
+          // this.props.parentUpdateDownloadPermission()
+          this.forceUpdate();
+      });
+    }
+   
     this.currentCourseId=""
+    const {arrayIds,courseInfo,defaultId,permissions} = this.props
+    this.currentCourseId = defaultId
+
+
+
     this.options = []
     arrayIds.map((id,index)=>{
       this.options.push(<option value={id} selected={defaultId===id?true:false}>{courseInfo[id]['courseName']}</option>)
@@ -31,7 +51,16 @@ class DoenetHeader extends Component {
     className="select"
     onChange = {(e)=>{
       this.currentCourseId = e.target.value;
-      console.log("new id: "+this.currentCourseId);
+      this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+      this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
+      if (this.accessAllowed==="1"){
+        this.rightToView = true
+        if (this.adminAccess==="1"){
+          this.rightToEdit = true
+          this.instructorRights = true
+        }
+      }
+      // this.makePermissionList()
       this.props.parentFunction(e.target.value);
       this.forceUpdate()}}>
       {this.options}
@@ -58,7 +87,29 @@ class DoenetHeader extends Component {
 
     this.setupDatabase();
   }
-
+  makePermissionList(){
+    console.log("instructor right: "+this.instructorRights)
+    this.selectPermission=(
+      <select onChange={(e)=>{
+        {
+          console.log("e.target")
+          console.log(e.target.value)
+          if (e.target.value==="Student"){
+            this.rightToEdit=false
+          }
+          if (e.target.value==="Instructor"){
+            this.rightToEdit=true
+          }
+          this.props.permissionCallBack(e.target.value);
+          this.forceUpdate()
+        }
+      }}>
+      {this.rightToView?(<option selected = {!this.rightToEdit?true:false} value="Student">Student</option>):null}
+      {this.instructorRights?(<option selected = {this.rightToEdit?true:false} value="Instructor">Instructor</option>):null}
+        
+        </select>  
+    )
+  }
   setupDatabase() {
     // create a new database object
     let indexedDB = new IndexedDB(); 
@@ -120,7 +171,11 @@ class DoenetHeader extends Component {
 
   render() {
     const { toolTitle, headingTitle} = this.props;
-
+    console.log("render header")
+    console.log(this.instructorRights)
+    if(this.coursesPermissions!={}){
+      this.makePermissionList()
+    }
     return (
       <React.Fragment>
         <div className="headingContainerWrapper">
@@ -134,11 +189,7 @@ class DoenetHeader extends Component {
               <span>{ this.select }</span>
             </div>}
             <div className="headingToolbar">
-              {this.previousPageButtonName && 
-              <div id="previousPageButton" data-cy="previousPageButton" onClick={()=>location.href=this.previousPageButtonLink}>
-                <FontAwesomeIcon id="previousPageButtonIcon" icon={faArrowLeft}/>
-                <div style={{display:"inline", marginLeft:"3px"}}>{ this.previousPageButtonName }</div>
-              </div> }
+            {this.selectPermission}          
               <div className="toolboxContainer" data-cy="toolboxButton" onClick={this.toogleToolbox}>  
               <FontAwesomeIcon id="toolboxButton" icon={faTh}/>
                 {this.state.showToolbox && 

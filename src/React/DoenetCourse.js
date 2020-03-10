@@ -625,6 +625,7 @@ class Assignments extends Component {
 class DoenetCourse extends Component {
   constructor(props){
     super(props);
+    this.parentUpdateDownloadPermission = true
     this.rightToEdit = false
     this.rightToView = false
     this.instructorRights = false
@@ -954,10 +955,11 @@ class DoenetCourse extends Component {
     // console.log(parsed.param);
   }
   loadAllCourses() {
+    console.log("from loadAllCourses")
     this.makeTreeArray=[]
     this.alreadyLoadOverview = false
     this.alreadyLoadSyllabus = false
-    this.alreadyLoadAssignment = false
+    this.alreadyLoadAssignment = []
     this.Overview_doenetML = ""
     this.Syllabus_doenetML = ""
     this.assignmentTree = null
@@ -975,7 +977,7 @@ class DoenetCourse extends Component {
     axios.get(loadCoursesUrl,payload)
     .then(resp=>{
       let location = window.location.hash
-      console.log("from loadAllCourses")
+      console.log("downloading loadAllCourses")
       console.log(resp.data)
       this.alreadyHasCourseInfo = true
       this.courseInfo = resp.data.courseInfo;
@@ -983,8 +985,6 @@ class DoenetCourse extends Component {
       if (this.usingDefaultCourseId){
         this.currentCourseId = resp.data.courseIds[0] // default when first load
       }
-      // this.username = resp.data.user;
-          // this.access = resp.data.access;
           this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
           this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
           if (this.accessAllowed==="1"){
@@ -994,9 +994,7 @@ class DoenetCourse extends Component {
               this.instructorRights = true
             }
           }
-          console.log("new permission")
-          console.log (this.accessAllowed)
-          console.log (this.adminAccess)
+
       this.alreadyLoadAllCourses = true;
       this.courseName = this.courseInfo[this.currentCourseId]['courseName']
       //////////////////
@@ -3282,26 +3280,26 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     // if (this.AssignmentInfoPackageReady){
     //   this.buildRightSideInfoColumn()
     // }
-    this.roles=(<select
-    onChange={(e)=>{
-      if (e.target.value==="Student"){
-        this.rightToEdit=false
-      }
-      if (e.target.value==="Instructor"){
-        this.rightToEdit=true
-      }
-      this.alreadyLoadAssignment=[]
-      this.alreadyMadeLink=[]
-      this.tree_route=[]
-      this.overview_link=null
-      this.syllabus_link=null
-      this.grade_link=null
-      this.assignment_link=null
-      this.forceUpdate()
-    }}>
-      {this.rightToView?(<option selected = {!this.rightToEdit?true:false} value="Student">Student</option>):null}
-      {this.instructorRights?(<option selected = {this.rightToEdit?true:false} value="Instructor">Instructor</option>):null}
-    </select>)
+    // this.roles=(<select
+    // onChange={(e)=>{
+    //   if (e.target.value==="Student"){
+    //     this.rightToEdit=false
+    //   }
+    //   if (e.target.value==="Instructor"){
+    //     this.rightToEdit=true
+    //   }
+    //   this.alreadyLoadAssignment=[]
+    //   this.alreadyMadeLink=[]
+    //   this.tree_route=[]
+    //   this.overview_link=null
+    //   this.syllabus_link=null
+    //   this.grade_link=null
+    //   this.assignment_link=null
+    //   this.forceUpdate()
+    // }}>
+    //   {this.rightToView?(<option selected = {!this.rightToEdit?true:false} value="Student">Student</option>):null}
+    //   {this.instructorRights?(<option selected = {this.rightToEdit?true:false} value="Instructor">Instructor</option>):null}
+    // </select>)
 
     if (this.AssignmentInfoChanged){
       this.AssignmentInfoChanged=false;
@@ -3315,29 +3313,71 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     return (
     <React.Fragment>
       <div className="courseContainer">
-        {(this.courseIdsArray!=[] && this.courseInfo!={}?
+        {(this.courseIdsArray!=[] && this.courseInfo!={} ?
           (<DoenetHeader 
+            rightToEdit = {this.rightToEdit}
+            rightToView = {this.rightToView}
+            instructorRights = {this.instructorRights}
+            downloadPermission = {this.parentUpdateDownloadPermission}
+            permissions = {this.coursesPermissions}
             key={"name"+(this.updateNumber++)}
             toolTitle="Course" 
             arrayIds = {this.courseIdsArray}
             courseInfo = {this.courseInfo}
             headingTitle={this.courseName}
             defaultId = {this.currentCourseId} 
+            parentUpdateDownloadPermission = {()=>{
+              this.parentUpdateDownloadPermission = false
+            }}
+            permissionCallBack = {(e)=>{
+              if (e==="Student"){
+                this.rightToEdit=false
+              }
+              if (e==="Instructor"){
+                this.rightToEdit=true
+                this.instructorRights = true
+              }
+
+              this.makeTreeArray=[]
+              this.alreadyLoadOverview = false
+              this.alreadyLoadSyllabus = false
+              this.Overview_doenetML = ""
+              this.Syllabus_doenetML = ""
+              this.assignmentTree = null
+
+              this.alreadyLoadAssignment=[]
+              this.alreadyMadeLink=[]
+              this.tree_route=[]
+              this.overview_link=null
+              this.syllabus_link=null
+              this.grade_link=null
+              this.assignment_link=null
+              this.forceUpdate()
+            }}
             parentFunction={(e)=>{
               this.updateNumber+=1
+
+              this.alreadyLoadAssignment=[]
+              this.alreadyMadeLink=[]
+              this.tree_route=[]
+              this.overview_link=null
+              this.syllabus_link=null
+              this.grade_link=null
+              this.assignment_link=null
+
               this.currentCourseId = e;
-              this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
-              this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
-              this.rightToView = false
-              this.rightToEdit = false
-              this.instructorRights = false
-              if (this.accessAllowed==="1"){
-                this.rightToView = true
-                if (this.adminAccess==="1"){
-                  this.rightToEdit = true
-                  this.instructorRights = true
-                }
-              }
+              // this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+              // this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
+              // this.rightToView = false
+              // this.rightToEdit = false
+              // this.instructorRights = false
+              // if (this.accessAllowed==="1"){
+              //   this.rightToView = true
+              //   if (this.adminAccess==="1"){
+              //     this.rightToEdit = true
+              //     this.instructorRights = true
+              //   }
+              // }
               this.usingDefaultCourseId = false
               this.alreadyLoadAllCourses = false
 
