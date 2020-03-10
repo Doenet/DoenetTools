@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTh , faUser, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
 import axios from 'axios';
+import ConstrainToAngles from '../Doenet/components/ConstrainToAngles';
 
 
 class DoenetHeader extends Component {
@@ -15,7 +16,27 @@ class DoenetHeader extends Component {
     this.state = {
       showToolbox: false,
     }
-
+    const {arrayIds,courseInfo,defaultId} = this.props
+    this.currentCourseId = defaultId
+    console.log("from header")
+    console.log(arrayIds)
+    console.log(defaultId)
+    this.currentCourseId=""
+    this.options = []
+    arrayIds.map((id,index)=>{
+      this.options.push(<option value={id} selected={defaultId===id?true:false}>{courseInfo[id]['courseName']}</option>)
+    })
+    // console.log(this.options)
+    this.select = (<select 
+    className="select"
+    onChange = {(e)=>{
+      this.currentCourseId = e.target.value;
+      console.log("new id: "+this.currentCourseId);
+      this.props.parentFunction(e.target.value);
+      this.forceUpdate()}}>
+      {this.options}
+    </select>)
+    // this.headingTitle = this.props.courseInfo[this.currentCourseId]['courseName']
     this.toolTitleToLinkMap = {
       "Admin" : "/admin/",
       "Chooser" : "/chooser/",
@@ -109,7 +130,8 @@ class DoenetHeader extends Component {
               <span>{ toolTitle }</span>
             </div>
             {headingTitle && <div className="headingTitle">
-              <span>{ headingTitle }</span>
+              {/* <span>{ headingTitle }</span> */}
+              <span>{ this.select }</span>
             </div>}
             <div className="headingToolbar">
               {this.previousPageButtonName && 

@@ -8,7 +8,7 @@ import query from '../queryParamFuncs';
 import DoenetBox from '../React/DoenetBox';
 import { faWindowClose, faEdit, faArrowUp,faArrowDown,faArrowLeft,faArrowRight,faPlus,faFolderPlus} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropTypes from 'prop-types';
+
 // import {
 //   BrowserRouter as Router,
 //   Switch,
@@ -652,22 +652,27 @@ class DoenetCourse extends Component {
     this.listOfOptions=["None","Gateway","Problem Sets","Projects","Exams","Participation"]
 
     this.alreadyHadAssignmentsIndexAndDoenetML=false
-    const envurl='/api/env.php';
+    const envurl='/api/env01.php';
     this.adminAccess = 0;
     this.accessAllowed = 0;
+
+    this.coursesPermissions = {}
     axios.get(envurl)
       .then(resp=>{
-          this.username = resp.data.user;
-          this.access = resp.data.access;
-          this.accessAllowed = resp.data.accessAllowed;
-          this.adminAccess=resp.data.adminAccess;
-          if (this.accessAllowed==="1"){
-            this.rightToView = true
-            if (this.adminAccess==="1"){
-              this.rightToEdit = true
-              this.instructorRights = true
-            }
-          } 
+          this.coursesPermissions = resp.data
+          // console.log("this.coursesPermissions")
+          // console.log(this.coursesPermissions)
+          // this.username = resp.data.user;
+          // this.access = resp.data.access;
+          // this.accessAllowed = resp.data.accessAllowed;
+          // this.adminAccess=resp.data.adminAccess;
+          // if (this.accessAllowed==="1"){
+          //   this.rightToView = true
+          //   if (this.adminAccess==="1"){
+          //     this.rightToEdit = true
+          //     this.instructorRights = true
+          //   }
+          // } 
           this.forceUpdate();
       });
       // todo: a select button to switch between students and instructor
@@ -681,7 +686,8 @@ class DoenetCourse extends Component {
     this.assignmentOnScreen = false;
     this.treeOnScreen = true;
     this.courseId = "aI8sK4vmEhC5sdeSP3vNW"; //Temporary TODO: Choose courses
-    this.courseName = "Calculus and Dynamical Systems in Biology";
+    this.courseName = "";
+    this.alreadyLoadAllCourses = false;
     this.gradeCategories = ['Gateway','Problem Sets','Projects','Exams','Participation'];
     this.assignmentId = url.searchParams.get("assignmentId");
     this.activeSection = window.location.hash.substring(2);
@@ -752,6 +758,7 @@ class DoenetCourse extends Component {
     const url_header_assignment = "/api/getHeaderAndAssignmentInfo.php";
      this.arr_return=[];
      this.id_arr=[];
+     this.courseIdsArray = []
      this.assignmentName="";
      this.assignment_branchId = null;
      this.dueDate=null;
@@ -842,9 +849,9 @@ class DoenetCourse extends Component {
       this.enableAssignment=false
 
 
+      this.loadAllCourses()
 
-
-      const loadUrl = '/api/loadEnable.php'
+      /*const loadUrl = '/api/loadEnable.php'
       this.payLoad = {
         overview:0,
         syllabus:0,
@@ -892,9 +899,10 @@ class DoenetCourse extends Component {
           }
           this.loadSection()
           this.forceUpdate()
-        });
+        });*/
          
     this.courseInfo = {};
+    this.alreadyHasCourseInfo = false
     this.finishedContructor = false;
  
 
@@ -911,7 +919,7 @@ class DoenetCourse extends Component {
 
     
 
-
+    this.usingDefaultCourseId = true
     this.updateNumber = 0;
     this.buildAssignmentGrades = this.buildAssignmentGrades.bind(this);
     this.buildItemGrade = this.buildItemGrade.bind(this);
@@ -944,6 +952,139 @@ class DoenetCourse extends Component {
     
     // var parsed = queryString.parse(this.props.location.search);
     // console.log(parsed.param);
+  }
+  loadAllCourses() {
+    this.makeTreeArray=[]
+    this.alreadyLoadOverview = false
+    this.alreadyLoadSyllabus = false
+    this.alreadyLoadAssignment = false
+    this.Overview_doenetML = ""
+    this.Syllabus_doenetML = ""
+    this.assignmentTree = null
+    const loadCoursesUrl='/api/loadAllCourses.php';
+    const data={
+        overview:0,
+        syllabus:0,
+        grade:0,
+        assignment:0
+    }
+    const payload = {
+      params: data
+    }
+    if (!this.alreadyHasCourseInfo){
+    axios.get(loadCoursesUrl,payload)
+    .then(resp=>{
+      let location = window.location.hash
+      console.log("from loadAllCourses")
+      console.log(resp.data)
+      this.alreadyHasCourseInfo = true
+      this.courseInfo = resp.data.courseInfo;
+      this.courseIdsArray = resp.data.courseIds;
+      if (this.usingDefaultCourseId){
+        this.currentCourseId = resp.data.courseIds[0] // default when first load
+      }
+      // this.username = resp.data.user;
+          // this.access = resp.data.access;
+          this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+          this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
+          if (this.accessAllowed==="1"){
+            this.rightToView = true
+            if (this.adminAccess==="1"){
+              this.rightToEdit = true
+              this.instructorRights = true
+            }
+          }
+          console.log("new permission")
+          console.log (this.accessAllowed)
+          console.log (this.adminAccess)
+      this.alreadyLoadAllCourses = true;
+      this.courseName = this.courseInfo[this.currentCourseId]['courseName']
+      //////////////////
+      this.enableOverview=!!(+(resp.data.courseInfo[this.currentCourseId]["overviewEnabled"]))
+          if (this.enableOverview){
+            this.trueList.push("overview")
+            this.overview_branchId=resp.data.courseInfo[this.currentCourseId]["overviewId"]
+            console.log("overview_branchId: "+this.overview_branchId)
+          }
+          this.enableSyllabus=!!(+(resp.data.courseInfo[this.currentCourseId]["syllabusEnabled"]))
+          if (this.enableSyllabus){
+            this.trueList.push("syllabus")
+            this.syllabus_branchId=resp.data.courseInfo[this.currentCourseId]["syllabusId"]
+            console.log("syllabus_branchId: "+this.syllabus_branchId)
+          }
+          this.enableGrade=!!(+(resp.data.courseInfo[this.currentCourseId]["gradeEnabled"]))
+          if (this.enableGrade){
+            this.trueList.push("grade")
+          }
+          this.enableAssignment=!!(+(resp.data.courseInfo[this.currentCourseId]["assignmentEnabled"]))
+          if (this.enableAssignment){
+            this.trueList.push("assignments")
+          }
+          this.DoneLoading=true;
+          if (location=="#/" || location==""){
+            if (this.trueList!=[]){
+              this.activeSection=this.trueList[0]
+            }
+          }
+          else if (location=="#/overview"){
+            this.activeSection="overview"
+          } else if (location=="#/syllabus"){
+            this.activeSection="syllabus"
+          } else if (location=="#/grades"){
+            this.activeSection="grade"
+          } else  {
+            this.activeSection="assignments"
+            this.LoadAssignmentFromTheBeginning({location:location})
+          }
+          this.loadSection()
+          this.makeTreeVisible({loadSpecificId:""}) 
+          this.forceUpdate()
+    });}
+    else {
+      console.log("ALREADY LOAD ALL COURSES")
+      this.alreadyLoadAllCourses = true;
+      this.courseName = this.courseInfo[this.currentCourseId]['courseName']
+      //////////////////
+      this.enableOverview=!!(+(this.courseInfo[this.currentCourseId]["overviewEnabled"]))
+          if (this.enableOverview){
+            this.trueList.push("overview")
+            this.overview_branchId=this.courseInfo[this.currentCourseId]["overviewId"]
+            console.log("overview_branchId: "+this.overview_branchId)
+          }
+          this.enableSyllabus=!!(+(this.courseInfo[this.currentCourseId]["syllabusEnabled"]))
+          if (this.enableSyllabus){
+            this.trueList.push("syllabus")
+            this.syllabus_branchId=this.courseInfo[this.currentCourseId]["syllabusId"]
+            console.log("syllabus_branchId: "+this.syllabus_branchId)
+          }
+          this.enableGrade=!!(+(this.courseInfo[this.currentCourseId]["gradeEnabled"]))
+          if (this.enableGrade){
+            this.trueList.push("grade")
+          }
+          this.enableAssignment=!!(+(this.courseInfo[this.currentCourseId]["assignmentEnabled"]))
+          if (this.enableAssignment){
+            this.trueList.push("assignments")
+          }
+          this.DoneLoading=true;
+          if (location=="#/" || location==""){
+            if (this.trueList!=[]){
+              this.activeSection=this.trueList[0]
+            }
+          }
+          else if (location=="#/overview"){
+            this.activeSection="overview"
+          } else if (location=="#/syllabus"){
+            this.activeSection="syllabus"
+          } else if (location=="#/grades"){
+            this.activeSection="grade"
+          } else  {
+            this.activeSection="assignments"
+            this.LoadAssignmentFromTheBeginning({location:location})
+          }
+          this.loadSection()
+          this.makeTreeVisible({loadSpecificId:""}) 
+          this.forceUpdate()
+    }
   }
   findEnabledCategory(){
     const loadUrl = '/api/loadEnable.php'
@@ -1434,9 +1575,9 @@ this.forceUpdate()
     }
   }
   buildTreeArray(){
-    // console.log("running buildTreeArray")
-    // console.log(this.heading_obj)
-    // console.log(this.assignment_obj)
+    console.log("running buildTreeArray")
+    console.log(this.heading_obj)
+    console.log(this.assignment_obj)
     // console.log("this.makeTreeArray0")
     // console.log(this.makeTreeArray)
     // first get pId that is null
@@ -2400,6 +2541,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.Overview_doenetML=this.doenetML;
         this.alreadyLoadOverview=true
         console.log("doenetML overview!!!")
+        console.log(this.Overview_doenetML)
         this.loadFirstTrue=(this.Overview_doenetML!=""?<Overview doenetML={this.Overview_doenetML}/>:null)
         console.log(this.doenetML)
        // this.buildOverview();
@@ -2875,11 +3017,14 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     if (this.activeSection==="overview" && !this.alreadyLoadOverview){
       console.log("====MAKING overview====")
       this.loadOverview();
-      console.log("Overview code: "+this.Overview_doenetML)
+      console.log("Overview branchid: "+this.overview_branchId)
       // this.alreadyLoadOverview=true
     } else if (this.activeSection==="syllabus"&& !this.alreadyLoadSyllabus) {
       console.log("====MAKING syllabus====")
       this.loadSyllabus();
+      console.log("Overview branchid: "+this.overview_branchId)
+      console.log("syllabus branchid: "+this.syllabus_branchId)
+
       // this.alreadyLoadSyllabus = true
     } else if (this.activeSection==="grade") {
       this.loadingGrade();
@@ -2901,10 +3046,21 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   }
   makeTreeVisible({loadSpecificId}) {
     const url_header_assignment = "/api/getHeaderAndAssignmentInfo.php";
+    console.log("inside make tree")
+    console.log(this.currentCourseId)
+    this.assignment_obj = {}
+    this.heading_obj = {}
+    const data={        
+      courseId:this.currentCourseId
+    }
+    const payload = {
+      params: data
+    }
     // if (!this.alreadyMadeTree){
-      axios (url_header_assignment)
+      axios.get(url_header_assignment,payload)
     .then (resp=>{
       this.obj_return = resp.data;
+      console.log(resp.data)
       //let lengthOfReturnArray = (this.obj_return.length)
       this.alreadyMadeTree=true;
       let iterator=0;      
@@ -2984,6 +3140,13 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   render() {
     console.log("====RENDER====");
     console.log(this.rightToEdit)
+    console.log(this.rightToView)
+    if (!this.alreadyLoadAllCourses){
+      this.loadAllCourses()
+    }
+    if (this.courseIdsArray==[]){
+      this.forceUpdate()
+    }
       let found = false
     this.trueList.forEach(e=>{
       if (e===this.activeSection && found===false){
@@ -3152,8 +3315,38 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     return (
     <React.Fragment>
       <div className="courseContainer">
+        {(this.courseIdsArray!=[] && this.courseInfo!={}?
+          (<DoenetHeader 
+            key={"name"+(this.updateNumber++)}
+            toolTitle="Course" 
+            arrayIds = {this.courseIdsArray}
+            courseInfo = {this.courseInfo}
+            headingTitle={this.courseName}
+            defaultId = {this.currentCourseId} 
+            parentFunction={(e)=>{
+              this.updateNumber+=1
+              this.currentCourseId = e;
+              this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+              this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
+              this.rightToView = false
+              this.rightToEdit = false
+              this.instructorRights = false
+              if (this.accessAllowed==="1"){
+                this.rightToView = true
+                if (this.adminAccess==="1"){
+                  this.rightToEdit = true
+                  this.instructorRights = true
+                }
+              }
+              this.usingDefaultCourseId = false
+              this.alreadyLoadAllCourses = false
+
+              // this.AssignmentInfoChanged=true;
+              this.forceUpdate()
+              }} 
+            />):null
+          )}
         
-        <DoenetHeader toolTitle="Course" headingTitle={this.courseName} />
         <Router>
           <>
          {/* {this.activeSection==="overview"?this.loadOverview:this.loadSyllabus} */}
