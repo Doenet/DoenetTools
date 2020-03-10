@@ -8,9 +8,12 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import DateTimePicker from 'react-datetime-picker';
 class DoenetBox extends Component {
-
   constructor(props) {
     super(props);
+  this.readPriviledge = false
+  this.writePriviledge = false
+  this.readPriviledge = this.props.readPriviledge
+  this.writePriviledge = this.props.writePriviledge
     this.inputType = this.props.type;
     this.title = this.props.title;
     this.value = this.props.value;
@@ -75,12 +78,14 @@ class DoenetBox extends Component {
         <div className = {this.className}>
           <span className="SectionText">{this.title}</span>
           <span className="SectionValue">
-          <input onChange={
-            (e)=>{this.value = e.target.value;this.forceUpdate();this.props.parentFunction(this.value)}
+          {this.writePriviledge?(<input onChange={
+            (e)=>{this.value = e.target.value;this.props.parentFunction(this.value);this.forceUpdate()}
             // (e)=>{this.value=e.target.value;
             // this.AssignmentInfoChanged=true;
           }
-            type={this.inputType} value={this.value}></input>
+            type={this.inputType} value={this.value}></input>):
+            <div>{this.value}</div>
+            }
           </span>
         </div>
       </React.Fragment>)
@@ -91,7 +96,7 @@ class DoenetBox extends Component {
           <span className="SectionText">{this.title}</span>
           <div className="SectionValue">
             
-        <label className="switch">
+          {this.writePriviledge?(<label className="switch">
           <input onChange={
             ()=>{this.value = !this.value;this.forceUpdate();this.props.parentFunction(this.value)}
             // (e)=>{this.value=e.target.value;
@@ -99,43 +104,60 @@ class DoenetBox extends Component {
           }
             type={this.inputType} checked={this.value}></input>
         <span className="slider round"></span>
-      </label>
+      </label>)
+          :<div>{this.value?'Yes':'No'}</div>}
 
           </div>
           
         </div>
       )
     }
-    else if (this.inputType==="calendar"){
-      return (
-        <div className = {this.className}> 
-          <span className="SectionText">{this.title}</span>
-          <span className="SectionValue">
-          <DateTimePicker
-          onChange={(date)=>{this.props.parentFunction(date.toString());this.setState({date:date})}}
-          // onChange={(date)=>{console.log("its type is ");console.log(new Date(date).toString())}}
-          value={this.state.date}
-          disableClock = {true}
-        />
-        </span>
-        </div>
-      )
-    }
+    // else if (this.inputType==="calendar"){
+    //   return (
+    //     <div className = {this.className}> 
+    //       <span className="SectionText">{this.title}</span>
+    //       <span className="SectionValue">
+
+    //       {!this.writePriviledge?(<DateTimePicker
+    //       onChange={(date)=>{this.props.parentFunction(date.toString());this.setState({date:date})}}
+    //       // onChange={(date)=>{console.log("its type is ");console.log(new Date(date).toString())}}
+    //       value={this.state.date}
+    //       disableClock = {true}
+    //     />):(<div>{this.state.date}</div>)
+      
+    //   }
+        
+    //     </span>
+    //     </div>
+    //   )
+    // }
     else if (this.inputType==="Calendar"){
       return (
         <div> 
           <div className = {this.className}> 
           <span className="SectionText">{this.title}</span>
           <span className="SectionValue">
-          <DatePicker
-            selected={this.state.date}
-            onChange={(date)=>{this.props.parentFunction(date.toString());this.setState({date:date})}}            
-            showTimeSelect
-            timeFormat="HH:mm:00"
-            timeIntervals={15}
-            timeCaption="time"
-            dateFormat="yyyy-MM-d HH:mm:00"
-          />
+        {this.writePriviledge?(<DatePicker
+          selected={this.state.date}
+          onChange={(date)=>{this.props.parentFunction(date.toString());
+            this.setState({date:date})}}            
+          showTimeSelect
+          timeFormat="HH:mm:00"
+          timeIntervals={15}
+          timeCaption="time"
+          dateFormat="yyyy-MM-d HH:mm:00"
+        />)
+      :(<DatePicker
+        selected={this.state.date}
+        onChange={(date)=>{this.props.parentFunction(date.toString());
+          this.setState({date:date})}}  
+          disabled          
+        showTimeSelect
+        timeFormat="HH:mm:00"
+        timeIntervals={15}
+        timeCaption="time"
+        dateFormat="yyyy-MM-d HH:mm:00"
+      />)}
         </span>
         </div>
           
@@ -148,7 +170,7 @@ class DoenetBox extends Component {
         <div className = {this.className}>
           <span className="SectionText">{this.title}</span>
           <span className="SectionValue">
-        {this.selectBar}
+        {this.writePriviledge?(this.selectBar):(this.value)}
           </span>
         </div>
       </React.Fragment>)

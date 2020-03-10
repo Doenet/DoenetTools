@@ -38,9 +38,6 @@ class DoenetAdmin extends Component {
             this.username = resp.data.user;
             this.access = resp.data.access;
             this.adminAccess=resp.data.adminAccess;
-            console.log("from ENV")
-            console.log(resp.data)
-            console.log(this.adminAccess)
             this.forceUpdate();
         });
      
@@ -444,10 +441,6 @@ class DoenetAdmin extends Component {
     // }
   }
 buildTree(){
-  console.log("inside build tree")
-  console.log(this.assignment_obj)
-  console.log(this.heading_obj)
-  console.log(this.makeTreeArray)
   let ClassName = "headerSelection"
   let countChildrenOfUltimate=0
   let lengthChildrenOfUltimate=0
@@ -611,10 +604,8 @@ buildTree(){
     console.log("EMPTY TREE")
   }
   if (this.enableMode==='header'){
-    console.log("yes plzzz")
     this.tree.push(addHeaderToTheEndOfUltimateHeader)
   }
-  console.log("finish building tree")
 }
   saveTree(){
     console.log("saving the tree")
@@ -1233,18 +1224,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   
 }
   ToggleList(){
-    console.log("=====TOGGLE=====")
-    // this.enabledDisabledArray[this.activeSection]=!this.enabledDisabledArray[this.activeSection];
-    // //console.log("active section is..."+this.activeSection)
-    // if (this.activeSection==="overview"){
-    //   this.setState({overview:this.enabledDisabledArray[this.activeSection]})
-    // }else if (this.activeSection==="grade"){
-    //   this.setState({grade:this.enabledDisabledArray[this.activeSection]})
-    // }else if (this.activeSection==="assignment"){
-    //   this.setState({assignment:this.enabledDisabledArray[this.activeSection]})
-    // }else if (this.activeSection==="syllabus"){
-    //   this.setState({syllabus:this.enabledDisabledArray[this.activeSection]})
-    // }
     const url = '/api/save_enable_disable_category.php'
     console.log(this.state.overview)
     console.log(this.state.grade)
@@ -2466,8 +2445,6 @@ this.forceUpdate()
       <span className="Section-Text">Assignments</span>
       <span className="Section-Icon-Box">         
         <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.overview_branchId} icon={faEdit}/></span>
-      {/* <span className="Section-Icon-Box">          */}
-        {/* <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({assignment:false,newChange:true});}} icon={faWindowClose}/></span> */}
         <label className="switch">
           <input checked={this.state.assignment} onChange={(e)=>{this.setState({assignment:e.target.checked,newChange:true})}} type="checkbox"/>
         <span className="slider round"></span>
@@ -2504,9 +2481,7 @@ this.forceUpdate()
           <input checked={this.state.overview} onChange={(e)=>{this.setState({overview:e.target.checked,newChange:true})}} type="checkbox"/>
         <span class="slider round"></span>
       </label>
-      {/* <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({overview:false,newChange:true});}} icon={faWindowClose}/>
-        </span> */}
+
       </div>)
     // }
     // if (this.state.syllabus){
@@ -2520,10 +2495,10 @@ this.forceUpdate()
           this.forceUpdate();
         }}><span className="Section-Text">Syllabus</span>
           <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.syllabus_branchId} icon={faEdit}/></span>
+        <FontAwesomeIcon className="Section-Icon"
+         onClick={()=>window.location.href="/editor/?branchId="+this.syllabus_branchId} 
+         icon={faEdit}/></span>
       
-      {/* <span className="Section-Icon-Box">          */}
-        {/* <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({syllabus:false,newChange:true});}} icon={faWindowClose}/></span> */}
         <label className="switch">
           <input checked={this.state.syllabus} onChange={(e)=>{this.setState({syllabus:e.target.checked,newChange:true})}} type="checkbox"/>
         <span className="slider round"></span>

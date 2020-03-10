@@ -13,7 +13,8 @@ body{
   .courseContainer{
     display:grid;
     /* grid-template-columns: 120px 130px auto 140px; */
-    grid-template-columns: 250px auto 250px;
+    /* grid-template-columns: 250px auto 450px; */
+    grid-template-columns: 250px auto;
     grid-template-rows: 60px auto;
     width: 100vw;
     height: 100vh;
@@ -32,15 +33,42 @@ body{
   }
   .homeActiveSection{
     /* background-color: rgb(243, 0, 0); */
+    display:grid;
+
+    grid-row: 2 / 3 ;
     grid-column: 2 / 3;
+
+    grid-template-columns: auto 520px;
+    /* grid-template-rows: 60px auto; */
+    /* width: 100vw; */
+    /* height: 100vh; */
+    padding: 5px;
+    margin: 0;
+    overflow: scroll;
+
+    /* grid-column: 2 / 3;
     grid-row: 2 / 3;
+    padding: 5px;
+    overflow: scroll; */
+  }
+  .homeActiveSectionMain{
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
     padding: 5px;
     overflow: scroll;
   }
-  
-  .info {
+  /* .courseContainer .info{
+    color:red;
     grid-column: 3 / 4;
     grid-row: 2 / 3;
+    padding: 5px;
+    overflow: scroll;
+  } */
+
+  .info {
+    /* grid-column: 3 / 4; */
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
     padding: 5px;
     overflow: scroll;
   }
@@ -223,11 +251,23 @@ body{
   
   .SectionContainer {
     display:flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     padding: 2;
     margin: 1px 0px 1px 0px;
     cursor: pointer;
   
+  }
+  .SectionContainer-Active {
+    display:flex;
+    justify-content: flex-start;
+    background-color: rgb(151, 155, 151);
+    padding: 2;
+    margin: 1px 0px 1px 0px;
+    cursor: pointer;
+  
+  }
+  .disabled{
+    color: #C0C0C0;
   }
   .SectionContainer-Active {
     display:flex;
@@ -241,7 +281,9 @@ body{
     flex-grow: 1;
     font-size: 18px;
     padding:6px;
+    padding-right: 20px;
     border-right:167px;
+    width: 140px;
   }
   .Section-Icon {
     font-size:18px;

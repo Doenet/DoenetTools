@@ -35,7 +35,7 @@
   flex-grow: 1;
   font-size: 18px;
   padding:6px;
-  border-right:167px;
+  border-right:20px;
   cursor: pointer;
   width: 206px;
   margin: 10px 2px 10px 2px;
@@ -53,10 +53,10 @@
   display:flex;
   flex-grow: 1;
   font-size: 17px;
-  padding:6px;
+  padding:6px 6px 6px 6px;
   border-right:167px;
   margin:0;
-  width:185px;
+  width:130px;
   white-space: nowrap; 
   margin: 10px 2px 10px 2px;
   border-color: coral;

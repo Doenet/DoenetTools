@@ -17,6 +17,7 @@
     "mersenne-twister": "1.1.0",
     "moment": "^2.24.0",
     "nanoid": "^2.1.11",
+    "prop-types": "^15.7.2",
     "react-ace": "^6.6.0",
     "react-datepicker": "^2.13.0",
     "react-datetime-picker": "^2.9.0",
