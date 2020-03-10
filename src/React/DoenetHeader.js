@@ -22,6 +22,10 @@ class DoenetHeader extends Component {
     this.rightToView = this.props.rightToView
     this.rightToEdit = this.props.rightToEdit
     this.instructorRights = this.props.instructorRights
+    console.log("props are")
+    console.log("this.rightToEdit: "+this.rightToEdit)
+    console.log("this.rightToView: "+this.rightToView)
+    console.log("this.instructorRights: "+this.instructorRights)
     this.selectPermission = null
     this.coursesPermissions = {}
     if (this.props.downloadPermission){
@@ -88,27 +92,47 @@ class DoenetHeader extends Component {
     this.setupDatabase();
   }
   makePermissionList(){
-    console.log("instructor right: "+this.instructorRights)
-    this.selectPermission=(
-      <select onChange={(e)=>{
-        {
-          console.log("e.target")
-          console.log(e.target.value)
-          if (e.target.value==="Student"){
-            this.rightToEdit=false
+    console.log("making list for header")
+    if (this.instructorRights){
+      this.selectPermission=(
+        <select onChange={(e)=>{
+          {
+            if (e.target.value==="Student"){
+              this.rightToEdit=false
+            }
+            if (e.target.value==="Instructor"){
+              this.rightToEdit=true
+            }
+            this.props.permissionCallBack(e.target.value);
+            this.forceUpdate()
           }
-          if (e.target.value==="Instructor"){
-            this.rightToEdit=true
+        }}>
+        {this.rightToView?(<option selected = {!this.rightToEdit?true:false} value="Student">Student</option>):null}
+        {(<option selected = {this.rightToEdit?true:false} value="Instructor">Instructor</option>)}
+          
+          </select>  
+      )
+    }
+    else {
+      this.selectPermission=(
+        <span onChange={(e)=>{
+          {
+            if (e.target.value==="Student"){
+              this.rightToEdit=false
+            }
+            if (e.target.value==="Instructor"){
+              this.rightToEdit=true
+            }
+            this.props.permissionCallBack(e.target.value);
+            this.forceUpdate()
           }
-          this.props.permissionCallBack(e.target.value);
-          this.forceUpdate()
-        }
-      }}>
-      {this.rightToView?(<option selected = {!this.rightToEdit?true:false} value="Student">Student</option>):null}
-      {this.instructorRights?(<option selected = {this.rightToEdit?true:false} value="Instructor">Instructor</option>):null}
-        
-        </select>  
-    )
+        }}>
+        {this.rightToView?(<option selected = {!this.rightToEdit?true:false} value="Student">Student</option>):null}
+          
+          </span>  
+      )
+    }
+    
   }
   setupDatabase() {
     // create a new database object
@@ -171,8 +195,6 @@ class DoenetHeader extends Component {
 
   render() {
     const { toolTitle, headingTitle} = this.props;
-    console.log("render header")
-    console.log(this.instructorRights)
     if(this.coursesPermissions!={}){
       this.makePermissionList()
     }

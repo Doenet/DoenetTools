@@ -999,6 +999,7 @@ class DoenetCourse extends Component {
       this.courseName = this.courseInfo[this.currentCourseId]['courseName']
       //////////////////
       this.enableOverview=!!(+(resp.data.courseInfo[this.currentCourseId]["overviewEnabled"]))
+      console.log("this.enableOverview: "+this.enableOverview)
           if (this.enableOverview){
             this.trueList.push("overview")
             this.overview_branchId=resp.data.courseInfo[this.currentCourseId]["overviewId"]
@@ -1121,6 +1122,7 @@ class DoenetCourse extends Component {
   ToggleList(){
     const url = '/api/save_enable_disable_category.php'
     const data = {
+      courseId:this.currentCourseId,
       overview:Number(this.enableOverview),
       grade:Number(this.enableGrade),
       syllabus:Number(this.enableSyllabus),
@@ -3137,8 +3139,16 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   }
   render() {
     console.log("====RENDER====");
-    console.log(this.rightToEdit)
-    console.log(this.rightToView)
+    this.overview_link=null
+    this.syllabus_link=null
+    this.grade_link=null
+    this.assignment_link=null
+    console.log(this.currentCourseId)
+    console.log(this.enableOverview)
+    console.log(this.enableSyllabus)
+    console.log(this.enableGrade)
+    console.log(this.enableAssignment)
+
     if (!this.alreadyLoadAllCourses){
       this.loadAllCourses()
     }
@@ -3356,7 +3366,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
             }}
             parentFunction={(e)=>{
               this.updateNumber+=1
-
+              this.alreadyHasCourseInfo=false
               this.alreadyLoadAssignment=[]
               this.alreadyMadeLink=[]
               this.tree_route=[]
@@ -3366,18 +3376,18 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
               this.assignment_link=null
 
               this.currentCourseId = e;
-              // this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
-              // this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
-              // this.rightToView = false
-              // this.rightToEdit = false
-              // this.instructorRights = false
-              // if (this.accessAllowed==="1"){
-              //   this.rightToView = true
-              //   if (this.adminAccess==="1"){
-              //     this.rightToEdit = true
-              //     this.instructorRights = true
-              //   }
-              // }
+              this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+              this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
+              this.rightToView = false
+              this.rightToEdit = false
+              this.instructorRights = false
+              if (this.accessAllowed==="1"){
+                this.rightToView = true
+                if (this.adminAccess==="1"){
+                  this.rightToEdit = true
+                  this.instructorRights = true
+                }
+              }
               this.usingDefaultCourseId = false
               this.alreadyLoadAllCourses = false
 
