@@ -89,7 +89,7 @@ class DoenetHeader extends Component {
             this.forceUpdate();
         });
 
-    this.setupDatabase();
+    // this.setupDatabase();
   }
   makePermissionList(){
     console.log("making list for header")
@@ -134,51 +134,7 @@ class DoenetHeader extends Component {
     }
     
   }
-  setupDatabase() {
-    // create a new database object
-    let indexedDB = new IndexedDB(); 
 
-    // open a connection to the database
-    indexedDB.openDB((result) => {
-
-      // retrieve data
-      indexedDB.get("header_store", "page_history", (data) => {
-        
-        // history doesn't exist, initialize data 
-        if (data == null) {
-          indexedDB.insert("header_store", { 
-            type: "page_history",            
-            previousPageName: null,
-            previousPageLink: null,
-            currentPageName: this.props.toolTitle,
-            currentPageLink: window.location.href
-          }); 
-        }
-
-        // page not changed, retrieve previous page data, do not update history
-        if (this.props.toolTitle == data.currentPageName) {
-          this.previousPageButtonName = data.previousPageName;
-          this.previousPageButtonLink = data.previousPageLink;
-          this.forceUpdate(); 
-        } else {  
-          // page changed, retrieve last current page data
-          this.previousPageButtonName = data.currentPageName;
-          this.previousPageButtonLink = data.currentPageLink;
-          
-          // update page history
-          if (this.props.title != data.currentPageName) 
-            indexedDB.insert("header_store", { 
-              type: "page_history",            
-              currentPageName: this.props.toolTitle,  // set current to currentPage
-              currentPageLink: window.location.href,
-              previousPageName: data.currentPageName, // overwrite previous with last current
-              previousPageLink: data.currentPageLink
-          });
-          this.forceUpdate(); 
-        }
-      });
-    });
-  }
 
   toogleToolbox = () => {
     if (!this.state.showToolbox) {
