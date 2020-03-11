@@ -406,6 +406,10 @@ export class RenderMode extends TextComponent {
   static componentType = "rendermode";
 }
 
+export class RenderAsMath extends BooleanComponent {
+  static componentType = "renderasmath";
+}
+
 export class ChunkSize extends NumberComponent {
   static componentType = "chunksize";
 }

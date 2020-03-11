@@ -4,7 +4,7 @@ import DoenetRenderer from './DoenetRenderer';
 export default class P extends DoenetRenderer {
   constructor(props) {
     super(props);
-    this.createChildren();
+    this.initializeChildren();
   }
 
   render() {

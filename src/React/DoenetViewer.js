@@ -8,7 +8,7 @@ class DoenetViewer extends Component {
     this.update = this.update.bind(this);
     this.coreReady = this.coreReady.bind(this);
 
-    this.rendererUpdateObjects = {};
+    this.rendererUpdateMethods = {};
 
     this.core = new Core({
       coreReadyCallback: this.coreReady,
@@ -35,22 +35,17 @@ class DoenetViewer extends Component {
       let documentComponentInstructions = this.core.renderedComponentInstructions[this.core.documentName];
       let documentRendererClass = this.rendererClasses[documentComponentInstructions.componentType]
 
-      // TODO: how does updateObject work in this model????
-      let updateObject = {};
       this.documentRenderer = React.createElement(documentRendererClass,
         {
           key: documentComponentInstructions.componentName,
           componentInstructions: documentComponentInstructions,
-          updateObject,
           rendererClasses: this.rendererClasses,
-          rendererUpdateObjects: this.rendererUpdateObjects,
+          rendererUpdateMethods: this.rendererUpdateMethods,
           flags: this.props.flags,
         }
       )
 
       this.forceUpdate();
-      console.log("rendererUpdateObjects")
-      console.log(this.rendererUpdateObjects)
     });
 
   }
@@ -60,23 +55,22 @@ class DoenetViewer extends Component {
   //offscreen then postpone that one
   update(instructions) {
     for (let instruction of instructions) {
-      // console.log(`${instruction.instructionType}!`);
 
       if (instruction.instructionType === "updateStateVariable") {
         for (let componentName of instruction.renderersToUpdate) {
-          this.rendererUpdateObjects[componentName]();
+          this.rendererUpdateMethods[componentName].update();
         }
-      } else if (instruction.instructionType === "addComponents") {
-        let renderer = this.rendererUpdateObjects[instruction.parentComponentName];
-        let newComponents = this.buildTreeHelper(instruction.components);
-        renderer.addChildren(instruction.childIndex, newComponents);
-      } else if (instruction.instructionType === "deleteComponents") {
-        let renderer = this.rendererUpdateObjects[instruction.parentComponentName];
-        for (let delChildName of instruction.childNames) {
-          delete this.rendererUpdateObjects[delChildName];
-        }
+      } else if (instruction.instructionType === "addRenderer") {
+        this.rendererUpdateMethods[instruction.parentName].addChildren(instruction)
+      } else if (instruction.instructionType === "deleteRenderers") {
+        this.rendererUpdateMethods[instruction.parentName].removeChildren(instruction)
 
-        renderer.removeChildren(instruction.childIndex, instruction.numberToRemove);
+        // let renderer = this.rendererUpdateMethods[instruction.parentComponentName];
+        // for (let delChildName of instruction.childNames) {
+        //   delete this.rendererUpdateMethods[delChildName];
+        // }
+
+        // renderer.removeChildren(instruction.childIndex, instruction.numberToRemove);
 
       }
     }

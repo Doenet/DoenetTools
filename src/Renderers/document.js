@@ -5,7 +5,7 @@ export default class Document extends DoenetRenderer{
 
   render(){
     if(this.children === undefined) {
-      this.createChildren();
+      this.initializeChildren();
     }
     return <>{this.children}</>
   }

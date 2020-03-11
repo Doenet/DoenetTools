@@ -354,7 +354,7 @@ export default class Core {
         throw Error("Initial components need to be an array of just one component.");
       }
       // this.setAncestors(newComponents[0]);
-      this.updateRenderers({ componentNames: [newComponents[0].componentName] });
+      this.updateRenderers({ componentNames: [newComponents[0].componentName], init: true });
       this.document = newComponents[0];
 
     } else {
@@ -391,64 +391,50 @@ export default class Core {
     return newComponents;
   }
 
-  //Add on to array of components that render things
-  rebuildRenderComponents(component = this._components[this.documentName], init = true) {
 
-    if (init === true) {
-      // empty the array and object without reassigning
-      // so that components still have access to them
-      this._renderComponents.length = 0;
-      for (let key in this._renderComponentsByName) {
-        delete this._renderComponentsByName[key];
-      }
-      this._graphRenderComponents.length = 0;
-    }
-
-    // console.log(component.componentType);
-    // console.log(component.componentIsAProperty);
-    // console.log("--");
-
-    if (!component.stateValues.hide &&
-      component.renderer !== undefined &&
-      component.componentIsAProperty === false
-    ) {
-
-      let unproxiedComponent = this._components[component.componentName];
-
-      if (unproxiedComponent instanceof this._allComponentClasses.graph) {
-        this._graphRenderComponents.push(unproxiedComponent.renderer);
-      }
-      this._renderComponentsByName[unproxiedComponent.componentName] = unproxiedComponent.renderer;
-
-      let childRenderers = [];
-
-      if (unproxiedComponent.stateValues.childrenWhoRender) {
-        for (let childName of unproxiedComponent.stateValues.childrenWhoRender) {
-          let child = this._components[childName];
-          if (child !== undefined) {
-            let cr = this.rebuildRenderComponents(child, false);
-            if (cr !== undefined) {
-              childRenderers.push(cr);
-            }
-          }
-        }
-      }
-
-      unproxiedComponent.renderer.childRenderers = childRenderers;
-
-      if (init) {
-        this._renderComponents.push(unproxiedComponent.renderer);
-      }
-
-      return unproxiedComponent.renderer;
-    }
-  }
-
-  updateRenderers({ componentNames, sourceOfUpdate, recurseToChildren = true }) {
+  updateRenderers({ componentNames, sourceOfUpdate, recurseToChildren = true,
+    componentChanges = [], init = false
+  }) {
+    
     // create shallow copy so can add components to end
     // if parent comes after child
 
     let renderersToUpdate = [];
+
+    let instructions = [];
+
+
+    // delete any deleted components from renderedComponentInstructions
+    // and add instruction to deleteInstructions
+    for (let changeObj of componentChanges) {
+      if (changeObj.changeType === "deletedReplacements") {
+
+        let firstComponentDeleted = changeObj.deletedComponents[0];
+        let deletedComponentName = firstComponentDeleted.componentName;
+        let parentName = firstComponentDeleted.parentName;
+
+        let firstIndexInParent =
+          this.renderedComponentInstructions[parentName].children.indexOf(
+            this.renderedComponentInstructions[deletedComponentName]);
+
+        let numberDeleted = changeObj.numberDeleted;
+
+        this.renderedComponentInstructions[parentName].children.splice(firstIndexInParent, numberDeleted);
+        let deletedComponentNames = changeObj.deletedComponents.map(x => x.componentName)
+        for (let cName of deletedComponentNames) {
+          delete this.renderedComponentInstructions[cName]
+        }
+
+        instructions.push({
+          instructionType: "deleteRenderers",
+          parentName,
+          firstIndexInParent,
+          numberDeleted,
+          deletedComponentNames
+        })
+
+      }
+    }
 
     let componentNamesToUpdate = [...componentNames];
     for (let [ind, componentName] of componentNamesToUpdate.entries()) {
@@ -527,6 +513,15 @@ export default class Core {
               this.renderedComponentInstructions[parentName].children[indexForParent] = this.renderedComponentInstructions[componentName];
             }
 
+            if(!init) {
+              instructions.push({
+                instructionType: "addRenderer",
+                componentName,
+                parentName,
+                indexForParent,
+              })
+            }
+
             if (!this.renderedComponentTypes.includes(unproxiedComponent.componentType)) {
               this.renderedComponentTypes.push(unproxiedComponent.componentType)
             }
@@ -542,7 +537,8 @@ export default class Core {
           this.updateRenderers({
             componentNames: unproxiedComponent.stateValues.childrenWhoRender,
             sourceOfUpdate: sourceOfUpdate,
-            recurseToChildren: true
+            recurseToChildren: true,
+            init,
           });
         }
       }
@@ -553,8 +549,14 @@ export default class Core {
         instructionType: "updateStateVariable",
         renderersToUpdate
       }
-      this.coreUpdatedCallback([instruction])
+      instructions.push(instruction);
     }
+
+
+    if(!init) {
+      this.coreUpdatedCallback(instructions)
+    }
+
   }
 
   componentAndRenderedDescendants(component) {
@@ -2542,33 +2544,33 @@ export default class Core {
             delete results.newValues[varName2];
           }
         }
-        if(results.noChanges) {
+        if (results.noChanges) {
           for (let varName2 of varNamesToDelete) {
             let ind = results.noChanges.indexOf(varName2);
-            if(ind !== -1) {
-              results.noChanges.splice(ind,1);
+            if (ind !== -1) {
+              results.noChanges.splice(ind, 1);
             }
           }
         }
-        if(results.makeEssential) {
+        if (results.makeEssential) {
           for (let varName2 of varNamesToDelete) {
             let ind = results.makeEssential.indexOf(varName2);
-            if(ind !== -1) {
-              results.makeEssential.splice(ind,1);
+            if (ind !== -1) {
+              results.makeEssential.splice(ind, 1);
             }
           }
         }
 
-        if(results.alwaysShadow) {
+        if (results.alwaysShadow) {
           for (let varName2 of varNamesToDelete) {
             let ind = results.alwaysShadow.indexOf(varName2);
-            if(ind !== -1) {
-              results.alwaysShadow.splice(ind,1);
+            if (ind !== -1) {
+              results.alwaysShadow.splice(ind, 1);
             }
           }
         }
 
-        if(results.setComponentType) {
+        if (results.setComponentType) {
           if (results.setComponentType) {
             for (let varName2 of varNamesToDelete) {
               delete results.setComponentType[varName2];
@@ -4472,7 +4474,7 @@ export default class Core {
               if (multipleVariables) {
                 value = value.stateValues[vName]
               }
-              if (!changedValuesOnly || vName in changedValuesForCName) {
+              if (!changedValuesOnly || changedValuesForCName.has(vName)) {
                 dependencyValuesForCName[vName] = value;
               }
 
@@ -7118,12 +7120,17 @@ export default class Core {
     saveSerializedState = true, sourceOfUpdate
   }) {
 
-    // merge newStateVariableValues into changedStateVariables
+    // merge keys of newStateVariableValues into changedStateVariables
     for (let cName in newStateVariableValues) {
-      if (!this.changedStateVariables[cName]) {
-        this.changedStateVariables[cName] = {};
+      if (this.changedStateVariables[cName]) {
+        // add all keys of newStateVariableValues[cName] to this.changedStateVariables[cName]
+        let changedSvs = this.changedStateVariables[cName];
+        Object.keys(newStateVariableValues[cName]).forEach(changedSvs.add, changedSvs);
+      } else {
+        // create new set from scratch if don't have old changed state variables
+        this.changedStateVariables[cName] = new Set(Object.keys(newStateVariableValues[cName]));
       }
-      Object.assign(this.changedStateVariables[cName], newStateVariableValues[cName]);
+
     }
 
 
@@ -7139,12 +7146,13 @@ export default class Core {
     componentsTouched = new Set(componentsTouched);
 
     // calculate any replacement changes on composites touched
-    this.replacementChangesFromComponentsTouched(componentsTouched);
+    let componentChanges = this.replacementChangesFromComponentsTouched(componentsTouched);
 
     this.updateRenderers({
       componentNames: componentsTouched,
       sourceOfUpdate,
       recurseToChildren: false,
+      componentChanges,
     });
 
     this.finishUpdate();
@@ -7194,7 +7202,7 @@ export default class Core {
           }
 
           for (let componentName in result.addedComponents) {
-            this.changedStateVariables[componentName] = Object.assign({}, this._components[componentName].state);
+            this.changedStateVariables[componentName] = new Set(Object.keys(this._components[componentName].state));
           }
         }
       }
@@ -7207,6 +7215,8 @@ export default class Core {
         }
       }
     }
+
+    return componentChanges;
   }
 
   processNewStateVariableValues({ newStateVariableValues, componentsTouched }) {

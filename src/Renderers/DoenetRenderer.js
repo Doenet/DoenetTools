@@ -20,9 +20,11 @@ export default class DoenetRenderer extends Component {
     // Also means it will always have the new values when they are changed....
     this.doenetSvData = props.componentInstructions.stateValues;
 
-    props.rendererUpdateObjects[this.componentName] = this.update;
-    props.updateObject.addChildren = this.addChildren;
-    props.updateObject.removeChildren = this.removeChildren;
+    props.rendererUpdateMethods[this.componentName] = {
+      update: this.update,
+      addChildren: this.addChildren,
+      removeChildren: this.removeChildren,
+    }
 
   }
 
@@ -30,44 +32,47 @@ export default class DoenetRenderer extends Component {
     this.forceUpdate();
   }
 
-  addChildren(index, components) {
-    this.children.splice(index, 0, ...components);
+  addChildren(instruction) {
+    let childInstructions = this.childrenToCreate[instruction.indexForParent];
+    let child = this.createChildFromInstructions(childInstructions);
+    this.children.splice(instruction.indexForParent,0, child);
+    this.children = [...this.children]; // needed for React to recognize it's different
+
     this.forceUpdate();
   }
 
-  removeChildren(index, numberToRemove) {
-    this.children.splice(index, numberToRemove);
+  removeChildren(instruction) {
+    this.children.splice(instruction.firstIndexInParent, instruction.numberDeleted);
+    this.children = [...this.children]; // needed for React to recognize it's different
+    for(let componentName of instruction.deletedComponentNames) {
+      delete this.props.rendererUpdateMethods[componentName];
+    }
     this.forceUpdate();
   }
 
-  createChildren(additionalprops = {}) {
+  initializeChildren() {
     this.children = [];
-
     for (let childInstructions of this.childrenToCreate) {
-
-      // TODO: how does updateObject work in this model????
-      let updateObject = {};
-
-      let propsForChild = {
-        key: childInstructions.componentName,
-        componentInstructions: childInstructions,
-        updateObject,
-        rendererClasses: this.props.rendererClasses,
-        rendererUpdateObjects: this.props.rendererUpdateObjects,
-        flags: this.props.flags,
-      }
-
-      Object.assign(propsForChild, additionalprops);
-
-
-      let child = React.createElement(
-        this.props.rendererClasses[childInstructions.componentType],
-        propsForChild
-      );
+      let child = this.createChildFromInstructions(childInstructions);
       this.children.push(child);
     }
 
     return this.children;
   }
 
+
+  createChildFromInstructions(childInstructions) {
+    let propsForChild = {
+      key: childInstructions.componentName,
+      componentInstructions: childInstructions,
+      rendererClasses: this.props.rendererClasses,
+      rendererUpdateMethods: this.props.rendererUpdateMethods,
+      flags: this.props.flags,
+    };
+    if(this.doenetPropsForChildren) {
+      Object.assign(propsForChild, this.doenetPropsForChildren);
+    }
+    let child = React.createElement(this.props.rendererClasses[childInstructions.componentType], propsForChild);
+    return child;
+  }
 }

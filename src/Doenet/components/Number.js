@@ -12,7 +12,7 @@ export default class NumberComponent extends InlineComponent {
     let properties = super.createPropertiesObject(args);
     properties.displayDigits = { default: 10 };
     properties.displaySmallAsZero = { default: false };
-    properties.renderMode = { default: "text" };
+    properties.renderAsMath = { default: false, forRenderer: true };
     return properties;
   }
 
@@ -47,6 +47,7 @@ export default class NumberComponent extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: this.componentType,
+      forRenderer: true,
       returnDependencies: () => ({
         numberChild: {
           dependencyType: "childStateVariables",

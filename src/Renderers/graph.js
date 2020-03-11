@@ -214,7 +214,8 @@ export default class Graph extends DoenetRenderer {
     }
 
     if (this.children === undefined && this.board) {
-      this.createChildren({ board: this.board })
+      this.doenetPropsForChildren = { board: this.board };
+      this.initializeChildren();
     }
 
     return <React.Fragment>
