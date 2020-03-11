@@ -7,6 +7,7 @@ import nanoid from 'nanoid';
 import DoenetHeader from './DoenetHeader';
 import { faWindowClose, faEdit, faArrowUp,faArrowDown,faArrowLeft,faArrowRight,faPlus,faFolderPlus} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { TreeView } from './TreeView/TreeView'
 
 function hashStringToInteger(s) {
   var hash = 0, i, chr;
@@ -2213,11 +2214,15 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     let disableNext = false;
     if (this.assignmentIndex === (this.assignmentIdList.length - 1)){disableNext = true;}
   }
+
+  buildTreeStructure(){
+    this.treeStructureArray = [];
+
+    // get all headings at base level
+    this.heading_obj["UltimateHeader"]["headingId"].forEach(headingId => {
+      this.treeStructureArray.push(headingId);
+    });
+  }
 }
-
-
-
-
-
 
 export default DoenetAdmin;
