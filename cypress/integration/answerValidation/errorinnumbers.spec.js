@@ -7,7 +7,7 @@ describe('Allow error in numbers validation tests', function () {
   it('expression with single number', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>a</p>
     <p><math simplify>log(32x+c)</math> 
     <answer size="30">
@@ -108,7 +108,7 @@ describe('Allow error in numbers validation tests', function () {
   it('expression with single number, absolute error', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>a</p>
     <p><math simplify>log(32x+c)</math> 
     <answer size="30">
@@ -210,7 +210,7 @@ describe('Allow error in numbers validation tests', function () {
   it.skip('complicated expression with three numbers', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>a</p>
     <p><math simplify>10 exp(7x^2/(3-sqrt(y)))</math> 
     <answer size="30">
@@ -269,7 +269,7 @@ describe('Allow error in numbers validation tests', function () {
   it("don't ignore exponents", () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>a</p>
     <p><math simplify>10x^2-4</math> 
     <answer size="30">
@@ -345,7 +345,7 @@ describe('Allow error in numbers validation tests', function () {
   it('symbolic, expression with single number', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>a</p>
     <p><math simplify>log(32x+c)</math> 
     <answer size="30">
@@ -446,7 +446,7 @@ describe('Allow error in numbers validation tests', function () {
   it('symbolic, expression with single number, absolute error', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>a</p>
     <p><math simplify>log(32x+c)</math> 
     <answer size="30">
@@ -547,7 +547,7 @@ describe('Allow error in numbers validation tests', function () {
   it('symbolic, complicated expression with three numbers', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>a</p>
     <p><math simplify>10000 exp(7x^2/(0.00003-sqrt(y)))</math> 
     <answer size="40">
@@ -636,7 +636,7 @@ describe('Allow error in numbers validation tests', function () {
   it('symbolic, complicated expression with three numbers, absolute error', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>a</p>
     <p><math simplify>10000 exp(7x^2/(0.00003-sqrt(y)))</math> 
     <answer size="40">
@@ -725,7 +725,7 @@ describe('Allow error in numbers validation tests', function () {
   it("symbolic, don't ignore exponents", () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>a</p>
     <p><math simplify>10x^2-4</math> 
     <answer size="30">
@@ -801,7 +801,7 @@ describe('Allow error in numbers validation tests', function () {
   it('symbolic, no simplification', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>a</p>
     <p><math>2.15234262pi+e*25.602348230</math> 
     <answer size="30">
@@ -881,7 +881,7 @@ describe('Allow error in numbers validation tests', function () {
   it('symbolic, evaluate numbers, preserve order', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>a</p>
     <p><math simplify="numbersPreserveOrder">sin(2pi+1x+4x+pi+6)</math> 
     <answer size="30">
@@ -953,7 +953,7 @@ describe('Allow error in numbers validation tests', function () {
   it('symbolic, evaluate numbers', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>a</p>
     <p><math simplify="numbers">sin(2pi+1x+4x+pi+6)</math> 
     <answer size="30">
@@ -1026,7 +1026,7 @@ describe('Allow error in numbers validation tests', function () {
   it('symbolic, full simplification', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>a</p>
     <p><math simplify="full">sin(2pi+1x+4x+pi+6)</math> 
     <answer size="30">

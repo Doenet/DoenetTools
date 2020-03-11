@@ -11,7 +11,7 @@ describe('Mathinput Graph Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <mathinput name="x" prefill="1"/>
     <mathinput name="y" prefill="2"/>
     <graph>
@@ -109,7 +109,7 @@ describe('Mathinput Graph Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <mathinput name="x" prefill="3"/>
     <mathinput name="y" prefill="2"/>
     <graph>
@@ -189,7 +189,7 @@ describe('Mathinput Graph Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <mathinput name="a" prefill="-3"/>
     <mathinput name="b" prefill="2"/>
     <graph>
@@ -268,7 +268,7 @@ describe('Mathinput Graph Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <mathinput name="a" prefill="-3"/>
     <mathinput name="b" prefill="2"/>
     <graph>

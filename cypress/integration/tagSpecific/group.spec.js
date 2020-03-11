@@ -5,7 +5,7 @@ describe('Group Tag Tests',function() {
   })
 
   it('nested groups, reffed', () => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p>Animal: <textinput name="animal" prefill="fox"/></p>
     <p>Plant: <textinput name="plant" prefill="tree"/></p>
     
@@ -77,7 +77,7 @@ describe('Group Tag Tests',function() {
   })
 
   it('nested groups, initially unresolved, reffed', () => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
 
     <group name="g1">
       <p name="animalp">The animal <ref>animalphrase</ref>.</p>
@@ -164,7 +164,7 @@ describe('Group Tag Tests',function() {
   })
 
   it('group with a map that begins zero length, reffed multiple times',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <p>
     <group>
@@ -425,7 +425,7 @@ describe('Group Tag Tests',function() {
   });
 
   it('group with mutual references',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <p name="p1">
     <aslist>

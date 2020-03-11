@@ -9,7 +9,7 @@ describe('Math Operator Tag Tests', function () {
   it('sum', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <sum name="numbers"><math>3</math><number>17</number><number>5-4</number></sum>
       <sum name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></sum>
@@ -50,7 +50,7 @@ describe('Math Operator Tag Tests', function () {
   it('product', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
 
       <product name="numbers"><math>3</math><number>17</number><number>5-4</number></product>
@@ -93,7 +93,7 @@ describe('Math Operator Tag Tests', function () {
   it('clamp number', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
 
       <clampNumber>55.3</clampNumber>
@@ -195,7 +195,7 @@ describe('Math Operator Tag Tests', function () {
   it('wrap number periodic', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
 
       <wrapnumberperiodic>55.3</wrapnumberperiodic>
@@ -297,7 +297,7 @@ describe('Math Operator Tag Tests', function () {
   it('clamp and wrap number updatable', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <graph>
         <point layer="1">(6,7)</point>
@@ -489,7 +489,7 @@ describe('Math Operator Tag Tests', function () {
   it('round expressions', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <round>55.3252326</round>
       <round>log(31)</round>
@@ -596,7 +596,7 @@ describe('Math Operator Tag Tests', function () {
   it('convert set to list', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
 
       <p><text>a</text></p>
       <p><math>{1,2,3,2,1}</math></p>
@@ -679,7 +679,7 @@ describe('Math Operator Tag Tests', function () {
   it('convert set to list, initially unresolved', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
 
       <p><text>a</text></p>
 
@@ -719,7 +719,7 @@ describe('Math Operator Tag Tests', function () {
   it('floor and ceil', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <floor>55.3252326</floor>
       <ceil>log(31)</ceil>
@@ -799,7 +799,7 @@ describe('Math Operator Tag Tests', function () {
   it('abs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <abs>-5.3</abs>
       <abs>-x</abs>

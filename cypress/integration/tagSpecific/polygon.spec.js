@@ -8,7 +8,7 @@ describe('Polygon Tag Tests', function () {
   it('Polygon with sugared reffed points', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
       <point>(3,5)</point>
@@ -86,7 +86,7 @@ describe('Polygon Tag Tests', function () {
   it('Polygon vertices and reffed points', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
       <point>(3,5)</point>
@@ -163,7 +163,7 @@ describe('Polygon Tag Tests', function () {
   it('Polygon string points', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <math>-1</math>
     <graph>
@@ -234,7 +234,7 @@ describe('Polygon Tag Tests', function () {
   it('Polygon string points in vertices', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <math>-1</math>
     <graph>
@@ -305,7 +305,7 @@ describe('Polygon Tag Tests', function () {
   it('dynamic polygon, initially zero, reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
   
     <mathinput name="count" prefill="0" />
@@ -431,7 +431,7 @@ describe('Polygon Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>b</text>
   
     <mathinput name="count" prefill="0" />
@@ -496,7 +496,7 @@ describe('Polygon Tag Tests', function () {
   it('dynamic polygon with sugared vertices, initially zero, reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
   
     <mathinput name="count" prefill="0" />
@@ -622,7 +622,7 @@ describe('Polygon Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>b</text>
   
     <mathinput name="count" prefill="0" />
@@ -686,7 +686,7 @@ describe('Polygon Tag Tests', function () {
   it('dynamic polygon with sugared vertices from reffed map, initially zero, reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
   
     <mathinput name="count" prefill="0" />
@@ -812,7 +812,7 @@ describe('Polygon Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>b</text>
   
     <mathinput name="count" prefill="0" />
@@ -877,7 +877,7 @@ describe('Polygon Tag Tests', function () {
   it('polygon with initially undefined point', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathinput/>
     <graph>
@@ -939,7 +939,7 @@ describe('Polygon Tag Tests', function () {
   it.skip(`can't move polygon based on map`, () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
   
     <graph>
@@ -1063,7 +1063,7 @@ describe('Polygon Tag Tests', function () {
   it('ref vertices of polygon', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <polygon>(-3,-1),(1,2),(3,4),(6,-2)</polygon>
@@ -1141,7 +1141,7 @@ describe('Polygon Tag Tests', function () {
   it('new polygon from reffed vertices of polygon', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <polygon>(-9,6),(-3,7),(4,0),(8,5)</polygon>
@@ -1261,7 +1261,7 @@ describe('Polygon Tag Tests', function () {
   it('new polygon as translated version of polygon', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathinput prefill="5" name="transx" />
     <mathinput prefill="7" name="transy" />
@@ -1395,7 +1395,7 @@ describe('Polygon Tag Tests', function () {
   it('parallelogram based on three points', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <polygon name="parallelogram">
@@ -1482,7 +1482,7 @@ describe('Polygon Tag Tests', function () {
   it('new polygon from reffed vertices, some flipped', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <polygon>(-9,6),(-3,7),(4,0),(8,5)</polygon>
@@ -1563,7 +1563,7 @@ describe('Polygon Tag Tests', function () {
   it('four vertex polygon based on three points', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <polygon>
@@ -1648,7 +1648,7 @@ describe('Polygon Tag Tests', function () {
   it('fourth vertex depends on internal ref of first vertex', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <polygon>
@@ -1727,7 +1727,7 @@ describe('Polygon Tag Tests', function () {
   it('first vertex depends on internal ref of fourth vertex', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <polygon>
@@ -1807,7 +1807,7 @@ describe('Polygon Tag Tests', function () {
   it('first vertex depends fourth, formula for fifth', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <polygon>
@@ -1913,7 +1913,7 @@ describe('Polygon Tag Tests', function () {
   it('first, fourth, seventh vertex depends on fourth, seventh, tenth', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <polygon>
@@ -2135,7 +2135,7 @@ describe('Polygon Tag Tests', function () {
   it('first, fourth, seventh vertex depends on shifted fourth, seventh, tenth', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <polygon>

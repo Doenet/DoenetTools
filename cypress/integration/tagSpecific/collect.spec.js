@@ -5,7 +5,7 @@ describe('Collect Tag Tests',function() {
   })
 
   it.only('collect points from graphs',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <panel>
     <graph>
@@ -271,7 +271,7 @@ describe('Collect Tag Tests',function() {
   });
 
   it('collect dynamic points from graphs',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <mathinput name="count" prefill="3"/>
     <mathinput name="mult" prefill="2"/>
@@ -483,7 +483,7 @@ describe('Collect Tag Tests',function() {
   // got rid of include hidden and always include hidden
   // rationale: if component becomes unhidden, it's not communicated to collect so it can't grab it after the fact
   it.skip(`default don't include hidden`,() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <extract prop="x"><ref prop="endpoint1">_linesegment1</ref></extract>
     <graph>
@@ -514,7 +514,7 @@ describe('Collect Tag Tests',function() {
   })
 
   it.skip(`dynamically change if include hidden`,() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <extract prop="x"><ref prop="endpoint1">_linesegment1</ref></extract>
     <p>Include hidden: <booleaninput /></p>
@@ -645,7 +645,7 @@ describe('Collect Tag Tests',function() {
   })
 
   it('collect points and lines from graphs',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <panel>
     <graph>
@@ -761,7 +761,7 @@ describe('Collect Tag Tests',function() {
   });
 
   it('maximum number',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <mathinput name="count" prefill="5"/>
     <mathinput name="mult" prefill="2"/>
@@ -1025,7 +1025,7 @@ describe('Collect Tag Tests',function() {
   });
 
   it('collect child numbers',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <mathinput />
 
@@ -1117,7 +1117,7 @@ describe('Collect Tag Tests',function() {
   });
 
   it('collect, extract, ref multiple ways',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
 
   <p>How many blanks? 

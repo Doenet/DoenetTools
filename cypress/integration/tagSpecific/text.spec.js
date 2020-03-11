@@ -7,7 +7,7 @@ beforeEach(() => {
   })
 
   it('spaces preserved between tags',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p><text>Hello</text> <text>there</text>!</p>
 
     <p><text>We <text>could</text> be <ref>_text2</ref>.</text></p>

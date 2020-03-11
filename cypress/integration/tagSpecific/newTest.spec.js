@@ -7,7 +7,7 @@ describe('Document Tests', function () {
   it('hint, document and variable components test', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
         <document>
             <p>this point will appear on graph</p>
             <mathinput prefill="1"></mathinput>

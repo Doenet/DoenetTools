@@ -7,7 +7,7 @@ describe('LineSegment Tag Tests', function () {
   it('lineSegment with sugared reffed points', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <ref prop="y">_point1</ref>
   <graph>
   <point label='P'>(3,5)</point>
@@ -85,7 +85,7 @@ describe('LineSegment Tag Tests', function () {
   it('lineSegment with sugared string', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="y"><ref prop="endpoint1">_linesegment1</ref></extract>
   <graph>
     <lineSegment>(3,5),(-4,9)</lineSegment>
@@ -156,7 +156,7 @@ describe('LineSegment Tag Tests', function () {
   it('lineSegment with sugared strings and refs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <number>3</number>
   <graph>
   <point>(-2,1)</point>
@@ -227,7 +227,7 @@ describe('LineSegment Tag Tests', function () {
   it('lineSegment with endpoints containing sugared strings and refs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <number>3</number>
   <graph>
   <point>(-2,1)</point>
@@ -301,7 +301,7 @@ describe('LineSegment Tag Tests', function () {
   it('lineSegment with sugared points containing sugared strings and refs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <number>3</number>
   <graph>
   <point>(-2,1)</point>
@@ -374,7 +374,7 @@ describe('LineSegment Tag Tests', function () {
   it('lineSegment with no sugar', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="y"><ref prop="endpoint1">_linesegment1</ref></extract>
   <graph>
     <lineSegment><endpoints>
@@ -454,7 +454,7 @@ describe('LineSegment Tag Tests', function () {
   it('lineSegment with multiple layers of reffed points in sugar', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <point>(2,1)</point>
   <point>(-2,-5)</point>
   <ref>_point1</ref>
@@ -536,7 +536,7 @@ describe('LineSegment Tag Tests', function () {
   it('reffed line segments', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="y"><ref prop="endpoint1">_linesegment1</ref></extract>
   <graph>
     <linesegment><endpoints>
@@ -921,7 +921,7 @@ describe('LineSegment Tag Tests', function () {
   it('initially non-numeric point', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="y"><ref prop="endpoint1">_linesegment1</ref></extract>
   <mathinput name="x" prefill="q"/>
   <graph>
@@ -959,7 +959,7 @@ describe('LineSegment Tag Tests', function () {
   it('constrain to linesegment', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="y"><ref prop="endpoint1">_linesegment1</ref></extract>
   <graph>
   <point>(1,2)</point>
@@ -1081,7 +1081,7 @@ describe('LineSegment Tag Tests', function () {
   it('attract to linesegment', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="y"><ref prop="endpoint1">_linesegment1</ref></extract>
   <graph>
   <point>(1,2)</point>
@@ -1203,7 +1203,7 @@ describe('LineSegment Tag Tests', function () {
   it('ref endpoints of line segment', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="y"><ref prop="endpoint1">_linesegment1</ref></extract>
   <graph>
   <linesegment>(1,2),(3,4)</linesegment>
@@ -1382,7 +1382,7 @@ describe('LineSegment Tag Tests', function () {
   it('new linesegment from reffed endpoints of line segment', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="y"><ref prop="endpoint1">_linesegment1</ref></extract>
   <graph>
   <linesegment>(-1,-2),(-3,-4)</linesegment>
@@ -1521,7 +1521,7 @@ describe('LineSegment Tag Tests', function () {
   it('extracting endpoint coordinates of symmetric linesegment', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="y"><ref prop="endpoint1">_linesegment1</ref></extract>
   <graph>
   <linesegment>
@@ -1629,7 +1629,7 @@ describe('LineSegment Tag Tests', function () {
   it('three linesegments with mutual references', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="y"><ref prop="endpoint1">_linesegment1</ref></extract>
   <graph>
   <linesegment>

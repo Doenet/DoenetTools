@@ -8,7 +8,7 @@ describe('UpdateValue Tag Tests',function() {
   
   it('incrementing graph of line segments',() => {
 
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <number name="step">20/<ref>count</ref></number>
     <graph>

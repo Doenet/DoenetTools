@@ -5,7 +5,7 @@ describe('Symbolic equality tests',function() {
     })
   
   it('symbolic equality match with no simplification',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p><text>a</text></p>
     <p>
     <math>1+3</math>: 
@@ -132,7 +132,7 @@ describe('Symbolic equality tests',function() {
   });
   
   it('symbolic equality match with no simplification 2',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p><text>a</text></p>
     <p>
     <math>1x-0y+-3s</math>: 
@@ -237,7 +237,7 @@ describe('Symbolic equality tests',function() {
   });
 
   it('symbolic equality match with simplifying numbers, preserving order',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p><text>a</text></p>
     <p>
     <math>1x^2+2-0x^2+3+x^2+3x^2+7+4</math>: 
@@ -342,7 +342,7 @@ describe('Symbolic equality tests',function() {
   });
 
   it('symbolic equality match with simplifying numbers',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p><text>a</text></p>
     <p>
     <math>1x^2+2-0x^2+3+x^2+3x^2+7+4</math>: 
@@ -435,7 +435,7 @@ describe('Symbolic equality tests',function() {
   });
 
   it('symbolic equality match with full simplification',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p><text>a</text></p>
     <p>
     <math>6x^2 -3x +8x-4 + (2x-3)(4-x)</math>: 
@@ -528,7 +528,7 @@ describe('Symbolic equality tests',function() {
   });
 
   it('symbolic equality match with expand and full simplification',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p><text>a</text></p>
     <p>
     <math>(2x-3)(4-x) + sin(x)^2+cos(x)^2</math>: 

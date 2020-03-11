@@ -7,7 +7,7 @@ beforeEach(() => {
   })
 
   it('textlist within textlists',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p><textlist hide="true">a,b,c</textlist></p>
 
     <p><ref hide="false">_textlist1</ref></p>

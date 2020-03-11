@@ -14,6 +14,11 @@ export default class MathRenderer extends DoenetRenderer {
   }
 
   render() {
+
+    if (this.doenetSvData.hide) {
+      return null;
+    }
+
     let mathJaxify = this.doenetSvData.latex;
     if (this.doenetSvData.renderMode === "inline") {
       mathJaxify = "\\(" + mathJaxify + "\\)";

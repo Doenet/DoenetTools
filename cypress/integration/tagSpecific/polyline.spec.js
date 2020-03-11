@@ -6,7 +6,7 @@ beforeEach(() => {
   })
 
 it('Polyline with sugared reffed points',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <graph>
     <point>(3,5)</point>
@@ -83,7 +83,7 @@ it('Polyline with sugared reffed points',() => {
 })
 
 it('Polyline vertices and reffed points',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <graph>
     <point>(3,5)</point>
@@ -159,7 +159,7 @@ it('Polyline vertices and reffed points',() => {
 })
 
 it('Polyline string points',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <math>-1</math>
   <graph>
@@ -229,7 +229,7 @@ it('Polyline string points',() => {
 })
 
 it('Polyline string points in vertices',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <math>-1</math>
   <graph>
@@ -299,7 +299,7 @@ it('Polyline string points in vertices',() => {
 })
 
 it('dynamic polyline, initially zero, reffed',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <mathinput name="count" prefill="0" />
   <graph>
@@ -420,7 +420,7 @@ it('dynamic polyline, initially zero, reffed',() => {
 
   cy.log("start over and begin with big increment")
 
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>b</text>
   <mathinput name="count" prefill="0" />
   <graph>
@@ -481,7 +481,7 @@ it('dynamic polyline, initially zero, reffed',() => {
 })
 
 it('dynamic polyline with sugared vertices, initially zero, reffed',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <mathinput name="count" prefill="0" />
   <graph>
@@ -603,7 +603,7 @@ it('dynamic polyline with sugared vertices, initially zero, reffed',() => {
 
   cy.log("start over and begin with big increment")
 
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>b</text>
   <mathinput name="count" prefill="0" />
   <graph>
@@ -665,7 +665,7 @@ it('dynamic polyline with sugared vertices, initially zero, reffed',() => {
 })
 
 it('dynamic polyline with sugared vertices from reffed map, initially zero, reffed',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
 
   <mathinput name="count" prefill="0" />
@@ -787,7 +787,7 @@ it('dynamic polyline with sugared vertices from reffed map, initially zero, reff
 
 
   cy.log("start over and begin with big increment")
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>b</text>
 
   <mathinput name="count" prefill="0" />
@@ -850,7 +850,7 @@ it('dynamic polyline with sugared vertices from reffed map, initially zero, reff
 })
 
 it('polyline with initially undefined point',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <mathinput/>
   <graph>
@@ -910,7 +910,7 @@ it('polyline with initially undefined point',() => {
 // We've changed the design.  We now allow this to move
 // TODO: write test for new design
 it.skip(`can't move polyline based on map`,() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
 
   <graph>
@@ -1032,7 +1032,7 @@ it.skip(`can't move polyline based on map`,() => {
 })
 
 it('ref vertices of polyline',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <graph>
   <polyline>(-3,-1),(1,2),(3,4),(6,-2)</polyline>
@@ -1108,7 +1108,7 @@ it('ref vertices of polyline',() => {
 })
 
 it('new polyline from reffed vertices of polyline',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <graph>
   <polyline>(-9,6),(-3,7),(4,0),(8,5)</polyline>
@@ -1226,7 +1226,7 @@ it('new polyline from reffed vertices of polyline',() => {
 })
 
 it('new polyline from reffed vertices, some flipped',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <graph>
   <polyline>(-9,6),(-3,7),(4,0),(8,5)</polyline>
@@ -1305,7 +1305,7 @@ it('new polyline from reffed vertices, some flipped',() => {
 })
 
 it('four vertex polyline based on three points',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <graph>
   <polyline>
@@ -1388,7 +1388,7 @@ it('four vertex polyline based on three points',() => {
 })
 
 it('fourth vertex depends on internal ref of first vertex',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <graph>
   <polyline>
@@ -1465,7 +1465,7 @@ it('fourth vertex depends on internal ref of first vertex',() => {
 })
 
 it('first vertex depends on internal ref of fourth vertex',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <graph>
   <polyline>
@@ -1543,7 +1543,7 @@ it('first vertex depends on internal ref of fourth vertex',() => {
 })
 
 it('first vertex depends fourth, formula for fifth',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <graph>
   <polyline>
@@ -1647,7 +1647,7 @@ it('first vertex depends fourth, formula for fifth',() => {
 })
 
 it('first, fourth, seventh vertex depends on fourth, seventh, tenth',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <graph>
   <polyline>
@@ -1867,7 +1867,7 @@ it('first, fourth, seventh vertex depends on fourth, seventh, tenth',() => {
 })
 
 it('first, fourth, seventh vertex depends on shifted fourth, seventh, tenth',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <graph>
   <polyline>

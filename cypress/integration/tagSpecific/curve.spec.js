@@ -7,7 +7,7 @@ describe('Curve Tag Tests', function () {
   it('a function of x', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -35,7 +35,7 @@ describe('Curve Tag Tests', function () {
   it('y = a function of x', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -62,7 +62,7 @@ describe('Curve Tag Tests', function () {
   it('x = a function of y', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -90,7 +90,7 @@ describe('Curve Tag Tests', function () {
   it('x = a function of y, switching variables', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve variables="y,x">
@@ -118,7 +118,7 @@ describe('Curve Tag Tests', function () {
   it('q = a function of p', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve variables="p,q">
@@ -144,7 +144,7 @@ describe('Curve Tag Tests', function () {
   it('q = a function of p, switching variables', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve variables="q,p">
@@ -172,7 +172,7 @@ describe('Curve Tag Tests', function () {
   it('a function of r', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve variables="r,u">
@@ -200,7 +200,7 @@ describe('Curve Tag Tests', function () {
   it('an unsugared function', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve variables="r,u">
@@ -228,7 +228,7 @@ describe('Curve Tag Tests', function () {
   it('an unsugared function, manually flipped', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve variables="r,u" flipfunction="true">
@@ -256,7 +256,7 @@ describe('Curve Tag Tests', function () {
   it('a function with math and ref', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathinput prefill="1"/>
     <graph>
@@ -296,7 +296,7 @@ describe('Curve Tag Tests', function () {
   it('a parameterization in terms of t', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -328,7 +328,7 @@ describe('Curve Tag Tests', function () {
   it('a parameterization in terms of s', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve parameter="s">
@@ -360,7 +360,7 @@ describe('Curve Tag Tests', function () {
   it('x, y = a parameterization in terms of t', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -392,7 +392,7 @@ describe('Curve Tag Tests', function () {
   it('x, y = a parameterization in terms of t, swapped variables', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve variables="y,x">
@@ -423,7 +423,7 @@ describe('Curve Tag Tests', function () {
   it('u, v = a parameterization in terms of s', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve variables="u,v" parameter="s">
@@ -455,7 +455,7 @@ describe('Curve Tag Tests', function () {
   it('x, y = a parameterization in terms of t, vector form', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -487,7 +487,7 @@ describe('Curve Tag Tests', function () {
   it('x, y = a parameterization in terms of t, vector form, switched', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -519,7 +519,7 @@ describe('Curve Tag Tests', function () {
   it('x, y = a parameterization in terms of t, change par limits', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve parmin="-1" parmax="0.5">
@@ -551,7 +551,7 @@ describe('Curve Tag Tests', function () {
   it('a parameterization, no sugar', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -584,7 +584,7 @@ describe('Curve Tag Tests', function () {
   it('a parameterization with parens', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -616,7 +616,7 @@ describe('Curve Tag Tests', function () {
   it('a parameterization with math and ref', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathinput prefill="2"/>
     <graph>
@@ -664,7 +664,7 @@ describe('Curve Tag Tests', function () {
   it('spline through four points, as string with ref', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathinput prefill="-2"/>
     <graph>
@@ -713,7 +713,7 @@ describe('Curve Tag Tests', function () {
   it('spline through four points, as reffed points', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathinput prefill="-2"/>
     <graph>
@@ -783,7 +783,7 @@ describe('Curve Tag Tests', function () {
   it('spline through four points, as reffed points, no sugar', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathinput prefill="-2"/>
     <graph>
@@ -855,7 +855,7 @@ describe('Curve Tag Tests', function () {
   it('spline through four points, as reffed points, change spline parameters', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathinput prefill="-2"/>
     <graph>
@@ -925,7 +925,7 @@ describe('Curve Tag Tests', function () {
   it('constrain to function', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve variables="u,v">
@@ -993,7 +993,7 @@ describe('Curve Tag Tests', function () {
   it('constrain to inverse function', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve variables="v,u">
@@ -1061,7 +1061,7 @@ describe('Curve Tag Tests', function () {
   it('constrain to parametrized curve', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathinput prefill="-2"/>
     <mathinput prefill="2"/>
@@ -1142,7 +1142,7 @@ describe('Curve Tag Tests', function () {
   it('constrain to spline', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <textinput />
     <mathinput prefill="0.8"/>
@@ -1282,7 +1282,7 @@ describe('Curve Tag Tests', function () {
   it('extrapolate', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <booleaninput />
     <booleaninput />
@@ -1403,7 +1403,7 @@ describe('Curve Tag Tests', function () {
   it('variable length curve', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p>Number of points: <mathinput /></p>
     <p>Step size: <mathinput /></p>
@@ -1519,7 +1519,7 @@ describe('Curve Tag Tests', function () {
   it('new curve from reffed vertices, some flipped', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>(-9,6),(-3,7),(4,0),(8,5)</curve>
@@ -1643,7 +1643,7 @@ describe('Curve Tag Tests', function () {
   it('extracting point coordinates of symmetric curve', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>

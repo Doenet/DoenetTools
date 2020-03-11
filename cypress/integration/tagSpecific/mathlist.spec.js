@@ -17,7 +17,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist from string', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist>a,1+1,</mathlist>
     <mathlist simplify="full">a,1+1,</mathlist>
@@ -69,7 +69,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist with error in string', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist>a,(, 1+1,</mathlist>
     ` }, "*");
@@ -113,7 +113,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist with math children', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist>
       <math>a</math>
@@ -144,7 +144,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist with math and number children', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist>
       <math>a</math>
@@ -182,7 +182,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist originally gets blank string children from group', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist>
       <group>
@@ -223,7 +223,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist with mathlist children', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist>
       <math>a</math>
@@ -318,7 +318,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist with maximum number', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist maximumnumber="7">
       <math>a</math>
@@ -408,7 +408,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist ancestor prop simplify', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist simplify="full">
       <math>a+a</math>

@@ -8,7 +8,7 @@ describe('Number Tag Tests', function () {
 
   it('1+1', () => {
     cy.window().then((win) => {
-      win.postMessage({ doenetCode: `
+      win.postMessage({ doenetML: `
       <text>a</text>
       <ref>_number1</ref>
       <number>1+1</number>
@@ -35,7 +35,7 @@ describe('Number Tag Tests', function () {
 
   it(`number that isn't a number`, () => {
     cy.window().then((win) => {
-      win.postMessage({ doenetCode: `<ref>_number1</ref><number>x+1</number>` }, "*");
+      win.postMessage({ doenetML: `<ref>_number1</ref><number>x+1</number>` }, "*");
     })
 
     cy.log('Test value displayed in browser')
@@ -57,7 +57,7 @@ describe('Number Tag Tests', function () {
 
   it('number in math', () => {
     cy.window().then((win) => {
-      win.postMessage({ doenetCode: `<math>x+<number>3</number></math>` }, "*");
+      win.postMessage({ doenetML: `<math>x+<number>3</number></math>` }, "*");
     })
 
     cy.log('Test value displayed in browser')
@@ -76,7 +76,7 @@ describe('Number Tag Tests', function () {
 
   it('math in number', () => {
     cy.window().then((win) => {
-      win.postMessage({ doenetCode: `<number>5+<math>3</math></number>` }, "*");
+      win.postMessage({ doenetML: `<number>5+<math>3</math></number>` }, "*");
     })
 
     cy.log('Test value displayed in browser')
@@ -96,7 +96,7 @@ describe('Number Tag Tests', function () {
 
   it('number converts to decimals', () => {
     cy.window().then((win) => {
-      win.postMessage({ doenetCode: `<number>log(0.5/0.3)</number>, <math><ref>_number1</ref></math>` }, "*");
+      win.postMessage({ doenetML: `<number>log(0.5/0.3)</number>, <math><ref>_number1</ref></math>` }, "*");
     })
 
     let num = Math.log(0.5/0.3);
@@ -122,7 +122,7 @@ describe('Number Tag Tests', function () {
 
   it('ref number property', () => {
     cy.window().then((win) => {
-      win.postMessage({ doenetCode: `
+      win.postMessage({ doenetML: `
       <ref prop="number">_number1</ref>,
       <number>8+3</number>` }, "*");
     })

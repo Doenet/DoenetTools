@@ -14,7 +14,7 @@ describe('Textinput Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <textinput prefill='hello'/>
     <ref>_textinput1</ref>
@@ -339,7 +339,7 @@ describe('Textinput Tag Tests', function () {
   it('downstream from textinput', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>Original text: <text>hello there</text></p>
     <p>textinput based on text: <textinput><ref>_text1</ref></textinput></p>
     `}, "*");
@@ -373,7 +373,7 @@ describe('Textinput Tag Tests', function () {
     cy.log('prefill ignored');
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>Original text: <text>hello there</text></p>
     <p>textinput based on text: <textinput prefill="bye now"><ref>_text1</ref></textinput></p>
     `}, "*");
@@ -387,7 +387,7 @@ describe('Textinput Tag Tests', function () {
     cy.log("values revert if not updatable")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>Original text: <text>can't <text>update</text> <text>me</text></text></p>
     <p>textinput based on text: <textinput><ref>_text1</ref></textinput></p>
     `}, "*");

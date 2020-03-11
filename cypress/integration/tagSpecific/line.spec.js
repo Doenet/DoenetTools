@@ -9,7 +9,7 @@ describe('Line Tag Tests', function () {
   it('move points refed by line', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point label='P'>(3,5)</point>
@@ -43,7 +43,7 @@ describe('Line Tag Tests', function () {
   it('full unsugared <through><point> line', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <line label='l'>
@@ -77,7 +77,7 @@ describe('Line Tag Tests', function () {
   it('sugar <point> from string inside <through>', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <line label='l'>
@@ -116,7 +116,7 @@ describe('Line Tag Tests', function () {
   it('sugar <through> from string', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <line label='l'>
@@ -153,7 +153,7 @@ describe('Line Tag Tests', function () {
   it('sugar <through> from strings and maths', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <math>1</math>
   <math>2</math>
@@ -193,7 +193,7 @@ describe('Line Tag Tests', function () {
   it('sugar <through> from <points>', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <math>1</math>
   <math>2</math>
@@ -227,7 +227,7 @@ describe('Line Tag Tests', function () {
   it('sugar <point> label as a component', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <line>
@@ -268,7 +268,7 @@ describe('Line Tag Tests', function () {
   it.only('line from sugared equation, single string', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <math>1</math>
   <graph>
@@ -333,7 +333,7 @@ describe('Line Tag Tests', function () {
   it('line from unsugared equation, single string', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <math>1</math>
   <graph>
@@ -401,7 +401,7 @@ describe('Line Tag Tests', function () {
   it('line from sugared equation, multiple pieces', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <math>5x</math>
   <number>2</number>
@@ -434,7 +434,7 @@ describe('Line Tag Tests', function () {
   it('line from equation with different variables', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <line variables="u,v">
@@ -515,7 +515,7 @@ describe('Line Tag Tests', function () {
   it('line from points with strange constraints', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <math>1</math>
   <graph>
@@ -652,7 +652,7 @@ describe('Line Tag Tests', function () {
   it('reffed line', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="point1">_line1</ref></extract>
   <graph>
@@ -760,7 +760,7 @@ describe('Line Tag Tests', function () {
   it('line via reffed through', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="point1">_line1</ref></extract>
   <graph>
@@ -868,7 +868,7 @@ describe('Line Tag Tests', function () {
   it('ref points of line', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="point1">_line1</ref></extract>
   <graph>
@@ -1049,7 +1049,7 @@ describe('Line Tag Tests', function () {
   it('new line from reffed points of line', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="point1">_line1</ref></extract>
   <graph>
@@ -1190,7 +1190,7 @@ describe('Line Tag Tests', function () {
   it('reference public state variables of line', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <line>
@@ -1244,7 +1244,7 @@ describe('Line Tag Tests', function () {
   it('line from reference to equation and coefficients', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="point1">_line1</ref></extract>
   <graph>
@@ -1325,7 +1325,7 @@ describe('Line Tag Tests', function () {
   it('extracting point coordinates of symmetric line', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="point1">_line1</ref></extract>
   <graph>
@@ -1435,7 +1435,7 @@ describe('Line Tag Tests', function () {
   it('three lines with mutual references', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="point1">_line1</ref></extract>
   <graph>

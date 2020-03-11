@@ -7,7 +7,7 @@ describe('Feedback Tag Tests', function () {
   it('feedback from answer value or credit', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer>x+y</answer></p>
   <feedback><if><ref prop="creditAchieved">_answer1</ref> = 1</if>
@@ -95,7 +95,7 @@ describe('Feedback Tag Tests', function () {
   it('feedback from award', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer><award>x+y</award><award credit="0.5">x</award></answer></p>
   <feedback><if><ref>_award1</ref></if>
@@ -175,7 +175,7 @@ describe('Feedback Tag Tests', function () {
   it('feedback from awards, select which one to display', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer>
     <mathinput />
@@ -339,7 +339,7 @@ describe('Feedback Tag Tests', function () {
   it('feedback from multiple choice, select which one to display', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer>
     <choice credit="0.1">cat</choice>
@@ -462,7 +462,7 @@ describe('Feedback Tag Tests', function () {
   it('feedback for any incorrect response', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer type="text">hello there</answer></p>
   <feedback>
@@ -506,7 +506,7 @@ describe('Feedback Tag Tests', function () {
   it('feedback defined in awards', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer>
     <award feedbackcode="goodjob">sin(pi x)</award>
@@ -626,7 +626,7 @@ describe('Feedback Tag Tests', function () {
   it('feedback defined in choices', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p>
     <answer>

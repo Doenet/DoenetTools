@@ -59,6 +59,10 @@ export default class TextInput extends DoenetRenderer {
 
   render() {
 
+    if (this.doenetSvData.hide) {
+      return null;
+    }
+
     const inputKey = this.componentName + '_input';
 
     let surroundingBorderColor = "#efefef";

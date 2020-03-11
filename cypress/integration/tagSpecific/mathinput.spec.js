@@ -4,7 +4,7 @@ describe('Mathinput Tag Tests', function () {
     cy.visit('/test')
   })
 
-  it('mathinput references', () => {
+  it.only('mathinput references', () => {
 
     // A fairly involved test
     // to check for bugs that have shown up only after multiple manipulations
@@ -13,7 +13,7 @@ describe('Mathinput Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathinput prefill='x+1'/>
     <ref>_mathinput1</ref>
@@ -389,7 +389,7 @@ describe('Mathinput Tag Tests', function () {
   it('downstream from mathinput', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p>Original math: <math>1+2x</math></p>
     <p>Mathinput based on math: <mathinput><ref>_math1</ref></mathinput></p>
@@ -457,7 +457,7 @@ describe('Mathinput Tag Tests', function () {
     cy.log('prefill ignored');
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>b</text>
     <p>Original math: <math>1+2x</math></p>
     <p>Mathinput based on math: <mathinput prefill="x^2/9"><ref>_math1</ref></mathinput></p>
@@ -486,7 +486,7 @@ describe('Mathinput Tag Tests', function () {
     cy.log("normal downstream rules apply")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>c</text>
     <p>Original math: <math simplify>1+<math>3x</math></math></p>
     <p>Mathinput based on math: <mathinput><ref>_math1</ref></mathinput></p>
@@ -557,7 +557,7 @@ describe('Mathinput Tag Tests', function () {
     cy.log("values revert if not updatable")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>d</text>
     <p>Original math: <math>1+<math>2x</math><math>z</math></math></p>
     <p>Mathinput based on math: <mathinput><ref>_math1</ref></mathinput></p>
@@ -626,7 +626,7 @@ describe('Mathinput Tag Tests', function () {
   it('preview input', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>Enter math</text>
     <mathinput name="a"/>
     <mathinput name="b"/>
@@ -700,7 +700,7 @@ describe('Mathinput Tag Tests', function () {
   it('accurately reduce vector length', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>Enter vector</text>
     <mathinput name="a"/>
     `}, "*");

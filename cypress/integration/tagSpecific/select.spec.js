@@ -9,7 +9,7 @@ describe('Select Tag Tests', function () {
   it("no parameters, select doesn't do anything", () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><select/></p>
     `}, "*");
@@ -26,7 +26,7 @@ describe('Select Tag Tests', function () {
   it('select single math', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <aslist>
     <select assignnames="x1">
@@ -128,7 +128,7 @@ describe('Select Tag Tests', function () {
   it('select multiple maths', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <aslist>
     <select name="s1" assignnames="X1, y1, z1" numberToSelect="3">
@@ -197,7 +197,7 @@ describe('Select Tag Tests', function () {
   it('select multiple maths, initially unresolved', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <aslist>
     <select name="s1" assignnames="X1, y1, z1">
@@ -282,7 +282,7 @@ describe('Select Tag Tests', function () {
   it('select multiple maths with namespace', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <aslist>
     <select name="s1" assignnames="x1, y1, z1" numberToSelect="3" newNameSpace>
@@ -352,7 +352,7 @@ describe('Select Tag Tests', function () {
   it('select multiple maths, with replacement', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <aslist>
     <select name="s1" assignnames="x1, y1, z1" numberToSelect="5" withReplacement>
@@ -409,7 +409,7 @@ describe('Select Tag Tests', function () {
   it("refs don't resample", () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p>
     <aslist>
@@ -485,7 +485,7 @@ describe('Select Tag Tests', function () {
   it("select doesn't change dynamically", () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p>Number to select: <mathinput prefill="5" name="numbertoselect"/></p>
     <p>First option: <mathinput prefill="a" name="x"/></p>
@@ -587,7 +587,7 @@ describe('Select Tag Tests', function () {
   it("select doesn't resample in dynamic map", () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     How many variables do you want? <mathinput />
     <p name="p1"><aslist>
@@ -894,7 +894,7 @@ describe('Select Tag Tests', function () {
   it('select single group of maths, assign names to grandchildren', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
     <p name="p1"><aslist><select assignnames="(x1,y1,z1)">
       <group><math>u</math><math>v</math><math>w</math></group>
@@ -981,7 +981,7 @@ describe('Select Tag Tests', function () {
   it('select single group of maths, assign names with namespace to grandchildren', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
     <p name="p1"><aslist><select assignnames="(x,y,z)" name="s1" newnamespace>
       <group><math>u</math><math>v</math><math>w</math></group>
@@ -1069,7 +1069,7 @@ describe('Select Tag Tests', function () {
   it('select multiple group of maths, assign names to grandchildren', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
     <p name="p1"><aslist>
       <select assignnames="(x1,y1,z1),(x2,y2,z2),(x3,y3,z3)" numbertoselect="3">
@@ -1143,7 +1143,7 @@ describe('Select Tag Tests', function () {
   it('references to outside components', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
     <math hide name="x1">x</math>
     <math hide name="x2">y</math>
@@ -1214,7 +1214,7 @@ describe('Select Tag Tests', function () {
   it('internal references', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
 
     <select assignnames="q,r,s,t,u" numbertoselect="5" withreplacement>
@@ -1313,7 +1313,7 @@ describe('Select Tag Tests', function () {
   it('variants specified, select single', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
     <variantControl nvariants="5" variants="aVocado, broCColi , carrot ,Dill,eggplanT"/>
 
@@ -1362,7 +1362,7 @@ describe('Select Tag Tests', function () {
   it('variants specified, select multiple', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
     <variantControl nvariants="5" variants="avocado, brOccoli , carrot ,dill,   eggPlant  "/>
 
@@ -1444,7 +1444,7 @@ describe('Select Tag Tests', function () {
   it('select text as sugar', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
     <aslist>
     <select assignnames="w1,w2,w3,w4,w5" numbertoselect="5">
@@ -1474,7 +1474,7 @@ describe('Select Tag Tests', function () {
   it('select numbers as sugar', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
     <aslist>
     <select assignnames="n1,n2,n3,n4,n5,n6,n7,n8,n9,n10" numbertoselect="10" withReplacement>
@@ -1506,7 +1506,7 @@ describe('Select Tag Tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantcontrol nvariants="200"/>
         <aslist>
@@ -1551,7 +1551,7 @@ describe('Select Tag Tests', function () {
   it('select weighted with replacement', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
     <aslist>
     <select assignnames="x1" numbertoselect="200" withreplacement>
@@ -1601,7 +1601,7 @@ describe('Select Tag Tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantcontrol nvariants="200"/>
         <aslist>
@@ -1663,7 +1663,7 @@ describe('Select Tag Tests', function () {
   it('references to internal assignnames', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
 
     <select name="original" assignnames="q,r,s,t,u,v,w" numbertoselect="7" withreplacement>
@@ -1785,7 +1785,7 @@ describe('Select Tag Tests', function () {
   it('references to internal assignnames, newnamespaces', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
     <select name="original" assignnames="q,r,s,t,u,v,w" numbertoselect="7" withreplacement>
       <p><select name="s" newnamespace assignnames="q,r" numbertoselect="2">a,e,i,o,u</select><ref name="q2">s/q</ref><ref name="r2">s/r</ref></p>
@@ -1931,7 +1931,7 @@ describe('Select Tag Tests', function () {
   it.skip('references to internal assignnames, named grandchildren', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
     <select name="original" assignnames="(q,qq, qr),(r, rq,rr),(s, sq, sr),(t, tq, tr),(u,uq,ur)" numbertoselect="5" withreplacement>
       <p><select assignnames="q,r" numbertoselect="2">a,e,i,o,u</select><ref name="q2">q</ref><ref name="r2">r</ref></p>
@@ -2044,7 +2044,7 @@ describe('Select Tag Tests', function () {
   it.skip('references to internal assignnames, newnamespaces, named grandchildren', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
         <select name="original" assignnames="(q,qq, qr),(r, rq,rr),(s, sq, sr),(t, tq, tr),(u,uq,ur)" numbertoselect="5" withreplacement>
       <p><select name="a" assignnames="q,r" numbertoselect="2" newnamespace>a,e,i,o,u</select><ref name="q2">a/q</ref><ref name="r2">a/r</ref></p>
@@ -2157,7 +2157,7 @@ describe('Select Tag Tests', function () {
   it('references to select of selects', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
     <select name="original" assignnames="q,r,s,t,u" numbertoselect="5" withreplacement>
       <select assignnames="q,r" numbertoselect="2">a,e,i,o,u</select>
@@ -2242,7 +2242,7 @@ describe('Select Tag Tests', function () {
   it('references to select of selects, newnamespaces', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
 
     <select name="original" assignnames="q,r,s,t,u" numbertoselect="5" withreplacement>
@@ -2328,7 +2328,7 @@ describe('Select Tag Tests', function () {
   it('references to select of selects of selects', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
 
     <select assignnames="q,r,s" numbertoselect="3" withreplacement>
@@ -2440,7 +2440,7 @@ describe('Select Tag Tests', function () {
   it('references to select of selects of selects, newnamespaces', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <math>1</math>
 
     <select name="a" newnamespace assignnames="q,r,s" numbertoselect="3" withreplacement>
@@ -2552,7 +2552,7 @@ describe('Select Tag Tests', function () {
   it("references to named grandchildren's children", () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <select assignnames="(a,b,c,d)">
     <group>
@@ -2636,7 +2636,7 @@ describe('Select Tag Tests', function () {
   it("references to named grandchildren's children, newnamespaces", () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <select assignnames="(a,b,c,d)">
     <group>
@@ -2719,7 +2719,7 @@ describe('Select Tag Tests', function () {
   it("select of a map of a select, with references", () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><aslist name="list1">
     <select assignnames="j,k,l" numbertoselect="3" withreplacement>
@@ -2794,7 +2794,7 @@ describe('Select Tag Tests', function () {
   it("select of a map of a select, new namespaces", () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><aslist name="list1">
     <select name="s" newnamespace assignnames="j,k,l" numbertoselect="3" withreplacement>
@@ -2869,7 +2869,7 @@ describe('Select Tag Tests', function () {
   it('two selects with mutual dependence, numbertoselect initially unresolved', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><aslist>
     <select name="s1" assignnames="X1, y1, z1" withReplacement>
@@ -2939,7 +2939,7 @@ describe('Select Tag Tests', function () {
   it('select with hide will hide replacements', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <p>Selects and hide</p>
       <p><select assignnames="c">
         <text>a</text>
@@ -2977,7 +2977,7 @@ describe('Select Tag Tests', function () {
   it('select with hide will hide named grandchildren replacements', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <p>Selects and hide</p>
       <p><aslist><select assignnames="(a,b,c)">
         <group>

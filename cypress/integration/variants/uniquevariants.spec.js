@@ -13,7 +13,7 @@ describe('Specifying unique variant tests', function () {
     for (let ind = 0; ind < 6; ind++) {
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <select assignnames="x">u,v,w,x,y,z</select>
@@ -39,7 +39,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <select assignnames="x">u,v,w,x,y,z</select>
@@ -69,7 +69,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <selectfromsequence assignnames="x">10</selectfromsequence>
@@ -95,7 +95,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <selectfromsequence assignnames="x">10</selectfromsequence>
@@ -141,7 +141,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -176,7 +176,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -211,7 +211,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -271,7 +271,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -304,7 +304,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -335,7 +335,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -384,7 +384,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -417,7 +417,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -448,7 +448,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -503,7 +503,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -536,7 +536,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -567,7 +567,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -616,7 +616,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -649,7 +649,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -680,7 +680,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -731,7 +731,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants nvariants="10" />
         <aslist>
@@ -765,7 +765,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants nvariants="10" />
         <aslist>
@@ -797,7 +797,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants nvariants="10" />
         <aslist>
@@ -839,7 +839,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -873,7 +873,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -904,7 +904,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -938,7 +938,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -973,7 +973,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -1015,7 +1015,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -1049,7 +1049,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -1080,7 +1080,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -1114,7 +1114,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -1149,7 +1149,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -1191,7 +1191,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <select assignnames="x">
@@ -1223,7 +1223,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <select assignnames="x">
@@ -1252,7 +1252,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <select assignnames="x">
@@ -1284,7 +1284,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <select assignnames="x">
@@ -1317,7 +1317,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <select assignnames="x">
@@ -1365,7 +1365,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -1401,7 +1401,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
@@ -1436,7 +1436,7 @@ describe('Specifying unique variant tests', function () {
 
         cy.window().then((win) => {
           win.postMessage({
-            doenetCode: `
+            doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
@@ -1497,7 +1497,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="p">
@@ -1594,7 +1594,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="p">
@@ -1658,7 +1658,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="p">
@@ -1719,7 +1719,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="p">
@@ -1802,7 +1802,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="problem">
@@ -1911,7 +1911,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="problem">
@@ -1987,7 +1987,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="problem">
@@ -2060,7 +2060,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="24" uniquevariants/>
       <select assignnames="problem">

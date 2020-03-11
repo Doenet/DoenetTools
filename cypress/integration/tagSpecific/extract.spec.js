@@ -5,7 +5,7 @@ describe('Extract Tag Tests',function() {
   })
       
   it('extract copies properties',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <extract prop="latex"><math modifybyreference="false">x</math></extract>
     <extract prop="latex"><math modifybyreference="true">x</math></extract>
     `},"*");
@@ -25,7 +25,7 @@ describe('Extract Tag Tests',function() {
   });
 
   it('extract can overwrite basecomponent properties',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <extract modifybyreference="true" prop="latex"><math modifybyreference="false">x</math></extract>
     <extract modifybyreference="false" prop="latex"><math modifybyreference="true">x</math></extract>
     `},"*");
@@ -46,7 +46,7 @@ describe('Extract Tag Tests',function() {
   });
 
   it('extract multiple tags',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <extract prop="y">
       <point>(1,2)</point>
       <point>(3,4)</point>
@@ -76,7 +76,7 @@ describe('Extract Tag Tests',function() {
   });
 
   it('extract still updatable',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <graph>
       <ref name="copy">original</ref>
       <point name="transformed">(<ref prop="y">copy2</ref>, <extract prop="x1"><ref name="copy2">copy</ref></extract>)</point>
@@ -144,7 +144,7 @@ describe('Extract Tag Tests',function() {
   });
 
   it('ref prop of extract',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <extract prop="center">
     <circle>
       <through>

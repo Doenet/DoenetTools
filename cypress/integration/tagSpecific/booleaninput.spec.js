@@ -8,7 +8,7 @@ describe('Booleaninput Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <booleaninput label="hello"/>
     <ref prop="value">_booleaninput1</ref>
@@ -75,7 +75,7 @@ describe('Booleaninput Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <booleaninput prefill="true"/>
     <ref prop="value">_booleaninput1</ref>
@@ -130,7 +130,7 @@ describe('Booleaninput Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><booleaninput prefill="t" label="green"/></p>
     <p><ref>_booleaninput1</ref></p>
@@ -211,7 +211,7 @@ describe('Booleaninput Tag Tests', function () {
   it('downstream from booleaninput', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p>Original boolean: <boolean>true</boolean></p>
     <p>booleaninput based on boolean: <booleaninput><ref>_boolean1</ref></booleaninput></p>
@@ -265,7 +265,7 @@ describe('Booleaninput Tag Tests', function () {
     cy.log('prefill ignored');
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>b</text>
     <p>Original boolean: <boolean>true</boolean></p>
     <p>booleaninput based on boolean: <booleaninput prefill="false"><ref>_boolean1</ref></booleaninput></p>
@@ -284,7 +284,7 @@ describe('Booleaninput Tag Tests', function () {
     cy.log("values revert if not updatable")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>c</text>
     <p>Original boolean: <boolean>can't <text>update</text> <text>me</text></boolean></p>
     <p>booleaninput based on boolean: <booleaninput><ref>_boolean1</ref></booleaninput></p>

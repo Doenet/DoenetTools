@@ -7,7 +7,7 @@ describe('Answer Tag Tests', function () {
   it.only('answer sugar from one string', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer>x+y</answer></p>
   <p>Current response: <ref prop="currentResponse">_answer1</ref></p>
@@ -147,7 +147,7 @@ describe('Answer Tag Tests', function () {
   it('answer sugar from one string, set to text', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer type="text">hello there</answer></p>
   <p>Current response: <ref prop="currentResponse">_answer1</ref></p>
@@ -265,7 +265,7 @@ describe('Answer Tag Tests', function () {
   it('answer sugar from one string, set to text, initially unresolved', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer><type><ref>t1</ref></type>hello there</answer></p>
   <p>Current response: <ref prop="currentResponse">_answer1</ref></p>
@@ -386,7 +386,7 @@ describe('Answer Tag Tests', function () {
   it('answer sugar from one math', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer><math>x+y</math></answer></p>
   <p>Current response: <ref prop="currentResponse">_answer1</ref></p>
@@ -526,7 +526,7 @@ describe('Answer Tag Tests', function () {
   it('answer sugar from one math, initally unresolved', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer><math>x+y-3+<ref>n</ref></math></answer></p>
   <p>Current response: <ref prop="currentResponse">_answer1</ref></p>
@@ -673,7 +673,7 @@ describe('Answer Tag Tests', function () {
   it('answer sugar from one text', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer><text>  hello there </text></answer></p>
   <p>Current response: <ref prop="currentResponse">_answer1</ref></p>
@@ -790,7 +790,7 @@ describe('Answer Tag Tests', function () {
   it('answer sugar from one text, initally unresolved', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer><ref>n</ref></answer></p>
   <p>Current response: <ref prop="currentResponse">_answer1</ref></p>
@@ -917,7 +917,7 @@ describe('Answer Tag Tests', function () {
   it('answer sugar from incomplete awards', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer><award>x+y</award><award credit="0.5"><math>x</math></award></answer></p>
   <p>Current response: <ref prop="currentResponse">_answer1</ref></p>
@@ -1106,7 +1106,7 @@ describe('Answer Tag Tests', function () {
   it('answer sugar from incomplete awards, set to text', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer type="text"><award>hello there</award><award credit="0.5"><text>bye</text></award></answer></p>
   <p>Current response: <ref prop="currentResponse">_answer1</ref></p>
@@ -1261,7 +1261,7 @@ describe('Answer Tag Tests', function () {
   it('answer sugar from incomplete awards, based on text', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer><award>hello there</award><award credit="0.5"><text>bye</text></award></answer></p>
   <p>Current response: <ref prop="currentResponse">_answer1</ref></p>
@@ -1416,7 +1416,7 @@ describe('Answer Tag Tests', function () {
   it('answer with internal references, incomplete awards', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <answer>
   <award><math>x+y</math></award><award credit="0.5">x</award>
@@ -1606,7 +1606,7 @@ describe('Answer Tag Tests', function () {
   it('full answer tag', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer>Enter values that sum to <m>3x</m>: <mathinput/> <mathinput/>
   <award><if><math><ref prop="value">_mathinput1</ref>+<ref prop="value">_mathinput2</ref></math> = <math>3x</math></if></award>
@@ -2116,7 +2116,7 @@ describe('Answer Tag Tests', function () {
   it('full answer tag, internal references', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <answer>
     <p>Enter values that sum to <m>3x</m>: <mathinput/> <mathinput/></p>
@@ -2626,7 +2626,7 @@ describe('Answer Tag Tests', function () {
   it('full answer tag, text inputs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer>Enter rain and snow in either order: <textinput/> <textinput/>
   <award><if><text><ref prop="value">_textinput1</ref> <ref prop="value">_textinput2</ref></text> = <text>rain snow</text></if></award>
@@ -3180,7 +3180,7 @@ describe('Answer Tag Tests', function () {
   it('answer inequalities', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <answer>Enter enter number larger than 5 or less than 2: <mathinput/>
   <award><if><ref prop="value">_mathinput1</ref> > 5</if></award>
   <award><if><ref prop="value">_mathinput1</ref> < <math>2</math></if></award>
@@ -3247,7 +3247,7 @@ describe('Answer Tag Tests', function () {
     cy.log("Number between -1 and 1, inclusive");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <answer><mathinput/>
   <award><if>-1 <= <ref prop="value">_mathinput1</ref> <= 1</if></award>
   </answer>
@@ -3270,7 +3270,7 @@ describe('Answer Tag Tests', function () {
     cy.log("Number between -1 and 1, exclusive");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <answer><mathinput/>
   <award><if>-1 < <ref prop="value">_mathinput1</ref> < 1</if></award>
   </answer>
@@ -3292,7 +3292,7 @@ describe('Answer Tag Tests', function () {
     cy.log("Number between -1 and 1, as greater than");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <answer><mathinput/>
   <award><if>1 > <ref prop="value">_mathinput1</ref> >= -1</if></award>
   </answer>
@@ -3317,7 +3317,7 @@ describe('Answer Tag Tests', function () {
     cy.log("Number between -1 and 1, inclusive");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <answer><mathinput/> <mathinput/> <mathinput/>
     <award><if>
       ((<ref prop="value">_mathinput1</ref> = x
@@ -3354,7 +3354,7 @@ describe('Answer Tag Tests', function () {
   it('answer inside map', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <map>
       <template>
@@ -3671,7 +3671,7 @@ describe('Answer Tag Tests', function () {
   it('integrated submit buttons', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer>
     <award>x+y</award>
@@ -3898,7 +3898,7 @@ describe('Answer Tag Tests', function () {
   it('integrated submit buttons, text', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer type="text">
     <award>hello there</award>
@@ -4074,7 +4074,7 @@ describe('Answer Tag Tests', function () {
   it('submit buttons with two answer blanks', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p><answer>Enter values that sum to <m>3x</m>: <mathinput/> <mathinput/>
   <award><if><math><ref prop="value">_mathinput1</ref>+<ref prop="value">_mathinput2</ref></math> = <math>3x</math></if></award>
@@ -4368,7 +4368,7 @@ describe('Answer Tag Tests', function () {
   it('submit buttons with two text answer blanks', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
         <text>a</text>
         <p><answer>Enter rain and snow in either order: <textinput/> <textinput/>
         <award><if><text><ref prop="value">_textinput1</ref> <ref prop="value">_textinput2</ref></text> = <text>rain snow</text></if></award>
@@ -4611,7 +4611,7 @@ describe('Answer Tag Tests', function () {
   it('submit button with external inputs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p>Favorite variable: <mathinput name="var" prefill="x"/></p>
     <p>Second favorite variable: <mathinput name="var2" prefill="y"/></p>
@@ -4761,7 +4761,7 @@ describe('Answer Tag Tests', function () {
   it('answer with inline choiceinput', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p>The animal is a <answer>
   <choiceinput inline>
@@ -4898,7 +4898,7 @@ describe('Answer Tag Tests', function () {
   it('answer with inline choiceinput, fixedorder', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p>The animal is a <answer>
   <choiceinput inline fixedorder>
@@ -5037,7 +5037,7 @@ describe('Answer Tag Tests', function () {
   it('answer with sugared inline choiceinput', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p>The animal is a <answer inline>
     <choice credit="0.5">cat</choice>
@@ -5182,7 +5182,7 @@ describe('Answer Tag Tests', function () {
   it('answer with sugared inline choiceinput, fixedorder', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p>The animal is a <answer inline fixedorder>
     <choice credit="0.5">cat</choice>
@@ -5329,7 +5329,7 @@ describe('Answer Tag Tests', function () {
   it('answer with block choiceinput', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p>The animal is a:</p>
   <answer>
@@ -5481,7 +5481,7 @@ describe('Answer Tag Tests', function () {
   it('answer with sugared block choiceinput', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p>The animal is a:</p>
   <answer>
@@ -5641,7 +5641,7 @@ describe('Answer Tag Tests', function () {
   it('answer with variable number of choices', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p>Num: <mathinput name="num" prefill="3"/></p>
 
@@ -6019,7 +6019,7 @@ describe('Answer Tag Tests', function () {
   it('answer with user-defined choice and credit', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <p>Credit for cat: <mathinput name="catcredit" prefill="0.3" /> </p>
       <p>Last option: <textinput prefill="bird" name="last" /></p>
@@ -6184,7 +6184,7 @@ describe('Answer Tag Tests', function () {
   it('switch answer between inline and block', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <p>Inline: <booleaninput name="inline" /> </p>
       <answer>
@@ -6277,7 +6277,7 @@ describe('Answer Tag Tests', function () {
   it('answer math from one string, split into options', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p>All three: <answer>x+y, (x+y)/2, (x,y)</answer></p>
   <p>Individuals: <answer splitintooptions>x+y, (x+y)/2, (x,y)</answer></p>
@@ -6386,7 +6386,7 @@ describe('Answer Tag Tests', function () {
   it('answer text from one string, split into options', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p>All three: <answer type="text">hello there, doenet, (we're almost here, but not quite)</answer></p>
   <p>Individuals: <answer type="text" splitintooptions>hello there, doenet, (we're almost here, but not quite)</answer></p>
@@ -6471,7 +6471,7 @@ describe('Answer Tag Tests', function () {
   it('answer with incomplete awards, split into options', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p>Only split: <answer splitintooptions>a,b,c</answer></p>
   <p>Option specified in award:
@@ -6573,7 +6573,7 @@ describe('Answer Tag Tests', function () {
   it('answer, any letter', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
 
   <p>Enter any letter:
   <answer size='3' name='userx'>
@@ -6611,7 +6611,7 @@ describe('Answer Tag Tests', function () {
   it('answer element of user defined set', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
 
   <p>Enter a set <mathinput name="set" prefill="{1,2,3}" size="20"/></p>
   <p>Enter an element of that set: 

@@ -8,7 +8,7 @@ describe('Parabola Tag Tests',function() {
     })
   
   it('parabola with no parameters gives y=x^2',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <parabola />
@@ -50,7 +50,7 @@ describe('Parabola Tag Tests',function() {
   });
   
   it('parabola through no points gives y=x^2',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <parabola><through></through></parabola>
@@ -92,7 +92,7 @@ describe('Parabola Tag Tests',function() {
   });
 
   it('parabola through one point uses it as vertex',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <point>(1,2)</point>
@@ -155,7 +155,7 @@ describe('Parabola Tag Tests',function() {
   });
  
   it('parabola through two points',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <point>(1,2)</point>
@@ -267,7 +267,7 @@ describe('Parabola Tag Tests',function() {
   });
 
   it('parabola through three points',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <point>(1,2)</point>

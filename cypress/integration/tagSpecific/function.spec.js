@@ -7,7 +7,7 @@ describe('Function Tag Tests', function () {
   it('function with nothing', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -35,7 +35,7 @@ describe('Function Tag Tests', function () {
   it('function with single minimum', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -64,7 +64,7 @@ describe('Function Tag Tests', function () {
   it('function with single minimum, change x-scale', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function xscale="3">
@@ -93,7 +93,7 @@ describe('Function Tag Tests', function () {
   it('function with single minimum, change x-scale and y-scale', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function xscale="3" yscale="5">
@@ -122,7 +122,7 @@ describe('Function Tag Tests', function () {
   it('function with single maximum', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -151,7 +151,7 @@ describe('Function Tag Tests', function () {
   it('function with single maximum, change x-scale', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function xscale="3">
@@ -180,7 +180,7 @@ describe('Function Tag Tests', function () {
   it('function with single maximum, change x-scale and y-scale', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function xscale="3" yscale="5">
@@ -209,7 +209,7 @@ describe('Function Tag Tests', function () {
   it('function with single minimum, specify x', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -236,7 +236,7 @@ describe('Function Tag Tests', function () {
   it('function with single minimum, specify x and y', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -263,7 +263,7 @@ describe('Function Tag Tests', function () {
   it('function with single minimum, specify x and y as tuple', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -290,7 +290,7 @@ describe('Function Tag Tests', function () {
   it('function with single minimum, specify x and y as list', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -317,7 +317,7 @@ describe('Function Tag Tests', function () {
   it('function with single minimum, specify x and y as vector equation', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -344,7 +344,7 @@ describe('Function Tag Tests', function () {
   it('function with single extremum, specify x and y as tuple', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -371,7 +371,7 @@ describe('Function Tag Tests', function () {
   it('function with min and max', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -405,7 +405,7 @@ describe('Function Tag Tests', function () {
   it('function with min and extremum', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -439,7 +439,7 @@ describe('Function Tag Tests', function () {
   it('function with extremum and max', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -473,7 +473,7 @@ describe('Function Tag Tests', function () {
   it('function with two minima', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -507,7 +507,7 @@ describe('Function Tag Tests', function () {
   it('function with two minima and maximum with specified height', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -542,7 +542,7 @@ describe('Function Tag Tests', function () {
   it('function with two minima and extremum with specified height', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -577,7 +577,7 @@ describe('Function Tag Tests', function () {
   it('function with maximum and higher minimum', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -609,7 +609,7 @@ describe('Function Tag Tests', function () {
   it('function with maximum and higher extremum', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -638,7 +638,7 @@ describe('Function Tag Tests', function () {
   it('function with minimum and lower maximum', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -670,7 +670,7 @@ describe('Function Tag Tests', function () {
   it('function with minimum and lower extremum', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -699,7 +699,7 @@ describe('Function Tag Tests', function () {
   it('function with extremum and lower maximum', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -728,7 +728,7 @@ describe('Function Tag Tests', function () {
   it('function with maximum through points', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -767,7 +767,7 @@ describe('Function Tag Tests', function () {
   it('function with single through point', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -793,7 +793,7 @@ describe('Function Tag Tests', function () {
   it('function with single through point with slope', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -819,7 +819,7 @@ describe('Function Tag Tests', function () {
   it('function with single through point with dynamic slope', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p>slope: <mathinput/></p>
     <graph>
@@ -878,7 +878,7 @@ describe('Function Tag Tests', function () {
   it('function with two through points with dynamic slope', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p>slope: <mathinput/></p>
     <graph>
@@ -955,7 +955,7 @@ describe('Function Tag Tests', function () {
   it('function through three points', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -990,7 +990,7 @@ describe('Function Tag Tests', function () {
   it('function through three points with slopes', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <point>(2,1)</point>
@@ -1037,7 +1037,7 @@ describe('Function Tag Tests', function () {
   it('function with conflicting points', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -1062,7 +1062,7 @@ describe('Function Tag Tests', function () {
   it('check monotonicity', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -1098,7 +1098,7 @@ describe('Function Tag Tests', function () {
   it('point constrained to function', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -1147,7 +1147,7 @@ describe('Function Tag Tests', function () {
   it('function determined by formula', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -1173,7 +1173,7 @@ describe('Function Tag Tests', function () {
   it('function determined by formula in different variable', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function variable="q">
@@ -1200,7 +1200,7 @@ describe('Function Tag Tests', function () {
   it('point constrained to function in different variable', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function variable="u">
@@ -1249,7 +1249,7 @@ describe('Function Tag Tests', function () {
   it('calculated extrema from spline', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <point>(0.7, 5.43)</point>
@@ -1489,7 +1489,7 @@ describe('Function Tag Tests', function () {
   it('calculated extrema from gaussians', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <point layer="2">(0,1)</point>
@@ -1691,7 +1691,7 @@ describe('Function Tag Tests', function () {
   it('calculated extrema from sinusoid', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     Period: <mathinput />
     <graph>
@@ -1815,7 +1815,7 @@ describe('Function Tag Tests', function () {
   it('no extrema with horizontal asymptote', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -1845,7 +1845,7 @@ describe('Function Tag Tests', function () {
   it('extrema of rational function', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -1888,7 +1888,7 @@ describe('Function Tag Tests', function () {
   it('intervals of extrema are not counted', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -1919,7 +1919,7 @@ describe('Function Tag Tests', function () {
   it('extrema of function with restricted domain', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <function>
@@ -1956,7 +1956,7 @@ describe('Function Tag Tests', function () {
   it('two functions with mutual dependence', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <point>(1,2)</point>

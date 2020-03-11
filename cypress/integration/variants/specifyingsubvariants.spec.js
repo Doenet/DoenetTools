@@ -12,7 +12,7 @@ describe('Specifying subvariants tests', function () {
     for (let ind = 0; ind < 6; ind++) {
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <select assignnames="x">u,v,w,x,y,z</select>
     `,
@@ -46,7 +46,7 @@ describe('Specifying subvariants tests', function () {
 
         cy.window().then((win) => {
           win.postMessage({
-            doenetCode: `
+            doenetML: `
       <text>${ind1}</text>
       <text>${ind2}</text>
       <select assignnames="x,y" numbertoselect="2">x,y,z</select>
@@ -84,7 +84,7 @@ describe('Specifying subvariants tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <selectfromsequence assignnames="n">10</selectfromsequence>
       `,
@@ -118,7 +118,7 @@ describe('Specifying subvariants tests', function () {
 
         cy.window().then((win) => {
           win.postMessage({
-            doenetCode: `
+            doenetML: `
         <text>${ind1}</text>
         <text>${ind2}</text>
         <selectfromsequence assignnames="x,y" numbertoselect="2">4</selectfromsequence>
@@ -172,7 +172,7 @@ describe('Specifying subvariants tests', function () {
 
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="4"/>
 
@@ -220,7 +220,7 @@ describe('Specifying subvariants tests', function () {
       let direction = directions[directionInd];
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="4"/>
 
@@ -272,7 +272,7 @@ describe('Specifying subvariants tests', function () {
       let sidesChosen = sideInds.map(x => sides[x])
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="4"/>
 
@@ -323,7 +323,7 @@ describe('Specifying subvariants tests', function () {
       let sidesChosen = sideInds.map(x => sides[x])
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="4"/>
 
@@ -383,7 +383,7 @@ describe('Specifying subvariants tests', function () {
     for (let ind = 0; ind < 5; ind++) {
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="100"/>
   
@@ -437,7 +437,7 @@ describe('Specifying subvariants tests', function () {
       for (let ind2 = 0; ind2 < 400; ind2 += 100) {
         cy.window().then((win) => {
           win.postMessage({
-            doenetCode: `
+            doenetML: `
         <text>${ind1}</text>
         <text>${ind2}</text>
         <variantControl nvariants="100"/>
@@ -501,7 +501,7 @@ describe('Specifying subvariants tests', function () {
     for (let ind = 0; ind < 5; ind++) {
       cy.window().then((win) => {
         win.postMessage({
-          doenetCode: `
+          doenetML: `
       <text>${ind}</text>
       <variantControl nvariants="100"/>
   
@@ -571,7 +571,7 @@ describe('Specifying subvariants tests', function () {
               for (let ind6 = 4; ind6 < 5; ind6++) {
                 cy.window().then((win) => {
                   win.postMessage({
-                    doenetCode: `
+                    doenetML: `
                 <text>${ind1}</text>
                 <text>${ind2}</text>
                 <text>${ind3}</text>
@@ -675,7 +675,7 @@ describe('Specifying subvariants tests', function () {
               for (let ind6 = 4; ind6 < 5; ind6++) {
                 cy.window().then((win) => {
                   win.postMessage({
-                    doenetCode: `
+                    doenetML: `
                   <text>${ind1}</text>
                   <text>${ind2}</text>
                   <text>${ind3}</text>

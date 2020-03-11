@@ -19,8 +19,13 @@ export default class Number extends DoenetRenderer {
 
 
   render() {
+
+    if (this.doenetSvData.hide) {
+      return null;
+    }
+
     let number = this.doenetSvData.value;
-    if(this.doenetSvData.renderAsMath) {
+    if (this.doenetSvData.renderAsMath) {
       number = "\\(" + number + "\\)"
     }
     return <><a name={this.componentName} /><span id={this.componentName}>{number}</span></>

@@ -208,6 +208,11 @@ export default class Graph extends DoenetRenderer {
   }
 
   render() {
+
+    if (this.doenetSvData.hide) {
+      return null;
+    }
+
     const divStyle = {
       width: this.doenetSvData.numericalWidth,
       height: this.doenetSvData.numericalHeight,

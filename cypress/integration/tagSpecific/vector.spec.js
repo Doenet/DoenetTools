@@ -8,7 +8,7 @@ describe('Vector Tag Tests', function () {
   it('vector with single sugared point, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -160,7 +160,7 @@ describe('Vector Tag Tests', function () {
   it('vector with single point sugared as head, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -312,7 +312,7 @@ describe('Vector Tag Tests', function () {
   it('vector with single head sugared point, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -464,7 +464,7 @@ describe('Vector Tag Tests', function () {
   it('vector with single head point, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -616,7 +616,7 @@ describe('Vector Tag Tests', function () {
   it('vector with single endpoints sugared point, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -768,7 +768,7 @@ describe('Vector Tag Tests', function () {
   it('vector with single endpoints point, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -920,7 +920,7 @@ describe('Vector Tag Tests', function () {
   it('vector with single displacement sugared point, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -1072,7 +1072,7 @@ describe('Vector Tag Tests', function () {
   it('vector with single displacement point, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -1224,7 +1224,7 @@ describe('Vector Tag Tests', function () {
   it('vector with two sugared points, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -1376,7 +1376,7 @@ describe('Vector Tag Tests', function () {
   it('vector with two points sugared as head/tail, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -1528,7 +1528,7 @@ describe('Vector Tag Tests', function () {
   it('vector with sugared head and tail points, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -1680,7 +1680,7 @@ describe('Vector Tag Tests', function () {
   it('vector with head and tail points, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -1832,7 +1832,7 @@ describe('Vector Tag Tests', function () {
   it('vector with two sugared endpoints, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -1984,7 +1984,7 @@ describe('Vector Tag Tests', function () {
   it('vector with two endpoints, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -2136,7 +2136,7 @@ describe('Vector Tag Tests', function () {
   it('vector with displacement and tail, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -2288,7 +2288,7 @@ describe('Vector Tag Tests', function () {
   it('vector with displacement and point, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -2440,7 +2440,7 @@ describe('Vector Tag Tests', function () {
   it('vector with vector and point, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -2592,7 +2592,7 @@ describe('Vector Tag Tests', function () {
   it('vector with vector and tail, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -2744,7 +2744,7 @@ describe('Vector Tag Tests', function () {
   it('vector with displacement and head, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -2896,7 +2896,7 @@ describe('Vector Tag Tests', function () {
   it('vector with vector and head, head/tail/displacement reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -3048,7 +3048,7 @@ describe('Vector Tag Tests', function () {
   it('reffed vectors', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -3436,7 +3436,7 @@ describe('Vector Tag Tests', function () {
   it('reffed vectors and displacements', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -3585,7 +3585,7 @@ describe('Vector Tag Tests', function () {
   it('constrain to vector', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -3710,7 +3710,7 @@ describe('Vector Tag Tests', function () {
   it('attract to vector', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>
@@ -3835,7 +3835,7 @@ describe('Vector Tag Tests', function () {
   it('two update paths through vectors', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">original</ref></extract>
   <mathinput name="a" prefill="2" modifybyreference="false" />
@@ -3931,7 +3931,7 @@ describe('Vector Tag Tests', function () {
   it('display vector sum triangle', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">u</ref></extract>
   <graph>
@@ -4132,7 +4132,7 @@ describe('Vector Tag Tests', function () {
   it('ref coordinates off vectors', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <vector name="u">(1,5),(7,3)</vector>
@@ -4199,7 +4199,7 @@ describe('Vector Tag Tests', function () {
   it('combining displacement components through refs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">v1</ref></extract>
   <graph>
@@ -4486,7 +4486,7 @@ describe('Vector Tag Tests', function () {
   it('combining displacement components through refs 2', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">v1</ref></extract>
   <graph>
@@ -4788,7 +4788,7 @@ describe('Vector Tag Tests', function () {
   it('combining components of head and tail through refs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">v</ref></extract>
   <graph>
@@ -4912,7 +4912,7 @@ describe('Vector Tag Tests', function () {
   it('updates depending on vector definition', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">vh</ref></extract>
   <graph>
@@ -6740,7 +6740,7 @@ describe('Vector Tag Tests', function () {
   it('vector adapts to coords of displacement', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <math><ref>_vector1</ref></math>
   <graph>
@@ -6793,7 +6793,7 @@ describe('Vector Tag Tests', function () {
   it('three vectors with mutual references', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">_vector1</ref></extract>
   <graph>

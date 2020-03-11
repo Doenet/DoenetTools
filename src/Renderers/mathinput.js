@@ -44,7 +44,7 @@ export default class MathInput extends DoenetRenderer {
   updateMathExpressionFromText(text) {
     this.textValue = text;
     let newMathExpression = this.calculateMathExpressionFromText(text);
-    if(!newMathExpression.equalsViaSyntax(this.mathExpression)) {
+    if (!newMathExpression.equalsViaSyntax(this.mathExpression)) {
       this.mathExpression = newMathExpression;
       this.actions.updateMathExpression({
         mathExpression: newMathExpression
@@ -93,6 +93,10 @@ export default class MathInput extends DoenetRenderer {
   }
 
   render() {
+
+    if (this.doenetSvData.hide) {
+      return null;
+    }
 
     const inputKey = this.componentName + '_input';
 

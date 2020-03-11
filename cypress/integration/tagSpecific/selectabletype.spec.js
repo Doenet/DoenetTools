@@ -7,7 +7,7 @@ beforeEach(() => {
   })
 
   it('from with number string',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <from>7</from>
     <ref prop="value">_from1</ref>
     `},"*");
@@ -26,7 +26,7 @@ beforeEach(() => {
   });
 
   it('from with letter string',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <from>q</from>
     <ref prop="value">_from1</ref>
     `},"*");
@@ -43,7 +43,7 @@ beforeEach(() => {
   });
 
   it('from with letternumber string',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <from>z3</from>
     <ref prop="value">_from1</ref>
     `},"*");
@@ -60,7 +60,7 @@ beforeEach(() => {
   });
 
   it('from with boolean child',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <from><boolean>false</boolean></from>
     <ref prop="value">_from1</ref>
     `},"*");
@@ -77,7 +77,7 @@ beforeEach(() => {
   });
 
   it('from with dynamic boolean child',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <from><ref prop="value">b</ref></from>
     <ref prop="value">_from1</ref>
     <booleaninput name="b"/>
@@ -117,7 +117,7 @@ beforeEach(() => {
   });
   
   it('from with type from originally unresolved ref',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <from>
       <type><ref>_text1</ref></type>
       x^2
@@ -141,7 +141,7 @@ beforeEach(() => {
   });
 
   it('exclude with number string',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <exclude>3,7</exclude>
     <p><aslist><ref prop="values">_exclude1</ref></aslist></p>
     `},"*");
@@ -162,7 +162,7 @@ beforeEach(() => {
   });
 
   it('exclude with letters string',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <exclude>q,u</exclude>
     <p><aslist><ref prop="values">_exclude1</ref></aslist></p>
     `},"*");
@@ -179,7 +179,7 @@ beforeEach(() => {
   });
 
   it('exclude with letternumber string',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <exclude>2,i</exclude>
     <p><aslist><ref prop="values">_exclude1</ref></aslist></p>
     `},"*");
@@ -197,7 +197,7 @@ beforeEach(() => {
 
   
   it('exclude with type from originally unresolved ref',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <exclude>
       <type><ref>_text1</ref></type>
       x^2, b/u

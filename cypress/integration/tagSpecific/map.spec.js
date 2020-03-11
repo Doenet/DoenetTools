@@ -17,7 +17,7 @@ describe('Map Tag Tests', function () {
   it('single map of maths', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <aslist>
     <map>
@@ -62,7 +62,7 @@ describe('Map Tag Tests', function () {
   it('single map of texts', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <map >
       <template><text>You are a <subsref/>!</text> </template>
@@ -95,7 +95,7 @@ describe('Map Tag Tests', function () {
   it('single map of sequence', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <map>
       <template><math simplify><subsref/>^2</math> </template>
@@ -143,7 +143,7 @@ describe('Map Tag Tests', function () {
   it('triple parallel map', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <aslist>
     <map behavior="parallel">
@@ -203,7 +203,7 @@ describe('Map Tag Tests', function () {
   it('triple combination map', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <map behavior="combination">
       <template>
@@ -332,7 +332,7 @@ describe('Map Tag Tests', function () {
   it('two nested maps', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <aslist>
     <map>
@@ -401,7 +401,7 @@ describe('Map Tag Tests', function () {
   it('three nested maps with graphs and reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <map>
     <template>
@@ -515,7 +515,7 @@ describe('Map Tag Tests', function () {
   it('three nested maps with graphs and namespaces', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <map assignnamespaces="u,v">
     <template>
@@ -621,7 +621,7 @@ describe('Map Tag Tests', function () {
   it('combination map nested inside map with graphs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <map>
     <template>
@@ -671,7 +671,7 @@ describe('Map Tag Tests', function () {
   it('map with refs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <map>
     <template>
@@ -733,7 +733,7 @@ describe('Map Tag Tests', function () {
   it('map with refs, extended dynamically', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <map>
     <template>
@@ -890,7 +890,7 @@ describe('Map Tag Tests', function () {
   it('map with reffed template', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <map>
     <template>
@@ -943,7 +943,7 @@ describe('Map Tag Tests', function () {
   it('graph with new namespace and assignnamespaces', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <ref>/hi/c/_coords1</ref>
     <ref>/hi/s/_coords1</ref>
@@ -1006,7 +1006,7 @@ describe('Map Tag Tests', function () {
   it('map reffing subsref of other map', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <map assignnamespaces="u,v,w">
       <template><math>(<subsref/>, <ref>../e/_subsref1</ref>)</math></template>
@@ -1043,7 +1043,7 @@ describe('Map Tag Tests', function () {
   });
 
   // it('map reffing other map via childnumber',() => {
-  //   cy.window().then((win) => { win.postMessage({doenetCode: `
+  //   cy.window().then((win) => { win.postMessage({doenetML: `
   //   <text>a</text>
   //   <math>1</math>
   //   <graph>
@@ -1101,7 +1101,7 @@ describe('Map Tag Tests', function () {
   it('map length depending on other map', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <map>
     <template>
@@ -1149,7 +1149,7 @@ describe('Map Tag Tests', function () {
   it('map begins zero length, reffed multiple times', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
 
     <p>
@@ -1487,7 +1487,7 @@ describe('Map Tag Tests', function () {
   it('map with circular dependence in template', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
       <map assignnamespaces="a,b,c">
@@ -1706,7 +1706,7 @@ describe('Map Tag Tests', function () {
   it('two maps with mutual references, begin zero length, reffed multiple times', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
       <map assignnamespaces="a,b,c">
@@ -1992,7 +1992,7 @@ describe('Map Tag Tests', function () {
   it('map points to adapt to math', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p>Number of points: <mathinput name="number"/></p>
     <p>Step size: <mathinput name="step" /></p>

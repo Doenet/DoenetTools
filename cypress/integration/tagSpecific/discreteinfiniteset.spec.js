@@ -8,7 +8,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
   it('match given discrete infinite set', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <answer>
     <p>Offsets: <mathinput name="o"/></p>
     <p>Period: <mathinput name="p" /></p>
@@ -211,7 +211,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
   it('match reffed discrete infinite sets', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>Offsets: <mathinput name="offsets" /></p>
     <p>Period: <mathinput name="period" /></p>
     
@@ -582,7 +582,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
   it('partial credit with discrete infinite set', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <offsets hide name="correct_offsets" mergemathlists="true">30,150</offsets>
     <period hide name="correct_period">180</period>
     <discreteinfiniteset name="correct" simplify="full">

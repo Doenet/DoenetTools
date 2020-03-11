@@ -456,9 +456,7 @@ export default class Core {
         } else {
 
           // component currently not being renderered
-          // flag to be rendered only if 
-          // - component is not hidden and
-          // - either
+          // flag to be rendered only if either
           //   - component is the document or 
           //   - have a rendered parent and component is a child who renders
 
@@ -473,11 +471,7 @@ export default class Core {
               let parent = this._components[parentName];
               if (parent && parent.stateValues.childrenWhoRender) {
                 indexForParent = parent.stateValues.childrenWhoRender.indexOf(componentName);
-
-                // Note: we don't look up state variable hide until it is the last
-                // item to check so that don't unnecessarily compute state variable value
-                // (hide may be a getter)
-                if (indexForParent !== -1 && !unproxiedComponent.stateValues.hide) {
+                if (indexForParent !== -1) {
                   addToRenderedComponents = true;
                 }
 

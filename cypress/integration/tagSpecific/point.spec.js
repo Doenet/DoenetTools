@@ -10,7 +10,7 @@ describe('Point Tag Tests', function () {
   it('point sugar a ref', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
       <point label="P">(5,6)</point>
@@ -38,7 +38,7 @@ describe('Point Tag Tests', function () {
   it('coords use a ref', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <point label="P">(5,6)</point>
@@ -83,7 +83,7 @@ describe('Point Tag Tests', function () {
   it('label use a ref', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <point label="P">(5,6)</point>
@@ -112,7 +112,7 @@ describe('Point Tag Tests', function () {
   it('test invertible due to modifyIndirectly', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point>
@@ -142,7 +142,7 @@ describe('Point Tag Tests', function () {
   it('define 2D point from 3D point', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point>
@@ -185,7 +185,7 @@ describe('Point Tag Tests', function () {
   it('define 2D point from 3D point, reffing xj', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point>
@@ -228,7 +228,7 @@ describe('Point Tag Tests', function () {
   it('define 2D point from 3D point, separate coordinates', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point>
@@ -274,7 +274,7 @@ describe('Point Tag Tests', function () {
   it('define 2D point from double-reffed 3D point, separate coordinates', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point>
@@ -323,7 +323,7 @@ describe('Point Tag Tests', function () {
   it('point on graph that is refed in two ways', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point>(1,2)
@@ -393,7 +393,7 @@ describe('Point Tag Tests', function () {
   it('point draggable but constrained to x = y^2/10', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point>
@@ -434,7 +434,7 @@ describe('Point Tag Tests', function () {
   it('point draggable but constrained to y = sin(x)', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point>
@@ -475,7 +475,7 @@ describe('Point Tag Tests', function () {
   it('point reflected across line', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point>(1,2)</point>
@@ -524,7 +524,7 @@ describe('Point Tag Tests', function () {
   it('point not draggable', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point draggable="false">(1,2)</point>
@@ -554,7 +554,7 @@ describe('Point Tag Tests', function () {
   it('point on line', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <graph>
   <point>
     (<ref>d</ref>,3-<ref>d</ref>)
@@ -589,7 +589,7 @@ describe('Point Tag Tests', function () {
   it('points draggable even with complicated dependence', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>q</text>
   <graph>
 
@@ -642,7 +642,7 @@ describe('Point Tag Tests', function () {
   it.skip('points related through intermediate math', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point>
@@ -790,7 +790,7 @@ describe('Point Tag Tests', function () {
   it('no dependence on downstream update order', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point>
@@ -855,7 +855,7 @@ describe('Point Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>b</text>
   <graph>
   <point>
@@ -922,7 +922,7 @@ describe('Point Tag Tests', function () {
   it('point constrained to grid', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
 
@@ -972,7 +972,7 @@ describe('Point Tag Tests', function () {
   it('point constrained to two contradictory grids', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
 
@@ -1028,7 +1028,7 @@ describe('Point Tag Tests', function () {
   it('three points with one constrained to grid', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <point name="original">(1,2)</point>
@@ -1150,7 +1150,7 @@ describe('Point Tag Tests', function () {
   it('points constrained to grid with parameters', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <mathinput name="dx"/>
   <mathinput name="dy"/>
@@ -1315,7 +1315,7 @@ describe('Point Tag Tests', function () {
   it('point attracted to grid', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
 
@@ -1378,7 +1378,7 @@ describe('Point Tag Tests', function () {
   it('point attracted to grid, including gridlines', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
 
@@ -1459,7 +1459,7 @@ describe('Point Tag Tests', function () {
   it('point attracted to grid with parameters', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <mathinput name="dx"/>
   <mathinput name="dy"/>
@@ -1563,7 +1563,7 @@ describe('Point Tag Tests', function () {
   it('point constrained to line', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point>(0,2)</point>
@@ -1636,7 +1636,7 @@ describe('Point Tag Tests', function () {
   it('point attracted to line', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point>(0,2)</point>
@@ -1710,7 +1710,7 @@ describe('Point Tag Tests', function () {
   it('point constrained to lines and points', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <graph>
   <line hide>y = x + 7</line>
   <line hide>y = x - 3</line>
@@ -1789,7 +1789,7 @@ describe('Point Tag Tests', function () {
   it('point attracted to lines and points', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <graph>
   <line hide>y = x + 7</line>
   <line hide>y = x - 3</line>
@@ -1895,7 +1895,7 @@ describe('Point Tag Tests', function () {
   it('point constrained to union of lines and grid', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <graph>
   <line>x+y=0</line>
   <line>x=y</line>
@@ -1980,7 +1980,7 @@ describe('Point Tag Tests', function () {
   it('point attracted to union of lines and grid', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <graph>
   <line>x+y=0</line>
   <line>x=y</line>
@@ -2103,7 +2103,7 @@ describe('Point Tag Tests', function () {
   it('point attracted to union of lines and intersections', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <graph>
   <line>x+y=0</line>
   <line>x=y</line>
@@ -2291,7 +2291,7 @@ describe('Point Tag Tests', function () {
   it('point constrained to union of lines and attracted to intersections', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <graph>
   <line>x+y=0</line>
   <line>x=y</line>
@@ -2443,7 +2443,7 @@ describe('Point Tag Tests', function () {
   it('point constrained intersection of two lines', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <graph>
   <point>(1,2)</point>
   <point>(2,2)</point>
@@ -2533,7 +2533,7 @@ describe('Point Tag Tests', function () {
     // is likely to have property children on either side
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point name='A' label="A" constrainToGrid="true" modifyIndirectly="true" hide="false" draggable="true">(1,2)</point>
@@ -2568,7 +2568,7 @@ describe('Point Tag Tests', function () {
     // is likely to have property children on either side
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point name="A" label="A" attractToGrid="true" modifyIndirectly="true" hide="false" draggable="true">(1,2)</point>
@@ -2613,7 +2613,7 @@ describe('Point Tag Tests', function () {
   it('sugar coords with defining gap', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <mathinput name="n"/>
 
   <graph>
@@ -2663,7 +2663,7 @@ describe('Point Tag Tests', function () {
   it('referencing via x1 and x2', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <point>(1,2)</point>
@@ -2699,7 +2699,7 @@ describe('Point Tag Tests', function () {
   it('updating via adapters', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <point><point>(1,2)</point></point>
@@ -2763,7 +2763,7 @@ describe('Point Tag Tests', function () {
   it('combining different components through refs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <point>(1,2)</point>
@@ -2828,7 +2828,7 @@ describe('Point Tag Tests', function () {
   it('combining different components through refs 2', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <point>(1,2)</point>
@@ -2896,7 +2896,7 @@ describe('Point Tag Tests', function () {
   it('ref prop of refs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <math><ref prop="y">p1a</ref></math>
 
@@ -2979,7 +2979,7 @@ describe('Point Tag Tests', function () {
   it('nested refs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <ref name="p1b">p1a</ref>
@@ -3084,7 +3084,7 @@ describe('Point Tag Tests', function () {
   it('points depending on each other', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <point>
@@ -3158,7 +3158,7 @@ describe('Point Tag Tests', function () {
   it('points depending on each other through intermediaries', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <point>
@@ -3298,7 +3298,7 @@ describe('Point Tag Tests', function () {
   it('points depending on each other, one using coords', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <point>
@@ -3370,7 +3370,7 @@ describe('Point Tag Tests', function () {
   it('points depending original graph axis limit', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <point>
@@ -3430,7 +3430,7 @@ describe('Point Tag Tests', function () {
   it('label points by combining coordinates with other point', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <point>
@@ -3545,7 +3545,7 @@ describe('Point Tag Tests', function () {
   it('update point with constraints', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
       <point>
