@@ -18,6 +18,7 @@ export default class Input extends InlineComponent {
       defaultValue: 0,
       public: true,
       componentType: "number",
+      forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
@@ -54,6 +55,7 @@ export default class Input extends InlineComponent {
 
 
     stateVariableDefinitions.includeCheckWork = {
+      forRenderer: true,
       returnDependencies: () => ({
         answerAncestor: {
           dependencyType: "stateVariable",
@@ -74,6 +76,7 @@ export default class Input extends InlineComponent {
 
 
     stateVariableDefinitions.disabled = {
+      forRenderer: true,
       returnDependencies: () => ({
         collaborateGroups: {
           dependencyType: "stateVariable",
@@ -95,6 +98,7 @@ export default class Input extends InlineComponent {
 
 
     stateVariableDefinitions.valueHasBeenValidated = {
+      forRenderer: true,
       returnDependencies: () => ({
         answerAncestor: {
           dependencyType: "stateVariable",

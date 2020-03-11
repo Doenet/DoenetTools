@@ -136,7 +136,7 @@ export default class Core {
     serializedState[0].doenetAttributes.contentId = this.contentId;
 
     this._components = {};
-    this.renderedComponents = {};
+    this.renderedComponentInstructions = {};
     this.renderedComponentTypes = [];
 
     this.downstreamDependencies = {};
@@ -159,7 +159,7 @@ export default class Core {
     //Make these variables available for cypress
     window.state = {
       components: this._components,
-      renderedComponents: this.renderedComponents,
+      renderedComponentInstructions: this.renderedComponentInstructions,
       renderedComponentTypes: this.renderedComponentTypes,
       downstreamDependencies: this.downstreamDependencies,
       upstreamDependencies: this.upstreamDependencies,
@@ -456,7 +456,7 @@ export default class Core {
       if (unproxiedComponent !== undefined) {
         // could be undefined if deleted since last updated
 
-        if (componentName in this.renderedComponents) {
+        if (componentName in this.renderedComponentInstructions) {
 
           // TODO: tell renderer it must update, or at least it is stale
 
@@ -464,7 +464,6 @@ export default class Core {
           // TODO: do we need to put state variables here?
           renderersToUpdate.push(componentName);
 
-          console.log(`************ Need to call update renderer for ${componentName}`);
           //unproxiedComponent.updateRenderer({ sourceOfUpdate: sourceOfUpdate });
 
 
@@ -482,9 +481,9 @@ export default class Core {
           let indexForParent = -1;
 
           if (!addToRenderedComponents) {
-            // Note: will add to renderedComponents only if parent is already there
+            // Note: will add to renderedComponentInstructions only if parent is already there
             // so order of components in componentNames matters
-            if (parentName in this.renderedComponents) {
+            if (parentName in this.renderedComponentInstructions) {
               let parent = this._components[parentName];
               if (parent && parent.stateValues.childrenWhoRender) {
                 indexForParent = parent.stateValues.childrenWhoRender.indexOf(componentName);
@@ -498,7 +497,7 @@ export default class Core {
 
               }
             } else {
-              // parent is not in renderedComponents
+              // parent is not in renderedComponentInstructions
               // But, if parent is in componentNamesToUpdate after component
               // add componentName to end of componentNamesToUpdate so will come back
               // component after parent is added
@@ -517,14 +516,15 @@ export default class Core {
               }
             }
 
-            this.renderedComponents[componentName] = {
+            this.renderedComponentInstructions[componentName] = {
               componentName: componentName,
               componentType: unproxiedComponent.componentType,
               stateValues: new Proxy(stateForRenderer, createStateProxyHandler()),
               children: [],
+              actions: unproxiedComponent.actions,
             }
             if (indexForParent !== -1) {
-              this.renderedComponents[parentName].children[indexForParent] = this.renderedComponents[componentName];
+              this.renderedComponentInstructions[parentName].children[indexForParent] = this.renderedComponentInstructions[componentName];
             }
 
             if (!this.renderedComponentTypes.includes(unproxiedComponent.componentType)) {
@@ -548,9 +548,7 @@ export default class Core {
       }
     }
 
-    if(renderersToUpdate.length > 0) {
-      console.log("renderersToUpdate")
-      console.log(renderersToUpdate)
+    if (renderersToUpdate.length > 0) {
       let instruction = {
         instructionType: "updateStateVariable",
         renderersToUpdate
@@ -2328,6 +2326,9 @@ export default class Core {
 
         }
       };
+      if (propertySpecification.forRenderer) {
+        stateVariableDefinitions[property].forRenderer = true;
+      }
     }
 
     if (redefineDependencies.propVariable) {
@@ -2421,10 +2422,28 @@ export default class Core {
     }
 
 
+    let deleteStateVariablesFromDefinition = {};
     for (let varName of stateVariablesToShadow) {
       let stateDef = stateVariableDefinitions[varName];
 
+
+      if (stateDef.additionalStateVariablesDefined) {
+        for (let varName2 of stateDef.additionalStateVariablesDefined) {
+          if (!stateVariablesToShadow.includes(varName2)) {
+            // varName2 is not shadowed, however, it includes varName
+            // in its definition
+            if (!deleteStateVariablesFromDefinition[varName2]) {
+              deleteStateVariablesFromDefinition[varName2] = [];
+            }
+            deleteStateVariablesFromDefinition[varName2].push(varName);
+          }
+        }
+      }
+      // Todo: if have additionalStateVariablesDefined
+      // how do we remove value of varName from the other state variables?
       delete stateDef.additionalStateVariablesDefined;
+
+
       let originalReturnDependencies = stateDef.returnDependencies;
 
       stateDef.returnDependencies = function (args) {
@@ -2492,6 +2511,72 @@ export default class Core {
           }
         }
       };
+    }
+
+
+    // Note: this is untested code, as haven't made components
+    // that will trigger this condition
+    for (let varName in deleteStateVariablesFromDefinition) {
+      let varNamesToDelete = deleteStateVariablesFromDefinition[varName];
+      let stateDef = stateVariableDefinitions[varName];
+
+      // delete variables from additionalStateVariablesDefined
+      for (let varName2 of varNamesToDelete) {
+        let ind = stateDef.additionalStateVariablesDefined.indexOf(varName2);
+        stateDef.additionalStateVariablesDefined.splice(ind, 1);
+      }
+
+      // remove variables from definition
+      let originalDefinition = stateDef.definition;
+
+      stateDef.definition = function (args) {
+        let results = originalDefinition(args);
+
+        if (results.useEssentialOrDefaultValue) {
+          for (let varName2 of varNamesToDelete) {
+            delete results.useEssentialOrDefaultValue[varName2];
+          }
+        }
+        if (results.newValues) {
+          for (let varName2 of varNamesToDelete) {
+            delete results.newValues[varName2];
+          }
+        }
+        if(results.noChanges) {
+          for (let varName2 of varNamesToDelete) {
+            let ind = results.noChanges.indexOf(varName2);
+            if(ind !== -1) {
+              results.noChanges.splice(ind,1);
+            }
+          }
+        }
+        if(results.makeEssential) {
+          for (let varName2 of varNamesToDelete) {
+            let ind = results.makeEssential.indexOf(varName2);
+            if(ind !== -1) {
+              results.makeEssential.splice(ind,1);
+            }
+          }
+        }
+
+        if(results.alwaysShadow) {
+          for (let varName2 of varNamesToDelete) {
+            let ind = results.alwaysShadow.indexOf(varName2);
+            if(ind !== -1) {
+              results.alwaysShadow.splice(ind,1);
+            }
+          }
+        }
+
+        if(results.setComponentType) {
+          if (results.setComponentType) {
+            for (let varName2 of varNamesToDelete) {
+              delete results.setComponentType[varName2];
+            }
+          }
+        }
+      }
+
     }
 
   }

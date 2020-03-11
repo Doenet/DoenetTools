@@ -11,6 +11,9 @@ export default class DoenetRenderer extends Component {
     this.childrenToCreate = props.componentInstructions.children;
     this.componentName = props.componentInstructions.componentName;
 
+    this.actions = props.componentInstructions.actions;
+
+
     // TODO: this keeps the proxy in place so that state variables
     // aren't calculated unless asked for
     // Is this what we want?
@@ -24,12 +27,6 @@ export default class DoenetRenderer extends Component {
   }
 
   update() {
-
-    console.log(`calling update for ${this.componentName}`);
-
-    // TODO: if doenetSvData is still proxy, don't need to set values
-    // just do the update?
-    // Object.assign(this.doenetSvData, newStateVariables);
     this.forceUpdate();
   }
 
@@ -56,14 +53,15 @@ export default class DoenetRenderer extends Component {
         componentInstructions: childInstructions,
         updateObject,
         rendererClasses: this.props.rendererClasses,
-        requestUpdate: this.props.requestUpdate,
         rendererUpdateObjects: this.props.rendererUpdateObjects,
+        flags: this.props.flags,
       }
 
       Object.assign(propsForChild, additionalprops);
 
+
       let child = React.createElement(
-        this.rendererClasses[childInstructions.componentType],
+        this.props.rendererClasses[childInstructions.componentType],
         propsForChild
       );
       this.children.push(child);

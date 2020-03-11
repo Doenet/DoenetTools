@@ -8,6 +8,7 @@ export default class Point extends GraphicalComponent {
     this.movePoint = this.movePoint.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     );
+    this.actions = { movePoint: this.movePoint };
   }
   static componentType = "point";
 

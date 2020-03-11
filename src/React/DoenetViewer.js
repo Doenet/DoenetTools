@@ -32,7 +32,7 @@ class DoenetViewer extends Component {
 
     renderersloadComponent(renderPromises, rendererClassNames).then((rendererClasses) => {
       this.rendererClasses = rendererClasses;
-      let documentComponentInstructions = this.core.renderedComponents[this.core.documentName];
+      let documentComponentInstructions = this.core.renderedComponentInstructions[this.core.documentName];
       let documentRendererClass = this.rendererClasses[documentComponentInstructions.componentType]
 
       // TODO: how does updateObject work in this model????
@@ -43,8 +43,8 @@ class DoenetViewer extends Component {
           componentInstructions: documentComponentInstructions,
           updateObject,
           rendererClasses: this.rendererClasses,
-          requestUpdate: this.core.requestUpdate,
           rendererUpdateObjects: this.rendererUpdateObjects,
+          flags: this.props.flags,
         }
       )
 
@@ -55,43 +55,6 @@ class DoenetViewer extends Component {
 
   }
 
-
-  // buildTree() {
-  //   this.buildTreeHelper([this.core.renderedComponents[this.core.documentName]]);
-  //   this.documentRenderer = this.doenetRenderers[this.core.documentName];
-  //   console.log("documentRenderer")
-  //   console.log(this.documentRenderer)
-  //   this.forceUpdate();
-  // }
-
-  // //Build tree depth first
-  // buildTreeHelper(tree) {
-  //   var reactArray = [];
-  //   for (let node of tree) {
-  //     var children = [];
-  //     if (node.children.length > 0) {
-  //       //if has children go deeper
-  //       children = this.buildTreeHelper(node.children);
-  //     }
-  //     let updateObject = {};
-  //     let reactComponent = React.createElement(this.renderers[node.componentType],
-  //       {
-  //         key: node.componentName,
-  //         _key: node.componentName,
-  //         children,
-  //         svData: node.stateValues,
-  //         updateObject,
-  //         requestUpdate: this.core.requestUpdate,
-  //       });
-  //     reactArray.push(reactComponent);
-  //     this.doenetRenderers[node.componentName] = reactComponent;
-  //     this.rendererUpdateObjects[node.componentName] = updateObject;
-
-  //   }
-
-  //   return reactArray;
-
-  // }
 
 
   //offscreen then postpone that one

@@ -9,6 +9,7 @@ class DoenetTest extends Component {
     this.state = {
       error: null,
       errorInfo: null,
+      showCorrectness: true,
     };
 
     this.updateNumber = 1;
@@ -35,6 +36,7 @@ class DoenetTest extends Component {
             <DoenetViewer 
             key={"doenetviewer"+this.updateNumber} 
             doenetML={doenetDefaultCode}
+            flags = {{showCorrectness:this.state.showCorrectness}}
             // collaborate={true}
             // free={{doenetCode: this.state.code, requestedVariant: this.state.requestedVariant}} 
             // mode={{

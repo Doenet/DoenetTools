@@ -6,17 +6,37 @@ export default class Textinput extends Input {
     this.updateText = this.updateText.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     );
+
+    this.actions = {
+      updateText: this.updateText
+    };
+
+    //Complex because the stateValues isn't defined until later
+    Object.defineProperty(this.actions, 'submitAnswer', {
+      get: function () {
+        if (this.stateValues.answerAncestor !== null) {
+          return () => this.requestAction({
+            componentName: this.stateValues.answerAncestor.componentName,
+            actionName: "submitAnswer"
+          })
+        } else {
+          return () => null
+        }
+      }.bind(this)
+    });
+
+
   }
   static componentType = "textinput";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.prefill = { default: "" };
-    properties.size = { default: 10 };
+    properties.size = { default: 10, forRenderer: true };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
@@ -38,6 +58,7 @@ export default class Textinput extends Input {
     stateVariableDefinitions.value = {
       public: true,
       componentType: "text",
+      forRenderer: true,
       returnDependencies: () => ({
         textChild: {
           dependencyType: "childStateVariables",

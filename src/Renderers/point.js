@@ -83,7 +83,7 @@ export default class Point extends DoenetRenderer {
     let x = this.doenetSvData.numericalXs[0];
     let y = this.doenetSvData.numericalXs[1];
 
-    this.pointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, [x,y]);
+    this.pointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
 
     let visible = !this.doenetSvData.hide;
 
@@ -120,7 +120,7 @@ export default class Point extends DoenetRenderer {
     // TODO: determine if change initiated with point
 
     // if (changeInitiatedWithPoint) {
-      this.props.board.updateInfobox(this.pointJXG);
+    this.props.board.updateInfobox(this.pointJXG);
     // }
 
     this.pointJXG.name = this.doenetSvData.label;
@@ -144,14 +144,7 @@ export default class Point extends DoenetRenderer {
   }
 
   onDragHandler() {
-    this.props.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
-        componentName: this.componentName,
-        stateVariable: "xs",
-        value: [this.pointJXG.X(), this.pointJXG.Y()],
-      }]
-    })
+    this.actions.movePoint({ x: this.pointJXG.X(), y: this.pointJXG.Y() });
   }
 
   render() {

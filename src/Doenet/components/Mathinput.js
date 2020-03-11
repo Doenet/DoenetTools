@@ -7,6 +7,25 @@ export default class Mathinput extends Input {
     this.updateMathExpression = this.updateMathExpression.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     );
+
+    this.actions = {
+      updateMathExpression: this.updateMathExpression
+    };
+
+    //Complex because the stateValues isn't defined until later
+    Object.defineProperty(this.actions, 'submitAnswer', {
+      get: function () {
+        if (this.stateValues.answerAncestor !== null) {
+          return () => this.requestAction({
+            componentName: this.stateValues.answerAncestor.componentName,
+            actionName: "submitAnswer"
+          })
+        } else {
+          return () => null
+        }
+      }.bind(this)
+    });
+
   }
   static componentType = "mathinput";
 
@@ -14,7 +33,7 @@ export default class Mathinput extends Input {
     let properties = super.createPropertiesObject(args);
     properties.prefill = { default: "" };
     properties.format = { default: "text" };
-    properties.size = { default: 10 };
+    properties.size = { default: 10, forRenderer: true };
     return properties;
   }
 
@@ -40,6 +59,7 @@ export default class Mathinput extends Input {
     stateVariableDefinitions.value = {
       public: true,
       componentType: "math",
+      forRenderer: true,
       returnDependencies: () => ({
         mathChild: {
           dependencyType: "childStateVariables",
