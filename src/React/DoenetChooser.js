@@ -12,6 +12,7 @@ import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown,
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
 import SpinningLoader from './SpinningLoader';
+import { TreeView } from './TreeView/TreeView'
 
 
 class DoenetChooser extends Component {
@@ -35,11 +36,13 @@ class DoenetChooser extends Component {
     this.loadUserFoldersAndRepo();
     this.loadUserUrls();
     this.loadAllCourses();
+    this.loadHeadingsAndAssignments();
 
     this.branches_loaded = false;
     this.courses_loaded = false;
     this.folders_loaded = false;
     this.urls_loaded = false;
+    this.assignments_and_headings_loaded = false;
 
     this.updateNumber = 0;
 
@@ -1043,9 +1046,39 @@ class DoenetChooser extends Component {
     })
   }
 
+  loadHeadingsAndAssignments() {
+    const url = "/api/getHeaderAndAssignmentInfo.php";
+    axios(url).then(resp=>{
+      this.headingsInfo = {};
+      this.assignmentsInfo = {};
+      Object.keys(resp.data).map(itemId => {
+          // console.log(resp.data[itemId]["name"]);
+        if (resp.data[itemId]["attribute"] == "header") {
+          this.headingsInfo[itemId] = resp.data[itemId];
+          // process children
+          for (let i in resp.data[itemId]["childrenId"]) {
+            let childId = resp.data[itemId]["childrenId"][i];
+            if (childId == "") continue;
+            if (resp.data[childId]["attribute"] == "header") {
+              this.headingsInfo[itemId]["headingId"].push(childId);
+            } else {
+              this.headingsInfo[itemId]["assignmentId"].push(childId);
+            }
+          }
+        } else {
+          this.assignmentsInfo[itemId] = resp.data[itemId];
+        }
+      })
+      this.assignments_and_headings_loaded = true;
+      this.forceUpdate();
+    }).catch(error =>{
+      this.setState({error:error})
+    }); 
+  }
+
   render(){
 
-    if (!this.courses_loaded){
+    if (!this.courses_loaded || !this.assignments_and_headings_loaded){
       return <div style={{display:"flex",justifyContent:"center",alignItems:"center", height:"100vh"}}>
                 <SpinningLoader/>
              </div>
@@ -1090,6 +1123,7 @@ class DoenetChooser extends Component {
         urlList = this.courseInfo[this.state.selectedCourse].urls;
       }
       this.mainSection = <React.Fragment>
+        <TreeView headingsInfo={this.headingsInfo} assignmentsInfo={this.assignmentsInfo} />
         <DoenetBranchBrowser
           loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
           allContentInfo={this.branchId_info}
