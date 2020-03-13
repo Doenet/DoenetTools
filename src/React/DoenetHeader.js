@@ -50,6 +50,8 @@ class DoenetHeader extends Component {
       arrayIds.map((id,index)=>{
         this.options.push(<option value={id} selected={defaultId===id?true:false}>{courseInfo[id]['courseName']}</option>)
       })
+    } else {
+      this.options.push(<option selected={true}>No courses</option>)
     }
 
     // console.log(this.options)

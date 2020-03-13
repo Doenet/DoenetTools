@@ -3123,6 +3123,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   }
   render() {
     console.log("====RENDER====");
+    console.log(this.activeSection)
     this.overview_link=null
     this.syllabus_link=null
     this.grade_link=null
