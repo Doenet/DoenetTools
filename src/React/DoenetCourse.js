@@ -1036,7 +1036,7 @@ class DoenetCourse extends Component {
             this.LoadAssignmentFromTheBeginning({location:location})
           }
           this.loadSection()
-          this.makeTreeVisible({loadSpecificId:""}) 
+          // this.makeTreeVisible({loadSpecificId:""}) 
           this.forceUpdate()
     });}
     else {
@@ -3122,8 +3122,10 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     // this.buildTree()
   }
   render() {
-    console.log("====RENDER====");
-    console.log(this.activeSection)
+    // console.log("====RENDER====");
+    // if (!this.assignmentTree && this.activeSection==="assignments"){
+    //   this.makeTreeVisible({loadSpecificId:""})
+    // }
     this.overview_link=null
     this.syllabus_link=null
     this.grade_link=null
@@ -3344,6 +3346,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
               this.syllabus_link=null
               this.grade_link=null
               this.assignment_link=null
+              if (this.activeSection==="assignments"){
+                this.makeTreeVisible({loadSpecificId:""})
+              }
               this.forceUpdate()
             }}
             parentFunction={(e)=>{
