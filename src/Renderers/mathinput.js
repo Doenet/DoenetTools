@@ -66,12 +66,14 @@ export default class MathInput extends DoenetRenderer {
 
   handleKeyDown(e) {
     if (e.key === "Escape") {
-      this.textValue = this.textValueToRevertTo;
-      this.mathExpression = this.valueToRevertTo;
-      this.actions.updateMathExpression({
-        mathExpression: this.valueToRevertTo
-      });
-      this.forceUpdate();
+      if (!this.mathExpression.equalsViaSyntax(this.valueToRevertTo)) {
+        this.textValue = this.textValueToRevertTo;
+        this.mathExpression = this.valueToRevertTo;
+        this.actions.updateMathExpression({
+          mathExpression: this.valueToRevertTo
+        });
+        this.forceUpdate();
+      }
     }
   }
 
@@ -111,6 +113,9 @@ export default class MathInput extends DoenetRenderer {
       if (this.textValue === '\uFF3F') {
         this.textValue = "";
       }
+      this.valueToRevertTo = this.doenetSvData.value;
+      this.textValueToRevertTo = this.textValue;
+
     }
 
     return <React.Fragment>

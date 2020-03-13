@@ -19,7 +19,8 @@ describe('Textinput Tag Tests', function () {
     <textinput prefill='hello'/>
     <ref>_textinput1</ref>
     <ref prop='value'>_textinput1</ref>
-    <textinput/>`}, "*");
+    <textinput/>
+    `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
@@ -27,9 +28,9 @@ describe('Textinput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let textinput1a = components['/_ref1'].replacements[0];
-      let textinput1aAnchor = '#'+textinput1a.componentName + '_input';
+      let textinput1aAnchor = '#' + textinput1a.componentName + '_input';
       let text1 = components['/_ref2'].replacements[0];
-      let text1Anchor = '#'+text1.componentName;
+      let text1Anchor = '#' + text1.componentName;
 
       cy.log('Test values displayed in browser')
       cy.get('#\\/_textinput1_input').should('have.value', 'hello');
@@ -54,16 +55,16 @@ describe('Textinput Tag Tests', function () {
 
       cy.log('Test values displayed in browser')
       cy.get('#\\/_textinput1_input').should('have.value', 'hello2');
-      cy.get(textinput1aAnchor).should('have.value', 'hello');
+      cy.get(textinput1aAnchor).should('have.value', 'hello2');
       cy.get('#\\/_textinput2_input').should('have.value', '');
 
-      cy.get(text1Anchor).should('have.text', 'hello');
+      cy.get(text1Anchor).should('have.text', 'hello2');
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_textinput1'].stateValues.value).eq('hello');
-        expect(textinput1a.stateValues.value).eq('hello');
+        expect(components['/_textinput1'].stateValues.value).eq('hello2');
+        expect(textinput1a.stateValues.value).eq('hello2');
         expect(components['/_textinput2'].stateValues.value).eq('');
       });
 
@@ -77,7 +78,6 @@ describe('Textinput Tag Tests', function () {
       cy.get('#\\/_textinput1_input').should('have.value', 'hello2');
       cy.get(textinput1aAnchor).should('have.value', 'hello2');
       cy.get('#\\/_textinput2_input').should('have.value', '');
-
       cy.get(text1Anchor).should('have.text', 'hello2');
 
       cy.log('Test internal values are set to the correct values')
@@ -95,17 +95,17 @@ describe('Textinput Tag Tests', function () {
       cy.get(textinput1aAnchor).type(`{backspace} you`);
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/_textinput1_input').should('have.value', 'hello2');
+      cy.get('#\\/_textinput1_input').should('have.value', 'hello you');
       cy.get(textinput1aAnchor).should('have.value', 'hello you');
       cy.get('#\\/_textinput2_input').should('have.value', '');
 
-      cy.get(text1Anchor).should('have.text', 'hello2');
+      cy.get(text1Anchor).should('have.text', 'hello you');
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_textinput1'].stateValues.value).eq("hello2");
-        expect(textinput1a.stateValues.value).eq("hello2");
+        expect(components['/_textinput1'].stateValues.value).eq("hello you");
+        expect(textinput1a.stateValues.value).eq("hello you");
         expect(components['/_textinput2'].stateValues.value).eq('');
       });
 
@@ -147,7 +147,7 @@ describe('Textinput Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         expect(components['/_textinput1'].stateValues.value).eq("hello you");
         expect(textinput1a.stateValues.value).eq("hello you");
-        expect(components['/_textinput2'].stateValues.value).eq('');
+        expect(components['/_textinput2'].stateValues.value).eq('bye');
       });
 
 
@@ -179,17 +179,17 @@ describe('Textinput Tag Tests', function () {
       cy.get(textinput1aAnchor).clear().type(`abc`);
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/_textinput1_input').should('have.value', 'hello you');
+      cy.get('#\\/_textinput1_input').should('have.value', 'abc');
       cy.get(textinput1aAnchor).should('have.value', 'abc');
       cy.get('#\\/_textinput2_input').should('have.value', 'bye');
 
-      cy.get(text1Anchor).should('have.text', 'hello you');
+      cy.get(text1Anchor).should('have.text', 'abc');
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_textinput1'].stateValues.value).eq("hello you");
-        expect(textinput1a.stateValues.value).eq("hello you");
+        expect(components['/_textinput1'].stateValues.value).eq("abc");
+        expect(textinput1a.stateValues.value).eq("abc");
         expect(components['/_textinput2'].stateValues.value).eq("bye");
       });
 
@@ -252,7 +252,7 @@ describe('Textinput Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         expect(components['/_textinput1'].stateValues.value).eq("abc");
         expect(textinput1a.stateValues.value).eq("abc");
-        expect(components['/_textinput2'].stateValues.value).eq("bye");
+        expect(components['/_textinput2'].stateValues.value).eq("saludos");
       });
 
 
@@ -263,16 +263,16 @@ describe('Textinput Tag Tests', function () {
 
       cy.log('Test values displayed in browser')
       cy.get('#\\/_textinput1_input').should('have.value', 'abcd');
-      cy.get(textinput1aAnchor).should('have.value', 'abc');
+      cy.get(textinput1aAnchor).should('have.value', 'abcd');
       cy.get('#\\/_textinput2_input').should('have.value', 'saludos');
 
-      cy.get(text1Anchor).should('have.text', 'abc');
+      cy.get(text1Anchor).should('have.text', 'abcd');
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_textinput1'].stateValues.value).eq("abc");
-        expect(textinput1a.stateValues.value).eq("abc");
+        expect(components['/_textinput1'].stateValues.value).eq("abcd");
+        expect(textinput1a.stateValues.value).eq("abcd");
         expect(components['/_textinput2'].stateValues.value).eq("saludos");
       });
 
@@ -300,8 +300,26 @@ describe('Textinput Tag Tests', function () {
       cy.get(textinput1aAnchor).clear();
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/_textinput1_input').should('have.value', 'abcd');
+      cy.get('#\\/_textinput1_input').should('have.value', '');
       cy.get(textinput1aAnchor).should('have.value', '');
+      cy.get('#\\/_textinput2_input').should('have.value', 'saludos');
+
+      cy.get(text1Anchor).should('have.text', '');
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_textinput1'].stateValues.value).eq("");
+        expect(textinput1a.stateValues.value).eq("");
+        expect(components['/_textinput2'].stateValues.value).eq("saludos");
+      });
+
+      cy.log("pressing escape to undo")
+      cy.get(textinput1aAnchor).type(`{esc}`);
+
+      cy.log('Test values displayed in browser')
+      cy.get('#\\/_textinput1_input').should('have.value', 'abcd');
+      cy.get(textinput1aAnchor).should('have.value', 'abcd');
       cy.get('#\\/_textinput2_input').should('have.value', 'saludos');
 
       cy.get(text1Anchor).should('have.text', 'abcd');
@@ -314,22 +332,79 @@ describe('Textinput Tag Tests', function () {
         expect(components['/_textinput2'].stateValues.value).eq("saludos");
       });
 
-
-      cy.log("Focusing third textinput");
-      cy.get('#\\/_textinput2_input').focus();
+      cy.log("Type e in second textinput");
+      cy.get(textinput1aAnchor).type(`e`);
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/_textinput1_input').should('have.value', '');
-      cy.get(textinput1aAnchor).should('have.value', '');
+      cy.get('#\\/_textinput1_input').should('have.value', 'abcde');
+      cy.get(textinput1aAnchor).should('have.value', 'abcde');
       cy.get('#\\/_textinput2_input').should('have.value', 'saludos');
 
-      cy.get(text1Anchor).should('have.text', '');
+      cy.get(text1Anchor).should('have.text', 'abcde');
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_textinput1'].stateValues.value).eq('');
-        expect(textinput1a.stateValues.value).eq('');
+        expect(components['/_textinput1'].stateValues.value).eq("abcde");
+        expect(textinput1a.stateValues.value).eq("abcde");
+        expect(components['/_textinput2'].stateValues.value).eq("saludos");
+      });
+
+
+      cy.log("Escape in first input doesn't undo");
+      cy.get('#\\/_textinput1_input').type(`{Esc}`);
+
+      cy.log('Test values displayed in browser')
+      cy.get('#\\/_textinput1_input').should('have.value', 'abcde');
+      cy.get(textinput1aAnchor).should('have.value', 'abcde');
+      cy.get('#\\/_textinput2_input').should('have.value', 'saludos');
+
+      cy.get(text1Anchor).should('have.text', 'abcde');
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_textinput1'].stateValues.value).eq("abcde");
+        expect(textinput1a.stateValues.value).eq("abcde");
+        expect(components['/_textinput2'].stateValues.value).eq("saludos");
+      });
+
+
+      cy.log("Delete characters and replace in first input");
+      cy.get('#\\/_textinput1_input').type(`{backspace}{backspace}f`);
+
+
+      cy.log('Test values displayed in browser')
+      cy.get('#\\/_textinput1_input').should('have.value', 'abcf');
+      cy.get(textinput1aAnchor).should('have.value', 'abcf');
+      cy.get('#\\/_textinput2_input').should('have.value', 'saludos');
+
+      cy.get(text1Anchor).should('have.text', 'abcf');
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_textinput1'].stateValues.value).eq("abcf");
+        expect(textinput1a.stateValues.value).eq("abcf");
+        expect(components['/_textinput2'].stateValues.value).eq("saludos");
+      });
+
+
+      cy.log("Undo with escape");
+      cy.get('#\\/_textinput1_input').type(`{Esc}`);
+
+      cy.log('Test values displayed in browser')
+      cy.get('#\\/_textinput1_input').should('have.value', 'abcde');
+      cy.get(textinput1aAnchor).should('have.value', 'abcde');
+      cy.get('#\\/_textinput2_input').should('have.value', 'saludos');
+
+      cy.get(text1Anchor).should('have.text', 'abcde');
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_textinput1'].stateValues.value).eq("abcde");
+        expect(textinput1a.stateValues.value).eq("abcde");
         expect(components['/_textinput2'].stateValues.value).eq("saludos");
       });
 

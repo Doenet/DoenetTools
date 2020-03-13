@@ -1,10 +1,6 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Graph extends BlockComponent {
-  constructor(args) {
-    super(args);
-    this.returnRenderersInGraph = this.returnRenderersInGraph.bind(this);
-  }
   static componentType = "graph";
 
   static createPropertiesObject(args) {

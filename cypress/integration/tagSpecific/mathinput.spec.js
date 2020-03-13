@@ -4,7 +4,7 @@ describe('Mathinput Tag Tests', function () {
     cy.visit('/test')
   })
 
-  it.only('mathinput references', () => {
+  it('mathinput references', () => {
 
     // A fairly involved test
     // to check for bugs that have shown up only after multiple manipulations

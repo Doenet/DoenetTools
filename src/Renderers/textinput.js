@@ -14,7 +14,9 @@ export default class TextInput extends DoenetRenderer {
     this.handleFocus = this.handleFocus.bind(this);
     this.onChangeHandler = this.onChangeHandler.bind(this);
 
+    this.currentValue = this.doenetSvData.value;
     this.valueToRevertTo = this.doenetSvData.value;
+  
 
   }
 
@@ -51,6 +53,7 @@ export default class TextInput extends DoenetRenderer {
   }
 
   onChangeHandler(e) {
+    this.currentValue = e.target.value;
     this.actions.updateText({
       text: e.target.value
     });
@@ -70,13 +73,19 @@ export default class TextInput extends DoenetRenderer {
       surroundingBorderColor = "#82a5ff";
     }
 
+
+    if(this.doenetSvData.value !== this.currentValue) {
+      this.currentValue = this.doenetSvData.value;
+      this.valueToRevertTo = this.doenetSvData.value;
+    }
+
     return <React.Fragment>
       <a name={this.componentName} />
       <span className="textInputSurroundingBox" id={this.componentName}>
         <input
           key={inputKey}
           id={inputKey}
-          value={this.doenetSvData.value}
+          value={this.currentValue}
           disabled={this.doenetSvData.disabled}
           onChange={this.onChangeHandler}
           onKeyPress={this.handleKeyPress}
