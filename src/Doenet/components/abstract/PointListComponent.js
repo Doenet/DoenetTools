@@ -238,7 +238,7 @@ export default class PointListComponent extends BaseComponent {
     }
 
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         pointChildren: {
           dependencyType: "childIdentity",
@@ -247,7 +247,7 @@ export default class PointListComponent extends BaseComponent {
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          childrenWhoRender: dependencyValues.pointChildren.map(x => x.componentName)
+          childrenToRender: dependencyValues.pointChildren.map(x => x.componentName)
         }
       })
     }

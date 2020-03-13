@@ -419,7 +419,7 @@ export default class Choiceinput extends Input {
     }
 
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         choiceChildrenOrdered: {
           dependencyType: "stateVariable",
@@ -428,7 +428,7 @@ export default class Choiceinput extends Input {
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          childrenWhoRender: dependencyValues.choiceChildrenOrdered.map(x => x.componentName)
+          childrenToRender: dependencyValues.choiceChildrenOrdered.map(x => x.componentName)
         }
       })
     }

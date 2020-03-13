@@ -1101,7 +1101,7 @@ export default class Line extends GraphicalComponent {
       })
     }
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         throughChild: {
           dependencyType: "childIdentity",
@@ -1112,11 +1112,11 @@ export default class Line extends GraphicalComponent {
         if (dependencyValues.throughChild.length === 1) {
           return {
             newValues: {
-              childrenWhoRender: [dependencyValues.throughChild[0].componentName]
+              childrenToRender: [dependencyValues.throughChild[0].componentName]
             }
           }
         } else {
-          return { newValues: { childrenWhoRender: [] } }
+          return { newValues: { childrenToRender: [] } }
         }
       }
     }

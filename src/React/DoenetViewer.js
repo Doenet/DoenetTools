@@ -64,14 +64,8 @@ class DoenetViewer extends Component {
         this.rendererUpdateMethods[instruction.parentName].addChildren(instruction)
       } else if (instruction.instructionType === "deleteRenderers") {
         this.rendererUpdateMethods[instruction.parentName].removeChildren(instruction)
-
-        // let renderer = this.rendererUpdateMethods[instruction.parentComponentName];
-        // for (let delChildName of instruction.childNames) {
-        //   delete this.rendererUpdateMethods[delChildName];
-        // }
-
-        // renderer.removeChildren(instruction.childIndex, instruction.numberToRemove);
-
+      } else if (instruction.instructionType === "swapChildRenderers") {
+        this.rendererUpdateMethods[instruction.parentName].swapChildren(instruction)
       }
     }
 

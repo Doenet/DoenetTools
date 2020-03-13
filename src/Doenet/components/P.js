@@ -22,7 +22,7 @@ export default class P extends BlockComponent {
 
     let stateVariableDefinitions = {};
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
           dependencyType: "childIdentity",
@@ -32,7 +32,7 @@ export default class P extends BlockComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues:
-            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
+            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
         };
       }
     }

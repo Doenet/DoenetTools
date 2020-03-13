@@ -1,7 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
 
 export default class TextList extends InlineComponent {
-  static componentType = "textlist";
+  static componentType = "randomizedtextlist";
 
   // when another component has a property that is a textlist,
   // use the texts state variable to populate that property
@@ -96,23 +96,24 @@ export default class TextList extends InlineComponent {
         maximumNumber: {
           dependencyType: "stateVariable",
           variableName: "maximumNumber",
+        },
+        childrenToRender: {
+          dependencyType: "stateVariable",
+          variableName: "childrenToRender"
         }
       }),
       definition: function ({ dependencyValues }) {
         let texts = [];
 
-        for (let child of dependencyValues.textAndTextlistChildren) {
+        let childNames = dependencyValues.textAndTextlistChildren.map(x=>x.componentName);
+        for(let childName of dependencyValues.childrenToRender) {
+          let index = childNames.indexOf(childName);
+          let child = dependencyValues.textAndTextlistChildren[index];
           if (child.stateValues.texts) {
             texts.push(...child.stateValues.texts);
           } else {
             texts.push(child.stateValues.value);
           }
-        }
-
-        let maxNum = dependencyValues.maximumNumber;
-        if (maxNum !== null && texts.length > maxNum) {
-          maxNum = Math.max(0, Math.floor(maxNum));
-          texts = texts.slice(0, maxNum)
         }
 
         return { newValues: { texts } }
@@ -149,7 +150,7 @@ export default class TextList extends InlineComponent {
     }
 
     stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
+      returnDependencies: ({ sharedParameters }) => ({
         textAndTextlistChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "textAndTextLists",
@@ -160,9 +161,15 @@ export default class TextList extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "maximumNumber",
         },
+        selectRng: {
+          dependencyType: "value",
+          value: sharedParameters.selectRng,
+          doNotProxy: true,
+        }
       }),
       definition: function ({ dependencyValues }) {
         let childrenToRender = [];
+
 
         for (let child of dependencyValues.textAndTextlistChildren) {
 
@@ -179,10 +186,26 @@ export default class TextList extends InlineComponent {
           childrenToRender = childrenToRender.slice(0, maxNum)
         }
 
+        console.log(`randomizing children`)
+
+        // first shuffle the array
+        // https://stackoverflow.com/a/12646864
+        for (let i = childrenToRender.length - 1; i > 0; i--) {
+          const rand = dependencyValues.selectRng.random();
+          const j = Math.floor(rand * (i + 1));
+          [childrenToRender[i], childrenToRender[j]] = [childrenToRender[j], childrenToRender[i]];
+        }
+
+        let numChildren = Math.ceil(dependencyValues.selectRng.random() * childrenToRender.length);
+        console.log(`numChildren: ${numChildren}`)
+        childrenToRender = childrenToRender.slice(0, numChildren)
+
+
         return { newValues: { childrenToRender } }
 
       }
     }
+
 
     return stateVariableDefinitions;
   }

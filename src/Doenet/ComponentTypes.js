@@ -21,6 +21,7 @@ import StringComponent from './components/StringComponent';
 import Text from './components/Text';
 import Letters from './components/Letters';
 import TextList from './components/TextList';
+import RandomizedTextList from './components/RandomizedTextList';
 import MathList from './components/MathList';
 import NumberList from './components/NumberList';
 import P from './components/P';
@@ -174,6 +175,7 @@ const componentTypeArray = [
   Document,
   StringComponent,
   Text, Letters, TextList,
+  RandomizedTextList,
   P,
   BooleanComponent, BooleanList,
   MathComponent, MathList,

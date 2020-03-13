@@ -50,7 +50,7 @@ export default class SectioningComponent extends BlockComponent {
       definition: () => ({ newValues: { viewedSolution: false } })
     }
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
           dependencyType: "childIdentity",
@@ -60,7 +60,7 @@ export default class SectioningComponent extends BlockComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues:
-            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
+            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
         };
       }
     }

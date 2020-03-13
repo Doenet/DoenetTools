@@ -282,12 +282,12 @@ export default class MathList extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         mathAndMathlistChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "mathAndMathLists",
-          variableNames: ["childrenWhoRender"],
+          variableNames: ["childrenToRender"],
           variablesOptional: true,
         },
         maximumNumber: {
@@ -296,24 +296,24 @@ export default class MathList extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        let childrenWhoRender = [];
+        let childrenToRender = [];
 
         for (let child of dependencyValues.mathAndMathlistChildren) {
 
-          if (child.stateValues.childrenWhoRender) {
-            childrenWhoRender.push(...child.stateValues.childrenWhoRender);
+          if (child.stateValues.childrenToRender) {
+            childrenToRender.push(...child.stateValues.childrenToRender);
           } else {
-            childrenWhoRender.push(child.componentName);
+            childrenToRender.push(child.componentName);
           }
         }
 
         let maxNum = dependencyValues.maximumNumber;
-        if (maxNum !== null && childrenWhoRender.length > maxNum) {
+        if (maxNum !== null && childrenToRender.length > maxNum) {
           maxNum = Math.max(0, Math.floor(maxNum));
-          childrenWhoRender = childrenWhoRender.slice(0, maxNum)
+          childrenToRender = childrenToRender.slice(0, maxNum)
         }
 
-        return { newValues: { childrenWhoRender } }
+        return { newValues: { childrenToRender } }
 
       }
     }

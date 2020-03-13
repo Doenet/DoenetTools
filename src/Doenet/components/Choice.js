@@ -152,7 +152,7 @@ export default class Choice extends InlineComponent {
       }
     };
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
           dependencyType: "childIdentity",
@@ -162,7 +162,7 @@ export default class Choice extends InlineComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues:
-            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
+            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
         };
       }
     }

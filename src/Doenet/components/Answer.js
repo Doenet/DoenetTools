@@ -990,7 +990,7 @@ export default class Answer extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         blockOrInlineChildren: {
           dependencyType: "childIdentity",
@@ -1002,12 +1002,12 @@ export default class Answer extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        let childrenWhoRender = [
+        let childrenToRender = [
           ...dependencyValues.blockOrInlineChildren.map(x => x.componentName),
           ...dependencyValues.anyBlockOrInlineComponentsWithNoAward.map(x => x.componentName)
         ]
         return {
-          newValues: { childrenWhoRender }
+          newValues: { childrenToRender }
         }
       }
     }

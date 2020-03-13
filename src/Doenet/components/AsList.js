@@ -23,7 +23,7 @@ export default class AsList extends InlineComponent {
 
     let stateVariableDefinitions = {};
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
           dependencyType: "childIdentity",
@@ -33,7 +33,7 @@ export default class AsList extends InlineComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues:
-            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
+            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
         };
       }
     }

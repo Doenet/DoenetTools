@@ -116,7 +116,7 @@ export default class panel extends InlineComponent {
 
     }
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         children: {
           dependencyType: "childIdentity",
@@ -126,7 +126,7 @@ export default class panel extends InlineComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues:
-            { childrenWhoRender: dependencyValues.children.map(x => x.componentName) }
+            { childrenToRender: dependencyValues.children.map(x => x.componentName) }
         };
       }
     }

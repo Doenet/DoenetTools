@@ -6,6 +6,7 @@ export default class DoenetRenderer extends Component {
     super(props);
     this.addChildren = this.addChildren.bind(this);
     this.removeChildren = this.removeChildren.bind(this);
+    this.swapChildren = this.swapChildren.bind(this);
     this.update = this.update.bind(this);
 
     this.childrenToCreate = props.componentInstructions.children;
@@ -24,6 +25,7 @@ export default class DoenetRenderer extends Component {
       update: this.update,
       addChildren: this.addChildren,
       removeChildren: this.removeChildren,
+      swapChildren: this.swapChildren,
     }
 
   }
@@ -35,7 +37,7 @@ export default class DoenetRenderer extends Component {
   addChildren(instruction) {
     let childInstructions = this.childrenToCreate[instruction.indexForParent];
     let child = this.createChildFromInstructions(childInstructions);
-    this.children.splice(instruction.indexForParent,0, child);
+    this.children.splice(instruction.indexForParent, 0, child);
     this.children = [...this.children]; // needed for React to recognize it's different
 
     this.forceUpdate();
@@ -44,9 +46,17 @@ export default class DoenetRenderer extends Component {
   removeChildren(instruction) {
     this.children.splice(instruction.firstIndexInParent, instruction.numberDeleted);
     this.children = [...this.children]; // needed for React to recognize it's different
-    for(let componentName of instruction.deletedComponentNames) {
+    for (let componentName of instruction.deletedComponentNames) {
       delete this.props.rendererUpdateMethods[componentName];
     }
+    this.forceUpdate();
+  }
+
+
+  swapChildren(instruction) {
+    [this.children[instruction.index1], this.children[instruction.index2]]
+      = [this.children[instruction.index2], this.children[instruction.index1]];
+    this.children = [...this.children]; // needed for React to recognize it's different
     this.forceUpdate();
   }
 
@@ -69,7 +79,7 @@ export default class DoenetRenderer extends Component {
       rendererUpdateMethods: this.props.rendererUpdateMethods,
       flags: this.props.flags,
     };
-    if(this.doenetPropsForChildren) {
+    if (this.doenetPropsForChildren) {
       Object.assign(propsForChild, this.doenetPropsForChildren);
     }
     let child = React.createElement(this.props.rendererClasses[childInstructions.componentType], propsForChild);

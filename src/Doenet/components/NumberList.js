@@ -247,7 +247,7 @@ export default class NumberList extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         numberAndNumberlistChildren: {
           dependencyType: "stateVariable",
@@ -260,7 +260,7 @@ export default class NumberList extends InlineComponent {
         numberlistChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "atLeastZeroNumberlists",
-          variableNames: ["childrenWhoRender"],
+          variableNames: ["childrenToRender"],
         },
         maximumNumber: {
           dependencyType: "stateVariable",
@@ -270,7 +270,7 @@ export default class NumberList extends InlineComponent {
       definition: function ({ dependencyValues, componentInfoObjects }) {
         let numberNumber = 0;
         let numberlistNumber = 0;
-        let childrenWhoRender = [];
+        let childrenToRender = [];
 
         for (let child of dependencyValues.numberAndNumberlistChildren) {
 
@@ -278,21 +278,21 @@ export default class NumberList extends InlineComponent {
             inheritedComponentType: child.componentType,
             baseComponentType: "number"
           })) {
-            childrenWhoRender.push(dependencyValues.numberChildren[numberNumber].componentName);
+            childrenToRender.push(dependencyValues.numberChildren[numberNumber].componentName);
             numberNumber++;
           } else {
-            childrenWhoRender.push(...dependencyValues.numberlistChildren[numberlistNumber].stateValues.childrenWhoRender);
+            childrenToRender.push(...dependencyValues.numberlistChildren[numberlistNumber].stateValues.childrenToRender);
             numberlistNumber++;
           }
         }
 
         let maxNum = dependencyValues.maximumNumber;
-        if (maxNum !== undefined && childrenWhoRender.length > maxNum) {
+        if (maxNum !== undefined && childrenToRender.length > maxNum) {
           maxNum = Math.max(0, Math.floor(maxNum));
-          childrenWhoRender = childrenWhoRender.slice(0, maxNum)
+          childrenToRender = childrenToRender.slice(0, maxNum)
         }
 
-        return { newValues: { childrenWhoRender } }
+        return { newValues: { childrenToRender } }
 
       }
     }
