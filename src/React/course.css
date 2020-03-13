@@ -35,7 +35,7 @@ body{
     /* background-color: rgb(243, 0, 0); */
     display:grid;
 
-    grid-row: 2 / 3 ;
+    grid-row: 2/3 ;
     grid-column: 2 / 3;
 
     grid-template-columns: auto 520px;
@@ -56,6 +56,12 @@ body{
     grid-row: 1 / 2;
     padding: 5px;
     overflow: scroll;
+  }
+  .homeActiveSectionMainTree{
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+    padding: 5px;
+    overflow: auto;
   }
   /* .courseContainer .info{
     color:red;

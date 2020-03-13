@@ -597,7 +597,7 @@ class Assignments extends Component {
   }
   render() {
     return (
-      <React.Fragment>
+      // <React.Fragment>
       <div className="homeActiveSectionMain" data-cy="syllabusNavItem">
         {/* <span className="Section-Text">Assignment is loading if not already here</span> */}
         {this.assignmentDoenetML!="" && this.assignmentDoenetML!=null?
@@ -618,7 +618,7 @@ class Assignments extends Component {
         />:<p>Not yet available</p>}
               </div>
 
-              </React.Fragment>
+              // </React.Fragment>
         )
   }
 }
@@ -1000,23 +1000,23 @@ class DoenetCourse extends Component {
       //////////////////
       this.enableOverview=!!(+(resp.data.courseInfo[this.currentCourseId]["overviewEnabled"]))
       console.log("this.enableOverview: "+this.enableOverview)
-          if (this.enableOverview){
+          if (this.enableOverview || this.rightToEdit){
             this.trueList.push("overview")
             this.overview_branchId=resp.data.courseInfo[this.currentCourseId]["overviewId"]
             console.log("overview_branchId: "+this.overview_branchId)
           }
           this.enableSyllabus=!!(+(resp.data.courseInfo[this.currentCourseId]["syllabusEnabled"]))
-          if (this.enableSyllabus){
+          if (this.enableSyllabus || this.rightToEdit){
             this.trueList.push("syllabus")
             this.syllabus_branchId=resp.data.courseInfo[this.currentCourseId]["syllabusId"]
-            console.log("syllabus_branchId: "+this.syllabus_branchId)
+            // console.log("syllabus_branchId: "+this.syllabus_branchId)
           }
           this.enableGrade=!!(+(resp.data.courseInfo[this.currentCourseId]["gradeEnabled"]))
-          if (this.enableGrade){
+          if (this.enableGrade || this.rightToEdit){
             this.trueList.push("grade")
           }
           this.enableAssignment=!!(+(resp.data.courseInfo[this.currentCourseId]["assignmentEnabled"]))
-          if (this.enableAssignment){
+          if (this.enableAssignment || this.rightToEdit){
             this.trueList.push("assignments")
           }
           this.DoneLoading=true;
@@ -1040,7 +1040,7 @@ class DoenetCourse extends Component {
           this.forceUpdate()
     });}
     else {
-      console.log("ALREADY LOAD ALL COURSES")
+      // console.log("ALREADY LOAD ALL COURSES")
       this.alreadyLoadAllCourses = true;
       this.courseName = this.courseInfo[this.currentCourseId]['courseName']
       //////////////////
@@ -1048,13 +1048,11 @@ class DoenetCourse extends Component {
           if (this.enableOverview){
             this.trueList.push("overview")
             this.overview_branchId=this.courseInfo[this.currentCourseId]["overviewId"]
-            console.log("overview_branchId: "+this.overview_branchId)
           }
           this.enableSyllabus=!!(+(this.courseInfo[this.currentCourseId]["syllabusEnabled"]))
           if (this.enableSyllabus){
             this.trueList.push("syllabus")
             this.syllabus_branchId=this.courseInfo[this.currentCourseId]["syllabusId"]
-            console.log("syllabus_branchId: "+this.syllabus_branchId)
           }
           this.enableGrade=!!(+(this.courseInfo[this.currentCourseId]["gradeEnabled"]))
           if (this.enableGrade){
@@ -1128,13 +1126,9 @@ class DoenetCourse extends Component {
       syllabus:Number(this.enableSyllabus),
       assignment:Number(this.enableAssignment)
     }
-    console.log(data)
     axios.post(url, data)
     .then(function (response) {
-      console.log(response);
-      console.log("-------DATA is---------")
-      console.log(response.data);
-      
+
     })
     .catch(function (error) {
       this.setState({error:error});
@@ -1159,7 +1153,6 @@ class DoenetCourse extends Component {
     this.assignment_branchId = this.assignment_obj[this.thisAssignmentInfo]['branchId']
     axios.get(urlDownload,payload)
         .then(resp=>{
-            console.log("FROM loadAssignmentInfo.php")
             // console.log(resp.data)
             this.assignmentName=resp.data['assignmentName']
             this.assignedDate=resp.data['assignedDate']
@@ -1179,7 +1172,7 @@ class DoenetCourse extends Component {
             // this.buildRightSideInfoColumn()
             this.AssignmentInfoPackageReady=true
             this.buildRightSideInfoColumn()
-            console.log("link is "+link)
+            // console.log("link is "+link)
           this.makeTreeRoute({link:link,assignmentId:this.thisAssignmentInfo})
             this.forceUpdate();
         });
@@ -1206,13 +1199,8 @@ class DoenetCourse extends Component {
     } 
     this.alreadyMadeLink = this.alreadyMadeLink_temp
     // this.alreadyMadeLink = [this.alreadyMadeLink.slice(0,position)] + [this.alreadyMadeLink.slice(position+1,this.alreadyMadeLink.length)]
-    console.log(this.tree_route)
-    console.log(this.alreadyMadeLink)
-    console.log("==here=")
-    // console.log(this.tree_route.slice(0,position))
-    // console.log(this.tree_route[position])  
-    // console.log(this.alreadyMadeLink.slice(0,position))
-    // console.log(this.alreadyMadeLink[position])    
+
+ 
     this.buildRightSideInfoColumn()
     this.makeTreeRoute({link:link,assignmentId:id})
 
@@ -1223,7 +1211,7 @@ class DoenetCourse extends Component {
   }
   saveAssignmentInfo(){
     const urlDownload="/api/saveAssignmentInfo.php";
-    console.log("saveAssignmentInfo")
+    // console.log("saveAssignmentInfo")
     this.resetTreeArray = true
     // console.log(this.AssignmentInfo)
 
@@ -1247,13 +1235,12 @@ class DoenetCourse extends Component {
       numberOfAttemptsAllowed:(this.numberOfAttemptsAllowed===""?0:this.numberOfAttemptsAllowed),
       timeLimit:(this.timeLimit===""?"00:00:00":this.timeLimit)
     }
-    console.log("DATA IS")
-    console.log(data)
+
 
     axios.post(urlDownload,data)
       .then(resp=>{
-        console.log("resp")
-        console.log(resp.data)
+        // console.log("resp")
+        // console.log(resp.data)
       })
       .catch(error=>{this.setState({error:error})});
   }
@@ -1262,7 +1249,7 @@ class DoenetCourse extends Component {
 
   buildRightSideInfoColumn(){
     let evenOrOdd = 0
-    console.log("building right side column")
+    // console.log("building right side column")
     // const SettingContainer = styled.button`
     // display:flex;
     // justify-content:space-between;
@@ -1480,7 +1467,7 @@ this.AssignmentInfoPackageReady = false
 this.forceUpdate()
   }
   buildGrades() {
-    console.log("building grades in DoenetCourse")
+    // console.log("building grades in DoenetCourse")
     this.total = { possible: 0, score: 0, percentage: '0%' }
 
     for (let gcat of this.gradeCategories) {
@@ -1575,9 +1562,9 @@ this.forceUpdate()
     }
   }
   buildTreeArray(){
-    console.log("running buildTreeArray")
-    console.log(this.heading_obj)
-    console.log(this.assignment_obj)
+    // console.log("running buildTreeArray")
+    // console.log(this.heading_obj)
+    // console.log(this.assignment_obj)
     // console.log("this.makeTreeArray0")
     // console.log(this.makeTreeArray)
     // first get pId that is null
@@ -1685,11 +1672,7 @@ buildTree(){
       let name = element["name"]
       let level = element["level"];
       let id = element["id"]; // id of either header or assignment
-      if (id==="M0hf_Z3a3kh9-NQO90JVS"){
-        console.log(" tree branch of..")
-        console.log(this.enableMode) 
-        console.log(this.heading_obj['M0hf_Z3a3kh9-NQO90JVS'])
-       }
+
       let type = element ["attribute"]
       let headerParentId=null;
       if (type==='header'){
@@ -1816,7 +1799,8 @@ buildTree(){
       (
         <Link to={link} key={"tree_branch"+index} 
         data-cy={data_cy} className={ClassName} style={styleAssignment}
-        onClick={()=>{this.thisAssignmentInfo=id;console.log("clicking link")
+        onClick={()=>{this.thisAssignmentInfo=id;
+          // console.log("clicking link")
           this.loadAssignmentContent({contentId:contentID,branchId:branchID,assignmentId:id});
         }}
         >
@@ -1873,7 +1857,7 @@ buildTree(){
 }
 
 saveTree(){
-  console.log("saving the tree")
+  // console.log("saving the tree")
   /**
    * here passing in a payload of
    * for UPDATE:
@@ -1978,7 +1962,7 @@ saveTree(){
 
     axios.post(urlGetCode,data)
     .then(resp=>{
-      console.log(resp.data)
+      // console.log(resp.data)
     })
     .catch(error=>{this.setState({error:error})});
 
@@ -2106,8 +2090,8 @@ if (currentHeaderIdIndexInsidemyParentHeaderIdArray===(myParentHeaderIdArray-1))
 }else {
   this.heading_obj[myNewParentId]["headingId"].unshift(currentHeaderId)
 }
-console.log("moveHeaderLeft")
-console.log(this.heading_obj)
+// console.log("moveHeaderLeft")
+// console.log(this.heading_obj)
 this.buildTreeArray();
 this.buildTree();
 this.forceUpdate();
@@ -2170,7 +2154,7 @@ while (iterator<length){
 let addedAssignmentId = arr[iterator];
 let ID = nanoid();
 this.heading_obj[myParentID]['assignmentId'].splice(addAtIndex,0,ID)
-console.log("NEW ID is.."+ID)
+// console.log("NEW ID is.."+ID)
 let name = "untitle assignment "+iterator;
 this.assignment_obj [ID]={name:name,parent:myParentID,contentId:addedAssignmentId}
 iterator+=1;
@@ -2196,7 +2180,7 @@ let currentHeaderObj = this.heading_obj[currentHeaderId];
 let iterator=arr.length-1; // last index of Adding AssignmentID
 while (iterator>=0){
 let ID = nanoid();
-console.log("NEW ID is.."+ID)
+// console.log("NEW ID is.."+ID)
 let name = "untitle assignment "+iterator;
 this.assignment_obj [ID]={name:name,parent:currentHeaderId,contentId:arr[iterator]}
 // adding ID to currentHeaderId's assignmentId array
@@ -2219,13 +2203,13 @@ let addAtIndex=currentHeaderIdIndexInsideParentHeadingIdArray
 let ID = nanoid();
 
 if (addAtIndex===0){
-  console.log("case 1")
+  // console.log("case 1")
   this.heading_obj["UltimateHeader"]['headingId'].unshift(ID)
 } else if (addAtIndex===(length-1)){
-  console.log("case 2")
+  // console.log("case 2")
   this.heading_obj["UltimateHeader"]['headingId'].push(ID)
 } else {
-  console.log("case 3")
+  // console.log("case 3")
   this.heading_obj["UltimateHeader"]['headingId'].splice(addAtIndex+1,0,ID)
 }
 this.heading_obj [ID]={name:"untitled header",parent:"UltimateHeader",assignmentId:[],headingId:[]}
@@ -2274,8 +2258,8 @@ deleteHeader ({headerObj}){
 /**
  * delete header will delete its children including header and assignment
  */
-console.log("deleting obj")
-console.log(headerObj)
+// console.log("deleting obj")
+// console.log(headerObj)
 let id = headerObj['id']
 // delete it as heading, get parent
 // let indexOfHeader = this.headerId_arr.indexOf(id)
@@ -2295,8 +2279,8 @@ listOfDeletingAssignment.push(element.toString())
 this.deleteChildrenAssignment({list:listOfDeletingAssignment})
 // before deleting myself, delete all my header object
 let listOfMyHeaders = currentHeaderObject["headingId"]
-console.log("listOfMyHeaders")
-console.log(listOfMyHeaders)
+// console.log("listOfMyHeaders")
+// console.log(listOfMyHeaders)
 let listOfDeletingHeader = []
 listOfMyHeaders.forEach (element=>{
 let currentChildHeaderObjID = element
@@ -2322,9 +2306,9 @@ this.heading_obj[parentId]["headingId"].splice(indexOfCurrentHeaderInsideItsPare
 //}
 // deleting it inside the parent headingId
 
-console.log("delete header")
-console.log(this.heading_obj)
-console.log(this.assignment_obj)
+// console.log("delete header")
+// console.log(this.heading_obj)
+// console.log(this.assignment_obj)
 this.axiosDeleteAssignmentFromDB({listOfAssignment:this.listOfAssignmentIdNeedDeletingFromDB})
 
 // this.buildTreeArray();
@@ -2383,7 +2367,7 @@ this.axiosDeleteAssignmentFromDB({listOfAssignment:this.listOfAssignmentIdNeedDe
 }
 axiosDeleteAssignmentFromDB ({listOfAssignment}) {
 // listOfAssignment.forEach(element=>{
-console.log("axios here")
+// console.log("axios here")
 //   console.log(element)
 // })
   // here write axios called to delete one selected assignment
@@ -2395,7 +2379,7 @@ const data = {
 
 axios.post(urlGetCode1,data)
 .then(resp=>{
-  console.log(resp.data)
+  // console.log(resp.data)
   this.buildTreeArray();
   this.buildTree();
   this.forceUpdate();
@@ -2412,7 +2396,7 @@ makeTreeRoute ({link,assignmentId}) {
   this.assignmentsIndexAndDoenetML[assignmentId]['doenetML'] = this.assignmentDoenetML
   if (!(this.alreadyMadeLink.includes(link)) && link){
     console.log("===Making route====")
-  console.log(this.assignmentsIndexAndDoenetML[assignmentId])
+  // console.log(this.assignmentsIndexAndDoenetML[assignmentId])
     let tree_route_branch = 
   (
     <Route key={link} exact path={link}>
@@ -2422,7 +2406,7 @@ makeTreeRoute ({link,assignmentId}) {
      </React.Fragment>
     </Route>
   )
-  console.log(tree_route_branch)
+  // console.log(tree_route_branch)
   this.tree_route.push(tree_route_branch);
   this.alreadyMadeLink.push(link)
   this.assignmentsIndexAndDoenetML[assignmentId]['indexInRouterArray']=this.tree_route.length-1
@@ -2440,8 +2424,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   this.treeOnScreen = false;
   // console.log("HERE running loadAssignmentContent")
   this.componentLoadedFromNavigationBar = null
-  console.log(assignmentId in this.ListOfAlreadyDownLoadDoenetML)
-  console.log(this.ListOfAlreadyDownLoadDoenetML)
+  // console.log(assignmentId in this.ListOfAlreadyDownLoadDoenetML)
+  // console.log(this.ListOfAlreadyDownLoadDoenetML)
   // given contentId, get me doenetML
 //4P7WK6V4HvxS9fIT8IY4i
 //4P7WK6V4HvxS9fIT8IY4i
@@ -2475,11 +2459,11 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.updateNumber++;
         this.assignmentDoenetML=doenetML;
         this.ListOfAlreadyDownLoadDoenetML[assignmentId] = this.assignmentDoenetML
-        console.log("DOENET ML !!")
-        console.log(assignmentId)
-        console.log(this.assignmentDoenetML)
+        // console.log("DOENET ML !!")
+        // console.log(assignmentId)
+        // console.log(this.assignmentDoenetML)
           link = "/assignments/"+assignmentId
-          console.log("calling info 02")
+          // console.log("calling info 02")
           this.loadThisAssignmentInfo({link:link})
               if (this.LoadAssignmentFromTheBeginningFlag) {
                 console.log("===LOADING ASSIGNMENT FROM URL===")
@@ -2493,7 +2477,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     else {
       // this.forceUpdate();
       this.thisAssignmentInfo = assignmentId
-      console.log("calling info 01")
+      // console.log("calling info 01")
       this.loadThisAssignmentInfo({link:link})
       console.log("==ALREADY DOWNLOAD THAT ASSIGNMENT===")
     }
@@ -2520,7 +2504,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
 
   loadOverview(){
     console.log("loading OVERVIEW in course")
-    console.log(this.overview_branchId)
+    // console.log(this.overview_branchId)
     this.doenetML="";
     const phpUrl='/api/getDoenetML.php';
     const data={        
@@ -2540,10 +2524,10 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.doenetML=doenetML;
         this.Overview_doenetML=this.doenetML;
         this.alreadyLoadOverview=true
-        console.log("doenetML overview!!!")
-        console.log(this.Overview_doenetML)
+        // console.log("doenetML overview!!!")
+        // console.log(this.Overview_doenetML)
         this.loadFirstTrue=(this.Overview_doenetML!=""?<Overview doenetML={this.Overview_doenetML}/>:null)
-        console.log(this.doenetML)
+        // console.log(this.doenetML)
        // this.buildOverview();
          this.forceUpdate();
       })
@@ -2596,8 +2580,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
 
         this.updateNumber++;
         this.doenetML=doenetML;
-        console.log("doenetML syllabus!!!")
-        console.log(this.doenetML)
+        // console.log("doenetML syllabus!!!")
+        // console.log(this.doenetML)
         
       this.Syllabus_doenetML=this.doenetML;
       this.alreadyLoadSyllabus = true
@@ -2637,7 +2621,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   //   // TODO: what assignment get un-publish ?
 
   loadGrades(){
-    console.log("loading grades in DoenetCourse")
+    // console.log("loading grades in DoenetCourse")
     this.scores = {};
     this.subTotals = {};
       
@@ -2966,7 +2950,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   //   this.forceUpdate();
   // }
   loadingGrade(){
-    console.log("loading grade from COurse")
+    // console.log("loading grade from COurse")
     const loadGradsUrl = '/api/loadGradsLearner.php';
     const data = {
       courseId: this.courseId,
@@ -2982,13 +2966,13 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.course = resp.data.course;
         this.section = resp.data.section;
         this.group = resp.data.group;
-        console.log("INSIDE loading grade")
-        console.log(this.assignmentsData)
-        console.log(this.student)
-        console.log(this.course)
-        console.log(this.section)
-        console.log(this.group)
-        console.log("END")
+        // console.log("INSIDE loading grade")
+        // console.log(this.assignmentsData)
+        // console.log(this.student)
+        // console.log(this.course)
+        // console.log(this.section)
+        // console.log(this.group)
+        // console.log("END")
         this.buildGrades();
         // this.loadFirstTrue=(<Syllabus doenetML={this.Syllabus_doenetML}/>)
         this.loadFirstTrue=(<Grades parentFunction={(e)=>{this.activeSection="assignments";
@@ -3009,21 +2993,21 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       .catch(error => { this.setState({ error: error }) });
   }
   loadSection(){
-    console.log("inside load section")
-    console.log("active is "+this.activeSection)
-    console.log("this.alreadyLoadOverview: "+this.alreadyLoadOverview)
+    // console.log("inside load section")
+    // console.log("active is "+this.activeSection)
+    // console.log("this.alreadyLoadOverview: "+this.alreadyLoadOverview)
     // console.log("this.alreadyLoadSyllabus: "+this.alreadyLoadSyllabus)
     // console.log("Syllabus code: "+this.Syllabus_doenetML)
     if (this.activeSection==="overview" && !this.alreadyLoadOverview){
       console.log("====MAKING overview====")
       this.loadOverview();
-      console.log("Overview branchid: "+this.overview_branchId)
+      // console.log("Overview branchid: "+this.overview_branchId)
       // this.alreadyLoadOverview=true
     } else if (this.activeSection==="syllabus"&& !this.alreadyLoadSyllabus) {
       console.log("====MAKING syllabus====")
       this.loadSyllabus();
-      console.log("Overview branchid: "+this.overview_branchId)
-      console.log("syllabus branchid: "+this.syllabus_branchId)
+      // console.log("Overview branchid: "+this.overview_branchId)
+      // console.log("syllabus branchid: "+this.syllabus_branchId)
 
       // this.alreadyLoadSyllabus = true
     } else if (this.activeSection==="grade") {
@@ -3047,7 +3031,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   makeTreeVisible({loadSpecificId}) {
     const url_header_assignment = "/api/getHeaderAndAssignmentInfo.php";
     console.log("inside make tree")
-    console.log(this.currentCourseId)
+    // console.log(this.currentCourseId)
     this.assignment_obj = {}
     this.heading_obj = {}
     const data={        
@@ -3060,7 +3044,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       axios.get(url_header_assignment,payload)
     .then (resp=>{
       this.obj_return = resp.data;
-      console.log(resp.data)
+      // console.log(resp.data)
       //let lengthOfReturnArray = (this.obj_return.length)
       this.alreadyMadeTree=true;
       let iterator=0;      
@@ -3107,7 +3091,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.buildTreeArray()
         this.buildTree()
         this.alreadyHadAssignmentsIndexAndDoenetML = true
-        this.assignmentTree = (<div className="homeActiveSectionMain">{this.tree}</div>);
+        this.assignmentTree = (<div className="homeActiveSectionMainTree">{this.tree}</div>);
 
         if (this.LoadAssignmentFromTheBeginningFlag) {
         this.loadAssignmentContent({contentId:null,branchId:null,assignmentId:loadSpecificId})
@@ -3143,11 +3127,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.syllabus_link=null
     this.grade_link=null
     this.assignment_link=null
-    console.log(this.currentCourseId)
-    console.log(this.enableOverview)
-    console.log(this.enableSyllabus)
-    console.log(this.enableGrade)
-    console.log(this.enableAssignment)
+    // console.log(this.overview_branchId)
+    // console.log(this.syllabus_branchId)
 
     if (!this.alreadyLoadAllCourses){
       this.loadAllCourses()
@@ -3370,6 +3351,10 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
               this.alreadyLoadAssignment=[]
               this.alreadyMadeLink=[]
               this.tree_route=[]
+
+              this.overview_branchId=""
+    this.syllabus_branchId=""
+
               this.overview_link=null
               this.syllabus_link=null
               this.grade_link=null
@@ -3444,7 +3429,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
             {/* TO-DO(me): ask Kevin if he wants assignment loaded here 
             when an assignment is selected as instructor and students */}
             {/* {this.componentLoadedFromNavigationBar} */}
-
               <Switch>
                 {/* <Route path="/:id" children={<Child />}> */}
                 <Route key="overview" exact path="/overview">
@@ -3478,7 +3462,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 </Route>
                 {this.tree_route}
               </Switch>
-              
             </div>
             
           </>
@@ -3522,711 +3505,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     </React.Fragment>);
   }
 }
-// class DoenetCourse extends Component {
-//   constructor(props) {
-//     super(props);
-
-//     this.assignmentIndex = 0;
-//     this.loadingScreen = (<React.Fragment><p>Loading...</p></React.Fragment>);
-
-//     const envurl = '/api/env.php';
-//     axios.get(envurl)
-//       .then(resp => {
-//         this.username = resp.data.user;
-//         this.access = resp.data.access;
-//         this.forceUpdate();
-//       });
-
-
-//     let url_string = window.location.href;
-//     var url = new URL(url_string);
-
-//     this.username = "";
-//     this.courseId = "aI8sK4vmEhC5sdeSP3vNW"; //Temporary TODO: Choose courses
-//     this.courseName = "Calculus and Dynamical Systems in Biology";
-//     this.assignmentId = url.searchParams.get("assignmentId");
-//     this.mode = url.searchParams.get("mode");
-//     this.activeSection = url.searchParams.get("active");
-//     //Temporary not use params
-//     this.mode = "preview"; //Temp
-//     console.log(`The courseId id is ${this.courseId}`);
-//     this.courseInfo = {};
-//     this.finishedContructor = false;
-
-//     let code = "";
-
-//     //Get code and mode from the database
-//     const loadOutlineUrl = '/api/loadOutline.php';
-//     const data = {
-//       courseId: this.courseId,
-//     }
-//     const payload = {
-//       params: data
-//     }
-//     console.log("data");
-//     console.log(data);
-
-//     axios.get(loadOutlineUrl, payload)
-//       .then(resp => {
-//         console.log(resp.data);
-//         this.finishContruction({ data: resp.data });
-//         this.setState({ assignmentIndex: this.assignmentIndex, code: this.assignmentIdList[this.assignmentIndex].code });
-//         if (this.activeSection === "assignments") {
-//           this.loadAssignment({ assignmentId: this.assignmentId });
-//           this.buildAssignment();
-//         }
-//       });
-
-//     this.state = {
-//       courseId: "",
-//       error: null,
-//       errorInfo: null,
-//       outlineType: "outline",
-//     };
-
-//     //detect forward or back browser buttons
-//     // window.onpopstate = function(e){
-//     //   // alert(`${document.location} ${JSON.stringify(e.state)}`);
-//     //   // this.loadAssignment({assignmentInfo:e.state.assignmentId})
-//     // }.bind(this);
-//     if (this.activeSection === "assignments") {
-//       this.mainSection = this.loadingScreen;
-//       // wait for completion of finishConstruction then buildAssignment
-//     }
-
-//     this.updateNumber = 0;
-//     this.updateLocationBar = this.updateLocationBar.bind(this);
-//     this.assignmentDataToCourseInfo = this.assignmentDataToCourseInfo.bind(this);
-//     this.buildOutline = this.buildOutline.bind(this);
-//     this.buildAssignmentArray = this.buildAssignmentArray.bind(this);
-//     this.loadAssignment = this.loadAssignment.bind(this);
-//     this.finishContruction = this.finishContruction.bind(this);
-//     this.handlePrev = this.handlePrev.bind(this);
-//     this.handleNext = this.handleNext.bind(this);
-//     this.buildAssignmentList = this.buildAssignmentList.bind(this);
-//     this.setAssignmentObj = this.setAssignmentObj.bind(this);
-//     this.generateNewAttempt = this.generateNewAttempt.bind(this);
-//     this.creditUpdate = this.creditUpdate.bind(this);
-//     this.buildAssignment = this.buildAssignment.bind(this);
-//     this.updateAssignmentList = this.updateAssignmentList.bind(this);
-//   }
-
-//   // updateLocationBar({assignmentId, activeSection=this.activeSection}){
-//   //   history.replaceState({},"title","?active="+activeSection);
-//   //   if (this.activeSection === "assignment")
-//   //     history.replaceState({assignmentId:this.assignmentObj.assignmentId},"title","?assignmentId="+this.assignmentObj.assignmentId);
-//   // }
-
-//   updateLocationBar(assignmentId = this.assignmentId, activeSection = this.activeSection) {
-//     history.replaceState({}, "title", "?active=" + activeSection);
-//     if (this.activeSection === "assignments") {
-//       console.log(this.assignmentId);
-//       history.replaceState({}, "title", "?active=" + activeSection + "&assignmentId=" + assignmentId);
-//     }
-//   }
-
-//   buildAssignment() {
-//     this.mainSection = this.loadingScreen;
-//     this.activeSection = "assignments";
-
-//     if (this.mode === "") { return null; }
-//     if (this.finishedContructor === false) { return null; }
-
-//     let disablePrev = false;
-//     if (this.assignmentIndex === 0) { disablePrev = true; }
-//     let disableNext = false;
-//     if (this.assignmentIndex === (this.assignmentIdList.length - 1)) { disableNext = true; }
-
-//     console.log("-----------this.assignmentObj-------------");
-
-//     console.log(this.assignmentObj);
-
-//     let solutionType = "button";
-//     if (Number(this.assignmentObj.showSolution) === 0) {
-//       solutionType = "none";
-//     }
-//     let showHints = true;
-//     if (Number(this.assignmentObj.showHints) === 0) {
-//       showHints = false;
-//     }
-//     let showFeedback = true;
-//     if (Number(this.assignmentObj.showFeedback) === 0) {
-//       showFeedback = false;
-//     }
-//     let showCorrectness = true;
-//     if (Number(this.assignmentObj.showCorrectness) === 0) {
-//       showCorrectness = false;
-//     }
-
-//     this.assignmentFragment = <React.Fragment>
-//       <div className="assignmentContainer">
-//         <div className="assignmentActivity">
-//           <DoenetViewer
-//             key={"doenetviewer" + this.updateNumber}
-//             free={{
-//               doenetCode: this.assignmentObj.code,
-//               doenetState: this.assignmentObj.latestDocumentState,
-//               requestedVariant: { index: this.assignmentObj.assignedVariant },
-//             }}
-//             assignmentId={this.assignmentObj.assignmentId}
-//             creditUpdate={this.creditUpdate}
-//             attemptNumber={this.assignmentObj.attemptNumber}
-//             mode={{
-//               solutionType: solutionType,
-//               allowViewSolutionWithoutRoundTrip: false,
-//               showHints,
-//               showFeedback,
-//               showCorrectness,
-//             }}
-//             course={true}
-//           />
-//         </div>
-//       </div>
-//     </React.Fragment>;
-
-//     this.mainSection = this.assignmentFragment;
-//     this.updateLocationBar(this.assignmentObj.assignmentId);
-//     this.forceUpdate();
-//   }
-
-//   setAssignmentObj({ outlineType }) {
-//     if (outlineType === "outline") {
-//       this.assignmentObj = this.assignmentIdList[this.assignmentIndex];
-//     } else if (outlineType === "assignment") {
-//       this.assignmentObj = this.assignmentAssignedList[this.assignmentIndex];
-//     } else if (outlineType === "due") {
-//       this.assignmentObj = this.assignmentDueList[this.assignmentIndex];
-//     }
-//   }
-
-//   finishContruction({ data }) {
-
-//     this.courseAssignmentChoiceList = [];
-//     this.assignmentDataToCourseInfo({ courseId: this.courseId, data: data });
-
-//     this.assignmentIdList = [];
-//     this.buildAssignmentArray({ courseId: this.courseId, assignmentId: this.assignmentId });
-//     this.assignmentAssignedList = [...this.assignmentIdList];
-//     this.assignmentAssignedList.sort(
-//       (a, b) => {
-//         return new Date(a.assignedDate) - new Date(b.assignedDate)
-//       }
-//     );
-//     this.assignmentDueList = [...this.assignmentIdList];
-//     this.assignmentDueList.sort(
-//       (a, b) => {
-//         return new Date(a.dueDate) - new Date(b.dueDate)
-//       }
-//     );
-
-//     // let outlineType = "outline";
-//     // this.setAssignmentObj({ outlineType: outlineType });
-//     // this.resolveVariant({ outlineType: outlineType });
-
-//     if (this.state.outlineType === "outline") {
-//       this.buildOutline({ courseId: this.courseId });
-//     } else if (this.state.outlineType === "assignment") {
-//       this.buildAssignmentList({ courseId: this.courseId });
-//     } else {
-//       this.buildDueList();
-//     }
-
-//     this.finishedContructor = true;
-
-//     // console.log("END OF CONSTRUCTION");
-//     // console.log(this.assignmentIdList);
-//     // console.log(this.assignmentIdList[this.assignmentIndex].code);
-//     // this.setState({code:this.assignmentIdList[this.assignmentIndex].code});
-//   }
-
-//   updateAssignmentList({ outlineType }) {
-//     if (outlineType === "outline") {
-//       this.buildOutline({ courseId: this.courseId });
-//     } else if (outlineType === "assignment") {
-//       this.buildAssignmentList({ courseId: this.courseId });
-//     } else {
-//       this.buildDueList();
-//     }
-//   }
-
-//   resolveVariant({ outlineType }) {
-
-//     if (this.assignmentObj.assignedVariant === undefined || this.assignmentObj.assignedVariant === null) {
-//       this.assignmentObj.attemptNumber = 1;
-
-//       if (Number(this.assignmentObj.multipleAttempts) === 1) {
-
-//         //VariantIndex is the same offline and online
-//         this.assignmentObj.assignedVariant = this.variantNumberFromAttemptNumber();
-//       } else {
-//         this.assignmentObj.assignedVariant = 0;
-//       }
-
-
-//       //Save assignedVariant to DB
-//       const url = '/api/saveVariant.php';
-//       const data = {
-//         assignmentId: this.assignmentObj.assignmentId,
-//         assignedVariant: this.assignmentObj.assignedVariant,
-//         attemptNumber: this.assignmentObj.attemptNumber,
-//         contentId: this.assignmentObj.contentId,
-//       }
-//       const payload = {
-//         params: data
-//       }
-//       console.log("saveVariant data");
-//       console.log(data);
-
-
-//       axios.get(url, payload)
-//         .then(resp => {
-//           console.log(resp.data);
-//         });
-
-//     }
-
-
-//   }
-
-//   variantNumberFromAttemptNumber() {
-//     let preseed = this.assignmentObj.attemptNumber + this.assignmentObj.assignmentId
-//     if (Number(this.assignmentObj.individualize) === 1) {
-//       preseed += this.username;
-//     }
-//     let seed = hashStringToInteger(preseed);
-
-//     let rng = new MersenneTwister(seed);
-//     let randomNumber = rng.random();
-//     return Math.floor(randomNumber * 1000000000);
-//   }
-
-//   assignmentDataToCourseInfo({ courseId, data }) {
-
-//     this.courseInfo[courseId] = {};
-//     this.courseInfo[courseId].heading = {};
-//     let parentHeadingIds = [];
-
-//     let prevLoopLevel = 1;
-//     let potentialParentHeadingId = "";
-//     for (let i = 0; i < data.headingText.length; i++) {
-
-//       let headingText = data.headingText[i];
-//       let headingLevel = data.headingLevel[i];
-//       let headingId = data.headingId[i];
-//       if (prevLoopLevel < headingLevel) {
-//         if (potentialParentHeadingId !== "") {
-//           parentHeadingIds.push(potentialParentHeadingId);
-//         }
-//       } else if (prevLoopLevel > headingLevel) {
-//         for (var x = 0; x < (prevLoopLevel - headingLevel); x++) {
-//           parentHeadingIds.pop();
-//         }
-//       }
-
-
-//       let baseObj = this.courseInfo[courseId];
-//       for (let headingId of parentHeadingIds) {
-//         baseObj = baseObj.heading[headingId];
-//       }
-
-//       if (baseObj.headingsOrder === undefined) {
-//         baseObj.headingsOrder = [];
-//         baseObj.heading = {};
-//       }
-
-//       // Add the heading information to the base object
-//       baseObj.headingsOrder.push({
-//         courseHeadingId: headingId,
-//         headingText: headingText,
-//       });
-//       baseObj.heading[headingId] = {};
-//       if (data.assignments[headingId] !== undefined) {
-//         baseObj.heading[headingId].assignmentOrder = [];
-//         baseObj.heading[headingId].assignments = {};
-//         for (let assignmentInfo of data.assignments[headingId]) {
-//           baseObj.heading[headingId].assignmentOrder.push(assignmentInfo.assignmentId);
-
-
-//           baseObj.heading[headingId].assignments[assignmentInfo.assignmentId] = {
-//             documentName: assignmentInfo.assignmentName,
-//             code: assignmentInfo.doenetML,
-//             latestDocumentState: assignmentInfo.latestDocumentState,
-//             docTags: [],
-//             contentId: assignmentInfo.contentId,
-//             sourceBranchId: assignmentInfo.sourceBranchId,
-//             dueDate: assignmentInfo.dueDate,
-//             assignedDate: assignmentInfo.assignedDate,
-//             individualize: assignmentInfo.individualize,
-//             multipleAttempts: assignmentInfo.multipleAttempts,
-//             showSolution: assignmentInfo.showSolution,
-//             showFeedback: assignmentInfo.showFeedback,
-//             showHints: assignmentInfo.showHints,
-//             showCorrectness: assignmentInfo.showCorrectness,
-//             proctorMakesAvailable: assignmentInfo.proctorMakesAvailable,
-//             dueDateOverride: assignmentInfo.dueDateOverride,
-//             timeLimitOverride: assignmentInfo.timeLimitOverride,
-//             numberOfAttemptsAllowedOverride: assignmentInfo.numberOfAttemptsAllowedOverride,
-//             attemptNumber: assignmentInfo.attemptNumber,
-//             assignedVariant: assignmentInfo.assignedVariant,
-//             generatedVariant: assignmentInfo.generatedVariant,
-//             totalPointsOrPercent: assignmentInfo.totalPointsOrPercent,
-//             credit: assignmentInfo.credit,
-//             proctorMakesAvailable: assignmentInfo.proctorMakesAvailable,
-
-
-//           };
-
-
-//         }
-
-//       }
-
-
-//       prevLoopLevel = headingLevel;
-//       potentialParentHeadingId = headingId;
-//     }
-
-//   }
-
-//   componentDidCatch(error, info) {
-//     this.setState({ error: error, errorInfo: info });
-//   }
-
-//   buildAssignmentArray({ courseId, headingIdArray = [], assignmentIndex = -1, assignmentId = this.assignmentObj.assignmentId }) {
-
-//     let baseObj = this.courseInfo[courseId];
-//     //Adjust the baseObj so it is at the current heading level
-//     for (let headingId of headingIdArray) {
-//       baseObj = baseObj.heading[headingId];
-//     }
-
-//     if (baseObj.assignmentOrder !== undefined) {
-//       for (let baseObjAssignmentId of baseObj.assignmentOrder) {
-
-//         // let assignmentInfo = Object.assign({},baseObj.assignments[assignmentId]);
-//         let assignmentInfo = baseObj.assignments[baseObjAssignmentId];
-//         assignmentInfo.assignmentId = baseObjAssignmentId;
-
-
-//         this.assignmentIdList.push(assignmentInfo);
-//         assignmentIndex++;
-//         if (baseObjAssignmentId === assignmentId) {
-//           this.assignmentIndex = assignmentIndex;
-//         }
-//       }
-//     }
-
-
-//     if (baseObj.headingsOrder !== undefined) {
-//       for (let [index, headingObj] of baseObj.headingsOrder.entries()) {
-//         let headingId = headingObj.courseHeadingId;
-
-//         let nextLevelHeadingIdArray = []; //break the association for recursion
-//         for (let headingId of headingIdArray) {
-//           nextLevelHeadingIdArray.push(headingId);
-//         }
-//         nextLevelHeadingIdArray.push(headingId);
-//         assignmentIndex = this.buildAssignmentArray({ courseId: courseId, headingIdArray: nextLevelHeadingIdArray, assignmentIndex: assignmentIndex, assignmentId: assignmentId });
-//       }
-//     }
-//     return assignmentIndex;
-//   }
-
-//   buildAssignmentList({ courseId }) {
-
-//     this.courseAssignmentChoiceList = [];
-
-//     for (let [index, assignmentObj] of this.assignmentAssignedList.entries()) {
-//       if (index === this.assignmentIndex) {
-//         let selectedAssignment = this.buildSelectedAssignment({ assignmentObj: assignmentObj });
-//         this.courseAssignmentChoiceList.push(selectedAssignment);
-//         this.assignmentIndex = index;
-//       } else {
-//         this.courseAssignmentChoiceList.push(
-//           <div
-//             style={{ margins: "10px", height: "30px" }}
-//             key={'assignmentList' + assignmentObj.assignmentId}
-//             onClick={() => { this.loadAssignment({ assignmentId: assignmentObj.assignmentId }) }}
-//           >{assignmentObj.documentName}</div>
-//         )
-//       }
-
-//     }
-
-//   }
-
-//   buildDueList() {
-
-//     this.courseAssignmentChoiceList = [];
-
-//     for (let [index, assignmentObj] of this.assignmentDueList.entries()) {
-//       if (index === this.assignmentIndex) {
-//         let selectedAssignment = this.buildSelectedAssignment({ assignmentObj: assignmentObj });
-//         this.courseAssignmentChoiceList.push(selectedAssignment);
-//         this.assignmentIndex = index;
-//       } else {
-//         this.courseAssignmentChoiceList.push(
-//           <div
-//             style={{ margins: "10px", height: "30px" }}
-//             key={'assignmentList' + assignmentObj.assignmentId}
-//             onClick={() => { this.loadAssignment({ assignmentId: assignmentObj.assignmentId }) }}
-//           >{assignmentObj.documentName}</div>
-//         )
-//       }
-//     }
-//   }
-
-//   generateNewAttempt() {
-//     this.assignmentObj.attemptNumber++;
-//     this.assignmentObj.assignedVariant = this.variantNumberFromAttemptNumber();
-//     this.assignmentObj.latestDocumentState = null;
-//     this.updateNumber++;
-//     //Save attempt number to database
-//     //Save assignedVariant to DB
-//     const url = '/api/saveVariant.php';
-//     const data = {
-//       assignmentId: this.assignmentObj.assignmentId,
-//       assignedVariant: this.assignmentObj.assignedVariant,
-//       attemptNumber: this.assignmentObj.attemptNumber,
-//       contentId: this.assignmentObj.contentId,
-//     }
-//     const payload = {
-//       params: data
-//     }
-//     console.log("saveVariant on Generate New Attempt data");
-//     console.log(data);
-
-
-//     axios.get(url, payload)
-//       .then(resp => {
-//         console.log(resp.data);
-//       });
-
-//     this.forceUpdate();
-//   }
-
-//   buildSelectedAssignment() {
-
-
-//     let available = "null";
-//     if (this.assignmentObj.assignedDate !== null) {
-//       available = this.assignmentObj.assignedDate.toLocaleString("en-US");
-//     }
-//     let due = "null";
-//     if (this.assignmentObj.dueDate !== null) {
-//       due = this.assignmentObj.dueDate.toLocaleString("en-US");
-//     }
-
-//     let newAttemptElements = null;
-//     let adjustment = 0;
-
-
-//     // console.log("this.assignmentObj multipleAttempts");
-//     // console.log(this.assignmentObj);
-//     // console.log(this.assignmentObj.multipleAttempts);
-
-//     if (Number(this.assignmentObj.multipleAttempts) === 1) {
-//       adjustment = adjustment + 40;
-//       newAttemptElements = (<React.Fragment>
-//         <div>Attempt Number: {this.assignmentObj.attemptNumber}</div>
-//         <button style={{ marginTop: "4px" }} onClick={() => {
-//           this.generateNewAttempt();
-//         }}>Generate New Attempt</button>
-//       </React.Fragment>);
-//     }
-
-//     let gradeLinkElement = null;
-//     if (this.assignmentObj.totalPointsOrPercent) {
-//       adjustment = adjustment + 20;
-//       let percentText = 0;
-//       if (this.assignmentObj.credit) {
-//         percentText = Math.round(this.assignmentObj.credit * 1000) / 10;
-//       }
-//       gradeLinkElement = (<React.Fragment>
-//         <div style={{ cursor: "pointer" }} onClick={() => {
-//           location.href = "/course/?active=grades&assignmentId=" + this.assignmentObj.assignmentId;
-//         }}>Credit: {percentText}%</div>
-//       </React.Fragment>)
-//     }
-
-//     let heightOfOutsideBox = 110 + adjustment + "px";
-
-//     return (<React.Fragment key={`selected ${this.assignmentObj.assignmentId}`}>
-//       <div style={{ margins: "10px", height: heightOfOutsideBox, backgroundColor: "#cce2ff" }} onClick={this.buildAssignment}>
-//         <div style={{ textAlign: "center", backgroundColor: "grey" }} >
-//           <div style={{ display: "inline-block", fontWeight: "bold", fontSize: "16px" }}>{this.assignmentObj.documentName}</div>
-//         </div>
-//         <div>Available</div>
-//         <div> {available}</div>
-//         <div>Due</div>
-//         <div> {due}</div>
-//         {gradeLinkElement}
-//         {newAttemptElements}
-//       </div>
-//     </React.Fragment>
-//     );
-//   }
-
-//   buildOutline({ courseId, headingIdArray = [] }) {
-//     //Initialize the array before building
-//     if (headingIdArray.length === 0) {
-//       this.courseAssignmentChoiceList = [];
-//     }
-//     let indentPx = "20";
-//     let baseObj = this.courseInfo[courseId];
-//     //Adjust the baseObj so it is at the current heading level
-//     for (let headingId of headingIdArray) {
-//       baseObj = baseObj.heading[headingId];
-//     }
-
-//     if (baseObj.headingsOrder !== undefined) {
-//       let headingIndent = headingIdArray.length * Number(indentPx);
-//       for (let [index, headingObj] of baseObj.headingsOrder.entries()) {
-//         let headingId = headingObj.courseHeadingId;
-//         let headingText = headingObj.headingText;
-
-//         var assignmentList = [];
-//         let headingInfo = baseObj.heading[headingId];
-
-
-//         if (headingInfo.assignmentOrder !== undefined) {
-
-//           for (let assignmentId of headingInfo.assignmentOrder) {
-//             let assignmentObj = headingInfo.assignments[assignmentId];
-
-//             if (this.assignmentObj.assignmentId === assignmentId) {
-//               let selectedObj = this.buildSelectedAssignment();
-//               assignmentList.push(selectedObj);
-//             } else {
-//               assignmentList.push(
-//                 <div
-//                   style={{ marginLeft: headingIndent + "px", minWidth: "160px" }}
-//                   key={'assignmentList' + assignmentId}
-//                   onClick={() => { this.loadAssignment({ assignmentId: assignmentId }) }}
-//                 >{assignmentObj.documentName}</div>
-//               )
-//             }
-
-//           }
-//         }
-
-//         this.courseAssignmentChoiceList.push(
-//           <React.Fragment key={"outline" + headingObj.courseHeadingId}>
-//             <div style={{ marginLeft: headingIndent + "px", fontWeight: "bold", minWidth: "160px" }}>{headingText}</div>
-//             {assignmentList}
-//           </React.Fragment>
-//         );
-
-//         let nextLevelHeadingIdArray = []; //break the association for recursion
-//         for (let headingId of headingIdArray) {
-//           nextLevelHeadingIdArray.push(headingId);
-//         }
-//         nextLevelHeadingIdArray.push(headingId);
-//         this.buildOutline({ courseId: courseId, headingIdArray: nextLevelHeadingIdArray });
-
-//       }
-//     }
-
-
-//   }
-
-//   // loadAssignment({ assignmentId, outlineType = this.state.outlineType }) {
-//   //   this.updateAssignmentIndex({ outlineType: outlineType, assignmentId: assignmentId });
-//   //   this.courseOutlineList = [];
-//   //   this.updateNumber++;
-//   //   this.assignmentId = assignmentId;
-//   //   this.setAssignmentObj({ outlineType: this.state.outlineType });
-//   //   this.resolveVariant({ outlineType: this.state.outlineType });
-//   //   this.updateAssignmentList({ outlineType: this.state.outlineType });
-//   //   this.updateLocationBar();
-//   //   this.forceUpdate();
-//   // }
-
-//   // handlePrev() {
-//   //   if (this.assignmentIndex > 0) this.assignmentIndex = this.assignmentIndex - 1;
-//   //   this.courseOutlineList = [];
-//   //   this.updateNumber++;
-//   //   this.setAssignmentObj({ outlineType: this.state.outlineType });
-//   //   this.resolveVariant({ outlineType: this.state.outlineType });
-//   //   this.updateAssignmentList({ outlineType: this.state.outlineType });
-//   //   this.updateLocationBar();
-//   //   this.forceUpdate();
-//   // }
-
-//   // handleNext() {
-//   //   if (this.assignmentIndex < this.assignmentIdList.length - 1) this.assignmentIndex = this.assignmentIndex + 1;
-//   //   console.log(this.assignmentIndex);
-//   //   console.log(this.assignmentIdList.length);
-//   //   this.courseOutlineList = [];
-//   //   this.updateNumber++;
-//   //   this.setAssignmentObj({ outlineType: this.state.outlineType });
-//   //   this.resolveVariant({ outlineType: this.state.outlineType });
-//   //   this.updateAssignmentList({ outlineType: this.state.outlineType });
-//   //   this.updateLocationBar();
-//   //   this.forceUpdate();
-//   // }
-
-//   // updateAssignmentIndex({ outlineType, assignmentId = this.assignmentObj.assignmentId }) {
-//   //   this.assignmentIndex = 0;
-//   //   console.log(assignmentId)
-
-//   //   if (outlineType === "outline") {
-//   //     for (let [index, assignmentObj] of this.assignmentIdList.entries()) {
-//   //       if (assignmentObj.assignmentId === assignmentId) {
-//   //         this.assignmentIndex = index;
-//   //         break;
-//   //       }
-//   //     }
-
-//   //   } else if (outlineType === "assignment") {
-//   //     for (let [index, assignmentObj] of this.assignmentAssignedList.entries()) {
-//   //       if (assignmentObj.assignmentId === assignmentId) {
-//   //         this.assignmentIndex = index;
-//   //         break;
-//   //       }
-//   //     }
-//   //   } else if (outlineType === "due") {
-//   //     for (let [index, assignmentObj] of this.assignmentDueList.entries()) {
-//   //       if (assignmentObj.assignmentId === assignmentId) {
-//   //         this.assignmentIndex = index;
-//   //         break;
-//   //       }
-//   //     }
-//   //   }
-
-
-//   // }
-
-//   creditUpdate({ credit }) {
-
-//     if (credit > this.assignmentObj.credit || !this.assignmentObj.credit) {
-//       this.assignmentObj.credit = credit;
-//     }
-//     this.forceUpdate();
-//   }
-// }
-  // render() {
-
-  //   //We have an error so doen't show the viewer
-  //   if (this.state.error) {
-
-  //     return (<React.Fragment>
-  //       <p style={{ color: "red" }}>{this.state.error && this.state.error.toString()}</p>
-  //     </React.Fragment>);
-  //   }
-
-  //   return (<>
-  //     <div className="courseContainer">
-  //       <DoenetHeader toolTitle="Course" headingTitle={this.courseName} />
-
-  //     </div>
-  //   </>)
-
-  //   let disablePrev = false;
-  //   if (this.assignmentIndex === 0) { disablePrev = true; }
-  //   let disableNext = false;
-  //   if (this.assignmentIndex === (this.assignmentIdList.length - 1)) { disableNext = true; }
-  // }
 
 
 

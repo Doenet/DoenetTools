@@ -22,19 +22,18 @@ class DoenetHeader extends Component {
     this.rightToView = this.props.rightToView
     this.rightToEdit = this.props.rightToEdit
     this.instructorRights = this.props.instructorRights
-    console.log("props are")
-    console.log("this.rightToEdit: "+this.rightToEdit)
-    console.log("this.rightToView: "+this.rightToView)
-    console.log("this.instructorRights: "+this.instructorRights)
     this.selectPermission = null
     this.coursesPermissions = {}
     if (this.props.downloadPermission){
       axios.get(envurl)
       .then(resp=>{
-          console.log("downloading header permission")
+          // console.log("downloading header permission")
           this.coursesPermissions = resp.data
-          this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+          if (this.coursesPermissions['courseInfo'][this.currentCourseId]){
+            this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
           this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
+          }
+          
           // this.props.parentUpdateDownloadPermission()
           this.forceUpdate();
       });
@@ -47,9 +46,12 @@ class DoenetHeader extends Component {
 
 
     this.options = []
-    arrayIds.map((id,index)=>{
-      this.options.push(<option value={id} selected={defaultId===id?true:false}>{courseInfo[id]['courseName']}</option>)
-    })
+    if (arrayIds){
+      arrayIds.map((id,index)=>{
+        this.options.push(<option value={id} selected={defaultId===id?true:false}>{courseInfo[id]['courseName']}</option>)
+      })
+    }
+
     // console.log(this.options)
     this.select = (<select 
     className="select"
@@ -92,7 +94,7 @@ class DoenetHeader extends Component {
     // this.setupDatabase();
   }
   makePermissionList(){
-    console.log("making list for header")
+    // console.log("making list for header")
     if (this.instructorRights){
       this.selectPermission=(
         <select onChange={(e)=>{
