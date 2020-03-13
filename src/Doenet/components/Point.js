@@ -650,6 +650,7 @@ export default class Point extends GraphicalComponent {
     stateVariableDefinitions.coords = {
       public: true,
       componentType: "coords",
+      forRenderer: true,
       returnDependencies: () => ({
         xs: {
           dependencyType: "stateVariable",
@@ -925,53 +926,6 @@ export default class Point extends GraphicalComponent {
 
   }
 
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    const actions = {
-      movePoint: this.movePoint,
-    }
-    if (this.stateValues.nDimensions === 2) {
-      let x = this.stateValues.numericalXs[0];
-      let y = this.stateValues.numericalXs[1];
-      this.renderer = new this.availableRenderers.point2d({
-        key: this.componentName,
-        label: this.stateValues.label,
-        draggable: this.stateValues.draggable,
-        layer: this.stateValues.layer,
-        x,
-        y,
-        actions: actions,
-        color: this.stateValues.selectedStyle.markerColor,
-        size: this.stateValues.selectedStyle.markerSize,
-        style: this.stateValues.selectedStyle.markerStyle,
-        visible: !this.stateValues.hide,
-        showlabel: this.stateValues.showlabel,
-      });
-    }
-  }
-
-  updateRenderer({ sourceOfUpdate } = {}) {
-    let changeInitiatedWithPoint = false;
-    if (sourceOfUpdate !== undefined &&
-      sourceOfUpdate.originalComponents.includes(this.componentName)) {
-      changeInitiatedWithPoint = true;
-    }
-    let x = this.stateValues.numericalXs[0];
-    let y = this.stateValues.numericalXs[1];
-
-    this.renderer.updatePoint({
-      x, y,
-      changeInitiatedWithPoint: changeInitiatedWithPoint,
-      label: this.stateValues.label,
-      visible: !this.stateValues.hide,
-      draggable: this.stateValues.draggable,
-      showlabel: this.stateValues.showlabel,
-    });
-  }
 
 
 }

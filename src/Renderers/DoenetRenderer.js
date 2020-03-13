@@ -82,7 +82,7 @@ export default class DoenetRenderer extends Component {
     if (this.doenetPropsForChildren) {
       Object.assign(propsForChild, this.doenetPropsForChildren);
     }
-    let child = React.createElement(this.props.rendererClasses[childInstructions.componentType], propsForChild);
+    let child = React.createElement(this.props.rendererClasses[childInstructions.rendererType], propsForChild);
     return child;
   }
 }

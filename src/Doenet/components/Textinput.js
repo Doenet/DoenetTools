@@ -164,45 +164,4 @@ export default class Textinput extends Input {
     })
   }
 
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    this.actions = {
-      updateText: this.updateText,
-    }
-    if (this.stateValues.answerAncestor !== undefined) {
-      this.actions.submitAnswer = () => this.requestAction({
-        componentName: this.stateValues.answerAncestor.componentName,
-        actionName: "submitAnswer"
-      })
-    }
-
-    this.renderer = new this.availableRenderers.textinput({
-      actions: this.actions,
-      text: this.stateValues.value,
-      key: this.componentName,
-      includeCheckWork: this.stateValues.includeCheckWork,
-      creditAchieved: this.stateValues.creditAchieved,
-      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      size: this.stateValues.size,
-      showCorrectness: this.flags.showCorrectness,
-    });
-  }
-  updateRenderer({ sourceOfUpdate }) {
-
-    let changeInitiatedWithThisComponent = sourceOfUpdate.local &&
-      sourceOfUpdate.originalComponents.includes(this.componentName);
-
-    this.renderer.updateTextinputRenderer({
-      text: this.stateValues.value,
-      creditAchieved: this.stateValues.creditAchieved,
-      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      changeInitiatedWithThisComponent
-    });
-
-  }
-
 }

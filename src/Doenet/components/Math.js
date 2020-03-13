@@ -426,23 +426,6 @@ export default class MathComponent extends InlineComponent {
 
   adapters = ["number", "text"];
 
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    this.renderer = new this.availableRenderers.math({
-      key: this.componentName,
-      mathLatex: this.stateValues.latex,
-      renderMode: this.stateValues.renderMode,
-    });
-  }
-
-  updateRenderer() {
-    this.renderer.updateMathLatex(this.stateValues.latex);
-  }
-
 }
 
 

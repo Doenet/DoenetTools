@@ -67,10 +67,20 @@ export default class Point extends DoenetRenderer {
     delete this.pointJXG;
   }
 
+  componentWillUnmount() {
+    if (this.pointJXG) {
+      this.removeGraphicalObject();
+    }
+  }
+
+
   // update({ x, y, changeInitiatedWithPoint, label, visible, draggable, showlabel }) {
   update() {
 
-    console.log('now calling update in point with no data')
+    if(!this.props.board) {
+      this.forceUpdate();
+      return;
+    }
 
     // even points that are hidden have renderers
     // (or this could be called before createGraphicalObject
@@ -147,8 +157,28 @@ export default class Point extends DoenetRenderer {
     this.actions.movePoint({ x: this.pointJXG.X(), y: this.pointJXG.Y() });
   }
 
+  componentDidMount() {
+    if (!this.props.board) {
+      window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
+      window.MathJax.Hub.processSectionDelay = 0;
+      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+    }
+  }
+
+  componentDidUpdate() {
+    if(!this.props.board) {
+      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+    }
+  }
+
   render() {
-    return null;
+
+    if (this.doenetSvData.hide || this.props.board) {
+      return null;
+    }
+
+    let mathJaxify = "\\(" + this.doenetSvData.coords + "\\)";
+    return <><a name={this.componentName} /><span id={this.componentName}>{mathJaxify}</span></>
   }
 }
 

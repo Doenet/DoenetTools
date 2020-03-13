@@ -137,7 +137,7 @@ export default class Core {
 
     this._components = {};
     this.renderedComponentInstructions = {};
-    this.renderedComponentTypes = [];
+    this.rendererTypesInDocument = [];
     this.componentsWithChangedChildrenToRender = new Set([]);
 
     this.downstreamDependencies = {};
@@ -527,9 +527,6 @@ export default class Core {
       instructions.push(instruction);
     }
 
-    console.log('instructions for changing renderer children')
-    console.log(instructions);
-
     this.coreUpdatedCallback(instructions)
 
   }
@@ -559,13 +556,14 @@ export default class Core {
     this.renderedComponentInstructions[componentName] = {
       componentName: componentName,
       componentType: component.componentType,
+      rendererType: component.rendererType,
       stateValues: new Proxy(stateForRenderer, createStateProxyHandler()),
       children: childInstructions,
       actions: component.actions,
     };
 
-    if (!this.renderedComponentTypes.includes(component.componentType)) {
-      this.renderedComponentTypes.push(component.componentType)
+    if (!this.rendererTypesInDocument.includes(component.rendererType)) {
+      this.rendererTypesInDocument.push(component.rendererType)
     }
 
     return this.renderedComponentInstructions[componentName];

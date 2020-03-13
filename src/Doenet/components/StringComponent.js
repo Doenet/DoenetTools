@@ -48,22 +48,4 @@ export default class StringComponent extends InlineComponent {
 
   }
 
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    this.renderer = new this.availableRenderers.text({
-      key: this.componentName,
-      text: this.stateValues.value,
-      suppressKeyRender: true,
-    });
-  }
-
-  updateRenderer() {
-    this.renderer.updateText(this.stateValues.value);
-  }
-
 }

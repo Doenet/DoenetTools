@@ -181,51 +181,6 @@ export default class Mathinput extends Input {
     }
   }
 
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    this.actions = {
-      updateMathExpression: this.updateMathExpression,
-    }
-    if (this.stateValues.answerAncestor !== undefined) {
-      this.actions.submitAnswer = () => this.requestAction({
-        componentName: this.stateValues.answerAncestor.componentName,
-        actionName: "submitAnswer"
-      })
-    }
-
-    this.renderer = new this.availableRenderers.mathinput({
-      actions: this.actions,
-      mathExpression: new Proxy(this.stateValues.value, this.readOnlyProxyHandler),
-      key: this.componentName,
-      includeCheckWork: this.stateValues.includeCheckWork,
-      creditAchieved: this.stateValues.creditAchieved,
-      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      size: this.stateValues.size,
-      showCorrectness: this.flags.showCorrectness,
-      disabled: this.stateValues.disabled,
-    });
-  }
-
-
-  updateRenderer({ sourceOfUpdate }) {
-
-    let changeInitiatedWithThisComponent = sourceOfUpdate.local &&
-      sourceOfUpdate.originalComponents.includes(this.componentName);
-
-    this.renderer.updateMathinputRenderer({
-      mathExpression: new Proxy(this.stateValues.value, this.readOnlyProxyHandler),
-      creditAchieved: this.stateValues.creditAchieved,
-      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      disabled: this.stateValues.disabled,
-      changeInitiatedWithThisComponent,
-    });
-
-  }
-
 }
 
 

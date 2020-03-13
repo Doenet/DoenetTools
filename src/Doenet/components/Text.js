@@ -124,22 +124,4 @@ export default class Text extends InlineComponent {
     return {};
   }
 
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    this.renderer = new this.availableRenderers.text({
-      key: this.componentName,
-      text: this.stateValues.value,
-    });
-  }
-
-  updateRenderer() {
-    this.renderer.updateText(this.stateValues.value);
-  }
-
-
 }

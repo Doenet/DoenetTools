@@ -116,7 +116,7 @@ export default class Graph extends BlockComponent {
       })
     }
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
           dependencyType: "childIdentity",
@@ -126,7 +126,7 @@ export default class Graph extends BlockComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues:
-            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
+            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
         };
       }
     }
@@ -134,50 +134,5 @@ export default class Graph extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-    this.renderer = new this.availableRenderers.graph2d({
-      key: this.componentName,
-      returnRenderersInGraph: this.returnRenderersInGraph,
-      // TODO: lost graphRenderComponents: is used in graph renderer!
-      graphRenderComponents: this.graphRenderComponents,
-      width: parseInt(this.stateValues.width),
-      height: parseInt(this.stateValues.height),
-      xmin: this.stateValues.xmin,
-      xmax: this.stateValues.xmax,
-      ymin: this.stateValues.ymin,
-      ymax: this.stateValues.ymax,
-      displayaxes: this.stateValues.displayaxes,
-      xlabel: this.stateValues.xlabel,
-      ylabel: this.stateValues.ylabel,
-    });
-  }
-
-  updateRenderer() {
-    if (this.renderer !== undefined) {
-      this.renderer.resizeBoard({
-        xmin: this.stateValues.xmin,
-        xmax: this.stateValues.xmax,
-        ymin: this.stateValues.ymin,
-        ymax: this.stateValues.ymax,
-      })
-    }
-  }
-
-  returnRenderersInGraph() {
-    let graphicalRenderers = {};
-
-    for (let component of this.stateValues.graphicalDescendants) {
-      let componentRenderer = this.allRenderComponents[component.componentName];
-      // could be undefined if no renderer present
-      graphicalRenderers[component.componentName] = componentRenderer;
-    }
-
-    return graphicalRenderers;
-
-  }
 
 }

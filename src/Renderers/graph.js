@@ -151,7 +151,6 @@ export default class Graph extends DoenetRenderer {
 
   drawGraphicalComponents() {
 
-
     this.renderers = {};
 
     let currentRenderers = this.returnRenderersInGraph();

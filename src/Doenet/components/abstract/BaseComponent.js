@@ -34,6 +34,7 @@ export default class BaseComponent {
     this.ancestors = ancestors;
 
     this.componentType = this.constructor.componentType;
+    this.rendererType = this.constructor.rendererType;
     this.standardComponentClasses = standardComponentClasses;
     this.allComponentClasses = allComponentClasses;
     this.isInheritedComponentType = isInheritedComponentType;
@@ -83,6 +84,10 @@ export default class BaseComponent {
   }
 
   static componentType = "_base";
+
+  static get rendererType() {
+    return this.componentType;
+  }
 
   get childLogicSatisfied() {
     return this.childLogic.logicResult.success;

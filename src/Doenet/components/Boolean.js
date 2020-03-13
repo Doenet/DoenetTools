@@ -61,7 +61,7 @@ export default class BooleanComponent extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: this.componentType,
-      // deferCalculation: false,
+      forRenderer: true,
       returnDependencies: () => ({
         stringTextChildren: {
           dependencyType: "childStateVariables",
@@ -154,9 +154,10 @@ export default class BooleanComponent extends InlineComponent {
     }
 
 
-    stateVariableDefinitions.textValue = {
+    stateVariableDefinitions.text = {
       public: true,
       componentType: "text",
+      forRenderer: true,
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -164,7 +165,7 @@ export default class BooleanComponent extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { textValue: dependencyValues.value ? "true" : "false" } }
+        return { newValues: { text: dependencyValues.value ? "true" : "false" } }
       }
     }
 
@@ -183,21 +184,5 @@ export default class BooleanComponent extends InlineComponent {
     return {};
   }
 
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    this.renderer = new this.availableRenderers.text({
-      key: this.componentName,
-      text: this.stateValues.textValue
-    });
-  }
-
-  updateRenderer() {
-    this.renderer.updateText(this.stateValues.textValue);
-  }
 
 }

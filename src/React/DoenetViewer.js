@@ -24,7 +24,7 @@ class DoenetViewer extends Component {
   coreReady() {
     let renderPromises = [];
     let rendererClassNames = [];
-    for (let rendererClassName of this.core.renderedComponentTypes) {
+    for (let rendererClassName of this.core.rendererTypesInDocument) {
       rendererClassNames.push(rendererClassName);
       renderPromises.push(import(/* webpackMode: "lazy", webpackChunkName: "./renderers/[request]" */ `../Renderers/${rendererClassName}`));
     }
@@ -33,7 +33,7 @@ class DoenetViewer extends Component {
     renderersloadComponent(renderPromises, rendererClassNames).then((rendererClasses) => {
       this.rendererClasses = rendererClasses;
       let documentComponentInstructions = this.core.renderedComponentInstructions[this.core.documentName];
-      let documentRendererClass = this.rendererClasses[documentComponentInstructions.componentType]
+      let documentRendererClass = this.rendererClasses[documentComponentInstructions.rendererType]
 
       this.documentRenderer = React.createElement(documentRendererClass,
         {
