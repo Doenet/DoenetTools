@@ -15,10 +15,10 @@ export default class DoenetRenderer extends Component {
     this.actions = props.componentInstructions.actions;
 
 
-    // TODO: this keeps the proxy in place so that state variables
+    // This keeps the proxy in place so that state variables
     // aren't calculated unless asked for
-    // Is this what we want?
-    // Also means it will always have the new values when they are changed....
+    // Also means it will always have the new values when they are changed
+    // so we don't have to pass them in on update
     this.doenetSvData = props.componentInstructions.stateValues;
 
     props.rendererUpdateMethods[this.componentName] = {
@@ -44,7 +44,7 @@ export default class DoenetRenderer extends Component {
   }
 
   removeChildren(instruction) {
-    this.children.splice(instruction.firstIndexInParent, instruction.numberDeleted);
+    this.children.splice(instruction.firstIndexInParent, instruction.numberChildrenDeleted);
     this.children = [...this.children]; // needed for React to recognize it's different
     for (let componentName of instruction.deletedComponentNames) {
       delete this.props.rendererUpdateMethods[componentName];

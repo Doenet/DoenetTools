@@ -1,5 +1,4 @@
 import InlineComponent from './abstract/InlineComponent';
-import { textFromComponent } from '../utils/text';
 
 export default class AsList extends InlineComponent {
   static componentType = "aslist";
@@ -66,14 +65,6 @@ export default class AsList extends InlineComponent {
     }
 
     return stateVariableDefinitions;
-  }
-
-  initializeRenderer() {
-    if (this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.aslist({
-        key: this.componentName,
-      });
-    }
   }
 
 }

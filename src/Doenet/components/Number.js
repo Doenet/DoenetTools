@@ -47,7 +47,6 @@ export default class NumberComponent extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: this.componentType,
-      forRenderer: true,
       returnDependencies: () => ({
         numberChild: {
           dependencyType: "childStateVariables",
@@ -147,6 +146,7 @@ export default class NumberComponent extends InlineComponent {
     }
 
     stateVariableDefinitions.valueForDisplay = {
+      forRenderer: true,
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",

@@ -24,7 +24,7 @@ export default class Number extends DoenetRenderer {
       return null;
     }
 
-    let number = this.doenetSvData.value;
+    let number = this.doenetSvData.valueForDisplay;
     if (this.doenetSvData.renderAsMath) {
       number = "\\(" + number + "\\)"
     }

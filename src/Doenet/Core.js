@@ -399,6 +399,7 @@ export default class Core {
     // if parent comes after child
 
     let renderersToUpdate = [];
+    let deletedRenderers = [];
 
     let instructions = [];
 
@@ -450,7 +451,7 @@ export default class Core {
         }
 
         for (let { childName, ind } of deletedChildren.reverse()) {
-          this.deleteFromRenderedComponentsInstructions({
+          let deletedComponentNames = this.deleteFromRenderedComponentInstructions({
             componentName: childName,
             recurseToChildren: true
           });
@@ -460,9 +461,11 @@ export default class Core {
             instructionType: "deleteRenderers",
             parentName: componentName,
             firstIndexInParent: ind,
-            numberDeleted: 1,
-            deletedComponentNames: [childName]
+            numberChildrenDeleted: 1,
+            deletedComponentNames
           })
+
+          deletedRenderers.push(...deletedComponentNames);
         }
 
 
@@ -519,6 +522,8 @@ export default class Core {
     // reset for next time
     this.componentsWithChangedChildrenToRender = new Set([]);
 
+    renderersToUpdate = renderersToUpdate.filter(x => !deletedRenderers.includes(x))
+
     if (renderersToUpdate.length > 0) {
       let instruction = {
         instructionType: "updateStateVariable",
@@ -569,22 +574,26 @@ export default class Core {
     return this.renderedComponentInstructions[componentName];
   }
 
-  deleteFromRenderedComponentsInstructions({
+  deleteFromRenderedComponentInstructions({
     componentName,
     recurseToChildren = true,
   }) {
+    let deletedComponentNames = [componentName]
     if (recurseToChildren) {
       let componentInstruction = this.renderedComponentInstructions[componentName];
       if (componentInstruction) {
         for (let child of componentInstruction.children) {
-          this.deleteFromRenderedComponentsInstructions({
+          let additionalDeleted = this.deleteFromRenderedComponentInstructions({
             componentName: child.componentName,
             recurseToChildren,
           })
+          deletedComponentNames.push(...additionalDeleted);
         }
       }
     }
     delete this.renderedComponentInstructions[componentName];
+
+    return deletedComponentNames;
   }
 
   componentAndRenderedDescendants(component) {
