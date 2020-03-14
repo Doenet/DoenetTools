@@ -70,7 +70,7 @@ export default class Slider extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.sliderType = {
       returnDependencies: () => ({

@@ -21,7 +21,7 @@ export default class Container extends BlockComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({

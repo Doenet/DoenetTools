@@ -62,7 +62,7 @@ export default class MathComponent extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.codePre = {
       // deferCalculation: false,

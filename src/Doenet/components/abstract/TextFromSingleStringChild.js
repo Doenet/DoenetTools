@@ -22,7 +22,7 @@ export default class TextFromSingleStringChild extends Text {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.value = {
       public: true,

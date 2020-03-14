@@ -70,7 +70,7 @@ export default class Award extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.incomplete = {
       additionalStateVariablesDefined: [

@@ -20,7 +20,7 @@ export default class P extends BlockComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
@@ -39,14 +39,6 @@ export default class P extends BlockComponent {
 
     return stateVariableDefinitions;
     
-  }
-
-  initializeRenderer(){
-    if(this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.p({
-        key: this.componentName,
-      });
-    }
   }
 
   static includeBlankStringChildren = true;

@@ -27,7 +27,7 @@ export default class Constraints extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.independentComponentConstraints = {
       returnDependencies: () => ({

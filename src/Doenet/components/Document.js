@@ -56,7 +56,7 @@ export default class Document extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({

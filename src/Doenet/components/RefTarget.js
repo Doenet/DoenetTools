@@ -2,6 +2,7 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class RefTarget extends BaseComponent {
   static componentType = "reftarget";
+  static rendererType = undefined;
 
   static takesComponentName = true;
   static stateVariableForTakingComponentName = 'refTargetName';
@@ -30,7 +31,7 @@ export default class RefTarget extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.refTargetName = {
       returnDependencies: () => ({

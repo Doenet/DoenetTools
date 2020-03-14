@@ -29,7 +29,7 @@ export default class Subsindex extends CompositeComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.substitutionsNumber = {
       returnDependencies: () => ({

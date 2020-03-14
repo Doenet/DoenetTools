@@ -53,7 +53,7 @@ export default class ConditionalContent extends BlockComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.hide = {
       returnDependencies: () => ({

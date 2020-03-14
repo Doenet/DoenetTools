@@ -596,7 +596,7 @@ export default class Answer extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.inputDescendants = {
       returnDependencies: () => ({

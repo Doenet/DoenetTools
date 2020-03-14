@@ -105,7 +105,7 @@ export default class IfComponent extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.parsedExpression = {
       additionalStateVariablesDefined: [

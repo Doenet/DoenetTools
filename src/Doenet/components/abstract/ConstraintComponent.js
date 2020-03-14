@@ -10,7 +10,7 @@ export default class ConstraintComponent extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.independentComponentConstraints = {
       returnDependencies: () => ({}),

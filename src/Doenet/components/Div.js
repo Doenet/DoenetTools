@@ -25,7 +25,7 @@ export default class Div extends BlockComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({

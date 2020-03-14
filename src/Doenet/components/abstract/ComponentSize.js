@@ -52,7 +52,7 @@ export default class ComponentSize extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let componentType = this.componentType;
 

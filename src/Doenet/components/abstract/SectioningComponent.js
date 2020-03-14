@@ -8,7 +8,7 @@ export default class SectioningComponent extends BlockComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.title = { default: "", componentType: "text" };
+    properties.title = { default: "", componentType: "text", forRenderer: true };
     properties.aggregatescores = { default: false };
     properties.weight = { default: 1 };
     // properties.possiblepoints = {default: undefined};
@@ -38,7 +38,7 @@ export default class SectioningComponent extends BlockComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.containerTag = {
       returnDependencies: () => ({}),

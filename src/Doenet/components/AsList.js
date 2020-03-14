@@ -20,7 +20,7 @@ export default class AsList extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({

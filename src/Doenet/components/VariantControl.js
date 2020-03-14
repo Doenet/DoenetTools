@@ -2,6 +2,7 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class VariantControl extends BaseComponent {
   static componentType = "variantcontrol";
+  static rendererType = undefined;
 
   static createsVariants = true;
 
@@ -47,7 +48,7 @@ export default class VariantControl extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.nVariantsSpecified = {
       returnDependencies: ({ sharedParameters }) => ({

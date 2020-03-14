@@ -2,6 +2,7 @@ import BaseComponent from './BaseComponent';
 
 export default class ComponentWithSelectableType extends BaseComponent {
   static componentType = "_componentwithselectabletype";
+  static rendererType = undefined;
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
@@ -139,7 +140,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.value = {
       public: true,

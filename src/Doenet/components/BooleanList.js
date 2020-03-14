@@ -68,7 +68,7 @@ export default class BooleanList extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.booleanAndBooleanlistChildren = {
       returnDependencies: () => ({

@@ -160,8 +160,9 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    delete stateVariableDefinitions.value;
 
     stateVariableDefinitions.selectedType = {
       public: true,

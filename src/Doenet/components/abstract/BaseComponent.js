@@ -89,6 +89,50 @@ export default class BaseComponent {
     return this.componentType;
   }
 
+  get allPotentialRendererTypes() {
+    if (!this.rendererType) {
+      return [];
+    }
+
+    let allPotentialRendererTypes = [this.rendererType];
+
+    for (let childName in this.allChildren) {
+      let child = this.allChildren[childName].component;
+      for (let rendererType of child.allPotentialRendererTypes) {
+        if (!allPotentialRendererTypes.includes(rendererType)) {
+          allPotentialRendererTypes.push(rendererType);
+        }
+      }
+    }
+
+    return allPotentialRendererTypes;
+
+  }
+
+  potentialRendererTypesFromSerializedComponents(serializedComponents) {
+    let potentialRendererTypes = [];
+
+    for (let comp of serializedComponents) {
+      let compClass = this.allComponentClasses[comp.componentType];
+      let rendererType = compClass.rendererType;
+      if (rendererType && !potentialRendererTypes.includes(rendererType)) {
+        potentialRendererTypes.push(rendererType);
+      }
+
+      if (comp.children) {
+        let childRenderTypes = this.potentialRendererTypesFromSerializedComponents(comp.children);
+        for (let rendererType of childRenderTypes) {
+          if (!potentialRendererTypes.includes(rendererType)) {
+            potentialRendererTypes.push(rendererType);
+          }
+        }
+      }
+
+    }
+
+    return potentialRendererTypes;
+  }
+
   get childLogicSatisfied() {
     return this.childLogic.logicResult.success;
   }
@@ -118,7 +162,15 @@ export default class BaseComponent {
   }
 
   static returnStateVariableDefinitions() {
-    return {};
+
+    let stateVariableDefinitions = {};
+
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { childrenToRender: [] } })
+    }
+
+    return stateVariableDefinitions;
   }
 
   static returnNormalizedStateVariableDefinitions({ propertyNames }) {
@@ -274,11 +326,6 @@ export default class BaseComponent {
     return descendants;
   }
 
-  initializeRenderer({ sstate }) {
-  }
-
-  updateRenderer() {
-  }
 
   static useChildrenForReference = true;
 

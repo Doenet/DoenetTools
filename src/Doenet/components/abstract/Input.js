@@ -12,7 +12,7 @@ export default class Input extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.creditAchieved = {
       defaultValue: 0,

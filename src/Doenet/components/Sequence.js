@@ -169,7 +169,7 @@ export default class Sequence extends CompositeComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.specifiedFrom = {
       additionalStateVariablesDefined: ["typeOfFrom"],
@@ -978,6 +978,13 @@ export default class Sequence extends CompositeComponent {
     // console.log(replacementChanges);
     return replacementChanges;
 
+  }
+
+  get allPotentialRendererTypes() {
+    console.log(`get all potential renderer types for sequence ${this.componentName}`)
+    let allPotentialRendererTypes = [this.stateValues.selectedType];
+    console.log(allPotentialRendererTypes)
+    return allPotentialRendererTypes;
   }
 
 }

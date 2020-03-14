@@ -68,7 +68,7 @@ export default class Select extends CompositeComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.serializedChildren = {
       returnDependencies: () => ({

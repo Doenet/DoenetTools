@@ -27,7 +27,7 @@ export default class panel extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.breakpoints = {
       returnDependencies: () => ({

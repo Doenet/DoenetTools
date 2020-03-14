@@ -2,6 +2,7 @@ import InlineComponent from './abstract/InlineComponent';
 
 export default class Variants extends InlineComponent {
   static componentType = "variants";
+  static rendererType = undefined;
 
   static returnChildLogic (args) {
     let childLogic = super.returnChildLogic(args);
@@ -56,7 +57,7 @@ export default class Variants extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.variants = {
       public: true,

@@ -2,6 +2,7 @@ import MathComponent from './Math';
 
 export default class Coords extends MathComponent {
   static componentType = "coords";
+  static rendererType = "math";
 
   updateState(args={}) {
     super.updateState(args);

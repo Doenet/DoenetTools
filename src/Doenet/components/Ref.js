@@ -150,7 +150,7 @@ export default class Ref extends CompositeComponent {
 
   static returnStateVariableDefinitions({ propertyNames }) {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.refTarget = {
       returnDependencies: () => ({
@@ -416,7 +416,7 @@ export default class Ref extends CompositeComponent {
                 variableName: propVariableObj.varName,
               }
             }
-            if(propVariableObj.isArray) {
+            if (propVariableObj.isArray) {
               dependencies[`targetArray${ind}`] = {
                 dependencyType: "componentStateVariable",
                 componentName: stateValues.refTargetName,
@@ -466,7 +466,7 @@ export default class Ref extends CompositeComponent {
             replacementClasses.push(...componentType.map(x =>
               componentInfoObjects.allComponentClasses[x])
             );
-          } else if(propVariableObj.isArray) {
+          } else if (propVariableObj.isArray) {
             // TODO: what about multi-dimensional arrays?
             let arrayLength = dependencyValues[`targetArray${ind}`].length;
             let componentClass = componentInfoObjects.allComponentClasses[componentType];
@@ -642,7 +642,31 @@ export default class Ref extends CompositeComponent {
 
   }
 
+  get allPotentialRendererTypes() {
 
+    let allPotentialRendererTypes = [];
+
+    for (let replacementClass of this.stateValues.replacementClassesForProp) {
+      let rendererType = replacementClass.rendererType;
+      if (rendererType && !allPotentialRendererTypes.includes(rendererType)) {
+        allPotentialRendererTypes.push(rendererType);
+      }
+    }
+
+    if (this.replacements) {
+      for (let replacement of this.replacements) {
+        for (let rendererType of replacement.allPotentialRendererTypes) {
+          if (!allPotentialRendererTypes.includes(rendererType)) {
+            allPotentialRendererTypes.push(rendererType);
+          }
+        }
+
+      }
+    }
+
+    return allPotentialRendererTypes;
+
+  }
 
   updateStateUnused() {
 

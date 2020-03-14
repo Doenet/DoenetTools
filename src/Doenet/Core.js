@@ -137,7 +137,6 @@ export default class Core {
 
     this._components = {};
     this.renderedComponentInstructions = {};
-    this.rendererTypesInDocument = [];
     this.componentsWithChangedChildrenToRender = new Set([]);
 
     this.downstreamDependencies = {};
@@ -174,6 +173,8 @@ export default class Core {
       initialAdd: true,
       applySugar: true,
     })
+
+    this.rendererTypesInDocument = this._components[this.documentName].allPotentialRendererTypes;
 
     // console.log(serializedState)
     // console.timeEnd('start up time');
@@ -501,17 +502,19 @@ export default class Core {
           if (!previousChildNames.includes(name)) {
 
             let comp = this._components[name];
+            if (comp.rendererType) {
 
-            let childToRender = this.initializeRenderedComponentInstruction(comp);
-            instructionChildren.splice(ind, 0, childToRender);
+              let childToRender = this.initializeRenderedComponentInstruction(comp);
+              instructionChildren.splice(ind, 0, childToRender);
 
-            instructions.push({
-              instructionType: "addRenderer",
-              componentName: comp.componentName,
-              parentName: componentName,
-              indexForParent: ind,
-            })
+              instructions.push({
+                instructionType: "addRenderer",
+                componentName: comp.componentName,
+                parentName: componentName,
+                indexForParent: ind,
+              })
 
+            }
           }
 
         }
@@ -538,13 +541,21 @@ export default class Core {
 
   initializeRenderedComponentInstruction(component) {
 
+    if (component.rendererType === undefined) {
+      return;
+    }
+
     let componentName = component.componentName;
 
     let childInstructions = [];
     if (component.stateValues.childrenToRender) {
       for (let childName of component.stateValues.childrenToRender) {
+        let child = this._components[childName];
+        if (!child.rendererType) {
+          continue;
+        }
         childInstructions.push(
-          this.initializeRenderedComponentInstruction(this._components[childName])
+          this.initializeRenderedComponentInstruction(child)
         )
       }
     }
@@ -566,10 +577,6 @@ export default class Core {
       children: childInstructions,
       actions: component.actions,
     };
-
-    if (!this.rendererTypesInDocument.includes(component.rendererType)) {
-      this.rendererTypesInDocument.push(component.rendererType)
-    }
 
     return this.renderedComponentInstructions[componentName];
   }
@@ -2572,8 +2579,6 @@ export default class Core {
     }
 
 
-    // Note: this is untested code, as haven't made components
-    // that will trigger this condition
     for (let varName in deleteStateVariablesFromDefinition) {
       let varNamesToDelete = deleteStateVariablesFromDefinition[varName];
       let stateDef = stateVariableDefinitions[varName];
@@ -2633,6 +2638,7 @@ export default class Core {
             }
           }
         }
+        return results;
       }
 
     }
@@ -5386,7 +5392,7 @@ export default class Core {
         continue;
       }
 
-      let stateValues;
+      let stateValues = {};
       if (stateVarObj.stateVariablesDeterminingDependencies) {
         let missingAValue = false;
         for (let varName2 of stateVarObj.stateVariablesDeterminingDependencies) {

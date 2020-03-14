@@ -41,7 +41,7 @@ export default class Map extends CompositeComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.nSubstitutions = {
       additionalStateVariablesDefined: ["substitutionsNames"],
@@ -571,4 +571,26 @@ export default class Map extends CompositeComponent {
     // could treat as a normal component
     return { success: false };
   }
+
+  get allPotentialRendererTypes() {
+
+    let allPotentialRendererTypes = this.potentialRendererTypesFromSerializedComponents(
+      this.stateValues.template
+    );
+
+    if(this.replacements) {
+      for(let replacement of this.replacements) {
+        for(let rendererType of replacement.allPotentialRendererTypes) {
+          if(!allPotentialRendererTypes.includes(rendererType)) {
+            allPotentialRendererTypes.push(rendererType);
+          }
+        }
+
+      }
+    }
+
+    return allPotentialRendererTypes;
+
+  }
+
 }

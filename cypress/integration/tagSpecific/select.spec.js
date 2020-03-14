@@ -1540,10 +1540,10 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
 
       expect(numX).greaterThan(0);
-      expect(numX).lessThan(12);
-      expect(numY).greaterThan(20);
+      expect(numX).lessThan(15);
+      expect(numY).greaterThan(17);
       expect(numY).lessThan(50);
-      expect(numZ).greaterThan(150);
+      expect(numZ).greaterThan(140);
 
     })
   });

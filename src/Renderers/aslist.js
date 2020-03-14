@@ -13,12 +13,18 @@ export default class AsList extends DoenetRenderer {
       return null;
     }
 
-    if(this.children.length === 0) {
-      return <React.Fragment key={this.componentName}/>
+    // since can't access properties of child themselves
+    // look at the instrutions to create children to determine
+    // which children are hidden
+    let unhiddenChildren = this.children
+      .filter((x, i) => !this.childrenToCreate[i].stateValues.hide)
+
+    if (unhiddenChildren.length === 0) {
+      return <React.Fragment key={this.componentName} />
     }
 
-    let withCommas = this.children.slice(1).reduce((a,b) => [...a, ', ', b], [this.children[0]])
-    
+    let withCommas = unhiddenChildren.slice(1).reduce((a, b) => [...a, ', ', b], [unhiddenChildren[0]])
+
     return <React.Fragment key={this.componentName}><a name={this.componentName} />{withCommas}</React.Fragment>;
   }
 }

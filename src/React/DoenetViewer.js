@@ -24,6 +24,8 @@ class DoenetViewer extends Component {
   coreReady() {
     let renderPromises = [];
     let rendererClassNames = [];
+    console.log('rendererTypesInDocument');
+    console.log(this.core.rendererTypesInDocument);
     for (let rendererClassName of this.core.rendererTypesInDocument) {
       rendererClassNames.push(rendererClassName);
       renderPromises.push(import(/* webpackMode: "lazy", webpackChunkName: "./renderers/[request]" */ `../Renderers/${rendererClassName}`));

@@ -15,7 +15,7 @@ export default class GraphicalComponent extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.selectedStyle = {
       forRenderer: true,

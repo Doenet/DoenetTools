@@ -103,7 +103,7 @@ export default class Collect extends CompositeComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.refTarget = {
       returnDependencies: () => ({

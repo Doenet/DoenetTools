@@ -2,4 +2,5 @@ import ComponentWithSerializedChildren from './abstract/ComponentWithSerializedC
 
 export default class Template extends ComponentWithSerializedChildren {
   static componentType = "template";
+  static rendererType = undefined;
 }

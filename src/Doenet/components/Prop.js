@@ -20,7 +20,7 @@ export default class Prop extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.variableName = {
       returnDependencies: () => ({
