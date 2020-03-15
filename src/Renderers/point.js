@@ -10,6 +10,8 @@ export default class Point extends DoenetRenderer {
     }
   }
 
+  initializeChildrenOnConstruction = false;
+
   createGraphicalObject() {
 
     //things to be passed to JSXGraph as attributes

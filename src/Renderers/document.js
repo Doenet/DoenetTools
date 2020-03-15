@@ -9,9 +9,6 @@ export default class Document extends DoenetRenderer {
       return null;
     }
 
-    if (this.children === undefined) {
-      this.initializeChildren();
-    }
     return <>{this.children}</>
   }
 }

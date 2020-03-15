@@ -10,6 +10,8 @@ export default class Graph extends DoenetRenderer {
     this.setAllBoardsToHighQualityAndUpdate = this.setAllBoardsToHighQualityAndUpdate.bind(this);
   }
 
+  initializeChildrenOnConstruction = false;
+
   componentDidMount() {
     this.drawBoard();
     this.forceUpdate();

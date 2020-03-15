@@ -6,13 +6,32 @@ export default class Booleaninput extends Input {
     this.updateBoolean = this.updateBoolean.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     );
+
+    this.actions = {
+      updateBoolean: this.updateBoolean
+    };
+
+    //Complex because the stateValues isn't defined until later
+    Object.defineProperty(this.actions, 'submitAnswer', {
+      get: function () {
+        if (this.stateValues.answerAncestor !== null) {
+          return () => this.requestAction({
+            componentName: this.stateValues.answerAncestor.componentName,
+            actionName: "submitAnswer"
+          })
+        } else {
+          return () => null
+        }
+      }.bind(this)
+    });
+
   }
   static componentType = "booleaninput";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.prefill = { default: "false" };
-    properties.label = { default: "" };
+    properties.label = { default: "", forRenderer: true };
     return properties;
   }
 
@@ -39,6 +58,7 @@ export default class Booleaninput extends Input {
     stateVariableDefinitions.value = {
       public: true,
       componentType: "boolean",
+      forRenderer: true,
       returnDependencies: () => ({
         booleanChild: {
           dependencyType: "childStateVariables",
@@ -146,45 +166,6 @@ export default class Booleaninput extends Input {
         value: boolean,
       }]
     })
-  }
-
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    this.actions = {
-      updateBoolean: this.updateBoolean,
-    }
-    if (this.stateValues.answerAncestor !== undefined) {
-      this.actions.submitAnswer = () => this.requestAction({
-        componentName: this.stateValues.answerAncestor.componentName,
-        actionName: "submitAnswer"
-      })
-    }
-
-    this.renderer = new this.availableRenderers.booleaninput({
-      actions: this.actions,
-      boolean: this.stateValues.value,
-      key: this.componentName,
-      label: this.stateValues.label,
-      includeCheckWork: this.stateValues.includeCheckWork,
-      creditAchieved: this.stateValues.creditAchieved,
-      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      showCorrectness: this.flags.showCorrectness,
-    });
-  }
-
-  updateRenderer() {
-    this.renderer.updateBoolean({
-      boolean: this.stateValues.value,
-      label: this.stateValues.label,
-      creditAchieved: this.stateValues.creditAchieved,
-      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-    });
-
   }
 
 }

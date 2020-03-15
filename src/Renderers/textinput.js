@@ -16,16 +16,16 @@ export default class TextInput extends DoenetRenderer {
 
     this.currentValue = this.doenetSvData.value;
     this.valueToRevertTo = this.doenetSvData.value;
-  
 
   }
 
+  initializeChildrenOnConstruction = false;
 
   handleKeyPress(e) {
     if (e.key === "Enter") {
       this.valueToRevertTo = this.doenetSvData.value;
       if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
-        this.props.actions.submitAnswer();
+        this.actions.submitAnswer();
       }
       this.forceUpdate();
     }
@@ -74,7 +74,7 @@ export default class TextInput extends DoenetRenderer {
     }
 
 
-    if(this.doenetSvData.value !== this.currentValue) {
+    if (this.doenetSvData.value !== this.currentValue) {
       this.currentValue = this.doenetSvData.value;
       this.valueToRevertTo = this.doenetSvData.value;
     }

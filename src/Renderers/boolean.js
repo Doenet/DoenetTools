@@ -3,6 +3,8 @@ import DoenetRenderer from './DoenetRenderer';
 
 export default class Boolean extends DoenetRenderer {
 
+  initializeChildrenOnConstruction = false;
+  
   render() {
 
     if (this.doenetSvData.hide) {

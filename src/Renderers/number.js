@@ -3,6 +3,8 @@ import DoenetRenderer from './DoenetRenderer';
 
 export default class Number extends DoenetRenderer {
 
+  initializeChildrenOnConstruction = false;
+
   componentDidMount() {
     if (this.doenetSvData.renderAsMath) {
       window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });

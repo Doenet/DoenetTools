@@ -15,8 +15,6 @@ export default class MathInput extends DoenetRenderer {
     this.handleFocus = this.handleFocus.bind(this);
     this.onChangeHandler = this.onChangeHandler.bind(this);
 
-
-
     this.mathExpression = this.doenetSvData.value;
     this.textValue = this.doenetSvData.value.toString();
 
@@ -26,8 +24,9 @@ export default class MathInput extends DoenetRenderer {
     //Remove __ value so it doesn't show
     if (this.textValue === '\uFF3F') { this.textValue = ""; }
 
-
   }
+
+  initializeChildrenOnConstruction = false;
 
   calculateMathExpressionFromText(text) {
     let expression;
@@ -58,7 +57,7 @@ export default class MathInput extends DoenetRenderer {
       this.valueToRevertTo = this.doenetSvData.value;
       this.textValueToRevertTo = this.textValue;
       if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
-        this.props.actions.submitAnswer();
+        this.actions.submitAnswer();
       }
       this.forceUpdate();
     }

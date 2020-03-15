@@ -2,10 +2,6 @@ import React from 'react';
 import DoenetRenderer from './DoenetRenderer';
 
 export default class Section extends DoenetRenderer {
-  constructor(props) {
-    super(props);
-    this.initializeChildren();
-  }
 
   render() {
 

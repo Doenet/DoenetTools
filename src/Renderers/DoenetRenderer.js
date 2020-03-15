@@ -28,7 +28,13 @@ export default class DoenetRenderer extends Component {
       swapChildren: this.swapChildren,
     }
 
+    if(this.initializeChildrenOnConstruction) {
+      this.initializeChildren();
+    }
+
   }
+
+  initializeChildrenOnConstruction = true;
 
   update() {
     this.forceUpdate();
