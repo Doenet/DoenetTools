@@ -26,7 +26,7 @@ export default class MathInput extends DoenetRenderer {
 
   }
 
-  initializeChildrenOnConstruction = false;
+  static initializeChildrenOnConstruction = false;
 
   calculateMathExpressionFromText(text) {
     let expression;

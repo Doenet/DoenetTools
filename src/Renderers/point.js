@@ -10,7 +10,7 @@ export default class Point extends DoenetRenderer {
     }
   }
 
-  initializeChildrenOnConstruction = false;
+  static initializeChildrenOnConstruction = false;
 
   createGraphicalObject() {
 
@@ -77,9 +77,9 @@ export default class Point extends DoenetRenderer {
 
 
   // update({ x, y, changeInitiatedWithPoint, label, visible, draggable, showlabel }) {
-  update() {
+  update({ sourceOfUpdate }) {
 
-    if(!this.props.board) {
+    if (!this.props.board) {
       this.forceUpdate();
       return;
     }
@@ -131,9 +131,9 @@ export default class Point extends DoenetRenderer {
 
     // TODO: determine if change initiated with point
 
-    // if (changeInitiatedWithPoint) {
-    this.props.board.updateInfobox(this.pointJXG);
-    // }
+    if (sourceOfUpdate.originalComponents.includes(this.componentName)) {
+      this.props.board.updateInfobox(this.pointJXG);
+    }
 
     this.pointJXG.name = this.doenetSvData.label;
     // this.pointJXG.visProp.withlabel = this.showlabel && this.label !== "";
@@ -168,7 +168,7 @@ export default class Point extends DoenetRenderer {
   }
 
   componentDidUpdate() {
-    if(!this.props.board) {
+    if (!this.props.board) {
       window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
     }
   }

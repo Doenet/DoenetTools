@@ -2,6 +2,7 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class Constraints extends BaseComponent {
   static componentType = "constraints";
+  static rendererType = undefined;
 
   // remove default properties from base component
   static createPropertiesObject() {
@@ -123,6 +124,10 @@ export default class Constraints extends BaseComponent {
       },
       definition: function ({ dependencyValues, arrayKeys }) {
 
+        // console.log("constraintResult dependencies")
+        // console.log(dependencyValues);
+        // console.log(arrayKeys)
+
         if (dependencyValues.independentComponentConstraints && arrayKeys) {
           let arrayKey = Number(arrayKeys[0]);
           let variables = {
@@ -215,6 +220,7 @@ export default class Constraints extends BaseComponent {
         // console.log('inverse definition of constraints')
         // console.log(desiredStateVariableValues);
         // console.log(dependencyValues)
+        // console.log(stateValues)
 
         // Note: the idea is that we want the constrain applied even in the reverse direction
         // so that downstream variables will see the effect of the constraint
@@ -255,10 +261,18 @@ export default class Constraints extends BaseComponent {
           // we applied constraint to whole array
           let variables = {};
 
-          // in this case, desiredStateVariableValues.constraintResult
-          // should be an array of all values
-          for (let arrayKey in desiredStateVariableValues.constraintResults) {
-            variables[`x${Number(arrayKey) + 1}`] = desiredStateVariableValues.constraintResults[arrayKey];
+          // desiredStateVariableValues.constraintResult could just a
+          // subset of keys (if arrayKeys specified)
+          // but we should apply constraint function to all values
+          // We start with previous values of constraintResults
+          // and then modify any that are in desiredStateVariableValues.constraintResults
+
+          for (let arrayKey in stateValues.constraintResults) {
+            if (arrayKey in desiredStateVariableValues.constraintResults) {
+              variables[`x${Number(arrayKey) + 1}`] = desiredStateVariableValues.constraintResults[arrayKey];
+            } else {
+              variables[`x${Number(arrayKey) + 1}`] = stateValues.constraintResults[arrayKey];
+            }
           }
 
           for (let constraintChild of dependencyValues.constraintChildren) {

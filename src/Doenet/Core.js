@@ -530,7 +530,8 @@ export default class Core {
     if (renderersToUpdate.length > 0) {
       let instruction = {
         instructionType: "updateStateVariable",
-        renderersToUpdate
+        renderersToUpdate,
+        sourceOfUpdate,
       }
       instructions.push(instruction);
     }

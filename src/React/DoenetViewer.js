@@ -60,7 +60,9 @@ class DoenetViewer extends Component {
 
       if (instruction.instructionType === "updateStateVariable") {
         for (let componentName of instruction.renderersToUpdate) {
-          this.rendererUpdateMethods[componentName].update();
+          this.rendererUpdateMethods[componentName].update({
+            sourceOfUpdate: instruction.sourceOfUpdate
+          });
         }
       } else if (instruction.instructionType === "addRenderer") {
         this.rendererUpdateMethods[instruction.parentName].addChildren(instruction)

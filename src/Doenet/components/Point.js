@@ -900,6 +900,37 @@ export default class Point extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.nearestPoint = {
+      returnDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions"
+        },
+        numericalXs: {
+          dependencyType: "stateVariable",
+          variableName: "numericalXs"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          nearestPoint: function () {
+            // for point, nearest point is just the point itself
+            // only implement for numerical values
+            let result = {};
+
+            for(let ind=1; ind <= dependencyValues.nDimensions; ind++) {
+              let x = dependencyValues.numericalXs[ind-1];
+              if(!Number.isFinite(x)) {
+                return {};
+              }
+              result['x'+ind] = x;
+            }
+            return result;
+          }
+        }
+      })
+    }
+
 
     return stateVariableDefinitions;
   }

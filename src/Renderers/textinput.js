@@ -19,7 +19,7 @@ export default class TextInput extends DoenetRenderer {
 
   }
 
-  initializeChildrenOnConstruction = false;
+  static initializeChildrenOnConstruction = false;
 
   handleKeyPress(e) {
     if (e.key === "Enter") {

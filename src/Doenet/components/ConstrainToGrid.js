@@ -39,6 +39,12 @@ export default class ConstrainToGrid extends ConstraintComponent {
       definition: () => ({ newValues: { independentComponentConstraints: true } })
     }
 
+    // Note: constraintInactive allows one to treat constrainToGrid as a property
+    // so that
+    // <component constrainToGrid /> and <component constrainToGrid="true"/>
+    // turn the constraint on (with default parameters), and
+    // <component constrainToGrid="false"/>
+    // leave the constraint off
     stateVariableDefinitions.constraintInactive = {
       returnDependencies: () => ({
         stringChild: {

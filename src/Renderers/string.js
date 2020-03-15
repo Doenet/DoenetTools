@@ -3,7 +3,7 @@ import DoenetRenderer from './DoenetRenderer';
 
 export default class StringRenderer extends DoenetRenderer {
 
-  initializeChildrenOnConstruction = false;
+  static initializeChildrenOnConstruction = false;
 
   render() {
 

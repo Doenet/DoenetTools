@@ -3,7 +3,7 @@ import DoenetRenderer from './DoenetRenderer';
 
 export default class MathRenderer extends DoenetRenderer {
 
-  initializeChildrenOnConstruction = false;
+  static initializeChildrenOnConstruction = false;
 
   componentDidMount() {
     window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });

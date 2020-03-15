@@ -3,7 +3,7 @@ import DoenetRenderer from './DoenetRenderer';
 
 export default class Number extends DoenetRenderer {
 
-  initializeChildrenOnConstruction = false;
+  static initializeChildrenOnConstruction = false;
 
   componentDidMount() {
     if (this.doenetSvData.renderAsMath) {

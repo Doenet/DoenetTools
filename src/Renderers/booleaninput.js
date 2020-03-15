@@ -12,7 +12,7 @@ export default class BooleanInput extends DoenetRenderer {
 
   }
 
-  initializeChildrenOnConstruction = false;
+  static initializeChildrenOnConstruction = false;
 
   onChangeHandler(e) {
     this.actions.updateBoolean({

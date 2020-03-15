@@ -51,7 +51,12 @@ export default class AttractToGrid extends ConstraintComponent {
       })
     }
 
-
+    // Note: constraintInactive allows one to treat attractToGrid as a property
+    // so that
+    // <component attractToGrid /> and <component attractToGrid="true"/>
+    // turn the constraint on (with default parameters), and
+    // <component attractToGrid="false"/>
+    // leave the constraint off
     stateVariableDefinitions.constraintInactive = {
       returnDependencies: () => ({
         stringChild: {
