@@ -7,7 +7,7 @@ import * as Icons from './icons'
 import DropItem from "../drop-item";
 import DragItem from "../drag-item";
 
-export const TreeNode = memo(({ children, name, style, defaultOpen = false }) => {
+const TreeNode = memo(({ children, name, style, defaultOpen = false }) => {
   const [isOpen, setOpen] = useState(defaultOpen)
   const previous = usePrevious(isOpen)
   const [bind, { height: viewHeight }] = useMeasure()

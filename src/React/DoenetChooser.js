@@ -78,6 +78,7 @@ class DoenetChooser extends Component {
     this.toggleManageUrlForm = this.toggleManageUrlForm.bind(this);
     this.saveUrl = this.saveUrl.bind(this);
     this.handleNewUrlCreated = this.handleNewUrlCreated.bind(this);
+    this.updateHeadingsAndAssignments = this.updateHeadingsAndAssignments.bind(this);
   }
 
 
@@ -1076,6 +1077,12 @@ class DoenetChooser extends Component {
     }); 
   }
 
+  updateHeadingsAndAssignments(headingsInfo, assignmentsInfo) {
+    this.headingsInfo = headingsInfo;
+    this.assignmentsInfo = assignmentsInfo;
+    console.log("Here");
+  }
+
   render(){
 
     if (!this.courses_loaded || !this.assignments_and_headings_loaded){
@@ -1083,6 +1090,8 @@ class DoenetChooser extends Component {
                 <SpinningLoader/>
              </div>
     }
+    return <TreeView headingsInfo={this.headingsInfo} assignmentsInfo={this.assignmentsInfo} 
+      updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>;
 
     this.buildCourseList();
     this.buildLeftNavPanel();
@@ -1123,7 +1132,6 @@ class DoenetChooser extends Component {
         urlList = this.courseInfo[this.state.selectedCourse].urls;
       }
       this.mainSection = <React.Fragment>
-        <TreeView headingsInfo={this.headingsInfo} assignmentsInfo={this.assignmentsInfo} />
         <DoenetBranchBrowser
           loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
           allContentInfo={this.branchId_info}
