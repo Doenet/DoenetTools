@@ -17,7 +17,7 @@ services:
     build: './php'
     volumes:
       - ./volumes/dist_local:/usr/local/apache2/htdocs
-      - ../php_config/env.ini:/var/doenet_php_config/env.ini
+      - ./php_config/env.ini:/var/doenet_php_config/env.ini
     restart: always
 
   mysql:
@@ -29,13 +29,16 @@ services:
     restart: always
 
   node:
+    # build:
+    #   context: '../'
+    #   dockerfile: 'node'
     build: './node'
+    # image: node:13.8
     user: 'node'
     working_dir: /home/node/app
     volumes:
       - ..:/home/node/app
       - ./volumes/dist_local:/var/www/html
-
-    command: 'npm start'
-    restart: always
-    # command: 'npm --version'
+    command: 'npm start' # comment this line if you want to serve but not build
+    restart: always # comment this line if you want to serve but not build
+    # command: 'npm --version' # Uncomment this line if you want to serve but not build
