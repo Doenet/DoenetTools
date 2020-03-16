@@ -771,6 +771,7 @@ export default class Answer extends InlineComponent {
     };
 
     stateVariableDefinitions.delegateCheckWork = {
+      forRenderer: true,
       returnDependencies: () => ({
         inputDescendants: {
           dependencyType: "stateVariable",
@@ -846,6 +847,7 @@ export default class Answer extends InlineComponent {
       defaultValue: 0,
       public: true,
       componentType: "number",
+      forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
@@ -929,6 +931,7 @@ export default class Answer extends InlineComponent {
 
 
     stateVariableDefinitions.justSubmitted = {
+      forRenderer: true,
       returnDependencies: () => ({
         currentCreditAchievedDependencies: {
           dependencyType: "stateVariable",
