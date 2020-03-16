@@ -3309,82 +3309,89 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       <div className="courseContainer">
         {(this.courseIdsArray!=[] && this.courseInfo!={} ?
           (<DoenetHeader 
-            rightToEdit = {this.rightToEdit}
-            rightToView = {this.rightToView}
-            instructorRights = {this.instructorRights}
-            downloadPermission = {this.parentUpdateDownloadPermission}
-            permissions = {this.coursesPermissions}
-            key={"name"+(this.updateNumber++)}
+            key={"doenetHeader"+(this.updateNumber++)}
             toolTitle="Course" 
-            arrayIds = {this.courseIdsArray}
-            courseInfo = {this.courseInfo}
-            headingTitle={this.courseName}
-            defaultId = {this.currentCourseId} 
-            parentUpdateDownloadPermission = {()=>{
-              this.parentUpdateDownloadPermission = false
-            }}
-            permissionCallBack = {(e)=>{
-              if (e==="Student"){
-                this.rightToEdit=false
+            headingTitle = {this.courseName}
+           
+            rights = {
+              {rightToEdit:this.rightToEdit,
+                rightToView:this.rightToView,
+                instructorRights : this.instructorRights,
+                downloadPermission : this.parentUpdateDownloadPermission,
+                permissions : this.coursesPermissions,
+                arrayIds : this.courseIdsArray,
+                courseInfo : this.courseInfo,
+                defaultId : this.currentCourseId,
+                permissionCallBack :(e)=>{
+                  if (e==="Student"){
+                    this.rightToEdit=false
+                  }
+                  if (e==="Instructor"){
+                    this.rightToEdit=true
+                    this.instructorRights = true
+                  }
+    
+                  this.makeTreeArray=[]
+                  this.alreadyLoadOverview = false
+                  this.alreadyLoadSyllabus = false
+                  this.Overview_doenetML = ""
+                  this.Syllabus_doenetML = ""
+                  this.assignmentTree = null
+    
+                  this.alreadyLoadAssignment=[]
+                  this.alreadyMadeLink=[]
+                  this.tree_route=[]
+                  this.overview_link=null
+                  this.syllabus_link=null
+                  this.grade_link=null
+                  this.assignment_link=null
+                  if (this.activeSection==="assignments"){
+                    this.makeTreeVisible({loadSpecificId:""})
+                  }
+                  this.forceUpdate()
+                },
+                parentFunction:(e)=>{
+                  this.updateNumber+=1
+                  this.alreadyHasCourseInfo=false
+                  this.alreadyLoadAssignment=[]
+                  this.alreadyMadeLink=[]
+                  this.tree_route=[]
+    
+                  this.overview_branchId=""
+                  this.syllabus_branchId=""
+    
+                  this.overview_link=null
+                  this.syllabus_link=null
+                  this.grade_link=null
+                  this.assignment_link=null
+    
+                  this.currentCourseId = e;
+                  this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+                  this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
+                  this.rightToView = false
+                  this.rightToEdit = false
+                  this.instructorRights = false
+                  if (this.accessAllowed==="1"){
+                    this.rightToView = true
+                    if (this.adminAccess==="1"){
+                      this.rightToEdit = true
+                      this.instructorRights = true
+                    }
+                  }
+                  this.usingDefaultCourseId = false
+                  this.alreadyLoadAllCourses = false
+    
+                  // this.AssignmentInfoChanged=true;
+                  this.forceUpdate()
+                  }
               }
-              if (e==="Instructor"){
-                this.rightToEdit=true
-                this.instructorRights = true
-              }
-
-              this.makeTreeArray=[]
-              this.alreadyLoadOverview = false
-              this.alreadyLoadSyllabus = false
-              this.Overview_doenetML = ""
-              this.Syllabus_doenetML = ""
-              this.assignmentTree = null
-
-              this.alreadyLoadAssignment=[]
-              this.alreadyMadeLink=[]
-              this.tree_route=[]
-              this.overview_link=null
-              this.syllabus_link=null
-              this.grade_link=null
-              this.assignment_link=null
-              if (this.activeSection==="assignments"){
-                this.makeTreeVisible({loadSpecificId:""})
-              }
-              this.forceUpdate()
-            }}
-            parentFunction={(e)=>{
-              this.updateNumber+=1
-              this.alreadyHasCourseInfo=false
-              this.alreadyLoadAssignment=[]
-              this.alreadyMadeLink=[]
-              this.tree_route=[]
-
-              this.overview_branchId=""
-    this.syllabus_branchId=""
-
-              this.overview_link=null
-              this.syllabus_link=null
-              this.grade_link=null
-              this.assignment_link=null
-
-              this.currentCourseId = e;
-              this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
-              this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
-              this.rightToView = false
-              this.rightToEdit = false
-              this.instructorRights = false
-              if (this.accessAllowed==="1"){
-                this.rightToView = true
-                if (this.adminAccess==="1"){
-                  this.rightToEdit = true
-                  this.instructorRights = true
-                }
-              }
-              this.usingDefaultCourseId = false
-              this.alreadyLoadAllCourses = false
-
-              // this.AssignmentInfoChanged=true;
-              this.forceUpdate()
-              }} 
+            }
+            // rightToEdit = {this.rightToEdit}
+            // rightToView = {this.rightToView}
+            
+            
+            
+             
             />):null
           )}
         
