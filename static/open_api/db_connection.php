@@ -1,10 +1,10 @@
 <?php
 
-$env_path = "../etc/env.ini";
+$env_path = "../etc/env.ini"; // ?
 $remoteuser = $_SERVER[ 'REMOTE_USER' ];
 
 if ($_SERVER['HTTP_HOST'] == 'localhost:3000'){
-  $env_path = "../../env.ini";
+  $env_path = "/var/doenet_php_config/env.ini";
   $remoteuser = "devuser";
 }
 
