@@ -633,7 +633,7 @@ class DoenetCourse extends Component {
     this.loadingScreen = (<React.Fragment><p>Loading...</p></React.Fragment>);
     this.AssignmentInfoPackageReady = false
     this.thisAssignmentInfo=""
-
+    this.grade_route = null
     this.assignmentName=null;
      this.individualize=false;
      this.multipleAttempts=false;
@@ -1137,7 +1137,7 @@ class DoenetCourse extends Component {
     // adding list
     this.newChange = false
     this.loadSection()
-    this.forceUpdate()
+    // this.forceUpdate()
     
 
   }
@@ -2998,6 +2998,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     // console.log("this.alreadyLoadOverview: "+this.alreadyLoadOverview)
     // console.log("this.alreadyLoadSyllabus: "+this.alreadyLoadSyllabus)
     // console.log("Syllabus code: "+this.Syllabus_doenetML)
+    this.loadFirstTrue=null
     if (this.activeSection==="overview" && !this.alreadyLoadOverview){
       console.log("====MAKING overview====")
       this.loadOverview();
@@ -3021,7 +3022,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       this.treeOnScreen = true;
       this.thisAssignmentInfo=""
       this.componentLoadedFromNavigationBar=null;
+      if (this.enableAssignment){
       this.makeTreeVisible({loadSpecificId:""})
+      }
     }
     // else {
     //   console.log("====ALREADY MADE=====")
@@ -3247,6 +3250,15 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         </label></React.Fragment>):null}
         </div>
       )
+      this.grade_route=(
+        <Route key="grade" exact path="/grades">
+                  <Grades parentFunction={(e)=>{this.activeSection="assignments";this.loadAssignmentFromGrade=true;this.makeTreeVisible({loadSpecificId:e})}}/>
+                  {/* //this.props.student, this.props.sections, this.props.group,
+                  // this.props.gradeCategories, this.props.score, this.props.subtotal
+                  // this.props.total */}
+                  {/* {this.gradeComponent} */}
+                </Route>
+      )
     }
     if (this.rightToEdit || (this.rightToView && this.enableAssignment)){
       this.assignment_link = (
@@ -3345,7 +3357,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                   this.syllabus_link=null
                   this.grade_link=null
                   this.assignment_link=null
-                  if (this.activeSection==="assignments"){
+                  if (this.activeSection==="assignments" && this.enableAssignment){
                     this.makeTreeVisible({loadSpecificId:""})
                   }
                   this.forceUpdate()
@@ -3450,13 +3462,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 <Route key="syllabus" exact path="/syllabus">
                   {this.Syllabus_doenetML!="" && this.Syllabus_doenetML!=undefined?<Syllabus doenetML={this.Syllabus_doenetML}/>:null}             
                 </Route>
-                <Route key="grade" exact path="/grades">
-                  <Grades parentFunction={(e)=>{this.activeSection="assignments";this.loadAssignmentFromGrade=true;this.makeTreeVisible({loadSpecificId:e})}}/>
-                  {/* //this.props.student, this.props.sections, this.props.group,
-                  // this.props.gradeCategories, this.props.score, this.props.subtotal
-                  // this.props.total */}
-                  {/* {this.gradeComponent} */}
-                </Route>
+                {this.grade_route}
                 <Route key="/" exact path="/">
                 {this.loadFirstTrue}
                 {/* {this.Overview_doenetML!=""?<Overview doenetML={this.Overview_doenetML}/>:null} */}
