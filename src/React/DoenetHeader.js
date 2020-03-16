@@ -48,12 +48,12 @@ class DoenetHeader extends Component {
         // this.options.push(<option value={id} selected={defaultId===id?true:false}>{this.props.rights.courseInfo[id]['courseName']}</option>)
       })
     } else {
-      this.options.push(<option key={this.updateNumber++} selected={true}>No courses</option>)
+      this.options.push(<option key={this.updateNumber++}>No courses</option>)
     }
 
     // console.log(this.options)
     this.select = (<select 
-    value = {this.props.rights?this.props.rights.defaultId:null}
+    value = {this.props.rights?this.props.rights.defaultId:undefined}
     className="select"
     onChange = {(e)=>{
       this.currentCourseId = e.target.value;
@@ -123,7 +123,8 @@ class DoenetHeader extends Component {
     this.coursesPermissions = undefined
     this.accessAllowed = undefined
     this.adminAccess =undefined
-    this.props.rights.rightToView = undefined
+    if(this.props.rights){
+      this.props.rights.rightToView = undefined
     this.props.rights.rightToEdit = undefined
     this.props.rights.instructorRights = undefined
     this.props.rights.downloadPermission = undefined
@@ -135,6 +136,8 @@ class DoenetHeader extends Component {
     this.props.rights.defaultId = undefined
     this.props.rights.permissionCallBack = undefined
     this.props.rights.parentFunction = undefined
+    }
+    
   }
   makePermissionList(){
     // console.log("making list for header")
@@ -174,7 +177,7 @@ class DoenetHeader extends Component {
             this.forceUpdate()
           }
         }}>
-        {this.rightToView?(<option key={this.updateNumber++} selected = {!this.rightToEdit?true:false} value="Student">Student</option>):null}
+        {this.rightToView?(<option key={this.updateNumber++}  value="Student">Student</option>):null}
           
           </span>  
       )
