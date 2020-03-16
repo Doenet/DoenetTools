@@ -49,12 +49,10 @@ $ cd docker && docker-compose up
 🤑
 
 ## Usage
-Visit `localhost` in your browser to test the project. When you make changes to the code in the code in `/static` or `/src`, the Docker container will automatically build the changes and serve the new files.
-
-**Warning:** When you build the container again (e.g. `docker-compose build` or `docker-compose up --build`), the database may be reset. So export your changes.
+Visit `localhost` in your browser to test the project. When you make changes to the code in the code in `/static` or `/src`, the Docker containers will automatically build the changes and serve the new files. There will be no output to the terminal and you must refresh manually.
 
 ### Directly access the database
-The database is exposed to your local machine by port 3306. You can use a program such as Sequel Pro (Mac) or MySQLWorkbench (Most OS) to interact with the database directly.
+The database is exposed to your local machine by port 3306. You can use a program such as Sequel Pro (Mac), MySQLWorkbench (Most OS), or the MySQL CLI. to interact with the database directly.
 
 If port 3306 is in use, you can change the port in the `docker-compose.yml` file:
 ```yaml
