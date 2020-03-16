@@ -76,7 +76,6 @@ class DoenetHeader extends Component {
    
     // this.headingTitle = this.props.this.props.rights.courseInfo[this.currentCourseId]['courseName']
     this.toolTitleToLinkMap = {
-      "Admin" : "/admin/",
       "Chooser" : "/chooser/",
       "Course" : "/course/",
       "Documentation" : "/docs/",
@@ -231,7 +230,7 @@ class DoenetHeader extends Component {
                       "selectedToolboxNavLink" : "toolboxNavLink";
                     return( 
                       <div className={ navLinkClassName } key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolTitle }>
-                        <a href={ this.toolTitleToLinkMap[toolTitle] }>{ this.props.toolTitle }</a>
+                        <a href={ this.toolTitleToLinkMap[toolTitle] }>{toolTitle }</a>
                       </div>
                     )
                   })}
