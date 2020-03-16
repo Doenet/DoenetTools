@@ -4,9 +4,9 @@ The core libraries underlying the Distributed Open Education Network (Doenet)
 ## Local Development Setup
 ### 1. `fork` and `clone` this project
 - [_Fork the project on Github_](https://help.github.com/en/github/getting-started-with-github/fork-a-repo)
-- `cd /path/to/desired/location`
-- `git clone git@github.com:<your_username>/DoenetCourse`
-- `cd DoenetCourse`
+- `$ cd /path/to/desired/location`
+- `$ git clone git@github.com:<your_username>/DoenetCourse`
+- `$ cd DoenetCourse`
 
 ### 2. Install Docker
 #### If you have a Desktop Environment (If you don't know what that is, you probably do):
@@ -17,11 +17,11 @@ The core libraries underlying the Distributed Open Education Network (Doenet)
 - [_Find the instructions to install Docker Engine for your platform here_](https://docs.docker.com/install/)
 - Install Docker Compose  
 ```bash
-sudo curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+$ sudo curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 ```
 - Add the execute permission to the docker-compose file
 ```bash
-sudo chmod +x /usr/local/bin/docker-compose
+$ sudo chmod +x /usr/local/bin/docker-compose
 ```
 
 Hopefully you are now done installing docker.
@@ -33,16 +33,16 @@ Hopefully you are now done installing docker.
 ### 3. Install dependencies
 - Go to the DoenetCourse folder
 ```bash
-cd /path/to/desired/location/DoenetCourse
+$ cd /path/to/desired/location/DoenetCourse
 ```
 - Use NPM to install the build utilities. (Dependencies)
 ```bash
-npm install
+$ npm install
 ```
 
 ### 4. Build and run the container!
 ```bash
-cd docker && docker-compose up
+$ cd docker && docker-compose up
 ```
 
 ### 5. Profit
@@ -53,7 +53,7 @@ Visit `localhost` in your browser to test the project. When you make changes to 
 
 **Warning:** When you build the container again (e.g. `docker-compose build` or `docker-compose up --build`), the database may be reset. So export your changes.
 
-### Database
+### Directly access the database
 The database is exposed to your local machine by port 3306. You can use a program such as Sequel Pro (Mac) or MySQLWorkbench (Most OS) to interact with the database directly.
 
 If port 3306 is in use, you can change the port in the `docker-compose.yml` file:
@@ -67,3 +67,22 @@ If port 3306 is in use, you can change the port in the `docker-compose.yml` file
       - ./volumes/db:/var/lib/mysql
     restart: always
 ```
+
+### Create a new database template
+If you want to save your current database as a template, run the following in bash in your mysql container:
+```bash
+$ mysqldump --all-databases --password=helloworld > /docker-entrypoint-initdb.d/dbdump.sql
+```
+You can then grab this file from `DoenetCourse/docker/volumes/db_init/dbdump.sql`.
+
+To use this new template:
+1. Stop the docker containers
+2. Rename the dump file to `db_template.sql`
+3. Replace the old `DoenetCourse/docker/volumes/db_init/db_template.sql` with the newly renamed file
+4. Delete the contents (except for `.gitignore`, `.touch`) of `DoenetCourse/docker/volumes/db/`.
+5. Start the containers
+```bash
+$ cd /path/to/local/clone/of/DoenetCourse
+$ docker-compose up --build
+```
+6. Pet your cat (Optional)

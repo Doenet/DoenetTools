@@ -26,6 +26,7 @@ services:
       - 3306:3306
     volumes:
       - ./volumes/db:/var/lib/mysql
+      - ./volumes/db_init/db_template.sql:/docker-entrypoint-initdb.d/db_template.sql
     restart: always
 
   node:
@@ -39,6 +40,6 @@ services:
     volumes:
       - ..:/home/node/app
       - ./volumes/dist_local:/var/www/html
-    command: 'npm start' # comment this line if you want to serve but not build
-    restart: always # comment this line if you want to serve but not build
-    # command: 'npm --version' # Uncomment this line if you want to serve but not build
+    # command: 'npm start' # comment this line if you want to serve but not build
+    # restart: always # comment this line if you want to serve but not build
+    command: 'npm --version' # Uncomment this line if you want to serve but not build
