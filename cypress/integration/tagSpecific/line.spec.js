@@ -265,7 +265,7 @@ describe('Line Tag Tests', function () {
     })
   })
 
-  it.only('line from sugared equation, single string', () => {
+  it('line from sugared equation, single string', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -447,67 +447,73 @@ describe('Line Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.log('equation and line variable are what they should be')
-    cy.get('#__math3 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('u')
-    })
-    cy.get('#__math4 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('v')
-    })
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
+      let math1 = components['/_ref1'].replacements[0];
+      let math1Anchor = '#' + math1.componentName;
+      let math2 = components['/_ref2'].replacements[0];
+      let math2Anchor = '#' + math2.componentName;
 
-      // have to create unproxied version of equation for equals to work
-      let unproxiedEquation = me.fromAst(components['/_line1'].stateValues.equation.tree);
-      expect(unproxiedEquation.equals(me.fromText('5u-2v=3'))).to.be.true;
-      expect(components['/_line1'].stateValues.var1.tree).eq("u");
-      expect(components['/_line1'].stateValues.var2.tree).eq("v");
-      expect(components['/_line1'].stateValues.coeff0.tree).eq(3);
-      expect(components['/_line1'].stateValues.coeffvar1.tree).eq(-5);
-      expect(components['/_line1'].stateValues.coeffvar2.tree).eq(2);
-      expect(components['/_line1'].stateValues.slope.tree).eqls(['/', 5, 2]);
-      expect(components['/_line1'].stateValues.xintercept.tree).eqls(['/', 3, 5]);
-      expect(components['/_line1'].stateValues.yintercept.tree).eqls(['/', -3, 2]);
-      expect(components.__math3.state.value.tree).eq("u");
-      expect(components.__math4.state.value.tree).eq("v");
-    })
+      cy.log('equation and line variable are what they should be')
+      cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('u')
+      })
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('v')
+      })
 
-    cy.log("Move line right 1 and down 3");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+      cy.window().then((win) => {
 
-      let point1coords = [
-        components['/_line1'].stateValues.points[0].get_component(0),
-        components['/_line1'].stateValues.points[0].get_component(1),
-      ];
-      let point2coords = [
-        components['/_line1'].stateValues.points[1].get_component(0),
-        components['/_line1'].stateValues.points[1].get_component(1),
-      ];
+        // have to create unproxied version of equation for equals to work
+        let unproxiedEquation = me.fromAst(components['/_line1'].stateValues.equation.tree);
+        expect(unproxiedEquation.equals(me.fromText('5u-2v=3'))).to.be.true;
+        expect(components['/_line1'].stateValues.var1.tree).eq("u");
+        expect(components['/_line1'].stateValues.var2.tree).eq("v");
+        expect(components['/_line1'].stateValues.coeff0.tree).eq(3);
+        expect(components['/_line1'].stateValues.coeffvar1.tree).eq(-5);
+        expect(components['/_line1'].stateValues.coeffvar2.tree).eq(2);
+        expect(components['/_line1'].stateValues.slope.tree).eqls(['/', 5, 2]);
+        expect(components['/_line1'].stateValues.xintercept.tree).eqls(['/', 3, 5]);
+        expect(components['/_line1'].stateValues.yintercept.tree).eqls(['/', -3, 2]);
+        expect(math1.state.value.tree).eq("u");
+        expect(math2.state.value.tree).eq("v");
+      })
 
-      let moveX = 1;
-      let moveY = -3;
+      cy.log("Move line right 1 and down 3");
+      cy.window().then((win) => {
 
-      point1coords[0] = point1coords[0].add(moveX);
-      point1coords[1] = point1coords[1].add(moveY);
-      point2coords[0] = point2coords[0].add(moveX);
-      point2coords[1] = point2coords[1].add(moveY);
+        let point1coords = [
+          components['/_line1'].stateValues.points[0].get_component(0),
+          components['/_line1'].stateValues.points[0].get_component(1),
+        ];
+        let point2coords = [
+          components['/_line1'].stateValues.points[1].get_component(0),
+          components['/_line1'].stateValues.points[1].get_component(1),
+        ];
 
-      components['/_line1'].moveLine({
-        point1coords: point1coords,
-        point2coords: point2coords
-      });
+        let moveX = 1;
+        let moveY = -3;
 
-      let newEquation = me.fromText("5u-2v=3").substitute({
-        'u': ['+', 'u', -moveX],
-        'v': ['+', 'v', -moveY],
-      });
+        point1coords[0] = point1coords[0].add(moveX);
+        point1coords[1] = point1coords[1].add(moveY);
+        point2coords[0] = point2coords[0].add(moveX);
+        point2coords[1] = point2coords[1].add(moveY);
 
-      // have to create unproxied version of equation for equals to work
-      let unproxiedEquation = me.fromAst(components['/_line1'].stateValues.equation.tree);
-      expect(unproxiedEquation.equals(newEquation)).to.be.true;
+        components['/_line1'].moveLine({
+          point1coords: point1coords,
+          point2coords: point2coords
+        });
 
+        let newEquation = me.fromText("5u-2v=3").substitute({
+          'u': ['+', 'u', -moveX],
+          'v': ['+', 'v', -moveY],
+        });
+
+        // have to create unproxied version of equation for equals to work
+        let unproxiedEquation = me.fromAst(components['/_line1'].stateValues.equation.tree);
+        expect(unproxiedEquation.equals(newEquation)).to.be.true;
+
+      })
     })
 
   });

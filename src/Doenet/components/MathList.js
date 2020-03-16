@@ -3,6 +3,7 @@ import me from 'math-expressions';
 
 export default class MathList extends InlineComponent {
   static componentType = "mathlist";
+  static rendererType = "aslist";
 
   // when another component has a property that is a textlist,
   // use the maths state variable to populate that property
@@ -295,12 +296,14 @@ export default class MathList extends InlineComponent {
           variableName: "maximumNumber",
         },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, componentInfoObjects }) {
         let childrenToRender = [];
 
         for (let child of dependencyValues.mathAndMathlistChildren) {
-
-          if (child.stateValues.childrenToRender) {
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "mathlist"
+          })) {
             childrenToRender.push(...child.stateValues.childrenToRender);
           } else {
             childrenToRender.push(child.componentName);
@@ -320,15 +323,6 @@ export default class MathList extends InlineComponent {
 
 
     return stateVariableDefinitions;
-  }
-
-
-  initializeRenderer() {
-    if (this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.aslist({
-        key: this.componentName,
-      });
-    }
   }
 
 }

@@ -7,6 +7,7 @@ export default class Line extends GraphicalComponent {
     this.moveLine = this.moveLine.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     );
+    this.actions = { moveLine: this.moveLine };
   }
   static componentType = "line";
 
@@ -16,7 +17,7 @@ export default class Line extends GraphicalComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.draggable = { default: true };
+    properties.draggable = { default: true, forRenderer: true };
     return properties;
   }
 
@@ -464,8 +465,9 @@ export default class Line extends GraphicalComponent {
         stateValues, initialChange, arrayKeys
       }) {
 
-        // console.log(`inverseDefinition of points`);
-        // console.log(desiredStateVariableValues.points)
+        console.log(`inverseDefinition of points`);
+        console.log(desiredStateVariableValues.points)
+        console.log(JSON.parse(JSON.stringify(stateValues)))
 
         // if not draggable, then disallow initial change 
         if (initialChange && !stateValues.draggable) {
@@ -546,22 +548,50 @@ export default class Line extends GraphicalComponent {
             let coeffvar2 = numericalPoint2[0] - numericalPoint1[0];
             let coeff0 = numericalPoint1[0] * numericalPoint2[1] - numericalPoint1[1] * numericalPoint2[0];
 
+            let prodDiff = Math.abs(coeffvar1 * stateValues.coeffvar2 - stateValues.coeffvar1 * coeffvar2);
 
-            return {
-              success: true,
-              instructions: [{
+            let instructions = [];
+
+            if (prodDiff < Math.abs(coeffvar1 * stateValues.coeffvar2) * 1E-12) {
+              // the slope didn't change, so line was translated
+              // don't change coeffvar1 or coeffvar2, but just coeff0
+
+              if (coeffvar1 !== 0) {
+                coeff0 *= stateValues.coeffvar1 / coeffvar1;
+              } else {
+                coeff0 *= stateValues.coeffvar2 / coeffvar2
+              }
+
+              instructions.push({
+                setDependency: "coeff0",
+                desiredValue: coeff0,
+                additionalDependencyValues: {
+                  coeffvar1: stateValues.coeffvar1,
+                  coeffvar2: stateValues.coeffvar2
+                }
+              })
+            } else {
+              instructions.push({
                 setDependency: "coeff0",
                 desiredValue: coeff0,
                 additionalDependencyValues: {
                   coeffvar1, coeffvar2
                 }
-              },
-              {
-                setDependency: "lastPointsFromInverting",
-                desiredValue: [numericalPoint1, numericalPoint2]
-              }
-              ],
+              })
+            }
 
+            instructions.push({
+              setDependency: "lastPointsFromInverting",
+              desiredValue: [numericalPoint1, numericalPoint2]
+            })
+
+            console.log('instructions from inverse for points')
+            console.log(instructions);
+
+
+            return {
+              success: true,
+              instructions
             }
 
 
@@ -780,6 +810,7 @@ export default class Line extends GraphicalComponent {
     stateVariableDefinitions.equation = {
       public: true,
       componentType: "equation",
+      forRenderer: true,
       stateVariablesDeterminingDependencies: ["equationChild"],
       additionalStateVariablesDefined: [
         {
@@ -825,8 +856,8 @@ export default class Line extends GraphicalComponent {
       },
       definition: function ({ dependencyValues }) {
 
-        // console.log('definition of equation')
-        // console.log(dependencyValues);
+        console.log('definition of equation')
+        console.log(dependencyValues);
 
         let variables = dependencyValues.variables;
 
@@ -836,7 +867,10 @@ export default class Line extends GraphicalComponent {
         if (dependencyValues.equationChild) {
           let equation = dependencyValues.equationChild[0].stateValues.value;
 
-          let result = calculateCoeffsFromEquation({ equation, variables })
+          console.log(equation.toString());
+
+          let result = calculateCoeffsFromEquation({ equation, variables });
+          console.log(result);
 
           if (!result.success) {
             return {
@@ -973,7 +1007,8 @@ export default class Line extends GraphicalComponent {
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
-        // console.log(`inverse definition of equation, coeffs`);
+        console.log(`inverse definition of equation, coeffs`);
+        console.log(desiredStateVariableValues)
 
         if (dependencyValues.points) {
           console.log(`Haven't implemented inverse definition of equation of line based on points`);
@@ -1001,12 +1036,15 @@ export default class Line extends GraphicalComponent {
           return { success: false }
         }
 
-        let equation = me.fromAst(['=', ['+', ['*', 'a', 'x'], ['*', 'b', 'y'], 'c'], 0]).substitute({
+        let equation = me.fromAst(['=', 0, ['+', ['*', 'a', 'x'], ['*', 'b', 'y'], 'c']]).substitute({
           a: desiredStateVariableValues.coeffvar1,
           b: desiredStateVariableValues.coeffvar2,
           c: desiredStateVariableValues.coeff0,
           x: dependencyValues.variables[0], y: dependencyValues.variables[1]
         }).simplify();
+
+        console.log(`desired equation`)
+        console.log(equation);
 
         return {
           success: true,
@@ -1025,6 +1063,7 @@ export default class Line extends GraphicalComponent {
     stateVariableDefinitions.numericalPoints = {
       isArray: true,
       entryPrefixes: ["numericalPoint"],
+      forRenderer: true,
       returnDependencies: () => ({
         points: {
           dependencyType: "stateVariable",
@@ -1380,7 +1419,7 @@ export default class Line extends GraphicalComponent {
     this.state.coeffvar2 = point2x.subtract(point1x).simplify();
     this.state.coeff0 = point1x.multiply(point2y).subtract(point1y.multiply(point2x)).simplify();
     // let equation = me.fromAst('ax+by+c=0').substitute({a:coeffvar1, b:coeffvar2, c: coeff0, x: var1, y:var2}).simplify();
-    this.state.equation = me.fromAst(['=', ['+', ['*', 'a', 'x'], ['*', 'b', 'y'], 'c'], 0]).substitute({
+    this.state.equation = me.fromAst(['=', 0, ['+', ['*', 'a', 'x'], ['*', 'b', 'y'], 'c']]).substitute({
       a: this.state.coeffvar1, b: this.state.coeffvar2, c: this.state.coeff0, x: var1, y: var2
     }).simplify();
 
@@ -1538,7 +1577,7 @@ export default class Line extends GraphicalComponent {
         newStateVariables.coeffvar2 = coeffvar2;
         newStateVariables.coeff0 = coeff0;
       } else {
-        let equation = me.fromAst(['=', ['+', ['*', 'a', 'x'], ['*', 'b', 'y'], 'c'], 0]).substitute({
+        let equation = me.fromAst(['=', 0, ['+', ['*', 'a', 'x'], ['*', 'b', 'y'], 'c']]).substitute({
           a: coeffvar1, b: coeffvar2, c: coeff0, x: var1, y: var2
         }).simplify();
 
@@ -1618,15 +1657,15 @@ function calculateCoeffsFromEquation({ equation, variables }) {
 
   equation = equation.expand().simplify();
 
-  let lhs = me.fromAst(['+', equation.tree[1], ['-', equation.tree[2]]]).expand().simplify();
-  // divide lhs into terms
+  let rhs = me.fromAst(['+', equation.tree[2], ['-', equation.tree[1]]]).expand().simplify();
+  // divide rhs into terms
 
   let terms = [];
-  if (Array.isArray(lhs.tree) && lhs.tree[0] === '+') {
-    terms = lhs.tree.slice(1);
+  if (Array.isArray(rhs.tree) && rhs.tree[0] === '+') {
+    terms = rhs.tree.slice(1);
   }
   else {
-    terms = [lhs.tree];
+    terms = [rhs.tree];
   }
 
   let coeffvar1 = me.fromAst(0);

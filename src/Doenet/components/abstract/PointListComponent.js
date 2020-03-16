@@ -3,6 +3,7 @@ import { returnBreakStringsSugarFunction } from '../commonsugar/breakstrings';
 
 export default class PointListComponent extends BaseComponent {
   static componentType = "_pointlistcomponent";
+  static rendererType = undefined;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -192,7 +193,7 @@ export default class PointListComponent extends BaseComponent {
           // working with entire array
 
           let instructions = [];
-          for(let key in desiredStateVariableValues.points) {
+          for (let key in desiredStateVariableValues.points) {
             instructions.push({
               setDependency: "pointChildren",
               desiredValue: desiredStateVariableValues.points[key],

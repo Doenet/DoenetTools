@@ -2,6 +2,7 @@ import MathComponent from './Math';
 
 export default class Equation extends MathComponent {
   static componentType = "equation";
+  static rendererType = "math";
 
   static returnStateVariableDefinitions() {
 

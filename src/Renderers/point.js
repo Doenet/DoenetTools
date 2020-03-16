@@ -20,7 +20,7 @@ export default class Point extends DoenetRenderer {
       visible: !this.doenetSvData.hide,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: this.doenetSvData.draggable !== true,
-      layer: this.doenetSvData.layer,
+      layer: 10 * this.doenetSvData.layer + 9,
       fillColor: this.doenetSvData.selectedStyle.markerColor,
       strokeColor: this.doenetSvData.selectedStyle.markerColor,
       // highlightFillColor: this.doenetSvData.selectedStyle.markerColor,
