@@ -16,14 +16,16 @@ class DoenetHeader extends Component {
     this.state = {
       showToolbox: false,
     }
+    this.select=null
+    this.mounted=false;
     this.updateNumber = 0;
-    const envurl='/api/env01.php';
     this.adminAccess = 0;
     this.accessAllowed = 0;
     if (this.props.rights){
       this.rightToView = this.props.rights.rightToView
       this.rightToEdit = this.props.rights.rightToEdit
       this.instructorRights = this.props.rights.instructorRights
+      this.coursesPermissions = this.props.rights.permissions  
     } else {
       this.rightToView = false
       this.rightToEdit = false
@@ -31,21 +33,6 @@ class DoenetHeader extends Component {
     }
 
     this.selectPermission = null
-    this.coursesPermissions = {}
-    if (this.props.rights && this.props.rights.downloadPermission){
-      axios.get(envurl)
-      .then(resp=>{
-          // console.log("downloading header permission")
-          this.coursesPermissions = resp.data
-          if (this.coursesPermissions['courseInfo'][this.currentCourseId]){
-            this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
-          this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
-          }
-          
-          this.forceUpdate();
-      });
-    }
-   
     this.currentCourseId=""
     // const {this.props.rights.arrayIds,this.props.rights.courseInfo,defaultId,permissions} = this.props.rights
     if (this.props.rights){
@@ -55,7 +42,7 @@ class DoenetHeader extends Component {
 
 
     this.options = []
-    if (this.props.rights && this.props.rights.arrayIds){
+    if (this.props.rights && this.props.rights.arrayIds!=[]){
       this.props.rights.arrayIds.map((id,index)=>{
         this.options.push(<option key={this.updateNumber++} value={id}>{this.props.rights.courseInfo[id]['courseName']}</option>)        
         // this.options.push(<option value={id} selected={defaultId===id?true:false}>{this.props.rights.courseInfo[id]['courseName']}</option>)
@@ -84,6 +71,9 @@ class DoenetHeader extends Component {
       this.forceUpdate()}}>
       {this.options}
     </select>)
+    
+  
+   
     // this.headingTitle = this.props.this.props.rights.courseInfo[this.currentCourseId]['courseName']
     this.toolTitleToLinkMap = {
       "Admin" : "/admin/",
@@ -94,23 +84,42 @@ class DoenetHeader extends Component {
       "Gradebook": "/gradebook/",
     }
 
-    this.username = "";
-    this.access = 0;
-    const url='/api/env.php';
-        axios.get(url)
-        .then(resp=>{
-            this.username = resp.data.user;
-            this.access = resp.data.access;
-            this.forceUpdate();
-        });
+    // this.username = "";
+    // this.access = 0;
+    // const url='/api/env.php';
+    //     axios.get(url)
+    //     .then(resp=>{
+    //         this.username = resp.data.user;
+    //         this.access = resp.data.access;
+    //         this.forceUpdate();
+    //     });
 
     // this.setupDatabase();
   }
+  // componentDidMount(){
+
+    // const envurl='/api/env01.php';
+    // const CancelToken = axios.CancelToken;
+    // const source = CancelToken.source();
+    // if (this.props.rights && this.props.rights.downloadPermission){
+    //   axios.get(envurl)
+    //   .then(resp=>{
+    //       // console.log("downloading header permission")
+    //       this.coursesPermissions = resp.data
+    //       if (this.coursesPermissions['courseInfo'][this.currentCourseId]){
+    //         this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+    //       this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
+    //       }
+
+    //       this.forceUpdate();
+    //   });
+    // }
+  // }
   componentWillUnmount(){
     this.select = undefined
     this.selectPermission =undefined
     this.username = undefined;
-    this.access = undefined;
+    // this.access = undefined;
     this.coursesPermissions = undefined
     this.accessAllowed = undefined
     this.adminAccess =undefined
@@ -188,6 +197,8 @@ class DoenetHeader extends Component {
 
 
   render() {
+    // console.log("header render")
+    // console.log(this.select)
     // console.log(this.props)
     // const { toolTitle, headingTitle} = this.props;
     if(this.coursesPermissions!={}){
