@@ -38,13 +38,17 @@ const listData = {
   done: []
 };
 
-
-
 export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssignments}) => {
   const [todoValues, setValue] = useState(todos);
   const [list, setLists] = useState(listData);
   const [currentDraggedObject, setCurrentDraggedObject] = useState({id: null, ev: null});
   const [headings, setHeadings] = useState(headingsInfo);
+  const [assignments, setAssignments] = useState(assignmentsInfo);
+
+  useEffect(() => {
+    setHeadings(headingsInfo);
+    setAssignments(assignmentsInfo);
+  }, [headingsInfo, assignmentsInfo])
 
   let height = 0
   let transitions = {};
@@ -68,11 +72,11 @@ export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssign
   }
 
   const onDraggableDragOver = (id) => {
-    const draggedOverItemParentListId = assignmentsInfo[id]["parent"];
-    const draggedOverItemIndex = headingsInfo[draggedOverItemParentListId]["assignmentId"]
+    const draggedOverItemParentListId = assignments[id]["parent"];
+    const draggedOverItemIndex = headings[draggedOverItemParentListId]["assignmentId"]
       .findIndex(itemId => itemId == id);
 
-    const draggedItemParentListId = assignmentsInfo[currentDraggedObject.id]["parent"];
+    const draggedItemParentListId = assignments[currentDraggedObject.id]["parent"];
 
     // if the item is dragged over itself, ignore
     if (currentDraggedObject.id == id || draggedItemParentListId != draggedOverItemParentListId) {
@@ -80,14 +84,11 @@ export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssign
     } 
     
     // filter out the currently dragged item
-    let items = headingsInfo[draggedOverItemParentListId]["assignmentId"].filter(itemId => itemId != currentDraggedObject.id);
+    const items = headings[draggedOverItemParentListId]["assignmentId"].filter(itemId => itemId != currentDraggedObject.id);
     // add the dragged item after the dragged over item
     items.splice(draggedOverItemIndex, 0, currentDraggedObject.id);
     
-    // update headingsInfo
-    headingsInfo[draggedOverItemParentListId]["assignmentId"] = items
-    updateHeadingsAndAssignments(headingsInfo, assignmentsInfo);
-    // invoke callback
+    // update headings
     setHeadings((prevHeadings) => {
       prevHeadings[draggedOverItemParentListId]["assignmentId"] = items;
       return({
@@ -97,34 +98,44 @@ export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssign
   };
 
   const onDroppableDragOver = useCallback((listId) => {
-    // const currentDraggedItem = { ...todoValues[currentDraggedObject.id] };
-    // const previousState = currentDraggedItem.state; 
-    // if (previousState == listId) return;
-
-    // let previousList = list[currentDraggedItem.state];
-    // const indexInList = previousList.findIndex(item => item.id == currentDraggedObject.id);
-    // if (indexInList > -1) {
-    //   previousList.splice(indexInList, 1);
-    // }
-    // currentDraggedItem.state = listId;
-    // const currentList = list[currentDraggedItem.state];
-    // currentList.push({id: currentDraggedObject.id});
-    // setValue({ ...todoValues, [currentDraggedObject.id]: currentDraggedItem });
-    // setLists({ ...list, [previousState]: previousList, [currentDraggedItem.state]: currentList} );
-    // window.requestAnimationFrame(() => { currentDraggedObject.ev.target.style.visibility = "hidden"; });
+    const previousParentId = assignments[currentDraggedObject.id].parent; 
+    if (previousParentId == listId) return;
+    console.log(listId + " " + previousParentId)
+    
+    const previousList = headings[previousParentId]["assignmentId"];
+    const indexInList = previousList.findIndex(itemId => itemId == currentDraggedObject.id);
+    if (indexInList > -1) {
+      previousList.splice(indexInList, 1);
+    }
+    const currentList = headings[listId]["assignmentId"];
+    currentList.push(currentDraggedObject.id);
+    window.requestAnimationFrame(() => { currentDraggedObject.ev.target.style.visibility = "hidden"; });
+    setHeadings((prevHeadings) => {
+      prevHeadings[previousParentId]["assignmentId"] = previousList;
+      prevHeadings[listId]["assignmentId"] = currentList;
+      return({
+        ...prevHeadings
+      })
+    })
+    setAssignments((prevAssignments) => {
+      prevAssignments[currentDraggedObject.id]["parent"] = listId;
+      return({
+        ...prevAssignments
+      })
+    })
   }, [todoValues, list, currentDraggedObject.id])
 
   const onDrop = () => {
     // window.requestAnimationFrame(() => { currentDraggedObject.ev.target.style.visibility = "visible"; });
-    // setValue({ ...todoValues});
-    // setCurrentDraggedObject({id: null, ev: null});
+    setCurrentDraggedObject({id: null, ev: null});
+    updateHeadingsAndAssignments(headings, assignments);
   }
 
   return (
     <div className="App">
       <div style={{ "textAlign": "left", "marginTop":"2em"}}>
         <Global />
-        {buildTreeStructure(headingsInfo, assignmentsInfo, onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop)}
+        {buildTreeStructure(headings, assignments, onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop)}
       </div>
       {/* <div className="box">
         <DropItem heading="Todo" 

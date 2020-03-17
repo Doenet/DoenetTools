@@ -36,9 +36,15 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
     to: { height: isOpen ? viewHeight : 0, opacity: isOpen ? 1 : 0, transform: `translate3d(${isOpen ? 0 : 20}px,0,0)` }
   })
   const Icon = Icons[`${children ? (isOpen ? 'Minus' : 'Plus') : 'Close'}SquareO`]
+  
+  const onDroppableDragOverCb = (listId) => {
+    setOpen(true);
+    onDroppableDragOver(listId)
+  }
+
   return (
     
-    <DropItem id={id} onDragOver={onDroppableDragOver} onDrop={onDrop}>
+    <DropItem id={id} onDragOver={onDroppableDragOverCb} onDrop={onDrop}>
       <Frame>
         <Icon style={{ ...toggle, opacity: children ? 1 : 0.3 }} onClick={() => setOpen(!isOpen)} />
         <Title style={style}>{data}</Title>

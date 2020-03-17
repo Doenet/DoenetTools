@@ -79,6 +79,7 @@ class DoenetChooser extends Component {
     this.saveUrl = this.saveUrl.bind(this);
     this.handleNewUrlCreated = this.handleNewUrlCreated.bind(this);
     this.updateHeadingsAndAssignments = this.updateHeadingsAndAssignments.bind(this);
+    this.saveTree = this.saveTree.bind(this);
   }
 
 
@@ -1080,7 +1081,84 @@ class DoenetChooser extends Component {
   updateHeadingsAndAssignments(headingsInfo, assignmentsInfo) {
     this.headingsInfo = headingsInfo;
     this.assignmentsInfo = assignmentsInfo;
-    console.log("Here");
+    console.log(headingsInfo);
+    console.log(assignmentsInfo);
+    this.saveTree(this.headingsInfo, this.assignmentsInfo);
+  }
+
+  saveTree(headingsInfo, assignmentsInfo){
+    console.log("saving the tree")
+    let assignmentId_parentID_array = [];
+    let assignmentId_array = Object.keys(assignmentsInfo)
+    assignmentId_array.forEach(id=>{
+      assignmentId_parentID_array.push(assignmentsInfo[id]['parent']);
+    })
+    let headerID_array = Object.keys(headingsInfo);
+    let headerID_array_to_payload = []
+    let headerID_childrenId_array_to_payload=[]
+    let headerID_parentId_array_to_payload = []
+    let headerID_name = []
+    headerID_array.forEach(currentHeaderId=>{
+      let currentHeaderObj=headingsInfo[currentHeaderId]
+      let name = currentHeaderObj['name']
+      if (name==null){
+        name="NULL"
+      }
+      let currentHeaderObjHeadingIdArray = currentHeaderObj['headingId']
+      let lengthOfHeadingId = currentHeaderObjHeadingIdArray.length
+      let currentHeaderObjAssignmentIdArray = currentHeaderObj['assignmentId']
+      let currentHeaderObjParentId = currentHeaderObj['parent']
+      let lengthOfAssigmentId = currentHeaderObjAssignmentIdArray.length
+      let iterator = 0
+      if (lengthOfHeadingId==0 && lengthOfAssigmentId==0){
+        headerID_array_to_payload.push(currentHeaderId)
+        if (currentHeaderObjParentId==null){
+          headerID_parentId_array_to_payload.push("NULL")
+        } else {
+        headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+        }
+        headerID_childrenId_array_to_payload.push("NULL")
+        headerID_name.push(name);
+      }
+      while (iterator < lengthOfHeadingId){
+        headerID_array_to_payload.push(currentHeaderId)
+        headerID_childrenId_array_to_payload.push(currentHeaderObjHeadingIdArray[iterator])
+        headerID_name.push(name);
+        if (currentHeaderObjParentId==null){
+          headerID_parentId_array_to_payload.push("NULL")
+        } else {
+        headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+        }
+        iterator+=1
+      }
+      iterator = 0
+      while (iterator < lengthOfAssigmentId){
+        headerID_array_to_payload.push(currentHeaderId)
+        headerID_childrenId_array_to_payload.push(currentHeaderObjAssignmentIdArray[iterator])
+        headerID_name.push(name);
+        if (currentHeaderObjParentId==null){
+          headerID_parentId_array_to_payload.push("NULL")
+        } else {
+        headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+        }
+        iterator+=1
+      }
+    })
+    const urlGetCode = '/api/saveTree.php';
+    const data = {
+      assignmentId_array: assignmentId_array,
+      assignmentId_parentID_array: assignmentId_parentID_array,
+      headerID_array_to_payload:headerID_array_to_payload,
+      headerID_name:headerID_name,
+      headerID_parentId_array_to_payload:headerID_parentId_array_to_payload,
+      headerID_childrenId_array_to_payload:headerID_childrenId_array_to_payload,
+      courseId:"aI8sK4vmEhC5sdeSP3vNW"
+    }
+    axios.post(urlGetCode,data)
+    .then(resp=>{
+      console.log(resp.data)
+    })
+    .catch(error=>{this.setState({error:error})});
   }
 
   render(){
