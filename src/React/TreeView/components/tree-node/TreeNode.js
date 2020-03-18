@@ -27,7 +27,7 @@ const TreeNode = memo(({ children, name, style, defaultOpen = false }) => {
   )
 })
 
-export const ParentNode = memo(({ children, data, style, defaultOpen = false, id, onDroppableDragOver, onDrop }) => {
+export const ParentNode = memo(({ children, data, style, defaultOpen = false, id, onDroppableDragOver, onDrop, onDraggableDragOver, onDragStart }) => {
   const [isOpen, setOpen] = useState(defaultOpen)
   const previous = usePrevious(isOpen)
   const [bind, { height: viewHeight }] = useMeasure()
@@ -42,24 +42,34 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
     onDroppableDragOver(listId)
   }
 
+  const onDraggableDragOverCb = (listId) => {
+    onDraggableDragOver(listId, "parent")
+  }
+
   return (
-    
-    <DropItem id={id} onDragOver={onDroppableDragOverCb} onDrop={onDrop}>
-      <Frame>
-        <Icon style={{ ...toggle, opacity: children ? 1 : 0.3 }} onClick={() => setOpen(!isOpen)} />
-        <Title style={style}>{data}</Title>
-        <Content style={{ opacity, height: isOpen && previous === isOpen ? 'auto' : height }}>
-          <a.div style={{ transform }} {...bind} children={children} />
-        </Content>
-      </Frame>
-    </DropItem>    
+    <DragItem id={id} onDragStart={onDragStart} onDragOver={onDraggableDragOverCb}>
+      <DropItem id={id} onDragOver={onDroppableDragOverCb} onDrop={onDrop}>
+        <Frame>
+          <Icon style={{ ...toggle, opacity: children ? 1 : 0.3 }} onClick={() => setOpen(!isOpen)} />
+          <Title style={style}>{data}</Title>
+          <Content style={{ opacity, height: isOpen && previous === isOpen ? 'auto' : height }}>
+            <a.div style={{ transform }} {...bind} children={children} />
+          </Content>
+        </Frame>
+      </DropItem>    
+    </DragItem>
   )
 })
 
 export const LeafNode = memo(({ id, data, style, onDragStart, onDragOver }) => {
   const Icon = Icons['CloseSquareO']
+
+  const onDraggableDragOverCb = (listId) => {
+    onDragOver(listId, "leaf")
+  }
+
   return (
-    <DragItem id={id} onDragStart={onDragStart} onDragOver={onDragOver}>
+    <DragItem id={id} onDragStart={onDragStart} onDragOver={onDraggableDragOverCb}>
       <Frame>
         <Icon style={{ ...toggle, opacity: 0.3 }} />
         <Title style={style}>{data}</Title>

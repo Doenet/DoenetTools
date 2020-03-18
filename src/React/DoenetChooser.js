@@ -1087,7 +1087,6 @@ class DoenetChooser extends Component {
   }
 
   saveTree(headingsInfo, assignmentsInfo){
-    console.log("saving the tree")
     let assignmentId_parentID_array = [];
     let assignmentId_array = Object.keys(assignmentsInfo)
     assignmentId_array.forEach(id=>{

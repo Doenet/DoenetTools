@@ -6,6 +6,7 @@ const useDrop = ({ ref, onDrop, onDragOver }) => {
     ev.preventDefault();
     onDragOver();
     updateDropState("dragging over");
+    // ev.stopPropagation();
   };
 
   const dropCb = ev => {
@@ -13,6 +14,7 @@ const useDrop = ({ ref, onDrop, onDragOver }) => {
     ev.dataTransfer.getData("source")
     onDrop();
     updateDropState("dropped");
+    // ev.stopPropagation();
   };
   useEffect(() => {
     const elem = ref.current;

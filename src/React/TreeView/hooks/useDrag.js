@@ -8,11 +8,14 @@ const useDrag = ({ id, effect, ref, onDragStart, onDragOver, onDragEnd }) => {
     ev.dataTransfer.setData("source", id);
     
     onDragStart && onDragStart(ev);
+    ev.stopPropagation();
   };
 
   const dragOverCb = ev => {
-    // updateDragState("draggedOver");
+    ev.preventDefault();
+    updateDragState("draggedOver");
     onDragOver && onDragOver(ev);
+    ev.stopPropagation();
   };
 
   const dragEndCb = ev => {
