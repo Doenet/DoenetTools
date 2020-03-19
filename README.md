@@ -12,6 +12,8 @@ The core libraries underlying the Distributed Open Education Network (Doenet)
 #### If you have a Desktop Environment (If you don't know what that is, you probably do):
 [_Install Docker Desktop_](https://www.docker.com/products/docker-desktop)
 
+_Skip to step 3_
+
 #### If you do not have a DE on your build machine, install docker-engine and docker-compose
 
 - [_Find the instructions to install Docker Engine for your platform here_](https://docs.docker.com/install/)
@@ -44,17 +46,18 @@ $ npm install
 ```bash
 $ cd docker && docker-compose up
 ```
+This may take a while. 
 
 ### 5. Profit
 🤑
 
 ## Usage
-Visit `localhost` in your browser to test the project. When you make changes to the code in the code in `/static` or `/src`, the Docker container will automatically build the changes and serve the new files.
+Visit `localhost` in your browser to test the project. When you make changes to the code in the code in `/static` or `/src`, the Docker containers will automatically build the changes and serve the new files. There will be no output to the terminal and you must refresh manually.
 
-**Warning:** When you build the container again (e.g. `docker-compose build` or `docker-compose up --build`), the database may be reset. So export your changes.
+To run the container after building, you can just run `docker-compose up` in the root directory.
 
 ### Directly access the database
-The database is exposed to your local machine by port 3306. You can use a program such as Sequel Pro (Mac) or MySQLWorkbench (Most OS) to interact with the database directly.
+The database is exposed to your local machine by port 3306. You can use a program such as Sequel Pro (Mac), MySQLWorkbench (Most OS), or the MySQL CLI. to interact with the database directly.
 
 If port 3306 is in use, you can change the port in the `docker-compose.yml` file:
 ```yaml
