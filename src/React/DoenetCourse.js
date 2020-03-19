@@ -679,7 +679,9 @@ class DoenetCourse extends Component {
       // todo: a select button to switch between students and instructor
       
      
-      
+    let deviceGivenWidth = this.widthToDevice();    
+    console.log("deviceGivenWidth: ")
+    console.log(deviceGivenWidth)
     let url_string = window.location.href;
     var url = new URL(url_string);
     
@@ -722,7 +724,7 @@ class DoenetCourse extends Component {
     this.componentLoadedFromNavigationBar=null;
     this.newChange= false
     this.state = {
-
+      deviceGivenWidth:deviceGivenWidth,
       courseId: "",
       error: null,
       errorInfo: null,
@@ -1174,7 +1176,8 @@ class DoenetCourse extends Component {
             this.buildRightSideInfoColumn()
             // console.log("link is "+link)
           this.makeTreeRoute({link:link,assignmentId:this.thisAssignmentInfo})
-            this.forceUpdate();
+          this.makeTreeVisible({loadSpecificId:this.thisAssignmentInfo})
+            // this.forceUpdate();
         });
   }
   changeCurrentAssignmentRoute({id}){
@@ -3124,6 +3127,26 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     // }
     // this.buildTree()
   }
+  windowResizeHandler(){
+    let deviceGivenWidth = this.widthToDevice();
+    if (this.state.deviceGivenWidth !== deviceGivenWidth){
+      this.setState({deviceGivenWidth: deviceGivenWidth});
+    }
+  }
+
+  widthToDevice(){
+    let w = document.documentElement.clientWidth;
+    if (w >= 1024){ return "computer"; }
+    if (w < 1024 && w >= 768){ return "tablet"; }
+    return "phone";
+  }
+  componentDidMount(){
+    window.addEventListener("resize",this.windowResizeHandler);
+  }
+
+  componentWillUnmount(){
+    window.removeEventListener("resize",this.windowResizeHandler);
+  }
   render() {
     // console.log("====RENDER====");
     // if (!this.assignmentTree && this.activeSection==="assignments"){
@@ -3417,45 +3440,13 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
               {this.grade_link}
 
               {this.assignment_link}
-
+              {this.activeSection==="assignments"&&this.enableAssignment?this.assignmentTree:null}
               
 
-              {this.rightToEdit && this.activeSection==="assignments"?
-              (<div>
-                
-                {/* <button className={this.enableMode==="position"?"selectedEnableButton":"button"} data-cy="modifyTree"
-              onClick={()=>{this.enableMode='position';this.activeSection="assignments";this.buildTree();this.makeTreeVisible({loadSpecificId:""})
-              }}>Modify position</button> */}
-
-              <button className={this.enableMode==="remove"?"selectedEnableButton":"button"} data-cy="removeTree"
-              onClick={()=>{this.enableMode='remove';this.activeSection="assignments";this.buildTree();this.makeTreeVisible({loadSpecificId:""})}}>Remove tree</button>
-
-              <button className={this.enableMode==='header'?"selectedEnableButton":"button"} data-cy="addHeader"
-              onClick={()=>{this.enableMode='header';this.activeSection="assignments";this.buildTree();this.makeTreeVisible({loadSpecificId:""})}}>Add Header</button>
-
-              <button className={this.enableMode==='assignments'?"selectedEnableButton":"button"} data-cy="addAssignment"
-              onClick={()=>{this.enableMode='assignments';this.activeSection="assignments";this.buildTree();this.makeTreeVisible({loadSpecificId:""})}}>Add Assignment</button>
-              </div>)
-              :null}
-
-              {/* {this.enableAssignment?this.assignment_link:null} */}
-              {/* <Link to={'/overview'} className="homeMainMenuItem" data-cy="overviewNavItem" onClick={()=>{this.activeSection="overview";this.loadSection();this.componentLoadedFromNavigationBar=null;this.forceUpdate()}}>{this.activeSection === "overview" ? "* " : null}Overview4</Link> */}
-              {/* <Link to={'/syllabus'} className="homeMainMenuItem" data-cy="syllabusNavItem"onClick={()=>{this.activeSection="syllabus";this.loadSection();this.componentLoadedFromNavigationBar=null;this.forceUpdate()}}>{this.activeSection === "syllabus" ? "* " : null}Syllabus2</Link> */}
-              {/* <Link to={'/grades'} className="homeMainMenuItem" data-cy="gradesNavItem"onClick={()=>{this.activeSection="grade";this.componentLoadedFromNavigationBar=null;this.loadSection()}}>{this.activeSection === "grades" ? "* " : null}Grades</Link> */}
-              {/* <Link to={'/assignments'} className="homeMainMenuItem" data-cy="assignmentsNavItem"onClick={()=>{this.activeSection="assignments";this.showsAllAssignment=!this.showsAllAssignment;this.componentLoadedFromNavigationBar=null;this.makeTreeVisible({loadSpecificId:""})}}>{this.activeSection === "assignments" ? "* " : null}Assignments</Link> */}
-              {/* {this.assignmentTree!=null?(this.activeSection==="assignments"?):null} */}
-              
-              {/* {this.activeSection==="assignments" && this.assignmentIsClicked?(this.assignmentTree!=null?this.assignmentTree:<p>Empty tree</p>):null} */}
             </div>
             <div className="homeActiveSection">
-            
-            
 
-            {/* TO-DO(me): ask Kevin if he wants assignment loaded here 
-            when an assignment is selected as instructor and students */}
-            {/* {this.componentLoadedFromNavigationBar} */}
               <Switch>
-                {/* <Route path="/:id" children={<Child />}> */}
                 <Route key="overview" exact path="/overview">
                   {this.Overview_doenetML!="" && this.Overview_doenetML!=undefined?<Overview doenetML={this.Overview_doenetML}/>:null}
                 </Route>
@@ -3465,19 +3456,10 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 {this.grade_route}
                 <Route key="/" exact path="/">
                 {this.loadFirstTrue}
-                {/* {this.Overview_doenetML!=""?<Overview doenetML={this.Overview_doenetML}/>:null} */}
                 </Route>
                 <Route key ="assignments" exact path='/assignments'>
                 <div>
-                  {this.assignmentTree}
-                {/* {this.activeSection==="assignments" && this.assignmentIsClicked?
-              (this.assignmentTree!=null?
-                (this.treeOnScreen?this.assignmentTree:null):
-                (!this.assignmentOnScreen?
-                  <p>Empty tree</p>:null)):
-                  null} */}
                   </div>
-                  {/* <div>Select an Assignment</div> */}
                 </Route>
                 {this.tree_route}
               </Switch>
