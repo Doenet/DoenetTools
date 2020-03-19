@@ -17,6 +17,9 @@ export default class Line extends DoenetRenderer {
 
   createGraphicalObject() {
 
+    if(this.doenetSvData.numericalPoints.length !== 2) {
+      return;
+    }
 
     //things to be passed to JSXGraph as attributes
     var jsxLineAttributes = {

@@ -336,6 +336,8 @@ export default class BaseComponent {
   }
 
   serialize(parameters = {}) {
+    // TODO: this function is converted only for the case with the parameter
+    // forReference set
 
     let includePropertyChildren = true;
     let includeOtherDefiningChildren = true;
@@ -390,6 +392,7 @@ export default class BaseComponent {
     if (parameters.forReference) {
       serializedState.preserializedName = this.componentName;
     } else {
+      console.warn('serializing a component without forReference set is not yet converted!!!!')
       let additionalState = {};
       for (let item in this._state) {
         if (this.state[item].essential || stateVariablesToInclude.includes(item)) {

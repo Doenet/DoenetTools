@@ -187,13 +187,28 @@ export default class Point extends GraphicalComponent {
 
 
     // coordsShadow will be null unless point was created
-    // via an adapter or ref prop
-    // In that case, given the primaryStateVariableForDefinition static variable,
+    // via an adapter or ref prop or from serialized state with coords value
+    // In case of adapter or ref prop,
+    // given the primaryStateVariableForDefinition static variable,
     // the definition of coordsShadow will be changed to be the value
     // that shadows the component adapted or reffed
     stateVariableDefinitions.coordsShadow = {
+      defaultValue: null,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { coordsShadow: null } })
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          coordsShadow: { variablesToCheck: ["coords", "coordsShadow"] }
+        }
+      }),
+      inverseDefinition: function ({desiredStateVariableValues}) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "coordsShadow",
+            value: desiredStateVariableValues.coordsShadow
+          }]
+        };
+      }
     }
 
     // Note: if point created via a ref (with no prop) of another point
@@ -917,12 +932,12 @@ export default class Point extends GraphicalComponent {
             // only implement for numerical values
             let result = {};
 
-            for(let ind=1; ind <= dependencyValues.nDimensions; ind++) {
-              let x = dependencyValues.numericalXs[ind-1];
-              if(!Number.isFinite(x)) {
+            for (let ind = 1; ind <= dependencyValues.nDimensions; ind++) {
+              let x = dependencyValues.numericalXs[ind - 1];
+              if (!Number.isFinite(x)) {
                 return {};
               }
-              result['x'+ind] = x;
+              result['x' + ind] = x;
             }
             return result;
           }

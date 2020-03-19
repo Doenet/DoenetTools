@@ -1065,6 +1065,10 @@ export default class Ref extends CompositeComponent {
     // create a serialized copy of the entire component
     let target = components[component.stateValues.refTarget.componentName];
 
+
+    // TODO: how do we determine if all target and descendant state variables
+    // are resolved?
+    
     // all target descendants have to be resolved to be able to successfully expand ref
     // Rationale: to create the reference shadow, core will need to
     // evaluate all state variables to determine which are essential
