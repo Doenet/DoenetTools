@@ -1,4 +1,6 @@
 import BaseComponent from './abstract/BaseComponent';
+import { convertValueToMathExpression } from '../utils/math';
+import { applyConstraintFromComponentConstraints } from '../utils/constraints';
 
 export default class Constraints extends BaseComponent {
   static componentType = "constraints";
@@ -237,7 +239,7 @@ export default class Constraints extends BaseComponent {
           // in this case, desiredStateVariableValues.constraintResult
           // should just contain the value for the one component
           let variables = {
-            [`x${arrayKey + 1}`]: desiredStateVariableValues.constraintResults[arrayKey]
+            [`x${arrayKey + 1}`]: convertValueToMathExpression(desiredStateVariableValues.constraintResults[arrayKey])
           }
 
           for (let constraintChild of dependencyValues.constraintChildren) {
@@ -269,7 +271,7 @@ export default class Constraints extends BaseComponent {
 
           for (let arrayKey in stateValues.constraintResults) {
             if (arrayKey in desiredStateVariableValues.constraintResults) {
-              variables[`x${Number(arrayKey) + 1}`] = desiredStateVariableValues.constraintResults[arrayKey];
+              variables[`x${Number(arrayKey) + 1}`] = convertValueToMathExpression(desiredStateVariableValues.constraintResults[arrayKey]);
             } else {
               variables[`x${Number(arrayKey) + 1}`] = stateValues.constraintResults[arrayKey];
             }
@@ -330,27 +332,5 @@ export default class Constraints extends BaseComponent {
     return stateVariableDefinitions;
   }
 
-
-}
-
-function applyConstraintFromComponentConstraints({ variables, applyComponentConstraint }) {
-  let newVariables = {};
-  let constrained = false;
-
-  for (let varName in variables) {
-    let result = applyComponentConstraint({ [varName]: variables[varName] })
-    if (result.constrained) {
-      constrained = true;
-      newVariables[varName] = result.variables[varName]
-    }
-  }
-  if (constrained) {
-    return {
-      constrained,
-      variables: newVariables
-    }
-  } else {
-    return {};
-  }
 
 }

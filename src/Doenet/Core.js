@@ -3258,6 +3258,15 @@ export default class Core {
           throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${depName}: childLogicName ${dep.childLogicName} does not exist.`);
         }
 
+        // if childIndices specified, filter out just those indices
+        // Note: indices are relative to the selected ones
+        // (not actual index in activeChildren)
+        // so filter uses the i argument, not the x argument
+        if (dep.childIndices !== undefined) {
+          activeChildrenIndices = activeChildrenIndices
+            .filter((x, i) => dep.childIndices.includes(i));
+        }
+
         let varNames;
         let requestStateVariables = false;
         if (dep.dependencyType === "childStateVariables") {
@@ -5428,6 +5437,15 @@ export default class Core {
           if (activeChildrenIndices === undefined) {
             throw Error(`Invalid state variable ${varName} of ${component.componentName}: childLogicName ${depDef.childLogicName} does not exist.`);
           }
+          // if childIndices specified, filter out just those indices
+          // Note: indices are relative to the selected ones
+          // (not actual index in activeChildren)
+          // so filter uses the i argument, not the x argument
+          if (depDef.childIndices !== undefined) {
+            activeChildrenIndices = activeChildrenIndices
+              .filter((x, i) => depDef.childIndices.includes(i));
+          }
+
           let newChildren = activeChildrenIndices.map(x => component.activeChildren[x].componentName);
           if (newChildren.length !== currentDep.downstreamComponentNames.length) {
             childrenChanged = true;
@@ -7519,6 +7537,7 @@ export default class Core {
             stateVariable: varName,
             value: newInstruction.desiredValue,
             overrideFixed: instruction.overrideFixed,
+            arrayKey: newInstruction.arrayKey
           }
           let additionalChanges = this.requestComponentChanges({
             instruction: inst, initialChange: false, workspace,
@@ -7536,6 +7555,7 @@ export default class Core {
             stateVariable: dep.downstreamVariableName,
             value: newInstruction.desiredValue,
             overrideFixed: instruction.overrideFixed,
+            arrayKey: newInstruction.arrayKey
           };
           if (newInstruction.additionalDependencyValues) {
             // it is possible to simultaneously set the values of multiple

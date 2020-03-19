@@ -3,6 +3,7 @@ import me from 'math-expressions';
 
 export class M extends InlineComponent {
   static componentType = "m";
+  static rendererType = "math";
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -49,6 +50,7 @@ export class M extends InlineComponent {
       public: true,
       componentType: this.componentType,
       defaultValue: "",
+      forRenderer: true,
       returnDependencies: () => ({
         stringTextMathChildren: {
           dependencyType: "childIdentity",
@@ -125,6 +127,7 @@ export class M extends InlineComponent {
     }
 
     stateVariableDefinitions.renderMode = {
+      forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { renderMode: "inline" } })
     }
@@ -150,24 +153,6 @@ export class M extends InlineComponent {
     }
 
     return stateVariableDefinitions;
-  }
-
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    this.renderer = new this.availableRenderers.math({
-      key: this.componentName,
-      mathLatex: this.stateValues.latex,
-      renderMode: this.stateValues.renderMode,
-    });
-  }
-
-  updateRenderer() {
-    this.renderer.updateMathLatex(this.stateValues.latex);
   }
 
 }

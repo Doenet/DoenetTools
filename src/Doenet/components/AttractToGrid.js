@@ -148,7 +148,7 @@ export default class AttractToGrid extends ConstraintComponent {
             if ("x1" in variables) {
               let x1 = findFiniteNumericalValue(variables.x1);
               // if found a non-numerical value, return no constraint
-              if (x1 === null) {
+              if (!Number.isFinite(x1)) {
                 return {};
               }
 
@@ -174,7 +174,7 @@ export default class AttractToGrid extends ConstraintComponent {
             if ("x2" in variables) {
               let x2 = findFiniteNumericalValue(variables.x2);
               // if found a non-numerical value, return no constraint
-              if (x2 === null) {
+              if (!Number.isFinite(x2)) {
                 return {};
               }
 
@@ -200,7 +200,7 @@ export default class AttractToGrid extends ConstraintComponent {
             if ("x3" in variables) {
               let x3 = findFiniteNumericalValue(variables.x3);
               // if found a non-numerical value, return no constraint
-              if (x3 === null) {
+              if (!Number.isFinite(x3)) {
                 return {};
               }
 

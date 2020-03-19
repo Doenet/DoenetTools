@@ -74,6 +74,8 @@ export default class Graph extends DoenetRenderer {
     // this.board.on('up', this.setAllBoardsToHighQualityAndUpdate);
     // this.board.on('down', this.setAllBoardsToStayLowQuality);
 
+    this.doenetPropsForChildren = { board: this.board };
+    this.initializeChildren();
   }
 
   resizeBoard({ xmin, xmax, ymin, ymax }) {
@@ -217,11 +219,6 @@ export default class Graph extends DoenetRenderer {
     const divStyle = {
       width: this.doenetSvData.numericalWidth,
       height: this.doenetSvData.numericalHeight,
-    }
-
-    if (this.children === undefined && this.board) {
-      this.doenetPropsForChildren = { board: this.board };
-      this.initializeChildren();
     }
 
     return <React.Fragment>

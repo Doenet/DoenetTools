@@ -7,6 +7,9 @@ export default class Line extends DoenetRenderer {
 
     if (props.board) {
       this.createGraphicalObject();
+
+      this.doenetPropsForChildren = { board: this.props.board };
+      this.initializeChildren();
     }
   }
 
@@ -59,7 +62,7 @@ export default class Line extends DoenetRenderer {
 
   componentWillUnmount() {
     if (this.lineJXG) {
-      this.removeGraphicalObject();
+      this.deleteGraphicalObject();
     }
   }
 
@@ -149,8 +152,12 @@ export default class Line extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide || this.props.board) {
+    if (this.doenetSvData.hide) {
       return null;
+    }
+
+    if(this.props.board) {
+      return <><a name={this.componentName} />{this.children}</>
     }
 
     let mathJaxify = "\\(" + this.doenetSvData.equation + "\\)";

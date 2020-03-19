@@ -638,7 +638,7 @@ export default class Answer extends InlineComponent {
 
         let arrayKey;
         if (arrayKeys) {
-          arrayKey = arrayKeys[0];
+          arrayKey = Number(arrayKeys[0]);
         }
 
         let numberValuesSoFar = 0;
@@ -705,7 +705,7 @@ export default class Answer extends InlineComponent {
 
         let arrayKey;
         if (arrayKeys) {
-          arrayKey = arrayKeys[0];
+          arrayKey = Number(arrayKeys[0]);
         }
 
         for (let ind in componentType) {

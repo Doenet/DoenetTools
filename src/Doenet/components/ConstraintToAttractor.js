@@ -1,51 +1,21 @@
 import ConstraintComponent from './abstract/ConstraintComponent';
+import { findFiniteNumericalValue } from '../utils/math';
+import { applyConstraintFromComponentConstraints } from '../utils/constraints';
 
 export default class ConstraintToAttractor extends ConstraintComponent {
   static componentType = "constrainttoattractor";
 
-
-  applyTheConstraint(variables) {
-
-    let childIndex = this.childLogic.returnMatches("ExactlyOneConstraint")[0];
-
-    let constraintResult =  this.activeChildren[childIndex]
-        .applyTheConstraint(variables);
-    
-    let distance2 = 0;
-
-    for(let varname in constraintResult.variables) {
-      // since, for now, have a distance function only for numerical values,
-      // skip if don't have numerical values
-      let originalVar = this.findFiniteNumericalValue(variables[varname]);
-      let constrainedVar = this.findFiniteNumericalValue(constraintResult.variables[varname]);
-
-      // shouldn't get undefined, but test for it anyway
-      if(originalVar === null || originalVar === undefined ||
-        constrainedVar === null || constrainedVar === undefined) {
-        return {};
-      }
-
-      distance2 += Math.pow(originalVar - constrainedVar, 2);
-    }
-
-    if(distance2 > this.state.threshold*this.state.threshold) {
-      return {};
-    }
-    
-    return constraintResult;
-  }
-
   static createPropertiesObject() {
     return {
-      threshold: {default: 0.5},
+      threshold: { default: 0.5 },
     };
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
-      name: "ExactlyOneConstraint",
+      name: "exactlyOneConstraint",
       componentType: '_constraint',
       number: 1,
       setAsBase: true,
@@ -53,4 +23,72 @@ export default class ConstraintToAttractor extends ConstraintComponent {
 
     return childLogic;
   }
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.applyConstraint = {
+      returnDependencies: () => ({
+        constraintChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneConstraint",
+          variableNames: ["applyConstraint", "applyComponentConstraint"],
+          variablesOptional: true,
+        },
+        independentComponentConstraints: {
+          dependencyType: "stateVariable",
+          variableName: "independentComponentConstraints"
+        },
+        threshold: {
+          dependencyType: "stateVariable",
+          variableName: "threshold"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          applyConstraint: function (variables) {
+
+            let constraintResult;
+
+            let constraintChild = dependencyValues.constraintChild[0];
+            if (constraintChild.stateValues.applyConstraint) {
+              constraintResult = constraintChild.stateValues.applyConstraint(variables);
+            } else {
+              constraintResult = applyConstraintFromComponentConstraints({
+                variables,
+                applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint
+              })
+            }
+
+            let distance2 = 0;
+
+            for (let varname in constraintResult.variables) {
+              // since, for now, have a distance function only for numerical values,
+              // skip if don't have numerical values
+              let originalVar = findFiniteNumericalValue(variables[varname]);
+              let constrainedVar = findFiniteNumericalValue(constraintResult.variables[varname]);
+
+              if (!Number.isFinite(originalVar) || !Number.isFinite(constrainedVar)) {
+                return {};
+              }
+
+              distance2 += Math.pow(originalVar - constrainedVar, 2);
+            }
+
+            if (distance2 > dependencyValues.threshold * dependencyValues.threshold) {
+              return {};
+            }
+
+            return constraintResult;
+          }
+        }
+      })
+    }
+
+    return stateVariableDefinitions;
+
+  }
+
 }

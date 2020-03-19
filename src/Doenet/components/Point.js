@@ -309,23 +309,23 @@ export default class Point extends GraphicalComponent {
 
         let arrayKey;
         if (arrayKeys) {
-          arrayKey = arrayKeys[0];
+          arrayKey = Number(arrayKeys[0]);
         }
-        if (arrayKey === "0" || arrayKey === undefined) {
+        if (arrayKey === 0 || arrayKey === undefined) {
           dependencies.xChild = {
             dependencyType: "childStateVariables",
             childLogicName: "exactlyOneX",
             variableNames: ["value"],
           };
         }
-        if (arrayKey === "1" || arrayKey === undefined) {
+        if (arrayKey === 1 || arrayKey === undefined) {
           dependencies.yChild = {
             dependencyType: "childStateVariables",
             childLogicName: "exactlyOneY",
             variableNames: ["value"],
           };
         }
-        if (arrayKey === "2" || arrayKey === undefined) {
+        if (arrayKey === 2 || arrayKey === undefined) {
           dependencies.zChild = {
             dependencyType: "childStateVariables",
             childLogicName: "exactlyOneZ",
@@ -373,7 +373,7 @@ export default class Point extends GraphicalComponent {
 
           let arrayKey;
           if (arrayKeys) {
-            arrayKey = arrayKeys[0];
+            arrayKey = Number(arrayKeys[0]);
           }
 
           if (arrayKey === undefined) {
@@ -674,7 +674,6 @@ export default class Point extends GraphicalComponent {
       inverseDefinition: function ({ desiredStateVariableValues, stateValues, initialChange }) {
         // console.log("invertCoords");
         // console.log(desiredStateVariableValues)
-        // console.log(dependencyValues);
         // console.log(stateValues);
 
         // if not draggable, then disallow initial change 
@@ -1004,12 +1003,12 @@ function calculateUnconstrainedXs({ dependencyValues, arrayKeys, freshnessInfo }
 
     let arrayKey;
     if (arrayKeys) {
-      arrayKey = arrayKeys[0];
+      arrayKey = Number(arrayKeys[0]);
     }
 
     let { xChild, yChild, zChild, nDimensions } = dependencyValues;
 
-    if (!freshByKey[0] && (arrayKey === "0" || arrayKey === undefined)) {
+    if (!freshByKey[0] && (arrayKey === 0 || arrayKey === undefined)) {
       freshByKey[0] = true;
       if (xChild && xChild.length === 1) {
         newXs[0] = xChild[0].stateValues.value.simplify();
@@ -1023,7 +1022,7 @@ function calculateUnconstrainedXs({ dependencyValues, arrayKeys, freshnessInfo }
       }
     }
 
-    if (!freshByKey[1] && (arrayKey === "1" || arrayKey === undefined)) {
+    if (!freshByKey[1] && (arrayKey === 1 || arrayKey === undefined)) {
       if (yChild && yChild.length === 1) {
         freshByKey[1] = true;
         newXs[1] = yChild[0].stateValues.value.simplify();
@@ -1038,7 +1037,7 @@ function calculateUnconstrainedXs({ dependencyValues, arrayKeys, freshnessInfo }
       }
     }
 
-    if (!freshByKey[2] && (arrayKey === "2" || arrayKey === undefined)) {
+    if (!freshByKey[2] && (arrayKey === 2 || arrayKey === undefined)) {
       if (zChild && zChild.length === 1) {
         freshByKey[2] = true;
         newXs[2] = zChild[0].stateValues.value.simplify();

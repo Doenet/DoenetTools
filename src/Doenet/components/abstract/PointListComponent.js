@@ -3,11 +3,11 @@ import { returnBreakStringsSugarFunction } from '../commonsugar/breakstrings';
 
 export default class PointListComponent extends BaseComponent {
   static componentType = "_pointlistcomponent";
-  static rendererType = undefined;
+  static rendererType = "container";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.hide = { default: true };
+    properties.hide = { default: true, forRenderer: true };
     return properties;
   }
 
@@ -81,28 +81,38 @@ export default class PointListComponent extends BaseComponent {
     stateVariableDefinitions.points = {
       isArray: true,
       entryPrefixes: ["point"],
-      returnDependencies: () => ({
-        pointChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroPoints",
-          variableNames: ["coords"]
-        }
-      }),
-      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
-        let freshByKey = freshnessInfo.freshByKey;
+      returnDependencies: function ({ arrayKeys }) {
 
-        if (changes.pointChildren) {
-          if (changes.pointChildren.componentIdentitiesChanged) {
-            for (let key in freshByKey) {
-              delete freshByKey[key];
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+        if (arrayKey === undefined) {
+          return {
+            pointChildren: {
+              dependencyType: "childStateVariables",
+              childLogicName: "atLeastZeroPoints",
+              variableNames: ["coords"]
             }
-          } else {
-            for (let key in changes.pointChildren.valuesChanged) {
-              delete freshByKey[key];
+          }
+        } else {
+          return {
+            pointChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "atLeastZeroPoints",
+              variableNames: ["coords"],
+              childIndices: [arrayKey],
             }
           }
         }
+      }
+      ,
+      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
+        // console.log('mark stale for pointlist points')
+        // console.log(changes);
+        // console.log(arrayKeys)
 
+        let freshByKey = freshnessInfo.freshByKey;
 
         let arrayKey;
         if (arrayKeys) {
@@ -110,6 +120,19 @@ export default class PointListComponent extends BaseComponent {
         }
 
         if (arrayKey === undefined) {
+
+          if (changes.pointChildren) {
+            if (changes.pointChildren.componentIdentitiesChanged) {
+              for (let key in freshByKey) {
+                delete freshByKey[key];
+              }
+            } else {
+              for (let key in changes.pointChildren.valuesChanged) {
+                delete freshByKey[key];
+              }
+            }
+          }
+
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
             return { fresh: false }
@@ -124,15 +147,30 @@ export default class PointListComponent extends BaseComponent {
           // have arrayKey
           // so asked for just one component
 
+          if (changes.pointChild) {
+            if (changes.pointChild.componentIdentitiesChanged) {
+              delete freshByKey[arrayKey];
+            } else {
+              if (changes.pointChild.valuesChanged[0]) {
+                delete freshByKey[arrayKey];
+              }
+            }
+          }
+
           return { fresh: freshByKey[arrayKey] === true };
         }
-
 
       },
       definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
 
         let freshByKey = freshnessInfo.freshByKey;
 
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+
+        if(arrayKey === undefined) {
         if (changes.pointChildren && changes.pointChildren.componentIdentitiesChanged) {
           // send array so that now should overwrite entire array
           for (let key in dependencyValues.pointChildren) {
@@ -146,11 +184,6 @@ export default class PointListComponent extends BaseComponent {
           }
         }
 
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = arrayKeys[0];
-        }
-        if (arrayKey === undefined) {
           let newPointValues = {};
           for (let arrayKey in dependencyValues.pointChildren) {
             if (!freshByKey[arrayKey]) {
@@ -160,12 +193,15 @@ export default class PointListComponent extends BaseComponent {
           }
           return { newValues: { points: newPointValues } }
         } else {
+
+          // have arrayKey
+          
           if (!freshByKey[arrayKey]) {
             freshByKey[arrayKey] = true;
             return {
               newValues: {
                 points: {
-                  [arrayKey]: dependencyValues.pointChildren[arrayKey].stateValues.coords
+                  [arrayKey]: dependencyValues.pointChild[0].stateValues.coords
                 }
               }
             }
@@ -212,9 +248,9 @@ export default class PointListComponent extends BaseComponent {
           return {
             success: true,
             instructions: [{
-              setDependency: "pointChildren",
+              setDependency: "pointChild",
               desiredValue: desiredStateVariableValues.points[arrayKey],
-              childIndex: arrayKey,
+              childIndex: 0,
               variableIndex: 0
             }]
           }
@@ -255,12 +291,5 @@ export default class PointListComponent extends BaseComponent {
     return stateVariableDefinitions;
 
   }
-
-  initializeRenderer() {
-    if (this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.container({ key: this.componentName });
-    }
-  }
-
 
 }

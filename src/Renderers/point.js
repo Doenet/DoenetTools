@@ -71,7 +71,7 @@ export default class Point extends DoenetRenderer {
 
   componentWillUnmount() {
     if (this.pointJXG) {
-      this.removeGraphicalObject();
+      this.deleteGraphicalObject();
     }
   }
 
@@ -175,8 +175,12 @@ export default class Point extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide || this.props.board) {
+    if (this.doenetSvData.hide) {
       return null;
+    }
+
+    if (this.props.board) {
+      return <a name="{this.componentName" />
     }
 
     let mathJaxify = "\\(" + this.doenetSvData.coords + "\\)";
