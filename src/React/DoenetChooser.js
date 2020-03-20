@@ -1081,8 +1081,6 @@ class DoenetChooser extends Component {
   updateHeadingsAndAssignments(headingsInfo, assignmentsInfo) {
     this.headingsInfo = headingsInfo;
     this.assignmentsInfo = assignmentsInfo;
-    console.log(headingsInfo);
-    console.log(assignmentsInfo);
     this.saveTree(this.headingsInfo, this.assignmentsInfo);
   }
 
@@ -1155,7 +1153,7 @@ class DoenetChooser extends Component {
     }
     axios.post(urlGetCode,data)
     .then(resp=>{
-      console.log(resp.data)
+      // console.log(resp.data)
     })
     .catch(error=>{this.setState({error:error})});
   }

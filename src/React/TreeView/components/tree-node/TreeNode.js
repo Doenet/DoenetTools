@@ -46,8 +46,12 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
     onDraggableDragOver(listId, "parent")
   }
 
+  const onDragStartCb = (listId, ev) => {
+    onDragStart(listId, "parent", ev)
+  }
+
   return (
-    <DragItem id={id} onDragStart={onDragStart} onDragOver={onDraggableDragOverCb}>
+    <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb}>
       <DropItem id={id} onDragOver={onDroppableDragOverCb} onDrop={onDrop}>
         <Frame>
           <Icon style={{ ...toggle, opacity: children ? 1 : 0.3 }} onClick={() => setOpen(!isOpen)} />
@@ -68,8 +72,12 @@ export const LeafNode = memo(({ id, data, style, onDragStart, onDragOver }) => {
     onDragOver(listId, "leaf")
   }
 
+  const onDragStartCb = (listId, ev) => {
+    onDragStart(listId, "leaf", ev)
+  }
+
   return (
-    <DragItem id={id} onDragStart={onDragStart} onDragOver={onDraggableDragOverCb}>
+    <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb}>
       <Frame>
         <Icon style={{ ...toggle, opacity: 0.3 }} />
         <Title style={style}>{data}</Title>
