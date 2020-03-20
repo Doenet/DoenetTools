@@ -159,11 +159,21 @@ function buildTreeStructure(headingsInfo, assignmentsInfo, onDragStart, onDragga
   
   let treeStructure = <React.Fragment>
     <div>
+      <ParentNode 
+      id="UltimateHeader"
+      key="ultimateHeader"
+      data="Tree 1"
+      onDroppableDragOver={onDroppableDragOver} 
+      onDrop={onDrop} 
+      onDragStart={onDragStart}
+      onDraggableDragOver={onDraggableDragOver}
+      draggable={false}> 
       {// iterate through base level headings to generate tree recursively
       baseLevelHeadings.map(baseHeadingId => {
         return buildTreeStructureHelper(baseHeadingId, headingsInfo, assignmentsInfo, 
           onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop);
       })}
+      </ParentNode>
     </div>
   </React.Fragment>;
   
