@@ -77,7 +77,7 @@ export class Through extends PointListComponent {
   static componentType = "through"
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.slope = {default: undefined};
+    properties.slope = { default: null };
     return properties;
   }
 }
@@ -94,7 +94,7 @@ export class Head extends Point {
   static componentType = "head"
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.hide = {default: true};
+    properties.hide = { default: true };
     return properties;
   }
   static rendererType = "point";
@@ -104,7 +104,7 @@ export class Tail extends Point {
   static componentType = "tail"
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.hide = {default: true};
+    properties.hide = { default: true };
     return properties;
   }
   static rendererType = "point";
@@ -119,7 +119,7 @@ export class Center extends Point {
   static componentType = "center"
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.hide = {default: true};
+    properties.hide = { default: true };
     return properties;
   }
   static rendererType = "point";

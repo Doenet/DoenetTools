@@ -105,12 +105,12 @@ export default class PointListComponent extends BaseComponent {
             }
           }
         }
-      }
-      ,
-      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
+      },
+      markStale: function ({ freshnessInfo, changes, arrayKeys, previousValues }) {
         // console.log('mark stale for pointlist points')
         // console.log(changes);
-        // console.log(arrayKeys)
+        // console.log(arrayKeys);
+        // console.log(previousValues);
 
         let freshByKey = freshnessInfo.freshByKey;
 
@@ -165,24 +165,30 @@ export default class PointListComponent extends BaseComponent {
 
         let freshByKey = freshnessInfo.freshByKey;
 
+        // console.log('definition of points for pointlist')
+        // console.log(JSON.parse(JSON.stringify(freshByKey)));
+        // console.log(JSON.parse(JSON.stringify(dependencyValues)))
+        // console.log(JSON.parse(JSON.stringify(changes)))
+        // console.log(arrayKeys);
+
         let arrayKey;
         if (arrayKeys) {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        if(arrayKey === undefined) {
-        if (changes.pointChildren && changes.pointChildren.componentIdentitiesChanged) {
-          // send array so that now should overwrite entire array
-          for (let key in dependencyValues.pointChildren) {
-            freshByKey[key] = true;
-          }
+        if (arrayKey === undefined) {
+          if (changes.pointChildren && changes.pointChildren.componentIdentitiesChanged) {
+            // send array so that now should overwrite entire array
+            for (let key in dependencyValues.pointChildren) {
+              freshByKey[key] = true;
+            }
 
-          return {
-            newValues: {
-              points: dependencyValues.pointChildren.map(x => x.stateValues.coords),
+            return {
+              newValues: {
+                points: dependencyValues.pointChildren.map(x => x.stateValues.coords),
+              }
             }
           }
-        }
 
           let newPointValues = {};
           for (let arrayKey in dependencyValues.pointChildren) {
@@ -195,7 +201,7 @@ export default class PointListComponent extends BaseComponent {
         } else {
 
           // have arrayKey
-          
+
           if (!freshByKey[arrayKey]) {
             freshByKey[arrayKey] = true;
             return {

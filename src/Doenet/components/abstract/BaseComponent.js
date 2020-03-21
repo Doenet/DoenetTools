@@ -173,14 +173,14 @@ export default class BaseComponent {
     return stateVariableDefinitions;
   }
 
-  static returnNormalizedStateVariableDefinitions({ propertyNames }) {
+  static returnNormalizedStateVariableDefinitions({ propertyNames, numerics }) {
     // return state variable definitions
     // where have added additionalStateVariablesDefined
 
 
     //  add state variable definitions from component class
     let newDefinitions = this.returnStateVariableDefinitions({
-      propertyNames,
+      propertyNames, numerics,
     });
 
 

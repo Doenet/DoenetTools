@@ -1946,6 +1946,7 @@ export default class Core {
     //  add state variable definitions from component class
     let newDefinitions = componentClass.returnNormalizedStateVariableDefinitions({
       propertyNames: Object.keys(stateVariableDefinitions),
+      numerics: this.numerics
     });
 
     Object.assign(stateVariableDefinitions, newDefinitions)
@@ -5924,28 +5925,202 @@ export default class Core {
 
   markStateVariableAndUpstreamDependentsStale({ component, varName }) {
 
-    // TODO: do we need to run markStale and process its result here?
-    // if so, what do we use for changes?
+    // console.log(`mark state variable ${varName} of ${component.componentName} and updeps stale`)
 
     let componentsTouched = [component.componentName];
     let stateVarObj = component.state[varName];
 
-    // delete recursive dependency values, in case they were defined
-    delete stateVarObj.recursiveDependencyValues;
+    // if don't have a getter set, this indicates that, before this markStale function,
+    // stateVarObj was fresh.
+    let varWasFresh = !(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)
 
-    // if don't have a getter set, then need to save old value
-    // and put getter back in place to get a new value next time it is requested
-    if (!(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)) {
-      stateVarObj._previousValue = stateVarObj.value;
-      delete stateVarObj.value;
-      let getStateVar = this.getStateVariableValue;
-      Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component, stateVariable: varName }), configurable: true });
+    // record whether or not stateVarObj was partially fresh before we do any more processing
+    // as we might change the attribute partiallyFresh from the result of markStale
+    let varWasPartiallyFresh = stateVarObj.partiallyFresh;
 
-      let additionalComponentsTouched = this.markUpstreamDependentsStale({ component, varName });
-      componentsTouched.push(...additionalComponentsTouched);
+    let foundVarChange = true;
+
+    if (varWasFresh || varWasPartiallyFresh) {
+
+      let result = this.processMarkStale({ component, varName });
+
+      if (result.fresh) {
+        foundVarChange = false;
+      }
 
     }
+
+    // check foundVarChange again, as it could have been
+    // set to false when processing markStale
+    if (foundVarChange) {
+
+      // delete recursive dependency values, if they exist
+      delete stateVarObj.recursiveDependencyValues;
+
+      if (varWasFresh) {
+
+        // save old value
+        // mark stale by putting getter back in place to get a new value next time it is requested
+        stateVarObj._previousValue = stateVarObj.value;
+        delete stateVarObj.value;
+        let getStateVar = this.getStateVariableValue;
+        Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component, stateVariable: varName }), configurable: true });
+      }
+
+      // if stateVarObj was fresh (and also if stateVarObj was marked partiallyFresh before started processing),
+      // we recurse on upstream dependents
+      if (varWasFresh || varWasPartiallyFresh) {
+        let additionalComponentsTouched = this.markUpstreamDependentsStale({ component, varName });
+        componentsTouched.push(...additionalComponentsTouched)
+      }
+    }
+
     return componentsTouched;
+  }
+
+  processMarkStale({ component, varName }) {
+    // if the stateVariable varName (or its array state variable)
+    // has a markStale function, then run that function,
+    // giving it arguments with information about what changed
+
+    // markStale may change the freshnessInfo for varName (or its array state variable)
+    // and will return an object with attributes
+    // - fresh: if the variable is to be considered completely fresh,
+    //   indicating the mark stale process should not recurse
+    // - partiallyFresh: if the variable is partially fresh,
+    //   indicating the mark stale process should recurse,
+    //   but the variable should be marked to allow later mark stale
+    //   processes that involve the variable to process the variable again
+
+
+    let stateVarObj = component.state[varName];
+
+    let stateVarForMarkStale = stateVarObj;
+    if (stateVarObj.isArrayEntry) {
+      stateVarForMarkStale = component.state[stateVarObj.arrayStateVariable]
+    }
+
+    if (!stateVarForMarkStale.markStale) {
+      return { fresh: false }
+    }
+
+    let changes = {};
+    let downDeps = this.downstreamDependencies[component.componentName][varName];
+    let previousValues = {};
+
+    for (let depName in downDeps) {
+      let dep = downDeps[depName];
+      let depChanges = {};
+      let foundDepChange = false;
+      if (dep.componentIdentityChanged) {
+        depChanges.componentIdentityChanged = true;
+        foundDepChange = true;
+      }
+      if (dep.componentIdentitiesChanged) {
+        depChanges.componentIdentitiesChanged = true;
+        foundDepChange = true;
+      }
+      if (dep.valuesChanged) {
+        depChanges.valuesChanged = dep.valuesChanged;
+        foundDepChange = true;
+      }
+      if (foundDepChange) {
+        changes[depName] = depChanges;
+      }
+      let foundPreviousValues = false;
+      let previousValuesForThisDep;
+
+      let cNames = [];
+      let multipleComponents = false;
+      if (dep.downstreamComponentName) {
+        cNames = [dep.downstreamComponentName];
+      } else if (dep.downstreamComponentNames) {
+        cNames = dep.downstreamComponentNames;
+        multipleComponents = true;
+        previousValuesForThisDep = [];
+      }
+
+      for (let cName of cNames) {
+        let vNames = [];
+        let multipleVariables = false;
+        if (dep.downstreamVariableName) {
+          vNames = [dep.downstreamVariableName];
+        } else if (dep.downstreamVariableNames) {
+          vNames = dep.downstreamVariableNames;
+          multipleVariables = true;
+        }
+
+        let compState = this._components[cName].state;
+
+        let prevValForThisComp;
+
+        if (multipleVariables) {
+          prevValForThisComp = { stateValues: {} };
+        }
+
+        for (let vName of vNames) {
+          let stObj = compState[vName];
+
+          if (!stObj) {
+            continue;
+          }
+
+          foundPreviousValues = true;
+
+          let prevVal = stObj._previousValue;
+
+          let varWasFresh = !(Object.getOwnPropertyDescriptor(stObj, 'value').get || stObj.immutable);
+          if (varWasFresh) {
+            prevVal = stObj.value;
+          }
+
+          if(typeof prevVal === "object" && prevVal !== null) {
+            prevVal = new Proxy(prevVal, readOnlyProxyHandler);
+          }
+
+          if (multipleVariables) {
+            prevValForThisComp.stateValues[vName] = prevVal;
+          } else {
+            prevValForThisComp = prevVal;
+          }
+
+        }
+
+        if(multipleComponents) {
+          previousValuesForThisDep.push(prevValForThisComp);
+        } else {
+          previousValuesForThisDep = prevValForThisComp;
+        }
+
+      }
+
+      if(foundPreviousValues) {
+        previousValues[depName] = previousValuesForThisDep;
+      }
+
+    }
+
+    let result = stateVarForMarkStale.markStale({
+      freshnessInfo: stateVarForMarkStale.freshnessInfo,
+      changes,
+      arrayKeys: stateVarObj.arrayKeys,
+      varName,  // include varName in case multiple state variables defined
+      previousValues,
+    });
+
+
+    // if stateVarObj is partially fresh, we do want to recurse to upstream dependencies
+    // we also want to mark stateVarObj as partiallyFresh so that if we reach stateVarObj
+    // again while marking stale, we will still recurse on its dependencies
+    // (needed because its getter will have been deleted, which is usually
+    // the indication that we don't need to recurse)
+    // 
+    if (result.partiallyFresh) {
+      stateVarObj.partiallyFresh = true;
+    } else {
+      delete stateVarObj.partiallyFresh;
+    }
+    return result;
   }
 
   markUpstreamDependentsStale({ component, varName }) {
@@ -6076,11 +6251,6 @@ export default class Core {
           let upDepComponent = this._components[upDep.upstreamComponentName];
           let upVar = upDepComponent.state[upVarName];
 
-          let stateVarForMarkStale = upVar;
-          if (upVar.isArrayEntry) {
-            stateVarForMarkStale = upDepComponent.state[upVar.arrayStateVariable]
-          }
-
           // if don't have a getter set, this indicates that, before this markStale function,
           // upVar was fresh.
           let upVarWasFresh = !(Object.getOwnPropertyDescriptor(upVar, 'value').get || upVar.immutable)
@@ -6089,57 +6259,19 @@ export default class Core {
           // as we might change the attribute partiallyFresh from the result of markStale
           let upVarWasPartiallyFresh = upVar.partiallyFresh;
 
-          if ((upVarWasFresh || upVarWasPartiallyFresh) && stateVarForMarkStale.markStale) {
-            // if the stateVariable upVar (or its array state variable)
-            // has a markStale function, then run that function,
-            // giving it arguments with information about what changed
+          if (upVarWasFresh || upVarWasPartiallyFresh) {
 
-            // markStale may change the freshnessInfo for upVar (or its array state variable)
-            // and will return an object with attributes
-            // - fresh: if the variable is to be considered completely fresh,
-            //   indicating the mark stale process should not recurse
-            // - partiallyFresh: if the variable is partially fresh,
-            //   indicating the mark stale process should recurse,
-            //   but the variable should be marked to allow later mark stale
-            //   processes that involve the variable to process the variable again
-
-            let depChanges = {};
-            if (upDep.componentIdentityChanged) {
-              depChanges.componentIdentityChanged = true;
-            }
-            if (upDep.componentIdentitiesChanged) {
-              depChanges.componentIdentitiesChanged = true;
-            }
-            if (upDep.valuesChanged) {
-              depChanges.valuesChanged = upDep.valuesChanged;
-            }
-
-            let result = upVar.markStale({
-              freshnessInfo: stateVarForMarkStale.freshnessInfo,
-              changes: { [upDep.dependencyName]: depChanges },
-              arrayKeys: upVar.arrayKeys,  // in case upVar is an array entry
+            let result = this.processMarkStale({
+              component: upDepComponent,
+              varName: upVarName,
             });
 
-            // if upVar is actually fresh, indicate that there is no change
-            // so that we won't recurse to upstream dependencies
             if (result.fresh) {
               foundVarChange = false;
             }
 
-
-            // if upVar is partially fresh, we do want to recurse to upstream dependencies
-            // we also want to mark upVar as partiallyFresh so that if we reach upVar
-            // again while marking stale, we will still recurse on its dependencies
-            // (needed because its getter will have been deleted, which is usually
-            // the indication that we don't need to recurse)
-            // 
-            if (result.partiallyFresh) {
-              upVar.partiallyFresh = true;
-            } else {
-              delete upVar.partiallyFresh;
-            }
-
           }
+
 
           // check foundVarChange again, as it could have been
           // set to false when processing markStale
