@@ -1,2 +1,2 @@
-FROM mysql:5.7.26
+FROM mysql:5.7.29
 ENV MYSQL_ROOT_PASSWORD helloworld
