@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   apache:
-    build: './apache'
+    build: '../docker/apache'
     ports:
       - 80:80
       # - 443:443
@@ -14,13 +14,13 @@ services:
     restart: always
 
   php:
-    build: './php'
+    build: '../docker/php'
     volumes:
       - ../dist_local:/usr/local/apache2/htdocs
     restart: always
 
   mysql:
-    build: './mysql'
+    build: '../docker/mysql'
     ports:
       - 3306:3306
     volumes:
