@@ -44,6 +44,7 @@ export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssign
   const [currentDraggedObject, setCurrentDraggedObject] = useState({id: null, ev: null});
   const [headings, setHeadings] = useState(headingsInfo);
   const [assignments, setAssignments] = useState(assignmentsInfo);
+  const [dropTimer, setDropTimer] = useState(null);
 
   useEffect(() => {
     setHeadings(headingsInfo);
@@ -72,7 +73,6 @@ export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssign
   }
 
   const onDraggableDragOver = (id, type) => {
-
     // draggedType must be equal to dragOver type
     if (type != currentDraggedObject.type) return;
 
@@ -141,20 +141,38 @@ export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssign
   const onDrop = () => {
     // window.requestAnimationFrame(() => { currentDraggedObject.ev.target.style.visibility = "visible"; });
     setCurrentDraggedObject({id: null, ev: null});
+    clearInterval(dropTimer);
     updateHeadingsAndAssignments(headings, assignments);
+  }
+
+  const onDropEnter = (listId) => {
+    if (currentDraggedObject.type == "leaf") {
+      return;
+    }
+    clearInterval(dropTimer);
+    let newTimer = setTimeout(function() {
+        // console.log(listId)
+        onDroppableDragOver(listId)
+    }, 2000);
+    setDropTimer(newTimer);
+  }
+
+  const onDropExit = () => {
+    clearInterval(dropTimer);
+    setDropTimer(null);
   }
 
   return (
     <div className="App">
       <div style={{ "textAlign": "left", "marginTop":"2em"}}>
         <Global />
-        {buildTreeStructure(headings, assignments, onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop)}
+        {buildTreeStructure(headings, assignments, onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropExit)}
       </div>
     </div>
   );
 }
 
-function buildTreeStructure(headingsInfo, assignmentsInfo, onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop) {
+function buildTreeStructure(headingsInfo, assignmentsInfo, onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropExit) {
   let baseLevelHeadings = headingsInfo["UltimateHeader"]["headingId"];
   
   let treeStructure = <React.Fragment>
@@ -166,12 +184,15 @@ function buildTreeStructure(headingsInfo, assignmentsInfo, onDragStart, onDragga
       onDroppableDragOver={onDroppableDragOver} 
       onDrop={onDrop} 
       onDragStart={onDragStart}
+      onDropEnter={() => console.log()} 
+      onDropExit={() => console.log()} 
       onDraggableDragOver={onDraggableDragOver}
-      draggable={false}> 
+      draggable={false}
+      defaultOpen={true}> 
       {// iterate through base level headings to generate tree recursively
       baseLevelHeadings.map(baseHeadingId => {
         return buildTreeStructureHelper(baseHeadingId, headingsInfo, assignmentsInfo, 
-          onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop);
+          onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropExit);
       })}
       </ParentNode>
     </div>
@@ -181,19 +202,21 @@ function buildTreeStructure(headingsInfo, assignmentsInfo, onDragStart, onDragga
 }
 
 function buildTreeStructureHelper(parentHeadingId, headingsInfo, assignmentsInfo, 
-  onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop) {
+  onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropExit) {
   let subTree = <ParentNode 
     id={parentHeadingId}
     key={parentHeadingId} 
     data={headingsInfo[parentHeadingId]["name"]}
     onDroppableDragOver={onDroppableDragOver} 
     onDrop={onDrop} 
+    onDropEnter={onDropEnter} 
+    onDropExit={onDropExit} 
     onDragStart={onDragStart}
     onDraggableDragOver={onDraggableDragOver}> 
       { // iterate through children headings to generate tree recursively
       headingsInfo[parentHeadingId]["headingId"].map(headingId => {
         return buildTreeStructureHelper(headingId, headingsInfo, assignmentsInfo,
-          onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop);
+          onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropExit);
       })}
       { // iterate through children assigments to generate tree recursively
       headingsInfo[parentHeadingId]["assignmentId"].map((assignmentId, index) => {

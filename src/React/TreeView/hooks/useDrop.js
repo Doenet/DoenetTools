@@ -1,27 +1,39 @@
 import { useState, useEffect } from "react";
 
-const useDrop = ({ ref, onDrop, onDragOver }) => {
+const useDrop = ({ ref, onDrop, onDragOver, onDropEnter, onDropExit }) => {
   const [dropState, updateDropState] = useState("droppable");
+
   const dropOverCb = ev => {
     ev.preventDefault();
-    onDragOver();
+    onDragOver && onDragOver();
     updateDropState("dragging over");
-    // ev.stopPropagation();
   };
 
   const dropCb = ev => {
     ev.preventDefault();
     ev.dataTransfer.getData("source")
-    onDrop();
+    onDrop && onDrop();
     updateDropState("dropped");
-    // ev.stopPropagation();
+  };
+
+  const dropEnterCb = ev => {
+    ev.preventDefault();
+    onDropEnter && onDropEnter();
+  };
+  const dropExitCb = ev => {
+    ev.preventDefault();
+    onDropExit && onDropExit();
   };
   useEffect(() => {
     const elem = ref.current;
     if (elem) {
+      elem.addEventListener("dragenter", dropEnterCb);
+      elem.addEventListener("dragexit", dropExitCb);
       elem.addEventListener("dragover", dropOverCb);
       elem.addEventListener("drop", dropCb);
       return () => {
+        elem.removeEventListener("dragenter", dropEnterCb);
+        elem.removeEventListener("dragexit", dropExitCb);
         elem.removeEventListener("dragover", dropOverCb);
         elem.removeEventListener("drop", dropCb);
       };

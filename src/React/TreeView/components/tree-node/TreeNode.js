@@ -27,7 +27,7 @@ const TreeNode = memo(({ children, name, style, defaultOpen = false }) => {
   )
 })
 
-export const ParentNode = memo(({ children, data, style, defaultOpen = false, id, onDroppableDragOver, onDrop, onDraggableDragOver, onDragStart, draggable = true}) => {
+export const ParentNode = memo(({ children, data, style, defaultOpen = false, id, onDroppableDragOver, onDrop, onDropEnter, onDropExit, onDraggableDragOver, onDragStart, draggable = true}) => {
   const [isOpen, setOpen] = useState(defaultOpen)
   const previous = usePrevious(isOpen)
   const [bind, { height: viewHeight }] = useMeasure()
@@ -50,7 +50,7 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
     onDragStart(listId, "parent", ev)
   }
 
-  let DroppableParentNode = <DropItem id={id} onDragOver={onDroppableDragOverCb} onDrop={onDrop}>
+  let DroppableParentNode = <DropItem id={id} onDragOver={onDroppableDragOverCb} onDrop={onDrop} onDropEnter={onDropEnter} onDropExit={onDropExit} >
     <Frame>
       <Icon style={{ ...toggle, opacity: children ? 1 : 0.3 }} onClick={() => setOpen(!isOpen)} />
       <Title style={style}>{data}</Title>
@@ -83,7 +83,7 @@ export const LeafNode = memo(({ id, data, style, onDragStart, onDragOver }) => {
   return (
     <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb}>
       <Frame>
-        <Icon style={{ ...toggle, opacity: 0.3 }} />
+        {/* <Icon style={{ ...toggle, opacity: 0.3 }} /> */}
         <Title style={style}>{data}</Title>
       </Frame>
     </DragItem>    
