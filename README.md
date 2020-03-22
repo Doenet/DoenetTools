@@ -86,3 +86,6 @@ $ cd /path/to/local/clone/of/DoenetCourse
 $ docker-compose up --build
 ```
 6. Pet your cat (Optional)
+
+### Use your own AMP/NMP stack
+You must use port 3000 for Apache/Nginx or our PHP probably won't work on your stack.

@@ -26,7 +26,8 @@
     "three-text2d": "0.4.1"
   },
   "scripts": {
-    "start": "webpack --mode development --config webpack.local.config.js --watch",
+    "start": "cd docker && docker-compose up",
+    "start:webpack": "webpack --mode development --config webpack.local.config.js --watch",
     "start:dev_server": "webpack-dev-server --mode development --open",
     "build": "webpack --mode production --config webpack.deployment.config.js",
     "test": "cypress open",
