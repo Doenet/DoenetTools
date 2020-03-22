@@ -4,6 +4,71 @@ body{
   margin: 0;
   font-family: 'Droid Serif','Georgia', 'Times New Roman', 'Times', 'serif';
 }
+.disabled{
+  color: #C0C0C0;
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 31px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  width:46px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 23px;
+  width: 22px;
+  left: -2.5px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: green;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(25px);
+  -ms-transform: translateX(25px);
+  transform: translateX(25px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
 .selectedEnableButton{
   background-color: rgb(94, 197, 94); 
   color: black; 
@@ -13,7 +78,7 @@ body{
 .courseContainer{
   display:grid;
   /* grid-template-columns: 120px 130px auto 140px; */
-  grid-template-columns: 250px auto 250px;
+  grid-template-columns: 280px auto 500px;
   grid-template-rows: 60px auto;
   width: 100vw;
   height: 100vh;
@@ -31,6 +96,7 @@ body{
 }
 .homeActiveSection{
   /* background-color: rgb(243, 0, 0); */
+  
   grid-column: 2 / 3;
   grid-row: 2 / 3;
   padding: 5px;
@@ -40,8 +106,10 @@ body{
 .info {
   grid-column: 3 / 4;
   grid-row: 2 / 3;
-  padding: 5px;
+  /* padding: 6px; */
   overflow: scroll;
+  background-color: rgb(228, 228, 228);
+
 }
 
 .homeMainMenuItem{
@@ -224,7 +292,7 @@ margin: 10px;
   justify-content: flex-end;
   padding: 2;
   margin: 1px 0px 1px 0px;
-  cursor: pointer;
+  /* cursor: pointer; */
 
 }
 .SectionContainer-Active {
@@ -241,6 +309,7 @@ margin: 10px;
   padding:6px;
   border-right:167px;
 }
+
 .Section-Icon {
   font-size:18px;
 }
