@@ -5,8 +5,8 @@ $remoteuser = $_SERVER[ 'REMOTE_USER' ];
 $db_temp = "cse_doenet";
 
 
-if ($_SERVER['HTTP_HOST'] == 'apache:80'){
-  $env_path = "/var/doenet_php_config/env.ini";
+if ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == 'localhost:3000'){
+  $env_path = "../open_api/env.ini";
   $remoteuser = "devuser";
   $db_temp = "doenet_local";
 }
@@ -20,14 +20,16 @@ $database = $ini_array["database"];
 
 $database = $db_temp; //TODO: remove all $db_temp's
 
+if ($_SERVER['HTTP_HOST'] == 'localhost:3000'){
+  $dbhost = "127.0.0.1";
+}
 
-// $conn = mysqli_connect($dbhost, $username, $password, $database);
-// // Check connection
-// if (!$conn) {
-//     die("Database Connection failed: " . mysqli_connect_error());
-// }
 
-http_response_code(200);
-echo $_SERVER['HTTP_HOST'];
+$conn = mysqli_connect($dbhost, $username, $password, $database);
+// Check connection
+if (!$conn) {
+    die("Database Connection failed: " . mysqli_connect_error());
+}
+
 
 ?>

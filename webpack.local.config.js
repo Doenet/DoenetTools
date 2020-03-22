@@ -22,7 +22,7 @@ module.exports = {
   },
 
   output: {
-    path: "/var/www/html",
+    path: resolve(__dirname, 'dist_local'),
     filename: '[name]',
   },
 

@@ -42,19 +42,30 @@ $ cd /path/to/desired/location/DoenetCourse
 $ npm install
 ```
 
-### 4. Build and run the container!
+### 4. Build and run the containers!
 ```bash
-$ cd docker && docker-compose up
+$ npm start
 ```
-This may take a while. 
+This may take a while since it must build the containers before you can use them.
 
-### 5. Profit
-🤑
+You can tell it is ready when the node container outputs a ton of text. It will output similar text after each re-packing.
+
+### 5. Stopping the containers
+When you are not using them, you can stop the docker containers by going to the terminal you started them with and using `ctrl+c`. Let the containers stop gracefully. Keep in mind that Webpack takes a while to get going, so you probably don't want to stop the containers until you are done for the day. Or you can leave them running indefinitely.
 
 ## Usage
 Visit `localhost` in your browser to test the project. When you make changes to the code in the code in `/static` or `/src`, the Docker containers will automatically build the changes and serve the new files. There will be no output to the terminal and you must refresh manually.
 
-To run the container after building, you can just run `docker-compose up` in the root directory.
+### Run the containers
+To run the containers, you can just run `npm start` in the project's root directory. This command will only build the containers if they are not already built.
+
+### Stop the containers
+Option 1: Use `ctrl+c` in the terminal that you started them with.
+
+Option 2: Stop all four containers using whatever docker interface you have. The containers are "node", "apache", "mysql", and "php".
+
+### Re-build the containers.
+If you need to re-build the containers for whatever reason, run `npm run docker:build`. Not to be confused with `npm run build` which will build the website for production.
 
 ### Directly access the database
 The database is exposed to your local machine by port 3306. You can use a program such as Sequel Pro (Mac), MySQLWorkbench (Most OS), or the MySQL CLI. to interact with the database directly.
@@ -65,7 +76,7 @@ If port 3306 is in use, you can change the port in the `docker-compose.yml` file
     build: './mysql'
     ports:
       - 3306:3306
-      # - desired_port:3306
+      # - <desired_port>:3306
     volumes:
       - ./volumes/db:/var/lib/mysql
     restart: always
@@ -79,13 +90,32 @@ $ mysqldump --all-databases --password=helloworld > /docker-entrypoint-initdb.d/
 You can then grab this file from `DoenetCourse/docker/volumes/db_init/dbdump.sql`.
 
 To use this new template:
-1. Stop the docker containers
-2. Rename the dump file to `db_template.sql`
-3. Replace the old `DoenetCourse/docker/volumes/db_init/db_template.sql` with the newly renamed file
+1. Stop the docker containers.
+2. Rename the dump file to `db_template.sql`.
+3. Replace the old `DoenetCourse/docker/volumes/db_init/db_template.sql` with the newly renamed file.
 4. Delete the contents (except for `.gitignore`, `.touch`) of `DoenetCourse/docker/volumes/db/`.
-5. Start the containers
+5. Start the containers:
 ```bash
-$ cd /path/to/local/clone/of/DoenetCourse
+$ cd /path/to/local/clone/of/DoenetCourse/docker
 $ docker-compose up --build
 ```
-6. Pet your cat (Optional)
+6. Pet your cat (Optional). :3
+
+### Use your own AMP/NMP stack (advanced)
+- Install a webserver that is compatible with PHP, we recommend Apache.
+  - We use Apache 2.4.41 in Docker.
+- Install PHP.
+  - We use PHP 7.4 in Docker, we have also used 7.3.8.
+- Install MySQL. You can probably also use MariaDB, but we have not tested that.
+  - We use MySQL 7.7.26 in Docker.
+- Have your server serve from `/path/to/DoenetCourse/dist_local/`.
+- Initialize your MySQL database with `/path/to/DoenetCourse/docker/volumes/db_init/db_template.sql`.
+- Use `npm run start:webpack` to run webpack on your normal namespace (not Docker).
+
+Notes:
+
+You may also get MariaDB to work. Please let us know if you do. c:
+
+We have not tested the current configuration with Nginx, you are on your own if you choose to use it. If you do, we would love to hear about how it turned out. c:
+
+You must use port 3000 for Apache/Nginx or our PHP probably won't work on your stack.
