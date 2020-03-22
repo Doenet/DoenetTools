@@ -31,6 +31,5 @@ if (!$conn) {
     die("Database Connection failed: " . mysqli_connect_error());
 }
 
-http_response_code(200);
 
 ?>
