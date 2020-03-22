@@ -28,7 +28,9 @@
   "scripts": {
     "start": "cd docker && docker-compose up",
     "docker:build": "cd docker && docker-compose build",
-    "start:webpack": "webpack --mode development --config webpack.local.config.js --watch",
+    "docker:lamp": "cd docker_lamp_only && docker-compose up",
+    "docker:webpack": "cd docker_webpack_only && docker-compose up",
+    "webpack": "webpack --mode development --config webpack.local.config.js --watch",
     "build": "webpack --mode production --config webpack.deployment.config.js",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome'",
