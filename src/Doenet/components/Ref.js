@@ -36,7 +36,7 @@ export default class Ref extends CompositeComponent {
     // Will check validity depending on ref target
     let properties = {};
     for (let componentType of allPossibleProperties) {
-      properties[componentType] = { ignorePropagationFromAncestors: true };
+      properties[componentType] = { ignorePropagationFromAncestors: true, default: null };
     }
 
     // Just in case there is a component that added these as a property, delete them
@@ -587,9 +587,9 @@ export default class Ref extends CompositeComponent {
 
           for (let property in dependencyValues) {
             if (!["replacementClasses", "useProp", "validProp"].includes(property) && !(property in propertiesObject)) {
-              if (dependencyValues[property] !== null) {
+              if (dependencyValues[property] !== null && dependencyValues[property] === []) {
                 validProperties = false;
-                console.warn(`Invalid property ${property} for reference to component of type ${targetClass.componentType}`)
+                console.error(`Invalid property ${property} for reference to component of type ${targetClass.componentType}`)
                 break;
               }
             }
@@ -1068,7 +1068,7 @@ export default class Ref extends CompositeComponent {
 
     // TODO: how do we determine if all target and descendant state variables
     // are resolved?
-    
+
     // all target descendants have to be resolved to be able to successfully expand ref
     // Rationale: to create the reference shadow, core will need to
     // evaluate all state variables to determine which are essential

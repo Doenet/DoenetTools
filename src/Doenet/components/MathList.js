@@ -5,7 +5,7 @@ export default class MathList extends InlineComponent {
   static componentType = "mathlist";
   static rendererType = "aslist";
 
-  // when another component has a property that is a textlist,
+  // when another component has a property that is a mathlist,
   // use the maths state variable to populate that property
   static stateVariableForPropertyValue = "maths";
 

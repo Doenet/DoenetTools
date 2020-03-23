@@ -243,6 +243,9 @@ export default class BaseComponent {
     let propertyObject = this.createPropertiesObject({ standardComponentClasses, allPossibleProperties });
 
     let stateVariableDescriptions = {};
+    let arrayEntryPrefixes = {};
+    let aliases = {};
+
     for (let varName in propertyObject) {
       let componentTypeOverride = propertyObject[varName].componentType;
       stateVariableDescriptions[varName] = {
@@ -250,15 +253,24 @@ export default class BaseComponent {
         public: true,
 
       }
-      if (propertyObject[varName].isArray) {
-        stateVariableDescriptions[varName].isArray = true;
+      if (propertyObject[varName].entryPrefixes) {
+        let classPropertyAttributes = standardComponentClasses[varName].attributesForPropertyValue;
+        if (classPropertyAttributes && classPropertyAttributes.isArray) {
+          stateVariableDescriptions[varName].isArray = true;
+          for (let prefix of propertyObject[varName].entryPrefixes) {
+            arrayEntryPrefixes[prefix] = {
+              arrayVariableName: varName,
+            }
+          }
+        } else {
+          console.warn(`entryPrefixes ignored for property ${varName} of ${this.componentName}`)
+        }
       }
+
     }
 
     let stateDef = this.returnNormalizedStateVariableDefinitions({ propertyNames: Object.keys(stateVariableDescriptions) });
 
-    let arrayEntryPrefixes = {};
-    let aliases = {};
 
     for (let varName in stateDef) {
       let theStateDef = stateDef[varName];
@@ -273,9 +285,11 @@ export default class BaseComponent {
         };
         if (theStateDef.isArray) {
           stateVariableDescriptions[varName].isArray = true;
-          for (let prefix of theStateDef.entryPrefixes) {
-            arrayEntryPrefixes[prefix] = {
-              arrayVariableName: varName,
+          if (theStateDef.entryPrefixes) {
+            for (let prefix of theStateDef.entryPrefixes) {
+              arrayEntryPrefixes[prefix] = {
+                arrayVariableName: varName,
+              }
             }
           }
         }

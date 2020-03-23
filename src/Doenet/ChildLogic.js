@@ -25,31 +25,33 @@ export default class childLogic {
       let name = '_property_' + property;
 
       let leaf;
-      if (propertySpecification.isArray) {
-        leaf = new ChildLogicLeaf({
-          name: name,
-          componentType: propertySpecification.singularName,
-          comparison: 'atLeast',
-          number: 0,
-          allowSpillover: false,
-          parentComponentType: this.parentComponentType,
-          allComponentClasses: this.allComponentClasses,
-          standardComponentClasses: this.standardComponentClasses,
-          components: this.components,
-        });
-      } else {
-        leaf = new ChildLogicLeaf({
-          name: name,
-          componentType: property,
-          comparison: 'atMost',
-          number: 1,
-          allowSpillover: false,
-          parentComponentType: this.parentComponentType,
-          allComponentClasses: this.allComponentClasses,
-          standardComponentClasses: this.standardComponentClasses,
-          components: this.components,
-        });
-      }
+      // TODO: determine how to handle case where want to allow
+      // multiple matches to property
+      // changed how isArray works to make it like other state variables
+      // if (propertySpecification.isArray) {
+      //   leaf = new ChildLogicLeaf({
+      //     name: name,
+      //     componentType: propertySpecification.singularName,
+      //     comparison: 'atLeast',
+      //     number: 0,
+      //     allowSpillover: false,
+      //     parentComponentType: this.parentComponentType,
+      //     allComponentClasses: this.allComponentClasses,
+      //     standardComponentClasses: this.standardComponentClasses,
+      //     components: this.components,
+      //   });
+      // } else {
+      leaf = new ChildLogicLeaf({
+        name: name,
+        componentType: property,
+        comparison: 'atMost',
+        number: 1,
+        allowSpillover: false,
+        parentComponentType: this.parentComponentType,
+        allComponentClasses: this.allComponentClasses,
+        standardComponentClasses: this.standardComponentClasses,
+        components: this.components,
+      });
       this.properties[property].name = name;
       this.logicComponents[name] = leaf;
       propertyPropositions.push(leaf);
@@ -335,6 +337,7 @@ export default class childLogic {
         activeChildrenMatched: activeChildrenMatchedBasicInfoOnly,
         components: this.components,
         dependencyValues,
+        allComponentClasses: this.allComponentClasses,
         idRng
       });
       if (result.success !== true) {

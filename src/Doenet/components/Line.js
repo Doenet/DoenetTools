@@ -13,11 +13,16 @@ export default class Line extends GraphicalComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["points", "variables"] };
+  static get stateVariablesShadowedForReference() { return ["points"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.draggable = { default: true, forRenderer: true };
+    properties.variables = {
+      componentType: "math",
+      entryPrefixes: ["var"],
+      dependentStateVariable: "nDimensions"
+    }
     return properties;
   }
 
@@ -698,134 +703,6 @@ export default class Line extends GraphicalComponent {
       }
     }
 
-    stateVariableDefinitions.variables = {
-      public: true,
-      componentType: "math",
-      isArray: true,
-      entryPrefixes: ["var"],
-      returnDependencies: () => ({
-        variablesChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atMostOneVariables",
-          variableNames: ["variables"]
-        },
-        nDimensions: {
-          dependencyType: "stateVariable",
-          variableName: "nDimensions"
-        }
-      }),
-      markStale({ freshnessInfo }) {
-        // just mark everything stale
-        let freshByKey = freshnessInfo.freshByKey;
-        for (let key in freshByKey) {
-          delete freshByKey[key];
-        }
-        return { fresh: false };
-      },
-      definition: function ({ dependencyValues, arrayKeys, freshnessInfo }) {
-
-        let freshByKey = freshnessInfo.freshByKey;
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        if (arrayKey !== undefined && freshByKey[arrayKey]) {
-          return {};
-        }
-
-        // if nDimensions isn't a number or isn't positive
-        // don't have any variables
-        if (!(dependencyValues.nDimensions > 0)) {
-          return { newValues: { variables: [] } }
-        }
-
-        if (dependencyValues.variablesChild.length === 0) {
-          if (dependencyValues.nDimensions === 0) {
-            return { newValues: { variables: [] } }
-          } else if (dependencyValues.nDimensions === 1) {
-            freshByKey[0] = true;
-            return { newValues: { variables: [me.fromAst("x")] } }
-          } else if (dependencyValues.nDimensions === 2) {
-            freshByKey[0] = true;
-            freshByKey[1] = true;
-            return { newValues: { variables: [me.fromAst("x"), me.fromAst("y")] } }
-          } else if (dependencyValues.nDimensions === 3) {
-            freshByKey[0] = true;
-            freshByKey[1] = true;
-            freshByKey[2] = true;
-            return { newValues: { variables: [me.fromAst("x"), me.fromAst("y"), me.fromAst("z")] } }
-          } else {
-            let variables = [];
-            for (let i = 1; i <= dependencyValues.nDimensions; i++) {
-              freshByKey[i - 1] = true;
-              variables.push(me.fromAst(`x_${i}`))
-            }
-            return { newValues: { variables } }
-          }
-        }
-
-        let variables = dependencyValues.variablesChild[0].stateValues.variables;
-
-        let nVariablesSpecified = variables.length;
-
-        if ((new Set(variables.map(x => x.toString()))).size < nVariablesSpecified) {
-          console.warn('Duplicate variables specified for line')
-        }
-
-        for (let i = 0; i < dependencyValues.nDimensions; i++) {
-          freshByKey[i] = true;
-        }
-
-        if (nVariablesSpecified >= dependencyValues.nDimensions) {
-          return {
-            newValues: {
-              variables:
-                variables.slice(0, dependencyValues.nDimensions)
-            }
-          }
-        }
-
-        console.warn(`Invalid format for variables of line: line is of ${dependencyValues.nDimensions} dimensions, but only ${nVariablesSpecified} variables were specified`)
-
-
-        let variablesUsed = [...variables.map(x => x.toString())];
-        variables = [...variables];
-        for (let i = nVariablesSpecified + 1; i <= dependencyValues.nDimensions; i++) {
-          let preferredVariables;
-          if (i == 1) {
-            preferredVariables = ["x", "x_1"];
-          } else if (i == 2) {
-            preferredVariables = ["y", "x_2", "y_2"];
-          } else if (i == 3) {
-            preferredVariables = ["z", "x_3", "z_3", "y_3"];
-          } else {
-            preferredVariables =
-              ["x", "y", "z", "u", "v", "w", "X", "Y", "Z"].map(x => `${x}_${i}`)
-          }
-          let addedVariable = false;
-          for (let v of preferredVariables) {
-            if (!variablesUsed.includes(v)) {
-              variables.push(me.fromText(v));
-              variablesUsed.push(v);
-              addedVariable = true;
-              break;
-            }
-          }
-          if (!addedVariable) {
-            let v = preferredVariables[0]
-            variables.push(me.fromText(v));
-            variablesUsed.push(v);
-            console.warn(`Variables added for line were not unique`)
-          }
-        }
-
-        return { newValues: { variables } }
-
-      }
-    }
-
 
     stateVariableDefinitions.equation = {
       public: true,
@@ -1310,7 +1187,7 @@ export default class Line extends GraphicalComponent {
             let x1 = variables.x1.evaluate_to_constant();
             let x2 = variables.x2.evaluate_to_constant();
 
-            if(!(Number.isFinite(x1) && Number.isFinite(x2))) {
+            if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
               return {};
             }
 

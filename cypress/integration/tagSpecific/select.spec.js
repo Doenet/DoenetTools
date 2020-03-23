@@ -1500,6 +1500,10 @@ describe('Select Tag Tests', function () {
 
   it('select weighted', () => {
 
+    // TODO: this test seems to fail with num Y < 17 once in awhile
+    // even though it should fail less than 0.1% of the time
+    // Is there a flaw?
+
     let numX = 0, numY = 0, numZ = 0;
 
     for (let ind = 1; ind <= 200; ind++) {

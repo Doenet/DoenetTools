@@ -1992,7 +1992,7 @@ export default class Core {
     for (let property in childLogic.properties) {
       let propertySpecification = childLogic.properties[property];
       let childLogicName = '_property_' + property;
-      let componentType = propertySpecification.componentName ? propertySpecification.componentName : property;
+      let componentType = propertySpecification.componentType ? propertySpecification.componentType : property;
       let defaultValue = propertySpecification.default;
       if (defaultValue === undefined) {
         defaultValue = null;
@@ -2003,9 +2003,18 @@ export default class Core {
       if (stateVariableForPropertyValue === undefined) {
         stateVariableForPropertyValue = "value";
       }
-      let returnDependencies, definition, inverseDefinition;
+
+      let additionalDependentStateVariables = [];
+      if (propertySpecification.dependentStateVariable) {
+        additionalDependentStateVariables.push(propertySpecification.dependentStateVariable);
+      }
+      if (propertySpecification.dependentStateVariables) {
+        additionalDependentStateVariables.push(...propertySpecification.dependentStateVariables);
+      }
+
+      let dependencies, definition, inverseDefinition;
       if (property in ancestorProps) {
-        returnDependencies = () => ({
+        dependencies = {
           [childLogicName]: {
             dependencyType: "childStateVariables",
             childLogicName: childLogicName,
@@ -2017,10 +2026,18 @@ export default class Core {
             componentName: ancestorProps[property],
             variableName: property,
           }
-        });
-        definition = function ({ dependencyValues, usedDefault }) {
-          let propertyChildVariables = dependencyValues[childLogicName];
-          if (propertyChildVariables.length === 0) {
+        };
+
+        for (let variableName of additionalDependentStateVariables) {
+          dependencies[variableName] = {
+            dependencyType: "stateVariable",
+            variableName
+          }
+        }
+
+        definition = function ({ dependencyValues, usedDefault, arrayKeys, freshnessInfo }) {
+          let propertyChild = dependencyValues[childLogicName];
+          if (propertyChild.length === 0) {
             if (!usedDefault.ancestorProp) {
               return { newValues: { [property]: dependencyValues.ancestorProp } }
             } else {
@@ -2034,8 +2051,18 @@ export default class Core {
               };
             }
           }
+
+          if (propertyClass.definitionForPropertyValue) {
+            return propertyClass.definitionForPropertyValue({
+              dependencyValues,
+              propertyChild,
+              propertySpecification: new Proxy(propertySpecification, readOnlyProxyHandler),
+              arrayKeys, freshnessInfo
+            })
+          }
+
           let childVariable = validatePropertyValue({
-            value: propertyChildVariables[0].stateValues[stateVariableForPropertyValue],
+            value: propertyChild[0].stateValues[stateVariableForPropertyValue],
             propertySpecification, property
           })
 
@@ -2078,6 +2105,18 @@ export default class Core {
 
           // property based on child
 
+          if (propertyClass.definitionForPropertyValue) {
+            if (propertyClass.inverseDefinitionForPropertyValue) {
+              return propertyClass.inverseDefinitionForPropertyValue({
+                desiredStateVariableValues,
+                dependencyValues,
+                propertySpecification: new Proxy(propertySpecification, readOnlyProxyHandler)
+              })
+            } else {
+              return { success: false }
+            }
+          }
+
           if (propertySpecification.mergeArrays) {
             // can't invert if we merged arrays to get the value
             return { success: false }
@@ -2089,6 +2128,7 @@ export default class Core {
                 setDependency: childLogicName,
                 desiredValue: [desiredStateVariableValues[property]],
                 childIndex: 0,
+                variableIndex: 0,
               }]
             };
           }
@@ -2096,25 +2136,61 @@ export default class Core {
       }
       else {
         // usual case of property with no ancestor property being propagated
-        returnDependencies = () => ({
+        dependencies = {
           [childLogicName]: {
             dependencyType: "childStateVariables",
             childLogicName: childLogicName,
             variableNames: [stateVariableForPropertyValue],
             markChildrenAsProperties: true,
           },
-        });
-        definition = function ({ dependencyValues }) {
-          let propertyChildVariables = dependencyValues[childLogicName];
-          if (propertyChildVariables.length === 0) {
+        };
+
+        for (let variableName of additionalDependentStateVariables) {
+          dependencies[variableName] = {
+            dependencyType: "stateVariable",
+            variableName
+          }
+        }
+
+        // if property class has own definition for property value
+        // and default value is not specified for this property
+        // then use the definition even if there are no property children
+        // Note: since ref specified default=null for all its properties,
+        // default will always be used if not property children,
+        // allowing ref to check if all properties specified are valid
+        let useDefaultIfNoPropertyChild = (
+          !propertyClass.definitionForPropertyValue
+          || "default" in propertySpecification
+        );
+
+        definition = function ({ dependencyValues, arrayKeys, freshnessInfo }) {
+          let propertyChild = dependencyValues[childLogicName];
+
+          // TODO: if property is an array state variable
+          // we don't have a way to set its default,
+          // we can only set a defaultEntry for an array state variable
+          // Do we need to implement a default value for an array
+          // so that can use it here in a property?
+          if (propertyChild.length === 0 && useDefaultIfNoPropertyChild) {
             return {
               useEssentialOrDefaultValue: {
                 [property]: { variablesToCheck: property }
               }
             };
           }
+
+          if (propertyClass.definitionForPropertyValue) {
+            return propertyClass.definitionForPropertyValue({
+              dependencyValues,
+              propertyChild,
+              propertySpecification: new Proxy(propertySpecification, readOnlyProxyHandler),
+              arrayKeys, freshnessInfo
+            })
+          }
+
+
           let childVariable = validatePropertyValue({
-            value: propertyChildVariables[0].stateValues[stateVariableForPropertyValue],
+            value: propertyChild[0].stateValues[stateVariableForPropertyValue],
             propertySpecification, property
           })
 
@@ -2141,15 +2217,36 @@ export default class Core {
             };
           }
           // property based on child
-          return {
-            success: true,
-            instructions: [{
-              setDependency: childLogicName,
-              desiredValue: [desiredStateVariableValues[property]],
-              variableIndex: 0,
-              childIndex: 0,
-            }]
-          };
+
+
+          if (propertyClass.definitionForPropertyValue) {
+            if (propertyClass.inverseDefinitionForPropertyValue) {
+              return propertyClass.inverseDefinitionForPropertyValue({
+                desiredStateVariableValues,
+                dependencyValues,
+                propertySpecification: new Proxy(propertySpecification, readOnlyProxyHandler)
+              })
+            } else {
+              return { success: false }
+            }
+          }
+
+          if (propertySpecification.mergeArrays) {
+            // can't invert if we merged arrays to get the value
+            return { success: false }
+          } else {
+
+            return {
+              success: true,
+              instructions: [{
+                setDependency: childLogicName,
+                desiredValue: [desiredStateVariableValues[property]],
+                childIndex: 0,
+                variableIndex: 0,
+              }]
+            };
+          }
+
         };
       }
       stateVariableDefinitions[property] = {
@@ -2159,14 +2256,26 @@ export default class Core {
         defaultValue,
         // deleteIfUndefined,
         // required: propertySpecification.required, // TODO: how do we do required?
-        returnDependencies,
+        returnDependencies: () => dependencies,
         definition,
         inverseDefinition
       };
 
-      if (propertySpecification.forRenderer) {
-        stateVariableDefinitions[property].forRenderer = true;
+      if (propertyClass.markStaleForPropertyValue) {
+        stateVariableDefinitions[property].markStale = propertyClass.markStaleForPropertyValue
       }
+
+      for (let attribute in propertyClass.attributesForPropertyValue) {
+        stateVariableDefinitions[property][attribute]
+          = propertyClass.attributesForPropertyValue[attribute];
+      }
+      for (let attribute of ["forRenderer", "entryPrefixes"]) {
+        if (attribute in propertySpecification) {
+          stateVariableDefinitions[property][attribute]
+            = propertySpecification[attribute];
+        }
+      }
+
     }
   }
 
@@ -2176,7 +2285,7 @@ export default class Core {
     // properties depend on adapterTarget (if exist in adapterTarget)
     for (let property in childLogic.properties) {
       let propertySpecification = childLogic.properties[property];
-      let componentType = propertySpecification.componentName ? propertySpecification.componentName : property;
+      let componentType = propertySpecification.componentType ? propertySpecification.componentType : property;
       let defaultValue = propertySpecification.default;
       let thisDependencies = {};
       if (property in adapterTargetComponent.state) {
@@ -2265,7 +2374,7 @@ export default class Core {
     // then on refTarget (if exist in refTarget)
     for (let property in childLogic.properties) {
       let propertySpecification = childLogic.properties[property];
-      let componentType = propertySpecification.componentName ? propertySpecification.componentName : property;
+      let componentType = propertySpecification.componentType ? propertySpecification.componentType : property;
       let defaultValue = propertySpecification.default;
       let thisDependencies = {};
 
@@ -2393,8 +2502,12 @@ export default class Core {
 
         }
       };
-      if (propertySpecification.forRenderer) {
-        stateVariableDefinitions[property].forRenderer = true;
+
+      for (let attribute of ["forRenderer", "entryPrefixes"]) {
+        if (attribute in propertySpecification) {
+          stateVariableDefinitions[property][attribute]
+            = propertySpecification[attribute];
+        }
       }
     }
 
@@ -3004,20 +3117,27 @@ export default class Core {
         }
       };
     }
+
+    let entryPrefixes = stateVarObj.entryPrefixes;
+
+    if (!entryPrefixes) {
+      entryPrefixes = [stateVariable]
+    }
+
     if (!stateVarObj.arrayVarNameFromArrayKey) {
       stateVarObj.arrayVarNameFromArrayKey = function (arrayKey) {
-        return stateVarObj.entryPrefixes[0] + String(Number(arrayKey) + 1);
+        return entryPrefixes[0] + String(Number(arrayKey) + 1);
       };
     }
     if (!stateVarObj.allVarNamesThatIncludeArrayKey) {
       stateVarObj.allVarNamesThatIncludeArrayKey = function (arrayKey) {
-        return [stateVarObj.entryPrefixes[0] + String(Number(arrayKey) + 1)];
+        return [entryPrefixes[0] + String(Number(arrayKey) + 1)];
       };
     }
     if (!component.arrayEntryPrefixes) {
       component.arrayEntryPrefixes = {};
     }
-    for (let prefix of stateVarObj.entryPrefixes) {
+    for (let prefix of entryPrefixes) {
       component.arrayEntryPrefixes[prefix] = stateVariable;
     }
 
@@ -4781,6 +4901,15 @@ export default class Core {
                         varsUnresolved: result.varsUnresolved,
                         component: depComponent
                       });
+
+                      // if happened to create a new unresolved dependency
+                      // for the current component
+                      // add it to varsUnresolved so that
+                      // returned object of resolveStateVariables
+                      // includes it
+                      if (depComponent.componentName === componentName) {
+                        Object.assign(varsUnresolved, result.varsUnresolved)
+                      }
                     }
 
                   }
@@ -5321,7 +5450,7 @@ export default class Core {
       delete this.unresolvedDependencies[parentName];
     }
     else {
-      this.unresolvedDependencies[parentName] = [];
+      this.unresolvedDependencies[parentName] = {};
       this.addUnresolvedDependencies({
         varsUnresolved: result.varsUnresolved,
         component: parent
@@ -6074,7 +6203,7 @@ export default class Core {
             prevVal = stObj.value;
           }
 
-          if(typeof prevVal === "object" && prevVal !== null) {
+          if (typeof prevVal === "object" && prevVal !== null) {
             prevVal = new Proxy(prevVal, readOnlyProxyHandler);
           }
 
@@ -6086,7 +6215,7 @@ export default class Core {
 
         }
 
-        if(multipleComponents) {
+        if (multipleComponents) {
           previousValuesForThisDep.push(prevValForThisComp);
         } else {
           previousValuesForThisDep = prevValForThisComp;
@@ -6094,7 +6223,7 @@ export default class Core {
 
       }
 
-      if(foundPreviousValues) {
+      if (foundPreviousValues) {
         previousValues[depName] = previousValuesForThisDep;
       }
 
