@@ -1,30 +1,38 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import './header.css'
 import doenetImage from '../media/Doenet_Logo_cloud_only.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTh , faUser, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import IndexedDB from '../services/IndexedDB';
-import axios from 'axios';
-import ConstrainToAngles from '../Doenet/components/ConstrainToAngles';
+import {animated,useSpring} from 'react-spring';
+import Menu from './menu.js'
+// import IndexedDB from '../services/IndexedDB';
+// import axios from 'axios';
+// import ConstrainToAngles from '../Doenet/components/ConstrainToAngles';
 
 
 class DoenetHeader extends Component {
 
   constructor(props) {
     super(props);
-
     this.state = {
+      menuVisble:false,
       showToolbox: false,
     }
     this.select=null
-    this.mounted=false;
     this.updateNumber = 0;
+    this.roles=[]
     this.adminAccess = 0;
     this.accessAllowed = 0;
     if (this.props.rights){
       this.rightToView = this.props.rights.rightToView
       this.rightToEdit = this.props.rights.rightToEdit
       this.instructorRights = this.props.rights.instructorRights
+      if (this.instructorRights){
+        this.roles.push("Instructor")
+      }
+      if (this.rightToView){
+        this.roles.push("Student")
+      }
       this.coursesPermissions = this.props.rights.permissions  
     } else {
       this.rightToView = false
@@ -79,41 +87,10 @@ class DoenetHeader extends Component {
       "Chooser" : "/chooser/",
       "Course" : "/course/",
       "Documentation" : "/docs/",
-      // "Editor" : "/editor/",
       "Gradebook": "/gradebook/",
     }
-
-    // this.username = "";
-    // this.access = 0;
-    // const url='/api/env.php';
-    //     axios.get(url)
-    //     .then(resp=>{
-    //         this.username = resp.data.user;
-    //         this.access = resp.data.access;
-    //         this.forceUpdate();
-    //     });
-
-    // this.setupDatabase();
   }
-  // componentDidMount(){
 
-    // const envurl='/api/env01.php';
-    // const CancelToken = axios.CancelToken;
-    // const source = CancelToken.source();
-    // if (this.props.rights && this.props.rights.downloadPermission){
-    //   axios.get(envurl)
-    //   .then(resp=>{
-    //       // console.log("downloading header permission")
-    //       this.coursesPermissions = resp.data
-    //       if (this.coursesPermissions['courseInfo'][this.currentCourseId]){
-    //         this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
-    //       this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
-    //       }
-
-    //       this.forceUpdate();
-    //   });
-    // }
-  // }
   componentWillUnmount(){
     this.select = undefined
     this.selectPermission =undefined
@@ -128,24 +105,24 @@ class DoenetHeader extends Component {
     this.props.rights.instructorRights = undefined
     this.props.rights.downloadPermission = undefined
     this.props.rights.permissions = undefined
-    // this.props.toolTitle = undefined
     this.props.rights.arrayIds = undefined
     this.props.rights.courseInfo = undefined
-    // this.props.headingTitle = undefined
     this.props.rights.defaultId = undefined
+    this.props.rights.defaultRole = undefined
     this.props.rights.permissionCallBack = undefined
     this.props.rights.parentFunction = undefined
     }
     
   }
-  makePermissionList(){
+  makePermissionList({menuBarAnimation}){
     // console.log("making list for header")
-    if (this.instructorRights){
+
+    /*if (this.instructorRights){
       this.selectPermission=(
         <select 
         value={!this.rightToEdit?"Student":"Instructor"}
         onChange={(e)=>{
-          {
+            
             if (e.target.value==="Student"){
               this.rightToEdit=false
             }
@@ -154,7 +131,7 @@ class DoenetHeader extends Component {
             }
             this.props.rights.permissionCallBack(e.target.value);
             this.forceUpdate()
-          }
+          
         }}>
         {this.rightToView?(<option key={this.updateNumber++} value="Student">Student</option>):null}
         {(<option key={this.updateNumber++} value="Instructor">Instructor</option>)}
@@ -180,7 +157,7 @@ class DoenetHeader extends Component {
           
           </span>  
       )
-    }
+    }*/
     
   }
 
@@ -199,13 +176,16 @@ class DoenetHeader extends Component {
 
 
   render() {
-    // console.log("header render")
-    // console.log(this.select)
-    // console.log(this.props)
     // const { toolTitle, headingTitle} = this.props;
-    if(this.coursesPermissions!={}){
-      this.makePermissionList()
-    }
+    // if(this.coursesPermissions!={}){
+      // const menuBarAnimation = useSpring({
+      //   from : {opacity : 0 ,transform: 'translateY(-100%)'},
+      //   opacity: this.state.menuVisble ? 1 : 0,
+      //   transform: this.state.menuVisble ? 'translateY(0)' : 'translateY(-100%)',
+      // })
+      // this.makePermissionList()
+    // }
+    
     return (
       <React.Fragment>
         <div className="headingContainerWrapper">
@@ -219,7 +199,8 @@ class DoenetHeader extends Component {
               <span>{ this.select }</span>
             </div>}
             <div className="headingToolbar">
-            {this.selectPermission}          
+              <Menu showThisRole={this.props.rights.defaultRole} roles={this.roles} permissionCallback={this.props.rights?this.props.rights.permissionCallBack:null}/>
+            {/* {this.selectPermission}           */}
               <div className="toolboxContainer" data-cy="toolboxButton" onClick={this.toogleToolbox}>  
               <FontAwesomeIcon id="toolboxButton" icon={faTh}/>
                 {this.state.showToolbox && 

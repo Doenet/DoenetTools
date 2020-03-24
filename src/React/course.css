@@ -352,3 +352,47 @@ body{
     }
 
   }
+@media only screen and (max-width: 450px){
+  .courseContainer{
+    grid-template-columns: auto;
+    grid-template-rows: 120px auto;
+    display:grid;
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+  }
+  #pageNavPhone{
+    display:block;
+  }
+  .pageNav{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width:100%;
+    position: fixed;
+    bottom:10px;
+   
+    margin: 0 auto;
+    text-align: center;    
+   
+  }
+  .homeLeftNav{
+    /* display: flex; */
+  background-color: rgb(228, 228, 228);
+  padding: 6px;
+  grid-column: 1 / 2;
+  grid-row: 2 /  3;  
+  overflow: scroll;
+}
+.Section-Text {
+  display:flex;
+  flex-grow: 1;
+  font-size: 18px;
+  padding:6px;
+  padding-right: 20px;
+  border-right:167px;
+  width: 250px;
+}
+}

@@ -592,13 +592,13 @@ class Assignments extends Component {
   constructor(props) {
     super(props);
     this.assignmentDoenetML = this.props.assignmentDoenetML
-    // console.log("RUNNING Assignments constructor")
-    // console.log(this.assignmentDoenetML)
+    console.log("RUNNING Assignments constructor")
+    console.log(this.props.style)
   }
   render() {
     return (
       // <React.Fragment>
-      <div className="homeActiveSectionMain" data-cy="syllabusNavItem">
+      <div style={this.props.style} className="homeActiveSectionMain" data-cy="syllabusNavItem">
         {/* <span className="Section-Text">Assignment is loading if not already here</span> */}
         {this.assignmentDoenetML!="" && this.assignmentDoenetML!=null?
         
@@ -656,6 +656,7 @@ class DoenetCourse extends Component {
     const envurl='/api/env01.php';
     this.adminAccess = 0;
     this.accessAllowed = 0;
+    this.phone_info_style = {}
 
     this.coursesPermissions = {}
     axios.get(envurl)
@@ -679,9 +680,8 @@ class DoenetCourse extends Component {
       // todo: a select button to switch between students and instructor
       
      
-    let deviceGivenWidth = this.widthToDevice();    
-    console.log("deviceGivenWidth: ")
-    console.log(deviceGivenWidth)
+    // let deviceGivenWidth = this.widthToDevice();    
+
     let url_string = window.location.href;
     var url = new URL(url_string);
     
@@ -724,7 +724,7 @@ class DoenetCourse extends Component {
     this.componentLoadedFromNavigationBar=null;
     this.newChange= false
     this.state = {
-      deviceGivenWidth:deviceGivenWidth,
+      // deviceGivenWidth:deviceGivenWidth,
       courseId: "",
       error: null,
       errorInfo: null,
@@ -925,6 +925,7 @@ class DoenetCourse extends Component {
     this.usingDefaultCourseId = true
     this.updateNumber = 0;
     this.buildAssignmentGrades = this.buildAssignmentGrades.bind(this);
+    // this.widthToDevice = this.widthToDevice.bind(this);
     this.buildItemGrade = this.buildItemGrade.bind(this);
     this.findEnabledCategory = this.findEnabledCategory.bind(this)
     this.buildAttemptItemGradesHelper = this.buildAttemptItemGradesHelper.bind(this);
@@ -2404,7 +2405,7 @@ makeTreeRoute ({link,assignmentId}) {
   (
     <Route key={link} exact path={link}>
       <React.Fragment>
-     <Assignments assignmentDoenetML={this.assignmentDoenetML}/>
+     <Assignments style={this.phone_info_style} assignmentDoenetML={this.assignmentDoenetML}/>
      {this.rightSideInfoColumn}
      </React.Fragment>
     </Route>
@@ -3127,31 +3128,43 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     // }
     // this.buildTree()
   }
-  windowResizeHandler(){
-    let deviceGivenWidth = this.widthToDevice();
-    if (this.state.deviceGivenWidth !== deviceGivenWidth){
-      this.setState({deviceGivenWidth: deviceGivenWidth});
-    }
-  }
+  // windowResizeHandler(){
+  //   let deviceGivenWidth = this.widthToDevice();
+  //   if (this.state.deviceGivenWidth !== deviceGivenWidth){
+  //     this.setState({deviceGivenWidth: deviceGivenWidth});
+  //   }
+  // }
 
-  widthToDevice(){
-    let w = document.documentElement.clientWidth;
-    if (w >= 1024){ return "computer"; }
-    if (w < 1024 && w >= 768){ return "tablet"; }
-    return "phone";
-  }
-  componentDidMount(){
-    window.addEventListener("resize",this.windowResizeHandler);
-  }
+  // widthToDevice(){
+  //   let w = document.documentElement.clientWidth;
+  //   if (w >= 1024){ return "computer"; }
+  //   if (w < 1024 && w >= 450){ return "tablet"; }
+  //   return "phone";
+  // }
+  // componentDidMount(){
+  //   window.addEventListener("resize",this.windowResizeHandler);
+  // }
 
-  componentWillUnmount(){
-    window.removeEventListener("resize",this.windowResizeHandler);
-  }
+  // componentWillUnmount(){
+  //   window.removeEventListener("resize",this.windowResizeHandler);
+  // }
   render() {
     // console.log("====RENDER====");
+    // console.log(this.state.deviceGivenWidth)
     // if (!this.assignmentTree && this.activeSection==="assignments"){
     //   this.makeTreeVisible({loadSpecificId:""})
     // }
+    let phone_homeLeftNav_style={}
+    // let phone_info_style={}
+
+    if (this.state.deviceGivenWidt==="phone"){
+      phone_homeLeftNav_style = {
+        gridColumn: "1 / 2",
+        gridRow: "2 /  3"  
+      }
+      this.phone_info_style={display:"None"}
+    } 
+
     this.overview_link=null
     this.syllabus_link=null
     this.grade_link=null
@@ -3342,7 +3355,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     return (
     <React.Fragment>
       <div className="courseContainer">
-        {(this.courseIdsArray!=[] && this.courseInfo!={} ?
+        {(this.courseIdsArray!=[] && this.courseInfo!={}?
           (<DoenetHeader 
             key={"doenetHeader"+(this.updateNumber++)}
             toolTitle="Course" 
@@ -3357,6 +3370,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 arrayIds : this.courseIdsArray,
                 courseInfo : this.courseInfo,
                 defaultId : this.currentCourseId,
+                defaultRole: (this.rightToEdit&&this.rightToView?"Instructor":(this.rightToView?"Student":"N/A")),
                 permissionCallBack :(e)=>{
                   if (e==="Student"){
                     this.rightToEdit=false
@@ -3433,7 +3447,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         <Router>
           <>
          {/* {this.activeSection==="overview"?this.loadOverview:this.loadSyllabus} */}
-            <div className="homeLeftNav">
+            <div style={phone_homeLeftNav_style} className="homeLeftNav">
               {this.roles}
               {this.overview_link}
               {this.syllabus_link}
@@ -3444,66 +3458,41 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
               
 
             </div>
-            <div className="homeActiveSection">
+            {this.state.deviceGivenWidth!="phone"?<div className="homeActiveSection">
 
-              <Switch>
-                <Route key="overview" exact path="/overview">
-                  {this.Overview_doenetML!="" && this.Overview_doenetML!=undefined?<Overview doenetML={this.Overview_doenetML}/>:null}
-                </Route>
-                <Route key="syllabus" exact path="/syllabus">
-                  {this.Syllabus_doenetML!="" && this.Syllabus_doenetML!=undefined?<Syllabus doenetML={this.Syllabus_doenetML}/>:null}             
-                </Route>
-                {this.grade_route}
-                <Route key="/" exact path="/">
-                {this.loadFirstTrue}
-                </Route>
-                <Route key ="assignments" exact path='/assignments'>
-                <div>
-                  </div>
-                </Route>
-                {this.tree_route}
-              </Switch>
-            </div>
+<Switch>
+  <Route key="overview" exact path="/overview">
+    {this.Overview_doenetML!="" && this.Overview_doenetML!=undefined?<Overview doenetML={this.Overview_doenetML}/>:null}
+  </Route>
+  <Route key="syllabus" exact path="/syllabus">
+    {this.Syllabus_doenetML!="" && this.Syllabus_doenetML!=undefined?<Syllabus doenetML={this.Syllabus_doenetML}/>:null}             
+  </Route>
+  {this.grade_route}
+  <Route key="/" exact path="/">
+  {this.loadFirstTrue}
+  </Route>
+  <Route key ="assignments" exact path='/assignments'>
+  <div>
+    </div>
+  </Route>
+  {this.tree_route}
+</Switch>
+</div>:null}
+            
             
           </>
         </Router>
-        {/* <Router>
-          <Route key="overview" exact path="/overview">
-            <div>HELLO</div>
-          </Route>
-        </Router> */}
-        {/* {this.thisAssignmentInfo!=""?
 
-  this.rightSideInfoColumn:null} */}
-        {/* <div className="homeLeftNav">
-          {overview_component}
-          {syllabus_component}
-          {grade_component}
-
-          {this.enableAssignment?ModifyTreeInsertAssignmentHeadingModeComponent:null}
-          {this.enableAssignment?tree_component:null}
-
-          
-        <select style={{marginTop:"10px"}} onChange={this.EnableThese}>
-          <option>Enable Section</option>
-          {this.enableThese }
-        </select>
-        </div> */}
-
-        {/* <div className="homeActiveSection">
-          {this.mainSection}
-        </div>
-        <div className="info">
-        <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.assignment_branchId} icon={faEdit}/></span>
-          <p>Assignment Name: {this.assignmentName?this.assignmentName:"not yet assigned"}</p>
-          <p>Due Date: {this.dueDate?this.dueDate:"not yet assigned"}</p>
-          <p>assigned Date: {this.assignedDate?this.assignedDate:"not yet assigned"}</p>
-          <p>number Of Attempts Allowed: {this.numberOfAttemptsAllowed?this.numberOfAttemptsAllowed:"not yet assigned"}</p>
-        </div> */}
       </div>
-      
-    </React.Fragment>);
+      {/* <div id="pageNavPhone">
+          <div className="pageNav">
+            <button className="selected" onClick={()=>this.setState({phone_panel_active:"Context Panel"})} ><span>Context Panel</span></button>
+            <button  className="selected" onClick={()=>this.setState({phone_panel_active:"Editor"})}><span>Editor</span></button>
+            <button  className="selected" onClick={()=>this.setState({phone_panel_active:"Viewer"})} ><span>Viewer</span></button>
+          </div>
+        </div> */}
+    </React.Fragment>)
+    
   }
 }
 
