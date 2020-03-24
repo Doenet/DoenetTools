@@ -592,13 +592,14 @@ class Assignments extends Component {
   constructor(props) {
     super(props);
     this.assignmentDoenetML = this.props.assignmentDoenetML
-    console.log("RUNNING Assignments constructor")
-    console.log(this.props.style)
+
   }
   render() {
     return (
       // <React.Fragment>
+
       <div style={this.props.style} className="homeActiveSectionMain" data-cy="syllabusNavItem">
+
         {/* <span className="Section-Text">Assignment is loading if not already here</span> */}
         {this.assignmentDoenetML!="" && this.assignmentDoenetML!=null?
         
@@ -656,7 +657,9 @@ class DoenetCourse extends Component {
     const envurl='/api/env01.php';
     this.adminAccess = 0;
     this.accessAllowed = 0;
+
     this.phone_info_style = {}
+
 
     this.coursesPermissions = {}
     axios.get(envurl)
@@ -678,6 +681,7 @@ class DoenetCourse extends Component {
           this.forceUpdate();
       });
       // todo: a select button to switch between students and instructor
+
       
      
     // let deviceGivenWidth = this.widthToDevice();    
@@ -724,7 +728,7 @@ class DoenetCourse extends Component {
     this.componentLoadedFromNavigationBar=null;
     this.newChange= false
     this.state = {
-      // deviceGivenWidth:deviceGivenWidth,
+
       courseId: "",
       error: null,
       errorInfo: null,
@@ -1177,8 +1181,10 @@ class DoenetCourse extends Component {
             this.buildRightSideInfoColumn()
             // console.log("link is "+link)
           this.makeTreeRoute({link:link,assignmentId:this.thisAssignmentInfo})
+
           this.makeTreeVisible({loadSpecificId:this.thisAssignmentInfo})
             // this.forceUpdate();
+
         });
   }
   changeCurrentAssignmentRoute({id}){
@@ -1858,6 +1864,7 @@ buildTree(){
   if (this.enableMode==='header'){
     this.tree.push(addHeaderToTheEndOfUltimateHeader)
   }
+
 }
 
 saveTree(){
@@ -2405,7 +2412,9 @@ makeTreeRoute ({link,assignmentId}) {
   (
     <Route key={link} exact path={link}>
       <React.Fragment>
+
      <Assignments style={this.phone_info_style} assignmentDoenetML={this.assignmentDoenetML}/>
+
      {this.rightSideInfoColumn}
      </React.Fragment>
     </Route>
@@ -3128,6 +3137,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     // }
     // this.buildTree()
   }
+
   // windowResizeHandler(){
   //   let deviceGivenWidth = this.widthToDevice();
   //   if (this.state.deviceGivenWidth !== deviceGivenWidth){
@@ -3355,7 +3365,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     return (
     <React.Fragment>
       <div className="courseContainer">
+
         {(this.courseIdsArray!=[] && this.courseInfo!={}?
+
           (<DoenetHeader 
             key={"doenetHeader"+(this.updateNumber++)}
             toolTitle="Course" 
@@ -3370,7 +3382,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 arrayIds : this.courseIdsArray,
                 courseInfo : this.courseInfo,
                 defaultId : this.currentCourseId,
+
                 defaultRole: (this.rightToEdit&&this.rightToView?"Instructor":(this.rightToView?"Student":"N/A")),
+
                 permissionCallBack :(e)=>{
                   if (e==="Student"){
                     this.rightToEdit=false
@@ -3447,13 +3461,16 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         <Router>
           <>
          {/* {this.activeSection==="overview"?this.loadOverview:this.loadSyllabus} */}
+
             <div style={phone_homeLeftNav_style} className="homeLeftNav">
+
               {this.roles}
               {this.overview_link}
               {this.syllabus_link}
               {this.grade_link}
 
               {this.assignment_link}
+
               {this.activeSection==="assignments"&&this.enableAssignment?this.assignmentTree:null}
               
 

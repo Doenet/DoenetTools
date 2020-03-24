@@ -36,7 +36,9 @@ body{
     display:grid;
 
     grid-row: 2/3 ;
+
     grid-column: 2 ;
+
 
     grid-template-columns: auto 520px;
     /* grid-template-rows: 60px auto; */
@@ -63,6 +65,16 @@ body{
     padding: 5px;
     overflow: auto;
   }
+
+
+  .info {
+    /* grid-column: 3 / 4; */
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+
+    padding: 5px;
+    overflow: scroll;
+  } */
 
   .info {
     /* grid-column: 3 / 4; */
