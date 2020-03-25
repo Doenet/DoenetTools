@@ -7,6 +7,7 @@ header("Access-Control-Allow-Credentials: true");
 
 include "db_connection.php";
 $_GET = json_decode(file_get_contents("php://input"),true);
+$courseId =  mysqli_real_escape_string($conn,$_GET["courseId"]);
 $overview =  mysqli_real_escape_string($conn,$_GET["overview"]);
 $grade =  mysqli_real_escape_string($conn,$_GET["grade"]);
 $syllabus =  mysqli_real_escape_string($conn,$_GET["syllabus"]);
@@ -14,14 +15,10 @@ $assignment =  mysqli_real_escape_string($conn,$_GET["assignment"]);
 $overview_branchId;
 $syllabus_branchId;
 
-// echo $overview;
-// echo $grade;
-// echo $syllabus;
-// echo $assignment;
-// $List = array();
 $sql = "
   SELECT overviewEnabled, gradeEnabled,syllabusEnabled,assignmentEnabled,overview_branchId,syllabus_branchId
   from course
+  WHERE courseId = '$courseId'
 ";
 $result = $conn->query($sql);
 if ($result->num_rows > 0){

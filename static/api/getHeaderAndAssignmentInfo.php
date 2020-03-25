@@ -8,6 +8,7 @@ header('Content-Type: application/json');
 include "db_connection.php";
 
 $_GET = json_decode(file_get_contents("php://input"),true);
+$courseId =  mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 // $object = (object) ['property' => 'Here we go'];
 // $arrayobj->append('fourth');
  $response_arr = new stdClass(); // return the entire tree obj
@@ -27,6 +28,7 @@ SELECT assignmentId,assignmentName,contentId,parentId, sourceBranchId,assignedDa
 timeLimit,
 numberOfAttemptsAllowed
 FROM assignment
+WHERE courseId = '$courseId'
 ORDER BY sortOrder
 ";
 $result = $conn->query($sql);
@@ -51,6 +53,7 @@ while ($row = $result->fetch_assoc()){
 $sql = "
 SELECT courseHeadingId,headingText,parentId,childrenId
 FROM course_heading
+WHERE courseId = '$courseId'
 ORDER BY sortOrder
 ";
 $result = $conn->query($sql);
