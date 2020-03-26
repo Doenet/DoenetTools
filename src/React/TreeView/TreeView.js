@@ -6,41 +6,8 @@ import { Global } from './components/tree-node/styles'
 import { useTransition, animated, config } from 'react-spring'
 import "./index.css";
 
-const todos = {
-  1: {
-    text: "First thing",
-    state: "todo",
-    type: "leaf"
-  },
-  2: {
-    text: "Second thing",
-    state: "todo",
-    type: "leaf"
-  },
-  3: {
-    text: "Third thing",
-    state: "todo",
-    type: "leaf"
-  },
-  4: {
-    text: "Fourth thing",
-    state: "wip",
-    type: "leaf"
-  },
-  5: {
-
-  }
-};
-
-const listData = {
-  todo: [{id: "1"}, {id: "2"}, {id: "3"}],
-  wip: [{id: "4"}],
-  done: []
-};
 
 export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssignments}) => {
-  const [todoValues, setValue] = useState(todos);
-  const [list, setLists] = useState(listData);
   const [currentDraggedObject, setCurrentDraggedObject] = useState({id: null, ev: null});
   const [headings, setHeadings] = useState(headingsInfo);
   const [assignments, setAssignments] = useState(assignmentsInfo);
@@ -51,21 +18,21 @@ export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssign
     setAssignments(assignmentsInfo);
   }, [headingsInfo, assignmentsInfo])
 
-  let height = 0
-  let transitions = {};
-  for (let [listId, listVal] of Object.entries(list)) {
-    const transition = useTransition(
-      listVal.map((data, i) => ({ ...data, y: (height += 1) - 1 })),
-      d => d.id,
-      {
-        from: { opacity: 0 },
-        leave: { height: 0, opacity: 0 },
-        enter: ({ y }) => ({ y, opacity: 1 }),
-        update: ({ y }) => ({ y })
-      }
-    );
-    transitions[listId] = transition;
-  }
+  // let height = 0
+  // let transitions = {};
+  // for (let [listId, listVal] of Object.entries(list)) {
+  //   const transition = useTransition(
+  //     listVal.map((data, i) => ({ ...data, y: (height += 1) - 1 })),
+  //     d => d.id,
+  //     {
+  //       from: { opacity: 0 },
+  //       leave: { height: 0, opacity: 0 },
+  //       enter: ({ y }) => ({ y, opacity: 1 }),
+  //       update: ({ y }) => ({ y })
+  //     }
+  //   );
+  //   transitions[listId] = transition;
+  // }
 
 
   const onDragStart = (draggedId, draggedType, ev) => {
@@ -75,6 +42,9 @@ export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssign
   const onDraggableDragOver = (id, type) => {
     // draggedType must be equal to dragOver type
     if (type != currentDraggedObject.type) return;
+
+    console.log(id);
+    console.log(type);
 
     const draggedOverItemInfo = type == "leaf" ? assignments : headings;
     const currentDraggedObjectInfo = currentDraggedObject.type == "leaf" ? assignments : headings;
@@ -136,7 +106,7 @@ export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssign
         })
       })
     }
-  }, [todoValues, list, currentDraggedObject.id])
+  }, [currentDraggedObject.id])
 
   const onDrop = () => {
     // window.requestAnimationFrame(() => { currentDraggedObject.ev.target.style.visibility = "visible"; });
@@ -152,7 +122,7 @@ export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssign
     clearInterval(dropTimer);
     let newTimer = setTimeout(function() {
         // console.log(listId)
-        onDroppableDragOver(listId)
+        // onDroppableDragOver(listId)
     }, 2000);
     setDropTimer(newTimer);
   }
