@@ -4,7 +4,7 @@ export default class Variants extends InlineComponent {
   static componentType = "variants";
   static rendererType = undefined;
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroVariants = childLogic.newLeaf({
@@ -33,13 +33,13 @@ export default class Variants extends InlineComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         stringChild: {
           dependencyType: "childStateVariables",
           childLogicName: "exactlyOneString",
           variableNames: ["value"]
         }
-      },
+      }),
       affectedBySugar: ["atLeastZeroVariants"],
       replacementFunction: breakStringIntoVariantsByCommas,
     });

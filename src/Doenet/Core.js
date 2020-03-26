@@ -1860,6 +1860,9 @@ export default class Core {
     if (sugarResults.childrenToDelete !== undefined) {
       for (let childName of sugarResults.childrenToDelete) {
         if (Object.keys(this.downstreamDependencies[childName]).length > 0) {
+          console.log(this.downstreamDependencies)
+          console.log(childName)
+          console.log(this.downstreamDependencies[childName])
           throw Error(`Need to implement deleting dependencies when deleting string via sugar`)
         }
         // upstream dependencies should be from parent
@@ -2005,11 +2008,13 @@ export default class Core {
       }
 
       let additionalDependentStateVariables = [];
-      if (propertySpecification.dependentStateVariable) {
-        additionalDependentStateVariables.push(propertySpecification.dependentStateVariable);
-      }
       if (propertySpecification.dependentStateVariables) {
         additionalDependentStateVariables.push(...propertySpecification.dependentStateVariables);
+      }
+
+      let propertyIsAnArray = false;
+      if (propertyClass.attributesForPropertyValue) {
+        propertyIsAnArray = propertyClass.attributesForPropertyValue.isArray;
       }
 
       let dependencies, definition, inverseDefinition;
@@ -2028,24 +2033,38 @@ export default class Core {
           }
         };
 
-        for (let variableName of additionalDependentStateVariables) {
-          dependencies[variableName] = {
+        for (let depStateVar of additionalDependentStateVariables) {
+          dependencies[depStateVar.dependencyName] = {
             dependencyType: "stateVariable",
-            variableName
+            variableName: depStateVar.variableName
           }
         }
 
         definition = function ({ dependencyValues, usedDefault, arrayKeys, freshnessInfo }) {
+
           let propertyChild = dependencyValues[childLogicName];
           if (propertyChild.length === 0) {
             if (!usedDefault.ancestorProp) {
               return { newValues: { [property]: dependencyValues.ancestorProp } }
             } else {
-              return {
-                useEssentialOrDefaultValue: {
-                  [property]: {
-                    variablesToCheck: property,
-                    defaultValue: dependencyValues.ancestorProp,
+              if (propertyIsAnArray) {
+                return {
+                  useEssentialOrDefaultValue: {
+                    [property]: {
+                      __entire_array: {
+                        variablesToCheck: property,
+                        defaultValue: dependencyValues.ancestorProp,
+                      }
+                    }
+                  }
+                }
+              } else {
+                return {
+                  useEssentialOrDefaultValue: {
+                    [property]: {
+                      variablesToCheck: property,
+                      defaultValue: dependencyValues.ancestorProp,
+                    }
                   }
                 }
               };
@@ -2145,10 +2164,10 @@ export default class Core {
           },
         };
 
-        for (let variableName of additionalDependentStateVariables) {
-          dependencies[variableName] = {
+        for (let depStateVar of additionalDependentStateVariables) {
+          dependencies[depStateVar.dependencyName] = {
             dependencyType: "stateVariable",
-            variableName
+            variableName: depStateVar.variableName
           }
         }
 
@@ -2172,11 +2191,22 @@ export default class Core {
           // Do we need to implement a default value for an array
           // so that can use it here in a property?
           if (propertyChild.length === 0 && useDefaultIfNoPropertyChild) {
-            return {
-              useEssentialOrDefaultValue: {
-                [property]: { variablesToCheck: property }
+
+            if (propertyIsAnArray) {
+              return {
+                useEssentialOrDefaultValue: {
+                  [property]: {
+                    __entire_array: { variablesToCheck: property }
+                  }
+                }
               }
-            };
+            } else {
+              return {
+                useEssentialOrDefaultValue: {
+                  [property]: { variablesToCheck: property }
+                }
+              };
+            }
           }
 
           if (propertyClass.definitionForPropertyValue) {
@@ -2800,7 +2830,7 @@ export default class Core {
 
       let childLogicComponent = childLogic.logicComponents[childLogicName];
 
-      if (childLogicComponent.sugarDependencies) {
+      if (childLogicComponent.returnSugarDependencies) {
         // if sugar has dependencies that must be satisfied before it can be applied,
         // then for each affected childlogic component,
         // create a state variable that will apply sugar when dependencies are satisfied
@@ -2876,7 +2906,7 @@ export default class Core {
 
         component.state[applySugarStateVariable] = {
           isAction: true,
-          returnDependencies: () => childLogicComponent.sugarDependencies,
+          returnDependencies: childLogicComponent.returnSugarDependencies,
           action: function ({ dependencyValues }) {
 
             core.replaceChildrenBySugar({
@@ -4009,12 +4039,13 @@ export default class Core {
 
 
       // first determine if can get value from essential state
-      let { haveEssentialValue, valueUnchanged } = this.setValueToEssential({
+      let { haveEssentialValue, valueUnchanged, byArrayEntries } = this.setValueToEssential({
         component, varName,
         useEssentialInfo: result.useEssentialOrDefaultValue[varName]
       });
 
-      if (component.state[varName].isArray) {
+      if (byArrayEntries) {
+
         for (let arrayKey in result.useEssentialOrDefaultValue[varName]) {
           if (!haveEssentialValue[arrayKey]) {
             if ("defaultEntryValue" in result.useEssentialOrDefaultValue[varName]) {
@@ -4252,27 +4283,36 @@ export default class Core {
   setValueToEssential({ component, varName, useEssentialInfo }) {
     let haveEssentialValue = false;
     let valueUnchanged = false;
+    let byArrayEntries = false;
 
     if (component.state[varName].isArray) {
-      valueUnchanged = {};
-      haveEssentialValue = {};
-      for (let arrayKey in useEssentialInfo) {
-        haveEssentialValue[arrayKey] = false;
+      if ("__entire_array" in useEssentialInfo) {
+        useEssentialInfo = useEssentialInfo.__entire_array;
+      } else {
+        byArrayEntries = true;
+        valueUnchanged = {};
+        haveEssentialValue = {};
+        for (let arrayKey in useEssentialInfo) {
+          haveEssentialValue[arrayKey] = false;
+        }
       }
-
     }
 
     // if state variable itself is already essential, then don't change the value
     // just use the previous value
-    if (component.state[varName].essential && !component.state[varName].isArray) {
-      // delete value to remove getter
-      delete component.state[varName].value;
-      component.state[varName].value = component.state[varName]._previousValue;
+    if (component.state[varName].essential && !byArrayEntries) {
+      if (!component.state[varName].isArray) {
+        // (if isArray, then arrayValues should still have previous value)
+
+        // delete value to remove getter
+        delete component.state[varName].value;
+        component.state[varName].value = component.state[varName]._previousValue;
+      }
       // return that did set it to an essential value
-      return { haveEssentialValue: true, valueUnchanged: true };
+      return { haveEssentialValue: true, valueUnchanged: true, byArrayEntries };
     }
     if (component.potentialEssentialState) {
-      if (component.state[varName].isArray) {
+      if (byArrayEntries) {
         for (let arrayKey in useEssentialInfo) {
           if (component.state[varName].essentialByArrayKey[arrayKey]) {
             // if already essential, no need to do more
@@ -4312,15 +4352,19 @@ export default class Core {
 
         if (foundEssential) {
 
-          // delete before assigning value to remove any getter for the property
-          delete component.state[varName].value;
-          component.state[varName].value = value;
+          if (component.state[varName].isArray) {
+            component.state[varName].arrayValues = value;
+          } else {
+            // delete before assigning value to remove any getter for the property
+            delete component.state[varName].value;
+            component.state[varName].value = value;
+          }
           component.state[varName].essential = true;
           haveEssentialValue = true;
         }
       }
     }
-    return { haveEssentialValue, valueUnchanged };
+    return { haveEssentialValue, valueUnchanged, byArrayEntries };
   }
 
   findPotentialEssentialValue({ variablesToCheck, potentialEssentialState }) {
@@ -5508,7 +5552,7 @@ export default class Core {
 
     // before making any changes, go through and find out if there are
     // any components with state variables determining dependencies
-    // and get the value fo those state variables
+    // and get the value of those state variables
     let stateValuesForDependencies = {};
     for (let varName in component.state) {
       let stateVarObj = component.state[varName];
@@ -5611,13 +5655,8 @@ export default class Core {
             for (let currentChild of currentDep.downstreamComponentNames) {
               if (!children.includes(currentChild)) {
                 // lost a child that matched this childLogic component.  remove dependency
-                // and change any child state variable that refer to parent state variables
                 componentsTouched.push(currentChild);
-                if (currentChild in this.components) {
-                  // only change if currentChild has not been deleted
-                  let additionalComponentsTouched = this.changeParentStateVariables(currentChild);
-                  componentsTouched.push(...additionalComponentsTouched);
-                }
+
                 let childUpDep = this.upstreamDependencies[currentChild];
                 let depNamesToCheck = ['__identity'];
                 if (currentDep.downstreamVariableNames) {
@@ -5641,10 +5680,7 @@ export default class Core {
             for (let newChild of children) {
               if (!currentDep.downstreamComponentNames.includes(newChild)) {
                 // gained a child that matched this childLogic component.  add dependency
-                // and change any child state variable that refer to parent state variables
                 componentsTouched.push(newChild);
-                let additionalComponentsTouched = this.changeParentStateVariables(newChild);
-                componentsTouched.push(...additionalComponentsTouched);
                 let childUpDep = this.upstreamDependencies[newChild];
                 if (childUpDep === undefined) {
                   childUpDep = this.upstreamDependencies[newChild] = {};
@@ -5694,6 +5730,13 @@ export default class Core {
         let additionalComponentsTouched = this.markStateVariableAndUpstreamDependentsStale({ component, varName });
         componentsTouched.push(...additionalComponentsTouched);
       }
+    }
+
+
+    // for all children, check if they need to change their parent state variables
+    for (let childName in component.allChildren) {
+      let additionalComponentsTouched = this.changeParentStateVariables(childName);
+      componentsTouched.push(...additionalComponentsTouched);
     }
 
     return componentsTouched;
@@ -5861,7 +5904,7 @@ export default class Core {
 
     // before making any changes, go through and find out if there are
     // any components with state variables determining dependencies
-    // and get the value fo those state variables
+    // and get the value of those state variables
     let stateValuesForDependencies = {}
     for (let varName in component.state) {
       let stateVarObj = component.state[varName];

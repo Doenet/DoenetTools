@@ -141,9 +141,9 @@ export default class BaseComponent {
 
     return {
       hide: { default: false, forRenderer: true },
-      modifyIndirectly: { default: true },
-      fixed: { default: false },
-      styleNumber: { default: 1 },
+      modifyIndirectly: { default: true, propagateToDescendants: true },
+      fixed: { default: false, propagateToDescendants: true },
+      styleNumber: { default: 1, propagateToDescendants: true },
     };
   }
 

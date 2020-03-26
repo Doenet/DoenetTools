@@ -105,138 +105,124 @@ export default class Variables extends MathList {
       return {};
     }
 
-    if ("nDimensions" in dependencyValues) {
+    let nVariables;
 
-      let nDimensions = dependencyValues.nDimensions;
+    if ("nVariables" in dependencyValues) {
 
-      // if nDimensions isn't a number or isn't positive
+      nVariables = dependencyValues.nVariables;
+
+      // if nVariables isn't a number or isn't positive
       // don't have any variables
-      if (!(nDimensions > 0)) {
+      if (!(nVariables > 0)) {
         return { newValues: { variables: [] } }
       }
-
-      if (propertyChild.length === 0) {
-        if (nDimensions === 0) {
-          return { newValues: { variables: [] } }
-        } else if (nDimensions === 1) {
-          freshByKey[0] = true;
-          return { newValues: { variables: [me.fromAst("x")] } }
-        } else if (nDimensions === 2) {
-          freshByKey[0] = true;
-          freshByKey[1] = true;
-          return { newValues: { variables: [me.fromAst("x"), me.fromAst("y")] } }
-        } else if (nDimensions === 3) {
-          freshByKey[0] = true;
-          freshByKey[1] = true;
-          freshByKey[2] = true;
-          return { newValues: { variables: [me.fromAst("x"), me.fromAst("y"), me.fromAst("z")] } }
-        } else {
-          let variables = [];
-          for (let i = 1; i <= nDimensions; i++) {
-            freshByKey[i - 1] = true;
-            variables.push(me.fromAst(`x_${i}`))
-          }
-          return { newValues: { variables } }
-        }
-      }
-
-      let variables = propertyChild[0].stateValues.variables;
-
-      let nVariablesSpecified = variables.length;
-
-      if ((new Set(variables.map(x => x.toString()))).size < nVariablesSpecified) {
-        console.warn('Duplicate variables specified')
-      }
-
-      for (let i = 0; i < nDimensions; i++) {
-        freshByKey[i] = true;
-      }
-
-      if (nVariablesSpecified >= nDimensions) {
-        return {
-          newValues: {
-            variables:
-              variables.slice(0, nDimensions)
-          }
-        }
-      }
-
-      console.warn(`Invalid format for variables: have ${nDimensions} dimensions, but only ${nVariablesSpecified} variables were specified`)
-
-
-      let variablesUsed = [...variables.map(x => x.toString())];
-      variables = [...variables];
-      for (let i = nVariablesSpecified + 1; i <= nDimensions; i++) {
-        let preferredVariables;
-        if (i == 1) {
-          if (nDimensions > 3) {
-            preferredVariables = ["x_1"];
-          } else {
-            preferredVariables = ["x"];
-          }
-        } else if (i == 2) {
-          if (nDimensions > 3) {
-            preferredVariables = ["x_2", "y_2"];
-          } else {
-            preferredVariables = ["y", "x_2"];
-          }
-        } else if (i == 3) {
-          if (nDimensions > 3) {
-            preferredVariables = ["x_3", "y_3", "z_3"];
-          } else {
-            preferredVariables = ["z", "x_3", "z_3"];
-          }
-        } else {
-          preferredVariables =
-            ["x", "y", "z", "u", "v", "w", "X", "Y", "Z"].map(x => `${x}_${i}`)
-        }
-        let addedVariable = false;
-        for (let v of preferredVariables) {
-          if (!variablesUsed.includes(v)) {
-            variables.push(me.fromText(v));
-            variablesUsed.push(v);
-            addedVariable = true;
-            break;
-          }
-        }
-        if (!addedVariable) {
-          let v = preferredVariables[0]
-          variables.push(me.fromText(v));
-          variablesUsed.push(v);
-          console.warn(`Variables added were not unique`)
-        }
-      }
-
-      return { newValues: { variables } }
-
 
     } else {
 
-      // nDimensions wasn't specified
+      // nVariables wasn't specified
+      // let it be the variables specified in the variables property child
 
-      if (propertyChild.length === 0) {
+      nVariables = 0;
+      if (propertyChild.length === 1) {
+        nVariables = propertyChild[0].stateValues.variables.length;
+      }
+      if (nVariables === 0) {
         return { newValues: { variables: [] } }
       }
 
-
-      let variables = propertyChild[0].stateValues.variables;
-
-      let nVariablesSpecified = variables.length;
-
-      if ((new Set(variables.map(x => x.toString()))).size < nVariablesSpecified) {
-        console.warn('Duplicate variables specified')
-      }
-
-      for (let i = 0; i < nVariablesSpecified; i++) {
-        freshByKey[i] = true;
-      }
-
-      return {
-        newValues: { variables }
-      }
-
-
     }
+
+
+    if (propertyChild.length === 0) {
+      if (nVariables === 1) {
+        freshByKey[0] = true;
+        return { newValues: { variables: [me.fromAst("x")] } }
+      } else if (nVariables === 2) {
+        freshByKey[0] = true;
+        freshByKey[1] = true;
+        return { newValues: { variables: [me.fromAst("x"), me.fromAst("y")] } }
+      } else if (nVariables === 3) {
+        freshByKey[0] = true;
+        freshByKey[1] = true;
+        freshByKey[2] = true;
+        return { newValues: { variables: [me.fromAst("x"), me.fromAst("y"), me.fromAst("z")] } }
+      } else {
+        let variables = [];
+        for (let i = 1; i <= nVariables; i++) {
+          freshByKey[i - 1] = true;
+          variables.push(me.fromAst(`x_${i}`))
+        }
+        return { newValues: { variables } }
+      }
+    }
+
+    let variables = propertyChild[0].stateValues.variables;
+
+    let nVariablesSpecified = variables.length;
+
+    if ((new Set(variables.map(x => x.toString()))).size < nVariablesSpecified) {
+      console.warn('Duplicate variables specified')
+    }
+
+    for (let i = 0; i < nVariables; i++) {
+      freshByKey[i] = true;
+    }
+
+    if (nVariablesSpecified >= nVariables) {
+      return {
+        newValues: {
+          variables:
+            variables.slice(0, nVariables)
+        }
+      }
+    }
+
+
+    let variablesUsed = [...variables.map(x => x.toString())];
+    variables = [...variables];
+    for (let i = nVariablesSpecified + 1; i <= nVariables; i++) {
+      let preferredVariables;
+      if (i == 1) {
+        if (nVariables > 3) {
+          preferredVariables = ["x_1"];
+        } else {
+          preferredVariables = ["x"];
+        }
+      } else if (i == 2) {
+        if (nVariables > 3) {
+          preferredVariables = ["x_2", "y_2"];
+        } else {
+          preferredVariables = ["y", "x_2"];
+        }
+      } else if (i == 3) {
+        if (nVariables > 3) {
+          preferredVariables = ["x_3", "y_3", "z_3"];
+        } else {
+          preferredVariables = ["z", "x_3", "z_3"];
+        }
+      } else {
+        preferredVariables =
+          ["x", "y", "z", "u", "v", "w", "X", "Y", "Z"].map(x => `${x}_${i}`)
+      }
+      let addedVariable = false;
+      for (let v of preferredVariables) {
+        if (!variablesUsed.includes(v)) {
+          variables.push(me.fromText(v));
+          variablesUsed.push(v);
+          addedVariable = true;
+          break;
+        }
+      }
+      if (!addedVariable) {
+        let v = preferredVariables[0]
+        variables.push(me.fromText(v));
+        variablesUsed.push(v);
+        console.warn(`Variables added were not unique`)
+      }
+    }
+
+    return { newValues: { variables } }
+
 
   }
 

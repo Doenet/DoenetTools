@@ -51,13 +51,13 @@ export default class PointListComponent extends BaseComponent {
       propositions: [atLeastOneString, atLeastOneMath],
       requireConsecutive: true,
       isSugar: true,
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         stringsAndMaths: {
           dependencyType: "childStateVariables",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"]
         }
-      },
+      }),
       affectedBySugar: ["atLeastZeroPoints"],
       replacementFunction: breakIntoPointsByCommas,
     });

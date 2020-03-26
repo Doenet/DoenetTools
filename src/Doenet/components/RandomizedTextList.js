@@ -49,13 +49,13 @@ export default class TextList extends InlineComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         stringChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "exactlyOneString",
           variableNames: ["value"]
         }
-      },
+      }),
       affectedBySugar: ["atLeastZeroTexts"],
       replacementFunction: breakStringIntoTextsByCommas,
     });
@@ -105,8 +105,8 @@ export default class TextList extends InlineComponent {
       definition: function ({ dependencyValues }) {
         let texts = [];
 
-        let childNames = dependencyValues.textAndTextlistChildren.map(x=>x.componentName);
-        for(let childName of dependencyValues.childrenToRender) {
+        let childNames = dependencyValues.textAndTextlistChildren.map(x => x.componentName);
+        for (let childName of dependencyValues.childrenToRender) {
           let index = childNames.indexOf(childName);
           let child = dependencyValues.textAndTextlistChildren[index];
           if (child.stateValues.texts) {

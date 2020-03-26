@@ -225,13 +225,13 @@ export class Extremum extends BaseComponent {
       operator: 'and',
       propositions: [variablesForSugar, stringsAndMaths],
       isSugar: true,
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         stringsAndMaths: {
           dependencyType: "childStateVariables",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"]
         }
-      },
+      }),
       affectedBySugar: ["exactlyOneLocation", "exactlyOneValue"],
       replacementFunction: createLocationValueFromSugar,
     });

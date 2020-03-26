@@ -105,7 +105,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
       operator: "or",
       propositions: [atLeastOneString, atLeastOneNonString],
       isSugar: true,
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
           variableName: "type",
@@ -115,7 +115,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
           childLogicName: "atLeastOneString",
           variableNames: ["value"],
         }
-      },
+      }),
       affectedBySugar: ["atMostOneChild"],
       replacementFunction: addType,
     });

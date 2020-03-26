@@ -49,13 +49,13 @@ export default class TextList extends InlineComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         stringChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "exactlyOneString",
           variableNames: ["value"]
         }
-      },
+      }),
       affectedBySugar: ["atLeastZeroTexts"],
       replacementFunction: breakStringIntoTextsByCommas,
     });

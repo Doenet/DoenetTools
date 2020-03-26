@@ -21,7 +21,10 @@ export default class Line extends GraphicalComponent {
     properties.variables = {
       componentType: "math",
       entryPrefixes: ["var"],
-      dependentStateVariable: "nDimensions"
+      dependentStateVariables: [{
+        dependencyName: "nVariables",
+        variableName: "nDimensions"
+      }]
     }
     return properties;
   }
@@ -157,13 +160,13 @@ export default class Line extends GraphicalComponent {
       requireConsecutive: true,
       isSugar: true,
       affectedBySugar: ["exactlyOneEquation", "exactlyOneThrough"],
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         stringAndMathChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"]
         }
-      },
+      }),
       replacementFunction: replaceWithEquationOrThrough,
     });
 

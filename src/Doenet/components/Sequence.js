@@ -94,7 +94,7 @@ export default class Sequence extends CompositeComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
           variableName: "type",
@@ -104,7 +104,7 @@ export default class Sequence extends CompositeComponent {
           childLogicName: "exactlyOneString",
           variableNames: ["value"]
         }
-      },
+      }),
       affectedBySugar: ["atMostOneFrom", "atMostOneTo"],
       replacementFunction: fromToAsString,
     });
@@ -981,9 +981,7 @@ export default class Sequence extends CompositeComponent {
   }
 
   get allPotentialRendererTypes() {
-    console.log(`get all potential renderer types for sequence ${this.componentName}`)
     let allPotentialRendererTypes = [this.stateValues.selectedType];
-    console.log(allPotentialRendererTypes)
     return allPotentialRendererTypes;
   }
 

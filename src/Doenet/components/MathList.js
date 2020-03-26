@@ -74,13 +74,13 @@ export default class MathList extends InlineComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         stringChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "exactlyOneString",
           variableNames: ["value"]
         }
-      },
+      }),
       affectedBySugar: ["atLeastZeroMaths"],
       replacementFunction: breakStringIntoMathsByCommas,
     });

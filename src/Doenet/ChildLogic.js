@@ -107,7 +107,7 @@ export default class childLogic {
   }
 
   newLeaf({ name, componentType, getComponentType, comparison, number, requireConsecutive,
-    condition, isSugar, repeatSugar, replacementFunction, sugarDependencies, affectedBySugar,
+    condition, isSugar, repeatSugar, replacementFunction, returnSugarDependencies, affectedBySugar,
     allowSpillover, excludeComponentTypes,
     setAsBase = false, ...invalidArguments
   }) {
@@ -134,7 +134,7 @@ export default class childLogic {
       componentType, getComponentType, excludeComponentTypes,
       comparison, number,
       requireConsecutive, condition,
-      isSugar, repeatSugar, sugarDependencies, affectedBySugar,
+      isSugar, repeatSugar, returnSugarDependencies, affectedBySugar,
       replacementFunction, allowSpillover,
       parentComponentType: this.parentComponentType,
       allComponentClasses: this.allComponentClasses,
@@ -153,7 +153,7 @@ export default class childLogic {
   }
 
   newOperator({ name, operator, propositions, sequenceMatters, requireConsecutive,
-    isSugar, repeatSugar, separateSugarInputs, replacementFunction, sugarDependencies,
+    isSugar, repeatSugar, separateSugarInputs, replacementFunction, returnSugarDependencies,
     affectedBySugar, allowSpillover,
     setAsBase = false, ...invalidArguments
   }) {
@@ -181,7 +181,7 @@ export default class childLogic {
       operator, propositions,
       sequenceMatters, requireConsecutive,
       isSugar, repeatSugar,
-      separateSugarInputs, replacementFunction, sugarDependencies, affectedBySugar,
+      separateSugarInputs, replacementFunction, returnSugarDependencies, affectedBySugar,
       allowSpillover,
       parentComponentType: this.parentComponentType,
       allComponentClasses: this.allComponentClasses,
@@ -864,7 +864,7 @@ class ChildLogicLeaf extends ChildLogicBase {
   constructor({ name, componentType, getComponentType, excludeComponentTypes,
     comparison = "exactly", number = 1,
     requireConsecutive = false, condition, isSugar = false, repeatSugar = false,
-    replacementFunction, sugarDependencies, affectedBySugar,
+    replacementFunction, returnSugarDependencies, affectedBySugar,
     allowSpillover = true,
     parentComponentType,
     allComponentClasses,
@@ -894,7 +894,7 @@ class ChildLogicLeaf extends ChildLogicBase {
     this.isSugar = isSugar;
     this.repeatSugar = repeatSugar;
     this.replacementFunction = replacementFunction;
-    this.sugarDependencies = sugarDependencies;
+    this.returnSugarDependencies = returnSugarDependencies;
     this.affectedBySugar = affectedBySugar;
     this.allowSpillover = allowSpillover;
 
@@ -1080,7 +1080,7 @@ class ChildLogicOperator extends ChildLogicBase {
   constructor({ name, operator, propositions = [],
     sequenceMatters = false, requireConsecutive = false,
     isSugar = false, repeatSugar = false, separateSugarInputs = false,
-    replacementFunction, sugarDependencies, affectedBySugar,
+    replacementFunction, returnSugarDependencies, affectedBySugar,
     allowSpillover = true,
     parentComponentType,
     allComponentClasses,
@@ -1104,7 +1104,7 @@ class ChildLogicOperator extends ChildLogicBase {
     this.repeatSugar = repeatSugar;
     this.separateSugarInputs = separateSugarInputs;
     this.replacementFunction = replacementFunction;
-    this.sugarDependencies = sugarDependencies;
+    this.returnSugarDependencies = returnSugarDependencies;
     this.affectedBySugar = affectedBySugar;
     this.allowSpillover = allowSpillover;
 

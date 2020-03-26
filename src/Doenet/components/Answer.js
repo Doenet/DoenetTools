@@ -139,7 +139,7 @@ export default class Answer extends InlineComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
           variableName: "type",
@@ -157,7 +157,7 @@ export default class Answer extends InlineComponent {
           childLogicName: "exactlyOneString",
           variableNames: ["value"]
         }
-      },
+      }),
       affectedBySugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
       replacementFunction: replaceFromOneString,
     });
@@ -214,12 +214,12 @@ export default class Answer extends InlineComponent {
       componentType: 'math',
       number: 1,
       isSugar: true,
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         size: {
           dependencyType: "stateVariable",
           variableName: "size"
         }
-      },
+      }),
       affectedBySugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
       replacementFunction: replaceFromOneMath,
     });
@@ -276,12 +276,12 @@ export default class Answer extends InlineComponent {
       componentType: 'text',
       number: 1,
       isSugar: true,
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         size: {
           dependencyType: "stateVariable",
           variableName: "size"
         }
-      },
+      }),
       affectedBySugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
 
       replacementFunction: replaceFromOneText,
@@ -482,7 +482,7 @@ export default class Answer extends InlineComponent {
       comparison: 'atLeast',
       number: 1,
       isSugar: true,
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
           variableName: "type",
@@ -496,7 +496,7 @@ export default class Answer extends InlineComponent {
           childLogicName: "atLeastOneIncompleteAward",
           variableNames: ["incompleteType", "childForIncomplete", "splitIntoOptions"]
         }
-      },
+      }),
       affectedBySugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
       replacementFunction: replaceFromIncompleteAwards,
       condition: awardIsIncomplete,
@@ -729,7 +729,7 @@ export default class Answer extends InlineComponent {
         // if this is second pass through (i.e., freshByKey was set)
         // then don't change anything
         // (For array state variables, don't need to return noChanges)
-        if(Object.keys(essentialSubmittedResponses).length === 0) {
+        if (Object.keys(essentialSubmittedResponses).length === 0) {
           return {}
         }
 

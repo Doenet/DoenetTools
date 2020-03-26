@@ -44,7 +44,7 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
       componentType: 'string',
       number: 1,
       isSugar: true,
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
           variableName: "type",
@@ -54,7 +54,7 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
           childLogicName: "exactlyOneString",
           variableNames: ["value"],
         }
-      },
+      }),
       affectedBySugar: ["anythingForSelectedType"],
       replacementFunction: breakIntoTypesByCommas,
     });
@@ -126,12 +126,12 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
       comparison: 'atLeast',
       number: 1,
       isSugar: true,
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
           variableName: "type",
         }
-      },
+      }),
       affectedBySugar: ["anythingForSelectedType"],
       replacementFunction: addType,
     });

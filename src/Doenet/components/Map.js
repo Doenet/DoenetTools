@@ -578,6 +578,15 @@ export default class Map extends CompositeComponent {
       this.stateValues.template
     );
 
+    for (let childName in this.allChildren) {
+      let child = this.allChildren[childName].component;
+      for (let rendererType of child.allPotentialRendererTypes) {
+        if (!allPotentialRendererTypes.includes(rendererType)) {
+          allPotentialRendererTypes.push(rendererType);
+        }
+      }
+    }
+
     if(this.replacements) {
       for(let replacement of this.replacements) {
         for(let rendererType of replacement.allPotentialRendererTypes) {
