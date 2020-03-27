@@ -2044,7 +2044,7 @@ export default class Core {
 
     serializedChildren = postProcessRef({
       serializedComponents: serializedChildren,
-      componentName: shadowingComponent.replacementOf.componentName
+      componentName: shadowingComponent.shadows.refComponentName
     })
 
     // go through the defining children of shadowing component
