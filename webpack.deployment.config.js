@@ -10,8 +10,8 @@ module.exports = {
   entry: {
     "index.js": "./src/index.js",
     "admin/index.js": "./src/admin/index.js",
-    "course/index.js": "./src/course/index.js",
     "chooser/index.js":"./src/chooser/index.js",
+    "course/index.js": "./src/course/index.js",
     "docs/index.js": "./src/docs/index.js",
     "editor/index.js": "./src/editor/index.js",
     "exam/index.js": "./src/exam/index.js",
