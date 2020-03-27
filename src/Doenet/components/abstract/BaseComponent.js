@@ -335,7 +335,7 @@ export default class BaseComponent {
     let descendants = [];
     for (let name in this.allChildren) {
       let child = this.allChildren[name].component;
-      descendants = [...descendants, child, ...child.allDescendants];
+      descendants = [...descendants, name, ...child.allDescendants];
     }
     return descendants;
   }

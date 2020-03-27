@@ -1741,6 +1741,24 @@ export default class Function extends InlineComponent {
       }
     }
 
+    // stateVariableDefinitions.indexInParent = {
+    //   returnDependencies: () => ({
+    //     indexInParent: {
+    //       dependencyType: "indexInParent",
+    //     },
+    //     functionIndexInParent: {
+    //       dependencyType: "indexInParent",
+    //       componentTypes: ["function"]
+    //     }
+    //   }),
+    //   definition: function ({ dependencyValues }) {
+    //     console.log('definition of indexInParent');
+    //     console.log(dependencyValues);
+
+    //     return { newValues: { indexInParent: dependencyValues.functionIndexInParent } }
+    //   }
+    // }
+
     return stateVariableDefinitions;
 
   }

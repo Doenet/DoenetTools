@@ -11,6 +11,7 @@ import { gatherDescendants } from './utils/descendants';
 import crypto from 'crypto';
 import { deepClone } from './utils/deepFunctions';
 import createStateProxyHandler from './StateProxyHandler';
+import { postProcessRef } from './components/Ref';
 
 // string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -1765,7 +1766,7 @@ export default class Core {
     component.childLogic.logicComponents[childLogicName].usedSugar = true;
 
     if (component.childLogic.excludeMultipleSugar) {
-      // if childLOgic is marked as excludeMultipleSugar
+      // if childLogic is marked as excludeMultipleSugar
       // then also set usedSugar on the childLogic itself,
       // which will prevent any sugar being applied
       component.childLogic.usedSugar = true;
@@ -1805,7 +1806,6 @@ export default class Core {
     }
 
 
-
     if (sugarResults.childChanges) {
 
       for (let childName in sugarResults.childChanges) {
@@ -1823,6 +1823,20 @@ export default class Core {
           sugarResults: changes,
         });
 
+        // immediately apply sugar to shadows
+        // so that defining indices from changes still apply
+        // (at later sugar changes could add/delete defining changes)
+        if (child.shadowedBy) {
+          for (let shadowingComponent of child.shadowedBy) {
+            this.applySugarToShadows(({
+              originalComponent: child,
+              shadowingComponent,
+              changes,
+              componentsShadowingDeleted: result.componentsShadowingDeleted
+            }))
+          }
+        }
+
         this.deriveChildResultsFromDefiningChildren(child);
 
         if (!component.childLogicSatisfied) {
@@ -1835,12 +1849,26 @@ export default class Core {
       }
     }
 
-    for (let change of sugarResults.baseChanges) {
+    for (let changes of sugarResults.baseChanges) {
       let result = this.replaceDefiningChildrenBySugar({
         component,
-        sugarResults: change,
+        sugarResults: changes,
       });
 
+
+      // immediately apply sugar to shadows
+      // so that defining indices from change still apply
+      // (at later sugar changes could add/delete defining changes)
+      if (component.shadowedBy) {
+        for (let shadowingComponent of component.shadowedBy) {
+          this.applySugarToShadows(({
+            originalComponent: component,
+            shadowingComponent,
+            changes,
+            componentsShadowingDeleted: result.componentsShadowingDeleted
+          }))
+        }
+      }
     }
 
     this.deriveChildResultsFromDefiningChildren(component);
@@ -1854,23 +1882,92 @@ export default class Core {
 
   }
 
-  replaceDefiningChildrenBySugar({ component, sugarResults }) {
+  replaceDefiningChildrenBySugar({ component, sugarResults, shadow = false }) {
+
+    let componentsShadowingDeleted = {};
 
     // delete the string children specified by childrenToDelete
     if (sugarResults.childrenToDelete !== undefined) {
       for (let childName of sugarResults.childrenToDelete) {
-        if (Object.keys(this.downstreamDependencies[childName]).length > 0) {
-          console.log(this.downstreamDependencies)
-          console.log(childName)
-          console.log(this.downstreamDependencies[childName])
-          throw Error(`Need to implement deleting dependencies when deleting string via sugar`)
-        }
-        // upstream dependencies should be from parent
-        // but we'll need to recompute those dependencies anyway
+        let child = this._components[childName];
 
-        // TODO: do we deal with case when component has been reffed
-        // and sugar is applied afterwards, as that means string could have
-        // other upstream dependencies?
+        let childAndDescendants = [childName, ...child.allDescendants]
+
+        for (let name of childAndDescendants) {
+          if (Object.keys(this.downstreamDependencies[name]).length > 0) {
+            this.deleteAllDownstreamDependencies(this._components[name]);
+          }
+        }
+
+        if (child.shadowedBy) {
+
+          // delete any refTarget upstream depedendencies
+          // ignore childstatevariables/identity
+          // as those will be recomputed when children are changed
+          for (let varName in this.upstreamDependencies[childName]) {
+            for (let [ind, upDep] of this.upstreamDependencies[childName][varName].entries()) {
+              if (upDep.dependencyType !== "childStateVariables" && upDep.dependencyType !== "childIdentity") {
+                if (upDep.dependencyName === "refTargetVariable") {
+
+                  let upstreamComponentName = upDep.upstreamComponentName;
+                  if (upDep.downstreamComponentNames && upDep.downstreamComponentNames.length > 1) {
+                    // if the dependency depends on other downstream components
+                    // just delete component from the array
+                    let ind = upDep.downstreamComponentNames.indexOf(componentName);
+                    upDep.downstreamComponentNames.splice(ind, 1);
+                  } else {
+                    delete this.downstreamDependencies[upstreamComponentName][upDep.upstreamVariableName][upDep.dependencyName];
+                    if (Object.keys(this.downstreamDependencies[upstreamComponentName][upDep.upstreamVariableName]).length == 0) {
+                      delete this.downstreamDependencies[upstreamComponentName][upDep.upstreamVariableName];
+                    }
+                  }
+
+                  // also delete from child's upstream dependencies
+                  this.upstreamDependencies[childName][varName].splice(ind, 1);
+
+                } else {
+                  console.warn(`In deleting ${childName} as child of ${component.componentName} via sugar, found an unexpected dependency`)
+                }
+              }
+            }
+          }
+
+          componentsShadowingDeleted[childName] = child.shadowedBy;
+        }
+
+
+        // mark all state variables as deleted
+        if (this.deletedStateVariables[childName] === undefined) {
+          this.deletedStateVariables[childName] = [];
+        }
+        for (let varName in child.state) {
+          this.deletedStateVariables[childName].push(varName);
+        }
+
+        for (let cName of childAndDescendants) {
+
+          if (this.unresolvedDependencies[cName]) {
+            for (let varName in this.unresolvedDependencies[cName]) {
+              for (let unRes of this.unresolvedDependencies[cName][varName]) {
+                // delete from this.unresolvedByDependent so don't attempt
+                // to try to resolve this state variable later
+                if (this.unresolvedByDependent[unRes.componentName]) {
+                  let unResBy = this.unresolvedByDependent[unRes.componentName][unRes.stateVariable];
+                  if (unResBy) {
+                    for (let [ind, dep] of unResBy.entries()) {
+                      if (dep.componentName === cName && dep.stateVariable === varName) {
+                        unResBy.splice(ind, 1);
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          delete this.unresolvedDependencies[cName];
+        }
 
         this.deregisterComponent(this._components[childName]);
       }
@@ -1891,6 +1988,7 @@ export default class Core {
       serializedState: sugarResults.newChildren,
       applySugar: true,
       ancestors: ancestorsForChildren,
+      shadow,
     });
 
     this.parameterStack.pop();
@@ -1899,8 +1997,160 @@ export default class Core {
     component.definingChildren.splice(sugarResults.firstDefiningIndex,
       sugarResults.nDefiningIndices, ...childrenResult.components);
 
-    return childrenResult;
+    return { createResult: childrenResult, componentsShadowingDeleted }
 
+  }
+
+  applySugarToShadows({ originalComponent, shadowingComponent, changes, componentsShadowingDeleted }) {
+
+    // recreate sugar results with the following changes
+    // 1. replace childrenToDelete with their shadows from componentsShadowingDeleted
+    // 2. serialized for reference any newly created components
+    //    (don't just use the instructions from the sugar, as additional
+    //    sugar could have been applied when creating those components)
+    // 3. find any "createdComponents" (components that were preserved)
+    //    and replace them with createdComponents referencing their shadows
+
+
+    let shadowChanges = Object.assign({}, changes)
+
+    let shadowChildrenToDelete = [];
+
+    if (changes.childrenToDelete) {
+      for (let deletedName of changes.childrenToDelete) {
+        let shadowingDeleted = componentsShadowingDeleted[deletedName];
+        if (shadowingDeleted) {
+          for (let comp of shadowingDeleted) {
+            // check if shadowingComponent is ancestor
+            if (comp.ancestors.map(x => x.componentName)
+              .includes(shadowingComponent.componentName)
+            ) {
+              shadowChildrenToDelete.push(comp.componentName);
+            }
+          }
+        }
+      }
+    }
+
+    shadowChanges.childrenToDelete = shadowChildrenToDelete;
+
+
+    let originalChildren = originalComponent.definingChildren.slice(
+      changes.firstDefiningIndex,
+      changes.firstDefiningIndex + changes.newChildren.length
+    )
+
+    let serializedChildren = originalChildren.map(x => x.serialize({ forReference: true }));
+
+    serializedChildren = postProcessRef({
+      serializedComponents: serializedChildren,
+      componentName: shadowingComponent.replacementOf.componentName
+    })
+
+    // go through the defining children of shadowing component
+    // if they aren't in shadowChanges.childrenToDelete
+    // we should be able to the component they are shadoing in originalChildren
+    // so that we can modify serializedChildren to be a createComponent
+    // refering to the shadowChild
+
+    for (let shadowingChild of shadowingComponent.definingChildren) {
+      if (shadowChanges.childrenToDelete.includes(shadowingChild.componentName)) {
+        continue;
+      }
+
+      let shadowedComponentName = shadowingChild.shadows.componentName;
+
+      // Go through serialized children to find shadowedComponentName
+      // and replace it with a createdComponent referring to shadowingChild
+      let shadowedChild = this.findShadowedChildInSerializedComponents({
+        serializedComponents: serializedChildren,
+        shadowedComponentName
+      })
+
+      if (shadowedChild) {
+        for (let key in shadowedChild) {
+          delete shadowedChild[key];
+        }
+        shadowedChild.createdComponent = true;
+        shadowedChild.componentName = shadowingChild.componentName;
+      } else {
+
+        shadowChanges.childrenToDelete.push(shadowingChild.componentName)
+
+      }
+
+    }
+
+    shadowChanges.newChildren = serializedChildren;
+
+    let result = this.replaceDefiningChildrenBySugar({
+      component: shadowingComponent,
+      sugarResults: shadowChanges,
+      shadow: true,
+    });
+
+    // recurse if shadowingComponent is shadowed
+    if (shadowingComponent.shadowedBy) {
+      for (let shadowingComponent2 of shadowingComponent.shadowedBy) {
+        this.applySugarToShadows(({
+          originalComponent: shadowingComponent,
+          shadowingComponent: shadowingComponent2,
+          changes: shadowChanges,
+          componentsShadowingDeleted: result.componentsShadowingDeleted
+        }))
+      }
+    }
+
+    this.deriveChildResultsFromDefiningChildren(shadowingComponent);
+
+    if (!shadowingComponent.childLogicSatisfied) {
+      // TODO: handle case where child logic is no longer satisfied
+      console.error(`Child logic of ${shadowingComponent.componentName} is not satisfied after applying sugar`)
+    }
+
+    this.markChildAndDescendantDependenciesChanged(shadowingComponent);
+
+
+    // Because we are changing the children of shadowingComponent
+    // out of the normal sequence
+    // we need to set up the component dependencies and resolve them,
+    // as it is possible they weren't set up do to child logic
+    // previously not being satisfied
+
+    this.setUpComponentDependencies({ component: shadowingComponent });
+
+    result = this.resolveStateVariables({ component: shadowingComponent });
+
+    if (Object.keys(result.varsUnresolved).length === 0) {
+      delete this.unresolvedDependencies[shadowingComponent.componentName];
+    }
+    else {
+      this.unresolvedDependencies[shadowingComponent.componentName] = {};
+      this.addUnresolvedDependencies({
+        varsUnresolved: result.varsUnresolved,
+        component: shadowingComponent
+      });
+    }
+
+  }
+
+  findShadowedChildInSerializedComponents({ serializedComponents, shadowedComponentName }) {
+    for (let serializedComponent of serializedComponents) {
+      if (serializedComponent.preserializedName === shadowedComponentName) {
+        return serializedComponent;
+      }
+      if (serializedComponent.children) {
+        let result = this.findShadowedChildInSerializedComponents({
+          serializedComponents: serializedComponent.children,
+          shadowedComponentName
+        });
+        if (result) {
+          return result;
+        }
+      }
+    }
+
+    return;
   }
 
   createStateVariableDefinitions({ childLogic, componentClass,
@@ -2559,11 +2809,21 @@ export default class Core {
       });
       if (stateDef.set) {
         stateDef.definition = function ({ dependencyValues }) {
-          return { newValues: { [primaryStateVariableForDefinition]: stateDef.set(dependencyValues.refTargetVariable) } };
+          return {
+            newValues: {
+              [primaryStateVariableForDefinition]: stateDef.set(dependencyValues.refTargetVariable),
+            },
+            alwaysShadow: [primaryStateVariableForDefinition],
+          };
         };
       } else {
         stateDef.definition = function ({ dependencyValues }) {
-          return { newValues: { [primaryStateVariableForDefinition]: dependencyValues.refTargetVariable } };
+          return {
+            newValues: {
+              [primaryStateVariableForDefinition]: dependencyValues.refTargetVariable,
+            },
+            alwaysShadow: [primaryStateVariableForDefinition],
+          };
         };
       }
       stateDef.inverseDefinition = function ({ desiredStateVariableValues }) {
@@ -2827,6 +3087,15 @@ export default class Core {
     let childLogic = component.childLogic;
     for (let childLogicName in childLogic.logicResult.sugarResults) {
       // we have matched children to sugar
+
+      // if component shadows another component
+      // then we will not apply sugar
+      // instead, the replacements will be made when the component
+      // being shadowed has its sugar processed
+      // i.e., when we applySugarToShadows
+      if (component.shadows) {
+        continue;
+      }
 
       let childLogicComponent = childLogic.logicComponents[childLogicName];
 
@@ -3359,7 +3628,7 @@ export default class Core {
         for (let upDep of this.upstreamDependencies[componentName][stateVariable]) {
           let upstreamComponentName = upDep.upstreamComponentName;
           if (upDep.downstreamComponentNames && upDep.downstreamComponentNames.length > 1) {
-            // if the dependency depend on other downstream components
+            // if the dependency depends on other downstream components
             // just delete component from the array
             let ind = upDep.downstreamComponentNames.indexOf(componentName);
             upDep.downstreamComponentNames.splice(ind, 1);
@@ -6498,8 +6767,8 @@ export default class Core {
 
   deregisterComponent(component, recursive = true) {
     if (recursive === true) {
-      for (let child of component.activeChildren) {
-        this.deregisterComponent(child);
+      for (let childName in component.allChildren) {
+        this.deregisterComponent(component.allChildren[childName].component);
       }
     }
 
