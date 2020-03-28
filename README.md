@@ -95,7 +95,7 @@ To use this new template:
 1. Stop the docker containers.
 2. Rename the dump file to `db_template.sql`.
 3. Replace the old `DoenetCourse/docker/volumes/db_init/db_template.sql` with the newly renamed file.
-4. Delete the contents (except for `.gitignore`, `.touch`) of `DoenetCourse/docker/volumes/db/`.
+4. Delete the contents (except for `.gitignore`) of `DoenetCourse/docker/volumes/db/`.
 5. Start the containers:
 ```bash
 $ cd /path/to/local/clone/of/DoenetCourse/docker
