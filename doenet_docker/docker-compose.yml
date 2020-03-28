@@ -25,7 +25,7 @@ services:
       - 3306:3306
     volumes:
       - ./volumes/db:/var/lib/mysql
-      - ./volumes/db_init/db_template.sql:/docker-entrypoint-initdb.d/db_template.sql
+      - ./volumes/db_init:/docker-entrypoint-initdb.d
     restart: always
 
   node:
