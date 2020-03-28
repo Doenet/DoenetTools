@@ -6,6 +6,7 @@ import { faFileAlt, faFolder, faArrowUp,
   faArrowDown, faDotCircle, faEdit, faArrowRight, faFolderOpen, faLink} from '@fortawesome/free-solid-svg-icons';
 import "./branchBrowser.css";
 import SpinningLoader from './SpinningLoader';
+import styled from 'styled-components';
 
 function formatTimestamp(date) {  
   let delta = Math.round((new Date - new Date(date)) / 1000);
@@ -924,6 +925,9 @@ class Folder extends React.Component {
 class InfoPanel extends Component {
   constructor(props) {
     super(props);
+    this.addUsername = {};
+
+    this.buildInfoPanelItemDetails = this.buildInfoPanelItemDetails.bind(this);
   }
 
   buildInfoPanel() {
@@ -981,6 +985,7 @@ class InfoPanel extends Component {
   }
 
   buildInfoPanelDriveDetails() {
+    
     let itemDetails = {};
     this.infoPanelDetails = [];
     // handle when no file selected, show folder/drive info
@@ -1036,6 +1041,7 @@ class InfoPanel extends Component {
   }
 
   buildInfoPanelItemDetails(selectedItemId, selectedItemType) {
+    
     this.infoPanelDetails = [];
     let itemDetails = {};
     if (selectedItemType === "folder") {
@@ -1055,7 +1061,89 @@ class InfoPanel extends Component {
             <span>No</span><button id="publicizeRepoButton" onClick={() => this.props.publicizeRepo(selectedItemId)}>Make Public</button>
         </React.Fragment>
       }
+      //Display controls for who it's shared with
+      let sharedJSX = null;
+      if (this.props.allFolderInfo[selectedItemId].isRepo){
+        const SharedUsersContainer = styled.div`
+        display: flex;
+        flex-direction: column;
+        `;
+        const UserPanel = styled.div`
+        width: 320px;
+        padding: 10px;
+        border-bottom: 1px solid grey; 
+        `;
+     
 
+        let users = [];
+        for (let userInfo of this.props.allFolderInfo[selectedItemId].user_access_info){
+          let removeAccess = <span>Owner</span>;
+          if (userInfo.owner === "0"){
+            removeAccess = <button onClick={()=>{
+              const loadCoursesUrl='/api/removeRepoUser.php';
+              const data={
+                repoId: selectedItemId,
+                username: userInfo.username,
+              }
+              const payload = {
+                params: data
+              }
+      
+              axios.get(loadCoursesUrl,payload)
+              .then(resp=>{
+                if (resp.data.success === "1"){
+                  this.props.allFolderInfo[selectedItemId].user_access_info = resp.data.users;
+                }
+                this.forceUpdate();
+              });
+            
+            }}>X</button>
+          }
+          users.push(<UserPanel key={`userpanel${userInfo.username}`}>
+            {userInfo.firstName} {userInfo.lastName} - {userInfo.email} - {removeAccess}
+            </UserPanel>)
+        }
+
+        const AddWrapper = styled.div`
+        margin-top: 10px;
+        `;
+
+        sharedJSX = <>
+        <p className="itemDetailsKey">Sharing Settings</p>
+        <SharedUsersContainer>{users}</SharedUsersContainer>
+        <AddWrapper>Add Username 
+          <input type="text" value={this.addUsername[selectedItemId]} onChange={(e)=>{
+            e.preventDefault();
+            
+            this.addUsername[selectedItemId] = e.target.value;
+            // console.log(e.target.value);
+            // console.log(this.addUsername);
+
+          }}></input>
+        <button onClick={()=>{
+          const loadCoursesUrl='/api/addRepoUser.php';
+        const data={
+          repoId: selectedItemId,
+          username: this.addUsername[selectedItemId],
+        }
+        const payload = {
+          params: data
+        }
+
+        axios.get(loadCoursesUrl,payload)
+        .then(resp=>{
+          if (resp.data.success === "1"){
+            this.props.allFolderInfo[selectedItemId].user_access_info = resp.data.users;
+          }
+          this.addUsername = {};
+          this.forceUpdate();
+        });
+          
+        }}>Add</button>
+        </AddWrapper>
+        </>
+      }
+ 
       Object.keys(itemDetails).map(itemDetailsKey => {
         let itemDetailsValue = itemDetails[itemDetailsKey];
         // add only if content not empty
@@ -1066,12 +1154,14 @@ class InfoPanel extends Component {
         </tr>);
       })
 
+
       this.infoPanelDetails = <React.Fragment>
         <table id="infoPanelDetailsTable">
           <tbody>
             {this.infoPanelDetails}
           </tbody>
         </table>
+        {sharedJSX}
       </React.Fragment>
 
     } else if (selectedItemType === "content") {

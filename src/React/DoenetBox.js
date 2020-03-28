@@ -10,6 +10,9 @@ import DateTimePicker from 'react-datetime-picker';
 class DoenetBox extends Component {
   constructor(props) {
     super(props);
+
+    this.updateNumber = 0;
+
   this.readPriviledge = false
   this.writePriviledge = false
   this.readPriviledge = this.props.readPriviledge
@@ -60,9 +63,11 @@ class DoenetBox extends Component {
   constructList(){
 
     this.props.options.map((val)=>{
-      this.options.push(<option value={val} selected={this.value===val?true:false}>{val}</option>)
+
+      this.options.push(<option key={val+(this.updateNumber++)} value={val} >{val}</option>)
     })
-    this.selectBar = (<select onChange = {(e)=>{this.value = e.target.value;this.props.parentFunction(e.target.value)}}>{this.options}</select>)
+    this.selectBar = (<select defaultValue={this.value} onChange = {(e)=>{this.value = e.target.value;this.props.parentFunction(e.target.value)}}>{this.options}</select>)
+
   }
   // render() {
   //   return (
