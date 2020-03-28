@@ -854,3 +854,13 @@ export class PossibleNumberOfGroups extends NumberList {
   static componentType = "PossibleNumberOfGroups";
   static rendererType = "numberlist";
 }
+
+export class NDiscretizationPoints extends NumberComponent {
+  static componentType = "ndiscretizationpoints";
+  static rendererType = "number";
+}
+
+export class Periodic extends BooleanComponent {
+  static componentType = "periodic";
+  static rendererType = "boolean";
+}

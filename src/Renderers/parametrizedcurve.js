@@ -1,7 +1,7 @@
 import React from 'react';
 import DoenetRenderer from './DoenetRenderer';
 
-export default class FunctionCurve extends DoenetRenderer {
+export default class ParametrizedCurve extends DoenetRenderer {
   constructor(props) {
     super(props)
 
@@ -34,15 +34,10 @@ export default class FunctionCurve extends DoenetRenderer {
       curveAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
 
-    if (this.doenetSvData.flipFunction) {
-      this.originalCurveJXG = this.props.board.create('functiongraph', [this.doenetSvData.f], { visible: false });
-      this.reflectLine = this.props.board.create('line', [0, 1, -1], { visible: false });
-      this.curveJXG = this.props.board.create('reflection', [this.originalCurveJXG, this.reflectLine], curveAttributes);
-    } else {
-      this.curveJXG = this.props.board.create('functiongraph', [this.doenetSvData.f], curveAttributes);
-    }
-
-    this.currentFlipFunction = this.doenetSvData.flipFunction;
+    this.curveJXG = this.props.board.create('curve', [
+      this.doenetSvData.fs[0], this.doenetSvData.fs[1],
+      this.doenetSvData.parminNumeric, this.doenetSvData.parmaxNumeric
+    ], curveAttributes);
 
     return this.curveJXG;
 
@@ -51,12 +46,6 @@ export default class FunctionCurve extends DoenetRenderer {
   deleteGraphicalObject() {
     this.props.board.removeObject(this.curveJXG);
     delete this.curveJXG;
-    if (this.reflectLine !== undefined) {
-      this.props.board.removeObject(this.reflectLine);
-      delete this.reflectLine;
-      this.props.board.removeObject(this.originalCurveJXG);
-      delete this.originalCurveJXG;
-    }
   }
 
   componentWillUnmount() {
@@ -80,22 +69,6 @@ export default class FunctionCurve extends DoenetRenderer {
       return;
     }
 
-    if (this.currentFlipFunction !== this.doenetSvData.flipFunction) {
-      // redraw entire curve if flip changed
-      this.deleteGraphicalObject();
-      let result = this.createGraphicalObject();
-
-      if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
-        if (this.doenetSvData.flipFunction) {
-          this.props.board.itemsRenderedLowQuality[this._key] = this.originalCurveJXG;
-        } else {
-          this.props.board.itemsRenderedLowQuality[this._key] = this.curveJXG;
-        }
-      }
-
-      return result;
-    }
-
     if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
       this.props.board.itemsRenderedLowQuality[this._key] = this.curveJXG;
     }
@@ -107,26 +80,23 @@ export default class FunctionCurve extends DoenetRenderer {
     this.curveJXG.visProp["visible"] = visible;
     this.curveJXG.visPropCalc["visible"] = visible;
 
-    if (this.doenetSvData.flipFunction) {
-      this.originalCurveJXG.Y = this.doenetSvData.f;
-      this.originalCurveJXG.needsUpdate = true;
-      this.originalCurveJXG.updateCurve();
-      if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
-        this.props.board.itemsRenderedLowQuality[this._key] = this.originalCurveJXG;
-      }
-    } else {
-      this.curveJXG.Y = this.doenetSvData.f;
-    }
+
+    this.curveJXG.X = this.doenetSvData.fs[0];
+    this.curveJXG.Y = this.doenetSvData.fs[1];
+
+    this.curveJXG.minX = x => this.doenetSvData.parminNumeric;
+    this.curveJXG.maxX = x => this.doenetSvData.parmaxNumeric;
+
+
 
     this.curveJXG.needsUpdate = true;
     this.curveJXG.updateCurve();
-    if (this.curveJXG.hasLabel) {
+    if(this.curveJXG.hasLabel) {
       this.curveJXG.label.needsUpdate = true;
       this.curveJXG.label.visPropCalc.visible = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
       this.curveJXG.label.update();
     }
     this.props.board.updateRenderer();
-
   }
 
 

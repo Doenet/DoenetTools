@@ -1,5 +1,4 @@
 import Curve from './Curve';
-import me, { filterRegExp } from 'math-expressions';
 
 export default class FunctionCurve extends Curve {
   static componentType = "functioncurve";
@@ -7,8 +6,8 @@ export default class FunctionCurve extends Curve {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-
     properties.flipFunction = { default: false, forRenderer: true };
+    properties.nDiscretizationPoints = { default: 500 };
     properties.variables = {
       componentType: "math",
       entryPrefixes: ["var"],
@@ -17,10 +16,6 @@ export default class FunctionCurve extends Curve {
         variableName: "nVariables"
       }],
       propagateToDescendants: true,
-      // distributeArrayEntriesToChildren: {
-      //   componentTypes: ["function"],
-      //   childProperty: "variable"
-      // }
     }
     return properties;
   }
@@ -46,36 +41,6 @@ export default class FunctionCurve extends Curve {
     let stateVariableDefinitions = super.returnStateVariableDefinitions({ numerics });
 
     delete stateVariableDefinitions.childrenToRender;
-
-    stateVariableDefinitions.styleDescription = {
-      public: true,
-      componentType: "text",
-      returnDependencies: () => ({
-        selectedStyle: {
-          dependencyType: "stateVariable",
-          variableName: "selectedStyle",
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-
-
-        let curveDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          curveDescription += "thick ";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          curveDescription += "thin ";
-        }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          curveDescription += "dashed ";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          curveDescription += "dotted ";
-        }
-
-        curveDescription += `${dependencyValues.selectedStyle.lineColor} `;
-
-        return { newValues: { styleDescription: curveDescription } };
-      }
-    }
 
     stateVariableDefinitions.nVariables = {
       returnDependencies: () => ({}),
@@ -107,6 +72,10 @@ export default class FunctionCurve extends Curve {
         flipFunction: {
           dependencyType: "stateVariable",
           variableName: "flipFunction"
+        },
+        nDiscretizationPoints: {
+          dependencyType: "stateVariable",
+          variableName: "nDiscretizationPoints"
         }
       }),
       definition: ({ dependencyValues }) => ({
@@ -140,7 +109,7 @@ export default class FunctionCurve extends Curve {
             let minT = 0;
             let maxT = 1;
 
-            let Nsteps = 500;
+            let Nsteps = dependencyValues.nDiscretizationPoints;
             let delta = (maxT - minT) / Nsteps;
 
             // sample Nsteps values of x between  [minT, maxT] 
@@ -198,14 +167,6 @@ export default class FunctionCurve extends Curve {
 
 
     return stateVariableDefinitions;
-  }
-
-  nearestPoint({ x1, x2, x3 }) {
-
-    if (x1 === undefined || x2 === undefined) {
-      return {};
-    }
-
   }
 
 }

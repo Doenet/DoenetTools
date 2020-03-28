@@ -23,7 +23,7 @@ export default class Curve extends GraphicalComponent {
       properties.parameter = { default: me.fromAst('t'), propagateToDescendants: true };
       properties.parmin = { default: me.fromAst(-10), propagateToDescendants: true };
       properties.parmax = { default: me.fromAst(10), propagateToDescendants: true };
-      properties.flipFunction = { default: false, propagateToDescendants: true };
+      // properties.flipFunction = { default: false, propagateToDescendants: true };
 
       properties.variables = {
         componentType: "math",
@@ -233,6 +233,22 @@ export default class Curve extends GraphicalComponent {
         }
       } else {
 
+        let parametrizedCurveName = createUniqueName("parametrizedcurve", idRng);
+
+        let variableForParameterFunctions = {
+          componentType: "variable",
+          children: [{
+            componentType: "ref",
+            children: [{
+              componentType: "reftarget",
+              state: { refTargetName: parametrizedCurveName }
+            },
+            {
+              componentType: "prop",
+              state: { variableName: "parameter" }
+            }]
+          }]
+        }
         if (rhsByPiece.length === 0) {
           // multiple pieces with no equal sign
           // each piece is a function for the coresponding variable
@@ -241,12 +257,13 @@ export default class Curve extends GraphicalComponent {
           for (let i = 0; i < lhsByPiece.length; i++) {
             functionChildren.push({
               componentType: "function",
-              children: lhsByPiece[i]
+              children: [variableForParameterFunctions, ...lhsByPiece[i]]
             });
           }
           newChildren = [{
             componentType: "parametrizedcurve",
-            children: functionChildren
+            children: functionChildren,
+            doenetAttributes: { componentName: parametrizedCurveName },
           }]
 
         } else {
@@ -256,25 +273,26 @@ export default class Curve extends GraphicalComponent {
           // where either lhs or rhs is the string corresponding to one of the variables
           let variablesLeft = new Set([]);
           let variableNames = dependencyValues.variables.map(x => x.tree);
-          variableNames.forEach(x => variablesLeft.add(x.tree));
+          variableNames.forEach(x => variablesLeft.add(x));
+
 
           let variableOrder = {};
           let childrenToBeOrdered = [];
           for (let i = 0; i < lhsByPiece.length; i++) {
-            let parametrizationChildren = [];
+            let functionChildren = [variableForParameterFunctions];
             let varName = getVarName(lhsByPiece[i]);
             if (variablesLeft.has(varName)) {
               let varInd = variableNames.indexOf(varName);
               variableOrder[varInd] = i;
               variablesLeft.delete(varName);
-              parametrizationChildren.push(...rhsByPiece[i]);
+              functionChildren.push(...rhsByPiece[i]);
             } else {
               varName = getVarName(rhsByPiece[i]);
               if (variablesLeft.has(varName)) {
                 let varInd = variableNames.indexOf(varName);
                 variableOrder[varInd] = i;
                 variablesLeft.delete(varName);
-                parametrizationChildren.push(...lhsByPiece[i]);
+                functionChildren.push(...lhsByPiece[i]);
               } else {
                 console.log("General form of parametric curve not implemented")
                 return { success: false }
@@ -283,7 +301,7 @@ export default class Curve extends GraphicalComponent {
 
             childrenToBeOrdered.push({
               componentType: "function",
-              children: parametrizationChildren
+              children: functionChildren,
             });
           }
 
@@ -295,6 +313,7 @@ export default class Curve extends GraphicalComponent {
           newChildren = [{
             componentType: "parametrizedcurve",
             children: orderedChildren,
+            doenetAttributes: { componentName: parametrizedCurveName },
           }]
         }
       }
