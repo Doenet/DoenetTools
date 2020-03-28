@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   apache:
-    build: '../docker/apache'
+    build: '../doenet_docker/apache'
     ports:
       - 80:80
       # - 443:443
@@ -14,16 +14,16 @@ services:
     restart: always
 
   php:
-    build: '../docker/php'
+    build: '../doenet_docker/php'
     volumes:
       - ../dist_local:/usr/local/apache2/htdocs
     restart: always
 
   mysql:
-    build: '../docker/mysql'
+    build: '../doenet_docker/mysql'
     ports:
       - 3306:3306
     volumes:
-      - ../docker/volumes/db:/var/lib/mysql
-      - ../docker/volumes/db_init/db_template.sql:/docker-entrypoint-initdb.d/db_template.sql
+      - ../doenet_docker/volumes/db:/var/lib/mysql
+      - ../doenet_docker/volumes/db_init/db_template.sql:/docker-entrypoint-initdb.d/db_template.sql
     restart: always

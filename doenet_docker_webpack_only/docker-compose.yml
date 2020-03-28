@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   node:
-    build: '../docker/node'
+    build: '../doenet_docker/node'
     # image: node:13.8
     user: 'node'
     working_dir: /home/node/app
