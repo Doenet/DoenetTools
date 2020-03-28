@@ -153,4 +153,3 @@ module.exports = {
     // openPage: "protected",
   }
 };
-
