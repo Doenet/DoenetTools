@@ -9,7 +9,9 @@ export default ({ children, heading, id, onDrop, onDragOver, onDropEnter, onDrop
     ref: dropRef,
     onDropEnter: () => onDropEnter(id),
     onDrop: onDrop,
-    onDragOver: () => onDragOver(id),
+    onDragOver: () => {  
+      onDragOver(id)
+    },
     onDropExit: onDropExit
   });
   return (

@@ -43,6 +43,7 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
   }
 
   const onDraggableDragOverCb = (listId) => {
+        
     onDraggableDragOver(listId, "parent")
   }
 
@@ -69,7 +70,7 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
   )
 })
 
-export const LeafNode = memo(({ id, data, style, onDragStart, onDragOver }) => {
+export const LeafNode = memo(({ id, data, styles, onDragStart, onDragOver }) => {
   const Icon = Icons['CloseSquareO']
 
   const onDraggableDragOverCb = (listId) => {
@@ -84,7 +85,7 @@ export const LeafNode = memo(({ id, data, style, onDragStart, onDragOver }) => {
     <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb}>
       <Frame>
         {/* <Icon style={{ ...toggle, opacity: 0.3 }} /> */}
-        <Title style={style}>{data}</Title>
+        <Title style={styles}>{data}</Title>
       </Frame>
     </DragItem>    
   )

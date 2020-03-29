@@ -12,11 +12,12 @@ export default ({ children, dragEffect, id, onDragStart, onDragOver }) => {
     ref: dragRef,
     onDragStart: (ev) => {
       onDragStart(id, ev);
-      window.requestAnimationFrame(() => { ev.target.style.visibility = "hidden"; });
+      let dragImage = document.createElement("img");
+      dragImage.style.visibility = "hidden";
+      event.dataTransfer.setDragImage(dragImage, 0, 0);
     },
     onDragOver: () => onDragOver(id),
     onDragEnd: (ev) => {
-      window.requestAnimationFrame(() => { ev.target.style.visibility = "visible"; });
     }
   });
 

@@ -11,29 +11,11 @@ export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssign
   const [currentDraggedObject, setCurrentDraggedObject] = useState({id: null, ev: null});
   const [headings, setHeadings] = useState(headingsInfo);
   const [assignments, setAssignments] = useState(assignmentsInfo);
-  const [dropTimer, setDropTimer] = useState(null);
 
   useEffect(() => {
     setHeadings(headingsInfo);
     setAssignments(assignmentsInfo);
   }, [headingsInfo, assignmentsInfo])
-
-  // let height = 0
-  // let transitions = {};
-  // for (let [listId, listVal] of Object.entries(list)) {
-  //   const transition = useTransition(
-  //     listVal.map((data, i) => ({ ...data, y: (height += 1) - 1 })),
-  //     d => d.id,
-  //     {
-  //       from: { opacity: 0 },
-  //       leave: { height: 0, opacity: 0 },
-  //       enter: ({ y }) => ({ y, opacity: 1 }),
-  //       update: ({ y }) => ({ y })
-  //     }
-  //   );
-  //   transitions[listId] = transition;
-  // }
-
 
   const onDragStart = (draggedId, draggedType, ev) => {
     setCurrentDraggedObject({id: draggedId, type: draggedType, ev: ev});
@@ -42,9 +24,6 @@ export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssign
   const onDraggableDragOver = (id, type) => {
     // draggedType must be equal to dragOver type
     if (type != currentDraggedObject.type) return;
-
-    console.log(id);
-    console.log(type);
 
     const draggedOverItemInfo = type == "leaf" ? assignments : headings;
     const currentDraggedObjectInfo = currentDraggedObject.type == "leaf" ? assignments : headings;
@@ -61,7 +40,6 @@ export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssign
     } 
     
     const headingsChildrenListKey = type == "leaf" ? "assignmentId" : "headingId";
-    // console.log(headings[draggedOverItemParentListId][headingsChildrenListKey])
     // filter out the currently dragged item
     const items = headings[draggedOverItemParentListId][headingsChildrenListKey].filter(itemId => itemId != currentDraggedObject.id);
     // add the dragged item after the dragged over item
@@ -89,7 +67,6 @@ export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssign
     }
     const currentList = headings[listId][headingsChildrenListKey];
     currentList.push(currentDraggedObject.id);
-    window.requestAnimationFrame(() => { currentDraggedObject.ev.target.style.visibility = "hidden"; });
     setHeadings((prevHeadings) => {
       prevHeadings[previousParentId][headingsChildrenListKey] = previousList;
       prevHeadings[listId][headingsChildrenListKey] = currentList;
@@ -109,40 +86,32 @@ export const TreeView = ({headingsInfo, assignmentsInfo, updateHeadingsAndAssign
   }, [currentDraggedObject.id])
 
   const onDrop = () => {
-    // window.requestAnimationFrame(() => { currentDraggedObject.ev.target.style.visibility = "visible"; });
     setCurrentDraggedObject({id: null, ev: null});
     clearInterval(dropTimer);
     updateHeadingsAndAssignments(headings, assignments);
   }
 
   const onDropEnter = (listId) => {
-    if (currentDraggedObject.type == "leaf") {
-      return;
-    }
-    clearInterval(dropTimer);
-    let newTimer = setTimeout(function() {
-        // console.log(listId)
-        // onDroppableDragOver(listId)
-    }, 2000);
-    setDropTimer(newTimer);
+    
   }
 
   const onDropExit = () => {
-    clearInterval(dropTimer);
-    setDropTimer(null);
+
   }
+
+  console.log(currentDraggedObject.id)
 
   return (
     <div className="App">
       <div style={{ "textAlign": "left", "marginTop":"2em"}}>
         <Global />
-        {buildTreeStructure(headings, assignments, onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropExit)}
+        {buildTreeStructure(headings, assignments, onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropExit, currentDraggedObject.id)}
       </div>
     </div>
   );
 }
 
-function buildTreeStructure(headingsInfo, assignmentsInfo, onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropExit) {
+function buildTreeStructure(headingsInfo, assignmentsInfo, onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropExit, currentDraggedId) {
   let baseLevelHeadings = headingsInfo["UltimateHeader"]["headingId"];
   
   let treeStructure = <React.Fragment>
@@ -162,7 +131,7 @@ function buildTreeStructure(headingsInfo, assignmentsInfo, onDragStart, onDragga
       {// iterate through base level headings to generate tree recursively
       baseLevelHeadings.map(baseHeadingId => {
         return buildTreeStructureHelper(baseHeadingId, headingsInfo, assignmentsInfo, 
-          onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropExit);
+          onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropExit, currentDraggedId);
       })}
       </ParentNode>
     </div>
@@ -172,7 +141,8 @@ function buildTreeStructure(headingsInfo, assignmentsInfo, onDragStart, onDragga
 }
 
 function buildTreeStructureHelper(parentHeadingId, headingsInfo, assignmentsInfo, 
-  onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropExit) {
+  onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropExit, currentDraggedId) {
+
   let subTree = <ParentNode 
     id={parentHeadingId}
     key={parentHeadingId} 
@@ -186,7 +156,7 @@ function buildTreeStructureHelper(parentHeadingId, headingsInfo, assignmentsInfo
       { // iterate through children headings to generate tree recursively
       headingsInfo[parentHeadingId]["headingId"].map(headingId => {
         return buildTreeStructureHelper(headingId, headingsInfo, assignmentsInfo,
-          onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropExit);
+          onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropExit, currentDraggedId);
       })}
       { // iterate through children assigments to generate tree recursively
       headingsInfo[parentHeadingId]["assignmentId"].map((assignmentId, index) => {
@@ -195,7 +165,12 @@ function buildTreeStructureHelper(parentHeadingId, headingsInfo, assignmentsInfo
           id={assignmentId} 
           key={assignmentId} 
           data={assignmentsInfo[assignmentId]["name"]} 
-          style={{ color: '#37ceff' }}  
+          styles={{
+            color: '#37ceff',
+            border: currentDraggedId == assignmentId ? "2px dotted #000" : "0px",
+            background: currentDraggedId == assignmentId ? "rgba(255, 255, 255, 0.3)" : "none",
+            padding: currentDraggedId == assignmentId ? "0px 5px" : "0px",
+          }}
           onDragStart={onDragStart} 
           onDragOver={onDraggableDragOver} />
       })}

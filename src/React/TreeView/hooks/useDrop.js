@@ -27,13 +27,13 @@ const useDrop = ({ ref, onDrop, onDragOver, onDropEnter, onDropExit }) => {
   useEffect(() => {
     const elem = ref.current;
     if (elem) {
-      elem.addEventListener("dragenter", dropEnterCb);
-      elem.addEventListener("dragexit", dropExitCb);
+      // elem.addEventListener("dragenter", dropEnterCb);
+      // elem.addEventListener("dragexit", dropExitCb);
       elem.addEventListener("dragover", dropOverCb);
       elem.addEventListener("drop", dropCb);
       return () => {
-        elem.removeEventListener("dragenter", dropEnterCb);
-        elem.removeEventListener("dragexit", dropExitCb);
+        // elem.removeEventListener("dragenter", dropEnterCb);
+        // elem.removeEventListener("dragexit", dropExitCb);
         elem.removeEventListener("dragover", dropOverCb);
         elem.removeEventListener("drop", dropCb);
       };
