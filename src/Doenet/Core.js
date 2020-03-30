@@ -1828,12 +1828,14 @@ export default class Core {
         // (at later sugar changes could add/delete defining changes)
         if (child.shadowedBy) {
           for (let shadowingComponent of child.shadowedBy) {
-            this.applySugarToShadows(({
-              originalComponent: child,
-              shadowingComponent,
-              changes,
-              componentsShadowingDeleted: result.componentsShadowingDeleted
-            }))
+            if (!shadowingComponent.shadows.propVariable) {
+              this.applySugarToShadows(({
+                originalComponent: child,
+                shadowingComponent,
+                changes,
+                componentsShadowingDeleted: result.componentsShadowingDeleted
+              }))
+            }
           }
         }
 
@@ -1841,7 +1843,7 @@ export default class Core {
 
         if (!component.childLogicSatisfied) {
           // TODO: handle case where child logic is no longer satisfied
-          console.error(`Child logic of ${component.componentName} is not satisfied after applying sugar`)
+          console.error(`Child logic of ${component.componentName} is not satisfied after applying sugar to children`)
         }
 
         this.markChildAndDescendantDependenciesChanged(child);
@@ -1861,12 +1863,14 @@ export default class Core {
       // (at later sugar changes could add/delete defining changes)
       if (component.shadowedBy) {
         for (let shadowingComponent of component.shadowedBy) {
-          this.applySugarToShadows(({
-            originalComponent: component,
-            shadowingComponent,
-            changes,
-            componentsShadowingDeleted: result.componentsShadowingDeleted
-          }))
+          if (!shadowingComponent.shadows.propVariable) {
+            this.applySugarToShadows(({
+              originalComponent: component,
+              shadowingComponent,
+              changes,
+              componentsShadowingDeleted: result.componentsShadowingDeleted
+            }))
+          }
         }
       }
     }
@@ -2092,12 +2096,14 @@ export default class Core {
     // recurse if shadowingComponent is shadowed
     if (shadowingComponent.shadowedBy) {
       for (let shadowingComponent2 of shadowingComponent.shadowedBy) {
-        this.applySugarToShadows(({
-          originalComponent: shadowingComponent,
-          shadowingComponent: shadowingComponent2,
-          changes: shadowChanges,
-          componentsShadowingDeleted: result.componentsShadowingDeleted
-        }))
+        if (!shadowingComponent2.shadows.propVariable) {
+          this.applySugarToShadows(({
+            originalComponent: shadowingComponent,
+            shadowingComponent: shadowingComponent2,
+            changes: shadowChanges,
+            componentsShadowingDeleted: result.componentsShadowingDeleted
+          }))
+        }
       }
     }
 
@@ -2105,7 +2111,7 @@ export default class Core {
 
     if (!shadowingComponent.childLogicSatisfied) {
       // TODO: handle case where child logic is no longer satisfied
-      console.error(`Child logic of ${shadowingComponent.componentName} is not satisfied after applying sugar`)
+      console.error(`Child logic of ${shadowingComponent.componentName} is not satisfied after applying sugar in shadows`)
     }
 
     this.markChildAndDescendantDependenciesChanged(shadowingComponent);
@@ -4518,32 +4524,28 @@ export default class Core {
         component.state[varName].value = component.state[varName].getValueFromArrayValues();
       }
 
-      if (valuesChanged[varName]) {
-        this.recordActualChangeInUpstreamDependencies({
-          component, varName,
-          changes: valuesChanged[varName] // so far, just in case is an array state variable
-        })
+    }
 
-        if (component.state[varName].isArray) {
-          let arrayVarNamesChanged = [];
-          for (let arrayKeyChanged in valuesChanged[varName].arrayKeysChanged) {
-            arrayVarNamesChanged.push(...component.state[varName].allVarNamesThatIncludeArrayKey(arrayKeyChanged))
-          }
-          for (let arrayVarName of arrayVarNamesChanged) {
-            this.recordActualChangeInUpstreamDependencies({
-              component, varName: arrayVarName,
-            })
-          }
+    for (let varName in valuesChanged) {
+      this.recordActualChangeInUpstreamDependencies({
+        component, varName,
+        changes: valuesChanged[varName] // so far, just in case is an array state variable
+      })
+
+      if (component.state[varName].isArray) {
+        let arrayVarNamesChanged = [];
+        for (let arrayKeyChanged in valuesChanged[varName].arrayKeysChanged) {
+          arrayVarNamesChanged.push(...component.state[varName].allVarNamesThatIncludeArrayKey(arrayKeyChanged))
         }
-
-        if (component.state[varName].isArrayEntry) {
+        for (let arrayVarName of arrayVarNamesChanged) {
           this.recordActualChangeInUpstreamDependencies({
-            component, varName: component.state[varName].arrayStateVariable,
+            component, varName: arrayVarName,
           })
         }
       }
 
     }
+
 
     return stateVarObj.value;
 
@@ -4807,7 +4809,7 @@ export default class Core {
         let depComponent = this.components[dep.downstreamComponentName];
         value = depComponent.state[dep.downstreamVariableName].value;
 
-        // if have valuesChanged, then must hve dep.downstreamVariableName
+        // if have valuesChanged, then must have dep.downstreamVariableName
         // so don't bother checking if it exists
         if (dep.valuesChanged && dep.valuesChanged[dep.downstreamVariableName].changed) {
           changes[dep.dependencyName] = { valuesChanged: dep.valuesChanged };
@@ -6192,6 +6194,12 @@ export default class Core {
     for (let varName in component.state) {
 
       let stateVarObj = component.state[varName];
+
+      if (stateVarObj.isArrayEntry) {
+        // skip array entries, as will get them from whole array
+        // (and they don't have a returnDependencies function directly)
+        continue;
+      }
 
       let stateValues = {};
       if (stateVarObj.stateVariablesDeterminingDependencies) {
@@ -7983,6 +7991,8 @@ export default class Core {
 
     // console.log(`request component changes`);
     // console.log(instruction);
+    // console.log('overall workspace')
+    // console.log(JSON.parse(JSON.stringify(workspace)))
 
     let component = this._components[instruction.componentName];
     let stateVariable = instruction.stateVariable;
@@ -7990,24 +8000,23 @@ export default class Core {
     if (workspace[instruction.componentName] === undefined) {
       workspace[instruction.componentName] = {};
     }
-    let stateVariableWorkspace = workspace[instruction.componentName][stateVariable];
-    if (stateVariableWorkspace === undefined) {
-      stateVariableWorkspace = workspace[instruction.componentName][stateVariable] = {};
-    }
+
 
     let inverseDefinitionArgs = this.getStateVariableDependencyValues({ component, stateVariable });
     inverseDefinitionArgs.componentInfoObjects = this.componentInfoObjects;
     inverseDefinitionArgs.initialChange = initialChange;
     inverseDefinitionArgs.stateValues = component.stateValues;
-    inverseDefinitionArgs.workspace = stateVariableWorkspace;
     inverseDefinitionArgs.overrideFixed = instruction.overrideFixed;
 
     let stateVarObj = component.state[stateVariable];
     let inverseDefinitionFunction = stateVarObj.inverseDefinition;
 
+    let stateVariableForWorkspace = stateVariable;
+
     if (stateVarObj.isArrayEntry) {
       let arrayStateVariable = stateVarObj.arrayStateVariable;
       inverseDefinitionFunction = component.state[arrayStateVariable].inverseDefinition;
+      stateVariableForWorkspace = arrayStateVariable;
 
       let desiredValuesForArray = {};
       if (stateVarObj.arrayKeys.length === 1) {
@@ -8023,6 +8032,12 @@ export default class Core {
     } else {
       inverseDefinitionArgs.desiredStateVariableValues = { [stateVariable]: instruction.value };
     }
+
+    let stateVariableWorkspace = workspace[instruction.componentName][stateVariableForWorkspace];
+    if (stateVariableWorkspace === undefined) {
+      stateVariableWorkspace = workspace[instruction.componentName][stateVariableForWorkspace] = {};
+    }
+    inverseDefinitionArgs.workspace = stateVariableWorkspace;
 
 
     if (instruction.additionalStateVariableValues) {

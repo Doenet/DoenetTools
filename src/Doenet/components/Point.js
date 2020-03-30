@@ -200,7 +200,7 @@ export default class Point extends GraphicalComponent {
           coordsShadow: { variablesToCheck: ["coords", "coordsShadow"] }
         }
       }),
-      inverseDefinition: function ({desiredStateVariableValues}) {
+      inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
@@ -264,7 +264,7 @@ export default class Point extends GraphicalComponent {
             nDimensions = 1;
           }
 
-          // if based on coords, should check to for actual change
+          // if based on coords, should check for actual change
           // as frequently the dimension doesn't change
           return { newValues: { nDimensions }, checkForActualChange: ["nDimensions"] };
 

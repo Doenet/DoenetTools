@@ -1164,6 +1164,7 @@ class ChildLogicOperator extends ChildLogicBase {
     let repeatSugar = false;
     let foundSugarResults = false;
     let newPreviouslyMatched = previouslyMatched.slice(0); // copy
+    let sugarsMatchedByPropositionName = {};
     for (let proposition of this.propositions) {
       // recurse
       let result = proposition.applyLogic({
@@ -1197,6 +1198,7 @@ class ChildLogicOperator extends ChildLogicBase {
         if (result.repeatSugar === true) {
           repeatSugar = true;
         }
+        sugarsMatchedByPropositionName[proposition.name] = result.sugarResults;
       }
 
     }
@@ -1250,11 +1252,9 @@ class ChildLogicOperator extends ChildLogicBase {
 
         // chose just the sugar from the proposition chosen
         let nameofMinIndex = allResults[propositionOfMinIndex].name;
-        if (nameofMinIndex in sugarResults) {
+        if(sugarsMatchedByPropositionName[nameofMinIndex]) {
           foundSugarResults = true;
-          sugarResults = {
-            [nameofMinIndex]: sugarResults[nameofMinIndex],
-          }
+          sugarResults = sugarsMatchedByPropositionName[nameofMinIndex];
         } else {
           foundSugarResults = false;
           sugarResults = {};
