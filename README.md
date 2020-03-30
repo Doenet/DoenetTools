@@ -46,9 +46,18 @@ $ npm install
 ```bash
 $ npm start
 ```
-This may take a while since it must build the containers before you can use them.
 
-You can tell it is ready when the node container outputs a ton of text. It will output similar text after each re-packing.
+**Yay, they are starting!**
+
+The first time it is run, this does a few things.
+1. Download the base containers from Docker Hub. This will take a while since they are large.
+2. Build Doenet's environment on top of the base containers.
+3. Start the containers in Doenet's composition.
+4. Apache and PHP start. These are pretty quick, although if you try to access the website now, you wont get much since seeing the project depends on the MySQL database and the Webpacked project.
+5. MySQL runs some first time setup. It sets up a new database and imports the database template that you downloaded when cloning this project.
+  a. You can tell this is done when the text `Version: '5.7.29'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server (GPL)` appears, signaling that mysql is done starting and is ready for connections on port 3306.
+6. Webpack (Node) runs a full pack on the project. This will be done every time the containers start. And it takes a while. Once the first pack is done, subsequent packs usually happen very quickly.
+  a. You can tell the initial pack is done when the terminal is spammed with logs from the Node container.
 
 ### 5. Stopping the containers
 When you are not using them, you can stop the docker containers by going to the terminal you started them with and using `ctrl+c`. Let the containers stop gracefully. Keep in mind that Webpack takes a while to get going, so you probably don't want to stop the containers until you are done for the day. Or you can leave them running indefinitely.
