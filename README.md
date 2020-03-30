@@ -85,20 +85,20 @@ If port 3306 is in use, you can change the port in the `docker-compose.yml` file
 ### Create a new database template
 If you want to save your current database as a template, run the following in bash in your mysql container:
 
-Note: Make sure you don't already have a file in `DoenetCourse/docker/volumes/db_init/dbdump.sql`. If you do, this command will overwrite it!
+Note: Make sure you don't already have a file in `DoenetCourse/doenet_docker/volumes/db_init/dbdump.sql`. If you do, this command will overwrite it!
 ```bash
 $ mysqldump --all-databases --password=helloworld > /docker-entrypoint-initdb.d/dbdump.sql
 ```
-You can then grab this file from `DoenetCourse/docker/volumes/db_init/dbdump.sql`.
+You can then grab this file from `DoenetCourse/doenet_docker/volumes/db_init/dbdump.sql`.
 
 To use this new template:
 1. Stop the docker containers.
 2. Rename the dump file to `db_template.sql`.
-3. Replace the old `DoenetCourse/docker/volumes/db_init/db_template.sql` with the newly renamed file.
-4. Delete the contents (except for `.gitignore`) of `DoenetCourse/docker/volumes/db/`.
+3. Replace the old `DoenetCourse/doenet_docker/volumes/db_init/db_template.sql` with the newly renamed file.
+4. Delete the contents (except for `.gitignore`) of `DoenetCourse/doenet_docker/volumes/db/`.
 5. Start the containers:
 ```bash
-$ cd /path/to/local/clone/of/DoenetCourse/docker
+$ cd /path/to/local/clone/of/DoenetCourse/doenet_docker
 $ docker-compose up --build
 ```
 6. Pet your cat (Optional). :3
@@ -137,7 +137,7 @@ $ npm run webapck
   - We use MySQL 7.7.26 in Docker.
 - Have your server serve from `/path/to/DoenetCourse/dist_local/`.
   - Use port 3000.
-- Initialize your MySQL database with `/path/to/DoenetCourse/docker/volumes/db_init/db_template.sql`.
+- Initialize your MySQL database with `/path/to/DoenetCourse/doenet_docker/volumes/db_init/db_template.sql`.
   - Use the default port. (3306)
 - Run Webpack. Or don't.
   - Use `$ npm run webpack` to run Webpack on your normal namespace (not Docker).  
