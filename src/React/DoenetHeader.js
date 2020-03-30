@@ -93,7 +93,6 @@ class DoenetHeader extends Component {
       "Course" : "/course/",
       "Documentation" : "/docs/",
       "Gradebook": "/gradebook/",
-      "Team": "/team/",
     }
 
   }
