@@ -47,6 +47,7 @@ const Frame = styled('div')`
   vertical-align: middle;
   color: white;
   fill: white;
+  background: ${props => props.draggedOver ? "rgba(255, 255, 255, 0.3)" : "none" };
 `
 
 const Title = styled('span')`
@@ -57,7 +58,7 @@ const Content = styled(animated.div)`
   will-change: transform, opacity, height;
   margin-left: 6px;
   padding: 0px 0px 0px 14px;
-  border-left: 1px dashed rgba(255, 255, 255, 0.4);
+  border-left: 1px dashed ${ props => props.draggedover == "false" ? "rgba(255, 255, 255, 0.4)" : "#37ceff" };
   overflow: 
 `
 

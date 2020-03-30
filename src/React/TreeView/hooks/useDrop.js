@@ -19,21 +19,29 @@ const useDrop = ({ ref, onDrop, onDragOver, onDropEnter, onDropExit }) => {
   const dropEnterCb = ev => {
     ev.preventDefault();
     onDropEnter && onDropEnter();
+    ev.stopPropagation();
   };
   const dropExitCb = ev => {
     ev.preventDefault();
-    onDropExit && onDropExit();
+    var rect = ref.current.getBoundingClientRect();
+
+    // Check the mouseEvent coordinates are outside of the rectangle
+    if(ev.x > rect.left + rect.width || ev.x < rect.left
+    || ev.y > rect.top + rect.height || ev.y < rect.top) {
+      onDropExit && onDropExit();
+    }
+    // ev.stopPropagation();
   };
   useEffect(() => {
     const elem = ref.current;
     if (elem) {
-      // elem.addEventListener("dragenter", dropEnterCb);
-      // elem.addEventListener("dragexit", dropExitCb);
+      elem.addEventListener("dragenter", dropEnterCb);
+      elem.addEventListener("dragleave", dropExitCb);
       elem.addEventListener("dragover", dropOverCb);
       elem.addEventListener("drop", dropCb);
       return () => {
-        // elem.removeEventListener("dragenter", dropEnterCb);
-        // elem.removeEventListener("dragexit", dropExitCb);
+        elem.removeEventListener("dragenter", dropEnterCb);
+        elem.removeEventListener("dragleave", dropExitCb);
         elem.removeEventListener("dragover", dropOverCb);
         elem.removeEventListener("drop", dropCb);
       };
