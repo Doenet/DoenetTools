@@ -45,7 +45,7 @@ export class Label extends TextComponent {
 
 export class ChildNumber extends Integer {
   static componentType = "childnumber";
-  static rendererType = "integer";
+  static rendererType = "number";
 }
 
 export class Prefill extends TextComponent {
@@ -238,12 +238,12 @@ export class Step extends MathComponent {
 
 export class NumRows extends Integer {
   static componentType = "numrows";
-  static rendererType = "integer";
+  static rendererType = "number";
 }
 
 export class NumColumns extends Integer {
   static componentType = "numcolumns";
-  static rendererType = "integer";
+  static rendererType = "number";
 }
 
 export class RowNum extends TextComponent {
@@ -432,7 +432,7 @@ export class Variant extends TextFromSingleStringChild {
 
 export class NVariants extends Integer {
   static componentType = "nvariants";
-  static rendererType = "integer";
+  static rendererType = "number";
 }
 
 export class UniqueVariants extends BooleanComponent {
@@ -447,7 +447,7 @@ export class Seed extends TextFromSingleStringChild {
 
 export class NumberToSelect extends Integer {
   static componentType = "numbertoselect";
-  static rendererType = "integer";
+  static rendererType = "number";
 }
 
 export class WithReplacement extends BooleanComponent {
@@ -457,7 +457,7 @@ export class WithReplacement extends BooleanComponent {
 
 export class DisplayDigits extends Integer {
   static componentType = "displaydigits";
-  static rendererType = "integer";
+  static rendererType = "number";
 }
 
 export class SelectWeight extends NumberComponent {
@@ -512,7 +512,7 @@ export class AnimationInterval extends NumberComponent {
 
 export class InitialSelectedIndex extends Integer {
   static componentType = "initialselectedindex";
-  static rendererType = "integer";
+  static rendererType = "number";
 }
 
 export class Numeric extends BooleanComponent {
@@ -537,7 +537,7 @@ export class Z extends MathComponent {
 
 export class Layer extends Integer {
   static componentType = "layer";
-  static rendererType = "integer";
+  static rendererType = "number";
 }
 
 export class RenderAsAcuteAngle extends BooleanComponent {
@@ -582,7 +582,7 @@ export class Tolerance extends NumberComponent {
 
 export class MaxIterations extends Integer {
   static componentType = "maxiterations";
-  static rendererType = "integer";
+  static rendererType = "number";
 }
 
 export class Unbiased extends BooleanComponent {
@@ -592,7 +592,7 @@ export class Unbiased extends BooleanComponent {
 
 export class NumberOfSamples extends Integer {
   static componentType = "numberofsamples";
-  static rendererType = "integer";
+  static rendererType = "number";
 }
 
 export class MatchWholeWord extends BooleanComponent {
@@ -627,12 +627,12 @@ export class MaxIndex extends MathComponent {
 
 export class NumberDecimals extends Integer {
   static componentType = "numberdecimals";
-  static rendererType = "integer";
+  static rendererType = "number";
 }
 
 export class NumberDigits extends Integer {
   static componentType = "numberdigits";
-  static rendererType = "integer";
+  static rendererType = "number";
 }
 
 export class ComponentTypes extends TextList {
@@ -752,7 +752,7 @@ export class AllowedErrorIsAbsolute extends BooleanComponent {
 
 export class NSignErrorsMatched extends Integer {
   static componentType = "nsignerrorsmatched";
-  static rendererType = "integer";
+  static rendererType = "number";
 }
 
 export class FeedbackCode extends TextComponent {

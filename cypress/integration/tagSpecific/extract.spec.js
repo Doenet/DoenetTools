@@ -264,12 +264,12 @@ describe('Extract Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/_aslist1"].activeChildren.map(x=> x.componentType)).eqls([]);
-      expect(components["/_aslist2"].activeChildren.map(x=> x.componentType)).eqls([]);
-      expect(components["/_p3"].activeChildren[0].activeChildren.map(x=> x.componentType)).eqls([]);
-      expect(components["/_aslist1"].activeChildren.map(x=> x.stateValues.value)).eqls([]);
-      expect(components["/_aslist2"].activeChildren.map(x=> x.stateValues.value)).eqls([]);
-      expect(components["/_p3"].activeChildren[0].activeChildren.map(x=> x.stateValues.value)).eqls([]);
+      expect(components["/_aslist1"].activeChildren.map(x => x.componentType)).eqls([]);
+      expect(components["/_aslist2"].activeChildren.map(x => x.componentType)).eqls([]);
+      expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.componentType)).eqls([]);
+      expect(components["/_aslist1"].activeChildren.map(x => x.stateValues.value)).eqls([]);
+      expect(components["/_aslist2"].activeChildren.map(x => x.stateValues.value)).eqls([]);
+      expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.stateValues.value)).eqls([]);
     })
 
     cy.log('set to 3')
@@ -280,12 +280,12 @@ describe('Extract Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/_aslist1"].activeChildren.map(x=> x.componentType)).eqls(["text","text","text"]);
-      expect(components["/_aslist2"].activeChildren.map(x=> x.componentType)).eqls(["text","text","text"]);
-      expect(components["/_p3"].activeChildren[0].activeChildren.map(x=> x.componentType)).eqls(["text","text","text"]);
-      expect(components["/_aslist1"].activeChildren.map(x=> x.stateValues.value)).eqls(["1","2","3"]);
-      expect(components["/_aslist2"].activeChildren.map(x=> x.stateValues.value)).eqls(["1","2","3"]);
-      expect(components["/_p3"].activeChildren[0].activeChildren.map(x=> x.stateValues.value)).eqls(["1","2","3"]);
+      expect(components["/_aslist1"].activeChildren.map(x => x.componentType)).eqls(["text", "text", "text"]);
+      expect(components["/_aslist2"].activeChildren.map(x => x.componentType)).eqls(["text", "text", "text"]);
+      expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.componentType)).eqls(["text", "text", "text"]);
+      expect(components["/_aslist1"].activeChildren.map(x => x.stateValues.value)).eqls(["1", "2", "3"]);
+      expect(components["/_aslist2"].activeChildren.map(x => x.stateValues.value)).eqls(["1", "2", "3"]);
+      expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.stateValues.value)).eqls(["1", "2", "3"]);
     })
 
     cy.log('increase to 4')
@@ -296,12 +296,12 @@ describe('Extract Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/_aslist1"].activeChildren.map(x=> x.componentType)).eqls(["text","text","text","text"]);
-      expect(components["/_aslist2"].activeChildren.map(x=> x.componentType)).eqls(["text","text","text","text"]);
-      expect(components["/_p3"].activeChildren[0].activeChildren.map(x=> x.componentType)).eqls(["text","text","text","text"]);
-      expect(components["/_aslist1"].activeChildren.map(x=> x.stateValues.value)).eqls(["1","2","3","4"]);
-      expect(components["/_aslist2"].activeChildren.map(x=> x.stateValues.value)).eqls(["1","2","3","4"]);
-      expect(components["/_p3"].activeChildren[0].activeChildren.map(x=> x.stateValues.value)).eqls(["1","2","3","4"]);
+      expect(components["/_aslist1"].activeChildren.map(x => x.componentType)).eqls(["text", "text", "text", "text"]);
+      expect(components["/_aslist2"].activeChildren.map(x => x.componentType)).eqls(["text", "text", "text", "text"]);
+      expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.componentType)).eqls(["text", "text", "text", "text"]);
+      expect(components["/_aslist1"].activeChildren.map(x => x.stateValues.value)).eqls(["1", "2", "3", "4"]);
+      expect(components["/_aslist2"].activeChildren.map(x => x.stateValues.value)).eqls(["1", "2", "3", "4"]);
+      expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.stateValues.value)).eqls(["1", "2", "3", "4"]);
     })
 
 
@@ -314,12 +314,12 @@ describe('Extract Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/_aslist1"].activeChildren.map(x=> x.componentType)).eqls(["text","text"]);
-      expect(components["/_aslist2"].activeChildren.map(x=> x.componentType)).eqls(["text","text"]);
-      expect(components["/_p3"].activeChildren[0].activeChildren.map(x=> x.componentType)).eqls(["text","text"]);
-      expect(components["/_aslist1"].activeChildren.map(x=> x.stateValues.value)).eqls(["1","2"]);
-      expect(components["/_aslist2"].activeChildren.map(x=> x.stateValues.value)).eqls(["1","2"]);
-      expect(components["/_p3"].activeChildren[0].activeChildren.map(x=> x.stateValues.value)).eqls(["1","2"]);
+      expect(components["/_aslist1"].activeChildren.map(x => x.componentType)).eqls(["text", "text"]);
+      expect(components["/_aslist2"].activeChildren.map(x => x.componentType)).eqls(["text", "text"]);
+      expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.componentType)).eqls(["text", "text"]);
+      expect(components["/_aslist1"].activeChildren.map(x => x.stateValues.value)).eqls(["1", "2"]);
+      expect(components["/_aslist2"].activeChildren.map(x => x.stateValues.value)).eqls(["1", "2"]);
+      expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.stateValues.value)).eqls(["1", "2"]);
     })
 
     cy.log('increase to 5')
@@ -330,16 +330,266 @@ describe('Extract Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components["/_aslist1"].activeChildren.map(x=> x.componentType)).eqls(["text","text","text","text","text"]);
-      expect(components["/_aslist2"].activeChildren.map(x=> x.componentType)).eqls(["text","text","text","text","text"]);
-      expect(components["/_p3"].activeChildren[0].activeChildren.map(x=> x.componentType)).eqls(["text","text","text","text","text"]);
-      expect(components["/_aslist1"].activeChildren.map(x=> x.stateValues.value)).eqls(["1","2","3","4","5"]);
-      expect(components["/_aslist2"].activeChildren.map(x=> x.stateValues.value)).eqls(["1","2","3","4","5"]);
-      expect(components["/_p3"].activeChildren[0].activeChildren.map(x=> x.stateValues.value)).eqls(["1","2","3","4","5"]);
+      expect(components["/_aslist1"].activeChildren.map(x => x.componentType)).eqls(["text", "text", "text", "text", "text"]);
+      expect(components["/_aslist2"].activeChildren.map(x => x.componentType)).eqls(["text", "text", "text", "text", "text"]);
+      expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.componentType)).eqls(["text", "text", "text", "text", "text"]);
+      expect(components["/_aslist1"].activeChildren.map(x => x.stateValues.value)).eqls(["1", "2", "3", "4", "5"]);
+      expect(components["/_aslist2"].activeChildren.map(x => x.stateValues.value)).eqls(["1", "2", "3", "4", "5"]);
+      expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.stateValues.value)).eqls(["1", "2", "3", "4", "5"]);
     })
 
 
   });
+
+  it('extract from map', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput name="n" />
+    <mathinput name="m" />
+    
+    <p><aslist>
+    <extract prop="x">
+      <map>
+        <template><point>(<subsref/>+<ref prop="value">../m</ref>,0)</point></template>
+        <substitutions>
+          <sequence><count><ref prop="value">n</ref></count></sequence>
+        </substitutions>
+      </map>
+    </extract>
+    </aslist></p>
+    
+    <p><aslist><ref>_extract1</ref></aslist></p>
+    
+    <p><ref>_aslist2</ref></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let aslist1 = components["/_p1"].activeChildren[0];
+      let aslist2 = components["/_p2"].activeChildren[0];
+      let aslist3 = components["/_p3"].activeChildren[0];
+      cy.get('#\\/_p1').should('have.text', '');
+      cy.get('#\\/_p2').should('have.text', '');
+      cy.get('#\\/_p3').should('have.text', '');
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/_aslist1"].activeChildren.map(x => x.componentType)).eqls([]);
+        expect(components["/_aslist2"].activeChildren.map(x => x.componentType)).eqls([]);
+        expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.componentType)).eqls([]);
+        expect(components["/_aslist1"].activeChildren.map(x => x.stateValues.value)).eqls([]);
+        expect(components["/_aslist2"].activeChildren.map(x => x.stateValues.value)).eqls([]);
+        expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.stateValues.value)).eqls([]);
+      })
+
+      cy.log('set n to 3')
+      cy.get('#\\/n_input').clear().type(`3`);
+      cy.window().then((win) => {
+        for (let i = 0; i < 3; i++) {
+          cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`＿+${i + 1}`)
+          });
+          cy.get(`#${aslist2.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`＿+${i + 1}`)
+          });
+          cy.get(`#${aslist3.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`＿+${i + 1}`)
+          });
+        }
+
+        // Note: put in another .then so test execute in order they appear here
+        // (so easier to find test results)
+        cy.window().then((win) => {
+          let components = Object.assign({}, win.state.components);
+          expect(components["/_aslist1"].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math"]);
+          expect(components["/_aslist2"].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math"]);
+          expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math"]);
+          expect(components["/_aslist1"].activeChildren.map(x => x.stateValues.value.toString())).eqls(["＿ + 1", "＿ + 2", "＿ + 3"]);
+          expect(components["/_aslist2"].activeChildren.map(x => x.stateValues.value.toString())).eqls(["＿ + 1", "＿ + 2", "＿ + 3"]);
+          expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.stateValues.value.toString())).eqls(["＿ + 1", "＿ + 2", "＿ + 3"]);
+        })
+      })
+
+      cy.log('set m to 7')
+      cy.get('#\\/m_input').clear().type(`7`);
+      cy.window().then((win) => {
+        for (let i = 0; i < 3; i++) {
+          cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`${i + 8}`)
+          });
+          cy.get(`#${aslist2.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`${i + 8}`)
+          });
+          cy.get(`#${aslist3.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`${i + 8}`)
+          });
+        }
+
+        // Note: put in another .then so test execute in order they appear here
+        // (so easier to find test results)
+        cy.window().then((win) => {
+          let components = Object.assign({}, win.state.components);
+          expect(components["/_aslist1"].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math"]);
+          expect(components["/_aslist2"].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math"]);
+          expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math"]);
+          expect(components["/_aslist1"].activeChildren.map(x => x.stateValues.value.toString())).eqls(["8", "9", "10"]);
+          expect(components["/_aslist2"].activeChildren.map(x => x.stateValues.value.toString())).eqls(["8", "9", "10"]);
+          expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.stateValues.value.toString())).eqls(["8", "9", "10"]);
+        })
+      })
+
+      cy.log('increase n to 4')
+      cy.get('#\\/n_input').clear().type(`4`);
+      cy.window().then((win) => {
+        for (let i = 0; i < 4; i++) {
+          cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`${i + 8}`)
+          });
+          cy.get(`#${aslist2.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`${i + 8}`)
+          });
+          cy.get(`#${aslist3.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`${i + 8}`)
+          });
+        }
+
+        // Note: put in another .then so test execute in order they appear here
+        // (so easier to find test results)
+        cy.window().then((win) => {
+          let components = Object.assign({}, win.state.components);
+          expect(components["/_aslist1"].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math", "math"]);
+          expect(components["/_aslist2"].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math", "math"]);
+          expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math", "math"]);
+          expect(components["/_aslist1"].activeChildren.map(x => x.stateValues.value.toString())).eqls(["8", "9", "10", "11"]);
+          expect(components["/_aslist2"].activeChildren.map(x => x.stateValues.value.toString())).eqls(["8", "9", "10", "11"]);
+          expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.stateValues.value.toString())).eqls(["8", "9", "10", "11"]);
+        })
+      })
+
+      cy.log('change m to q')
+      cy.get('#\\/m_input').clear().type(`q`);
+      cy.window().then((win) => {
+        for (let i = 0; i < 4; i++) {
+          cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`q+${i + 1}`)
+          });
+          cy.get(`#${aslist2.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`q+${i + 1}`)
+          });
+          cy.get(`#${aslist3.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`q+${i + 1}`)
+          });
+        }
+
+        // Note: put in another .then so test execute in order they appear here
+        // (so easier to find test results)
+        cy.window().then((win) => {
+          let components = Object.assign({}, win.state.components);
+          expect(components["/_aslist1"].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math", "math"]);
+          expect(components["/_aslist2"].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math", "math"]);
+          expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math", "math"]);
+          expect(components["/_aslist1"].activeChildren.map(x => x.stateValues.value.toString())).eqls(["q + 1", "q + 2", "q + 3", "q + 4"]);
+          expect(components["/_aslist2"].activeChildren.map(x => x.stateValues.value.toString())).eqls(["q + 1", "q + 2", "q + 3", "q + 4"]);
+          expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.stateValues.value.toString())).eqls(["q + 1", "q + 2", "q + 3", "q + 4"]);
+        })
+      })
+
+
+
+      cy.log('decrease n to 2')
+      cy.get('#\\/n_input').clear().type(`2`);
+      cy.window().then((win) => {
+        for (let i = 0; i < 2; i++) {
+          cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`q+${i + 1}`)
+          });
+          cy.get(`#${aslist2.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`q+${i + 1}`)
+          });
+          cy.get(`#${aslist3.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`q+${i + 1}`)
+          });
+        }
+
+        // Note: put in another .then so test execute in order they appear here
+        // (so easier to find test results)
+        cy.window().then((win) => {
+          let components = Object.assign({}, win.state.components);
+          expect(components["/_aslist1"].activeChildren.map(x => x.componentType)).eqls(["math", "math"]);
+          expect(components["/_aslist2"].activeChildren.map(x => x.componentType)).eqls(["math", "math"]);
+          expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.componentType)).eqls(["math", "math"]);
+          expect(components["/_aslist1"].activeChildren.map(x => x.stateValues.value.toString())).eqls(["q + 1", "q + 2"]);
+          expect(components["/_aslist2"].activeChildren.map(x => x.stateValues.value.toString())).eqls(["q + 1", "q + 2"]);
+          expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.stateValues.value.toString())).eqls(["q + 1", "q + 2"]);
+        })
+      })
+
+
+      cy.log('set m to -1')
+      cy.get('#\\/m_input').clear().type(`-1`);
+      cy.window().then((win) => {
+        for (let i = 0; i < 2; i++) {
+          cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`${i}`)
+          });
+          cy.get(`#${aslist2.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`${i}`)
+          });
+          cy.get(`#${aslist3.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`${i}`)
+          });
+        }
+
+        // Note: put in another .then so test execute in order they appear here
+        // (so easier to find test results)
+        cy.window().then((win) => {
+          let components = Object.assign({}, win.state.components);
+          expect(components["/_aslist1"].activeChildren.map(x => x.componentType)).eqls(["math", "math"]);
+          expect(components["/_aslist2"].activeChildren.map(x => x.componentType)).eqls(["math", "math"]);
+          expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.componentType)).eqls(["math", "math"]);
+          expect(components["/_aslist1"].activeChildren.map(x => x.stateValues.value.toString())).eqls(["0", "1"]);
+          expect(components["/_aslist2"].activeChildren.map(x => x.stateValues.value.toString())).eqls(["0", "1"]);
+          expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.stateValues.value.toString())).eqls(["0", "1"]);
+        })
+      })
+
+
+      cy.log('increase n to 5')
+      cy.get('#\\/n_input').clear().type(`5`);
+      cy.window().then((win) => {
+        for (let i = 0; i < 5; i++) {
+          cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`${i}`)
+          });
+          cy.get(`#${aslist2.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`${i}`)
+          });
+          cy.get(`#${aslist3.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim()).equal(`${i}`)
+          });
+        }
+
+        // Note: put in another .then so test execute in order they appear here
+        // (so easier to find test results)
+        cy.window().then((win) => {
+          let components = Object.assign({}, win.state.components);
+          expect(components["/_aslist1"].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math", "math", "math"]);
+          expect(components["/_aslist2"].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math", "math", "math"]);
+          expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math", "math", "math"]);
+          expect(components["/_aslist1"].activeChildren.map(x => x.stateValues.value.toString())).eqls(["0", "1", "2", "3", "4"]);
+          expect(components["/_aslist2"].activeChildren.map(x => x.stateValues.value.toString())).eqls(["0", "1", "2", "3", "4"]);
+          expect(components["/_p3"].activeChildren[0].activeChildren.map(x => x.stateValues.value.toString())).eqls(["0", "1", "2", "3", "4"]);
+        })
+      })
+
+    })
+  });
+
 
 
 });

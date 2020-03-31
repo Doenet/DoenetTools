@@ -2,6 +2,7 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class Prop extends BaseComponent {
   static componentType = "prop";
+  static rendererType = undefined;
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);

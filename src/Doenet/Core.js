@@ -629,8 +629,8 @@ export default class Core {
       shadow,
     });
 
-    console.log("createResult")
-    console.log(createResult)
+    // console.log("createResult")
+    // console.log(createResult)
 
     let newComponents = createResult.components;
 
@@ -1415,7 +1415,10 @@ export default class Core {
 
   }
 
-  processReplacementsWithInstructions({ replacementsWithInstructions, serializedReplacementsFromComponent, component }) {
+  processReplacementsWithInstructions({ replacementsWithInstructions,
+    serializedReplacementsFromComponent, component,
+    resolveAllDependencies = false
+  }) {
 
     let replacements = [];
 
@@ -1584,14 +1587,38 @@ export default class Core {
         }
       }
 
-      let replacementResult = this.createIsolatedComponentsSub({
-        serializedState: replacementsToAdd,
-        ancestors: component.ancestors,
-        applySugar: true,
-        shadow: true,
-      });
+      if (resolveAllDependencies) {
 
-      replacements.push(...replacementResult.components);
+        // resolveAllDependencies is set when adding new replacements
+        // to a document where all dependencies have already been resolved
+        // In this case, we call createIsolatedComponents
+        // (rather than createIsolatedComponentsSub)
+        // which will immediately resolve all dependencies
+        let replacementResult = this.createIsolatedComponents({
+          serializedState: replacementsToAdd,
+          ancestors: component.ancestors,
+          applySugar: true,
+          shadow: true,
+        });
+
+        if (replacementResult.success) {
+          replacements.push(...replacementResult.components);
+        } else {
+          console.error(`Creating new replacements of ${component.componentName} failed!!`)
+          console.error(replacementResult.message);
+        }
+      } else {
+
+        let replacementResult = this.createIsolatedComponentsSub({
+          serializedState: replacementsToAdd,
+          ancestors: component.ancestors,
+          applySugar: true,
+          shadow: true,
+        });
+        replacements.push(...replacementResult.components);
+
+      }
+
 
       this.parameterStack.pop();
     }
@@ -7209,7 +7236,7 @@ export default class Core {
 
     // console.log("replacement changes for " + component.componentName);
     // console.log(replacementChanges);
-    // console.log(component.replacements.map(x=>x.componentName));
+    // console.log(component.replacements.map(x => x.componentName));
     // console.log(component.unresolvedState);
     // console.log(component.unresolvedDependencies);
 
@@ -7259,12 +7286,27 @@ export default class Core {
 
           }
 
-          let createResult = this.createIsolatedComponentsSub({
+          // Note: we are using createIsolatedComponents
+          // (rather than createIsolatedComponentsSub)
+          // in order to resolved all dependencies before continuing
+          // The idea is that, when updateCompositeReplacements is called,
+          // all other dependencies have already been resolved,
+          // so we should be able to immediately resolve dependencies
+          // of any new components
+
+          let createResult = this.createIsolatedComponents({
             serializedState: serializedReplacements,
             applySugar: true,
             ancestors: component.ancestors,
           });
-          newComponents = createResult.components;
+
+          if (createResult.success) {
+            newComponents = createResult.components;
+          } else {
+            console.error(`Creating new replacements of ${component.componentName} failed!!`)
+            console.error(createResult.message);
+            newComponents = [];
+          }
 
         } else if (change.replacementsWithInstructions) {
 
@@ -7294,6 +7336,7 @@ export default class Core {
             replacementsWithInstructions: change.replacementsWithInstructions,
             serializedReplacementsFromComponent,
             component,
+            resolveAllDependencies: true,
           })
 
         } else {
