@@ -3864,8 +3864,7 @@ describe('Vector Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <extract prop="y"><ref prop="head">original</ref></extract>
-  <mathinput name="a" prefill="2" modifybyreference="false" />
-  <panel>
+  <mathinput name="a" prefill="2" modifyIndirectly="false" />
   <graph>
     <vector name="original">
       <tail fixed>(0,0)</tail>
@@ -3887,16 +3886,11 @@ describe('Vector Tag Tests', function () {
       </head>
     </vector>
   </graph>
-  </panel>
   `}, "*");
     });
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
-
-    cy.get('#__math5 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    })
 
     cy.log('check initial values')
     cy.window().then((win) => {

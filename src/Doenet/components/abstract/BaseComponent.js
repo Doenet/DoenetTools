@@ -96,6 +96,27 @@ export default class BaseComponent {
 
     let allPotentialRendererTypes = [this.rendererType];
 
+    // include any potential renderer type that could be
+    // created from a public state variable
+    for(let varName in this.state) {
+      if(this.state[varName].public) {
+        let componentTypes = this.state[varName].componentType;
+        if(!Array.isArray(componentTypes)) {
+          componentTypes = [componentTypes]
+        }
+        for(let componentType of componentTypes) {
+          let componentClass = this.allComponentClasses[componentType];
+          if(componentClass) {
+            let rendererType  = componentClass.rendererType;
+            if(rendererType && !allPotentialRendererTypes.includes(rendererType)) {
+              allPotentialRendererTypes.push(rendererType)
+            }
+          }
+        }
+      }
+    }
+
+    // recurse to all children
     for (let childName in this.allChildren) {
       let child = this.allChildren[childName].component;
       for (let rendererType of child.allPotentialRendererTypes) {
@@ -141,8 +162,8 @@ export default class BaseComponent {
 
     return {
       hide: { default: false, forRenderer: true },
-      modifyIndirectly: { default: true, propagateToDescendants: true },
-      fixed: { default: false, propagateToDescendants: true },
+      modifyIndirectly: { default: true },
+      fixed: { default: false },
       styleNumber: { default: 1, propagateToDescendants: true },
     };
   }

@@ -475,6 +475,14 @@ export default class Point extends GraphicalComponent {
               delete freshByKey[key];
             }
           }
+        } else {
+          // check if any of the unconstraintedXn's for a fresh n changed
+          for(let key in freshByKey) {
+            if(changes[`unconstrainedX${Number(key)+1}`]) {
+              delete freshByKey[key]
+            }
+          }
+
         }
 
 

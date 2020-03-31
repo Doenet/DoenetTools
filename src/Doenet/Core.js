@@ -1187,7 +1187,8 @@ export default class Core {
       throw Error(`Could not evaluate state variable readyToExpandWhenResolved of composite ${component.componentName}`);
     }
 
-    readyToExpand = component.state.readyToExpandWhenResolved.isResolved
+    readyToExpand = component.state.readyToExpandWhenResolved.isResolved;
+
     if (!readyToExpand) {
       return { success: false };
     }

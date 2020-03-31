@@ -180,7 +180,7 @@ export default class Point extends DoenetRenderer {
     }
 
     if (this.props.board) {
-      return <a name="{this.componentName" />
+      return <a name={this.componentName} />
     }
 
     let mathJaxify = "\\(" + this.doenetSvData.coords + "\\)";

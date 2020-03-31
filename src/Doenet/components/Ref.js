@@ -373,7 +373,7 @@ export default class Ref extends CompositeComponent {
     // If there is a prop, replacement classes are determined by componentType
     // of propVariableObjs
     // Except that, if propVariableObjs doesn't have componentType specified,
-    // then the componentType is determined by 
+    // then the componentType is determined by refTarget state variable
     stateVariableDefinitions.replacementClasses = {
       additionalStateVariablesDefined: [
         "stateVariablesRequested", "validProp", "componentTypeByTarget"
