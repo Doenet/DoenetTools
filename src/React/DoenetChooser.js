@@ -12,7 +12,7 @@ import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown,
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
 import SpinningLoader from './SpinningLoader';
-import { TreeView } from './TreeView/TreeView'
+import { SortableTreeView } from './TreeView/SortableTreeView'
 
 
 class DoenetChooser extends Component {
@@ -1165,7 +1165,7 @@ class DoenetChooser extends Component {
                 <SpinningLoader/>
              </div>
     }
-    return <TreeView headingsInfo={this.headingsInfo} assignmentsInfo={this.assignmentsInfo} 
+    return <SortableTreeView headingsInfo={this.headingsInfo} assignmentsInfo={this.assignmentsInfo} 
       updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>;
 
     this.buildCourseList();
