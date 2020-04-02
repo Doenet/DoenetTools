@@ -20,19 +20,14 @@ class DoenetHeader extends Component {
     }
     this.select=null
     this.updateNumber = 0;
-    this.roles=[]
+    this.roles={}
     this.adminAccess = 0;
     this.accessAllowed = 0;
     if (this.props.rights){
       this.rightToView = this.props.rights.rightToView
       this.rightToEdit = this.props.rights.rightToEdit
       this.instructorRights = this.props.rights.instructorRights
-      if (this.instructorRights){
-        this.roles.push("Instructor")
-      }
-      if (this.rightToView){
-        this.roles.push("Student")
-      }
+      
       this.coursesPermissions = this.props.rights.permissions  
     } else {
       this.rightToView = false
@@ -104,6 +99,8 @@ class DoenetHeader extends Component {
     this.props.rights.rightToEdit = undefined
     this.props.rights.instructorRights = undefined
     this.props.rights.downloadPermission = undefined
+    this.props.rights.itemsToShow = undefined
+    this.props.rights.menuIcon = undefined
     this.props.rights.permissions = undefined
     this.props.rights.arrayIds = undefined
     this.props.rights.courseInfo = undefined
@@ -114,78 +111,34 @@ class DoenetHeader extends Component {
     }
     
   }
-  makePermissionList({menuBarAnimation}){
-    // console.log("making list for header")
-
-    /*if (this.instructorRights){
-      this.selectPermission=(
-        <select 
-        value={!this.rightToEdit?"Student":"Instructor"}
-        onChange={(e)=>{
-            
-            if (e.target.value==="Student"){
-              this.rightToEdit=false
-            }
-            if (e.target.value==="Instructor"){
-              this.rightToEdit=true
-            }
-            this.props.rights.permissionCallBack(e.target.value);
-            this.forceUpdate()
-          
-        }}>
-        {this.rightToView?(<option key={this.updateNumber++} value="Student">Student</option>):null}
-        {(<option key={this.updateNumber++} value="Instructor">Instructor</option>)}
-          
-          </select>  
-      )
-    }
-    else {
-      this.selectPermission=(
-        <span onChange={(e)=>{
-          {
-            if (e.target.value==="Student"){
-              this.rightToEdit=false
-            }
-            if (e.target.value==="Instructor"){
-              this.rightToEdit=true
-            }
-            this.props.rights.permissionCallBack(e.target.value);
-            this.forceUpdate()
-          }
-        }}>
-        {this.rightToView?(<option key={this.updateNumber++}  value="Student">Student</option>):null}
-          
-          </span>  
-      )
-    }*/
-    
-  }
-
-
-  toogleToolbox = () => {
+  toggleToolbox = () => {
+    console.log("TOOL BOX")
     if (!this.state.showToolbox) {
-      document.addEventListener('click', this.toogleToolbox, false);
+      document.addEventListener('click', this.toggleToolbox, false);
     } else {
-      document.removeEventListener('click', this.toogleToolbox, false);
+      document.removeEventListener('click', this.toggleToolbox, false);
     }
 
     this.setState(prevState => ({
-      showToolbox: !prevState.showToolbox
+      showToolbox: !prevState.showToolbox,
+    }));    
+  }
+  toggleMenubar = () => {
+    console.log("MENU BAR")
+    if (!this.state.menuVisble) {
+      document.addEventListener('click', this.toggleMenubar, false);
+    } else {
+      document.removeEventListener('click', this.toggleMenubar, false);
+    }
+
+    this.setState(prevState => ({
+      menuVisble: !prevState.menuVisble
     }));    
   }
 
 
-  render() {
-    // const { toolTitle, headingTitle} = this.props;
-    // if(this.coursesPermissions!={}){
-      // const menuBarAnimation = useSpring({
-      //   from : {opacity : 0 ,transform: 'translateY(-100%)'},
-      //   opacity: this.state.menuVisble ? 1 : 0,
-      //   transform: this.state.menuVisble ? 'translateY(0)' : 'translateY(-100%)',
-      // })
-      // this.makePermissionList()
-    // }
-    
+  render() {  
+    console.log(`menuVisble: ${this.state.menuVisble}`)
     return (
       <React.Fragment>
         <div className="headingContainerWrapper">
@@ -199,12 +152,32 @@ class DoenetHeader extends Component {
               <span>{ this.select }</span>
             </div>}
             <div className="headingToolbar">
-              <Menu showThisRole={this.props.rights?this.props.rights.defaultRole:""} roles={this.roles} permissionCallback={this.props.rights?this.props.rights.permissionCallBack:null}/>
-            {/* {this.selectPermission}           */}
-              <div className="toolboxContainer" data-cy="toolboxButton" onClick={this.toogleToolbox}>  
+            <div 
+            >                
+              {<Menu 
+              key={"menu01"+(this.updateNumber++)}
+              showDropDown={this.state.menuVisble}
+              showThisRole={this.props.rights?this.props.rights.defaultRole:""} 
+              itemsToShow={this.props.rights?this.props.rights.itemsToShow:{}} 
+              menuIcon={this.props.rights?this.props.rights.menuIcon:null}
+              />}
+              </div>
+
+              <div className="toolboxContainer" data-cy="toolboxButton" 
+            >                
+              {<Menu 
+              key={"menu02"+(this.updateNumber++)}
+              showDropDown={this.state.menuVisble}
+              showThisRole={this.props.rights?this.props.rights.defaultRole:""} 
+              itemsToShow={this.props.rights?this.props.rights.itemsToShow:{}} 
+              // menuIcon={this.props.rights?this.props.rights.menuIcon:null}
+              />}
+              </div>
+
+              {/* <div className="toolboxContainer" data-cy="toolboxButton" onClick={this.toggleToolbox}>  
               <FontAwesomeIcon id="toolboxButton" icon={faTh}/>
                 {this.state.showToolbox && 
-                <Toolbox show={this.state.showToolbox} toogleToolbox={this.toogleToolbox}>
+                <Toolbox show={this.state.showToolbox} toggleToolbox={this.toggleToolbox}>
                   {Object.keys(this.toolTitleToLinkMap).map((toolTitle, index)=> {
                     let currentUrl = window.location.href;
                     const navLinkClassName = currentUrl.includes(this.toolTitleToLinkMap[toolTitle]) ? 
@@ -216,7 +189,8 @@ class DoenetHeader extends Component {
                     )
                   })}
                 </Toolbox>}
-              </div>
+              </div> */}
+
               <div id="userButton" onClick={()=>alert('User Setting Feature Not Yet Available')}>
                 <FontAwesomeIcon id="userButtonIcon" icon={faUser}/>
                 <div id="username" style={{display:"inline", marginLeft:"3px"}}>{ this.username }</div>
@@ -229,7 +203,7 @@ class DoenetHeader extends Component {
   }
 }
 
-const Toolbox = ({ toogleToolbox, children }) => {
+const Toolbox = ({ toggleToolbox, children }) => {
 
   return (
     <section className="toolbox" data-cy="toolbox">

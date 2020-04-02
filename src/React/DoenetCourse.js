@@ -6,7 +6,7 @@ import DoenetHeader from './DoenetHeader';
 import nanoid from 'nanoid';
 import query from '../queryParamFuncs';
 import DoenetBox from '../React/DoenetBox';
-import { faWindowClose, faEdit, faArrowUp,faArrowDown,faArrowLeft,faArrowRight,faPlus,faFolderPlus} from '@fortawesome/free-solid-svg-icons';
+import { faWindowClose, faEdit,faArrowLeft,faPlus, faUserSecret} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // import {
@@ -626,6 +626,7 @@ class DoenetCourse extends Component {
   constructor(props){
     super(props);
     this.parentUpdateDownloadPermission = true
+    this.permissionRoles={}
     this.rightToEdit = false
     this.rightToView = false
     this.instructorRights = false
@@ -998,6 +999,22 @@ class DoenetCourse extends Component {
             }
           }
 
+          if (this.instructorRights){
+            this.permissionRoles['Instructor']={
+              showText:"Instructor",
+              callBackFunction:(e)=>{this.permissionCallBack({e:e})}              
+          }
+          }
+          if (this.rightToView){
+            this.permissionRoles['Student']={
+              showText:"Student", 
+              callBackFunction:(e)=>{this.permissionCallBack({e:e})}              
+          }
+          this.permissionRoles['Yahoo']={
+            showText:"Go to Yahoo", 
+            url:"https://www.yahoo.com",
+        }
+          }
       this.alreadyLoadAllCourses = true;
       this.courseName = this.courseInfo[this.currentCourseId]['courseName']
       //////////////////
@@ -1085,6 +1102,34 @@ class DoenetCourse extends Component {
           this.makeTreeVisible({loadSpecificId:""}) 
           this.forceUpdate()
     }
+  }
+  permissionCallBack({e}) {
+    if (e==="Student"){
+      this.rightToEdit=false
+    }
+    if (e==="Instructor"){
+      this.rightToEdit=true
+      this.instructorRights = true
+    }
+
+    this.makeTreeArray=[]
+    this.alreadyLoadOverview = false
+    this.alreadyLoadSyllabus = false
+    this.Overview_doenetML = ""
+    this.Syllabus_doenetML = ""
+    this.assignmentTree = null
+
+    this.alreadyLoadAssignment=[]
+    this.alreadyMadeLink=[]
+    this.tree_route=[]
+    this.overview_link=null
+    this.syllabus_link=null
+    this.grade_link=null
+    this.assignment_link=null
+    if (this.activeSection==="assignments" && this.enableAssignment){
+      this.makeTreeVisible({loadSpecificId:""})
+    }
+    this.forceUpdate()
   }
   findEnabledCategory(){
     const loadUrl = '/api/loadEnable.php'
@@ -3365,40 +3410,17 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
               {rightToEdit:this.rightToEdit,
                 rightToView:this.rightToView,
                 instructorRights : this.instructorRights,
+
+                itemsToShow:this.permissionRoles,
+                
+                menuIcon:faUserSecret,
                 downloadPermission : this.parentUpdateDownloadPermission,
                 permissions : this.coursesPermissions,
                 arrayIds : this.courseIdsArray,
                 courseInfo : this.courseInfo,
                 defaultId : this.currentCourseId,
                 defaultRole: (this.rightToEdit&&this.rightToView?"Instructor":(this.rightToView?"Student":"N/A")),
-                permissionCallBack :(e)=>{
-                  if (e==="Student"){
-                    this.rightToEdit=false
-                  }
-                  if (e==="Instructor"){
-                    this.rightToEdit=true
-                    this.instructorRights = true
-                  }
-    
-                  this.makeTreeArray=[]
-                  this.alreadyLoadOverview = false
-                  this.alreadyLoadSyllabus = false
-                  this.Overview_doenetML = ""
-                  this.Syllabus_doenetML = ""
-                  this.assignmentTree = null
-    
-                  this.alreadyLoadAssignment=[]
-                  this.alreadyMadeLink=[]
-                  this.tree_route=[]
-                  this.overview_link=null
-                  this.syllabus_link=null
-                  this.grade_link=null
-                  this.assignment_link=null
-                  if (this.activeSection==="assignments" && this.enableAssignment){
-                    this.makeTreeVisible({loadSpecificId:""})
-                  }
-                  this.forceUpdate()
-                },
+                
                 parentFunction:(e)=>{
                   this.updateNumber+=1
                   this.alreadyHasCourseInfo=false
