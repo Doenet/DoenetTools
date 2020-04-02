@@ -150,7 +150,12 @@ function buildTreeStructureHelper(parentHeadingId, headingsInfo, assignmentsInfo
     onDropLeave={onDropLeave}
     draggedOver={parentHeadingId == currentDraggedOverContainerId}
     onDragStart={onDragStart}
-    onDraggableDragOver={onDraggableDragOver}> 
+    onDraggableDragOver={onDraggableDragOver}
+    style={{
+      border: currentDraggedId == parentHeadingId ? "2px dotted #37ceff" : "0px",
+      background: currentDraggedId == parentHeadingId ? "rgba(255, 255, 255, 0.3)" : "none",
+      padding: currentDraggedId == parentHeadingId ? "0px 5px" : "0px",
+    }}> 
       { // iterate through children headings to generate tree recursively
       headingsInfo[parentHeadingId]["headingId"].map(headingId => {
         return buildTreeStructureHelper(headingId, headingsInfo, assignmentsInfo,

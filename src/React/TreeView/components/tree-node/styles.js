@@ -39,11 +39,13 @@ const Global = createGlobalStyle`
 `
 
 const Frame = styled('div')`
+  display: inline-block;
   position: relative;
-  padding: 4px 0px 0px 0px;
+  padding: 4px 15px 0px 0px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow-x: hidden;
+  overflow-y: hidden;
   vertical-align: middle;
   color: white;
   fill: white;
@@ -59,7 +61,7 @@ const Content = styled(animated.div)`
   margin-left: 6px;
   padding: 0px 0px 0px 14px;
   border-left: 1px dashed ${ props => props.draggedover == "false" ? "rgba(255, 255, 255, 0.4)" : "#37ceff" };
-  overflow: 
+  
 `
 
 const toggle = {

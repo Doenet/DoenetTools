@@ -30,7 +30,6 @@ const TreeNode = memo(({ children, name, style, defaultOpen = false }) => {
 export const ParentNode = memo(({ children, data, style, defaultOpen = false, id, onDroppableDragOver, onDrop, onDraggableDragOver, onDragStart, onDropEnter, onDropLeave, draggedOver, draggable = true}) => {
   const [isOpen, setOpen] = useState(defaultOpen)
   const previous = usePrevious(isOpen)
-  // const [draggedOver, setDraggedOver] = useState(false);
   const [bind, { height: viewHeight }] = useMeasure()
   const { height, opacity, transform } = useSpring({
     from: { height: 0, opacity: 0, transform: 'translate3d(20px,0,0)' },
@@ -44,7 +43,7 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
   }
 
   const onDraggableDragOverCb = (listId) => {
-    onDraggableDragOver(listId, "parent")
+    // onDraggableDragOver(listId, "parent")
   }
 
   const onDragStartCb = (listId, ev) => {
