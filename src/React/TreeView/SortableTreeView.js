@@ -52,7 +52,15 @@ export const SortableTreeView = ({headingsInfo, assignmentsInfo, updateHeadingsA
     })
   };
 
-  const onDroppableDragOver = useCallback((listId) => {
+  const onDrop = () => {
+    setCurrentDraggedObject({id: null, ev: null});
+    setCurrentDraggedOverContainerId(null);
+    updateHeadingsAndAssignments(headings, assignments);
+  }
+
+  const onDropEnter = (listId) => {
+    if (listId == "UltimateHeader" && currentDraggedObject.type == "leaf") return;  // temp fix
+    setCurrentDraggedOverContainerId(listId); 
     const currentDraggedObjectInfo = currentDraggedObject.type == "leaf" ? assignments : headings;
     const previousParentId = currentDraggedObjectInfo[currentDraggedObject.id].parent; 
     if (previousParentId == listId) return;
@@ -81,33 +89,19 @@ export const SortableTreeView = ({headingsInfo, assignmentsInfo, updateHeadingsA
         })
       })
     }
-  }, [currentDraggedObject.id])
-
-  const onDrop = () => {
-    setCurrentDraggedObject({id: null, ev: null});
-    setCurrentDraggedOverContainerId(null);
-    updateHeadingsAndAssignments(headings, assignments);
-  }
-
-  const onDropEnter = (id) => {
-    setCurrentDraggedOverContainerId(id); 
-  }
-
-  const onDropLeave = () => {
-    setCurrentDraggedOverContainerId(null);
   }
 
   return (
     <div className="App">
       <div style={{ "textAlign": "left", "marginTop":"2em"}}>
         <Global />
-        {buildTreeStructure(headings, assignments, onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject.id, currentDraggedOverContainerId)}
+        {buildTreeStructure(headings, assignments, onDragStart, onDraggableDragOver, onDrop, onDropEnter, currentDraggedObject.id, currentDraggedOverContainerId)}
       </div>
     </div>
   );
 }
 
-function buildTreeStructure(headingsInfo, assignmentsInfo, onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedId, currentDraggedOverContainerId) {
+function buildTreeStructure(headingsInfo, assignmentsInfo, onDragStart, onDraggableDragOver, onDrop, onDropEnter, currentDraggedId, currentDraggedOverContainerId) {
   let baseLevelHeadings = headingsInfo["UltimateHeader"]["headingId"];
   
   let treeStructure = <React.Fragment>
@@ -116,19 +110,17 @@ function buildTreeStructure(headingsInfo, assignmentsInfo, onDragStart, onDragga
       id="UltimateHeader"
       key="ultimateHeader"
       data="Tree 1"
-      onDroppableDragOver={onDroppableDragOver} 
       onDrop={onDrop} 
       onDragStart={onDragStart}
-      onDropEnter={() => {}}
-      onDropLeave={() => {}}
-      draggedOver={false}
+      onDropEnter={onDropEnter}
       onDraggableDragOver={onDraggableDragOver}
+      draggedOver={currentDraggedOverContainerId == "UltimateHeader"}
       draggable={false}
-      defaultOpen={true}> 
+      defaultOpen={true} > 
       {// iterate through base level headings to generate tree recursively
       baseLevelHeadings.map(baseHeadingId => {
         return buildTreeStructureHelper(baseHeadingId, headingsInfo, assignmentsInfo, 
-          onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedId, currentDraggedOverContainerId);
+          onDragStart, onDraggableDragOver, onDrop, onDropEnter, currentDraggedId, currentDraggedOverContainerId);
       })}
       </ParentNode>
     </div>
@@ -138,16 +130,14 @@ function buildTreeStructure(headingsInfo, assignmentsInfo, onDragStart, onDragga
 }
 
 function buildTreeStructureHelper(parentHeadingId, headingsInfo, assignmentsInfo, 
-  onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedId, currentDraggedOverContainerId) {
+  onDragStart, onDraggableDragOver, onDrop, onDropEnter, currentDraggedId, currentDraggedOverContainerId) {
   
   let subTree = <ParentNode 
     id={parentHeadingId}
     key={parentHeadingId} 
     data={headingsInfo[parentHeadingId]["name"]}
-    onDroppableDragOver={onDroppableDragOver} 
     onDrop={onDrop} 
     onDropEnter={onDropEnter}
-    onDropLeave={onDropLeave}
     draggedOver={parentHeadingId == currentDraggedOverContainerId}
     onDragStart={onDragStart}
     onDraggableDragOver={onDraggableDragOver}
@@ -159,7 +149,7 @@ function buildTreeStructureHelper(parentHeadingId, headingsInfo, assignmentsInfo
       { // iterate through children headings to generate tree recursively
       headingsInfo[parentHeadingId]["headingId"].map(headingId => {
         return buildTreeStructureHelper(headingId, headingsInfo, assignmentsInfo,
-          onDragStart, onDraggableDragOver, onDroppableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedId, currentDraggedOverContainerId);
+          onDragStart, onDraggableDragOver, onDrop, onDropEnter, currentDraggedId, currentDraggedOverContainerId);
       })}
       { // iterate through children assigments to generate tree recursively
       headingsInfo[parentHeadingId]["assignmentId"].map((assignmentId, index) => {

@@ -50,6 +50,7 @@ const Frame = styled('div')`
   color: white;
   fill: white;
   background: ${props => props.draggedOver ? "rgba(255, 255, 255, 0.3)" : "none" };
+  pointer-events: ${props => props.draggable ? "none" : "auto" };
 `
 
 const Title = styled('span')`

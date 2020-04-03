@@ -27,7 +27,7 @@ const TreeNode = memo(({ children, name, style, defaultOpen = false }) => {
   )
 })
 
-export const ParentNode = memo(({ children, data, style, defaultOpen = false, id, onDroppableDragOver, onDrop, onDraggableDragOver, onDragStart, onDropEnter, onDropLeave, draggedOver, draggable = true}) => {
+export const ParentNode = memo(({ children, data, style, defaultOpen = false, id, onDrop, onDraggableDragOver, onDragStart, onDropEnter, draggedOver, draggable = true}) => {
   const [isOpen, setOpen] = useState(defaultOpen)
   const previous = usePrevious(isOpen)
   const [bind, { height: viewHeight }] = useMeasure()
@@ -36,10 +36,10 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
     to: { height: isOpen ? viewHeight : 0, opacity: isOpen ? 1 : 0, transform: `translate3d(${isOpen ? 0 : 20}px,0,0)` }
   })
   const Icon = Icons[`${children ? (isOpen ? 'Minus' : 'Plus') : 'Close'}SquareO`]
-  
-  const onDroppableDragOverCb = (listId) => {
+
+  const onDropEnterCb = (listId) => {
     setOpen(true);
-    onDroppableDragOver(listId)
+    onDropEnter(listId)
   }
 
   const onDraggableDragOverCb = (listId) => {
@@ -49,8 +49,9 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
   const onDragStartCb = (listId, ev) => {
     onDragStart(listId, "parent", ev)
   }
+  
 
-  let DroppableParentNode = <DropItem id={id} onDragOver={onDroppableDragOverCb} onDrop={onDrop} onDropEnter={onDropEnter} onDropExit={onDropLeave} >
+  let DroppableParentNode = <DropItem id={id} onDrop={onDrop} onDropEnter={onDropEnterCb} >
     <Frame draggedOver={draggedOver}>
       <Icon style={{ ...toggle, opacity: children ? 1 : 0.3 }} onClick={() => setOpen(!isOpen)} />
       <Title style={style}>{data}</Title>
@@ -60,7 +61,7 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
     </Frame>
   </DropItem>;
 
-  if (!draggable) return DroppableParentNode;
+  // if (!draggable) return DroppableParentNode;
 
   return (
     <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb}>
