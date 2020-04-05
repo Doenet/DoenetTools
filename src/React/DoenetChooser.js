@@ -13,6 +13,7 @@ import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
 import SpinningLoader from './SpinningLoader';
 import { SortableTreeView } from './TreeView/SortableTreeView'
+import DoenetCourseOutline from './DoenetCourseOutline'
 
 
 class DoenetChooser extends Component {
@@ -1165,8 +1166,9 @@ class DoenetChooser extends Component {
                 <SpinningLoader/>
              </div>
     }
-    return <SortableTreeView headingsInfo={this.headingsInfo} assignmentsInfo={this.assignmentsInfo} 
-      updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>;
+
+    return <DoenetCourseOutline treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
+      updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
 
     this.buildCourseList();
     this.buildLeftNavPanel();

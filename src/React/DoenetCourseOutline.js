@@ -1,13 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
-import DragItem from "./components/drag-item";
-import DropItem from "./components/drop-item";
-import { TreeNode, LeafNode, ParentNode } from "./components/tree-node/TreeNode"
-import { Global } from './components/tree-node/styles'
-import { useTransition, animated, config } from 'react-spring'
-import "./index.css";
+import { TreeView } from './TreeView/TreeView'
 
 
-export const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHeadingsAndAssignments,
+const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHeadingsAndAssignments,
   courseFoldersInfo, courseContentInfo, updateCourseFoldersAndContent }) => {
   const [currentDraggedObject, setCurrentDraggedObject] = useState({id: null, type: null, sourceContainerId: null});
   const [treeHeadings, setTreeHeadings] = useState(treeHeadingsInfo);
@@ -56,7 +51,8 @@ export const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, upd
     })
   };
 
-  const onTreeDroppableDragOver = useCallback((listId) => {
+  const onDropEnter = (listId) => {
+    if (listId == "UltimateHeader" && currentDraggedObject.type == "leaf") return;  // temp fix
     const currentDraggedObjectInfo = currentDraggedObject.type == "leaf" ? treeAssignments : treeHeadings;
     const previousParentId = currentDraggedObjectInfo[currentDraggedObject.id].parent; 
     if (previousParentId == listId) return;
@@ -85,26 +81,29 @@ export const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, upd
         })
       })
     }
-  }, [currentDraggedObject.id])
+  }
 
   const onDrop = () => {
     setCurrentDraggedObject({id: null, type: null, sourceContainerId: null});
     updateHeadingsAndAssignments(treeHeadings, treeAssignments);
   }
 
-  const onDropEnter = (id) => {
-    setCurrentDraggedOverContainerId(id); 
-  }
-
-  const onDropLeave = () => {
-    setCurrentDraggedOverContainerId(null);
-  }
+  console.log(treeAssignments[currentDraggedObject.id]);
 
   return (
     <div className="App">
       <div style={{ "textAlign": "left", "marginTop":"2em"}}>
-        <Global />
+        <TreeView 
+          headingsInfo={treeHeadings} 
+          assignmentsInfo={treeAssignments} 
+          currentDraggedObject={currentDraggedObject}
+          onDragStart={onDragStart}
+          onDraggableDragOver={onTreeDraggableDragOver} 
+          onDropEnter={onDropEnter}
+          onDrop={onDrop} />
       </div>
     </div>
   );
 }
+
+export default DoenetCourseOutline;
