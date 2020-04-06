@@ -47,9 +47,9 @@ const Frame = styled('div')`
   overflow-x: hidden;
   overflow-y: hidden;
   vertical-align: middle;
-  color: white;
-  fill: white;
-  background: ${props => props.draggedOver ? "rgba(255, 255, 255, 0.3)" : "none" };
+  color: rgba(0, 0, 0, 0.6);
+  fill: rgba(0, 0, 0, 0.6);
+  background: ${props => props.draggedOver ? "#f1f1f1" : "none" };
   pointer-events: ${props => props.draggable ? "none" : "auto" };
 `
 
@@ -61,7 +61,7 @@ const Content = styled(animated.div)`
   will-change: transform, opacity, height;
   margin-left: 6px;
   padding: 0px 0px 0px 14px;
-  border-left: 1px dashed ${ props => props.draggedover == "false" ? "rgba(255, 255, 255, 0.4)" : "#37ceff" };
+  border-left: 1px dashed ${ props => props.draggedover == "false" ? "rgba(0, 0, 0, 0.6)" : "#37ceff" };
   
 `
 

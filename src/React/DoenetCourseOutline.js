@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import styled from 'styled-components'
 import { TreeView } from './TreeView/TreeView'
 
 
@@ -52,10 +53,22 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
   };
 
   const onDropEnter = (listId) => {
-    if (listId == "UltimateHeader" && currentDraggedObject.type == "leaf") return;  // temp fix
+
+    // check current draggable source == tree
+    // true then continue
+    // false then (extract from original source, insert into tree at base level)
+
+    // temp fix, do we want to allow assignments at base level
+    if (listId == "UltimateHeader" && currentDraggedObject.type == "leaf") return;
+
+    // prevent heading from becoming a child of itself
+    if (listId == "UltimateHeader" && currentDraggedObject.type == "leaf") return;
+
     const currentDraggedObjectInfo = currentDraggedObject.type == "leaf" ? treeAssignments : treeHeadings;
     const previousParentId = currentDraggedObjectInfo[currentDraggedObject.id].parent; 
-    if (previousParentId == listId) return;
+    if (previousParentId == listId 
+        || listId == currentDraggedObject.id) // prevent heading from becoming a child of itself 
+      return;
     
     const headingsChildrenListKey = currentDraggedObject.type == "leaf" ? "assignmentId" : "headingId";
     const previousList = treeHeadings[previousParentId][headingsChildrenListKey];
@@ -88,11 +101,8 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
     updateHeadingsAndAssignments(treeHeadings, treeAssignments);
   }
 
-  console.log(treeAssignments[currentDraggedObject.id]);
-
   return (
-    <div className="App">
-      <div style={{ "textAlign": "left", "marginTop":"2em"}}>
+    <CourseOutlineFrame>
         <TreeView 
           headingsInfo={treeHeadings} 
           assignmentsInfo={treeAssignments} 
@@ -101,9 +111,31 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
           onDraggableDragOver={onTreeDraggableDragOver} 
           onDropEnter={onDropEnter}
           onDrop={onDrop} />
-      </div>
-    </div>
+        
+        <TempChooser><span>Temp chooser</span></TempChooser>
+    </CourseOutlineFrame>
   );
 }
+
+const CourseOutlineFrame = styled('div')`
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: left;
+  text-align: left;
+  padding: 2em;
+  overflow-y: scroll;
+`
+
+const TempChooser = styled('div')`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dotted #b3b3b3;
+  color: #b3b3b3;
+  background: #fff;
+  width: 25em;
+  height: 15em;
+`
 
 export default DoenetCourseOutline;

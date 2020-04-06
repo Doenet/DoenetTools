@@ -19,7 +19,6 @@ export const TreeView = ({headingsInfo, assignmentsInfo, currentDraggedObject, o
 
   return (
     <>
-    <Global />
     { buildTreeStructure(headingsInfo, assignmentsInfo, onDragStart, onDraggableDragOver, onDropCb, onDropEnterCb, currentDraggedObject.id, currentDraggedOverContainerId) }
     </>
   );
@@ -67,7 +66,7 @@ function buildTreeStructureHelper(parentHeadingId, headingsInfo, assignmentsInfo
     onDraggableDragOver={onDraggableDragOver}
     style={{
       border: currentDraggedId == parentHeadingId ? "2px dotted #37ceff" : "0px",
-      background: currentDraggedId == parentHeadingId ? "rgba(255, 255, 255, 0.3)" : "none",
+      background: currentDraggedId == parentHeadingId ? "#fff" : "none",
       padding: currentDraggedId == parentHeadingId ? "0px 5px" : "0px",
     }}> 
       { // iterate through children headings to generate tree recursively
@@ -83,9 +82,9 @@ function buildTreeStructureHelper(parentHeadingId, headingsInfo, assignmentsInfo
           key={assignmentId} 
           data={assignmentsInfo[assignmentId]["name"]} 
           styles={{
-            color: '#37ceff',
+            color: '#0083e3',
             border: currentDraggedId == assignmentId ? "2px dotted #37ceff" : "0px",
-            background: currentDraggedId == assignmentId ? "rgba(255, 255, 255, 0.3)" : "none",
+            background: currentDraggedId == assignmentId ? "#fff" : "none",
             padding: currentDraggedId == assignmentId ? "0px 5px" : "0px",
           }}
           onDragStart={onDragStart} 
