@@ -27,7 +27,7 @@ const TreeNode = memo(({ children, name, style, defaultOpen = false }) => {
   )
 })
 
-export const ParentNode = memo(({ children, data, style, defaultOpen = false, id, onDrop, onDraggableDragOver, onDragStart, onDropEnter, draggedOver, draggable = true}) => {
+export const ParentNode = memo(({ children, data, style, defaultOpen = false, id, onDrop, onDraggableDragOver, onDragStart, onDragEnd, onDropEnter, draggedOver, draggable = true}) => {
   const [isOpen, setOpen] = useState(defaultOpen)
   const previous = usePrevious(isOpen)
   const [bind, { height: viewHeight }] = useMeasure()
@@ -51,26 +51,29 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
   }
   
 
-  let DroppableParentNode = <DropItem id={id} onDrop={onDrop} onDropEnter={onDropEnterCb} >
+  let DroppableParentNode = 
     <Frame draggedOver={draggedOver}>
       <Icon style={{ ...toggle, opacity: children ? 1 : 0.3 }} onClick={() => setOpen(!isOpen)} />
       <Title style={style}>{data}</Title>
-      <Content draggedover={draggedOver.toString()} style={{ opacity, height: isOpen && previous === isOpen ? 'auto' : height }}>
-        <a.div style={{ transform }} {...bind} children={children} />
-      </Content>
+      <DropItem id={id} onDrop={onDrop} onDropEnter={onDropEnterCb} >
+        <Content draggedover={draggedOver.toString()} style={{ opacity, height: isOpen && previous === isOpen ? 'auto' : height }}>
+          <div style={{height: "1px"}}></div>
+          <a.div style={{ transform }} {...bind} children={children} />
+        </Content>
+      </DropItem>
     </Frame>
-  </DropItem>;
+  ;
 
   // if (!draggable) return DroppableParentNode;
 
   return (
-    <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb}>
+    <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
       {DroppableParentNode}      
     </DragItem>
   )
 })
 
-export const LeafNode = memo(({ id, data, styles, onDragStart, onDragOver }) => {
+export const LeafNode = memo(({ id, data, styles, onDragStart, onDragOver, onDragEnd }) => {
   const Icon = Icons['CloseSquareO']
 
   const onDraggableDragOverCb = (listId) => {
@@ -82,7 +85,7 @@ export const LeafNode = memo(({ id, data, styles, onDragStart, onDragOver }) => 
   }
 
   return (
-    <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb}>
+    <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
       <Frame>
         {/* <Icon style={{ ...toggle, opacity: 0.3 }} /> */}
         <Title style={styles}>{data}</Title>

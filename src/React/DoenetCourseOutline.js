@@ -96,7 +96,12 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
     }
   }
 
+  const onDragEnd = () => {
+    console.log("ENDED");
+  }
+
   const onDrop = () => {
+    console.log("DRopped")
     setCurrentDraggedObject({id: null, type: null, sourceContainerId: null});
     updateHeadingsAndAssignments(treeHeadings, treeAssignments);
   }
@@ -108,6 +113,7 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
           assignmentsInfo={treeAssignments} 
           currentDraggedObject={currentDraggedObject}
           onDragStart={onDragStart}
+          onDragEnd={onDragEnd}
           onDraggableDragOver={onTreeDraggableDragOver} 
           onDropEnter={onDropEnter}
           onDrop={onDrop} />
