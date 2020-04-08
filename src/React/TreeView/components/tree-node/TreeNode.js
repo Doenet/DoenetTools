@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react'
+import React, { memo, useState, useEffect } from 'react'
 import { useSpring, a } from 'react-spring'
 import useMeasure from "../../hooks/useMeasure";
 import usePrevious from "../../hooks/usePrevious";
@@ -27,7 +27,7 @@ const TreeNode = memo(({ children, name, style, defaultOpen = false }) => {
   )
 })
 
-export const ParentNode = memo(({ children, data, style, defaultOpen = false, id, onDrop, onDraggableDragOver, onDragStart, onDragEnd, onDropEnter, draggedOver, draggable = true}) => {
+export const ParentNode = memo(({ children, data, style, defaultOpen = false, id, onDrop, onDraggableDragOver, onDragStart, onDragEnd, onDropEnter, draggedOver, currentDraggedType}) => {
   const [isOpen, setOpen] = useState(defaultOpen)
   const previous = usePrevious(isOpen)
   const [bind, { height: viewHeight }] = useMeasure()
@@ -38,33 +38,30 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
   const Icon = Icons[`${children ? (isOpen ? 'Minus' : 'Plus') : 'Close'}SquareO`]
 
   const onDropEnterCb = (listId) => {
-    setOpen(true);
     onDropEnter(listId)
   }
 
   const onDraggableDragOverCb = (listId) => {
-    // onDraggableDragOver(listId, "parent")
+    setOpen(true);
+    onDraggableDragOver(listId, "parent")
   }
 
   const onDragStartCb = (listId, ev) => {
     onDragStart(listId, "parent", ev)
   }
-  
 
   let DroppableParentNode = 
-    <Frame draggedOver={draggedOver}>
+    <Frame>
       <Icon style={{ ...toggle, opacity: children ? 1 : 0.3 }} onClick={() => setOpen(!isOpen)} />
       <Title style={style}>{data}</Title>
       <DropItem id={id} onDrop={onDrop} onDropEnter={onDropEnterCb} >
         <Content draggedover={draggedOver.toString()} style={{ opacity, height: isOpen && previous === isOpen ? 'auto' : height }}>
-          <div style={{height: "1px"}}></div>
+          {children[0].length == 0 && children[1].length == 0 && <div style={{height: "20px"}} />}
           <a.div style={{ transform }} {...bind} children={children} />
         </Content>
       </DropItem>
     </Frame>
   ;
-
-  // if (!draggable) return DroppableParentNode;
 
   return (
     <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>

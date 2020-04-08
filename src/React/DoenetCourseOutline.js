@@ -24,10 +24,11 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
     if (type != currentDraggedObject.type) return;
 
     const draggedOverItemInfo = type == "leaf" ? treeAssignments : treeHeadings;
+    const headingsChildrenListKey = type == "leaf" ? "assignmentId" : "headingId";
     const currentDraggedObjectInfo = currentDraggedObject.type == "leaf" ? treeAssignments : treeHeadings;
 
     const draggedOverItemParentListId = draggedOverItemInfo[id]["parent"];
-    const draggedOverItemIndex = treeHeadings[draggedOverItemParentListId]["assignmentId"]
+    const draggedOverItemIndex = treeHeadings[draggedOverItemParentListId][headingsChildrenListKey]
       .findIndex(itemId => itemId == id);
 
     const draggedItemParentListId = currentDraggedObjectInfo[currentDraggedObject.id]["parent"];
@@ -36,12 +37,13 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
     if (currentDraggedObject.id == id || draggedItemParentListId != draggedOverItemParentListId) {
       return;
     } 
-    
-    const headingsChildrenListKey = type == "leaf" ? "assignmentId" : "headingId";
+
     // filter out the currently dragged item
     const items = treeHeadings[draggedOverItemParentListId][headingsChildrenListKey].filter(itemId => itemId != currentDraggedObject.id);
     // add the dragged item after the dragged over item
     items.splice(draggedOverItemIndex, 0, currentDraggedObject.id);
+
+    console.log(draggedOverItemIndex);
     
     // update headings
     setTreeHeadings((prevHeadings) => {

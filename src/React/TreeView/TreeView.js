@@ -28,6 +28,7 @@ export const TreeView = ({headingsInfo, assignmentsInfo, currentDraggedObject, o
         onDrop: onDropCb, 
         onDropEnter: onDropEnterCb, 
         currentDraggedId: currentDraggedObject.id, 
+        currentDraggedType: currentDraggedObject.type, 
         currentDraggedOverContainerId: currentDraggedOverContainerId
       }) 
     }
@@ -35,7 +36,8 @@ export const TreeView = ({headingsInfo, assignmentsInfo, currentDraggedObject, o
   );
 }
 
-function buildTreeStructure({headingsInfo, assignmentsInfo, onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, currentDraggedId, currentDraggedOverContainerId}) {
+function buildTreeStructure({headingsInfo, assignmentsInfo, onDragStart, onDragEnd, 
+  onDraggableDragOver, onDrop, onDropEnter, currentDraggedId, currentDraggedType, currentDraggedOverContainerId}) {
   let baseLevelHeadings = headingsInfo["UltimateHeader"]["headingId"];
   
   let treeStructure = <React.Fragment>
@@ -49,8 +51,9 @@ function buildTreeStructure({headingsInfo, assignmentsInfo, onDragStart, onDragE
       onDragEnd={onDragEnd} 
       onDropEnter={onDropEnter}
       onDraggableDragOver={onDraggableDragOver}
-      draggedOver={currentDraggedOverContainerId == "UltimateHeader"}
-      draggable={false}
+      draggedOver={currentDraggedOverContainerId == "UltimateHeader" && 
+        currentDraggedType !== "leaf"}
+      currentDraggedType={currentDraggedType}
       defaultOpen={true} > 
       {// iterate through base level headings to generate tree recursively
       baseLevelHeadings.map(baseHeadingId => {
@@ -64,6 +67,7 @@ function buildTreeStructure({headingsInfo, assignmentsInfo, onDragStart, onDragE
             onDrop: onDrop, 
             onDropEnter: onDropEnter, 
             currentDraggedId: currentDraggedId, 
+            currentDraggedType: currentDraggedType,
             currentDraggedOverContainerId: currentDraggedOverContainerId});
       })}
       </ParentNode>
@@ -74,7 +78,8 @@ function buildTreeStructure({headingsInfo, assignmentsInfo, onDragStart, onDragE
 }
 
 function buildTreeStructureHelper({parentHeadingId, headingsInfo, assignmentsInfo, 
-  onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, currentDraggedId, currentDraggedOverContainerId}) {
+  onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, currentDraggedId, currentDraggedType,
+   currentDraggedOverContainerId}) {
   
   let subTree = <ParentNode 
     id={parentHeadingId}
@@ -86,6 +91,7 @@ function buildTreeStructureHelper({parentHeadingId, headingsInfo, assignmentsInf
     onDragStart={onDragStart}
     onDragEnd={onDragEnd} 
     onDraggableDragOver={onDraggableDragOver}
+    currentDraggedType={currentDraggedType}
     style={{
       border: currentDraggedId == parentHeadingId ? "2px dotted #37ceff" : "0px",
       background: currentDraggedId == parentHeadingId ? "#fff" : "none",
@@ -103,6 +109,7 @@ function buildTreeStructureHelper({parentHeadingId, headingsInfo, assignmentsInf
             onDrop: onDrop, 
             onDropEnter: onDropEnter, 
             currentDraggedId: currentDraggedId, 
+            currentDraggedType: currentDraggedType,
             currentDraggedOverContainerId: currentDraggedOverContainerId});
       })}
       { // iterate through children assigments to generate tree recursively
