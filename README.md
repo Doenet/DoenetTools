@@ -43,6 +43,8 @@ $ npm install
 ```
 
 ### 4. Build and run the containers!
+Make sure that Docker is running, then:
+
 ```bash
 $ npm start
 ```
@@ -67,6 +69,8 @@ Visit `localhost` in your browser to test the project. When you make changes to 
 
 ### Run the containers
 To run the containers, you can just run `$ npm start` in the project's root directory. This command will only build the containers if they are not already built.
+
+Note: You must have docker running before you can start the containers.
 
 ### Stop the containers
 Option 1: Use `ctrl+c` in the terminal that you started them with.
