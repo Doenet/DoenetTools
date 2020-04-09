@@ -13,22 +13,41 @@ $toValue = mysqli_real_escape_string($conn, $_REQUEST["toValue"]);
 
 $changeableStrings = array("email", "lastName", "firstName", "profilePicture");
 $changeableInts = array("trackingConsent", "roleInstructor", "roleCourseDesigner", "roleWatchdog", "roleCommunityTA", "roleLiveDataCommunity");
+$possiblePictures = array(
+    "bird",
+    "cat",
+    "dog",
+    "emu",
+    "fox",
+    "horse",
+    "penguin",
+    "squirrel",
+    "swan",
+    "turtle",
+);
 
 if (in_array($changeField, $changeableStrings)) {
     if (!is_string($toValue)) {
         http_response_code(400);
-        echo "Invalid `toValue`, must be string for $changeField.";
+        echo "Invalid `toValue`: $toValue, must be string for $changeField.";
+        $conn->close();
+        return;
+    }
+
+    if ($changeField === "profilePicture" && !in_array($toValue, $possiblePictures)) {
+        http_response_code(400);
+        echo "Invalid `toValue`: $toValue for `profilePicture`, must be one of: " . implode(", ", $possiblePictures) . ".";
         $conn->close();
         return;
     }
 } else if (in_array($changeField, $changeableInts)) {
     if (!ctype_digit($toValue)) {
         http_response_code(400);
-        echo "Invalid `toValue`: $toValue, must be int for $changeField.";
+        echo "Invalid `toValue`: $toValue, must be int (1|0) for $changeField.";
         $conn->close();
         return;
     }
-    
+
     $toValue = (int)$toValue;
 } else {
     http_response_code(400);
