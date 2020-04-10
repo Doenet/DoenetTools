@@ -20,18 +20,27 @@ class DoenetHeader extends Component {
       menuVisble:false,
       showToolbox: false,
     }
+    this.permissionMenu=null
     this.select=null
-
     this.updateNumber = 0;
     this.roles={}
     this.adminAccess = 0;
     this.accessAllowed = 0;
+    this.currentCourseId=""
+
     if (this.props.rights){
       this.rightToView = this.props.rights.rightToView
       this.rightToEdit = this.props.rights.rightToEdit
       this.instructorRights = this.props.rights.instructorRights
       
       this.coursesPermissions = this.props.rights.permissions  
+    this.currentCourseId = this.props.rights.defaultId
+    if (this.coursesPermissions && this.currentCourseId){
+      this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+      this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
+    }
+
+
     } else {
       this.rightToView = false
       this.rightToEdit = false
@@ -39,29 +48,80 @@ class DoenetHeader extends Component {
     }
 
     this.selectPermission = null
-    this.currentCourseId=""
-    // const {this.props.rights.arrayIds,this.props.rights.courseInfo,defaultId,permissions} = this.props.rights
-    if (this.props.rights){
-    this.currentCourseId = this.props.rights.defaultId
-    }
+    // if (this.props.rights){
+    // this.currentCourseId = this.props.rights.defaultId
+
+    // }
+
+    // this.options = []
+    // if (this.props.rights && this.props.rights.arrayIds!=[]){
+    //   this.props.rights.arrayIds.map((id,index)=>{
+    //     this.options.push(<option key={this.updateNumber++} value={id}>{this.props.rights.courseInfo[id]['courseName']}</option>)        
+    //     // this.options.push(<option value={id} selected={defaultId===id?true:false}>{this.props.rights.courseInfo[id]['courseName']}</option>)
+    //   })
+    // } else {
+    //   this.options.push(<option key={this.updateNumber++}>No courses</option>)
+    // }
 
 
-    this.options = []
+    this.coursesToChoose={}
     if (this.props.rights && this.props.rights.arrayIds!=[]){
-      this.props.rights.arrayIds.map((id,index)=>{
-        this.options.push(<option key={this.updateNumber++} value={id}>{this.props.rights.courseInfo[id]['courseName']}</option>)        
-        // this.options.push(<option value={id} selected={defaultId===id?true:false}>{this.props.rights.courseInfo[id]['courseName']}</option>)
+      this.props.rights.arrayIds.map((id)=>{
+        this.coursesToChoose[id]={
+          showText:this.props.rights.courseInfo[id]['courseName'],
+          callBackFunction:(e)=>{
+          this.currentCourseId = e;
+            this.courseChosenCallBack({e:e})} 
+        }
       })
-    } else {
-      this.options.push(<option key={this.updateNumber++}>No courses</option>)
     }
 
-    // console.log(this.options)
-    this.select = (<select 
-    value = {this.props.rights?this.props.rights.defaultId:undefined}
-    className="select"
-    onChange = {(e)=>{
-      this.currentCourseId = e.target.value;
+    
+  
+   
+    this.toolTitleToLinkMap = {
+      "Chooser" : "/chooser/",
+      "Course" : "/course/",
+      "Documentation" : "/docs/",
+      "Gradebook": "/gradebook/",
+    }
+    this.navigationMenu = {}
+    Object.keys(this.toolTitleToLinkMap).map((toolTitle)=> {
+      if (toolTitle!=this.props.toolTitle){
+        this.navigationMenu[toolTitle]={
+          showText:toolTitle,
+          url:this.toolTitleToLinkMap[toolTitle]
+                     
+      }
+      }
+      
+    })
+    this.itemsToShowUpdated={}
+    if (this.accessAllowed==="1"){
+      this.itemsToShowUpdated['Student']={
+        showText:"Student",
+      callBackFunction: this.props.rights.itemsToShow['Student']['callBackFunction']
+      }
+      if (this.adminAccess==="1"){
+        this.itemsToShowUpdated['Instructor']={
+          showText:"Instructor",
+        callBackFunction: this.props.rights.itemsToShow['Instructor']['callBackFunction']
+        }
+      }
+    }
+    this.permissionMenu=(
+      <Menu 
+              key={"menu02"+(this.updateNumber++)}
+              // showDropDown={this.state.menuVisble}
+              showThisRole={this.props.rights?this.props.rights.defaultRole:""} 
+              itemsToShow = {this.itemsToShowUpdated}
+              // itemsToShow={this.props.rights?this.props.rights.itemsToShow:{}} 
+              // menuIcon={this.props.rights?this.props.rights.menuIcon:null}
+              />
+    )
+  }
+
+courseChosenCallBack({e}){
       this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
       this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
       if (this.accessAllowed==="1"){
@@ -72,27 +132,12 @@ class DoenetHeader extends Component {
         }
       }
       // this.makePermissionList()
-      this.props.rights.parentFunction(e.target.value);
-      this.forceUpdate()}}>
-      {this.options}
-    </select>)
-    
-  
-   
-    // this.headingTitle = this.props.this.props.rights.courseInfo[this.currentCourseId]['courseName']
-    this.toolTitleToLinkMap = {
-      "Chooser" : "/chooser/",
-      "Course" : "/course/",
-      "Documentation" : "/docs/",
-      "Gradebook": "/gradebook/",
-    }
-
-  }
-  // componentDidMount(){
-
+      this.props.rights.parentFunction(e);
+      this.forceUpdate()
+}
 
   componentWillUnmount(){
-    this.select = undefined
+    // this.select = undefined
     this.selectPermission =undefined
     this.username = undefined;
     // this.access = undefined;
@@ -118,30 +163,18 @@ class DoenetHeader extends Component {
     }
     
   }
-  toggleToolbox = () => {
-    console.log("TOOL BOX")
-    if (!this.state.showToolbox) {
-      document.addEventListener('click', this.toggleToolbox, false);
-    } else {
-      document.removeEventListener('click', this.toggleToolbox, false);
-    }
+  // toggleToolbox = () => {
+  //   if (!this.state.showToolbox) {
+  //     document.addEventListener('click', this.toggleToolbox, false);
+  //   } else {
+  //     document.removeEventListener('click', this.toggleToolbox, false);
+  //   }
 
-    this.setState(prevState => ({
-      showToolbox: !prevState.showToolbox,
-    }));    
-  }
-  toggleMenubar = () => {
-    console.log("MENU BAR")
-    if (!this.state.menuVisble) {
-      document.addEventListener('click', this.toggleMenubar, false);
-    } else {
-      document.removeEventListener('click', this.toggleMenubar, false);
-    }
+  //   this.setState(prevState => ({
+  //     showToolbox: !prevState.showToolbox,
+  //   }));    
+  // }
 
-    this.setState(prevState => ({
-      menuVisble: !prevState.menuVisble
-    }));    
-  }
 
 
   render() {  
@@ -154,48 +187,32 @@ class DoenetHeader extends Component {
               <span>{this.props.toolTitle}</span>
             </div>
             {this.props.headingTitle && <div className="headingTitle">
-              {/* <span>{ headingTitle }</span> */}
-              <span>{ this.select }</span>
+              <Menu
+              width={"500px"}
+              key={"menu00"+(this.updateNumber++)}           
+              showThisRole={this.props.rights?this.props.rights.courseInfo[this.currentCourseId]['courseName']:""}
+              itemsToShow = {this.coursesToChoose}
+              />
             </div>}
             <div className="headingToolbar">
             <div 
             >                
-              {<Menu 
-              key={"menu01"+(this.updateNumber++)}
-              showDropDown={this.state.menuVisble}
-              showThisRole={this.props.rights?this.props.rights.defaultRole:""} 
-              itemsToShow={this.props.rights?this.props.rights.itemsToShow:{}} 
-              menuIcon={this.props.rights?this.props.rights.menuIcon:null}
-              />}
               </div>
 
               <div className="toolboxContainer" data-cy="toolboxButton" 
             >                
-              {<Menu 
-              key={"menu02"+(this.updateNumber++)}
-              showDropDown={this.state.menuVisble}
-              showThisRole={this.props.rights?this.props.rights.defaultRole:""} 
-              itemsToShow={this.props.rights?this.props.rights.itemsToShow:{}} 
-              // menuIcon={this.props.rights?this.props.rights.menuIcon:null}
-              />}
-              </div>
+              {this.permissionMenu}
 
-              {/* <div className="toolboxContainer" data-cy="toolboxButton" onClick={this.toggleToolbox}>  
-              <FontAwesomeIcon id="toolboxButton" icon={faTh}/>
-                {this.state.showToolbox && 
-                <Toolbox show={this.state.showToolbox} toggleToolbox={this.toggleToolbox}>
-                  {Object.keys(this.toolTitleToLinkMap).map((toolTitle, index)=> {
-                    let currentUrl = window.location.href;
-                    const navLinkClassName = currentUrl.includes(this.toolTitleToLinkMap[toolTitle]) ? 
-                      "selectedToolboxNavLink" : "toolboxNavLink";
-                    return( 
-                      <div className={ navLinkClassName } key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolTitle }>
-                        <a href={ this.toolTitleToLinkMap[toolTitle] }>{toolTitle }</a>
-                      </div>
-                    )
-                  })}
-                </Toolbox>}
-              </div> */}
+              </div>
+              <div className="toolboxContainer" data-cy="toolboxButton" >
+              <Menu
+              key={"menu01"+(this.updateNumber++)}           
+              showThisRole={this.props.toolTitle} 
+              itemsToShow = {this.navigationMenu}
+              menuIcon={faTh}
+              />
+              
+              </div>
 
               <div id="userButton" onClick={()=>alert('User Setting Feature Not Yet Available')}>
                 <FontAwesomeIcon id="userButtonIcon" icon={faUser}/>
@@ -207,15 +224,6 @@ class DoenetHeader extends Component {
       </React.Fragment>
     );
   }
-}
-
-const Toolbox = ({ toggleToolbox, children }) => {
-
-  return (
-    <section className="toolbox" data-cy="toolbox">
-      {children}
-    </section>
-  );
 }
 
 export default DoenetHeader;

@@ -1,9 +1,8 @@
-import React, {useState,useEffect,useRef } from 'react';
+import React from 'react';
 import './menuItem.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {animated,useSpring,config,useTransition,useChain} from 'react-spring';
+import {animated,useSpring} from 'react-spring';
 import styled from 'styled-components';
-const Item = styled.p `
+const Item = styled.div `
 padding: 10px 10px 10px 10px ;
 position: relative;
 display: block;
@@ -24,13 +23,13 @@ const MenuItem = ({content}) =>{
   return (
     <div>
       <Item
-        onMouseEnter={() => set({ x: 0, color: "white"})}
+        onMouseEnter={() => set({ x: 0, color: "white"})} 
         onMouseLeave={() => set({ x: 100, color: "black"})}
       >
         <animated.span style={{ color }}>
           {content}
         </animated.span>
-        <animated.div
+        <animated.p
           style={{ transform: x.interpolate(v => `translateX(-${v}%`) }}
           className="glance"
         />

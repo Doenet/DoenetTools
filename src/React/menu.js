@@ -49,11 +49,10 @@ display: none;
 
 
 
-    const Menu = ({showThisRole,itemsToShow,menuIcon}) =>{
+    const Menu = ({showThisRole,itemsToShow,menuIcon,width}) =>{
       const node = useRef();
-      const[currentItemDisplay,setcurrentItemDisplay] = useState(Object.keys(itemsToShow).length>0?showThisRole:"N/A");
+      const[currentItemDisplay,setcurrentItemDisplay] = useState(Object.keys(itemsToShow).length>0?showThisRole:"");
       let rolesDisplay=[]
-      let click = 1;
       let updateNumber=0
         Object.keys(itemsToShow).map(item=>{
           if (itemsToShow[item]['url']){    // exists URL
@@ -136,17 +135,26 @@ display: none;
          </Icon>
          )
          : // no icon
-       (<MenuController 
+       (<button 
+
+        style={{margin:"0",
+        minWidth:(width?width:"40px"),
+          backgroundColor: "#6de5ff",
+            color: "black",
+            padding: "16px",
+            fontSize: "16px",
+            cursor: "pointer",
+            display:"block"
+          }}
          >{currentItemDisplay}
-         </MenuController>)
+         </button>)
        }</div>
-      
+      {/* use width somewhere in component below for consistenecy */}
         <DropDownContent 
         style={Object.keys(itemsToShow).length>1?fullMenuAnimation:null} >
           {itemTransitions.map(({ item, key, props }) => (
               (<animated.div
                 style={props} key={key}
-                
                 onClick={()=>{
                 if (itemsToShow[item]['url']){
                   window.location.href = itemsToShow[item]['url']

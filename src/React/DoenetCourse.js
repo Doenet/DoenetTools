@@ -1014,10 +1014,7 @@ class DoenetCourse extends Component {
               showText:"Student", 
               callBackFunction:(e)=>{this.permissionCallBack({e:e})}              
           }
-          this.permissionRoles['Yahoo']={
-            showText:"Go to Yahoo", 
-            url:"https://www.yahoo.com",
-        }
+          
           }
       this.alreadyLoadAllCourses = true;
       this.courseName = this.courseInfo[this.currentCourseId]['courseName']
@@ -3162,7 +3159,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.loadAssignmentContent({contentId:null,branchId:null,assignmentId:loadSpecificId})
         this.loadAssignmentFromGrade=false
         }
-      this.loadFirstTrue=(this.assignmentTree)
+      // this.loadFirstTrue=(this.assignmentTree)
       this.forceUpdate();
       
     }).catch(error=>{this.setState({error:error})});
@@ -3424,7 +3421,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 instructorRights : this.instructorRights,
 
                 itemsToShow:this.permissionRoles,
-                
+
                 menuIcon:faUserSecret,
                 downloadPermission : this.parentUpdateDownloadPermission,
                 permissions : this.coursesPermissions,
@@ -3432,7 +3429,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 courseInfo : this.courseInfo,
                 defaultId : this.currentCourseId,
 
-                defaultRole: (this.rightToEdit&&this.rightToView?"Instructor":(this.rightToView?"Student":"N/A")),
+                defaultRole: (this.rightToEdit&&this.rightToView?"Instructor":(this.rightToView?"Student":"")),
 
                 permissionCallBack :(e)=>{
                   if (e==="Student"){
