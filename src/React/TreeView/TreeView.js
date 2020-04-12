@@ -53,6 +53,7 @@ function buildTreeStructure({headingsInfo, assignmentsInfo, onDragStart, onDragE
       onDraggableDragOver={onDraggableDragOver}
       draggedOver={currentDraggedOverContainerId == "UltimateHeader" && 
         currentDraggedType !== "leaf"}
+      currentDraggedId={currentDraggedId}
       currentDraggedType={currentDraggedType}
       defaultOpen={true} > 
       {// iterate through base level headings to generate tree recursively
@@ -91,6 +92,7 @@ function buildTreeStructureHelper({parentHeadingId, headingsInfo, assignmentsInf
     onDragStart={onDragStart}
     onDragEnd={onDragEnd} 
     onDraggableDragOver={onDraggableDragOver}
+    currentDraggedId={currentDraggedId}
     currentDraggedType={currentDraggedType}
     style={{
       border: currentDraggedId == parentHeadingId ? "2px dotted #37ceff" : "0px",

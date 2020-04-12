@@ -63,13 +63,9 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
     // temp fix, do we want to allow assignments at base level
     if (listId == "UltimateHeader" && currentDraggedObject.type == "leaf") return;
 
-    // prevent heading from becoming a child of itself
-    if (listId == "UltimateHeader" && currentDraggedObject.type == "leaf") return;
-
     const currentDraggedObjectInfo = currentDraggedObject.type == "leaf" ? treeAssignments : treeHeadings;
     const previousParentId = currentDraggedObjectInfo[currentDraggedObject.id].parent; 
-    if (previousParentId == listId 
-        || listId == currentDraggedObject.id) // prevent heading from becoming a child of itself 
+    if (previousParentId == listId || listId == currentDraggedObject.id) // prevent heading from becoming a child of itself 
       return;
     
     const headingsChildrenListKey = currentDraggedObject.type == "leaf" ? "assignmentId" : "headingId";

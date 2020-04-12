@@ -27,7 +27,7 @@ const TreeNode = memo(({ children, name, style, defaultOpen = false }) => {
   )
 })
 
-export const ParentNode = memo(({ children, data, style, defaultOpen = false, id, onDrop, onDraggableDragOver, onDragStart, onDragEnd, onDropEnter, draggedOver, currentDraggedType}) => {
+export const ParentNode = memo(({ children, data, style, defaultOpen = false, id, onDrop, onDraggableDragOver, onDragStart, onDragEnd, onDropEnter, draggedOver, currentDraggedId, currentDraggedType}) => {
   const [isOpen, setOpen] = useState(defaultOpen)
   const previous = usePrevious(isOpen)
   const [bind, { height: viewHeight }] = useMeasure()
@@ -42,11 +42,12 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
   }
 
   const onDraggableDragOverCb = (listId) => {
-    setOpen(true);
+    if (listId !== currentDraggedId) setOpen(true);
     onDraggableDragOver(listId, "parent")
   }
 
   const onDragStartCb = (listId, ev) => {
+    setOpen(false);
     onDragStart(listId, "parent", ev)
   }
 
