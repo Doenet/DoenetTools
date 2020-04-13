@@ -54,10 +54,10 @@ module.exports = {
         use: [
           {
             loader: 'url-loader',
-            options: { 
+            options: {
               limit: 10000, // Convert images < 10kb to base64 strings
               name: 'media/[hash]-[name].[ext]'
-            } 
+            }
           },
         ],
       }
@@ -142,7 +142,10 @@ module.exports = {
       chunkFilename: "[id].css"
     }),
     new CopyWebpackPlugin([
-      { from: 'static' }
+      {
+        from: 'static',
+        ignore: ['env.ini'] // IMPORTANT
+      }
     ])
   ],
   devServer: {
@@ -150,4 +153,3 @@ module.exports = {
     // openPage: "protected",
   }
 };
-

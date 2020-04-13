@@ -127,11 +127,11 @@ $result = $conn->query($sql);
 $users = array();
 while($row = $result->fetch_assoc()){ 
   $user_info = array(
-    firstName=>$row["firstName"],
-    lastName=>$row["lastName"],
-    username=>$row["username"],
-    email=>$row["email"],
-    owner=>$row["owner"]
+    "firstName"=>$row["firstName"],
+    "lastName"=>$row["lastName"],
+    "username"=>$row["username"],
+    "email"=>$row["email"],
+    "owner"=>$row["owner"]
   );
   array_push($users,$user_info);
 }
