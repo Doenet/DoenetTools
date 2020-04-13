@@ -14,6 +14,7 @@ const useDrop = ({ ref, onDrop, onDragOver, onDropEnter }) => {
     ev.dataTransfer.getData("source")
     onDrop && onDrop();
     updateDropState("dropped");
+    ev.stopPropagation();
   };
 
   const dropEnterCb = ev => {

@@ -5,8 +5,7 @@ const useDrag = ({ id, effect, ref, onDragStart, onDragOver, onDragEnd }) => {
   const dragStartCb = ev => {
     updateDragState("dragging");
     ev.dataTransfer.dropEffect = effect;
-    ev.dataTransfer.setData("source", id);
-    
+    ev.dataTransfer.setData("text/plain", id);
     onDragStart && onDragStart(ev);
     ev.stopPropagation();
   };
@@ -19,11 +18,13 @@ const useDrag = ({ id, effect, ref, onDragStart, onDragOver, onDragEnd }) => {
   };
 
   const dragEndCb = ev => {
+    // ev.preventDefault();
     updateDragState("draggable");
     if (effect === "move") {
       updateDragState("moved");
     }
     onDragEnd && onDragEnd(ev);
+    ev.stopPropagation();
   };
   useEffect(() => {
     const elem = ref.current;

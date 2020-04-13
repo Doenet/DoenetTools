@@ -17,6 +17,10 @@ export const TreeView = ({headingsInfo, assignmentsInfo, currentDraggedObject, o
     onDropEnter(id);
   }
 
+  const onMouseUp = () => {
+    console.log("HERERE");
+  }
+
   return (
     <>
     { buildTreeStructure({
@@ -29,7 +33,8 @@ export const TreeView = ({headingsInfo, assignmentsInfo, currentDraggedObject, o
         onDropEnter: onDropEnterCb, 
         currentDraggedId: currentDraggedObject.id, 
         currentDraggedType: currentDraggedObject.type, 
-        currentDraggedOverContainerId: currentDraggedOverContainerId
+        currentDraggedOverContainerId: currentDraggedOverContainerId,
+        onMouseUp: onMouseUp
       }) 
     }
     </>
@@ -37,7 +42,7 @@ export const TreeView = ({headingsInfo, assignmentsInfo, currentDraggedObject, o
 }
 
 function buildTreeStructure({headingsInfo, assignmentsInfo, onDragStart, onDragEnd, 
-  onDraggableDragOver, onDrop, onDropEnter, currentDraggedId, currentDraggedType, currentDraggedOverContainerId}) {
+  onDraggableDragOver, onDrop, onDropEnter, currentDraggedId, currentDraggedType, currentDraggedOverContainerId, onMouseUp}) {
   let baseLevelHeadings = headingsInfo["UltimateHeader"]["headingId"];
   
   let treeStructure = <React.Fragment>
