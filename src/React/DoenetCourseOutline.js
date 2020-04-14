@@ -5,7 +5,7 @@ import { TreeView } from './TreeView/TreeView'
 
 const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHeadingsAndAssignments,
   courseFoldersInfo, courseContentInfo, updateCourseFoldersAndContent }) => {
-  const [currentDraggedObject, setCurrentDraggedObject] = useState({id: null, type: null, sourceContainerId: null});
+  const [currentDraggedObject, setCurrentDraggedObject] = useState({id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null});
   const [treeHeadings, setTreeHeadings] = useState(treeHeadingsInfo);
   const [treeAssignments, setTreeAssignments] = useState(treeAssignmentsInfo);
   const [originalTreeHeadingsAndAssignments, setOriginalTreeHeadingsAndAssignments] = useState({
@@ -26,7 +26,6 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
     if (currentDraggedObject.id == null // drag ended
       && !validDrop  // dropped outsize valid dropzone
     ) {
-
       console.log("invalid end")
     }
   }, [currentDraggedObject])
@@ -43,7 +42,10 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
 
   const onDragStart = (draggedId, draggedType, sourceContainerId) => {
     setValidDrop(() => false);
-    setCurrentDraggedObject({id: draggedId, type: draggedType, sourceContainerId: sourceContainerId});
+    const dataObjectSource = draggedType == "leaf" ? treeAssignments : treeHeadings;
+    const dataObject = dataObjectSource[draggedId];
+    const sourceParentId = dataObjectSource[draggedId].parent;
+    setCurrentDraggedObject({id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId});
     setOriginalTreeHeadingsAndAssignments({
       treeHeadings: treeHeadings,
       treeAssignments: treeAssignments,
@@ -92,33 +94,46 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
     // temp fix, do we want to allow assignments at base level
     if (listId == "UltimateHeader" && currentDraggedObject.type == "leaf") return;
 
-    const currentDraggedObjectInfo = currentDraggedObject.type == "leaf" ? treeAssignments : treeHeadings;
-    const previousParentId = currentDraggedObjectInfo[currentDraggedObject.id].parent; 
+    const currentDraggedObjectInfo = currentDraggedObject.dataObject;
+    const previousParentId = currentDraggedObjectInfo.parent;
+
     if (previousParentId == listId || listId == currentDraggedObject.id) // prevent heading from becoming a child of itself 
       return;
+    console.log(treeHeadings[previousParentId]["name"] + " " + treeHeadings[listId]["name"])
     
     const headingsChildrenListKey = currentDraggedObject.type == "leaf" ? "assignmentId" : "headingId";
     const previousList = treeHeadings[previousParentId][headingsChildrenListKey];
-    const indexInList = previousList.findIndex(itemId => itemId == currentDraggedObject.id);
-    if (indexInList > -1) {
-      previousList.splice(indexInList, 1);
-    }
     const currentList = treeHeadings[listId][headingsChildrenListKey];
-    currentList.push(currentDraggedObject.id);
+    // remove from previous list
+    if (previousParentId !== currentDraggedObject.sourceParentId) {
+      console.log("delete from " + treeHeadings[listId]["name"]);
+      const indexInList = previousList.findIndex(itemId => itemId == currentDraggedObject.id);
+      if (indexInList > -1) {
+        previousList.splice(indexInList, 1);
+      }
+    }
+    if (listId !== currentDraggedObject.sourceParentId) {
+      // add to current list
+      console.log("PuSHED");
+      currentList.push(currentDraggedObject.id);     
+    }
 
-    onDragStart(currentDraggedObject.id, currentDraggedObject.type, currentDraggedObject.sourceContainerId);
+    setCurrentDraggedObject((prevCurrentDraggedObject) => {
+      prevCurrentDraggedObject.dataObject.parent = listId;
+      return {
+        ...prevCurrentDraggedObject
+      }
+    })
 
     setTreeHeadings((prevHeadings) => {
       prevHeadings[previousParentId][headingsChildrenListKey] = previousList;
       prevHeadings[listId][headingsChildrenListKey] = currentList;
-      if (currentDraggedObject.type == "parent") prevHeadings[currentDraggedObject.id]["parent"] = listId;
       return({
         ...prevHeadings
       })
     })
     if (currentDraggedObject.type == "leaf") {
       setTreeAssignments((prevAssignments) => {
-        prevAssignments[currentDraggedObject.id]["parent"] = listId;
         return({
           ...prevAssignments
         })
@@ -131,6 +146,33 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
   }
 
   const onDrop = () => {
+    // update treeHeadings/treeAssignments currentDraggedObject parentId
+    // remove currentDraggedObject from sourceParentId children list
+    if (currentDraggedObject.type == "leaf") {
+      setTreeAssignments((prevAssignments) => {
+        prevAssignments[currentDraggedObject.id] = currentDraggedObject.dataObject;
+        return({
+          ...prevAssignments
+        })
+      })
+    }
+    const headingsChildrenListKey = currentDraggedObject.type == "leaf" ? "assignmentId" : "headingId";
+    const sourceParentChildrenList = treeHeadings[currentDraggedObject.sourceParentId][headingsChildrenListKey];
+    
+    if (currentDraggedObject.dataObject.parent !== currentDraggedObject.sourceParentId) {
+      const indexInSourceParentChildrenList = sourceParentChildrenList.findIndex(itemId => itemId == currentDraggedObject.id);
+      if (indexInSourceParentChildrenList > -1) {
+        sourceParentChildrenList.splice(indexInSourceParentChildrenList, 1);
+      }
+    }
+    setTreeHeadings((prevHeadings) => {
+      prevHeadings[currentDraggedObject.sourceParentId][headingsChildrenListKey] = sourceParentChildrenList;
+      if (currentDraggedObject.type == "parent") prevHeadings[currentDraggedObject.id] = currentDraggedObject.dataObject;
+      return({
+        ...prevHeadings
+      })
+    })
+    
     setValidDrop(true);
     setCurrentDraggedObject({id: null, type: null, sourceContainerId: null});
     updateHeadingsAndAssignments(treeHeadings, treeAssignments);

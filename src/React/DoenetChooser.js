@@ -1082,7 +1082,7 @@ class DoenetChooser extends Component {
   updateHeadingsAndAssignments(headingsInfo, assignmentsInfo) {
     this.headingsInfo = headingsInfo;
     this.assignmentsInfo = assignmentsInfo;
-    this.saveTree(this.headingsInfo, this.assignmentsInfo);
+    // this.saveTree(this.headingsInfo, this.assignmentsInfo);
   }
 
   saveTree(headingsInfo, assignmentsInfo){
