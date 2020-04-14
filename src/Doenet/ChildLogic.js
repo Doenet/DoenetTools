@@ -250,9 +250,17 @@ export default class childLogic {
 
   returnMatches(name) {
 
-    if (this.logicResult.success !== true ||
-      this.propertyAndBaseLogic === undefined) {
+
+    if(this.propertyAndBaseLogic === undefined) {
       return;
+    }
+
+    if (this.logicResult.success !== true) {
+      if(name in this.logicComponents) {
+        return [];
+      } else {
+        return;
+      }
     }
 
     let resultIndices = this.propertyAndBaseLogic.indicesFromNames[name];

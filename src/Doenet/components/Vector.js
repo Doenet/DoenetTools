@@ -576,7 +576,7 @@ export default class Vector extends GraphicalComponent {
               }
             };
           }
-          let headTree = ["tuple"]
+          let headTree = ["vector"]
           for (let i = 0; i < nDimDisplacement; i++) {
             headTree.push(
               dependencyValues.tail.get_component(i)
@@ -606,7 +606,7 @@ export default class Vector extends GraphicalComponent {
                   if (!["tuple", "vector"].includes(dependencyValues.tail.tree[0])) {
                     return me.fromAst(0);
                   }
-                  let headTree = ["tuple"]
+                  let headTree = ["vector"]
                   for (let i = 1; i < dependencyValues.tail.tree.length; i++) {
                     headTree.push(0);
                   }
@@ -703,7 +703,7 @@ export default class Vector extends GraphicalComponent {
               }]
             };
           }
-          let displacementTree = ["tuple"]
+          let displacementTree = ["vector"]
           displacementTree.length = nDimHead + 1;
           for (let i = 0; i < nDimHead; i++) {
             if (desiredStateVariableValues.head.tree[i + 1] !== undefined) {
@@ -861,7 +861,7 @@ export default class Vector extends GraphicalComponent {
                 }
               };
             }
-            let tailTree = ["tuple"]
+            let tailTree = ["vector"]
             for (let i = 0; i < nDimDisplacement; i++) {
               tailTree.push(
                 dependencyValues.head.get_component(i)
@@ -891,7 +891,7 @@ export default class Vector extends GraphicalComponent {
                     if (!["tuple", "vector"].includes(dependencyValues.head.tree[0])) {
                       return me.fromAst(0);
                     }
-                    let tailTree = ["tuple"]
+                    let tailTree = ["vector"]
                     for (let i = 1; i < dependencyValues.head.tree.length; i++) {
                       tailTree.push(0);
                     }
@@ -913,7 +913,7 @@ export default class Vector extends GraphicalComponent {
                     if (!["tuple", "vector"].includes(dependencyValues.displacement.tree[0])) {
                       return me.fromAst(0);
                     }
-                    let tailTree = ["tuple"]
+                    let tailTree = ["vector"]
                     for (let i = 1; i < dependencyValues.displacement.tree.length; i++) {
                       tailTree.push(0);
                     }
@@ -1020,7 +1020,7 @@ export default class Vector extends GraphicalComponent {
               }]
             };
           }
-          let displacementTree = ["tuple"];
+          let displacementTree = ["vector"];
           displacementTree.length = nDimHead + 1;
           for (let i = 0; i < nDimHead; i++) {
             if (desiredStateVariableValues.tail.tree[i + 1] !== undefined) {
@@ -1140,7 +1140,7 @@ export default class Vector extends GraphicalComponent {
             }
           };
         }
-        let displacementTree = ["tuple"]
+        let displacementTree = ["vector"]
         for (let i = 0; i < nDimTail; i++) {
           displacementTree.push(
             dependencyValues.head.get_component(i)
@@ -1203,7 +1203,7 @@ export default class Vector extends GraphicalComponent {
             }]
           };
         }
-        let headTree = ["tuple"];
+        let headTree = ["vector"];
         headTree.length = nDimDisplacement + 1;
         for (let i = 0; i < nDimDisplacement; i++) {
           if (desiredStateVariableValues.displacement.tree[i + 1] !== undefined) {
@@ -1313,7 +1313,7 @@ export default class Vector extends GraphicalComponent {
         }
 
 
-        let displacementTree = ["tuple"];
+        let displacementTree = ["vector"];
         displacementTree.length = dependencyValues.nDimensions + 1;
 
 
@@ -1559,7 +1559,7 @@ export default class Vector extends GraphicalComponent {
         updateInstructions.push({
           componentName: this.componentName,
           stateVariable: "displacement",
-          value: me.fromAst(["tuple", ...displacement])
+          value: me.fromAst(["vector", ...displacement])
         })
 
       } else {
@@ -1567,7 +1567,7 @@ export default class Vector extends GraphicalComponent {
         updateInstructions.push({
           componentName: this.componentName,
           stateVariable: "tail",
-          value: me.fromAst(["tuple", ...tailcoords])
+          value: me.fromAst(["vector", ...tailcoords])
         })
       }
 
@@ -1580,7 +1580,7 @@ export default class Vector extends GraphicalComponent {
           updateInstructions.push({
             componentName: this.componentName,
             stateVariable: "displacement",
-            value: me.fromAst(["tuple", ...displacement])
+            value: me.fromAst(["vector", ...displacement])
           })
         }
       }
@@ -1594,7 +1594,7 @@ export default class Vector extends GraphicalComponent {
         updateInstructions.push({
           componentName: this.componentName,
           stateVariable: "head",
-          value: me.fromAst(["tuple", ...headcoords])
+          value: me.fromAst(["vector", ...headcoords])
         })
       } else {
         // if based on displacement alone or displacement and tail
@@ -1607,7 +1607,7 @@ export default class Vector extends GraphicalComponent {
         updateInstructions.push({
           componentName: this.componentName,
           stateVariable: "displacement",
-          value: me.fromAst(["tuple", ...displacement])
+          value: me.fromAst(["vector", ...displacement])
         })
       }
 
@@ -1621,7 +1621,7 @@ export default class Vector extends GraphicalComponent {
           updateInstructions.push({
             componentName: this.componentName,
             stateVariable: "displacement",
-            value: me.fromAst(["tuple", ...displacement])
+            value: me.fromAst(["vector", ...displacement])
           })
         }
       }

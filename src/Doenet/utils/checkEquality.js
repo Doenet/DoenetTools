@@ -220,7 +220,7 @@ export default function checkEquality({
         return { fraction_equal: 0 };
       } else if (object2_operator === "tuple") {
         // since we can convert tuple to vector
-        // change object2 to array o felements
+        // change object2 to array of selements
         object2 = object2.tree.slice(1);
       } else if (object2_operator !== "vector") {
         // since can convert singleton to a vector of length 1

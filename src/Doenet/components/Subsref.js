@@ -1,5 +1,5 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import { postProcessRef } from './Ref';
+import { postProcessRef} from '../utils/refs';
 
 export default class Subsref extends CompositeComponent {
   static componentType = "subsref";
@@ -171,6 +171,8 @@ export default class Subsref extends CompositeComponent {
 
   static createSerializedReplacements({ component, components, workspace }) {
 
+    // console.log(`createSerializedReplacements for ${component.componentName}`);
+    
     let serializedCopy;
 
     let targetSubsComponent = components[component.stateValues.targetSubs.componentName];

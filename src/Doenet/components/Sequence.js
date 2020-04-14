@@ -411,7 +411,7 @@ export default class Sequence extends CompositeComponent {
           // step must be number if not math
           if (dependencyValues.selectedType !== "math") {
             let numericalStep = findFiniteNumericalValue(dependencyValues.specifiedStep);
-            if(!Number.isFinite(numericalStep)) {
+            if (!Number.isFinite(numericalStep)) {
               console.log("Invalid step of sequence.  Must be a number for sequence of type " + dependencyValues.selectedType + ".")
               validSequence = false;
             }
@@ -421,7 +421,7 @@ export default class Sequence extends CompositeComponent {
         if (dependencyValues.specifiedFrom !== null) {
           if (dependencyValues.selectedType === "number") {
             let numericalFrom = findFiniteNumericalValue(dependencyValues.specifiedFrom);
-            if(!Number.isFinite(numericalFrom)) {
+            if (!Number.isFinite(numericalFrom)) {
               console.log("Invalid from of number sequence.  Must be a number")
               validSequence = false;
             }
@@ -431,7 +431,7 @@ export default class Sequence extends CompositeComponent {
         if (dependencyValues.specifiedTo !== null) {
           if (dependencyValues.selectedType === "number") {
             let numericalTo = findFiniteNumericalValue(dependencyValues.specifiedTo);
-            if(!Number.isFinite(numericalTo)) {
+            if (!Number.isFinite(numericalTo)) {
               console.log("Invalid from of number sequence.  Must be a number")
               validSequence = false;
             }
@@ -596,6 +596,11 @@ export default class Sequence extends CompositeComponent {
           variableName: "exclude",
         },
       }),
+      // when this state variable is marked stale
+      // it indicates we should update replacement
+      // For this to work, must get value in replacement functions
+      // so that the variable is marked fresh
+      markStale: () => ({ updateReplacements: true }),
       definition: function () {
         // even with invalid sequence, still ready to expand
         // (it will just expand with zero replacements)
@@ -730,6 +735,12 @@ export default class Sequence extends CompositeComponent {
 
   static createSerializedReplacements({ component, workspace }) {
 
+    // console.log(`create serialized replacements for ${component.componentName}`)
+
+    // evaluate readyToExpandWhenResolved so that it is marked fresh,
+    // as it being marked stale triggers replacement update
+    component.stateValues.readyToExpandWhenResolved;
+
     if (!component.stateValues.validSequence) {
       workspace.lastReplacementParameters = {
         from: null,
@@ -784,11 +795,19 @@ export default class Sequence extends CompositeComponent {
       replacements.push(serializedComponent);
     }
 
+    // console.log(`replacements for ${component.componentName}`)
+    // console.log(replacements)
+
     return { replacements };
   }
 
   static calculateReplacementChanges({ component, workspace }) {
     // console.log(`calculate replacement changes for ${component.componentName}`);
+
+
+    // evaluate readyToExpandWhenResolved so that it is marked fresh,
+    // as it being marked stale triggers replacement update
+    component.stateValues.readyToExpandWhenResolved;
 
     let lrp = workspace.lastReplacementParameters;
 

@@ -1311,8 +1311,8 @@ export default class Line extends GraphicalComponent {
   }
 
   moveLine({ point1coords, point2coords }) {
-    let point1 = me.fromAst(["tuple", ...point1coords]);
-    let point2 = me.fromAst(["tuple", ...point2coords]);
+    let point1 = me.fromAst(["vector", ...point1coords]);
+    let point2 = me.fromAst(["vector", ...point2coords]);
 
     this.requestUpdate({
       updateType: "updateValue",
@@ -1548,8 +1548,8 @@ function calculatePointsFromCoeffs({ coeff0, coeffvar1, coeffvar2, variables, la
 
   let points = [];
 
-  points.push(me.fromAst(["tuple", point1x, point1y]));
-  points.push(me.fromAst(["tuple", point2x, point2y]));
+  points.push(me.fromAst(["vector", point1x, point1y]));
+  points.push(me.fromAst(["vector", point2x, point2y]));
 
   return { success: true, points };
 

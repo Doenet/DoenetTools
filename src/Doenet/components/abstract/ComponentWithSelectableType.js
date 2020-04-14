@@ -149,6 +149,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneChild",
           variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
         },
       }),
       definition({ dependencyValues }) {

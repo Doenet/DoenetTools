@@ -454,6 +454,10 @@ export default class Point extends GraphicalComponent {
       },
       markStale: function ({ freshnessInfo, changes, arrayKeys }) {
 
+        // console.log(`mark stale of xs`);
+        // console.log(arrayKeys)
+        // console.log(changes)
+
         let freshByKey = freshnessInfo.freshByKey
 
         let arrayKey;
@@ -505,6 +509,10 @@ export default class Point extends GraphicalComponent {
 
       definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
 
+        // console.log('definition of xs')
+        // console.log(dependencyValues)
+        // console.log(arrayKeys)
+        
         let freshByKey = freshnessInfo.freshByKey
 
         let arrayKey;
@@ -686,7 +694,7 @@ export default class Point extends GraphicalComponent {
           coordsAst.push(v.tree);
         }
         if (coordsAst.length > 1) {
-          coordsAst = ["tuple", ...coordsAst];
+          coordsAst = ["vector", ...coordsAst];
         } else {
           coordsAst = coordsAst[0];
         }
@@ -1113,7 +1121,7 @@ function invertUnconstrainedXs({ desiredStateVariableValues, dependencyValues,
 
   if (basedOnCoords) {
     let currentCoordsTree = Array(stateValues.nDimensions + 1);
-    currentCoordsTree[0] = "tuple";
+    currentCoordsTree[0] = "vector";
     for (let arrayKey in desiredStateVariableValues.unconstrainedXs) {
       currentCoordsTree[Number(arrayKey) + 1] = desiredStateVariableValues.unconstrainedXs[arrayKey];
     }

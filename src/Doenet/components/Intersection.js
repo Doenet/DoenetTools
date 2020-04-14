@@ -1,5 +1,5 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import { postProcessRef } from './Ref';
+import { postProcessRef} from '../utils/refs';
 import me from 'math-expressions';
 
 export default class Intersection extends CompositeComponent {
@@ -139,7 +139,7 @@ export default class Intersection extends CompositeComponent {
     // two intersecting lines, return point
     let x = (c2 * b1 - c1 * b2) / d;
     let y = (c1 * a2 - c2 * a1) / d;
-    let coords = me.fromAst(["tuple", x, y]);
+    let coords = me.fromAst(["vector", x, y]);
 
     return { replacements: [{ componentType: "point", state: { coords, draggable: false, fixed: true } }] };
 

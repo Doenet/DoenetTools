@@ -52,6 +52,32 @@ export default class Extract extends CompositeComponent {
       })
     }
 
+    stateVariableDefinitions.propVariableName = {
+      returnDependencies: () => ({
+        propChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneProp",
+          variableNames: ["variableName"]
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.propChild.length === 0) {
+          return {
+            newValues: {
+              propVariableName: ""
+            }
+          };
+        } else {
+          return {
+            newValues: {
+              propVariableName: dependencyValues.propChild[0].stateValues.variableName
+            }
+          };
+        }
+      }
+    }
+
+
 
     stateVariableDefinitions.effectiveTargetClasses = {
       returnDependencies: () => ({
@@ -228,11 +254,52 @@ export default class Extract extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "replacementClasses"
         },
+        needsReplacementsUpdatedWhenStale: {
+          dependencyType: "stateVariable",
+          variableName: "needsReplacementsUpdatedWhenStale"
+        },
       }),
       definition: function () {
         return { newValues: { readyToExpandWhenResolved: true } };
       },
     };
+
+
+    // similar to sourceComponents state variable
+    // but include prop variable if have a prop
+    // Note: this collects components a second time when have a prop
+    stateVariableDefinitions.needsReplacementsUpdatedWhenStale = {
+      stateVariablesDeterminingDependencies: [
+        "propVariableObjs", "propVariableName"
+      ],
+      returnDependencies: function ({ stateValues }) {
+        let dependencies = {};
+
+        // test based on propVariableObjs rather than propVariableName
+        // so that know we have a valid prop variable name
+        if (stateValues.propVariableObjs === null) {
+          dependencies.children = {
+            dependencyType: "childIdentity",
+            childLogicName: "anything",
+          }
+        } else {
+          dependencies.childrenWithProp = {
+            dependencyType: "childStateVariables",
+            childLogicName: "anything",
+            variableNames: [stateValues.propVariableName],
+          }
+        }
+
+        return dependencies;
+      },
+      // the whole point of this state variable is to return updateReplacements
+      // on mark stale
+      markStale: () => ({ updateReplacements: true }),
+      definition: () => ({ newValues: { needsReplacementsUpdatedWhenStale: true } })
+    }
+
+
+
     return stateVariableDefinitions;
   }
 
@@ -265,6 +332,11 @@ export default class Extract extends CompositeComponent {
   }
 
   static createSerializedReplacements({ component, components, workspace }) {
+
+    // evaluate needsReplacementsUpdatedWhenStale to make it fresh
+    component.stateValues.needsReplacementsUpdatedWhenStale;
+
+    // console.log(`calculating replacements for ${component.componentName}`);
 
     let replacements = [];
 
@@ -391,8 +463,13 @@ export default class Extract extends CompositeComponent {
 
   static calculateReplacementChanges({ component, components, workspace }) {
 
+    // evaluate needsReplacementsUpdatedWhenStale to make it fresh
+    component.stateValues.needsReplacementsUpdatedWhenStale;
+
     // console.log(`calculating replacement changes for ${component.componentName}`);
     // console.log(workspace.numReplacementsBySource);
+    // console.log(component.replacements);
+
 
     let replacementChanges = [];
 
@@ -400,10 +477,10 @@ export default class Extract extends CompositeComponent {
 
     let numReplacementsBySource = [];
 
-    // cumulative sum: https://stackoverflow.com/a/44081700
-    let replacementIndexBySource = [0, ...workspace.numReplacementsBySource];
-    replacementIndexBySource = replacementIndexBySource.reduce(
-      (a, x, i) => [...a, x + (a[i - 1] || 0)], []);
+    // // cumulative sum: https://stackoverflow.com/a/44081700
+    // let replacementIndexBySource = [0, ...workspace.numReplacementsBySource];
+    // replacementIndexBySource = replacementIndexBySource.reduce(
+    //   (a, x, i) => [...a, x + (a[i - 1] || 0)], []);
 
 
     let maxSourceLength = Math.max(component.stateValues.sourceComponents.length, workspace.numReplacementsBySource.length);
@@ -500,6 +577,7 @@ export default class Extract extends CompositeComponent {
     workspace.numReplacementsBySource = numReplacementsBySource;
     workspace.sourceNames = component.stateValues.sourceComponents.map(x => x.componentName)
 
+    // console.log("replacementChanges");
     // console.log(replacementChanges);
 
 

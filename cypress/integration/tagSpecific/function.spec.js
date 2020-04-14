@@ -21,12 +21,19 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(0, 1E-12);
       expect(f(2)).closeTo(0, 1E-12);
       expect(f(-1)).closeTo(0, 1E-12);
       expect(f(-2)).closeTo(0, 1E-12);
+
+      f = components['/_function1'].stateValues.f;
+      expect(f(0).tree).closeTo(0, 1E-12);
+      expect(f(1).tree).closeTo(0, 1E-12);
+      expect(f(2).tree).closeTo(0, 1E-12);
+      expect(f(-1).tree).closeTo(0, 1E-12);
+      expect(f(-2).tree).closeTo(0, 1E-12);
 
     })
 

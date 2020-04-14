@@ -144,6 +144,11 @@ export default class Map extends CompositeComponent {
           variableName: "validBehavior",
         }
       }),
+      // when this state variable is marked stale
+      // it indicates we should update replacement
+      // For this to work, must get value in replacement functions
+      // so that the variable is marked fresh
+      markStale: () => ({ updateReplacements: true }),
       definition: function () {
         // even with invalid behavior, still ready to expand
         // (it will just expand with zero replacements)
@@ -156,6 +161,10 @@ export default class Map extends CompositeComponent {
   }
 
   static createSerializedReplacements({ component, workspace }) {
+
+    // evaluate readyToExpandWhenResolved so that it is marked fresh,
+    // as it being marked stale triggers replacement update
+    component.stateValues.readyToExpandWhenResolved;
 
     if (!component.stateValues.validBehavior) {
       workspace.lastReplacementParameters = {
@@ -290,6 +299,12 @@ export default class Map extends CompositeComponent {
   }
 
   static calculateReplacementChanges({ component, components, workspace }) {
+
+    // console.log(`calculate replacement changes for ${component.componentName}`)
+
+    // evaluate readyToExpandWhenResolved so that it is marked fresh,
+    // as it being marked stale triggers replacement update
+    component.stateValues.readyToExpandWhenResolved;
 
     let replacementChanges = [];
 

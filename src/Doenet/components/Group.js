@@ -1,5 +1,6 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import {postProcessRef, processChangesForReplacements} from './Ref';
+// import {postProcessRef, processChangesForReplacements} from './Ref';
+import { postProcessRef} from '../utils/refs';
 
 export default class Group extends CompositeComponent {
   static componentType = "group";
