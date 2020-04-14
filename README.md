@@ -101,7 +101,7 @@ $ mysqldump --all-databases --password=helloworld > /docker-entrypoint-initdb.d/
 You can then see this file at `DoenetCourse/doenet_docker/volumes/db_init/dbdump.sql`.
 You may want to verify that the database exported correctly before continuing.
 
-To use this new template:
+### To use a new database template:
 1. Stop the docker containers.
 2. Delete the old `DoenetCourse/doenet_docker/volumes/db_init/db_template.sql`.
 2. Rename the dump file to `db_template.sql`.
