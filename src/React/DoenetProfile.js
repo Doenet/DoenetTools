@@ -35,7 +35,7 @@ let ProfileContainer = styled(WidthEnforcer)`
   padding: 3em;
   display: grid;
   grid-template-columns: 25em 1fr 1fr;
-  grid-template-rows: 5em 20em;
+  grid-template-rows: 5em 5em 11em;
   grid-column-gap: 1em;
 
   @media screen and (max-width: 1000px) {
@@ -48,7 +48,7 @@ let ProfileContainer = styled(WidthEnforcer)`
   }
 `;
 
-let ProfilePicture = styled.div`
+let ProfilePicture = styled.button`
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
     url("/profile_pictures/${props => props.pic}.jpg");
   background-position: center;
@@ -66,7 +66,7 @@ let ProfilePicture = styled.div`
   border-radius: 50%;
   user-select: none;
 
-  &:hover {
+  &:hover, &:focus {
     background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
       url("/profile_pictures/${props => props.pic}.jpg");
     color: rgba(255, 255, 255, 1);
@@ -77,7 +77,7 @@ let ProfilePicture = styled.div`
   }
 `;
 
-let EmailTextinput = styled(Textinput)`
+let WideTextinput = styled(Textinput)`
   grid-column: 2 / -1;
 
   @media screen and (max-width: 1000px) {
@@ -134,7 +134,7 @@ let ModalClose = styled.button`
   top: -0.25em;
 `;
 
-let ModalPic = styled.div`
+let ModalPic = styled.button`
   width: 10em;
   height: 10em;
   flex-shrink: 0;
@@ -228,7 +228,7 @@ export default function DoenetProfile(props) {
           }`
         )
         .then(resp => {
-          console.log(`updated profile with ${f}:${v}`);
+          console.log(`updated profile with ${f}: ${v}`);
           console.dir(resp.data);
           setMyProfile(resp.data); // because the states of all the inputs are controlled by themselves (the value/children prop is only used to initialize the element, not for updates), this will not cause a malignant race condition. This is at the loss of recieving updates when the profile is changed externally.
         })
@@ -309,7 +309,7 @@ export default function DoenetProfile(props) {
       >
         <ModalContent>
           <ModalHeader>Choose Your Profile Picture</ModalHeader>
-          <ModalClose onClick={e => changeModalVisibility(e, "hidden")}>
+          <ModalClose onClick={e => changeModalVisibility(e, "hidden")} name="closeProfilePictureModal">
             &times;
           </ModalClose>
           <ModalPicsContainer>{picElements}</ModalPicsContainer>
@@ -327,15 +327,20 @@ export default function DoenetProfile(props) {
       <DoenetHeader
         toolTitle="Profile"
         headingTitle="Edit My Profile"
+        willProvideProfile={true}
+        profile={myProfile}
       ></DoenetHeader>
       <PageHeader>{myProfile.username}'s Profile</PageHeader>
       <ProfileContainer id="content">
         <ProfilePicture
           pic={myProfile.profilePicture}
           onClick={e => changeModalVisibility(e, "visible")}
+          name="changeProfilePicture"
+          id="changeProfilePicture"
         >
           CHANGE
         </ProfilePicture>
+        <ProfilePicModal />
 
         <Textinput
           id="firstName"
@@ -351,13 +356,24 @@ export default function DoenetProfile(props) {
         >
           {myProfile.lastName}
         </Textinput>
-        <EmailTextinput
+        <WideTextinput
           id="email"
           label="Email Address"
           onChange={e => updateMyProfile("email", e.target.value)} // uses non-spammy updating
         >
           {myProfile.email}
-        </EmailTextinput>
+        </WideTextinput>
+        <WideTextinput
+          id="bio"
+          label="Bio"
+          onChange={e => updateMyProfile("bio", e.target.value)}
+          area={true}
+          maxlength="512"
+          rows="6"
+          resize="none"
+        >
+          {myProfile.bio}
+        </WideTextinput>
 
         <SpanAll>
           <SectionHeader>Tracking</SectionHeader>
@@ -433,10 +449,11 @@ export default function DoenetProfile(props) {
           >
             Live Data Community
           </StyledSwitch>
+          <h4>{"You have access to:"}</h4>
+          <p>{myProfile.toolAccess.join(", ")}</p>
         </SpanAll>
 
         <SectionHeader>Invites</SectionHeader>
-        <ProfilePicModal />
       </ProfileContainer>
     </>
   );

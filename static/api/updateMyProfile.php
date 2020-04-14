@@ -11,7 +11,7 @@ $_PUT = json_decode(file_get_contents("php://input"),true);
 $changeField = mysqli_real_escape_string($conn, $_REQUEST["changeField"]);
 $toValue = mysqli_real_escape_string($conn, $_REQUEST["toValue"]);
 
-$changeableStrings = array("email", "lastName", "firstName", "profilePicture");
+$changeableStrings = array("email", "lastName", "firstName", "profilePicture", "bio");
 $changeableInts = array("trackingConsent", "roleInstructor", "roleCourseDesigner", "roleWatchdog", "roleCommunityTA", "roleLiveDataCommunity");
 $possiblePictures = array(
     "bird",
@@ -23,7 +23,7 @@ $possiblePictures = array(
     "penguin",
     "squirrel",
     "swan",
-    "turtle",
+    "turtle"
 );
 
 if (in_array($changeField, $changeableStrings)) {
@@ -75,6 +75,3 @@ if ($result === TRUE) {
 }
 
 $conn->close();
-
-?>
-

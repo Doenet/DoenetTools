@@ -1,3 +1,17 @@
+/*
+Usage:
+<Textinput id="someId" label="some label text" onChange={optionalFunction} />
+this produces an empty text input with the label and id provided. It also does something when the content changes
+or
+<Textinput id="someId" label="some label text" onChange={optionalFunction}>Hello</Textinput>
+this produces an input with an initial value
+or
+<Textinput id="someId" label="some label text" onChange={optionalFunction} value="I will override children">I am a child</Textinput>
+the value prop overrides the children, the children will be ignored if there is a props.value set
+
+Note: you can pass any additional properties if you wish, these props will be passed to the div that contains the input and label elements.
+*/
+
 import React, { useState } from "react";
 import { useSpring, animated } from "react-spring";
 import styled from "styled-components";
@@ -86,9 +100,17 @@ const StyledInputContainer = styled.div`
   overflow: hidden;
 `;
 
+const LengthIndicator = styled.p`
+  position: absolute;
+  bottom: 0;
+  right: 1em;
+  color: ${LABELCOLOR};
+  font-family: sans-serif;
+`
+
 export default function Textinput(props) {
   // props
-  let area = props.area;
+  let area = props.area || false;
   let name = props.name || props.id;
   let id = props.id;
   if (!id) {
@@ -105,7 +127,10 @@ export default function Textinput(props) {
     setLabelStyle(labelStyles.notEmpty);
   }
 
-  const [inputStyle, setInputStyle] = useSpring(() => inputStyles.baseline);
+  // allow specifying resize property for textarea
+  let inputStylesWithResize = { ...inputStyles, baseline: { ...inputStyles.baseline, resize: props.resize || (area ? "both" : "none") }}
+
+  const [inputStyle, setInputStyle] = useSpring(() => inputStylesWithResize.baseline);
 
   // Section: event handlers
   function handleFocus(e) {
@@ -123,6 +148,7 @@ export default function Textinput(props) {
   if (area) {
     return (
       <StyledInputContainer
+        {...props}
         style={props.style}
         className={props.className}
         key={id + "-doenet-textinput-container"}
@@ -146,15 +172,18 @@ export default function Textinput(props) {
           name={name}
           value={value}
           key={id + "-doenet-input"}
+          rows={props.rows}
+          cols={props.cols}
+          maxLength={props.maxlength}
         />
+        <LengthIndicator>{`${value.length}/${props.maxlength}`}</LengthIndicator>
       </StyledInputContainer>
     );
   }
 
   return (
     <StyledInputContainer
-      style={props.style}
-      className={props.className}
+      {...props}
       key={id + "-doenet-textinput-container"}
     >
       <AnimatedLabel
