@@ -100,7 +100,8 @@ class Overview extends Component {
       
       <DoenetViewer
         key={"doenetviewer"}
-        free={{doenetCode: this.doenetML}}
+        // free={{doenetCode: this.doenetML}}
+        doenetML={this.doenetML}
         course={true}
         attemptNumber={this.latestAttemptNumber}
         mode={{
@@ -125,7 +126,8 @@ class Overview extends Component {
     {this.doenetML!=""?   
       <DoenetViewer
         key={"doenetviewer"}
-        free={{doenetCode: this.doenetML}}
+        // free={{doenetCode: this.doenetML}}
+        doenetML={this.doenetML}
         course={true}
         attemptNumber={this.latestAttemptNumber}
         mode={{
@@ -180,7 +182,8 @@ class Syllabus extends Component {
       {this.doenetML!=""?
       <div><DoenetViewer
       key={"doenetviewer"}
-      free={{doenetCode: this.doenetML}}
+      // free={{doenetCode: this.doenetML}}
+      doenetML={this.doenetML}
       course={true}
       attemptNumber={this.latestAttemptNumber}
       mode={{
@@ -206,7 +209,8 @@ class Syllabus extends Component {
       
       <DoenetViewer
         key={"doenetviewer"}
-        free={{doenetCode: this.doenetML}}
+        // free={{doenetCode: this.doenetML}}
+      doenetML={this.doenetML}
         course={true}
         attemptNumber={this.latestAttemptNumber}
         mode={{
@@ -570,9 +574,11 @@ class GradesItem extends Component {
 
       <DoenetViewer
         key={"doenetviewer"}
-        free={{
-          doenetState: this.itemState,
-        }}
+        // free={{
+        //   doenetState: this.itemState,
+        // }}
+      doenetML={this.doenetML}
+
         course={true}
         attemptNumber={this.latestAttemptNumber}
         mode={{
@@ -605,7 +611,9 @@ class Assignments extends Component {
         
         <DoenetViewer
           key={"doenetviewer"}
-          free={{doenetCode: this.assignmentDoenetML}}
+          // free={{doenetCode: this.assignmentDoenetML}}
+      doenetML={this.assignmentDoenetML}
+
           course={true}
           attemptNumber={this.latestAttemptNumber}
           mode={{
@@ -2558,7 +2566,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       
       <DoenetViewer 
               key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
-              free={{doenetCode: this.Overview_doenetML}} 
+              // free={{doenetCode: this.Overview_doenetML}} 
+              doenetML={this.Overview_doenetML}
               mode={{
                 solutionType:this.state.solutionType,
                 allowViewSolutionWithoutRoundTrip:this.state.allowViewSolutionWithoutRoundTrip,
@@ -2617,7 +2626,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       {this.doenetML!=""?
       <div><DoenetViewer 
               key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
-              free={{doenetCode: this.Syllabus_doenetML}} 
+              // free={{doenetCode: this.Syllabus_doenetML}} 
+              doenetML={this.Syllabus_doenetML}
+
               mode={{
                 solutionType:this.state.solutionType,
                 allowViewSolutionWithoutRoundTrip:this.state.allowViewSolutionWithoutRoundTrip,
@@ -2931,9 +2942,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
 
             <DoenetViewer 
             key={"doenetviewer"} 
-            free={{
-            doenetState: itemState,
-          }} 
+          //   free={{
+          //   doenetState: itemState,
+          // }} 
           course={true}
             attemptNumber={this.latestAttemptNumber}
               mode={{

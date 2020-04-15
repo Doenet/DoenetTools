@@ -44,7 +44,6 @@ class DoenetPage extends Component {
 
   render() {
     if (this.doenetML === undefined){ return null;}
-
      //We have an error so doen't show the viewer
      if (this.state.error){
 
@@ -56,9 +55,11 @@ class DoenetPage extends Component {
     return (<React.Fragment>
             <DoenetViewer 
             key={"doenetviewer"} 
-            free={{doenetCode: this.doenetML}} 
-            contentId={this.contentId} 
+            // free={{doenetCode: this.doenetML}} 
+            doenetML={this.doenetML}
+            // contentId={this.contentId} 
             showCollaboration={true}
+
             />
       </React.Fragment>);
   }
