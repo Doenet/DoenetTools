@@ -3,6 +3,7 @@ import me from 'math-expressions';
 
 export class M extends InlineComponent {
   static componentType = "m";
+  static rendererType = "math";
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -43,12 +44,13 @@ export class M extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.latex = {
       public: true,
       componentType: this.componentType,
       defaultValue: "",
+      forRenderer: true,
       returnDependencies: () => ({
         stringTextMathChildren: {
           dependencyType: "childIdentity",
@@ -76,9 +78,8 @@ export class M extends InlineComponent {
         },
 
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, componentInfoObjects }) {
 
-        console.log(dependencyValues)
         if (dependencyValues.stringTextMathChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
@@ -126,42 +127,32 @@ export class M extends InlineComponent {
     }
 
     stateVariableDefinitions.renderMode = {
+      forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { renderMode: "inline" } })
     }
 
+
+    stateVariableDefinitions.text = {
+      returnDependencies: () => ({
+        latex: {
+          dependencyType: "stateVariable",
+          variableName: "latex"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        let expression;
+        try {
+          expression = me.fromLatex(dependencyValues.stateValues.latex);
+        } catch (e) {
+          // just return latex if can't parse with math-expressions
+          return dependencyValues.stateValues.latex;
+        }
+        return expression.toString();
+      }
+    }
+
     return stateVariableDefinitions;
-  }
-
-  toText() {
-    let expression;
-    if (!this.stateValues.latex) {
-      return;
-    }
-    try {
-      expression = me.fromLatex(this.stateValues.latex);
-    } catch (e) {
-      // just return latex if can't parse with math-expression
-      return this.stateValues.latex;
-    }
-    return expression.toString();
-  }
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    this.renderer = new this.availableRenderers.math({
-      key: this.componentName,
-      mathLatex: this.stateValues.latex,
-      renderMode: this.stateValues.renderMode,
-    });
-  }
-
-  updateRenderer() {
-    this.renderer.updateMathLatex(this.stateValues.latex);
   }
 
 }

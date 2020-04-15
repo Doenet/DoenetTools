@@ -5,14 +5,14 @@ export default class Spreadsheet extends Table {
   constructor(args){
     super(args);
 
-    // make default reference (with no prop) be value
-    this.stateVariablesForReference = ["cells"];
-
     this.onChange = this.onChange.bind(this);
   }
 
   static componentType = "spreadsheet";
 
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static get stateVariablesShadowedForReference() { return ["cells"] };
 
 
   onChange(changes, source) {

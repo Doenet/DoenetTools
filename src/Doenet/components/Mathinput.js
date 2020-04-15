@@ -7,9 +7,25 @@ export default class Mathinput extends Input {
     this.updateMathExpression = this.updateMathExpression.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     );
-    this.setRendererValueAsSubmitted = this.setRendererValueAsSubmitted.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    );
+
+    this.actions = {
+      updateMathExpression: this.updateMathExpression
+    };
+
+    //Complex because the stateValues isn't defined until later
+    Object.defineProperty(this.actions, 'submitAnswer', {
+      get: function () {
+        if (this.stateValues.answerAncestor !== null) {
+          return () => this.requestAction({
+            componentName: this.stateValues.answerAncestor.componentName,
+            actionName: "submitAnswer"
+          })
+        } else {
+          return () => null
+        }
+      }.bind(this)
+    });
+
   }
   static componentType = "mathinput";
 
@@ -17,8 +33,7 @@ export default class Mathinput extends Input {
     let properties = super.createPropertiesObject(args);
     properties.prefill = { default: "" };
     properties.format = { default: "text" };
-    properties.size = { default: 10 };
-    properties.collaborateGroups = { default: undefined };
+    properties.size = { default: 10, forRenderer: true };
     return properties;
   }
 
@@ -39,11 +54,12 @@ export default class Mathinput extends Input {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.value = {
       public: true,
       componentType: "math",
+      forRenderer: true,
       returnDependencies: () => ({
         mathChild: {
           dependencyType: "childStateVariables",
@@ -103,60 +119,24 @@ export default class Mathinput extends Input {
       }
     }
 
-    stateVariableDefinitions.componentTypes = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { componentTypes: ["math"] } })
-    }
-
-
-
-    stateVariableDefinitions.numberTimesSubmitted = {
+    stateVariableDefinitions.text = {
       public: true,
-      componentType: "number",
-      defaultValue: 0,
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          numberTimesSubmitted: {
-            variablesToCheck: ["numberTimesSubmitted"]
-          }
+      componentType: "text",
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
         }
       }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "numberTimesSubmitted",
-            value: desiredStateVariableValues.numberTimesSubmitted
-          }]
-        };
+      definition: function ({ dependencyValues }) {
+        return { newValues: { text: dependencyValues.value.toString() } }
       }
     }
 
-
-    stateVariableDefinitions.creditAchieved = {
-      defaultValue: 0,
-      public: true,
-      componentType: "number",
+    stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          creditAchieved: {
-            variablesToCheck: ["creditAchieved"]
-          }
-        }
-      }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "creditAchieved",
-            value: desiredStateVariableValues.creditAchieved
-          }]
-        };
-      }
+      definition: () => ({ newValues: { componentType: "math" } })
     }
-
 
 
     stateVariableDefinitions.submittedValue = {
@@ -182,130 +162,6 @@ export default class Mathinput extends Input {
       }
     }
 
-    stateVariableDefinitions.answerAncestor = {
-      returnDependencies: () => ({
-        answerAncestor: {
-          dependencyType: "ancestorStateVariables",
-          componentType: "answer",
-          variableNames: ["delegateCheckWork", "justSubmitted"]
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        let answerAncestor = null;
-
-        if (dependencyValues.answerAncestor.length === 1) {
-          answerAncestor = dependencyValues.answerAncestor[0];
-        }
-        return {
-          newValues: { answerAncestor }
-        }
-      }
-    }
-
-    stateVariableDefinitions.includeCheckWork = {
-      returnDependencies: () => ({
-        answerAncestor: {
-          dependencyType: "stateVariable",
-          variableName: "answerAncestor"
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        let includeCheckWork = false;
-        if (dependencyValues.answerAncestor) {
-          includeCheckWork = dependencyValues.answerAncestor.stateValues.delegateCheckWork;
-        }
-        return {
-          newValues: { includeCheckWork }
-        }
-      }
-
-    }
-
-
-    stateVariableDefinitions.valueHasBeenValidated = {
-      returnDependencies: () => ({
-        answerAncestor: {
-          dependencyType: "stateVariable",
-          variableName: "answerAncestor"
-        },
-        numberTimesSubmitted: {
-          dependencyType: "stateVariable",
-          variableName: "numberTimesSubmitted"
-        },
-        value: {
-          dependencyType: "stateVariable",
-          variableName: "value"
-        },
-        submittedValue: {
-          dependencyType: "stateVariable",
-          variableName: "submittedValue"
-        },
-
-      }),
-      definition: function ({ dependencyValues }) {
-
-        let valueHasBeenValidated = false;
-
-        if (dependencyValues.answerAncestor &&
-          dependencyValues.answerAncestor.stateValues.justSubmitted //&&
-          // dependencyValues.numberTimesSubmitted > 0 &&
-          // dependencyValues.value.equalsViaSyntax(dependencyValues.submittedValue)
-        ) {
-          valueHasBeenValidated = true;
-        }
-        return {
-          newValues: { valueHasBeenValidated }
-        }
-      }
-    }
-
-
-    stateVariableDefinitions.rendererValueAsSubmitted = {
-      returnDependencies: () => ({
-        valueHasBeenValidated: {
-          dependencyType: "stateVariable",
-          variableName: "valueHasBeenValidated"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          useEssentialOrDefaultValue: {
-            rendererValueAsSubmitted: {
-              variablesToCheck: "rendererValueAsSubmitted",
-              defaultValue: dependencyValues.valueHasBeenValidated
-            }
-          }
-        }
-      },
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "rendererValueAsSubmitted",
-            value: desiredStateVariableValues.rendererValueAsSubmitted
-          }]
-        };
-      }
-    }
-
-
-    stateVariableDefinitions.disabled = {
-      returnDependencies: () => ({
-        collaborateGroups: {
-          dependencyType: "stateVariable",
-          variableName: "collaborateGroups"
-        },
-        collaboration: {
-          dependencyType: "flag",
-          flagName: "collaboration"
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          disabled: !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
-        }
-      })
-    }
 
     return stateVariableDefinitions;
 
@@ -323,66 +179,6 @@ export default class Mathinput extends Input {
         }]
       })
     }
-  }
-
-  setRendererValueAsSubmitted(val) {
-    console.log('set renderer value as submitted')
-    console.log(val)
-    this.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
-        componentName: this.componentName,
-        stateVariable: "rendererValueAsSubmitted",
-        value: val,
-      }]
-    })
-  }
-
-
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    this.actions = {
-      updateMathExpression: this.updateMathExpression,
-      setRendererValueAsSubmitted: this.setRendererValueAsSubmitted,
-    }
-    if (this.stateValues.answerAncestor !== undefined) {
-      this.actions.submitAnswer = () => this.requestAction({
-        componentName: this.stateValues.answerAncestor.componentName,
-        actionName: "submitAnswer"
-      })
-    }
-
-    this.renderer = new this.availableRenderers.mathinput({
-      actions: this.actions,
-      mathExpression: new Proxy(this.stateValues.value, this.readOnlyProxyHandler),
-      key: this.componentName,
-      includeCheckWork: this.stateValues.includeCheckWork,
-      creditAchieved: this.stateValues.creditAchieved,
-      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      numberTimesSubmitted: this.stateValues.numberTimesSubmitted,
-      size: this.stateValues.size,
-      showCorrectness: this.flags.showCorrectness,
-      disabled: this.stateValues.disabled,
-    });
-  }
-
-
-  updateRenderer() {
-
-
-    this.renderer.updateMathinputRenderer({
-      mathExpression: new Proxy(this.stateValues.value, this.readOnlyProxyHandler),
-      creditAchieved: this.stateValues.creditAchieved,
-      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      numberTimesSubmitted: this.stateValues.numberTimesSubmitted,
-      disabled: this.stateValues.disabled,
-    });
-
   }
 
 }

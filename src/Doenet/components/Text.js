@@ -5,7 +5,11 @@ export default class Text extends InlineComponent {
 
   static includeBlankStringChildren = true;
 
-  static returnChildLogic (args) {
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static get stateVariablesShadowedForReference() { return ["value"] };
+
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroStrings = childLogic.newLeaf({
@@ -35,11 +39,12 @@ export default class Text extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.value = {
       public: true,
       componentType: this.componentType,
+      forRenderer: true,
       // deferCalculation: false,
       returnDependencies: () => ({
         stringTextChildren: {
@@ -90,15 +95,24 @@ export default class Text extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { text: dependencyValues.value }
+      })
+    }
+
     return stateVariableDefinitions;
 
   }
 
-  useChildrenForReference = false;
-
-  get stateVariablesForReference() {
-    return ["value"];
-  }
 
   returnSerializeInstructions() {
     let skipChildren = this.childLogic.returnMatches("atLeastZeroStrings").length === 1 &&
@@ -109,23 +123,5 @@ export default class Text extends InlineComponent {
     }
     return {};
   }
-
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    this.renderer = new this.availableRenderers.text({
-      key: this.componentName,
-      text: this.stateValues.value,
-    });
-  }
-
-  updateRenderer() {
-    this.renderer.updateText(this.stateValues.value);
-  }
-
 
 }

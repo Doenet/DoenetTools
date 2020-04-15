@@ -8,7 +8,11 @@ export default class Video extends BlockComponent {
     properties.width = {default: 500};
     properties.height = {default: 500};
     properties.youtube = {default: undefined};
+
+    // TODO: changed how isArray works to be like normal state variables
+    // determine how to handle this situation of allowing multiple children
     properties.sources = {isArray: true, singularName: "source"};
+
     return properties;
   }
 

@@ -25,31 +25,33 @@ export default class childLogic {
       let name = '_property_' + property;
 
       let leaf;
-      if (propertySpecification.isArray) {
-        leaf = new ChildLogicLeaf({
-          name: name,
-          componentType: propertySpecification.singularName,
-          comparison: 'atLeast',
-          number: 0,
-          allowSpillover: false,
-          parentComponentType: this.parentComponentType,
-          allComponentClasses: this.allComponentClasses,
-          standardComponentClasses: this.standardComponentClasses,
-          components: this.components,
-        });
-      } else {
-        leaf = new ChildLogicLeaf({
-          name: name,
-          componentType: property,
-          comparison: 'atMost',
-          number: 1,
-          allowSpillover: false,
-          parentComponentType: this.parentComponentType,
-          allComponentClasses: this.allComponentClasses,
-          standardComponentClasses: this.standardComponentClasses,
-          components: this.components,
-        });
-      }
+      // TODO: determine how to handle case where want to allow
+      // multiple matches to property
+      // changed how isArray works to make it like other state variables
+      // if (propertySpecification.isArray) {
+      //   leaf = new ChildLogicLeaf({
+      //     name: name,
+      //     componentType: propertySpecification.singularName,
+      //     comparison: 'atLeast',
+      //     number: 0,
+      //     allowSpillover: false,
+      //     parentComponentType: this.parentComponentType,
+      //     allComponentClasses: this.allComponentClasses,
+      //     standardComponentClasses: this.standardComponentClasses,
+      //     components: this.components,
+      //   });
+      // } else {
+      leaf = new ChildLogicLeaf({
+        name: name,
+        componentType: property,
+        comparison: 'atMost',
+        number: 1,
+        allowSpillover: false,
+        parentComponentType: this.parentComponentType,
+        allComponentClasses: this.allComponentClasses,
+        standardComponentClasses: this.standardComponentClasses,
+        components: this.components,
+      });
       this.properties[property].name = name;
       this.logicComponents[name] = leaf;
       propertyPropositions.push(leaf);
@@ -105,7 +107,7 @@ export default class childLogic {
   }
 
   newLeaf({ name, componentType, getComponentType, comparison, number, requireConsecutive,
-    condition, isSugar, repeatSugar, replacementFunction, sugarDependencies, affectedBySugar,
+    condition, isSugar, repeatSugar, replacementFunction, returnSugarDependencies, affectedBySugar,
     allowSpillover, excludeComponentTypes,
     setAsBase = false, ...invalidArguments
   }) {
@@ -132,7 +134,7 @@ export default class childLogic {
       componentType, getComponentType, excludeComponentTypes,
       comparison, number,
       requireConsecutive, condition,
-      isSugar, repeatSugar, sugarDependencies, affectedBySugar,
+      isSugar, repeatSugar, returnSugarDependencies, affectedBySugar,
       replacementFunction, allowSpillover,
       parentComponentType: this.parentComponentType,
       allComponentClasses: this.allComponentClasses,
@@ -151,7 +153,7 @@ export default class childLogic {
   }
 
   newOperator({ name, operator, propositions, sequenceMatters, requireConsecutive,
-    isSugar, repeatSugar, separateSugarInputs, replacementFunction, sugarDependencies,
+    isSugar, repeatSugar, separateSugarInputs, replacementFunction, returnSugarDependencies,
     affectedBySugar, allowSpillover,
     setAsBase = false, ...invalidArguments
   }) {
@@ -179,7 +181,7 @@ export default class childLogic {
       operator, propositions,
       sequenceMatters, requireConsecutive,
       isSugar, repeatSugar,
-      separateSugarInputs, replacementFunction, sugarDependencies, affectedBySugar,
+      separateSugarInputs, replacementFunction, returnSugarDependencies, affectedBySugar,
       allowSpillover,
       parentComponentType: this.parentComponentType,
       allComponentClasses: this.allComponentClasses,
@@ -205,7 +207,7 @@ export default class childLogic {
     matchSugar = true, maxAdapterNumber = 0
   }) {
 
-    if(this.usedSugar) {
+    if (this.usedSugar) {
       matchSugar = false;
     }
 
@@ -293,8 +295,13 @@ export default class childLogic {
         activeChildrenPieces.push(flattenedMatches.map(x => activeChildren[x]));
       }
 
+      let activeChildrenPiecesBasicInfoOnly = activeChildrenPieces.map(x => ({
+        componentType: x.componentType,
+        componentName: x.componentName
+      }))
+
       let result = replacementFunction({
-        activeChildrenPieces: activeChildrenPieces,
+        activeChildrenPieces: activeChildrenPiecesBasicInfoOnly,
         components: this.components,
         dependencyValues,
         allComponentClasses: this.allComponentClasses,
@@ -321,10 +328,16 @@ export default class childLogic {
 
       activeChildrenPieces.push(activeChildrenMatched);
 
+      let activeChildrenMatchedBasicInfoOnly = activeChildrenMatched.map(x => ({
+        componentType: x.componentType,
+        componentName: x.componentName
+      }))
+
       let result = replacementFunction({
-        activeChildrenMatched: activeChildrenMatched,
+        activeChildrenMatched: activeChildrenMatchedBasicInfoOnly,
         components: this.components,
         dependencyValues,
+        allComponentClasses: this.allComponentClasses,
         idRng
       });
       if (result.success !== true) {
@@ -489,11 +502,11 @@ export default class childLogic {
       while (definingChildIndex === undefined) {
         // try to find what child is a replacement or adapter for
         let foundNewPotentialDefiningChild = false;
-        if(potentialDefiningChild.adaptedFrom) {
+        if (potentialDefiningChild.adaptedFrom) {
           foundNewPotentialDefiningChild = true;
           potentialDefiningChild = potentialDefiningChild.adaptedFrom;
           definingChildIndex = allChildren[potentialDefiningChild.componentName].definingChildrenIndex;
-        } else if(potentialDefiningChild.replacementOf) {
+        } else if (potentialDefiningChild.replacementOf) {
           let composite = potentialDefiningChild.replacementOf;
           if (compositesFound[composite.componentName] === undefined) {
             compositesFound[composite.componentName] =
@@ -851,7 +864,7 @@ class ChildLogicLeaf extends ChildLogicBase {
   constructor({ name, componentType, getComponentType, excludeComponentTypes,
     comparison = "exactly", number = 1,
     requireConsecutive = false, condition, isSugar = false, repeatSugar = false,
-    replacementFunction, sugarDependencies, affectedBySugar,
+    replacementFunction, returnSugarDependencies, affectedBySugar,
     allowSpillover = true,
     parentComponentType,
     allComponentClasses,
@@ -881,7 +894,7 @@ class ChildLogicLeaf extends ChildLogicBase {
     this.isSugar = isSugar;
     this.repeatSugar = repeatSugar;
     this.replacementFunction = replacementFunction;
-    this.sugarDependencies = sugarDependencies;
+    this.returnSugarDependencies = returnSugarDependencies;
     this.affectedBySugar = affectedBySugar;
     this.allowSpillover = allowSpillover;
 
@@ -924,6 +937,9 @@ class ChildLogicLeaf extends ChildLogicBase {
     maxAdapterNumber
   }) {
 
+    if (this.usedSugar) {
+      matchSugar = false;
+    }
 
     // Note: it is OK if componentType is not a valid component type
     // In this case, componentClass will be undefined,
@@ -1064,7 +1080,7 @@ class ChildLogicOperator extends ChildLogicBase {
   constructor({ name, operator, propositions = [],
     sequenceMatters = false, requireConsecutive = false,
     isSugar = false, repeatSugar = false, separateSugarInputs = false,
-    replacementFunction, sugarDependencies, affectedBySugar,
+    replacementFunction, returnSugarDependencies, affectedBySugar,
     allowSpillover = true,
     parentComponentType,
     allComponentClasses,
@@ -1088,7 +1104,7 @@ class ChildLogicOperator extends ChildLogicBase {
     this.repeatSugar = repeatSugar;
     this.separateSugarInputs = separateSugarInputs;
     this.replacementFunction = replacementFunction;
-    this.sugarDependencies = sugarDependencies;
+    this.returnSugarDependencies = returnSugarDependencies;
     this.affectedBySugar = affectedBySugar;
     this.allowSpillover = allowSpillover;
 
@@ -1130,6 +1146,10 @@ class ChildLogicOperator extends ChildLogicBase {
   applyLogic({ activeChildren,
     matchSugar, previouslyMatched = [],
     maxAdapterNumber }) {
+
+    if (this.usedSugar) {
+      matchSugar = false;
+    }
 
     if (matchSugar === false && this.isSugar === true) {
       return { success: false, message: "Sugar not allowed." };

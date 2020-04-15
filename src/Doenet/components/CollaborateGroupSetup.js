@@ -19,7 +19,7 @@ export default class CollaborateGroupSetup extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.possibleNumberOfGroups = {
       returnDependencies: () => ({

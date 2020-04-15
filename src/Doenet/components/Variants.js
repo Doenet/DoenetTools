@@ -2,8 +2,9 @@ import InlineComponent from './abstract/InlineComponent';
 
 export default class Variants extends InlineComponent {
   static componentType = "variants";
+  static rendererType = undefined;
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroVariants = childLogic.newLeaf({
@@ -13,8 +14,9 @@ export default class Variants extends InlineComponent {
       number: 0
     });
 
-    let breakStringIntoVariantsByCommas = function ({ activeChildrenMatched }) {
-      let stringChild = activeChildrenMatched[0];
+    let breakStringIntoVariantsByCommas = function ({ dependencyValues }) {
+
+      let stringChild = dependencyValues.stringChild[0];
       let newChildren = stringChild.stateValues.value.split(",").map(x => ({
         componentType: "variant",
         state: { value: x.trim() }
@@ -31,6 +33,13 @@ export default class Variants extends InlineComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
+      returnSugarDependencies: () => ({
+        stringChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneString",
+          variableNames: ["value"]
+        }
+      }),
       affectedBySugar: ["atLeastZeroVariants"],
       replacementFunction: breakStringIntoVariantsByCommas,
     });
@@ -48,7 +57,7 @@ export default class Variants extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.variants = {
       public: true,

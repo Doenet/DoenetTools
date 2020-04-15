@@ -3,14 +3,17 @@ import InlineComponent from './abstract/InlineComponent';
 export default class Url extends InlineComponent {
   static componentType = "url";
 
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static get stateVariablesShadowedForReference() { return ["linktext"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.href = {required: true};
+    properties.href = { required: true };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let atLeastZeroStrings = childLogic.newLeaf({
@@ -39,12 +42,10 @@ export default class Url extends InlineComponent {
   }
 
 
-  updateState(args={}) {
+  updateState(args = {}) {
 
-    if(args.init) {
+    if (args.init) {
 
-      // make default reference (with no prop) be linktext
-      this.stateVariablesForReference = ["linktext"];
 
       this.makePublicStateVariable({
         variableName: "linktext",
@@ -54,8 +55,8 @@ export default class Url extends InlineComponent {
     }
 
     super.updateState(args);
-    
-    if(!this.childLogicSatisfied) {
+
+    if (!this.childLogicSatisfied) {
       this.unresolvedState.linktext = true;
       return;
     }
@@ -63,34 +64,34 @@ export default class Url extends InlineComponent {
     let trackChanges = this.currentTracker.trackChanges;
     let childrenChanged = trackChanges.childrenChanged(this.componentName);
 
-    if(childrenChanged) {
+    if (childrenChanged) {
 
       let stringsAndTexts = this.childLogic.returnMatches("stringsAndTexts");
-      if(stringsAndTexts.length > 0) {
+      if (stringsAndTexts.length > 0) {
         this.state.stringTextChildren = stringsAndTexts.map(x => this.activeChildren[x]);
-      }else {
+      } else {
         delete this.state.stringTextChildren;
       }
     }
-  
 
-    if(this.state.stringTextChildren !== undefined) {
+
+    if (this.state.stringTextChildren !== undefined) {
       this.state.linktext = "";
       delete this.unresolvedState.linktext;
-      for(let child of this.state.stringTextChildren) {
-        if(child.unresolvedState.value) {
+      for (let child of this.state.stringTextChildren) {
+        if (child.unresolvedState.value) {
           this.unresolvedState.linktext = true;
           break;
         }
         this.state.linktext += child.state.value;
       }
-    }else {
-      if(this._state.linktext.essential !== true) {
+    } else {
+      if (this._state.linktext.essential !== true) {
         // if no string/text activeChildren and linktext wasn't set from state directly,
         // make linktext be href
-        if(this.unresolvedState.href) {
+        if (this.unresolvedState.href) {
           this.unresolvedState.linktext = true;
-        }else {
+        } else {
           this.state.linktext = this.state.href;
           delete this.unresolvedState.linktext;
         }
@@ -100,14 +101,14 @@ export default class Url extends InlineComponent {
   }
 
 
-  initializeRenderer(){
-    if(this.renderer === undefined) {
+  initializeRenderer() {
+    if (this.renderer === undefined) {
       this.renderer = new this.availableRenderers.url({
         key: this.componentName,
         href: this.state.href,
         linktext: this.state.linktext,
       });
-    }else {
+    } else {
       this.updateRenderer();
     }
   }

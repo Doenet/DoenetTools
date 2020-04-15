@@ -8,6 +8,8 @@ export default class CompositeComponent extends BaseComponent {
   }
   static componentType = "_composite";
 
+  static rendererType = undefined;
+
   static createSerializedReplacements() {
     return { replacements: [] }
   }
@@ -38,5 +40,25 @@ export default class CompositeComponent extends BaseComponent {
     return serializedState;
 
   }
+
+  get allPotentialRendererTypes() {
+
+    let allPotentialRendererTypes = [];
+
+    if(this.replacements) {
+      for(let replacement of this.replacements) {
+        for(let rendererType of replacement.allPotentialRendererTypes) {
+          if(!allPotentialRendererTypes.includes(rendererType)) {
+            allPotentialRendererTypes.push(rendererType);
+          }
+        }
+
+      }
+    }
+
+    return allPotentialRendererTypes;
+
+  }
+
 
 }

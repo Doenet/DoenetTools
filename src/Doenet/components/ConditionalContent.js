@@ -53,7 +53,7 @@ export default class ConditionalContent extends BlockComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.hide = {
       returnDependencies: () => ({
@@ -76,7 +76,7 @@ export default class ConditionalContent extends BlockComponent {
       }
     };
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         inlineBlockChildren: {
           dependencyType: "childIdentity",
@@ -86,7 +86,7 @@ export default class ConditionalContent extends BlockComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues: {
-            childrenWhoRender: dependencyValues.inlineBlockChildren.map(x => x.componentName)
+            childrenToRender: dependencyValues.inlineBlockChildren.map(x => x.componentName)
           }
         }
       }
