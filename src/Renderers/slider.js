@@ -35,12 +35,16 @@ export default class Slider extends DoenetRenderer {
     this.state = {
     }
 
+    
+
 
     console.log("this.doenetSvData");
     console.log(this.doenetSvData);
     console.log(this.doenetSvData.items)
     console.log(this.doenetSvData.index)
     console.log(this.doenetSvData.sliderType);
+    console.log(this.actions);
+
     
     
   }
@@ -59,12 +63,16 @@ export default class Slider extends DoenetRenderer {
       return null;
     }
 
+    console.log("Current Value")
+    console.log(this.doenetSvData.items[this.doenetSvData.index]);
+    
   
 
     return (
       <>
-        <div> I'm a slider!
-          </div>
+        <div> I'm a slider! </div>
+          <button onClick={()=>this.actions.changeValue({value:this.doenetSvData.items[this.doenetSvData.index - 1]})}>Prev</button>
+        <button onClick={()=>this.actions.changeValue({value:this.doenetSvData.items[this.doenetSvData.index + 1]})}>Next</button>
       </>
     );
 
