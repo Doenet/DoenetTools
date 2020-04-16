@@ -22,7 +22,7 @@ export default class Group extends CompositeComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.readyToExpandWhenResolved = {
       returnDependencies: () => ({}),

@@ -13,11 +13,15 @@ import * as SingleCharacterComponents from './components/SingleCharacterComponen
 import * as Sectioning from './components/Sectioning';
 import * as Lists from './components/Lists';
 import * as DynamicalSystems from './components/dynamicalSystems';
+import * as FeedbackDefinition from './components/FeedbackDefinition';
+import * as StyleDefinition from './components/StyleDefinition';
+import * as StyleDefinitionComponents from './components/StyleDefinitionComponents';
 import Document from './components/Document';
 import StringComponent from './components/StringComponent';
 import Text from './components/Text';
 import Letters from './components/Letters';
 import TextList from './components/TextList';
+import RandomizedTextList from './components/RandomizedTextList';
 import MathList from './components/MathList';
 import NumberList from './components/NumberList';
 import P from './components/P';
@@ -61,6 +65,7 @@ import Graph from './components/Graph';
 import Variables from './components/Variables';
 import Variable from './components/Variable';
 import Function from './components/Function';
+import InterpolatedFunction from './components/InterpolatedFunction';
 import Template from './components/Template';
 import Sequence from './components/Sequence';
 import Map from './components/Map';
@@ -70,6 +75,7 @@ import Subsindex from './components/Subsindex';
 import FromMapAncestor from './components/FromMapAncestor';
 import Slider from './components/Slider';
 import Markers from './components/Markers';
+import Constraints from './components/Constraints';
 import ConstrainToGrid from './components/ConstrainToGrid';
 import AttractToGrid from './components/AttractToGrid';
 import ConstrainTo from './components/ConstrainTo';
@@ -121,6 +127,8 @@ import Container from './components/Container';
 import CollaborateGroups from './components/CollaborateGroups';
 import CollaborateGroupSetup from './components/CollaborateGroupSetup';
 import Div from './components/Div';
+import IntervalInput from './components/IntervalInput';
+import Interval from './components/Interval';
 
 
 //Extended
@@ -164,9 +172,13 @@ const componentTypeArray = [
   ...Object.values(Sectioning),
   ...Object.values(Lists),
   ...Object.values(DynamicalSystems),
+  ...Object.values(FeedbackDefinition),
+  ...Object.values(StyleDefinition),
+  ...Object.values(StyleDefinitionComponents),
   Document,
   StringComponent,
   Text, Letters, TextList,
+  RandomizedTextList,
   P,
   BooleanComponent, BooleanList,
   MathComponent, MathList,
@@ -195,6 +207,7 @@ const componentTypeArray = [
   Variables,
   Variable,
   Function,
+  InterpolatedFunction,
   Template,
   Sequence,
   Slider,
@@ -207,6 +220,7 @@ const componentTypeArray = [
   Markers,
   Panel,
   Map, Substitutions, Subsref, Subsindex, FromMapAncestor,
+  Constraints,
   ConstrainToGrid,
   AttractToGrid,
   ConstrainTo,
@@ -244,6 +258,8 @@ const componentTypeArray = [
   CollaborateGroups,
   CollaborateGroupSetup,
   Div,
+  IntervalInput, 
+  Interval, 
 ];
 
 const componentTypeArrayExtended = [

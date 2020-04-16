@@ -3,6 +3,7 @@ import me from 'math-expressions';
 
 export default class Integer extends NumberComponent {
   static componentType = "integer";
+  rendererType = "number";
 
   static returnStateVariableDefinitions() {
 

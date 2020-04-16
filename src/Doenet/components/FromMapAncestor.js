@@ -2,6 +2,7 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class FromMapAncestor extends BaseComponent {
   static componentType = "fromMapAncestor";
+  static rendererType = undefined;
 
   static returnChildLogic (args) {
     let childLogic = super.returnChildLogic(args);
@@ -19,7 +20,7 @@ export default class FromMapAncestor extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.implicitValue = {
       returnDependencies: () => ({

@@ -2,6 +2,7 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class MathTarget extends BaseComponent {
   static componentType = "mathtarget";
+  static rendererType = undefined;
 
   static returnChildLogic (args) {
     let childLogic = super.returnChildLogic(args);
@@ -19,7 +20,7 @@ export default class MathTarget extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.mathChildName = {
       returnDependencies: () => ({
@@ -39,26 +40,6 @@ export default class MathTarget extends BaseComponent {
 
     return stateVariableDefinitions;
 
-  }
-
-
-  updateState(args={}) {
-    super.updateState(args);
-
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.mathChild = true;
-      return;
-    }
-
-    delete this.unresolvedState.mathChild;
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-      let mathInd = this.childLogic.returnMatches("ExactlyOneMath")[0];
-      this.state.mathChild = this.activeChildren[mathInd];
-    }
   }
 
 }

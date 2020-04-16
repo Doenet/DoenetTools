@@ -2,15 +2,34 @@ import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 
 export default class Line extends GraphicalComponent {
+  constructor(args) {
+    super(args);
+    this.moveLine = this.moveLine.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    );
+    this.actions = { moveLine: this.moveLine };
+  }
   static componentType = "line";
+
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static get stateVariablesShadowedForReference() { return ["points"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.draggable = { default: true };
+    properties.draggable = { default: true, forRenderer: true };
+    properties.variables = {
+      componentType: "math",
+      entryPrefixes: ["var"],
+      dependentStateVariables: [{
+        dependencyName: "nVariables",
+        variableName: "nDimensions"
+      }]
+    }
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let exactlyOneEquation = childLogic.newLeaf({
@@ -19,7 +38,7 @@ export default class Line extends GraphicalComponent {
       number: 1
     });
 
-    let replaceWithEquationOrThrough = function ({ activeChildrenMatched }) {
+    let replaceWithEquationOrThrough = function ({ dependencyValues }) {
       // have matched a sequence of strings and maths
       // first, break up by commas
       // If only one piece, then make an equation out of it
@@ -29,7 +48,7 @@ export default class Line extends GraphicalComponent {
       let currentPiece = [];
       let toDelete = [];
 
-      for (let component of activeChildrenMatched) {
+      for (let component of dependencyValues.stringAndMathChildren) {
         if (component.componentType !== "string") {
           currentPiece.push({
             createdComponent: true,
@@ -38,7 +57,7 @@ export default class Line extends GraphicalComponent {
           continue;
         }
 
-        let s = component.state.value.trim();
+        let s = component.stateValues.value.trim();
         let beginInd = 0;
         let deleteOriginalString = false;
 
@@ -140,6 +159,14 @@ export default class Line extends GraphicalComponent {
       propositions: [atLeastOneString, atLeastOneMath],
       requireConsecutive: true,
       isSugar: true,
+      affectedBySugar: ["exactlyOneEquation", "exactlyOneThrough"],
+      returnSugarDependencies: () => ({
+        stringAndMathChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "stringsAndMaths",
+          variableNames: ["value"]
+        }
+      }),
       replacementFunction: replaceWithEquationOrThrough,
     });
 
@@ -164,6 +191,7 @@ export default class Line extends GraphicalComponent {
       componentType: 'point',
       number: 2,
       isSugar: true,
+      affectedBySugar: ["exactlyOneThrough"],
       replacementFunction: addThrough,
     });
 
@@ -205,540 +233,993 @@ export default class Line extends GraphicalComponent {
 
   }
 
-  updateState(args = {}) {
-    if (args.init === true) {
 
-      this.makePublicStateVariable({
-        variableName: "slope",
-        componentType: "math",
-      });
-      this.makePublicStateVariable({
-        variableName: "xintercept",
-        componentType: "math",
-      });
-      this.makePublicStateVariable({
-        variableName: "yintercept",
-        componentType: "math",
-      });
-      this.makePublicStateVariable({
-        variableName: "equation",
-        componentType: "equation",
-      });
-      this.makePublicStateVariable({
-        variableName: "coeff0",
-        componentType: "math",
-      });
-      this.makePublicStateVariable({
-        variableName: "coeffvar1",
-        componentType: "math",
-      });
-      this.makePublicStateVariable({
-        variableName: "coeffvar2",
-        componentType: "math",
-      });
-      this.makePublicStateVariable({
-        variableName: "var1",
-        componentType: "math",
-      });
-      this.makePublicStateVariable({
-        variableName: "var2",
-        componentType: "math",
-      });
 
-      this.makePublicStateVariableArray({
-        variableName: "points",
-        componentType: "point",
-        stateVariableForRef: "coords",
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "point",
-        arrayVariableName: "points",
-      });
-      this.makePublicStateVariable({
-        variableName: "styledescription",
-        componentType: "text",
-      });
+  static returnStateVariableDefinitions() {
 
-      // reference via the point coords and vars
-      this.stateVariablesForReference = ["points", "var1", "var2"];
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-      this.moveLine = this.moveLine.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      );
+    stateVariableDefinitions.styleDescription = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
 
-    }
 
-    super.updateState(args);
-
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.slope = true;
-      this.unresolvedState.xintercept = true;
-      this.unresolvedState.yintercept = true;
-      this.unresolvedState.equation = true;
-      this.unresolvedState.coeff0 = true;
-      this.unresolvedState.coeffvar1 = true;
-      this.unresolvedState.coeffvar2 = true;
-      this.unresolvedState.var1 = true;
-      this.unresolvedState.var2 = true;
-      this.unresolvedState.points = true;
-      return;
-    }
-
-    delete this.unresolvedState.slope;
-    delete this.unresolvedState.xintercept;
-    delete this.unresolvedState.yintercept;
-    delete this.unresolvedState.equation;
-    delete this.unresolvedState.coeff0;
-    delete this.unresolvedState.coeffvar1;
-    delete this.unresolvedState.coeffvar2;
-    delete this.unresolvedState.var1;
-    delete this.unresolvedState.var2;
-    delete this.unresolvedState.points;
-
-    this.state.selectedStyle = this.styleDefinitions[this.state.stylenumber];
-    if(this.state.selectedStyle === undefined) {
-      this.state.selectedStyle = this.styleDefinitions[1];
-    }
-
-    let lineDescription = "";
-    if(this.state.selectedStyle.lineWidth >= 4) {
-      lineDescription += "thick ";
-    }else if(this.state.selectedStyle.lineWidth <= 1) {
-      lineDescription += "thin ";
-    }
-    if(this.state.selectedStyle.lineStyle === "dashed") {
-      lineDescription += "dashed ";
-    } else if(this.state.selectedStyle.lineStyle === "dotted") {
-      lineDescription += "dotted ";
-    }
-
-    lineDescription += `${this.state.selectedStyle.lineColor} `;
-
-    this.state.styledescription = lineDescription;
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-
-      // get variables from variable activeChildren if not from essential state variables
-      let varResult = this.childLogic.returnMatches("atMostOneVariables");
-      if (varResult.length === 1) {
-        this.state.variableChild = this.activeChildren[varResult[0]];
-      }else {
-        delete this.state.variableChild;
-        // default variables are x and y
-        if (this._state.var1.essential !== true) {
-          this.state.var1 = me.fromAst("x");
+        let lineDescription = "";
+        if (dependencyValues.selectedStyle.lineWidth >= 4) {
+          lineDescription += "thick ";
+        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
+          lineDescription += "thin ";
         }
-        if (this._state.var2.essential !== true) {
-          this.state.var2 = me.fromAst("y");
+        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
+          lineDescription += "dashed ";
+        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
+          lineDescription += "dotted ";
         }
+
+        lineDescription += `${dependencyValues.selectedStyle.lineColor} `;
+
+        return { newValues: { styleDescription: lineDescription } };
       }
+    }
 
-      this.state.definitionFrom = "";
-      let exactlyOneEquation = this.childLogic.returnMatches("exactlyOneEquation");
-      let exactlyOneThrough = this.childLogic.returnMatches("exactlyOneThrough");
-
-      if(exactlyOneEquation.length === 1) {
-        this.state.definitionFrom = "equation";
-        this.state.equationChild = this.activeChildren[exactlyOneEquation[0]];
-        delete this.state.throughChild;
-      }else if(exactlyOneThrough.length === 1) {
-        this.state.definitionFrom = "points";
-        this.state.throughChild = this.activeChildren[exactlyOneThrough[0]];
-        delete this.state.equationChild;
-      } else {
-        // no equation or through specified, must have either
-        // - essential equation,
-        // - essential coeff0, coeffvar1, and coeffvar2, or
-        // - essential points
-        delete this.state.equationChild;
-        delete this.state.throughChild;
-
-        if (this._state.equation.essential === true) {
-          this.state.definitionFrom = "equation";
-        } else if (this._state.coeff0.essential === true &&
-          this._state.coeffvar1.essential === true &&
-          this._state.coeffvar2.essential === true) {
-          this.state.definitionFrom = "coeffs";
-        } else if (this._state.points.essential === true) {
-          this.state.definitionFrom = "points";
+    // we make equation child be a state variable
+    // as we need a state variable to determine other dependencies
+    // using stateVariablesDeterminingDependencies
+    stateVariableDefinitions.equationChild = {
+      returnDependencies: () => ({
+        equationChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneEquation"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.equationChild.length === 1) {
+          return { newValues: { equationChild: dependencyValues.equationChild[0] } }
         } else {
-          throw Error("Must specify equation for line or points along line.")
+          return { newValues: { equationChild: null } }
         }
       }
     }
 
-    if(this.state.variableChild) {
-      if(this.state.variableChild.unresolvedState.variables) {
-        this.unresolvedState.var1 = true;
-        this.unresolvedState.var2 = true;
-      }else if(childrenChanged || trackChanges.getVariableChanges({
-        component: this.state.variableChild, variable: "variables"})) {
-        if (this.state.variableChild.state.ncomponents < 2) {
-          console.warn("Invalid format for variables of line: must have at least two variables");
-          if (this.state.variableChild.state.ncomponents === 1) {
-            this.state.var1 = this.state.variableChild.state.variables[0];
-            if(this.state.var1.tree === "y") {
-              this.state.var2 = me.fromAst("z");
-            }else {
-              this.state.var2 = me.fromAst("y");
+    stateVariableDefinitions.points = {
+      public: true,
+      componentType: "point",
+      isArray: true,
+      entryPrefixes: ["point"],
+      stateVariablesDeterminingDependencies: ["equationChild"],
+      returnDependencies: function ({ stateValues, arrayKeys }) {
+        if (stateValues.equationChild === null) {
+          let arrayKey;
+          if (arrayKeys) {
+            arrayKey = Number(arrayKeys[0]);
+          }
+          if (arrayKey === undefined) {
+            return ({
+              throughChild: {
+                dependencyType: "childStateVariables",
+                childLogicName: "exactlyOneThrough",
+                variableNames: ["points"]
+              }
+            })
+          } else {
+            return ({
+              throughChild: {
+                dependencyType: "childStateVariables",
+                childLogicName: "exactlyOneThrough",
+                variableNames: ["point" + (arrayKey + 1)]
+              }
+            })
+          }
+        } else {
+          return ({
+            coeff0: {
+              dependencyType: "stateVariable",
+              variableName: "coeff0"
+            },
+            coeffvar1: {
+              dependencyType: "stateVariable",
+              variableName: "coeffvar1"
+            },
+            coeffvar2: {
+              dependencyType: "stateVariable",
+              variableName: "coeffvar2"
+            },
+            variables: {
+              dependencyType: "stateVariable",
+              variableName: "variables",
+            },
+            lastPointsFromInverting: {
+              dependencyType: "stateVariable",
+              variableName: "lastPointsFromInverting"
             }
-          }else {
-            this.state.var1 = me.fromAst("x");
-            this.state.var2 = me.fromAst("y");
+          })
+        }
+      },
+      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
+
+        let freshByKey = freshnessInfo.freshByKey;
+
+        // console.log('markStale for line points')
+        // console.log(JSON.parse(JSON.stringify(freshByKey)));
+        // console.log(JSON.parse(JSON.stringify(changes)))
+        // console.log(arrayKeys);
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+
+        if (changes.throughChild) {
+
+
+          if (changes.throughChild.componentIdentitiesChanged) {
+
+            // if throughChild changed
+            // then the entire points array of line is also changed
+            for (let key in freshByKey) {
+              delete freshByKey[key];
+            }
+          } else {
+
+            let valuesChanged = changes.throughChild.valuesChanged[0];
+
+            if (arrayKey === undefined) {
+
+              if (valuesChanged.points) {
+                // if have the same points from throughChild
+                // then just check if any of those points values
+                // are no longer fresh
+                let newFreshByKey = valuesChanged.points.freshnessInfo.freshByKey;
+                for (let key in freshByKey) {
+                  if (!newFreshByKey[key]) {
+                    delete freshByKey[key];
+                  }
+                }
+              }
+            } else {
+              if (valuesChanged["point" + (arrayKey + 1)]) {
+                delete freshByKey[arrayKey];
+              }
+            }
+
+          }
+        } else if (changes.coeff0) {
+          for (let key in freshByKey) {
+            delete freshByKey[key];
+          }
+
+        }
+
+        if (arrayKey === undefined) {
+          if (Object.keys(freshByKey).length === 0) {
+            // asked for entire array and it is all stale
+            return { fresh: false }
+          } else {
+            // asked for entire array, but it has some fresh elements
+            return { partiallyFresh: true }
+          }
+        } else {
+          // asked for just one component
+          return { fresh: freshByKey[arrayKey] === true }
+        }
+
+      },
+      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
+        let freshByKey = freshnessInfo.freshByKey;
+
+        // console.log('definition of line points');
+        // console.log(dependencyValues)
+        // console.log(arrayKeys);
+        // console.log(JSON.parse(JSON.stringify(freshByKey)));
+        // console.log(changes)
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+
+        if ("coeff0" in dependencyValues) {
+
+          // if both points are fresh, don't return anything
+          if (freshByKey[0] && freshByKey[1]) {
+            return {};
+          }
+
+          let result = calculatePointsFromCoeffs(dependencyValues);
+
+          if (!result.success) {
+            return { newValues: { points: [] } }
+          } else {
+            for (let key in result.points) {
+              freshByKey[key] = true;
+            }
+            return { newValues: { points: result.points } }
+          }
+        } else if (dependencyValues.throughChild.length === 1) {
+
+          if (arrayKey === undefined) {
+            let throughPoints = dependencyValues.throughChild[0].stateValues.points;
+
+            if (changes.throughChild.componentIdentitiesChanged) {
+              // send array to indicate that should overwrite entire array
+              for (let key in throughPoints) {
+                freshByKey[key] = true;
+              }
+              return {
+                newValues: {
+                  points: throughPoints
+                }
+              }
+            }
+
+            let newPointValues = {};
+            for (let key in throughPoints) {
+              if (!freshByKey[key]) {
+                freshByKey[key] = true;
+                newPointValues[key] = throughPoints[key]
+              }
+            }
+            return { newValues: { points: newPointValues } }
+
+          } else {
+            // have an arrayKey defined
+
+            if (!freshByKey[arrayKey]) {
+              freshByKey[arrayKey] = true;
+              return {
+                newValues: {
+                  points: {
+                    [arrayKey]: dependencyValues.throughChild[0].stateValues["point" + (arrayKey + 1)]
+                  }
+                }
+              }
+            } else {
+              // arrayKey asked for didn't change
+              // don't need to report noChanges for array state variable
+              return {};
+            }
+          }
+
+        } else {
+          return {
+            newValues: { points: [] }
           }
         }
-        this.state.var1 = this.state.variableChild.state.variables[0];
-        this.state.var2 = this.state.variableChild.state.variables[1];
+      },
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues,
+        stateValues, initialChange, arrayKeys
+      }) {
+
+        // console.log(`inverseDefinition of points`);
+        // console.log(desiredStateVariableValues.points)
+        // console.log(JSON.parse(JSON.stringify(stateValues)))
+        // console.log(arrayKeys);
+
+        // if not draggable, then disallow initial change 
+        if (initialChange && !stateValues.draggable) {
+          return { success: false };
+        }
+
+        if ("throughChild" in dependencyValues) {
+          if (dependencyValues.throughChild.length !== 1) {
+            console.log('cannot invert points for line not based on points')
+            return { success: false }
+          }
+
+          let arrayKey;
+          if (arrayKeys) {
+            arrayKey = Number(arrayKeys[0]);
+          }
+
+          if (arrayKey === undefined) {
+            // working with entire array
+
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "throughChild",
+                desiredValue: desiredStateVariableValues.points,
+                childIndex: 0,
+                variableIndex: 0
+              }]
+            }
+          } else {
+
+            // just have one arrayKey
+            // so child variable of throughChild is an array entry (rather than array)
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "throughChild",
+                desiredValue: desiredStateVariableValues.points[arrayKey],
+                childIndex: 0,
+                variableIndex: 0,
+              }]
+            }
+
+          }
+        } else {
+
+          // dependencies are coeffs
+
+          let desiredPoints = desiredStateVariableValues.points;
+
+          let point1x, point1y, point2x, point2y;
+          if (desiredPoints[0]) {
+            point1x = desiredPoints[0].get_component(0);
+            point1y = desiredPoints[0].get_component(1);
+          } else {
+            point1x = stateValues.points[0].get_component(0);
+            point1y = stateValues.points[0].get_component(1);
+          }
+          if (desiredPoints[1]) {
+            point2x = desiredPoints[1].get_component(0);
+            point2y = desiredPoints[1].get_component(1);
+          } else {
+            point2x = stateValues.points[1].get_component(0);
+            point2y = stateValues.points[1].get_component(1);
+          }
+
+
+          if (typeof point1x.tree === "number" && typeof point1y.tree === "number"
+            && typeof point2x.tree === "number" && typeof point2y.tree === "number"
+          ) {
+
+
+            let numericalPoint1 = [point1x.tree, point1y.tree];
+            let numericalPoint2 = [point2x.tree, point2y.tree];
+
+            let coeffvar1 = numericalPoint1[1] - numericalPoint2[1];
+            let coeffvar2 = numericalPoint2[0] - numericalPoint1[0];
+            let coeff0 = numericalPoint1[0] * numericalPoint2[1] - numericalPoint1[1] * numericalPoint2[0];
+
+            let prodDiff = Math.abs(coeffvar1 * stateValues.coeffvar2 - stateValues.coeffvar1 * coeffvar2);
+
+            let instructions = [];
+
+            if (prodDiff < Math.abs(coeffvar1 * stateValues.coeffvar2) * 1E-12) {
+              // the slope didn't change, so line was translated
+              // don't change coeffvar1 or coeffvar2, but just coeff0
+
+              if (coeffvar1 !== 0) {
+                coeff0 *= stateValues.coeffvar1 / coeffvar1;
+              } else {
+                coeff0 *= stateValues.coeffvar2 / coeffvar2
+              }
+
+              instructions.push({
+                setDependency: "coeff0",
+                desiredValue: coeff0,
+                additionalDependencyValues: {
+                  coeffvar1: stateValues.coeffvar1,
+                  coeffvar2: stateValues.coeffvar2
+                }
+              })
+            } else {
+              instructions.push({
+                setDependency: "coeff0",
+                desiredValue: coeff0,
+                additionalDependencyValues: {
+                  coeffvar1, coeffvar2
+                }
+              })
+            }
+
+            instructions.push({
+              setDependency: "lastPointsFromInverting",
+              desiredValue: [numericalPoint1, numericalPoint2]
+            })
+
+            return {
+              success: true,
+              instructions
+            }
+
+
+          }
+
+
+          let coeffvar1 = point1y.subtract(point2y).simplify();
+          let coeffvar2 = point2x.subtract(point1x).simplify();
+          let coeff0 = point1x.multiply(point2y).subtract(point1y.multiply(point2x)).simplify();
+
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "coeff0",
+              desiredValue: coeff0,
+              additionalDependencyValues: {
+                coeffvar1, coeffvar2
+              }
+            }],
+          }
+        }
+
       }
     }
 
-    let recalculateLine = childrenChanged;
+    stateVariableDefinitions.nDimensions = {
+      public: true,
+      componentType: "number",
+      stateVariablesDeterminingDependencies: ["equationChild"],
+      returnDependencies: function ({ stateValues }) {
+        if (stateValues.equationChild === null) {
+          return {
+            points: {
+              dependencyType: "stateVariable",
+              variableName: "points"
+            }
+          }
+        } else {
+          return {
+            equationChild: {
+              dependencyType: "childIdentity",
+              childLogicName: "exactlyOneEquation"
+            },
+          }
+        }
+      },
+      definition: function ({ dependencyValues, changes }) {
 
-    if(this.state.equationChild) {
-      if(this.state.equationChild.unresolvedState.value) {
-        this.unresolvedState.slope = true;
-        this.unresolvedState.xintercept = true;
-        this.unresolvedState.yintercept = true;
-        this.unresolvedState.equation = true;
-        this.unresolvedState.coeff0 = true;
-        this.unresolvedState.coeffvar1 = true;
-        this.unresolvedState.coeffvar2 = true;
-        this.unresolvedState.points = true;
-        return;
-      }else if(childrenChanged || trackChanges.getVariableChanges({
-        component: this.state.equationChild, variable: "value"
-      })) {
-        recalculateLine = true;
-        this.state.equation = this.state.equationChild.state.value;
+        // console.log('definition of nDimensions')
+
+        // console.log(dependencyValues)
+        // console.log(changes)
+
+        // if have an equation, we must be 2D
+        // (Haven't implemented a line in 3D determined by 2 equations)
+        if (dependencyValues.equationChild) {
+          if (changes.equationChild && changes.equationChild.componentIdentitiesChanged) {
+            return {
+              newValues: { nDimensions: 2 },
+              checkForActualChange: ["nDimensions"]
+            }
+          } else {
+            return { noChanges: ["nDimensions"] }
+          }
+        } else {
+          if (dependencyValues.points.length > 0) {
+            let nDimensions = dependencyValues.points[0].tree.length - 1;
+            for (let i = 1; i < dependencyValues.points.length; i++) {
+              if (dependencyValues.points[i].tree.length - 1 !== nDimensions) {
+                console.warn("Can't have line through points of differing dimensions");
+                nDimensions = NaN;
+              }
+            }
+            return {
+              newValues: { nDimensions },
+              checkForActualChange: ["nDimensions"]
+            }
+          } else {
+            // line through zero points
+            return { newValues: { nDimensions: NaN } }
+          }
+
+        }
       }
-    }else if(this.state.throughChild) {
-      let throughState = this.state.throughChild.state;
-      if(this.state.throughChild.unresolvedState.points ||
-          throughState.points.some(x =>x.unresolvedState.coords)) {
-        this.unresolvedState.slope = true;
-        this.unresolvedState.xintercept = true;
-        this.unresolvedState.yintercept = true;
-        this.unresolvedState.equation = true;
-        this.unresolvedState.coeff0 = true;
-        this.unresolvedState.coeffvar1 = true;
-        this.unresolvedState.coeffvar2 = true;
-        this.unresolvedState.points = true;
-        return;
-      }
+    }
 
-      // calculate line from through points
 
-      let pointsChanged = childrenChanged || this.state.points === undefined || 
-        trackChanges.childrenChanged(this.state.throughChild.componentName);
-      
-      if(pointsChanged) {
-        recalculateLine = true;
+    stateVariableDefinitions.equation = {
+      public: true,
+      componentType: "equation",
+      forRenderer: true,
+      stateVariablesDeterminingDependencies: ["equationChild"],
+      additionalStateVariablesDefined: [
+        {
+          variableName: "coeff0",
+          public: true,
+          componentType: "math",
+        },
+        {
+          variableName: "coeffvar1",
+          public: true,
+          componentType: "math",
+        },
+        {
+          variableName: "coeffvar2",
+          public: true,
+          componentType: "math",
+        }
+      ],
+      returnDependencies: function ({ stateValues }) {
+        let dependencies = {
+          variables: {
+            dependencyType: "stateVariable",
+            variableName: "variables"
+          }
+        }
+        if (stateValues.equationChild === null) {
+          dependencies.points = {
+            dependencyType: "stateVariable",
+            variableName: "points"
+          };
+          dependencies.nDimensions = {
+            dependencyType: "stateVariable",
+            variableName: "nDimensions"
+          }
+        } else {
+          dependencies.equationChild = {
+            dependencyType: "childStateVariables",
+            childLogicName: "exactlyOneEquation",
+            variableNames: ["value"],
+          };
+        }
+        return dependencies;
+      },
+      definition: function ({ dependencyValues }) {
 
-        if (throughState.nPoints === 0) {
+        // console.log('definition of equation')
+        // console.log(dependencyValues);
+
+        let variables = dependencyValues.variables;
+
+        let blankMath = me.fromAst('\uff3f');
+
+
+        if (dependencyValues.equationChild) {
+          let equation = dependencyValues.equationChild[0].stateValues.value;
+
+          let result = calculateCoeffsFromEquation({ equation, variables });
+
+          if (!result.success) {
+            return {
+              newValues: {
+                equation,
+                coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
+              }
+            }
+          }
+
+          let { coeff0, coeffvar1, coeffvar2 } = result;
+          return {
+            newValues: {
+              equation, coeff0, coeffvar1, coeffvar2
+            }
+          }
+        }
+
+
+        if (dependencyValues.points.length === 0) {
           console.warn("Line through zero points, can't determine line");
-          this.state.points = [
-            me.fromAst(0), me.fromAst(0)
-          ]
-        }else if(throughState.nPoints === 1) {
+          return {
+            newValues: {
+              equation: blankMath,
+              coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
+            }
+          }
+
+        } else if (dependencyValues.points.length === 1) {
           console.warn("Line through just one point, can't determine line");
-          this.state.points = [
-            throughState.points[0].state.coords.copy(),
-            throughState.points[0].state.coords.copy(),
-          ]
-        }else if(throughState.nPoints === 2) {
-          this.state.points = [
-            throughState.points[0].state.coords.copy(),
-            throughState.points[1].state.coords.copy(),
-          ];
-        }else {
-          throw Error(`Can't create a line through more than 2 points (${throughState.nPoints} given)`);
-        }
-      }else {
-
-        if(throughState.nPoints > 0) {
-          if(trackChanges.getVariableChanges({
-            component: throughState.points[0],
-            variable: "coords"
-          })) {
-            recalculateLine = true;
-            this.state.points[0] = throughState.points[0].state.coords.copy();
+          return {
+            newValues: {
+              equation: blankMath,
+              coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
+            }
           }
-
-          if(throughState.nPoints > 1) {
-            if(trackChanges.getVariableChanges({
-              component: throughState.points[1],
-              variable: "coords"
-            })) {
-              recalculateLine = true;
-              this.state.points[1] = throughState.points[1].state.coords.copy();
+        } else if (dependencyValues.points.length > 2) {
+          console.warn(`Can't create a line through more than 2 points (${dependencyValues.points.length} given)`);
+          return {
+            newValues: {
+              equation: blankMath,
+              coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
             }
           }
         }
-      }
 
-    }else {
+        // have two points
+        let nDimens = dependencyValues.nDimensions;
 
-      if(this.state.definitionFrom === "coeffs") {
-        // no children
-        if(this.state.equation === undefined ||
-          trackChanges.getVariableChanges({ component: this, variable: "coeffvar1"}) ||
-          trackChanges.getVariableChanges({ component: this, variable: "coeffvar2"}) ||
-          trackChanges.getVariableChanges({ component: this, variable: "coeff0"})
+        if (Number.isNaN(nDimens)) {
+          console.warn("Line through points of different dimensions");
+          return {
+            newValues: {
+              equation: blankMath,
+              coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
+            }
+          }
+        }
+
+        if (nDimens < 2) {
+          console.warn("Line must be through points of at least two dimensions");
+          return {
+            newValues: {
+              equation: blankMath,
+              coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
+            }
+          }
+        }
+
+
+        let point1 = dependencyValues.points[0];
+        let point2 = dependencyValues.points[1];
+
+
+        let varStrings = [...variables.map(x => x.toString())];
+
+        for (let i = 0; i < nDimens; i++) {
+          if (point1.variables().indexOf(varStrings[i]) !== -1 ||
+            point2.variables().indexOf(varStrings[i]) !== -1) {
+            console.warn("Points through line depend on variables: " + varStrings.join(", "));
+            return {
+              newValues: {
+                equation: blankMath,
+                coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
+              }
+            }
+          }
+        }
+
+        if (nDimens !== 2) {
+          // no equation if not in 2D
+          return {
+            newValues: {
+              equation: blankMath,
+              coeff0: blankMath, coeffvar1: blankMath, coeffvar2: blankMath
+            }
+          }
+        }
+
+        if (point1.equals(point2)) {
+          // points are equal, so equation is undefined.  Set all coordinates to 0
+          let zero = me.fromAst(0);
+          return {
+            newValues: {
+              equation: blankMath,
+              coeff0: zero, coeffvar1: zero, coeffvar2: zero
+            }
+          }
+        }
+
+        let point1x = point1.get_component(0);
+        let point1y = point1.get_component(1);
+        let point2x = point2.get_component(0);
+        let point2y = point2.get_component(1);
+
+        // TODO: somehow normalize the equation for the line
+        // at least for case where coeffs are numbers
+        // Maybe detect case where coeffs are numbers so can do these calculation faster?
+
+        let coeffvar1 = point1y.subtract(point2y).simplify();
+        let coeffvar2 = point2x.subtract(point1x).simplify();
+        let coeff0 = point1x.multiply(point2y).subtract(point1y.multiply(point2x)).simplify();
+        // let equation = me.fromAst('ax+by+c=0').substitute({a:coeffvar1, b:coeffvar2, c: coeff0, x: var1, y:var2}).simplify();
+        let equation = me.fromAst(['=', ['+', ['*', 'a', 'x'], ['*', 'b', 'y'], 'c'], 0]).substitute({
+          a: coeffvar1, b: coeffvar2, c: coeff0, x: variables[0], y: variables[1]
+        }).simplify();
+
+        return {
+          newValues: {
+            equation, coeff0, coeffvar1, coeffvar2
+          }
+        }
+
+      },
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
+
+        // console.log(`inverse definition of equation, coeffs`);
+        // console.log(desiredStateVariableValues)
+
+        if (dependencyValues.points) {
+          console.log(`Haven't implemented inverse definition of equation of line based on points`);
+          return { success: false };
+        }
+
+        if (desiredStateVariableValues.equation) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "equationChild",
+              desiredValue: desiredStateVariableValues.equation,
+              childIndex: 0,
+              variableIndex: 0
+            }]
+          }
+        }
+
+        // if not inverting equation, must be inverting coeffs
+        if (!("coeff0" in desiredStateVariableValues
+          && "coeffvar1" in desiredStateVariableValues
+          && "coeffvar2" in desiredStateVariableValues)
         ) {
-          recalculateLine = true;
-        
+          console.log(`Haven't implemented inverting coeffs if not specifying all of them`);
+          return { success: false }
         }
-      } else if (this.state.definitionFrom === "equation") {
-        if(trackChanges.getVariableChanges({ component: this, variable: "equation"})
-        ) {
-          recalculateLine = true;
-        }
-      } else {
-        if(trackChanges.getVariableChanges({ component: this, variable: "points"})) {
-          recalculateLine = true;
+
+        let equation = me.fromAst(['=', 0, ['+', ['*', 'a', 'x'], ['*', 'b', 'y'], 'c']]).substitute({
+          a: desiredStateVariableValues.coeffvar1,
+          b: desiredStateVariableValues.coeffvar2,
+          c: desiredStateVariableValues.coeff0,
+          x: dependencyValues.variables[0], y: dependencyValues.variables[1]
+        }).simplify();
+
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "equationChild",
+            desiredValue: equation,
+            childIndex: 0,
+            variableIndex: 0
+          }]
         }
 
       }
 
     }
 
-    if(recalculateLine) {
-      let result;
-      if (this.state.definitionFrom === "coeffs") {
-        result = this.calculateStateFromCoeffs()
-      } else if (this.state.definitionFrom === "equation") {
-        result = this.calculateStateFromEquation();
-      } else {
-        result = this.calculateStateFromPoints();
-      }
-      
-      if(!result.success) {
-        return;
-      }
-
-      this.calculateSlope();
-      this.calculateIntercepts();
-    }
-
-  }
-
-  calculateStateFromEquation() {
-    // have equation but no points
-    // determine if equation is a linear equation in the variables
-
-    let var1 = this.state.var1;
-    let var2 = this.state.var2;
-    let var1String = var1.toString();
-    let var2String = var2.toString();
-
-    let equation = this.state.equation = this.state.equation.expand().simplify();
-
-    let lhs = me.fromAst(['+', equation.tree[1], ['-', equation.tree[2]]]).expand().simplify();
-    // divide lhs into terms
-
-    let terms = [];
-    if (Array.isArray(lhs.tree) && lhs.tree[0] === '+') {
-      terms = lhs.tree.slice(1);
-    }
-    else {
-      terms = [lhs.tree];
-    }
-
-    let coeffvar1 = me.fromAst(0);
-    let coeffvar2 = me.fromAst(0);
-    let coeff0 = me.fromAst(0);
-
-    for (let term of terms) {
-      let coeffs = getTermCoeffs(term);
-      if(!coeffs.success) {
-        return {success: false}
-      }
-      coeffvar1 = coeffvar1.add(coeffs.coeffvar1);
-      coeffvar2 = coeffvar2.add(coeffs.coeffvar2);
-      coeff0 = coeff0.add(coeffs.coeff0);
-    }
-    this.state.coeffvar1 = coeffvar1 = coeffvar1.simplify();
-    this.state.coeffvar2 = coeffvar2 = coeffvar2.simplify();
-    this.state.coeff0 = coeff0 = coeff0.simplify();
-
-    return this.calculateStateFromCoeffs(false);
-
-    function getTermCoeffs(term) {
-      let cv1 = 0, cv2 = 0, c0 = 0;
-
-      if (typeof term === "string") {
-        if (term === var1String) {
-          cv1 = 1;
+    stateVariableDefinitions.numericalPoints = {
+      isArray: true,
+      entryPrefixes: ["numericalPoint"],
+      forRenderer: true,
+      returnDependencies: () => ({
+        points: {
+          dependencyType: "stateVariable",
+          variableName: "points"
+        },
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
         }
-        else if (term === var2String) {
-          cv2 = 1;
+      }),
+      definition: function ({ dependencyValues }) {
+        if (Number.isNaN(dependencyValues.nDimensions)) {
+          return { newValues: { numericalPoints: [] } }
         }
-        else {
-          c0 = term;
-        }
-      }
-      else if (typeof term === "number") {
-        c0 = term;
-      }
-      else if (!Array.isArray(term)) {
-        console.warn("Invalid format for equation of line in variables " + var1 + " and " + var2);
-        return {success: false};
-      }
-      else {
-        let operator = term[0];
-        let operands = term.slice(1);
-        if (operator === '-') {
-          let coeffs = getTermCoeffs(operands[0]);
-          if(!coeffs.success) {
-            return {success: false}
-          }
-          cv1 = ['-', coeffs.coeffvar1.tree];
-          cv2 = ['-', coeffs.coeffvar2.tree];
-          c0 = ['-', coeffs.coeff0.tree];
-        }
-        else if (operator === '+') {
-          console.warn("Invalid format for equation of line in variables " + var1 + " and " + var2);
-          return {success: false};
-        }
-        else if (operator === '*') {
-          let var1ind = -1, var2ind = -1;
-          for (let i = 0; i < operands.length; i++) {
-            if (var1.equals(me.fromAst(operands[i]))) {
-              var1ind = i;
-              break;
+
+        let numericalPoints = [];
+        for (let point of dependencyValues.points) {
+          let numericalP = [];
+          for (let ind = 0; ind < dependencyValues.nDimensions; ind++) {
+            let val = point.get_component(ind).evaluate_to_constant();
+            if (!Number.isFinite(val)) {
+              val = NaN;
             }
-            else if (var2.equals(me.fromAst(operands[i]))) {
-              var2ind = i;
-              break;
-            }
+            numericalP.push(val);
           }
-          if (var1ind !== -1) {
-            operands.splice(var1ind, 1);
-            if (operands.length === 1) {
-              cv1 = operands[0];
-            }
-            else {
-              cv1 = ["*"].concat(operands);
-            }
-          }
-          else if (var2ind !== -1) {
-            operands.splice(var2ind, 1);
-            if (operands.length === 1) {
-              cv2 = operands[0];
-            }
-            else {
-              cv2 = ["*"].concat(operands);
-            }
-          }
-          else {
-            c0 = term;
-          }
+          numericalPoints.push(numericalP);
         }
-        else if (operator === "/") {
-          let coeffs = getTermCoeffs(operands[0]);
-          if(!coeffs.success) {
-            return {success: false}
-          }
-          cv1 = ['/', coeffs.coeffvar1.tree, operands[1]];
-          cv2 = ['/', coeffs.coeffvar2.tree, operands[1]];
-          c0 = ['/', coeffs.coeff0.tree, operands[1]];
-        }
-        else if (operator === '_') {
-          if (var1.equals(me.fromAst(term))) {
-            cv1 = 1;
-          }
-          else if (var2.equals(me.fromAst(term))) {
-            cv2 = 1;
-          }
-          else {
-            c0 = term;
-          }
-        }
-        else {
-          c0 = term;
-        }
-      }
-      return { success: true, coeffvar1: me.fromAst(cv1), coeffvar2: me.fromAst(cv2), coeff0: me.fromAst(c0) };
-    }
 
-  }
-
-  calculateStateFromCoeffs(calculateEquation = true) {
-
-    // must be an equation in just two variables
-    // so if variables were specified, check if exactly two variables
-    if (this.state.variableChild) {
-      if (this.state.variableChild.state.ncomponents !== 2) {
-        console.warn("Only two variables can be specified for equation of a line");
-        return {success: false};
+        return { newValues: { numericalPoints } }
       }
     }
 
-    this.state.ndimensions = 2;
 
-    let coeffvar1 = this.state.coeffvar1;
-    let coeffvar2 = this.state.coeffvar2;
-    let coeff0 = this.state.coeff0;
+    stateVariableDefinitions.numericalCoeff0 = {
+      additionalStateVariablesDefined: ["numericalCoeffvar1", "numericalCoeffvar2"],
+      returnDependencies: () => ({
+        coeff0: {
+          dependencyType: "stateVariable",
+          variableName: "coeff0"
+        },
+        coeffvar1: {
+          dependencyType: "stateVariable",
+          variableName: "coeffvar1"
+        },
+        coeffvar2: {
+          dependencyType: "stateVariable",
+          variableName: "coeffvar2"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
 
-    let var1 = this.state.var1;
-    let var2 = this.state.var2;
-    let var1String = var1.toString();
-    let var2String = var2.toString();
+        let numericalCoeff0 = dependencyValues.coeff0.evaluate_to_constant();
+        if (!Number.isFinite(numericalCoeff0)) {
+          numericalCoeff0 = NaN;
+        }
 
-    if(calculateEquation) {
-      this.state.equation = me.fromAst(
-        ['=',
-          ['+', ['*', coeffvar1.tree, var1.tree],
-            ['*', coeffvar2.tree, var2.tree],
-            coeff0], 0]
-      );
+
+        let numericalCoeffvar1 = dependencyValues.coeffvar1.evaluate_to_constant();
+        if (!Number.isFinite(numericalCoeffvar1)) {
+          numericalCoeffvar1 = NaN;
+        }
+
+        let numericalCoeffvar2 = dependencyValues.coeffvar2.evaluate_to_constant();
+        if (!Number.isFinite(numericalCoeffvar2)) {
+          numericalCoeffvar2 = NaN;
+        }
+
+        return { newValues: { numericalCoeff0, numericalCoeffvar1, numericalCoeffvar2 } }
+      }
     }
 
-    // if any of the coefficients have var1 or var2 in them, then it's not a line
-    if (coeffvar1.variables(true).indexOf(var1String) !== -1
-      || coeffvar1.variables(true).indexOf(var2String) !== -1
-      || coeffvar2.variables(true).indexOf(var1String) !== -1
-      || coeffvar2.variables(true).indexOf(var2String) !== -1
-      || coeff0.variables(true).indexOf(var1String) !== -1
-      || coeff0.variables(true).indexOf(var2String) !== -1) {
-      console.warn("Invalid format for equation of line in variables " + var1String + " and " + var2String);
-      return {success: false};
+
+    stateVariableDefinitions.slope = {
+      public: true,
+      componentType: "math",
+      returnDependencies: () => ({
+        coeffvar1: {
+          dependencyType: "stateVariable",
+          variableName: "coeffvar1"
+        },
+        coeffvar2: {
+          dependencyType: "stateVariable",
+          variableName: "coeffvar2"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        let slope = me.fromAst(["-", ["/", "a", "b"]])
+          .substitute({ a: dependencyValues.coeffvar1, b: dependencyValues.coeffvar2 })
+          .simplify();
+
+        return { newValues: { slope } }
+
+      }
     }
-    let zero = me.fromAst(0);
-    if (coeffvar1.equals(zero) && coeffvar2.equals(zero)) {
-      console.warn("Invalid format for equation of line in variables " + var1String + " and " + var2String);
-      return {success: false};
+
+    stateVariableDefinitions.xintercept = {
+      public: true,
+      componentType: "math",
+      returnDependencies: () => ({
+        coeff0: {
+          dependencyType: "stateVariable",
+          variableName: "coeff0"
+        },
+        coeffvar1: {
+          dependencyType: "stateVariable",
+          variableName: "coeffvar1"
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          xintercept: me.fromAst(["-", ["/", "a", "b"]])
+            .substitute({
+              a: dependencyValues.coeff0,
+              b: dependencyValues.coeffvar1
+            })
+            .simplify()
+        }
+      })
     }
 
-    // console.log("coefficient of " + var1 + " is " + coeffvar1.toString());
-    // console.log("coefficient of " + var2 + " is " + coeffvar2.toString());
-    // console.log("constant coefficient is " + coeff0.toString());
+    stateVariableDefinitions.yintercept = {
+      public: true,
+      componentType: "math",
+      returnDependencies: () => ({
+        coeff0: {
+          dependencyType: "stateVariable",
+          variableName: "coeff0"
+        },
+        coeffvar2: {
+          dependencyType: "stateVariable",
+          variableName: "coeffvar2"
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          yintercept: me.fromAst(["-", ["/", "a", "b"]])
+            .substitute({
+              a: dependencyValues.coeff0,
+              b: dependencyValues.coeffvar2
+            })
+            .simplify()
 
-    // create two points that equation passes through
-    let denom = coeffvar1.pow(2).add(coeffvar2.pow(2));
-    let point1x = coeffvar2.multiply(2).subtract(coeffvar1.multiply(coeff0)).divide(denom);
-    let point1y = coeffvar1.multiply(-2).subtract(coeffvar2.multiply(coeff0)).divide(denom);
-    let point2x = coeffvar2.subtract(coeffvar1.multiply(coeff0)).divide(denom);
-    let point2y = coeffvar1.add(coeffvar2.multiply(coeff0)).multiply(-1).divide(denom);
+        }
+      })
+    }
 
-    this.state.points = [];
+    stateVariableDefinitions.lastPointsFromInverting = {
+      defaultValue: null,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          lastPointsFromInverting: {
+            variableToCheck: "lastPointsFromInverting"
+          }
+        }
+      }),
+      inverseDefinition: ({ desiredStateVariableValues }) => ({
+        success: true,
+        instructions: [{
+          setStateVariable: "lastPointsFromInverting",
+          value: desiredStateVariableValues.lastPointsFromInverting
+        }]
+      })
+    }
 
-    this.state.points.push(me.fromAst(["tuple", point1x, point1y]));
-    this.state.points.push(me.fromAst(["tuple", point2x, point2y]));
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({
+        throughChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneThrough"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.throughChild.length === 1) {
+          return {
+            newValues: {
+              childrenToRender: [dependencyValues.throughChild[0].componentName]
+            }
+          }
+        } else {
+          return { newValues: { childrenToRender: [] } }
+        }
+      }
+    }
 
-    return {success: true};
+
+    stateVariableDefinitions.nearestPoint = {
+      returnDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions"
+        },
+        numericalCoeff0: {
+          dependencyType: "stateVariable",
+          variableName: "numericalCoeff0"
+        },
+        numericalCoeffvar1: {
+          dependencyType: "stateVariable",
+          variableName: "numericalCoeffvar1"
+        },
+        numericalCoeffvar2: {
+          dependencyType: "stateVariable",
+          variableName: "numericalCoeffvar2"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          nearestPoint: function (variables) {
+
+            // only implemented in 2D for now
+            if (dependencyValues.nDimensions !== 2) {
+              return {};
+            }
+
+            // only implement for constant coefficients
+            let a = dependencyValues.numericalCoeffvar1;
+            let b = dependencyValues.numericalCoeffvar2;
+            let c = dependencyValues.numericalCoeff0;
+
+            if (!(Number.isFinite(a) && Number.isFinite(b) && Number.isFinite(c))) {
+              return {};
+            }
+
+            let denom = a * a + b * b;
+
+            if (denom === 0) {
+              return {};
+            }
+
+            let x1 = variables.x1.evaluate_to_constant();
+            let x2 = variables.x2.evaluate_to_constant();
+
+            if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
+              return {};
+            }
+
+            let result = {};
+            result.x1 = (b * (b * x1 - a * x2) - a * c) / denom;
+            result.x2 = (a * (-b * x1 + a * x2) - b * c) / denom;
+
+            if (variables.x3 !== undefined) {
+              result.x3 = 0;
+            }
+
+            return result;
+
+          }
+        }
+      })
+    }
+
+
+
+    return stateVariableDefinitions;
 
   }
 
   calculateStateFromPoints() {
 
-    if(this.state.points.length !== 2) {
+    if (this.state.points.length !== 2) {
       console.warn("Line not through two points");
-      return {success: false};
+      return { success: false };
     }
 
     let point1 = this.state.points[0];
@@ -748,18 +1229,18 @@ export default class Line extends GraphicalComponent {
 
     if (point2.tree.length - 1 !== ndimens) {
       console.warn("Line through points of different dimensions");
-      return {success: false};
+      return { success: false };
     }
 
     if (ndimens === 1) {
       console.warn("Line must be through points of at least two dimensions");
-      return {success: false};
+      return { success: false };
     }
 
     if (this.state.variableChild) {
       if (this.state.variableChild.state.ncomponents !== ndimens) {
         console.warn("For a line, number of variables specified must match dimension of points");
-        return {success: false};
+        return { success: false };
       }
     }
 
@@ -788,13 +1269,13 @@ export default class Line extends GraphicalComponent {
       if (point1.variables().indexOf(varStrings[i]) !== -1 ||
         point2.variables().indexOf(varStrings[i]) !== -1) {
         console.warn("Points through line depend on variables: " + varStrings.join(", "));
-        return {success: false};
+        return { success: false };
       }
     }
 
     if (ndimens !== 2) {
       // no equation if not in 2D
-      return {success: true};
+      return { success: true };
     }
 
     if (point1.equals(point2)) {
@@ -803,7 +1284,7 @@ export default class Line extends GraphicalComponent {
       this.state.coeff0 = zero;
       this.state.coeffvar1 = zero;
       this.state.coeffvar2 = zero;
-      return {success: true};
+      return { success: true };
     }
 
     let point1x, point1y, point2x, point2y;
@@ -812,41 +1293,20 @@ export default class Line extends GraphicalComponent {
       point1y = point1.get_component(1);
       point2x = point2.get_component(0);
       point2y = point2.get_component(1);
-    } catch(e) {
+    } catch (e) {
       console.warn("Point through line don't have two dimensions");
-      return {success: false};
+      return { success: false };
     }
 
     this.state.coeffvar1 = point1y.subtract(point2y).simplify();
     this.state.coeffvar2 = point2x.subtract(point1x).simplify();
     this.state.coeff0 = point1x.multiply(point2y).subtract(point1y.multiply(point2x)).simplify();
     // let equation = me.fromAst('ax+by+c=0').substitute({a:coeffvar1, b:coeffvar2, c: coeff0, x: var1, y:var2}).simplify();
-    this.state.equation = me.fromAst(['=', ['+', ['*', 'a', 'x'], ['*', 'b', 'y'], 'c'], 0]).substitute({
+    this.state.equation = me.fromAst(['=', 0, ['+', ['*', 'a', 'x'], ['*', 'b', 'y'], 'c']]).substitute({
       a: this.state.coeffvar1, b: this.state.coeffvar2, c: this.state.coeff0, x: var1, y: var2
     }).simplify();
 
-    return {success: true};
-
-  }
-
-  calculateSlope() {
-    this.state.slope = me.fromAst(["-", ["/", "a", "b"]])
-      .substitute({ a: this.state.coeffvar1, b: this.state.coeffvar2 })
-      .simplify();
-  }
-
-  calculateIntercepts() {
-
-    let cs = {
-      "xintercept": this.state.coeffvar1,
-      "yintercept": this.state.coeffvar2,
-    }
-
-    for (let intercept in cs) {
-      this.state[intercept] = me.fromAst(["-", ["/", "a", "b"]])
-        .substitute({ a: this.state.coeff0, b: cs[intercept] })
-        .simplify();
-    }
+    return { success: true };
 
   }
 
@@ -858,237 +1318,239 @@ export default class Line extends GraphicalComponent {
       updateType: "updateValue",
       updateInstructions: [{
         componentName: this.componentName,
-        variableUpdates: {
-          points: {
-            isArray: true,
-            changes: { arrayComponents: { 0: point1, 1: point2 } }
-          }
-        }
+        stateVariable: "points",
+        value: [point1, point2]
       }]
     });
 
   }
 
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-    if (this.state.ndimensions === 2) {
-      const actions = {
-        moveLine: this.moveLine,
-      }
-
-      let point1x, point1y, point2x, point2y;
-      try {
-        point1x = this.state.points[0].get_component(0);
-        point1y = this.state.points[0].get_component(1);
-        point2x = this.state.points[1].get_component(0);
-        point2y = this.state.points[1].get_component(1);
-      } catch(e) {
-        console.warn("Points through line don't have two dimensions");
-        return;
-      }
-
-      this.renderer = new this.availableRenderers.line2d({
-        key: this.componentName,
-        label: this.state.label,
-        draggable: this.state.draggable,
-        layer: this.state.layer,
-        visible: !this.state.hide,
-        point1coords:
-          [
-            point1x.evaluate_to_constant(),
-            point1y.evaluate_to_constant()
-          ],
-        point2coords:
-          [
-            point2x.evaluate_to_constant(),
-            point2y.evaluate_to_constant()
-          ],
-        actions: actions,
-        color: this.state.selectedStyle.lineColor,
-        width: this.state.selectedStyle.lineWidth,
-        style: this.state.selectedStyle.lineStyle,
-      });
-    }
-  }
-
-  updateRenderer() {
-    let point1x, point1y, point2x, point2y;
-    try {
-      point1x = this.state.points[0].get_component(0);
-      point1y = this.state.points[0].get_component(1);
-      point2x = this.state.points[1].get_component(0);
-      point2y = this.state.points[1].get_component(1);
-    } catch(e) {
-      console.warn("Point through line don't have two dimensions");
-      return;
-    }
-
-    this.renderer.updateLine({
-      visible: !this.state.hide,
-      point1coords:
-        [
-          point1x.evaluate_to_constant(),
-          point1y.evaluate_to_constant()
-        ],
-      point2coords:
-        [
-          point2x.evaluate_to_constant(),
-          point2y.evaluate_to_constant()
-        ],
-    });
-  }
-
-  updateChildrenWhoRender() {
-    if (this.state.throughChild !== undefined)
-      this.childrenWhoRender = [this.state.throughChild.componentName];
-  }
-
-  allowDownstreamUpdates(status) {
-    return ((status.initialChange === true && this.state.draggable === true) ||
-      (status.initialChange !== true && this.state.modifyIndirectly === true));
-  }
-
-  get variablesUpdatableDownstream() {
-    return ["points"];
-  }
-
-
-  calculateDownstreamChanges({ stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate }) {
-
-    let newStateVariables = {};
-    let pointsChanged = new Set([]);
-
-    let newPoints = Array(2);
-
-    for (let varName in stateVariablesToUpdate) {
-      if (varName === "points") {
-        if (newStateVariables[varName] === undefined) {
-          newStateVariables[varName] = {
-            isArray: true,
-            changes: { arrayComponents: {} }
-          }
-        }
-        for (let ind in stateVariablesToUpdate[varName].changes.arrayComponents) {
-          pointsChanged.add(Number(ind));
-          newPoints[ind] = newStateVariables[varName].changes.arrayComponents[ind] =
-            stateVariablesToUpdate[varName].changes.arrayComponents[ind];
-        }
-      }
-    }
-
-    if (this.state.definitionFrom === "points") {
-
-      // check if based on through
-      if (this.state.throughChild !== undefined) {
-
-        let throughPoints = this.state.throughChild.state.points;
-
-        for (let ind = 0; ind < 2; ind++) {
-          if (pointsChanged.has(ind)) {
-            let pointName = throughPoints[ind].componentName;
-            dependenciesToUpdate[pointName] = { coords: {changes: newPoints[ind] }};
-          }
-        }
-      }
-    } else {
-      // line from equation or coefficients
-      // need to recalculate equation from new point coords
-
-      let var1 = this.state.var1;
-      let var2 = this.state.var2;
-      let point1x, point1y, point2x, point2y;
-      if (pointsChanged.has(0)) {
-        point1x = newPoints[0].get_component(0);
-        point1y = newPoints[0].get_component(1);
-      } else {
-        point1x = this.state.points[0].get_component(0);
-        point1y = this.state.points[0].get_component(1);
-      }
-      if (pointsChanged.has(1)) {
-        point2x = newPoints[1].get_component(0);
-        point2y = newPoints[1].get_component(1);
-      } else {
-        point2x = this.state.points[1].get_component(0);
-        point2y = this.state.points[1].get_component(1);
-      }
-
-      let coeffvar1 = point1y.subtract(point2y).simplify();
-      let coeffvar2 = point2x.subtract(point1x).simplify();
-      let coeff0 = point1x.multiply(point2y).subtract(point1y.multiply(point2x)).simplify();
-
-      if (this.state.definitionFrom === "coeffs") {
-        newStateVariables.coeffvar1 = coeffvar1;
-        newStateVariables.coeffvar2 = coeffvar2;
-        newStateVariables.coeff0 = coeff0;
-      } else {
-        let equation = me.fromAst(['=', ['+', ['*', 'a', 'x'], ['*', 'b', 'y'], 'c'], 0]).substitute({
-          a: coeffvar1, b: coeffvar2, c: coeff0, x: var1, y: var2
-        }).simplify();
-
-        if (this.state.equationChild !== undefined) {
-          dependenciesToUpdate[this.state.equationChild.componentName] = { value: {changes: equation }};
-        } else {
-          newStateVariables.equation = {changes: equation };
-        }
-      }
-    }
-
-
-    let shadowedResult = this.updateShadowSources({
-      newStateVariables: newStateVariables,
-      dependenciesToUpdate: dependenciesToUpdate,
-    });
-    let shadowedStateVariables = shadowedResult.shadowedStateVariables;
-    let isReplacement = shadowedResult.isReplacement;
-
-    // add stateVariable to stateVariableChangesToSave if is essential
-    // and no shadow sources were updated
-    for (let varname in newStateVariables) {
-      if (this._state[varname].essential === true &&
-        !shadowedStateVariables.has(varname) && !isReplacement) {
-        stateVariableChangesToSave[varname] = newStateVariables[varname];
-      }
-    }
-
-    return true;
-
-  }
-
   nearestPoint({ x1, x2, x3 }) {
 
-    // only implemented in 2D for now
-    if (this.state.ndimensions !== 2) {
-      return;
+  }
+}
+
+
+function calculateCoeffsFromEquation({ equation, variables }) {
+
+  // determine if equation is a linear equation in the variables
+
+  let var1 = variables[0];
+  let var2 = variables[1];
+  let var1String = var1.toString();
+  let var2String = var2.toString();
+
+  equation = equation.expand().simplify();
+
+  let rhs = me.fromAst(['+', equation.tree[2], ['-', equation.tree[1]]]).expand().simplify();
+  // divide rhs into terms
+
+  let terms = [];
+  if (Array.isArray(rhs.tree) && rhs.tree[0] === '+') {
+    terms = rhs.tree.slice(1);
+  }
+  else {
+    terms = [rhs.tree];
+  }
+
+  let coeffvar1 = me.fromAst(0);
+  let coeffvar2 = me.fromAst(0);
+  let coeff0 = me.fromAst(0);
+
+  for (let term of terms) {
+    let coeffs = getTermCoeffs(term);
+    if (!coeffs.success) {
+      return { success: false }
     }
+    coeffvar1 = coeffvar1.add(coeffs.coeffvar1);
+    coeffvar2 = coeffvar2.add(coeffs.coeffvar2);
+    coeff0 = coeff0.add(coeffs.coeff0);
+  }
+  coeffvar1 = coeffvar1.simplify();
+  coeffvar2 = coeffvar2.simplify();
+  coeff0 = coeff0.simplify();
 
-    // only implement for constant coefficients
-    let a = this.state.coeffvar1.evaluate_to_constant();
-    let b = this.state.coeffvar2.evaluate_to_constant();
-    let c = this.state.coeff0.evaluate_to_constant();
+  return { success: true, coeff0, coeffvar1, coeffvar2 }
 
-    if (!(Number.isFinite(a) && Number.isFinite(b) && Number.isFinite(c))) {
-      return {};
+  function getTermCoeffs(term) {
+    let cv1 = 0, cv2 = 0, c0 = 0;
+
+    if (typeof term === "string") {
+      if (term === var1String) {
+        cv1 = 1;
+      }
+      else if (term === var2String) {
+        cv2 = 1;
+      }
+      else {
+        c0 = term;
+      }
     }
-
-    let denom = a * a + b * b;
-
-    if (denom === 0) {
-      return {};
+    else if (typeof term === "number") {
+      c0 = term;
     }
-
-    let result = {};
-    result.x1 = (b * (b * x1 - a * x2) - a * c) / denom;
-    result.x2 = (a * (-b * x1 + a * x2) - b * c) / denom;
-
-    if (x3 !== undefined) {
-      result.x3 = 0;
+    else if (!Array.isArray(term)) {
+      console.warn("Invalid format for equation of line in variables " + var1 + " and " + var2);
+      return { success: false };
     }
-
-    return result;
+    else {
+      let operator = term[0];
+      let operands = term.slice(1);
+      if (operator === '-') {
+        let coeffs = getTermCoeffs(operands[0]);
+        if (!coeffs.success) {
+          return { success: false }
+        }
+        cv1 = ['-', coeffs.coeffvar1.tree];
+        cv2 = ['-', coeffs.coeffvar2.tree];
+        c0 = ['-', coeffs.coeff0.tree];
+      }
+      else if (operator === '+') {
+        console.warn("Invalid format for equation of line in variables " + var1 + " and " + var2);
+        return { success: false };
+      }
+      else if (operator === '*') {
+        let var1ind = -1, var2ind = -1;
+        for (let i = 0; i < operands.length; i++) {
+          if (var1.equals(me.fromAst(operands[i]))) {
+            var1ind = i;
+            break;
+          }
+          else if (var2.equals(me.fromAst(operands[i]))) {
+            var2ind = i;
+            break;
+          }
+        }
+        if (var1ind !== -1) {
+          operands.splice(var1ind, 1);
+          if (operands.length === 1) {
+            cv1 = operands[0];
+          }
+          else {
+            cv1 = ["*"].concat(operands);
+          }
+        }
+        else if (var2ind !== -1) {
+          operands.splice(var2ind, 1);
+          if (operands.length === 1) {
+            cv2 = operands[0];
+          }
+          else {
+            cv2 = ["*"].concat(operands);
+          }
+        }
+        else {
+          c0 = term;
+        }
+      }
+      else if (operator === "/") {
+        let coeffs = getTermCoeffs(operands[0]);
+        if (!coeffs.success) {
+          return { success: false }
+        }
+        cv1 = ['/', coeffs.coeffvar1.tree, operands[1]];
+        cv2 = ['/', coeffs.coeffvar2.tree, operands[1]];
+        c0 = ['/', coeffs.coeff0.tree, operands[1]];
+      }
+      else if (operator === '_') {
+        if (var1.equals(me.fromAst(term))) {
+          cv1 = 1;
+        }
+        else if (var2.equals(me.fromAst(term))) {
+          cv2 = 1;
+        }
+        else {
+          c0 = term;
+        }
+      }
+      else {
+        c0 = term;
+      }
+    }
+    return { success: true, coeffvar1: me.fromAst(cv1), coeffvar2: me.fromAst(cv2), coeff0: me.fromAst(c0) };
 
   }
+
+}
+
+function calculatePointsFromCoeffs({ coeff0, coeffvar1, coeffvar2, variables, lastPointsFromInverting }) {
+
+  let var1 = variables[0];
+  let var2 = variables[1];
+  let var1String = var1.toString();
+  let var2String = var2.toString();
+
+  // if any of the coefficients have var1 or var2 in them, then it's not a line
+  if (coeffvar1.variables(true).indexOf(var1String) !== -1
+    || coeffvar1.variables(true).indexOf(var2String) !== -1
+    || coeffvar2.variables(true).indexOf(var1String) !== -1
+    || coeffvar2.variables(true).indexOf(var2String) !== -1
+    || coeff0.variables(true).indexOf(var1String) !== -1
+    || coeff0.variables(true).indexOf(var2String) !== -1) {
+    console.warn("Invalid format for equation of line in variables " + var1String + " and " + var2String);
+    return { success: false };
+  }
+  let zero = me.fromAst(0);
+  if (coeffvar1.equals(zero) && coeffvar2.equals(zero)) {
+    console.warn("Invalid format for equation of line in variables " + var1String + " and " + var2String);
+    return { success: false };
+  }
+
+  // console.log("coefficient of " + var1 + " is " + coeffvar1);
+  // console.log("coefficient of " + var2 + " is " + coeffvar2);
+  // console.log("constant coefficient is " + coeff0);
+
+  let a = coeffvar1.evaluate_to_constant();
+  let b = coeffvar2.evaluate_to_constant();
+  let c = coeff0.evaluate_to_constant();
+
+  let point1x, point1y, point2x, point2y;
+
+  if (Number.isFinite(c) && Number.isFinite(a)
+    && Number.isFinite(b)
+  ) {
+
+
+    let denom = a * a + b * b;
+    if (denom === 0) {
+      return { success: false };
+    }
+
+    if (lastPointsFromInverting) {
+
+      let x1 = lastPointsFromInverting[0][0]
+      let x2 = lastPointsFromInverting[0][1]
+      point1x = (b * (b * x1 - a * x2) - a * c) / denom;
+      point1y = (a * (-b * x1 + a * x2) - b * c) / denom;
+
+      x1 = lastPointsFromInverting[1][0]
+      x2 = lastPointsFromInverting[1][1]
+      point2x = (b * (b * x1 - a * x2) - a * c) / denom;
+      point2y = (a * (-b * x1 + a * x2) - b * c) / denom;
+
+    } else {
+      // create two points that equation passes through
+      point1x = (2 * b - a * c) / denom;
+      point1y = (-2 * a - b * c) / denom;
+      point2x = (b - a * c) / denom;
+      point2y = -(a + b * c) / denom;
+    }
+
+  } else {
+
+    // create two points that equation passes through
+    let denom = coeffvar1.pow(2).add(coeffvar2.pow(2));
+    point1x = coeffvar2.multiply(2).subtract(coeffvar1.multiply(coeff0)).divide(denom);
+    point1y = coeffvar1.multiply(-2).subtract(coeffvar2.multiply(coeff0)).divide(denom);
+    point2x = coeffvar2.subtract(coeffvar1.multiply(coeff0)).divide(denom);
+    point2y = coeffvar1.add(coeffvar2.multiply(coeff0)).multiply(-1).divide(denom);
+  }
+
+  let points = [];
+
+  points.push(me.fromAst(["tuple", point1x, point1y]));
+  points.push(me.fromAst(["tuple", point2x, point2y]));
+
+  return { success: true, points };
+
 }

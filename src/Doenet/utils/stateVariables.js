@@ -15,7 +15,6 @@ export function renameStateVariable({ stateVariableDefinitions, oldName, newName
   // third, wrap definition in a function that changes oldName to newName in
   // - newValues
   // - useEssentialOrDefaultValue
-  // - useEssentialOrFallbackValue
   // - noChanges
   // - makeEssential
   // - alwaysShadow
@@ -24,7 +23,7 @@ export function renameStateVariable({ stateVariableDefinitions, oldName, newName
 
   let originalDefinition = stateVarDef.definition;
 
-  let keysInObjects = ['newValues', 'useEssentialOrDefaultValue', 'useEssentialOrFallbackValue'];
+  let keysInObjects = ['newValues', 'useEssentialOrDefaultValue'];
   let entriesInArrays = ['noChanges', 'makeEssential', 'alwaysShadow']
 
   stateVarDef.definition = function (args) {

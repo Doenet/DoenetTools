@@ -2,12 +2,13 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class Substitutions extends BaseComponent {
   static componentType = "substitutions";
+  static rendererType = "container";
 
   static returnChildLogic (args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
-      name: 'AtLeastZeroChildren',
+      name: 'atLeastZeroChildren',
       componentType: '_base',
       excludeComponentTypes: ['_composite'],
       comparison: 'atLeast',
@@ -20,14 +21,14 @@ export default class Substitutions extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.numberOfChildren = {
       additionalStateVariablesDefined: ["childComponentNames"],
       returnDependencies: () => ({
         children: {
           dependencyType: "childIdentity",
-          childLogicName: "AtLeastZeroChildren",
+          childLogicName: "atLeastZeroChildren",
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -37,23 +38,24 @@ export default class Substitutions extends BaseComponent {
       },
     }
 
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({
+        children: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroChildren"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues:
+            { childrenToRender: dependencyValues.children.map(x => x.componentName) }
+        };
+      }
+    }
+    
+
     return stateVariableDefinitions;
 
-  }
-
-  initializeRenderer() {
-    if (this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.container({ key: this.componentName });
-    }
-  }
-
-  updateChildrenWhoRender() {
-    let indices = this.childLogic.returnMatches("AtLeastZeroChildren");
-    if (indices === undefined) {
-      this.childrenWhoRender = [];
-    } else {
-      this.childrenWhoRender = indices.map(i => this.activeChildren[i].componentName);
-    }
   }
 
 }
