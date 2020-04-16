@@ -84,6 +84,7 @@ class DoenetHeader extends Component {
       "Course" : "/course/",
       "Documentation" : "/docs/",
       "Gradebook": "/gradebook/",
+      "Profile": "/profile/",
     }
     this.navigationMenu = {}
     Object.keys(this.toolTitleToLinkMap).map((toolTitle)=> {

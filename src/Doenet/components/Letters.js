@@ -2,6 +2,7 @@ import Text from './Text';
 
 export default class Letters extends Text {
   static componentType = "letters";
+  static rendererType = "text";
 
   updateState(args={}) {
     super.updateState(args);

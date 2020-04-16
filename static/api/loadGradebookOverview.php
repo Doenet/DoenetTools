@@ -25,7 +25,7 @@ if (!isset($_REQUEST["courseId"])) {
         $sql = "
             SELECT a.assignmentId, a.assignmentName, ua.credit, ua.username
             FROM assignment AS a
-            RIGHT  JOIN user_assignment AS ua
+            RIGHT JOIN user_assignment AS ua
             ON a.assignmentId = ua.assignmentId
             WHERE a.courseId = '$courseId'
             ORDER BY a.dueDate

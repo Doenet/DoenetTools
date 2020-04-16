@@ -534,8 +534,7 @@ export default class Curve extends GraphicalComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
-
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.selectedStyle = {
       returnDependencies: () => ({

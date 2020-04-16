@@ -4,19 +4,23 @@ import me from 'math-expressions';
 export default class Polyline extends GraphicalComponent {
   static componentType = "polyline";
 
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static get stateVariablesShadowedForReference() { return ["vertices"] };
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.draggable = {default: true};
+    properties.draggable = { default: true };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addVertices = function({activeChildrenMatched}) {
+    let addVertices = function ({ activeChildrenMatched }) {
       // add <vertices> around points
       let verticesChildren = [];
-      for(let child of activeChildrenMatched) {
+      for (let child of activeChildrenMatched) {
         verticesChildren.push({
           createdComponent: true,
           componentName: child.componentName
@@ -44,7 +48,7 @@ export default class Polyline extends GraphicalComponent {
       comparison: 'atLeast',
       number: 1,
     });
-    
+
     let AtLeastOneMath = childLogic.newLeaf({
       name: "AtLeastOneMath",
       componentType: 'math',
@@ -84,8 +88,8 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  updateState(args={}) {
-    if(args.init === true) {
+  updateState(args = {}) {
+    if (args.init === true) {
 
       this.makePublicStateVariableArray({
         variableName: "vertices",
@@ -101,14 +105,12 @@ export default class Polyline extends GraphicalComponent {
         componentType: "text",
       });
 
-      // reference via the point coords
-      this.stateVariablesForReference = ["vertices"];
 
       this.movePolyline = this.movePolyline.bind(
         new Proxy(this, this.readOnlyProxyHandler)
       );
 
-      if(this.state.nPoints === undefined) {
+      if (this.state.nPoints === undefined) {
         this.state.nPoints = 0;
       }
 
@@ -117,19 +119,19 @@ export default class Polyline extends GraphicalComponent {
     super.updateState(args);
 
     this.state.selectedStyle = this.styleDefinitions[this.state.stylenumber];
-    if(this.state.selectedStyle === undefined) {
+    if (this.state.selectedStyle === undefined) {
       this.state.selectedStyle = this.styleDefinitions[1];
     }
 
     let curveDescription = "";
-    if(this.state.selectedStyle.lineWidth >= 4) {
+    if (this.state.selectedStyle.lineWidth >= 4) {
       curveDescription += "thick ";
-    }else if(this.state.selectedStyle.lineWidth <= 1) {
+    } else if (this.state.selectedStyle.lineWidth <= 1) {
       curveDescription += "thin ";
     }
-    if(this.state.selectedStyle.lineStyle === "dashed") {
+    if (this.state.selectedStyle.lineStyle === "dashed") {
       curveDescription += "dashed ";
-    } else if(this.state.selectedStyle.lineStyle === "dotted") {
+    } else if (this.state.selectedStyle.lineStyle === "dotted") {
       curveDescription += "dotted ";
     }
 
@@ -138,7 +140,7 @@ export default class Polyline extends GraphicalComponent {
     this.state.styledescription = curveDescription;
 
 
-    if(!this.childLogicSatisfied) {
+    if (!this.childLogicSatisfied) {
       this.unresolvedState.vertices = true;
       this.unresolvedState.ndimensions = true;
       this.unresolvedState.nPoints = true;
@@ -151,20 +153,20 @@ export default class Polyline extends GraphicalComponent {
     let trackChanges = this.currentTracker.trackChanges;
     let childrenChanged = trackChanges.childrenChanged(this.componentName);
 
-    if(childrenChanged) {
+    if (childrenChanged) {
 
       let verticesInds = this.childLogic.returnMatches("ExactlyOneVertices");
 
       // if ExactlyOneVertices is undefined, then a superclass
       // must have overwritten childLogic, so skip this processing
-      if(verticesInds === undefined) {
+      if (verticesInds === undefined) {
         this.state.polylineChildlogicOverwritten = true;
         delete this.unresolvedState.vertices;
         return;
       }
 
 
-      if(verticesInds.length > 0) {
+      if (verticesInds.length > 0) {
         this.state.verticesChild = this.activeChildren[verticesInds[0]];
       } else {
         delete this.state.verticesChild;
@@ -172,29 +174,29 @@ export default class Polyline extends GraphicalComponent {
     }
 
 
-    if(this.state.polylineChildlogicOverwritten) {
+    if (this.state.polylineChildlogicOverwritten) {
       return;
     }
 
     let recheckPoints = false;
 
-    if(!this.state.verticesChild) {
-      if(!this._state.vertices.essential) {
+    if (!this.state.verticesChild) {
+      if (!this._state.vertices.essential) {
         delete this.unresolvedState.vertices;
         this.state.vertices = [];
         this.state.nPoints = 0;
         this.state.ndimensions = undefined;
         return;
-      }else {
+      } else {
         this.state.nPoints = this.state.vertices.length;
-        if(trackChanges.getVariableChanges({component: this, variable: "vertices"})) {
+        if (trackChanges.getVariableChanges({ component: this, variable: "vertices" })) {
           recheckPoints = true;
         }
       }
-    }else {
+    } else {
 
       let verticesState = this.state.verticesChild.state;
-      if(this.state.verticesChild.unresolvedState.points) {
+      if (this.state.verticesChild.unresolvedState.points) {
         this.unresolvedState.vertices = true;
         this.unresolvedState.ndimensions = true;
         this.unresolvedState.nPoints = true;
@@ -202,9 +204,11 @@ export default class Polyline extends GraphicalComponent {
       }
 
 
-      if(childrenChanged || 
-          trackChanges.getVariableChanges({component:this.state.verticesChild,
-            variable: "points"})) {
+      if (childrenChanged ||
+        trackChanges.getVariableChanges({
+          component: this.state.verticesChild,
+          variable: "points"
+        })) {
 
         recheckPoints = true;
         delete this.unresolvedState.vertices;
@@ -212,28 +216,28 @@ export default class Polyline extends GraphicalComponent {
         let points = verticesState.points;
         this.state.nPoints = verticesState.nPoints;
 
-        this.state.vertices=[];
-        
-        for(let i=0; i < this.state.nPoints; i++) {
-          if(points[i].unresolvedState.coords) {
-            if(!this.unresolvedState.vertices) {
-              this.unresolvedState.vertices = {isArray: true, arrayComponents: {}};
+        this.state.vertices = [];
+
+        for (let i = 0; i < this.state.nPoints; i++) {
+          if (points[i].unresolvedState.coords) {
+            if (!this.unresolvedState.vertices) {
+              this.unresolvedState.vertices = { isArray: true, arrayComponents: {} };
             }
             this.unresolvedState.vertices.arrayComponents[i] = true;
             this.state.vertices.push(undefined);
-          }else {
+          } else {
             this.state.vertices.push(points[i].state.coords.copy());
           }
         }
 
       } else {
-        for(let i=0; i < this.state.nPoints; i++) {
-          if(verticesState.points[i].unresolvedState.coords) {
-            if(!this.unresolvedState.vertices) {
-              this.unresolvedState.vertices = {isArray: true, arrayComponents: {}};
+        for (let i = 0; i < this.state.nPoints; i++) {
+          if (verticesState.points[i].unresolvedState.coords) {
+            if (!this.unresolvedState.vertices) {
+              this.unresolvedState.vertices = { isArray: true, arrayComponents: {} };
             }
             this.unresolvedState.vertices.arrayComponents[i] = true;
-          }else if(trackChanges.getVariableChanges({
+          } else if (trackChanges.getVariableChanges({
             component: verticesState.points[i],
             variable: "coords"
           })) {
@@ -244,21 +248,21 @@ export default class Polyline extends GraphicalComponent {
       }
     }
 
-    if(recheckPoints && !this.unresolvedState.vertices) {
+    if (recheckPoints && !this.unresolvedState.vertices) {
       this.state.ndimensions = undefined;
-      if(this.state.nPoints > 0) {
+      if (this.state.nPoints > 0) {
         this.state.ndimensions = 1;
         let vertex1tree = this.state.vertices[0].tree;
-        if(vertex1tree[0] === "tuple" || vertex1tree[0] === "vector") {
-          this.state.ndimensions = vertex1tree.length-1;
+        if (vertex1tree[0] === "tuple" || vertex1tree[0] === "vector") {
+          this.state.ndimensions = vertex1tree.length - 1;
         }
-        for(let i=1; i < this.state.nPoints; i++) {
+        for (let i = 1; i < this.state.nPoints; i++) {
           let ndimb = 1;
           let vertextree = this.state.vertices[i].tree;
-          if(vertextree[0] === "tuple" || vertextree[0] === "vector") {
-            ndimb = vertextree.length-1;
+          if (vertextree[0] === "tuple" || vertextree[0] === "vector") {
+            ndimb = vertextree.length - 1;
           }
-          if(ndimb != this.state.ndimensions) {
+          if (ndimb != this.state.ndimensions) {
             console.warn("Invalid polyline: points must have same number of dimensions");
             this.state.nPoints = 0;
             this.state.vertices = [];
@@ -272,7 +276,7 @@ export default class Polyline extends GraphicalComponent {
 
   movePolyline(pointcoordsObject) {
     let vertexComponents = {};
-    for(let ind in pointcoordsObject) {
+    for (let ind in pointcoordsObject) {
       vertexComponents[ind] = me.fromAst(["tuple", ...pointcoordsObject[ind]])
     }
 
@@ -292,13 +296,13 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  initializeRenderer({}){
-    if(this.renderer !== undefined) {
+  initializeRenderer({ }) {
+    if (this.renderer !== undefined) {
       this.updateRenderer();
       return;
     }
-    
-    if(this.state.ndimensions === 2 && this.unresolvedState.vertices === undefined) {
+
+    if (this.state.ndimensions === 2 && this.unresolvedState.vertices === undefined) {
       const actions = {
         movePolyline: this.movePolyline,
       }
@@ -308,7 +312,7 @@ export default class Polyline extends GraphicalComponent {
         draggable: this.state.draggable,
         layer: this.state.layer,
         visible: !this.state.hide,
-        pointcoords: this.state.vertices.map(x => 
+        pointcoords: this.state.vertices.map(x =>
           [x.get_component(0).evaluate_to_constant(),
           x.get_component(1).evaluate_to_constant()]),
         color: this.state.selectedStyle.lineColor,
@@ -319,23 +323,23 @@ export default class Polyline extends GraphicalComponent {
     }
   }
 
-  updateRenderer(){
+  updateRenderer() {
     this.renderer.updatePolyline({
       visible: !this.state.hide,
-      pointcoords: this.state.vertices.map(x => 
+      pointcoords: this.state.vertices.map(x =>
         [x.get_component(0).evaluate_to_constant(),
         x.get_component(1).evaluate_to_constant()]),
-   });
+    });
   }
 
-  updateChildrenWhoRender(){
-    if(this.state.verticesChild !== undefined)
+  updateChildrenWhoRender() {
+    if (this.state.verticesChild !== undefined)
       this.childrenWhoRender = [this.state.verticesChild.componentName];
   }
 
   allowDownstreamUpdates(status) {
     return ((status.initialChange === true && this.state.draggable === true) ||
-    (status.initialChange !== true && this.state.modifyIndirectly === true));
+      (status.initialChange !== true && this.state.modifyIndirectly === true));
   }
 
   get variablesUpdatableDownstream() {
@@ -343,38 +347,38 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  calculateDownstreamChanges({stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate}) {
+  calculateDownstreamChanges({ stateVariablesToUpdate, stateVariableChangesToSave,
+    dependenciesToUpdate }) {
 
     let newStateVariables = {};
     let verticesChanged = new Set([]);
 
     let newVertices = Array(this.state.nPoints);
 
-    for(let varName in stateVariablesToUpdate) {
-      if(varName === "vertices") {
-        if(newStateVariables[varName] === undefined) {
+    for (let varName in stateVariablesToUpdate) {
+      if (varName === "vertices") {
+        if (newStateVariables[varName] === undefined) {
           newStateVariables[varName] = {
             isArray: true,
             changes: { arrayComponents: {} }
           }
         }
-        for(let ind in stateVariablesToUpdate[varName].changes.arrayComponents) {
+        for (let ind in stateVariablesToUpdate[varName].changes.arrayComponents) {
           verticesChanged.add(Number(ind));
-          newVertices[ind] = newStateVariables[varName].changes.arrayComponents[ind] = 
+          newVertices[ind] = newStateVariables[varName].changes.arrayComponents[ind] =
             stateVariablesToUpdate[varName].changes.arrayComponents[ind];
         }
       }
     }
 
     // check if based on vertices child
-    if(this.state.verticesChild !== undefined) {
+    if (this.state.verticesChild !== undefined) {
       let vertices = this.state.verticesChild.state.points;
 
-      for(let ind=0; ind < vertices.length; ind++) {
-        if(verticesChanged.has(ind)) {
+      for (let ind = 0; ind < vertices.length; ind++) {
+        if (verticesChanged.has(ind)) {
           let pointName = vertices[ind].componentName;
-          dependenciesToUpdate[pointName] = {coords: {changes: newVertices[ind]}};
+          dependenciesToUpdate[pointName] = { coords: { changes: newVertices[ind] } };
         }
       }
     }
@@ -388,9 +392,9 @@ export default class Polyline extends GraphicalComponent {
 
     // add stateVariable to stateVariableChangesToSave if is essential
     // and no shadow sources were updated
-    for(let varname in newStateVariables) {
-      if(this._state[varname].essential === true &&
-          !shadowedStateVariables.has(varname) && !isReplacement) {
+    for (let varname in newStateVariables) {
+      if (this._state[varname].essential === true &&
+        !shadowedStateVariables.has(varname) && !isReplacement) {
         stateVariableChangesToSave[varname] = newStateVariables[varname];
       }
     }
@@ -400,10 +404,10 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  nearestPoint({x1, x2, x3}) {
+  nearestPoint({ x1, x2, x3 }) {
 
     // only implemented in 2D for now
-    if(this.state.ndimensions !== 2) {
+    if (this.state.ndimensions !== 2) {
       return;
     }
 
@@ -411,55 +415,55 @@ export default class Polyline extends GraphicalComponent {
     let closestResult = {}
 
     let prevPtx, prevPty;
-    let nextPtx = this.state.vertices[this.state.nPoints-1].get_component(0).evaluate_to_constant();
-    let nextPty = this.state.vertices[this.state.nPoints-1].get_component(1).evaluate_to_constant();
+    let nextPtx = this.state.vertices[this.state.nPoints - 1].get_component(0).evaluate_to_constant();
+    let nextPty = this.state.vertices[this.state.nPoints - 1].get_component(1).evaluate_to_constant();
 
-    for(let i=0; i < this.state.nPoints; i++) {
+    for (let i = 0; i < this.state.nPoints; i++) {
       prevPtx = nextPtx;
       prevPty = nextPty;
 
       nextPtx = this.state.vertices[i].get_component(0).evaluate_to_constant();
       nextPty = this.state.vertices[i].get_component(1).evaluate_to_constant();
-    
+
       // only implement for constants
-      if(!(Number.isFinite(prevPtx) && Number.isFinite(prevPty) && 
-          Number.isFinite(nextPtx) && Number.isFinite(nextPty))) {
+      if (!(Number.isFinite(prevPtx) && Number.isFinite(prevPty) &&
+        Number.isFinite(nextPtx) && Number.isFinite(nextPty))) {
         continue;
       }
 
-      let BA1 = nextPtx-prevPtx;
-      let BA2 = nextPty-prevPty;
-      let denom = (BA1*BA1+BA2*BA2);
+      let BA1 = nextPtx - prevPtx;
+      let BA2 = nextPty - prevPty;
+      let denom = (BA1 * BA1 + BA2 * BA2);
 
-      if(denom===0) {
+      if (denom === 0) {
         continue;
       }
 
-      let t = ((x1-prevPtx)*BA1+(x2-prevPty)*BA2)/denom;
+      let t = ((x1 - prevPtx) * BA1 + (x2 - prevPty) * BA2) / denom;
 
       let result;
 
-      if(t<=0) {
-        result = {x1: prevPtx, x2: prevPty};
-      }else if(t >= 1) {
-        result = {x1: nextPtx, x2: nextPty};
-      }else {
+      if (t <= 0) {
+        result = { x1: prevPtx, x2: prevPty };
+      } else if (t >= 1) {
+        result = { x1: nextPtx, x2: nextPty };
+      } else {
         result = {
-          x1: prevPtx + t*BA1,
-          x2: prevPty + t*BA2,
+          x1: prevPtx + t * BA1,
+          x2: prevPty + t * BA2,
         };
       }
 
       let distance2 = Math.pow(x1 - result.x1, 2) + Math.pow(x2 - result.x2, 2);
 
-      if(distance2 < closestDistance2) {
+      if (distance2 < closestDistance2) {
         closestDistance2 = distance2;
         closestResult = result;
       }
 
     }
 
-    if(x3 !== undefined && Object.keys(closestResult).length > 0) {
+    if (x3 !== undefined && Object.keys(closestResult).length > 0) {
       closestResult.x3 = 0;
     }
 

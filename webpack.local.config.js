@@ -10,13 +10,14 @@ module.exports = {
   entry: {
     "index.js": "./src/index.js",
     "admin/index.js": "./src/admin/index.js",
-    "chooser/index.js": "./src/chooser/index.js",
+    "chooser/index.js":"./src/chooser/index.js",
     "course/index.js": "./src/course/index.js",
     "docs/index.js": "./src/docs/index.js",
     "editor/index.js": "./src/editor/index.js",
     "exam/index.js": "./src/exam/index.js",
     "gradebook/index.js": "./src/gradebook/index.js",
     "page/index.js": "./src/page/index.js",
+    "profile/index.js": "./src/profile/index.js",
     "test/index.js": "./src/test/index.js",
     "viewer/index.js": "./src/viewer/index.js",
   },
@@ -24,6 +25,7 @@ module.exports = {
   output: {
     path: resolve(__dirname, 'dist_local'),
     filename: '[name]',
+    publicPath: '/',
   },
 
   module: {
@@ -55,10 +57,10 @@ module.exports = {
         use: [
           {
             loader: 'url-loader',
-            options: {
+            options: { 
               limit: 10000, // Convert images < 10kb to base64 strings
               name: 'media/[hash]-[name].[ext]'
-            }
+            } 
           },
         ],
       }
@@ -89,7 +91,7 @@ module.exports = {
       filename: "./course/index.html"
       // favicon: "",
     }),
-
+    
     new HtmlWebPackPlugin({
       chunks: ['docs/index.js'],
       template: "./src/docs/index.html",
@@ -132,6 +134,11 @@ module.exports = {
       template: "./src/page/index.html",
       filename: "./page/index.html"
       // favicon: "",
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ["profile/index.js"],
+      template: "./src/profile/index.html",
+      filename: "./profile/index.html"
     }),
     new HtmlWebPackPlugin({
       chunks: ["test/index.js"],

@@ -10,13 +10,14 @@ module.exports = {
   entry: {
     "index.js": "./src/index.js",
     "admin/index.js": "./src/admin/index.js",
-    "chooser/index.js":"./src/chooser/index.js",
     "course/index.js": "./src/course/index.js",
+    "chooser/index.js":"./src/chooser/index.js",
     "docs/index.js": "./src/docs/index.js",
     "editor/index.js": "./src/editor/index.js",
     "exam/index.js": "./src/exam/index.js",
     "gradebook/index.js": "./src/gradebook/index.js",
     "page/index.js": "./src/page/index.js",
+    "profile/index.js": "./src/profile/index.js",
     "viewer/index.js": "./src/viewer/index.js",
   },
 
@@ -54,10 +55,10 @@ module.exports = {
         use: [
           {
             loader: 'url-loader',
-            options: {
+            options: { 
               limit: 10000, // Convert images < 10kb to base64 strings
               name: 'media/[hash]-[name].[ext]'
-            }
+            } 
           },
         ],
       }
@@ -131,6 +132,11 @@ module.exports = {
     //   // favicon: "",
     // }),
     // new HtmlWebPackPlugin({
+    //   chunks: ["profile/index.js"],
+    //   template: "./src/profile/index.html",
+    //   filename: "./profile/index.html"
+    // }),
+    // new HtmlWebPackPlugin({
     //   chunks: ["viewer/index.js"],
     //   template: "./src/viewer/index.html",
     //   filename: "./viewer/index.html"
@@ -142,10 +148,7 @@ module.exports = {
       chunkFilename: "[id].css"
     }),
     new CopyWebpackPlugin([
-      {
-        from: 'static',
-        ignore: ['env.ini'] // IMPORTANT
-      }
+      { from: 'static' }
     ])
   ],
   devServer: {
@@ -153,3 +156,4 @@ module.exports = {
     // openPage: "protected",
   }
 };
+

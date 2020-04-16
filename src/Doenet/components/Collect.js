@@ -103,7 +103,7 @@ export default class Collect extends CompositeComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.refTarget = {
       returnDependencies: () => ({
@@ -394,7 +394,7 @@ export default class Collect extends CompositeComponent {
 
   }
 
-  static calculateReplacementChanges({ component, componentChanges, components }) {
+  static calculateReplacementChanges({ component, componentChanges, components, workspace }) {
 
     // console.log("Calculating replacement changes for " + component.componentName);
     let replacementChanges = [];
@@ -424,7 +424,7 @@ export default class Collect extends CompositeComponent {
       component.state.refTarget.componentName !== component.state.previousRefTarget.componentName ||
       component.state.previousCollectedComponents.length === 0) {
 
-      this.recreateAllReplacements({ component, replacementChanges, components });
+      this.recreateAllReplacements({ component, replacementChanges, components, workspace });
 
       return replacementChanges;
     }
@@ -647,7 +647,7 @@ export default class Collect extends CompositeComponent {
     return collectedDeps;
   }
 
-  static recreateAllReplacements({ component, replacementChanges, components }) {
+  static recreateAllReplacements({ component, replacementChanges, components, workspace }) {
     if (component.state.previousRefTarget !== undefined) {
       if (component.state.previousRefTarget.componentName !== component.state.refTarget.componentName) {
         let replacementInstruction = {
@@ -679,7 +679,7 @@ export default class Collect extends CompositeComponent {
       replacementChanges.push(replacementInstruction);
     }
 
-    let results = this.createSerializedReplacements({ component, components });
+    let results = this.createSerializedReplacements({ component, components, workspace });
 
     let replacementInstruction = {
       changeType: "add",

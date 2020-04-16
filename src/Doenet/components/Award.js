@@ -14,7 +14,7 @@ export default class Award extends BaseComponent {
       default: "none",
       toLowerCase: true,
       valueTransformations: { "": "full", "true": "full" },
-      validValues: new Set(["full", "numbers", "numbersepreserveorder", "none"]),
+      validValues: ["none", "full", "numbers", "numbersepreserveorder"],
       propagateToDescendants: true,
     };
     properties.unorderedCompare = { default: false, propagateToDescendants: true };
@@ -23,8 +23,8 @@ export default class Award extends BaseComponent {
     properties.allowedErrorIsAbsolute = { default: false, propagateToDescendants: true };
     properties.splitIntoOptions = { default: false, propagateToDescendants: true };
     properties.nSignErrorsMatched = { default: 0, propagateToDescendants: true };
-    properties.feedbackCode = { default: undefined };
-    properties.feedbackText = { default: undefined };
+    properties.feedbackCodes = { default: [] };
+    properties.feedbackText = { default: null };
 
     return properties;
 
@@ -70,7 +70,7 @@ export default class Award extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.incomplete = {
       additionalStateVariablesDefined: [
@@ -78,8 +78,9 @@ export default class Award extends BaseComponent {
       ],
       returnDependencies: () => ({
         stringChild: {
-          dependencyType: "childIdentity",
+          dependencyType: "childStateVariables",
           childLogicName: "exactlyOneString",
+          variableNames: ["value"]
         },
         mathChild: {
           dependencyType: "childIdentity",
@@ -178,49 +179,24 @@ export default class Award extends BaseComponent {
 
     }
 
-    // stateVariableDefinitions.justSubmitted = {
-    //   // TODO: not sure how to get this to work
-    //   public: true,
-    //   componentType: "boolean",
-    //   defaultValue: false,
-    //   returnDependencies: () => ({
-    //     ifChild: {
-    //       dependencyType: "childStateVariables",
-    //       childLogicName: "exactlyOneIf",
-    //       variableNames: ["justSubmitted"]
-    //     }
-    //   }),
-    //   definition: ({dependencyValues}) => ({
-    //     newValues: {
-    //       justSubmitted: dependencyValues.ifChild[0].stateValues.justSubmitted,
-    //     }
-    //   }),
-    //   inverseDefinition: function ({ desiredStateVariableValues }) {
-    //     return {
-    //       success: true,
-    //       instructions: [{
-    //         setDependency: "ifChild",
-    //         desiredValue: desiredStateVariableValues.justSubmitted,
-    //         childIndex: 0,
-    //         variableIndex: 0,
-    //       }]
-    //     };
-    //   }
 
-    // }
-
-    stateVariableDefinitions.feedback = {
+    stateVariableDefinitions.feedbacks = {
       public: true,
-      componentType: "feedback",
-
+      componentType: "feedbacktext",
+      isArray: true,
+      entryPrefixes: ['feedback'],
       returnDependencies: () => ({
         feedbackText: {
           dependencyType: "stateVariable",
           variableName: "feedbackText",
         },
-        feedbackCode: {
+        feedbackCodes: {
           dependencyType: "stateVariable",
-          variableName: "feedbackCode",
+          variableName: "feedbackCodes",
+        },
+        feedbackDefinitions: {
+          dependencyType: "parentStateVariable",
+          variableName: "feedbackDefinitions"
         },
         awarded: {
           dependencyType: "stateVariable",
@@ -230,26 +206,26 @@ export default class Award extends BaseComponent {
       definition: function ({ dependencyValues }) {
 
         if (!dependencyValues.awarded) {
-          return { newValues: { feedback: "" } }
+          return { newValues: { feedbacks: [] } }
         }
 
-        let feedback;
+        let feedbacks = [];
 
-        if (dependencyValues.feedbackText === undefined) {
-
-          // TODO: mechanism for specifying standardized feedback
-          // and for authors to modify it
-          let feedback = this.constructor.standardizedFeedback[dependencyValues.feedbackCode];
-          if (feedback === undefined) {
-            feedback = "";
-          } else {
-            feedback = feedback;
+        for (let feedbackCode of dependencyValues.feedbackCodes) {
+          let code = feedbackCode.toLowerCase();
+          for(let feedbackDefinition of dependencyValues.feedbackDefinitions) {
+            if(code === feedbackDefinition.feedbackCode) {
+              feedbacks.push(feedbackDefinition.feedbackText);
+              break;  // just take first match
+            }
           }
-        } else {
-          feedback = dependencyValues.feedbackText;
         }
 
-        return { newValues: feedback }
+        if(dependencyValues.feedbackText !== null) {
+          feedbacks.push(dependencyValues.feedbackText);
+        }
+
+        return { newValues: { feedbacks } }
 
       }
     };
@@ -257,34 +233,6 @@ export default class Award extends BaseComponent {
     return stateVariableDefinitions;
   }
 
-
-  updateState(args = {}) {
- 
-    let justSubmitted = true;
-    if (args.sourceOfUpdate !== undefined) {
-      justSubmitted = false;
-      let instructionsForThisComponent = args.sourceOfUpdate.instructionsByComponent[this.componentName];
-      if (instructionsForThisComponent !== undefined) {
-        if (instructionsForThisComponent.variableUpdates.justSubmitted !== undefined) {
-          justSubmitted = instructionsForThisComponent.variableUpdates.justSubmitted.changes;
-        }
-      } else if (Object.keys(args.sourceOfUpdate.instructionsByComponent).length === 1) {
-        let val = Object.values(args.sourceOfUpdate.instructionsByComponent)[0];
-        let variableUpdates = val.variableUpdates;
-        if (Object.keys(variableUpdates).length === 1 && Object.keys(variableUpdates)[0] === "rendererValueAsSubmitted") {
-          // if only change was changing renderedValueAsSubmitted on some component
-          // the don't change this.state.justSubmitted
-          // (which we accomplish by setting justSubmitted to true)
-          justSubmitted = true;
-        }
-      }
-    }
-
-    if (!justSubmitted || !this.state.ifChild.state.justSubmitted) {
-      this.state.justSubmitted = false;
-    }
-
-  }
 
   adapters = ["awarded"];
 
@@ -295,54 +243,5 @@ export default class Award extends BaseComponent {
     'onesignerror': `Credit reduced because it appears that you made a sign error.`,
     'twosignerrors': `Credit reduced because it appears that you made two sign errors.`,
   }
-
-}
-
-
-
-// return the JSON representing the portion of array determined by the given propChildren
-function returnSerializedComponentsFeedback({
-  stateVariable, variableName,
-  propChildren, propName,
-  componentName,
-}) {
-
-  if (stateVariable.value.length === 0) {
-    return [];
-  }
-
-  return [{
-    componentType: "feedback",
-    children: [
-      {
-        componentType: "if",
-        children: [
-          {
-            componentType: "ref",
-            children: [
-              {
-                componentType: "prop",
-                state: { variableName: "awarded" }
-              },
-              {
-                componentType: "reftarget",
-                state: { refTargetName: componentName }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        componentType: "string",
-        state: { value: stateVariable.value[0] }
-      }
-    ],
-    downstreamDependencies: {
-      [componentName]: [{
-        dependencyType: "referenceShadow",
-        prop: propName,
-      }]
-    },
-  }]
 
 }
