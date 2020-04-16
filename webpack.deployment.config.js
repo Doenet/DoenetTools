@@ -17,6 +17,7 @@ module.exports = {
     "exam/index.js": "./src/exam/index.js",
     "gradebook/index.js": "./src/gradebook/index.js",
     "page/index.js": "./src/page/index.js",
+    "profile/index.js": "./src/profile/index.js",
     "viewer/index.js": "./src/viewer/index.js",
   },
 
@@ -129,6 +130,11 @@ module.exports = {
     //   template: "./src/page/index.html",
     //   filename: "./page/index.html"
     //   // favicon: "",
+    // }),
+    // new HtmlWebPackPlugin({
+    //   chunks: ["profile/index.js"],
+    //   template: "./src/profile/index.html",
+    //   filename: "./profile/index.html"
     // }),
     // new HtmlWebPackPlugin({
     //   chunks: ["viewer/index.js"],
