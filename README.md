@@ -102,17 +102,17 @@ Note: Make sure you don't already have a file in `DoenetCourse/doenet_docker/vol
 ```bash
 $ mysqldump --all-databases --password=helloworld > /docker-entrypoint-initdb.d/dbdump.sql
 ```
-You can then grab this file from `DoenetCourse/doenet_docker/volumes/db_init/dbdump.sql`.
+You can then see this file at `DoenetCourse/doenet_docker/volumes/db_init/dbdump.sql`.
+You may want to verify that the database exported correctly before continuing.
 
-To use this new template:
+### To use a new database template:
 1. Stop the docker containers.
+2. Delete the old `DoenetCourse/doenet_docker/volumes/db_init/db_template.sql`.
 2. Rename the dump file to `db_template.sql`.
-3. Replace the old `DoenetCourse/doenet_docker/volumes/db_init/db_template.sql` with the newly renamed file.
 4. Delete the contents (except for `.gitignore`) of `DoenetCourse/doenet_docker/volumes/db/`.
 5. Start the containers:
 ```bash
-$ cd /path/to/local/clone/of/DoenetCourse/doenet_docker
-$ docker-compose up --build
+$ npm start
 ```
 6. Pet your cat (Optional). :3
 
@@ -164,4 +164,3 @@ You may also get MariaDB to work. Please let us know if you do. c:
 We have not tested the current configuration with Nginx, you are on your own if you choose to use it. If you do, we would love to hear about how it turned out. c:
 
 You must use port 3000 for Apache/Nginx or our PHP probably won't work on your stack.
-
