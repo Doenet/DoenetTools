@@ -2,7 +2,7 @@ import React, { Component, useState } from 'react';
 import './header.css'
 import doenetImage from '../media/Doenet_Logo_cloud_only.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTh , faUser, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faTh , faUser } from '@fortawesome/free-solid-svg-icons';
 
 import {animated,useSpring} from 'react-spring';
 import Menu from './menu.js'
@@ -87,15 +87,19 @@ class DoenetHeader extends Component {
     }
     this.navigationMenu = {}
     Object.keys(this.toolTitleToLinkMap).map((toolTitle)=> {
-      if (toolTitle!=this.props.toolTitle){
+      // if (toolTitle!=this.props.toolTitle){
         this.navigationMenu[toolTitle]={
           showText:toolTitle,
-          url:this.toolTitleToLinkMap[toolTitle]
+          url:(toolTitle!=this.props.toolTitle?this.toolTitleToLinkMap[toolTitle]:null)
                      
       }
-      }
+      // }
       
     })
+    console.log("this.navigationMenu")
+    console.log(this.navigationMenu)
+    this.changeOrderOfNavigationMenu()
+
     this.itemsToShowUpdated={}
     if (this.accessAllowed==="1"){
       this.itemsToShowUpdated['Student']={
@@ -109,17 +113,74 @@ class DoenetHeader extends Component {
         }
       }
     }
+    this.changeOrderOfItemsToShowUpdated()
     this.permissionMenu=(
       <Menu 
               key={"menu02"+(this.updateNumber++)}
               // showDropDown={this.state.menuVisble}
-              showThisRole={this.props.rights?this.props.rights.defaultRole:""} 
+              showThisRole={this.props.rights?(this.props.rights.defaultRole+"  "):""} 
               itemsToShow = {this.itemsToShowUpdated}
+              offsetPos={-47}
               // itemsToShow={this.props.rights?this.props.rights.itemsToShow:{}} 
               // menuIcon={this.props.rights?this.props.rights.menuIcon:null}
               />
     )
   }
+changeOrderOfItemsToShowUpdated(){
+  let thisArray = []
+  Object.keys(this.itemsToShowUpdated).map((e)=>{
+    thisArray.push(e)
+  })
+  let copy = {}
+  if (this.props.rights){
+    thisArray.map((e,index)=>{
+      if (e===this.props.rights.defaultRole){
+        thisArray.splice(index,1)
+        thisArray.unshift(this.props.rights.defaultRole)
+      }
+      
+    })
+
+    thisArray.map((e)=>{
+      copy[e]={
+        showText:this.itemsToShowUpdated[e]['showText'],
+        callBackFunction: this.itemsToShowUpdated[e]['callBackFunction']}
+    })    
+    this.itemsToShowUpdated = copy
+    
+  }
+}
+
+changeOrderOfNavigationMenu(){
+  let thisArray01 = []
+  Object.keys(this.navigationMenu).map((e)=>{
+    thisArray01.push(e)
+  })
+  console.log("thisArray01")
+  console.log(thisArray01)
+  let copy01 = {}
+  if (this.props.rights){
+    thisArray01.map((e,index)=>{
+      if (e===this.props.toolTitle){
+        thisArray01.splice(index,1)
+        thisArray01.unshift(this.props.toolTitle)
+      }
+      
+    })
+
+    thisArray01.map((e)=>{
+      if(this.navigationMenu[e]){
+        copy01[e]={
+          showText:this.navigationMenu[e]['showText'],
+          url: this.navigationMenu[e]['url']}
+      }
+      
+    })    
+    // this.navigationMenu = copy
+    this.navigationMenu = copy01
+    
+  }
+}
 
 courseChosenCallBack({e}){
       this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
@@ -190,8 +251,10 @@ courseChosenCallBack({e}){
               <Menu
               width={"500px"}
               key={"menu00"+(this.updateNumber++)}           
-              showThisRole={this.props.rights?this.props.rights.courseInfo[this.currentCourseId]['courseName']:""}
+              showThisRole={this.props.rights?(this.props.rights.courseInfo[this.currentCourseId]['courseName']+"  "):""}
               itemsToShow = {this.coursesToChoose}
+              offsetPos={-47}
+              menuWidth={"500px"}
               />
             </div>}
             <div className="headingToolbar">
@@ -209,7 +272,9 @@ courseChosenCallBack({e}){
               key={"menu01"+(this.updateNumber++)}           
               showThisRole={this.props.toolTitle} 
               itemsToShow = {this.navigationMenu}
+              offsetPos={-20}
               menuIcon={faTh}
+              grayTheseOut={this.props.toolTitle}
               />
               
               </div>

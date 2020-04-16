@@ -1,26 +1,27 @@
 import React, {useState,useEffect,useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {animated,useSpring,useTransition,useChain} from 'react-spring';
+import {faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
 import MenuItem from './menuItem.js';
 const DropDown = styled.div `
       text-align:center;
       color: black;
-      padding: 16px;
+      padding: 0px;
       font-size: 16px;
       border: none;
-      cursor: pointer;
       `
 const Icon = styled.div `
   display: flex;
   flex-direction: row;
   font-size: 13px;
   text-align: center;
-  width: auto;
+  width: 160px;
   border-radius: 4px;
   cursor: pointer;
   background-color: none;
   padding: 7px 5px;
+  padding-left:55px;
   color:#333333;
   text-transform: none;
   font-weight: 700;
@@ -49,19 +50,25 @@ display: none;
 
 
 
-    const Menu = ({showThisRole,itemsToShow,menuIcon,width}) =>{
+    const Menu = ({showThisRole,itemsToShow,menuIcon,width,grayTheseOut=[],offsetPos=0,menuWidth}) =>{
       const node = useRef();
       const[currentItemDisplay,setcurrentItemDisplay] = useState(Object.keys(itemsToShow).length>0?showThisRole:"");
       let rolesDisplay=[]
       let updateNumber=0
+      console.log("itemsToShow")
+      console.log(itemsToShow)
         Object.keys(itemsToShow).map(item=>{
+          console.log(`item is..${item}`)
           if (itemsToShow[item]['url']){    // exists URL
+            console.log("YESS")
             rolesDisplay.push(<p key={"op"+(updateNumber++)} 
           onClick={()=>
             window.location.href = itemsToShow[item]['url']
             
             }>{itemsToShow[item]['showText']}</p>)
-          } else {                          // no url, exec callBack
+          } else {                
+            console.log("NOOO")
+                      // no url, exec callBack
             rolesDisplay.push(<p key={"op"+(updateNumber++)} 
           onClick={()=>
             {setcurrentItemDisplay(item);
@@ -80,10 +87,12 @@ display: none;
       const fullMenuAnimation = useSpring({
         ref: navRef,
         from: {opacity:0, transform:`translateY(-200%)`},
-        transform: show ? `translateY(0)` : `translateY(-200%)`,
+        // -20% for nav menu, -47% for the other
+        transform: show ? `translateY(${offsetPos}%)` : `translateY(-200%)`,
         opacity: show ? 1 : 0,
-        display: "flex",
+        display: "block",
         flexDirection:'column',
+        width:(menuWidth?menuWidth:"160px"),
         config:{friction:24,tension:180}
       });
         useEffect(() => {
@@ -132,13 +141,14 @@ display: none;
           <FontAwesomeIcon
          icon={menuIcon}
          size={'lg'}/>
+         
          </Icon>
          )
          : // no icon
        (<button 
 
         style={{margin:"0",
-        minWidth:(width?width:"40px"),
+        minWidth:(width?width:"160px"),
           backgroundColor: "#6de5ff",
             color: "black",
             padding: "16px",
@@ -147,7 +157,12 @@ display: none;
             display:"block"
           }}
          >{currentItemDisplay}
-         </button>)
+         <FontAwesomeIcon
+         icon={faChevronDown}
+         size={'sm'}/>
+         </button>
+         
+         )
        }</div>
       {/* use width somewhere in component below for consistenecy */}
         <DropDownContent 
@@ -164,7 +179,12 @@ display: none;
                 }
               }}
                >
+                                  {!grayTheseOut.includes(item)?
                  <MenuItem content={itemsToShow[item]['showText']}/>
+                 :
+                 <MenuItem content={itemsToShow[item]['showText'] 
+                 } greyOut={true}/>
+                }
                </animated.div>)
           ))}
 
