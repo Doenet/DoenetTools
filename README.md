@@ -43,6 +43,8 @@ $ npm install
 ```
 
 ### 4. Build and run the containers!
+Make sure that Docker is running, then:
+
 ```bash
 $ npm start
 ```
@@ -67,6 +69,8 @@ Visit `localhost` in your browser to test the project. When you make changes to 
 
 ### Run the containers
 To run the containers, you can just run `$ npm start` in the project's root directory. This command will only build the containers if they are not already built.
+
+Note: You must have docker running before you can start the containers.
 
 ### Stop the containers
 Option 1: Use `ctrl+c` in the terminal that you started them with.
@@ -160,4 +164,3 @@ You may also get MariaDB to work. Please let us know if you do. c:
 We have not tested the current configuration with Nginx, you are on your own if you choose to use it. If you do, we would love to hear about how it turned out. c:
 
 You must use port 3000 for Apache/Nginx or our PHP probably won't work on your stack.
-
