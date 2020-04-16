@@ -27,7 +27,7 @@ class DoenetHeader extends Component {
     this.adminAccess = 0;
     this.accessAllowed = 0;
     this.currentCourseId=""
-
+    console.log("HEADER !!")
     if (this.props.rights){
       this.rightToView = this.props.rights.rightToView
       this.rightToEdit = this.props.rights.rightToEdit
@@ -96,8 +96,8 @@ class DoenetHeader extends Component {
       // }
       
     })
-    console.log("this.navigationMenu")
-    console.log(this.navigationMenu)
+    // console.log("this.navigationMenu")
+    // console.log(this.navigationMenu)
     this.changeOrderOfNavigationMenu()
 
     this.itemsToShowUpdated={}
@@ -156,8 +156,8 @@ changeOrderOfNavigationMenu(){
   Object.keys(this.navigationMenu).map((e)=>{
     thisArray01.push(e)
   })
-  console.log("thisArray01")
-  console.log(thisArray01)
+  // console.log("thisArray01")
+  // console.log(thisArray01)
   let copy01 = {}
   if (this.props.rights){
     thisArray01.map((e,index)=>{

@@ -85,8 +85,7 @@ class Overview extends Component {
         let doenetML = resp.data.doenetML;
         this.updateNumber++;
         this.doenetML=doenetML;
-        console.log("doenetML !!!")
-        console.log(this.doenetML)
+        console.log("forceUpdate from class Overview !!!")
          this.forceUpdate();
       })
       .catch(error=>{this.setState({error:error})});
@@ -166,7 +165,7 @@ class Syllabus extends Component {
         let doenetML = resp.data.doenetML;
         this.updateNumber++;
         this.doenetML=doenetML;
-        // this.buildSyllabus()
+        console.log("forceUpdate from class Syllabus !!!")        
         this.forceUpdate();
       })
       .catch(error=>{this.setState({error:error})});
@@ -661,24 +660,11 @@ class DoenetCourse extends Component {
 
     this.phone_info_style = {}
 
-
     this.coursesPermissions = {}
     axios.get(envurl)
       .then(resp=>{
           this.coursesPermissions = resp.data
-          // console.log("this.coursesPermissions")
-          // console.log(this.coursesPermissions)
-          // this.username = resp.data.user;
-          // this.access = resp.data.access;
-          // this.accessAllowed = resp.data.accessAllowed;
-          // this.adminAccess=resp.data.adminAccess;
-          // if (this.accessAllowed==="1"){
-          //   this.rightToView = true
-          //   if (this.adminAccess==="1"){
-          //     this.rightToEdit = true
-          //     this.instructorRights = true
-          //   }
-          // } 
+          console.log("forceUpdate from getting this.coursesPermissions !!!")
           this.forceUpdate();
       });
       // todo: a select button to switch between students and instructor
@@ -962,8 +948,11 @@ class DoenetCourse extends Component {
     // var parsed = queryString.parse(this.props.location.search);
     // console.log(parsed.param);
   }
+  componentDidMount(){
+    
+  }
   loadAllCourses() {
-    console.log("from loadAllCourses")
+    // console.log("from loadAllCourses")
     this.makeTreeArray=[]
     this.alreadyLoadOverview = false
     this.alreadyLoadSyllabus = false
@@ -985,8 +974,8 @@ class DoenetCourse extends Component {
     axios.get(loadCoursesUrl,payload)
     .then(resp=>{
       let location = window.location.hash
-      console.log("downloading loadAllCourses")
-      console.log(resp.data)
+      // console.log("downloading loadAllCourses")
+      // console.log(resp.data)
       this.alreadyHasCourseInfo = true
       this.courseInfo = resp.data.courseInfo;
       this.courseIdsArray = resp.data.courseIds;
@@ -1020,11 +1009,11 @@ class DoenetCourse extends Component {
       this.courseName = this.courseInfo[this.currentCourseId]['courseName']
       //////////////////
       this.enableOverview=!!(+(resp.data.courseInfo[this.currentCourseId]["overviewEnabled"]))
-      console.log("this.enableOverview: "+this.enableOverview)
+      // console.log("this.enableOverview: "+this.enableOverview)
           if (this.enableOverview || this.rightToEdit){
             this.trueList.push("overview")
             this.overview_branchId=resp.data.courseInfo[this.currentCourseId]["overviewId"]
-            console.log("overview_branchId: "+this.overview_branchId)
+            // console.log("overview_branchId: "+this.overview_branchId)
           }
           this.enableSyllabus=!!(+(resp.data.courseInfo[this.currentCourseId]["syllabusEnabled"]))
           if (this.enableSyllabus || this.rightToEdit){
@@ -1058,6 +1047,7 @@ class DoenetCourse extends Component {
           }
           this.loadSection()
           // this.makeTreeVisible({loadSpecificId:""}) 
+          console.log("before calling loadSection()")
           this.forceUpdate()
     });}
     else {
@@ -1101,6 +1091,7 @@ class DoenetCourse extends Component {
           }
           this.loadSection()
           this.makeTreeVisible({loadSpecificId:""}) 
+          console.log("after calling makeTreeVisible()")
           this.forceUpdate()
     }
   }
@@ -1130,6 +1121,7 @@ class DoenetCourse extends Component {
     if (this.activeSection==="assignments" && this.enableAssignment){
       this.makeTreeVisible({loadSpecificId:""})
     }
+    console.log("from permissionCallBack")
     this.forceUpdate()
   }
   findEnabledCategory(){
@@ -1163,6 +1155,7 @@ class DoenetCourse extends Component {
         if (this.enableAssignment){
           this.trueList.push("assignments")
         }
+        console.log("from load findEnabledCategory")
         this.forceUpdate()
       });
   }
@@ -1323,6 +1316,7 @@ class DoenetCourse extends Component {
         this.updateNumber+=1
         this.assignmentName = e;
         this.AssignmentInfoChanged=true;
+        console.log("from DoenetBox parentFunction")
          this.forceUpdate()}} 
          type="text" 
          title="Assignment Name: "
@@ -1338,6 +1332,7 @@ class DoenetCourse extends Component {
             let result = date[3]+"-"+this.months[date[1]]+"-"+date[2]+" "+date[4]
             this.dueDate = result;
             this.AssignmentInfoChanged=true;
+        console.log("from DoenetBox parentFunction")
              this.forceUpdate()}} 
         type="Calendar" 
         title="Due Date: "
@@ -1355,6 +1350,8 @@ class DoenetCourse extends Component {
         this.assignedDate = result;
 
         this.AssignmentInfoChanged=true;
+        console.log("from DoenetBox parentFunction")
+
          this.forceUpdate()}} 
          type="Calendar" 
          title="Assigned Date: " 
@@ -1368,6 +1365,8 @@ class DoenetCourse extends Component {
         this.updateNumber+=1
         this.timeLimit = e;
         this.AssignmentInfoChanged=true;
+        console.log("from DoenetBox parentFunction")
+
          this.forceUpdate()}} 
          type="text" 
          title="Time Limit: " 
@@ -1384,6 +1383,8 @@ class DoenetCourse extends Component {
           this.numberOfAttemptsAllowed = 0
         }
         this.AssignmentInfoChanged=true;
+        console.log("from DoenetBox parentFunction")
+
          this.forceUpdate()}} 
          type="number" 
          title="Number Of Attempts: " 
@@ -1398,6 +1399,8 @@ class DoenetCourse extends Component {
         this.updateNumber+=1
         this.totalPointsOrPercent = e;
         this.AssignmentInfoChanged=true;
+        console.log("from DoenetBox parentFunction")
+
          this.forceUpdate()}} 
          type="number" 
          title="Total Points Or Percent: " 
@@ -1412,6 +1415,8 @@ class DoenetCourse extends Component {
         this.updateNumber+=1
         this.gradeCategory = e;
         this.AssignmentInfoChanged=true;
+        console.log("from DoenetBox parentFunction")
+
          this.forceUpdate()}} 
          type="select" 
          options={this.listOfOptions}
@@ -1426,6 +1431,8 @@ class DoenetCourse extends Component {
         this.updateNumber+=1
         this.individualize = e;
         this.AssignmentInfoChanged=true;
+        console.log("from DoenetBox parentFunction")
+
          this.forceUpdate()}} 
          type="checkbox" 
          title="Individualize: " 
@@ -1442,6 +1449,8 @@ class DoenetCourse extends Component {
           this.numberOfAttemptsAllowed = 0
         }
         this.AssignmentInfoChanged=true;
+        console.log("from DoenetBox parentFunction")
+
          this.forceUpdate()}} 
          type="checkbox" 
          title="Multiple Attempts: " 
@@ -1455,6 +1464,8 @@ class DoenetCourse extends Component {
         this.updateNumber+=1
         this.showSolution = e;
         this.AssignmentInfoChanged=true;
+        console.log("from DoenetBox parentFunction")
+
          this.forceUpdate()}} 
          type="checkbox" 
          title="Show solution: " 
@@ -1468,6 +1479,8 @@ class DoenetCourse extends Component {
         this.updateNumber+=1
         this.showFeedback = e;
         this.AssignmentInfoChanged=true;
+        console.log("from DoenetBox parentFunction")
+
          this.forceUpdate()}} 
          type="checkbox" 
          title="Show feedback: " 
@@ -1481,6 +1494,8 @@ class DoenetCourse extends Component {
         this.updateNumber+=1
         this.showHints = e;
         this.AssignmentInfoChanged=true;
+        console.log("from DoenetBox parentFunction")
+
          this.forceUpdate()}} 
          type="checkbox" 
          title="Show hints: " 
@@ -1494,6 +1509,8 @@ class DoenetCourse extends Component {
         this.updateNumber+=1
         this.showCorrectness = e;
         this.AssignmentInfoChanged=true;
+        console.log("from DoenetBox parentFunction")
+
          this.forceUpdate()}} 
          type="checkbox" 
          title="Show correctness: " 
@@ -1508,6 +1525,8 @@ class DoenetCourse extends Component {
         this.updateNumber+=1
         this.proctorMakesAvailable = e;
         this.AssignmentInfoChanged=true;
+        console.log("from DoenetBox parentFunction")
+
          this.forceUpdate()}} 
          type="checkbox" 
          title="Proctor make available: " 
@@ -1516,6 +1535,8 @@ class DoenetCourse extends Component {
       {/* </SettingContainer> */}
 </div>)
 this.AssignmentInfoPackageReady = false
+console.log("from buildRightSideInfoColumn")
+
 this.forceUpdate()
   }
   buildGrades() {
@@ -1610,6 +1631,7 @@ this.forceUpdate()
     }
     else {
       this.makeTreeVisible({loadSpecificId:""})
+      console.log ("before this.makeTreeVisible line 1630")
       this.forceUpdate()
     }
   }
@@ -2558,7 +2580,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   // }
 
   loadOverview(){
-    console.log("loading OVERVIEW in course")
+    // console.log("loading OVERVIEW in course")
     // console.log(this.overview_branchId)
     this.doenetML="";
     const phpUrl='/api/getDoenetML.php';
@@ -2584,6 +2606,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.loadFirstTrue=(this.Overview_doenetML!=""?<Overview doenetML={this.Overview_doenetML}/>:null)
         // console.log(this.doenetML)
        // this.buildOverview();
+       console.log("from loadOverview line 2606")
          this.forceUpdate();
       })
       .catch(error=>{this.setState({error:error})});
@@ -2643,6 +2666,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       this.loadFirstTrue=(<Syllabus doenetML={this.Syllabus_doenetML}/>)
 
         // this.buildSyllabus()
+        console.log("from loadSyllabus line 2666")
         this.forceUpdate();
       })
       .catch(error=>{this.setState({error:error})});
@@ -2698,6 +2722,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
           this.course = resp.data.course;
           this.section = resp.data.section;
           this.group = resp.data.group;
+          console.log("from loadGrades line 2722")
           this.forceUpdate();
           
         })
@@ -3021,28 +3046,14 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.course = resp.data.course;
         this.section = resp.data.section;
         this.group = resp.data.group;
-        // console.log("INSIDE loading grade")
-        // console.log(this.assignmentsData)
-        // console.log(this.student)
-        // console.log(this.course)
-        // console.log(this.section)
-        // console.log(this.group)
-        // console.log("END")
+
         this.buildGrades();
         // this.loadFirstTrue=(<Syllabus doenetML={this.Syllabus_doenetML}/>)
         this.loadFirstTrue=(<Grades parentFunction={(e)=>{this.activeSection="assignments";
         this.loadAssignmentFromGrade=true;
         this.makeTreeVisible({loadSpecificId:e})}}/>)
         
-        // this.gradeComponent=(<Grades 
-        //   student={this.student} 
-        //   sections={this.sections}
-        //   group={this.group}
-        //   gradeCategories={this.gradeCategories}
-        //   score={this.score}
-        //   subtotal={this.subtotal}
-        //   total={this.subtotal}
-        //   />)
+
         this.forceUpdate()
       })
       .catch(error => { this.setState({ error: error }) });
@@ -3055,12 +3066,12 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     // console.log("Syllabus code: "+this.Syllabus_doenetML)
     this.loadFirstTrue=null
     if (this.activeSection==="overview" && !this.alreadyLoadOverview){
-      console.log("====MAKING overview====")
+      // console.log("====MAKING overview====")
       this.loadOverview();
       // console.log("Overview branchid: "+this.overview_branchId)
       // this.alreadyLoadOverview=true
     } else if (this.activeSection==="syllabus"&& !this.alreadyLoadSyllabus) {
-      console.log("====MAKING syllabus====")
+      // console.log("====MAKING syllabus====")
       this.loadSyllabus();
       // console.log("Overview branchid: "+this.overview_branchId)
       // console.log("syllabus branchid: "+this.syllabus_branchId)
@@ -3160,6 +3171,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         this.loadAssignmentFromGrade=false
         }
       // this.loadFirstTrue=(this.assignmentTree)
+      console.log(" from makeTreeVisible line 3171")
       this.forceUpdate();
       
     }).catch(error=>{this.setState({error:error})});
@@ -3201,7 +3213,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   //   window.removeEventListener("resize",this.windowResizeHandler);
   // }
   render() {
-    // console.log("====RENDER====");
+    console.log("====RENDER====");
     // console.log(this.state.deviceGivenWidth)
     // if (!this.assignmentTree && this.activeSection==="assignments"){
     //   this.makeTreeVisible({loadSpecificId:""})
@@ -3228,6 +3240,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       this.loadAllCourses()
     }
     if (this.courseIdsArray==[]){
+      console.log(" from line 3240, this.courseIdsArray==[]")
       this.forceUpdate()
     }
       let found = false
@@ -3284,6 +3297,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       this.thisAssignmentInfo="";
       this.loadSection();
       this.componentLoadedFromNavigationBar=null;
+      console.log("clicking overview_link")
       this.forceUpdate()}}>
         <span className={overview_class_text}>Overview</span>       
         </Link>
@@ -3306,7 +3320,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       onClick={()=>{this.activeSection="syllabus";
       this.thisAssignmentInfo="";
       this.loadSection();
-      this.componentLoadedFromNavigationBar=null;this.forceUpdate()}}>
+      this.componentLoadedFromNavigationBar=null;
+      console.log("clicking syllabus_link")
+      this.forceUpdate()}}>
       <span className={syllabus_class_text}>Syllabus</span>      
       </Link>
         {this.rightToEdit?(<React.Fragment><span className="Section-Icon-Box">         
@@ -3327,7 +3343,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       data-cy="gradesNavItem"
       onClick={()=>{this.activeSection="grade";
       this.thisAssignmentInfo="";
-      this.componentLoadedFromNavigationBar=null;this.forceUpdate()}}>
+      this.componentLoadedFromNavigationBar=null;
+      console.log("clicking grade_link")      
+      this.forceUpdate()}}>
       <span className={grade_class_text}>Grade</span>
       </Link>
       {this.rightToEdit?(<React.Fragment><span className="Section-Icon-Box">         
@@ -3457,6 +3475,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                   if (this.activeSection==="assignments" && this.enableAssignment){
                     this.makeTreeVisible({loadSpecificId:""})
                   }
+                  console.log("clicking permissionCallBack")
                   this.forceUpdate()
                 },
                 parentFunction:(e)=>{
@@ -3491,6 +3510,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                   this.alreadyLoadAllCourses = false
     
                   // this.AssignmentInfoChanged=true;
+                  console.log(" from parentFunction")
                   this.forceUpdate()
                   }
               }

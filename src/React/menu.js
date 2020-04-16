@@ -55,19 +55,19 @@ display: none;
       const[currentItemDisplay,setcurrentItemDisplay] = useState(Object.keys(itemsToShow).length>0?showThisRole:"");
       let rolesDisplay=[]
       let updateNumber=0
-      console.log("itemsToShow")
-      console.log(itemsToShow)
+      // console.log("itemsToShow")
+      // console.log(itemsToShow)
         Object.keys(itemsToShow).map(item=>{
-          console.log(`item is..${item}`)
+          // console.log(`item is..${item}`)
           if (itemsToShow[item]['url']){    // exists URL
-            console.log("YESS")
+            // console.log("YESS")
             rolesDisplay.push(<p key={"op"+(updateNumber++)} 
           onClick={()=>
             window.location.href = itemsToShow[item]['url']
             
             }>{itemsToShow[item]['showText']}</p>)
           } else {                
-            console.log("NOOO")
+            // console.log("NOOO")
                       // no url, exec callBack
             rolesDisplay.push(<p key={"op"+(updateNumber++)} 
           onClick={()=>
