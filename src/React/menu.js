@@ -93,7 +93,7 @@ display: none;
         display: "block",
         flexDirection:'column',
         width:(menuWidth?menuWidth:"160px"),
-        config:{friction:24,tension:180}
+        config:{friction:15,mass:1,tensions:180}
       });
         useEffect(() => {
           document.addEventListener('click',handleClick, false);
@@ -179,8 +179,11 @@ display: none;
                 }
               }}
                >
-                                  {!grayTheseOut.includes(item)?
-                 <MenuItem content={itemsToShow[item]['showText']}/>
+                  {!grayTheseOut.includes(item)?
+                 <MenuItem content={itemsToShow[item]['showText']}
+                 object={itemsToShow}
+                 currentItem={item}
+                 />
                  :
                  <MenuItem content={itemsToShow[item]['showText'] 
                  } greyOut={true}/>

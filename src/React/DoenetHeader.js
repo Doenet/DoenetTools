@@ -273,7 +273,7 @@ courseChosenCallBack({e}){
               key={"menu01"+(this.updateNumber++)}           
               showThisRole={this.props.toolTitle} 
               itemsToShow = {this.navigationMenu}
-              offsetPos={-20}
+              offsetPos={-18}
               menuIcon={faTh}
               grayTheseOut={this.props.toolTitle}
               />
