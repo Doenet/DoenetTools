@@ -7,18 +7,22 @@ import "./index.css";
 export const TreeView = ({headingsInfo, assignmentsInfo, currentDraggedObject, onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter}) => {
   const [currentDraggedOverContainerId, setCurrentDraggedOverContainerId] = useState(null);
 
+  // handle dragEnd
+  useEffect(() => {
+    if (currentDraggedObject.id == null) setCurrentDraggedOverContainerId(null);
+  }, [currentDraggedObject])
+
   const onDropCb = () => {
-    setCurrentDraggedOverContainerId(null);
-    onDrop();
+    onDrop && onDrop();
   }
 
   const onDropEnterCb = (id) => {
     setCurrentDraggedOverContainerId(id); 
-    onDropEnter(id);
+    onDropEnter && onDropEnter(id);
   }
 
   const onMouseUp = () => {
-    console.log("HERERE");
+    // console.log("HERERE");
   }
 
   return (

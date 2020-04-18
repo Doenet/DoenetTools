@@ -9,8 +9,8 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
   const [treeHeadings, setTreeHeadings] = useState(treeHeadingsInfo);
   const [treeAssignments, setTreeAssignments] = useState(treeAssignmentsInfo);
   const [originalTreeHeadingsAndAssignments, setOriginalTreeHeadingsAndAssignments] = useState({
-    treeHeadings: treeHeadingsInfo,
-    treeAssignments: treeAssignmentsInfo,
+    headings: null,
+    assignments: null,
   });
   const [validDrop, setValidDrop] = useState(true);
   
@@ -20,41 +20,21 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
     setTreeAssignments(treeAssignmentsInfo);
   }, [treeHeadingsInfo, treeAssignmentsInfo])
 
-  // handle dragend
-  useEffect(() => {
-    console.log(validDrop)
-    if (currentDraggedObject.id == null // drag ended
-      && !validDrop  // dropped outsize valid dropzone
-    ) {
-      console.log("invalid end")
-    }
-  }, [currentDraggedObject])
-
-  // useEffect(() => {
-  //   const mouseUpListener = () => {
-  //     console.log("TEST")
-  //   }
-  //   document.documentElement.addEventListener('mouseup', mouseUpListener); 
-  //   // return () => {
-  //   //   document.documentElement.removeEventListener('mouseup', dragStartCb);
-  //   // };
-  // });
-
   const onDragStart = (draggedId, draggedType, sourceContainerId) => {
-    setValidDrop(() => false);
     const dataObjectSource = draggedType == "leaf" ? treeAssignments : treeHeadings;
     const dataObject = dataObjectSource[draggedId];
     const sourceParentId = dataObjectSource[draggedId].parent;
-    setCurrentDraggedObject({id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId});
+    setValidDrop(() => false);
     setOriginalTreeHeadingsAndAssignments({
-      treeHeadings: treeHeadings,
-      treeAssignments: treeAssignments,
+      headings: JSON.parse(JSON.stringify(treeHeadings)),
+      assignments: JSON.parse(JSON.stringify(treeAssignments)),
     });
+    setCurrentDraggedObject({id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId});
   }
 
   const onTreeDraggableDragOver = (id, type) => {
     // draggedType must be equal to dragOver type
-    if (type != currentDraggedObject.type) return;
+    if (type != currentDraggedObject.type || id == "UltimateHeader") return;
 
     const draggedOverItemInfo = type == "leaf" ? treeAssignments : treeHeadings;
     const headingsChildrenListKey = type == "leaf" ? "assignmentId" : "headingId";
@@ -99,14 +79,12 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
 
     if (previousParentId == listId || listId == currentDraggedObject.id) // prevent heading from becoming a child of itself 
       return;
-    console.log(treeHeadings[previousParentId]["name"] + " " + treeHeadings[listId]["name"])
     
     const headingsChildrenListKey = currentDraggedObject.type == "leaf" ? "assignmentId" : "headingId";
     const previousList = treeHeadings[previousParentId][headingsChildrenListKey];
     const currentList = treeHeadings[listId][headingsChildrenListKey];
     // remove from previous list
     if (previousParentId !== currentDraggedObject.sourceParentId) {
-      console.log("delete from " + treeHeadings[listId]["name"]);
       const indexInList = previousList.findIndex(itemId => itemId == currentDraggedObject.id);
       if (indexInList > -1) {
         previousList.splice(indexInList, 1);
@@ -114,7 +92,6 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
     }
     if (listId !== currentDraggedObject.sourceParentId) {
       // add to current list
-      console.log("PuSHED");
       currentList.push(currentDraggedObject.id);     
     }
 
@@ -142,7 +119,18 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
   }
 
   const onDragEnd = () => {
-    console.log("ENDED");
+    // dropped outsize valid dropzone
+    let currTreeHeadings = treeHeadings;
+    let currTreeAssignments = treeAssignments;
+    if (!validDrop) {
+      currTreeHeadings = originalTreeHeadingsAndAssignments.headings;
+      currTreeAssignments = originalTreeHeadingsAndAssignments.assignments;
+    }
+    setTreeAssignments(currTreeAssignments);
+    setTreeHeadings(currTreeHeadings);
+    updateHeadingsAndAssignments(currTreeHeadings, currTreeAssignments);
+    setCurrentDraggedObject({id: null, type: null, sourceContainerId: null});
+    setOriginalTreeHeadingsAndAssignments({ headings: null, assignments: null });
   }
 
   const onDrop = () => {
