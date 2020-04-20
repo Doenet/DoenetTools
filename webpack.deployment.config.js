@@ -8,7 +8,7 @@ module.exports = {
 
   // devtool: 'source-map',
   entry: {
-    "index.js": "./src/index.js",
+    // "index.js": "./src/index.js",
     "admin/index.js": "./src/admin/index.js",
     "course/index.js": "./src/course/index.js",
     "chooser/index.js":"./src/chooser/index.js",
