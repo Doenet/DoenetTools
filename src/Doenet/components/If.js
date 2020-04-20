@@ -19,7 +19,7 @@ export default class IfComponent extends BaseComponent {
       default: "none",
       toLowerCase: true,
       valueTransformations: { "": "full", "true": "full" },
-      validValues: new Set(["full", "numbers", "numbersepreserveorder", "none"]),
+      validValues: ["none", "full", "numbers", "numbersepreserveorder"],
       propagateToDescendants: true,
     };
     properties.unorderedCompare = { default: false, propagateToDescendants: true };
@@ -105,7 +105,7 @@ export default class IfComponent extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.parsedExpression = {
       additionalStateVariablesDefined: [
@@ -207,67 +207,6 @@ export default class IfComponent extends BaseComponent {
       }),
       definition: evaluateLogic
     };
-
-
-    // stateVariableDefinitions.justSubmitted = {
-    //   defaultValue: false,
-    //   returnDependencies: () => ({
-    //     // don't actually use this value,
-    //     // but need definition to be recalculated if this variable changes
-    //     conditionSatisfied: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "conditionSatisfied",
-    //     },
-    //   }),
-    //   definition: function ({ overrides }) {
-    //     let justSubmitted = false;
-    //     // if(overrides.justSubmitted !== undefined) {
-    //     //   justSubmitted = overrides.justSubmitted
-    //     // }
-    //     return {
-    //       newValues: { justSubmitted },
-    //       makeEssential: ["justSubmitted"]
-    //     }
-
-    //     // let justSubmitted = true;
-    //     // if (sourceOfUpdate !== undefined) {
-    //     //   justSubmitted = false;
-    //     //   let instructionsForThisComponent = sourceOfUpdate.instructionsByComponent[this.componentName];
-    //     //   if (instructionsForThisComponent !== undefined) {
-    //     //     if (instructionsForThisComponent.variableUpdates.justSubmitted !== undefined) {
-    //     //       justSubmitted = instructionsForThisComponent.variableUpdates.justSubmitted.changes;
-    //     //     }
-    //     //   } else if (Object.keys(sourceOfUpdate.instructionsByComponent).length === 1) {
-    //     //     let val = Object.values(sourceOfUpdate.instructionsByComponent)[0];
-    //     //     let variableUpdates = val.variableUpdates;
-    //     //     if (Object.keys(variableUpdates).length === 1 && Object.keys(variableUpdates)[0] === "rendererValueAsSubmitted") {
-    //     //       // if only change was changing renderedValueAsSubmitted on some component
-    //     //       // the don't change this.state.justSubmitted
-    //     //       // (which we accomplish by setting justSubmitted to true)
-    //     //       justSubmitted = true;
-    //     //     }
-    //     //   }
-    //     // }
-
-    //     // if (!justSubmitted) {
-    //     //   return { newValues: { justSubmitted: false } }
-    //     // } else {
-    //     //   return { useEssentialOrDefaultValue: ["justSubmitted"] }
-    //     // }
-    //   },
-    //   inverseDefinition: function ({ desiredStateVariableValues }) {
-    //     let instructions = [{
-    //       setStateVariable: "justSubmitted",
-    //       value: desiredStateVariableValues.justSubmitted,
-    //     }];
-    //     if(desiredStateVariableValues.justSubmitted) {
-    //       instructions[0].temporaryOverride = true;
-    //     }
-
-    //     return { success: true, instructions }
-
-    //   }
-    // }
 
 
     return stateVariableDefinitions;

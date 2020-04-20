@@ -514,13 +514,16 @@ class DoenetEditor extends Component {
       open_external_window_button = <button onClick={this.openExternalViewerWindow}><FontAwesomeIcon icon={externalLink}/></button>
     }
 
+    console.log(this.state.viewerDoenetML)
     let doenetViewerMenu = <React.Fragment>
       <button onClick={this.handleViewerUpdate}>Update</button>
       {open_external_window_button}
       </React.Fragment>
-    let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"+this.updateNumber}><DoenetViewer 
+    let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"+this.updateNumber}>
+      <DoenetViewer 
               key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
-              free={{doenetCode: this.state.viewerDoenetML}} 
+              // free={{doenetCode: this.state.viewerDoenetML}} 
+              doenetML={this.state.viewerDoenetML} 
               mode={{
               solutionType:this.state.solutionType,
               allowViewSolutionWithoutRoundTrip:this.state.allowViewSolutionWithoutRoundTrip,

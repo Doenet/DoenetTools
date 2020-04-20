@@ -1,0 +1,75 @@
+/* SECTION: BASIC STYLES */
+.switch {
+  margin: 0.5em;
+  padding: 0;
+  font-size: 18px;
+  font-family: sans-serif;
+  display: grid;
+  grid-template-columns: 3em 1fr;
+}
+
+.switch > input {
+  font-size: 1em;
+  width: 2em;
+  background-color: lime;
+  margin: -0.3em 0 0 0;
+  padding: 0;
+  position: relative;
+  left: -9999px;
+}
+
+.switch > label {
+  position: relative;
+  top: -.45em;
+  overflow: visible;
+  margin-left: 1em;
+}
+
+/* background */
+.switch > input:before,
+.switch > input:after {
+  display: block;
+  visibility: visible;
+  content: "";
+  position: relative;
+  left: 9999px;
+}
+
+.switch > input:before {
+  border-radius: 1em;
+  width: 2em;
+  background-color: #ccc;
+  height: 1em;
+}
+
+.switch > input:focus:before {
+  background-color: #aaa
+}
+
+/* slider */
+.switch > input:after {
+  width: 1em;
+  height: 1.02em;
+  background-color: #eee;
+  top: -1em;
+  border-radius: 50%;
+  transform: translate(0, -0.01em);
+}
+
+/* SECTION: SWITCH ANIMATIONS */
+.switch > input:before,
+.switch > input:after {
+  transition: all 250ms ease-in-out;
+}
+
+.switch > input:checked:before {
+  background: #6de5ff;
+}
+
+.switch > input:focus:checked:before {
+  background-color: #57B7CD;
+}
+
+.switch > input:checked:after {
+  transform: translate(1.01em, -0.01em);
+}

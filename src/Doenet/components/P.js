@@ -20,9 +20,9 @@ export default class P extends BlockComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
           dependencyType: "childIdentity",
@@ -32,21 +32,13 @@ export default class P extends BlockComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues:
-            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
+            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
         };
       }
     }
 
     return stateVariableDefinitions;
     
-  }
-
-  initializeRenderer(){
-    if(this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.p({
-        key: this.componentName,
-      });
-    }
   }
 
   static includeBlankStringChildren = true;

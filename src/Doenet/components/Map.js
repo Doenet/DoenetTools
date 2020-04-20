@@ -41,7 +41,7 @@ export default class Map extends CompositeComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.nSubstitutions = {
       additionalStateVariablesDefined: ["substitutionsNames"],
@@ -423,6 +423,9 @@ export default class Map extends CompositeComponent {
     let prevMinNIterates = lrp.minNIterates;
     let newReplacementsToWithhold = 0;
     let currentReplacementsToWithhold = component.replacementsToWithhold;
+    if(!currentReplacementsToWithhold) {
+      currentReplacementsToWithhold = 0;
+    }
     let withheldSubstitutionChildNames = lrp.withheldSubstitutionChildNames;
 
     // Check if any previous substitution child names 
@@ -478,7 +481,7 @@ export default class Map extends CompositeComponent {
     if (currentMinNIterates < prevMinNIterates) {
 
       if (!foundDeletedSubstitutionsChild) {
-        newReplacementsToWithhold = component.replacementsToWithhold +
+        newReplacementsToWithhold = currentReplacementsToWithhold +
           (prevMinNIterates - currentMinNIterates) * component.stateValues.numberTemplateComponents;
 
         let replacementInstruction = {
@@ -568,4 +571,35 @@ export default class Map extends CompositeComponent {
     // could treat as a normal component
     return { success: false };
   }
+
+  get allPotentialRendererTypes() {
+
+    let allPotentialRendererTypes = this.potentialRendererTypesFromSerializedComponents(
+      this.stateValues.template
+    );
+
+    for (let childName in this.allChildren) {
+      let child = this.allChildren[childName].component;
+      for (let rendererType of child.allPotentialRendererTypes) {
+        if (!allPotentialRendererTypes.includes(rendererType)) {
+          allPotentialRendererTypes.push(rendererType);
+        }
+      }
+    }
+
+    if(this.replacements) {
+      for(let replacement of this.replacements) {
+        for(let rendererType of replacement.allPotentialRendererTypes) {
+          if(!allPotentialRendererTypes.includes(rendererType)) {
+            allPotentialRendererTypes.push(rendererType);
+          }
+        }
+
+      }
+    }
+
+    return allPotentialRendererTypes;
+
+  }
+
 }

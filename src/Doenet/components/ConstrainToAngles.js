@@ -174,7 +174,7 @@ export default class ConstrainToAngles extends ConstraintComponent {
     x1 = this.findFiniteNumericalValue(x1);
     x2 = this.findFiniteNumericalValue(x2);
 
-    if(x1 === null || x2 === null) {
+    if(!Number.isFinite(x1) || !Number.isFinite(x2)) {
       return {};
     }
 

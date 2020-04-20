@@ -8,10 +8,10 @@ header('Content-Type: application/json');
 include "db_connection.php";
 
 //prerelease security
-$sql = "SELECT adminAccessAllowed FROM user WHERE username='$remoteuser'";
+$sql = "SELECT accessAllowed FROM user WHERE username='$remoteuser'";
 $result = $conn->query($sql); 
 $row = $result->fetch_assoc();
-if ($row["adminAccessAllowed"] != 1){
+if ($row["accessAllowed"] != 1){
 	$response_arr = array(
 		"access"=> FALSE
 	);

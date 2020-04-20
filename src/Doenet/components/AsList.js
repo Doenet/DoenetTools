@@ -1,10 +1,9 @@
 import InlineComponent from './abstract/InlineComponent';
-import { textFromComponent } from '../utils/text';
 
 export default class AsList extends InlineComponent {
   static componentType = "aslist";
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
@@ -21,9 +20,9 @@ export default class AsList extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
           dependencyType: "childIdentity",
@@ -33,40 +32,39 @@ export default class AsList extends InlineComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues:
-            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
+            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
         };
       }
     }
 
-    return stateVariableDefinitions;
-  }
-
-  initializeRenderer(){
-    if(this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.aslist({
-        key: this.componentName,
-      });
-    }
-  }
-
-  toText() {
-
-    let atLeastZeroInline = this.childLogic.returnMatches("atLeastZeroInline");
-    if(atLeastZeroInline.length > 0) {
-      let children = atLeastZeroInline.map(x => this.activeChildren[x]);
-      let textpieces = [];
-      for(let child of children) {
-        let results = textFromComponent({component: child, textClass: this.allComponentClasses.text});
-        if(results.success) {
-          textpieces.push(results.textValue)
-        }else {
-          textpieces.push("")
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        inlineChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroInline",
+          variableNames: ["text"],
+          variablesOptional: true,
         }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let textpieces = [];
+        for (let child of dependencyValues.inlineChildren) {
+          if (typeof child.stateValues.text === "string") {
+            textpieces.push(child.stateValues.text);
+          } else {
+            textpieces.push('');
+          }
+        }
+        let text = textpieces.join(', ');
+
+        return { newValues: { text } };
       }
-      return textpieces.join(', ');
     }
 
-    return "";
+    return stateVariableDefinitions;
   }
 
 }

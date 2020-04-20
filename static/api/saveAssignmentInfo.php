@@ -6,20 +6,26 @@ header("Access-Control-Allow-Credentials: true");
 //header('Content-Type: application/json');
 
 include "db_connection.php";
+$_POST = json_decode(file_get_contents("php://input"),true);
 
-$assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
-$assignmentName =  mysqli_real_escape_string($conn,$_REQUEST["assignmentName"]);
-$dueDate =  mysqli_real_escape_string($conn,$_REQUEST["dueDate"]);
-$assignedDate =  mysqli_real_escape_string($conn,$_REQUEST["assignedDate"]);
-$gradeCategory =  mysqli_real_escape_string($conn,$_REQUEST["gradeCategory"]);
-$totalPointsOrPercent =  mysqli_real_escape_string($conn,$_REQUEST["totalPointsOrPercent"]);
-$individualize =  mysqli_real_escape_string($conn,$_REQUEST["individualize"]);
-$multipleAttempts =  mysqli_real_escape_string($conn,$_REQUEST["multipleAttempts"]);
-$showSolution =  mysqli_real_escape_string($conn,$_REQUEST["showSolution"]);
-$showFeedback =  mysqli_real_escape_string($conn,$_REQUEST["showFeedback"]);
-$showHints =  mysqli_real_escape_string($conn,$_REQUEST["showHints"]);
-$showCorrectness =  mysqli_real_escape_string($conn,$_REQUEST["showCorrectness"]);
-$proctorMakesAvailable =  mysqli_real_escape_string($conn,$_REQUEST["proctorMakesAvailable"]);
+$assignmentId =  mysqli_real_escape_string($conn,$_POST["assignmentId"]);
+$assignmentName =  mysqli_real_escape_string($conn,$_POST["assignmentName"]);
+$dueDate =  mysqli_real_escape_string($conn,$_POST["dueDate"]);
+$assignedDate =  mysqli_real_escape_string($conn,$_POST["assignedDate"]);
+$gradeCategory =  mysqli_real_escape_string($conn,$_POST["gradeCategory"]);
+$totalPointsOrPercent =  mysqli_real_escape_string($conn,$_POST["totalPointsOrPercent"]);
+$numberOfAttemptsAllowed =  mysqli_real_escape_string($conn,$_POST["numberOfAttemptsAllowed"]);
+
+$individualize =  mysqli_real_escape_string($conn,$_POST["individualize"]);
+$timeLimit = mysqli_real_escape_string($conn,$_POST["timeLimit"]);
+$multipleAttempts =  mysqli_real_escape_string($conn,$_POST["multipleAttempts"]);
+$showSolution =  mysqli_real_escape_string($conn,$_POST["showSolution"]);
+$showFeedback =  mysqli_real_escape_string($conn,$_POST["showFeedback"]);
+$showHints =  mysqli_real_escape_string($conn,$_POST["showHints"]);
+$showCorrectness =  mysqli_real_escape_string($conn,$_POST["showCorrectness"]);
+$proctorMakesAvailable =  mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
+
+echo "PHP @!!!!!!\n";
 
 
 $dbIndividualize = 0;
@@ -39,7 +45,10 @@ SET assignmentName = '$assignmentName',
 dueDate = $dueDate,
 assignedDate = $assignedDate,
 gradeCategory = '$gradeCategory',
+timeLimit='$timeLimit',
 totalPointsOrPercent = '$totalPointsOrPercent',
+numberOfAttemptsAllowed = '$numberOfAttemptsAllowed',
+
 individualize = '$dbIndividualize',
 multipleAttempts = '$multipleAttempts',
 showSolution = '$showSolution',

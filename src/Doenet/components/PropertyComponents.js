@@ -20,53 +20,64 @@ import NumberList from './NumberList';
 
 export class Hide extends BooleanComponent {
   static componentType = "hide";
+  static rendererType = "boolean";
 }
 
 export class Draggable extends BooleanComponent {
   static componentType = "draggable";
+  static rendererType = "boolean";
 }
 
 export class modifyIndirectly extends BooleanComponent {
   static componentType = "modifyIndirectly";
+  static rendererType = "boolean";
 }
 
 export class Fixed extends BooleanComponent {
   static componentType = "fixed";
+  static rendererType = "boolean";
 }
 
 export class Label extends TextComponent {
   static componentType = "label";
+  static rendererType = "text";
 }
 
 export class ChildNumber extends Integer {
   static componentType = "childnumber";
+  static rendererType = "integer";
 }
 
 export class Prefill extends TextComponent {
   static componentType = "prefill";
+  static rendererType = "text";
 }
 
 export class Format extends TextComponent {
   static componentType = "format";
+  static rendererType = "text";
 }
 
 export class Credit extends NumberComponent {
   static componentType = "credit";
+  static rendererType = "number";
 }
 
 export class Weight extends NumberComponent {
   static componentType = "weight";
+  static rendererType = "number";
 }
 
 export class PossiblePoints extends NumberComponent {
   static componentType = "possiblepoints";
+  static rendererType = "number";
 }
 
 export class Through extends PointListComponent {
   static componentType = "through"
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.slope = {default: undefined};
+    properties.slope = { default: null };
     return properties;
   }
 }
@@ -83,103 +94,125 @@ export class Head extends Point {
   static componentType = "head"
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.hide = {default: true};
+    properties.hide = { default: true };
     return properties;
   }
+  static rendererType = "point";
 }
 
 export class Tail extends Point {
   static componentType = "tail"
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.hide = {default: true};
+    properties.hide = { default: true };
     return properties;
   }
+  static rendererType = "point";
 }
 
 export class Displacement extends Vector {
   static componentType = "displacement"
+  static rendererType = "vector";
 }
 
 export class Center extends Point {
   static componentType = "center"
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.hide = {default: true};
+    properties.hide = { default: true };
     return properties;
   }
+  static rendererType = "point";
 }
 
 export class Radius extends MathComponent {
   static componentType = "radius";
+  static rendererType = "math";
 }
 
 export class Xmin extends NumberComponent {
   static componentType = "xmin";
+  static rendererType = "number";
 }
 
 export class Xmax extends NumberComponent {
   static componentType = "xmax";
+  static rendererType = "number";
 }
 
 export class Ymin extends NumberComponent {
   static componentType = "ymin";
+  static rendererType = "number";
 }
 
 export class Ymax extends NumberComponent {
   static componentType = "ymax";
+  static rendererType = "number";
 }
 
 export class Dx extends NumberComponent {
   static componentType = "dx";
+  static rendererType = "number";
 }
 
 export class Dy extends NumberComponent {
   static componentType = "dy";
+  static rendererType = "number";
 }
 
 export class Dz extends NumberComponent {
   static componentType = "dz";
+  static rendererType = "number";
 }
 
 export class Xoffset extends NumberComponent {
   static componentType = "xoffset";
+  static rendererType = "number";
 }
 
 export class Yoffset extends NumberComponent {
   static componentType = "yoffset";
+  static rendererType = "number";
 }
 
 export class Zoffset extends NumberComponent {
   static componentType = "zoffset";
+  static rendererType = "number";
 }
 
 export class Xthreshold extends NumberComponent {
   static componentType = "xthreshold";
+  static rendererType = "number";
 }
 
 export class Ythreshold extends NumberComponent {
   static componentType = "ythreshold";
+  static rendererType = "number";
 }
 
 export class Zthreshold extends NumberComponent {
   static componentType = "zthreshold";
+  static rendererType = "number";
 }
 
 export class Threshold extends NumberComponent {
   static componentType = "threshold";
+  static rendererType = "number";
 }
 
 export class IncludeGridlines extends BooleanComponent {
   static componentType = "includegridlines";
+  static rendererType = "boolean";
 }
 
 export class ShowControls extends BooleanComponent {
   static componentType = "showcontrols";
+  static rendererType = "boolean";
 }
 
 export class ShowTicks extends BooleanComponent {
   static componentType = "showticks";
+  static rendererType = "boolean";
 }
 
 export class From extends ComponentWithSelectableType {
@@ -200,34 +233,42 @@ export class ExcludeCombination extends ComponentListWithSelectableType {
 
 export class Step extends MathComponent {
   static componentType = "step";
+  static rendererType = "math";
 }
 
 export class NumRows extends Integer {
   static componentType = "numrows";
+  static rendererType = "integer";
 }
 
 export class NumColumns extends Integer {
   static componentType = "numcolumns";
+  static rendererType = "integer";
 }
 
 export class RowNum extends TextComponent {
   static componentType = "rownum";
+  static rendererType = "text";
 }
 
 export class ColNum extends TextComponent {
   static componentType = "colnum";
+  static rendererType = "text";
 }
 
 export class Type extends TextComponent {
   static componentType = "type";
+  static rendererType = "text";
 }
 
 export class DefaultType extends TextComponent {
   static componentType = "defaulttype";
+  static rendererType = "text";
 }
 
 export class Behavior extends TextComponent {
   static componentType = "behavior";
+  static rendererType = "text";
 }
 
 export class Width extends ComponentSize {
@@ -240,46 +281,57 @@ export class Height extends ComponentSize {
 
 export class Columns extends TextComponent {
   static componentType = "columns";
+  static rendererType = "text";
 }
 
 export class Depth extends NumberComponent {
   static componentType = "depth";
+  static rendererType = "number";
 }
 
 export class InitialNumber extends NumberComponent {
+  static rendererType = "number";
   static componentType = "initialnumber";
 }
 
 export class InitialText extends TextComponent {
   static componentType = "initialtext";
+  static rendererType = "text";
 }
 
 export class Parameter extends Variable {
   static componentType = "parameter";
+  static rendererType = "math";
 }
 
 export class ParMin extends MathComponent {
   static componentType = "parmin";
+  static rendererType = "math";
 }
 
 export class ParMax extends MathComponent {
   static componentType = "parmax";
+  static rendererType = "math";
 }
 
 export class Formula extends MathComponent {
   static componentType = "formula";
+  static rendererType = "math";
 }
 
 export class FlipFunction extends BooleanComponent {
   static componentType = "flipfunction";
+  static rendererType = "boolean";
 }
 
 export class SplineTension extends NumberComponent {
   static componentType = "splinetension";
+  static rendererType = "number";
 }
 
 export class SplineForm extends TextComponent {
   static componentType = "splineform";
+  static rendererType = "text";
 }
 
 export class ControlPoints extends PointListComponent {
@@ -292,6 +344,7 @@ export class ControlVectors extends VectorListComponent {
 
 export class DefaultControls extends TextComponent {
   static componentType = "defaultcontrols";
+  static rendererType = "text";
 }
 
 export class Angles extends AngleListComponent {
@@ -300,50 +353,62 @@ export class Angles extends AngleListComponent {
 
 export class Location extends MathComponent {
   static componentType = "location";
+  static rendererType = "math";
 }
 
 export class Value extends MathComponent {
   static componentType = "value";
+  static rendererType = "math";
 }
 
 export class Xscale extends NumberComponent {
   static componentType = "xscale";
+  static rendererType = "number";
 }
 
 export class Yscale extends NumberComponent {
   static componentType = "yscale";
+  static rendererType = "number";
 }
 
 export class ExtrapolateBackward extends BooleanComponent {
   static componentType = "extrapolatebackward";
+  static rendererType = "boolean";
 }
 
 export class ExtrapolateForward extends BooleanComponent {
   static componentType = "extrapolateforward";
+  static rendererType = "boolean";
 }
 
 export class Simplify extends TextComponent {
   static componentType = "simplify";
+  static rendererType = "text";
 }
 
 export class SimplifyOnCompare extends TextComponent {
   static componentType = "simplifyOnCompare";
+  static rendererType = "text";
 }
 
 export class VariableName extends TextComponent {
   static componentType = "variablename";
+  static rendererType = "text";
 }
 
 export class AuthorProp extends TextComponent {
   static componentType = "authorprop";
+  static rendererType = "text";
 }
 
 export class Index extends NumberComponent {
   static componentType = "index";
+  static rendererType = "number";
 }
 
 export class AggregateScores extends BooleanComponent {
   static componentType = "aggregatescores";
+  static rendererType = "boolean";
 }
 
 // export class AggregateByPoints extends BooleanComponent {
@@ -352,348 +417,440 @@ export class AggregateScores extends BooleanComponent {
 
 export class Title extends TextComponent {
   static componentType = "title";
+  static rendererType = "text";
 }
 
 export class Level extends NumberComponent {
   static componentType = "level";
+  static rendererType = "number";
 }
 
 export class Variant extends TextFromSingleStringChild {
   static componentType = "variant";
+  static rendererType = "text";
 }
 
 export class NVariants extends Integer {
   static componentType = "nvariants";
+  static rendererType = "integer";
 }
 
 export class UniqueVariants extends BooleanComponent {
   static componentType = "uniquevariants";
+  static rendererType = "boolean";
 }
 
 export class Seed extends TextFromSingleStringChild {
   static componentType = "seed";
+  static rendererType = "text";
 }
 
 export class NumberToSelect extends Integer {
   static componentType = "numbertoselect";
+  static rendererType = "integer";
 }
 
 export class WithReplacement extends BooleanComponent {
   static componentType = "withreplacement";
+  static rendererType = "boolean";
 }
 
 export class DisplayDigits extends Integer {
   static componentType = "displaydigits";
+  static rendererType = "integer";
 }
 
 export class SelectWeight extends NumberComponent {
   static componentType = "selectweight";
+  static rendererType = "number";
 }
 
 export class IndependentVariable extends Variable {
   static componentType = "independentvariable";
+  static rendererType = "math";
 }
 
 export class InitialIndependentVariableValue extends MathComponent {
   static componentType = "initialindependentvariablevalue";
+  static rendererType = "math";
 }
 
 export class RightHandSide extends MathWithVariable {
   static componentType = "righthandside";
+  static rendererType = "math";
 }
 
 export class RenderMode extends TextComponent {
   static componentType = "rendermode";
+  static rendererType = "text";
+}
+
+export class RenderAsMath extends BooleanComponent {
+  static componentType = "renderasmath";
+  static rendererType = "boolean";
 }
 
 export class ChunkSize extends NumberComponent {
   static componentType = "chunksize";
+  static rendererType = "number";
 }
 
 export class AnimationOn extends BooleanComponent {
   static componentType = "animationon";
+  static rendererType = "boolean";
 }
 
 export class AnimationMode extends TextComponent {
   static componentType = "animationmode";
+  static rendererType = "text";
 }
 
 export class AnimationInterval extends NumberComponent {
   static componentType = "animationinterval";
+  static rendererType = "number";
 }
 
 export class InitialSelectedIndex extends Integer {
   static componentType = "initialselectedindex";
+  static rendererType = "integer";
 }
 
 export class Numeric extends BooleanComponent {
   static componentType = "numeric";
+  static rendererType = "boolean";
 }
 
 export class X extends MathComponent {
   static componentType = "x";
+  static rendererType = "math";
 }
 
 export class Y extends MathComponent {
   static componentType = "y";
+  static rendererType = "math";
 }
 
 export class Z extends MathComponent {
   static componentType = "z";
+  static rendererType = "math";
 }
 
 export class Layer extends Integer {
   static componentType = "layer";
+  static rendererType = "integer";
 }
 
 export class RenderAsAcuteAngle extends BooleanComponent {
   static componentType = "renderasacuteangle";
+  static rendererType = "boolean";
 }
 
 export class DisplayAxes extends BooleanComponent {
   static componentType = "displayaxes";
+  static rendererType = "boolean";
 }
 
 export class Xlabel extends TextComponent {
   static componentType = "xlabel";
+  static rendererType = "text";
 }
 
 export class Ylabel extends TextComponent {
   static componentType = "ylabel";
+  static rendererType = "text";
 }
 
 export class Zlabel extends TextComponent {
+  static rendererType = "text";
   static componentType = "zlabel";
 }
 
 export class UpperValue extends NumberComponent {
   static componentType = "uppervalue";
+  static rendererType = "number";
 }
 
 export class LowerValue extends NumberComponent {
   static componentType = "lowervalue";
+  static rendererType = "number";
 }
 
 export class Tolerance extends NumberComponent {
   static componentType = "tolerance";
+  static rendererType = "number";
 }
 
 export class MaxIterations extends Integer {
   static componentType = "maxiterations";
+  static rendererType = "integer";
 }
 
 export class Unbiased extends BooleanComponent {
   static componentType = "unbiased";
+  static rendererType = "boolean";
 }
 
 export class NumberOfSamples extends Integer {
   static componentType = "numberofsamples";
+  static rendererType = "integer";
 }
 
 export class MatchWholeWord extends BooleanComponent {
   static componentType = "matchwholeword";
+  static rendererType = "boolean";
 }
 
 export class CaseSensitive extends BooleanComponent {
   static componentType = "casesensitive";
+  static rendererType = "boolean";
 }
 
 export class Offset extends MathComponent {
   static componentType = "offset";
+  static rendererType = "math";
 }
 
 export class Period extends MathComponent {
   static componentType = "period";
+  static rendererType = "math";
 }
 
 export class MinIndex extends MathComponent {
   static componentType = "minindex";
+  static rendererType = "math";
 }
 
 export class MaxIndex extends MathComponent {
   static componentType = "maxindex";
+  static rendererType = "math";
 }
 
 export class NumberDecimals extends Integer {
   static componentType = "numberdecimals";
+  static rendererType = "integer";
 }
 
 export class NumberDigits extends Integer {
   static componentType = "numberdigits";
+  static rendererType = "integer";
 }
 
 export class ComponentTypes extends TextList {
   static componentType = "componenttypes";
+  static rendererType = "textlist";
 }
 
 export class Source extends TextComponent {
   static componentType = "source";
+  static rendererType = "text";
 }
 
 export class Description extends TextComponent {
   static componentType = "description";
+  static rendererType = "text";
 }
 
 export class SelectMultiple extends BooleanComponent {
   static componentType = "selectmultiple";
+  static rendererType = "boolean";
 }
 
 export class AssignPartialCredit extends BooleanComponent {
   static componentType = "assignpartialcredit";
+  static rendererType = "boolean";
 }
 
 export class Inline extends BooleanComponent {
   static componentType = "inline";
+  static rendererType = "boolean";
 }
 
 export class FixedOrder extends BooleanComponent {
   static componentType = "fixedorder";
+  static rendererType = "boolean";
 }
 
 export class Href extends TextComponent {
   static componentType = "href";
+  static rendererType = "text";
 }
 
 export class Youtube extends TextComponent {
   static componentType = "youtube";
+  static rendererType = "text";
 }
 
 export class SplitIntoOptions extends BooleanComponent {
   static componentType = "splitintooptions";
+  static rendererType = "boolean";
 }
 
 export class Keyword extends TextComponent {
   static componentType = "keyword";
+  static rendererType = "text";
 }
 
 export class Size extends NumberComponent {
   static componentType = "size";
+  static rendererType = "number";
 }
 
 export class Expand extends BooleanComponent {
   static componentType = "expand";
+  static rendererType = "boolean";
 }
 
 export class ExpandOnCompare extends BooleanComponent {
   static componentType = "expandOnCompare";
+  static rendererType = "boolean";
 }
 
 export class Unordered extends BooleanComponent {
   static componentType = "unordered";
+  static rendererType = "boolean";
 }
 
 export class UnorderedCompare extends BooleanComponent {
   static componentType = "unorderedCompare";
+  static rendererType = "boolean";
 }
 
 export class MatchPartial extends BooleanComponent {
   static componentType = "matchpartial";
+  static rendererType = "boolean";
 }
 
 export class SymbolicEquality extends BooleanComponent {
   static componentType = "symbolicequality";
+  static rendererType = "boolean";
 }
 
 export class createIntervals extends BooleanComponent {
   static componentType = "createintervals";
+  static rendererType = "boolean";
 }
 
 export class createVectors extends BooleanComponent {
   static componentType = "createvectors";
+  static rendererType = "boolean";
 }
 
 export class AllowedErrorInNumbers extends NumberComponent {
   static componentType = "allowederrorinnumbers";
+  static rendererType = "number";
 }
 
 export class IncludeErrorInNumberExponents extends BooleanComponent {
   static componentType = "includeerrorinnumberexponents";
+  static rendererType = "boolean";
 }
 
 export class AllowedErrorIsAbsolute extends BooleanComponent {
   static componentType = "allowederrorisabsolute";
+  static rendererType = "boolean";
 }
 
 export class NSignErrorsMatched extends Integer {
   static componentType = "nsignerrorsmatched";
+  static rendererType = "integer";
 }
 
 export class FeedbackCode extends TextComponent {
   static componentType = "feedbackcode";
+  static rendererType = "text";
 }
 
 export class FeedbackText extends TextComponent {
   static componentType = "feedbacktext";
+  static rendererType = "text";
+}
+
+export class FeedbackCodes extends TextList {
+  static componentType = "feedbackcodes";
+  static rendererType = "textlist";
 }
 
 export class TextType extends TextComponent {
   static componentType = "texttype";
+  static rendererType = "text";
 }
 
 export class BranchId extends TextComponent {
   static componentType = "branchid";
+  static rendererType = "text";
 }
 
 export class ContentId extends TextComponent {
   static componentType = "contentid";
+  static rendererType = "text";
 }
 
 export class Target extends TextComponent {
   static componentType = "target";
+  static rendererType = "text";
 }
 
 export class PluralForm extends TextComponent {
   static componentType = "pluralform";
+  static rendererType = "text";
 }
 
 export class BasedOnNumber extends NumberComponent {
   static componentType = "basedonnumber";
+  static rendererType = "number";
 }
 
 export class DisplaySmallAsZero extends BooleanComponent {
   static componentType = "displaysmallaszero";
-}
-
-export class StyleNumber extends NumberComponent {
-  static componentType = "stylenumber";
+  static rendererType = "boolean";
 }
 
 export class MaximumNumber extends NumberComponent {
   static componentType = "maximumnumber";
+  static rendererType = "number";
 }
 
 export class ShowLabel extends BooleanComponent {
   static componentType = "showlabel";
+  static rendererType = "boolean";
 }
 
 export class MergeMathLists extends BooleanComponent {
   static componentType = "mergemathlists";
+  static rendererType = "boolean";
 }
 
 export class MergeNumberLists extends BooleanComponent {
   static componentType = "mergenumberlists";
+  static rendererType = "boolean";
 }
 
 export class AttractThreshold extends NumberComponent {
   static componentType = "attractthreshold";
+  static rendererType = "number";
 }
 
 export class NPoints extends NumberComponent {
   static componentType = "npoints";
+  static rendererType = "number";
 }
 
 export class SortResults extends BooleanComponent {
   static componentType = "sortresults";
+  static rendererType = "boolean";
 }
 
 export class Slope extends MathComponent {
   static componentType = "slope";
+  static rendererType = "math";
 }
 
 export class ForceFullCheckWorkButton extends BooleanComponent {
   static componentType = "forcefullcheckworkbutton";
+  static rendererType = "boolean";
 }
 
 export class PossibleNumberOfGroups extends NumberList {
   static componentType = "PossibleNumberOfGroups";
+  static rendererType = "numberlist";
 }

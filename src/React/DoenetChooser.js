@@ -616,6 +616,7 @@ class DoenetChooser extends Component {
     axios.get(loadUserFoldersAndRepoUrl,payload)
     .then(resp=>{
       this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
+      
       this.folderIds = resp.data.folderIds;
       this.folders_loaded = true;
       callback();
@@ -1138,6 +1139,8 @@ class DoenetChooser extends Component {
         />
       </React.Fragment>
     }
+
+   
 
     return (<React.Fragment>
       <DoenetHeader toolTitle="Chooser" headingTitle={"Choose Branches"} />
