@@ -18,6 +18,10 @@
   box-shadow: 0 2px 6px 0 rgba(0,0,0,.28);
   z-index: 5;
 }
+.select {
+  background-color: #6de5ff;
+  border-color: #6de5ff;
+}
 
 .toolTitle{
   width: 300px;
