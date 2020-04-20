@@ -43,4 +43,4 @@ src/tempcodes
 
 # Docker testing environment
 docker\ deb/
-# docker\ alp/
+docker\ alp/
