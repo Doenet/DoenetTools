@@ -1167,8 +1167,8 @@ class DoenetChooser extends Component {
              </div>
     }
 
-    return <DoenetCourseOutline treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
-      updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
+    // return <DoenetCourseOutline treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
+    //   updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
 
     this.buildCourseList();
     this.buildLeftNavPanel();
