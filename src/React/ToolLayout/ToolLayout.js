@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import DoenetHeader from '../DoenetHeader';
+import DoenetHeader from "../DoenetHeader";
 
 import {
   faChevronLeft,
@@ -15,23 +15,22 @@ const Container = styled.div`
   position: fixed;
   height: 100vh;
   margin-top: 60px;
-  overflow: hidden;
 `;
 
-export default function ToolLayout(props) {
-  const widthToDevice = () => {
-    let w = document.documentElement.clientWidth;
-    if (w >= 768) {
-      return "computer";
-    }
-    // if (w < 1024 && w >= 768) {
-    //   return "tablet";
-    // }
-    return "phone";
-  };
+const widthToDevice = () => {
+  let w = document.documentElement.clientWidth;
+  if (w >= 768) {
+    return "computer";
+  }
+  return "phone";
+};
 
+export default function ToolLayout(props) {
   var w = window.innerWidth;
-  const leftW = 200;
+  let leftW;
+  if(props.children && Array.isArray(props.children)) {
+    leftW = 200;
+  }
   const rightW = 300;
   const resizerW = 6;
 
@@ -43,7 +42,6 @@ export default function ToolLayout(props) {
 
   const [leftWidth, setLeftWidth] = useState(leftW);
   const [rightWidth, setRightWidth] = useState(rightW);
-  const [middleWidth, setMiddleWidth] = useState(middleW);
   const [isResizing, setIsResizing] = useState(false);
   const [currentResizer, setCurrentResizer] = useState("");
   const [firstPanelHidden, setFirstPanelHidden] = useState(false);
@@ -52,6 +50,7 @@ export default function ToolLayout(props) {
   const [leftOpenBtn, setLeftOpenBtn] = useState(false);
   const [rightOpenBtn, setRightOpenBtn] = useState(false);
   const [phoneVisiblePanel, setPhoneVisiblePanel] = useState("middle");
+  const [middleWidth, setMiddleWidth] = useState(middleW);
   const container = useRef();
   const [deviceType, setDeviceType] = useState(widthToDevice());
 
@@ -59,51 +58,28 @@ export default function ToolLayout(props) {
     window.addEventListener("resize", windowResizeHandler);
     setLeftCloseBtn(true);
     setRightCloseBtn(true);
-
-    if (deviceType === "computer") {
+    if (deviceType === "computer" || deviceType ==="tablet") {
       window.addEventListener("resize", handleWindowResize);
       window.addEventListener("mouseup", stopResize);
-      container &&
-        container.current &&
-        container.current.addEventListener("mousedown", startResize);
-      container &&
-        container.current &&
-        container.current.addEventListener("mousemove", resizingResizer);
-      return () => {
-        window.removeEventListener("resize", handleWindowResize);
-        window.removeEventListener("mouseup", stopResize);
-        container &&
-          container.current &&
-          container.current.removeEventListener("mousedown", startResize);
-        container &&
-          container.current &&
-          container.current.removeEventListener("mousemove", resizingResizer);
-      };
-    } else if (deviceType === "tablet") {
-      window.addEventListener("resize", handleWindowResize);
       window.addEventListener("touchend", stopResize);
-      container &&
-        container.current &&
-        container.current.addEventListener("touchstart", startResize);
-      container &&
-        container.current &&
-        container.current.addEventListener("touchmove", resizingResizer);
+      container && container.current && container.current.addEventListener("touchstart", startResize);
+      container && container.current && container.current.addEventListener("touchmove", resizingResizer);
+      container && container.current && container.current.addEventListener("mousedown", startResize);
+      container && container.current && container.current.addEventListener("mousemove", resizingResizer);
       return () => {
         window.removeEventListener("resize", handleWindowResize);
-
         window.removeEventListener("touchend", stopResize);
-        container &&
-          container.current &&
-          container.current.removeEventListener("touchstart", startResize);
-        container &&
-          container.current &&
-          container.current.removeEventListener("touchmove", resizingResizer);
+        window.removeEventListener("mouseup", stopResize);
+        container && container.current && container.current.removeEventListener("touchstart", startResize);
+        container && container.current && container.current.removeEventListener("touchmove", resizingResizer);
+        container && container.current && container.current.removeEventListener("mousedown", startResize);
+        container && container.current && container.current.removeEventListener("mousemove", resizingResizer);
       };
     } else if (deviceType === "phone") {
-      setLeftCloseBtn(false);
-      setLeftOpenBtn(false);
-      setRightCloseBtn(false);
-      setRightOpenBtn(false);
+        setLeftCloseBtn(false);
+        setLeftOpenBtn(false);
+        setRightCloseBtn(false);
+        setRightOpenBtn(false);
     }
     return () => {
       window.removeEventListener("resize", windowResizeHandler);
@@ -152,7 +128,6 @@ export default function ToolLayout(props) {
       } else {
         event = e;
       }
-
       if (currentResizer === "first") {
         let leftW = event.clientX - resizerW / 2;
         let rightW = rightWidth;
@@ -173,7 +148,6 @@ export default function ToolLayout(props) {
         } else if (firstPanelHidden) {
           setFirstPanelHidden(false);
         }
-
         let middleW = w - leftW - rightWidth - resizerW - resizerW;
         if (middleW < 100) {
           middleW = 100;
@@ -182,29 +156,27 @@ export default function ToolLayout(props) {
         if (props.children.length === 2) {
           middleW = w - leftW - resizerW;
         }
-
         setLeftWidth(leftW);
         setMiddleWidth(middleW);
         setRightWidth(rightW);
       } else if (currentResizer === "second") {
-        let middleW = event.clientX - leftWidth - resizerW;
-        let rightW = w - leftWidth - resizerW - middleW - resizerW;
-        if (rightW < 40) {
-          rightW = 0;
-          setRightOpenBtn(true);
-          middleW = w - leftWidth - resizerW - resizerW - rightW;
-          e.target.style.cursor = "w-resize";
+          let middleW = event.clientX - leftWidth - resizerW;
+          let rightW = w - leftWidth - resizerW - middleW - resizerW;
+          if (rightW < 40) {
+            rightW = 0;
+            setRightOpenBtn(true);
+            middleW = w - leftWidth - resizerW - resizerW - rightW;
+            e.target.style.cursor = "w-resize";
         } else if (rightW < 100) {
-          rightW = 100;
-          setRightOpenBtn(false);
-
-          middleW = w - leftWidth - resizerW - resizerW - rightW;
-          e.target.style.cursor = "col-resize";
+            rightW = 100;
+            setRightOpenBtn(false);
+            middleW = w - leftWidth - resizerW - resizerW - rightW;
+            e.target.style.cursor = "col-resize";
         } else if (middleW < 100) {
-          middleW = 100;
-          rightW = w - leftWidth - resizerW - resizerW - middleW;
+            middleW = 100;
+            rightW = w - leftWidth - resizerW - resizerW - middleW;
         } else {
-          e.target.style.cursor = "col-resize";
+            e.target.style.cursor = "col-resize";
         }
         setRightWidth(rightW);
         setMiddleWidth(middleW);
@@ -213,8 +185,6 @@ export default function ToolLayout(props) {
   };
 
   let allParts = [];
-
-  //Pass properties to children
 
   let Left = styled.div`
     width: ${deviceType !== "phone" && leftWidth}px;
@@ -228,7 +198,7 @@ export default function ToolLayout(props) {
     width: ${deviceType !== "phone" && middleWidth}px;
     min-height: 1vh;
     position: relative;
-    display: flex;
+    display: ${middleWidth === 0 ? "none" : "flex"};
     flex-direction: column;
   `;
 
@@ -241,34 +211,20 @@ export default function ToolLayout(props) {
   `;
 
   let ResizerFirst = styled.div`
-    // width: 5px;
-    // border-right: 1px solid black;
-    width:6px;
-    background:lightgrey;
+    width: 5px;
+    border-right: 1px solid black;
     position: relative;
     cursor: col-resize;
     flex-shrink: 0;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
   `;
 
   let ResizerSecond = styled.div`
-    // width: 5px;
-    // border-left: 1px solid black;
-    width:6px;
-    background:lightgrey;
+    width: 5px;
+    border-left: 1px solid black;
     position: relative;
     cursor: col-resize;
     flex-shrink: 0;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
   `;
-
-
 
   const leftPanelHideable = () => {
     setLeftCloseBtn(false);
@@ -282,46 +238,43 @@ export default function ToolLayout(props) {
     if (props.children.length === 2) {
       middleW = w - leftW - resizerW;
     }
-
     setLeftWidth(leftW);
     setMiddleWidth(middleW);
     setRightWidth(rightW);
   };
 
-  const rightPanelHideable = e => {
+  const rightPanelHideable = () => {
     setRightCloseBtn(false);
     setRightOpenBtn(true);
     let rightW = rightWidth;
     if (rightW > 0) {
       rightW = 0;
     }
-
     let leftW = leftWidth;
     let middleW = w - resizerW - resizerW - rightW - leftWidth;
     setLeftWidth(leftW);
     setMiddleWidth(middleW);
     setRightWidth(rightW);
   };
-  const leftPanelVisible = e => {
+
+  const leftPanelVisible = () => {
     setLeftCloseBtn(true);
     setLeftOpenBtn(false);
     let leftW = leftWidth;
     if (leftW === 0) {
       leftW = 100;
     }
-
     let rightW = rightWidth;
     let middleW = w - resizerW - resizerW - leftW - rightWidth;
     if (props.children.length === 2) {
       middleW = w - leftW - resizerW;
     }
-
     setLeftWidth(leftW);
     setMiddleWidth(middleW);
     setRightWidth(rightW);
   };
 
-  const rightPanelVisible = e => {
+  const rightPanelVisible = () => {
     setRightCloseBtn(true);
     setRightOpenBtn(false);
     let rightW = rightWidth;
@@ -333,7 +286,6 @@ export default function ToolLayout(props) {
     if (props.children.length === 2) {
       middleW = w - leftW - resizerW;
     }
-
     setLeftWidth(leftW);
     setMiddleWidth(middleW);
     setRightWidth(rightW);
@@ -342,7 +294,7 @@ export default function ToolLayout(props) {
   const renderMiddleMenu = () => {
     return (
       <>
-        {leftOpenBtn && (
+        { leftOpenBtn && (
           <FontAwesomeIcon
             icon={faChevronRight}
             style={{
@@ -355,7 +307,7 @@ export default function ToolLayout(props) {
             onClick={leftPanelVisible}
           />
         )}
-        {rightOpenBtn && (
+        { rightOpenBtn && (
           <FontAwesomeIcon
             icon={faChevronLeft}
             style={{
@@ -375,7 +327,7 @@ export default function ToolLayout(props) {
   const renderLeftMenu = () => {
     return (
       <>
-        {leftCloseBtn && (
+        { leftCloseBtn && (
           <FontAwesomeIcon
             style={{
               position: "absolute",
@@ -395,7 +347,7 @@ export default function ToolLayout(props) {
   let renderRightMenu = () => {
     return (
       <>
-        {rightCloseBtn && (
+        { rightCloseBtn && (
           <FontAwesomeIcon
             style={{
               position: "absolute",
@@ -411,12 +363,9 @@ export default function ToolLayout(props) {
     );
   };
 
-  let leftNavContent =
-    props.children && Array.isArray(props.children)
-      ? props.children[0]
-      : props.children;
+  let leftNavContent = props.children && Array.isArray(props.children) ? props.children[0] : props.children;
   let leftNav = React.cloneElement(leftNavContent, {
-    leftMenu: renderLeftMenu()
+    leftMenu: props.children[0] && renderLeftMenu()
   });
 
   allParts.push(
@@ -429,8 +378,9 @@ export default function ToolLayout(props) {
     allParts.push(<ResizerFirst key="resizer1" id="first" />);
   }
 
-  if (props.children[1]) {
-    let middleNav = React.cloneElement(props.children[1], {
+  let middleNav 
+  if(props.children[1]) {
+      middleNav = React.cloneElement(props.children[1], {
       middleMenu: renderMiddleMenu()
     });
     allParts.push(
@@ -444,8 +394,9 @@ export default function ToolLayout(props) {
     allParts.push(<ResizerSecond key="resizer2" id="second" />);
   }
 
+  let rightNav
   if (props.children[2]) {
-    let rightNav = React.cloneElement(props.children[2], {
+      rightNav = React.cloneElement(props.children[2], {
       rightMenu: renderRightMenu()
     });
     allParts.push(
@@ -453,65 +404,57 @@ export default function ToolLayout(props) {
         {rightNav}
       </Right>
     );
-  }
-  const PhoneViewContainer = styled.div`
-    display: block;
-  `;
+    }
 
   const PhoneContainer = styled.div`
-    display: flex;
+    display : flex;
     width: 100%;
-    bottom: 1px;
+    bottom: 0.1px;
     height: 40px;
     position: fixed;
     left: 0px;
     text-align: center;
   `;
+  
   const PhoneButton = styled.button`
     color: white;
     background-color: black;
     width: 100%;
+
   `;
 
-  
-  let phoneLeftNav = allParts.filter(
-    allParts => allParts.props.id === "leftpanel"
-  );
-  let phoneMiddleNav = allParts.filter(
-    allParts => allParts.props.id === "middlepanel"
-  );
-  let phoneRightNav = allParts.filter(
-    allParts => allParts.props.id === "rightpanel"
-  );
-
-  if (deviceType === "phone") {
-    return (
+  return (
       <>
-        <DoenetHeader/>
-        <PhoneViewContainer ref={container}>
-          <div style={{ position: "fixed", top: "120px" }}>
-            <div style={{ height: "90vh", display: "flex" }}>
-              {(phoneVisiblePanel === "left" || allParts.length === 1) && phoneLeftNav}
-              {phoneVisiblePanel === "middle" && phoneMiddleNav}
-              {phoneVisiblePanel === "right" && allParts.length > 2 && phoneRightNav}
-            </div>
-            {allParts.length > 1 && (
-              <PhoneContainer>
-                <PhoneButton onClick={() => setPhoneVisiblePanel("left")}>{phoneLeftNav[0].props.children.props.panelName}</PhoneButton>
-                {phoneMiddleNav.length > 0 && <PhoneButton onClick={() => setPhoneVisiblePanel("middle")}>{phoneMiddleNav[0].props.children.props.panelName}</PhoneButton> }
-                {phoneRightNav.length > 0 && <PhoneButton onClick={() => setPhoneVisiblePanel("right")}> {phoneRightNav[0].props.children.props.panelName} </PhoneButton>}
-              </PhoneContainer>
-            )}
+        <DoenetHeader  />
+        { deviceType === "phone" ? <div ref={ container }>
+        <div style={{ position: "fixed", top: "120px" }}>
+          <div style={{ height: "90vh", display: "flex" }}>
+          { (phoneVisiblePanel === "left" || allParts.length === 1) && <Left key="part1" id="leftpanel"> { leftNav } </Left> }
+          { phoneVisiblePanel === "middle" && <Middle key="part2" id="middlepanel">{ middleNav } </Middle> }
+          { phoneVisiblePanel === "right" && allParts.length > 2 &&  <Right key="part3" id="rightpanel">{ rightNav } </Right> }
           </div>
-        </PhoneViewContainer>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <DoenetHeader/>
-        <Container ref={container}>{allParts}</Container>
-      </>
-    );
-  }
+          { leftNav && (
+            <PhoneContainer>
+              <PhoneButton onClick={() => setPhoneVisiblePanel("left")}>
+                { leftNav.props.panelName }
+              </PhoneButton>
+              { middleNav && (
+                <PhoneButton onClick={() => setPhoneVisiblePanel("middle")}>
+                     { middleNav.props.panelName }
+                </PhoneButton>
+              )}
+              { rightNav && (
+                <PhoneButton onClick={() => setPhoneVisiblePanel("right")}>
+                   { rightNav.props.panelName }
+                </PhoneButton>
+              )}
+            </PhoneContainer>
+          )}
+        </div>
+      </div>
+      :
+      <Container ref={ container }>{ allParts }</Container>
+    }
+    </>
+  );
 }

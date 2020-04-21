@@ -1,6 +1,6 @@
 .headingContainerWrapper {
   height: 100%;
-  margin-bottom: 100px;
+  /* margin-bottom: 100px; */
 }
 
 .headingContainer{
@@ -265,7 +265,7 @@
 @media only screen and (max-width: 600px) {
   .headingContainerWrapper {
     height: 100%;
-    margin-bottom: 130px;
+    /* margin-bottom: 130px; */
   }
 
   .headingContainer{

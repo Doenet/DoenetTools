@@ -19,6 +19,8 @@ module.exports = {
     "page/index.js": "./src/page/index.js",
     "profile/index.js": "./src/profile/index.js",
     "viewer/index.js": "./src/viewer/index.js",
+    "exampletool/index.js": "./src/exampletool/index.js",
+
   },
 
   output: {

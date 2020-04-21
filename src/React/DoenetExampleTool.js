@@ -14,7 +14,7 @@ const Button = styled.button`
 
 const alphabet =
   "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z ";
-export default class ExampleTool extends Component {
+export default class DoenetExampleTool extends Component {
   render() {
     const menuControls = [<Button>Search</Button>];
     const menuControls2 = [<Button>Edit</Button>];
@@ -45,9 +45,9 @@ export default class ExampleTool extends Component {
             {alphabet}
           </ToolLayoutPanel>
 
-          <ToolLayoutPanel menuControls={menuControls3} panelName="Viewer">
+          {/* <ToolLayoutPanel menuControls={menuControls3} panelName="Viewer">
             {alphabet} {alphabet} {alphabet} {alphabet}
-          </ToolLayoutPanel>
+          </ToolLayoutPanel> */}
         </ToolLayout>
       </>
     );
