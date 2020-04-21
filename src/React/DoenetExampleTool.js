@@ -45,9 +45,9 @@ export default class DoenetExampleTool extends Component {
             {alphabet}
           </ToolLayoutPanel>
 
-          <ToolLayoutPanel menuControls={menuControlsViewer} panelName="Viewer">
+          {/* <ToolLayoutPanel menuControls={menuControlsViewer} panelName="Viewer">
             {alphabet} {alphabet} {alphabet} {alphabet}
-          </ToolLayoutPanel> 
+          </ToolLayoutPanel>  */}
         </ToolLayout>
       </>
     );

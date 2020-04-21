@@ -55,11 +55,15 @@ export default function ToolLayout(props) {
   const [deviceType, setDeviceType] = useState(widthToDevice());
 
   useEffect(() => {
+    document.addEventListener("fullscreenchange", function() {
+      console.log("fullscreenchange event fired!");
+    }); 
     window.addEventListener("resize", windowResizeHandler);
     setLeftCloseBtn(true);
     setRightCloseBtn(true);
+   
     if (deviceType === "computer") {
-      window.addEventListener("resize", handleWindowResize);
+      // window.addEventListener("resize", handleWindowResize);
       window.addEventListener("mouseup", stopResize);
       window.addEventListener("touchend", stopResize);
       container && container.current && container.current.addEventListener("touchstart", startResize);
@@ -67,7 +71,7 @@ export default function ToolLayout(props) {
       container && container.current && container.current.addEventListener("mousedown", startResize);
       container && container.current && container.current.addEventListener("mousemove", resizingResizer);
       return () => {
-        window.removeEventListener("resize", handleWindowResize);
+        // window.removeEventListener("resize", handleWindowResize);
         window.removeEventListener("touchend", stopResize);
         window.removeEventListener("mouseup", stopResize);
         container && container.current && container.current.removeEventListener("touchstart", startResize);
@@ -83,6 +87,7 @@ export default function ToolLayout(props) {
     }
     return () => {
       window.removeEventListener("resize", windowResizeHandler);
+      
     };
   });
 
@@ -91,23 +96,24 @@ export default function ToolLayout(props) {
     if (deviceType !== deviceWidth) {
       setDeviceType(deviceWidth);
     }
+    let w = window.innerWidth;
+
+   
+   let middleW =
+    w - leftWidth - rightWidth - resizerW - resizerW;
+  let rightW = rightWidth;
+  let leftW = leftWidth;
+  if (props.children.length === 2) {
+    middleW = w - leftW - resizerW;
+  }
+  setMiddleWidth(middleW);
+  setRightWidth(rightW);
+  setLeftWidth(leftW);
+    
+  
   };
 
-  const handleWindowResize = () => {
-    let middleW =
-      window.innerWidth - leftWidth - rightWidth - resizerW - resizerW;
-    let rightW = rightWidth;
-    let leftW = leftWidth;
-
-    if (props.children.length === 2) {
-      middleW = w - leftW - resizerW;
-    }
-    setMiddleWidth(middleW);
-    setRightWidth(rightW);
-    setLeftWidth(leftW);
-  };
-
-  const startResize = event => {
+ const startResize = event => {
     if (event.target.id === "first" || event.target.id === "second") {
       setCurrentResizer(event.target.id);
       setIsResizing(true);
