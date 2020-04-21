@@ -20,6 +20,8 @@ module.exports = {
     "profile/index.js": "./src/profile/index.js",
     "test/index.js": "./src/test/index.js",
     "viewer/index.js": "./src/viewer/index.js",
+    "exampletool/index.js": "./src/exampletool/index.js",
+
   },
 
   output: {
@@ -152,6 +154,14 @@ module.exports = {
       filename: "./viewer/index.html"
       // favicon: "",
     }),
+    //exampletool
+    new HtmlWebPackPlugin({
+      chunks: ["exampletool/index.js"],
+      template: "./src/exampletool/index.html",
+      filename: "./exampletool/index.html"
+      // favicon: "",
+    }),
+    
     new MiniCssExtractPlugin({
       filename: "[name].css",
       // filename: "main.css",

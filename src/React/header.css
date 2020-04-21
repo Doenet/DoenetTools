@@ -1,6 +1,6 @@
 .headingContainerWrapper {
   height: 100%;
-  margin-bottom: 100px;
+  /* margin-bottom: 100px; */
 }
 
 .headingContainer{
@@ -219,10 +219,13 @@
   text-decoration: none;
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 767px) {
 
   .toolTitle {
-    width: 270px;
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 0px;
   }
 
   .toolTitle span {
@@ -230,12 +233,20 @@
   }
 
   .headingToolbar {
-    width: 300px;
-    margin-left: 3px;
+    display:flex;
+    justify-content: space-between;
+    /* padding: 0 20px; */
+    padding: 0px 40px 0px 40px;
+    margin: 0 auto;
+    text-align: center;
   }
 
   .headingTitle {
-    max-width: 300px;
+    display: block;
+    width: 100%;
+    max-width: none;
+    margin: 0 auto;
+    text-align: center;
   }
 
   .headingTitle span {
@@ -256,16 +267,16 @@
   }
 
   .toolbox {
-    width: 180px;
+    width: 160px;
     top: 40px;
-    right: -60px;
+    right: -55px;
   }
-}
 
-@media only screen and (max-width: 600px) {
   .headingContainerWrapper {
     height: 100%;
-    margin-bottom: 130px;
+    position: fixed;
+    width:100%;
+    /* margin-bottom: 130px; */
   }
 
   .headingContainer{
@@ -273,35 +284,11 @@
     flex-direction: column;
     justify-content: space-around;
     height: 120px;
-  }
-
-  .toolTitle {
-    display: block;
-    width: 100%;
-    text-align: center;
     padding: 0px;
   }
 
-  .headingTitle {
-    display: block;
-    width: 100%;
-    max-width: none;
-    margin: 0 auto;
-    text-align: center;
-  }
+  
 
-  .headingToolbar {
-    justify-content: space-between;
-    padding: 0 20px;
-    margin: 0 auto;
-    text-align: center;
-  }
-
-  .toolbox {
-    width: 160px;
-    top: 40px;
-    right: -55px;
-  }
 }
 
 @media only screen and (max-width: 320px) {
