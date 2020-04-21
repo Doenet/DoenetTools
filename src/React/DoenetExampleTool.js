@@ -17,22 +17,22 @@ const alphabet =
 export default class DoenetExampleTool extends Component {
   render() {
     const menuControls = [<Button>Search</Button>];
-    const menuControls2 = [<Button>Edit</Button>];
-    const menuControls3 = [<Button>Update</Button>];
+    const menuControlsEditor = [<Button>Edit</Button>];
+    const menuControlsViewer = [<Button>Update</Button>];
 
     return (
       <>
         <ToolLayout>
 
        <ToolLayoutPanel
-            menuControls={menuControls}
+            // menuControls={menuControls}
             panelName="context"
           >
             {alphabet} {alphabet} {alphabet} {alphabet}
           </ToolLayoutPanel> 
 
-          <ToolLayoutPanel
-            // menuControls={menuControls2}
+       <ToolLayoutPanel
+            menuControls={menuControlsEditor}
             panelName="Editor">
 
             {alphabet} {alphabet} {alphabet} {alphabet} {alphabet} {alphabet}
@@ -45,9 +45,9 @@ export default class DoenetExampleTool extends Component {
             {alphabet}
           </ToolLayoutPanel>
 
-          {/* <ToolLayoutPanel menuControls={menuControls3} panelName="Viewer">
+          <ToolLayoutPanel menuControls={menuControlsViewer} panelName="Viewer">
             {alphabet} {alphabet} {alphabet} {alphabet}
-          </ToolLayoutPanel> */}
+          </ToolLayoutPanel> 
         </ToolLayout>
       </>
     );

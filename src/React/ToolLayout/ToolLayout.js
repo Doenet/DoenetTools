@@ -58,7 +58,7 @@ export default function ToolLayout(props) {
     window.addEventListener("resize", windowResizeHandler);
     setLeftCloseBtn(true);
     setRightCloseBtn(true);
-    if (deviceType === "computer" || deviceType ==="tablet") {
+    if (deviceType === "computer") {
       window.addEventListener("resize", handleWindowResize);
       window.addEventListener("mouseup", stopResize);
       window.addEventListener("touchend", stopResize);
@@ -425,7 +425,7 @@ export default function ToolLayout(props) {
 
   return (
       <>
-        <DoenetHeader  />
+        <DoenetHeader  toolTitle="Example"/>
         { deviceType === "phone" ? <div ref={ container }>
         <div style={{ position: "fixed", top: "120px" }}>
           <div style={{ height: "90vh", display: "flex" }}>
@@ -433,16 +433,18 @@ export default function ToolLayout(props) {
           { phoneVisiblePanel === "middle" && <Middle key="part2" id="middlepanel">{ middleNav } </Middle> }
           { phoneVisiblePanel === "right" && allParts.length > 2 &&  <Right key="part3" id="rightpanel">{ rightNav } </Right> }
           </div>
-          { leftNav && (
-            <PhoneContainer>
+          <PhoneContainer>
+          { leftNav && middleNav && (
+            <>
               <PhoneButton onClick={() => setPhoneVisiblePanel("left")}>
                 { leftNav.props.panelName }
               </PhoneButton>
-              { middleNav && (
                 <PhoneButton onClick={() => setPhoneVisiblePanel("middle")}>
                      { middleNav.props.panelName }
                 </PhoneButton>
-              )}
+                </>
+              )
+            }
               { rightNav && (
                 <PhoneButton onClick={() => setPhoneVisiblePanel("right")}>
                    { rightNav.props.panelName }
