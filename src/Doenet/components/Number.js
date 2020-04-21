@@ -4,15 +4,19 @@ import me from 'math-expressions';
 export default class NumberComponent extends InlineComponent {
   static componentType = "number";
 
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static get stateVariablesShadowedForReference() { return ["value"] };
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.displayDigits = { default: 10 };
     properties.displaySmallAsZero = { default: false };
-    properties.renderMode = { default: "text" };
+    properties.renderAsMath = { default: false, forRenderer: true };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let atMostOneString = childLogic.newLeaf({
@@ -38,7 +42,7 @@ export default class NumberComponent extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.value = {
       public: true,
@@ -76,6 +80,24 @@ export default class NumberComponent extends InlineComponent {
         } else {
           return { newValues: { value: dependencyValues.numberChild[0].stateValues.value } }
         }
+      },
+      set: function (value) {
+        // this function is called when
+        // - definition is overridden by a ref prop
+        // - when processing new state variable values
+        //   (which could be from outside sources)
+        let number = Number(value);
+        if (Number.isNaN(number)) {
+          try {
+            number = me.fromText(value).evaluate_to_constant();
+            if (number === null) {
+              number = NaN;
+            }
+          } catch (e) {
+            number = NaN;
+          }
+        }
+        return number;
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues, overrideFixed }) {
 
@@ -124,6 +146,7 @@ export default class NumberComponent extends InlineComponent {
     }
 
     stateVariableDefinitions.valueForDisplay = {
+      forRenderer: true,
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -237,14 +260,9 @@ export default class NumberComponent extends InlineComponent {
   }
 
 
-  useChildrenForReference = false;
-
-  get stateVariablesForReference() {
-    return ["value"];
-  }
 
   returnSerializeInstructions() {
-    let stringMatches =  this.childLogic.returnMatches("atMostOneString");
+    let stringMatches = this.childLogic.returnMatches("atMostOneString");
     let skipChildren = stringMatches && stringMatches.length === 1;
     if (skipChildren) {
       let stateVariables = ["value"];

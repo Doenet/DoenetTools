@@ -49,7 +49,7 @@ export default class Seeds extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.seeds = {
       public: true,

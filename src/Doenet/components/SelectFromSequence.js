@@ -491,7 +491,7 @@ export default class SelectFromSequence extends Sequence {
 
 function makeSelection({ dependencyValues }) {
 
-  if (dependencyValues.essentialSelectedValues !== undefined) {
+  if (dependencyValues.essentialSelectedValues !== null) {
     return {
       makeEssential: ["selectedValues"],
       newValues: {

@@ -14,6 +14,7 @@ import DoenetBranchBrowser from './DoenetBranchBrowser';
 import SpinningLoader from './SpinningLoader';
 import { SortableTreeView } from './TreeView/SortableTreeView'
 import DoenetCourseOutline from './DoenetCourseOutline'
+import { ToastContext, useToasts, ToastProvider } from './ToastManager';
 
 
 class DoenetChooser extends Component {
@@ -81,8 +82,9 @@ class DoenetChooser extends Component {
     this.handleNewUrlCreated = this.handleNewUrlCreated.bind(this);
     this.updateHeadingsAndAssignments = this.updateHeadingsAndAssignments.bind(this);
     this.saveTree = this.saveTree.bind(this);
+    this.ToastWrapper = this.ToastWrapper.bind(this);
+    this.displayToast = this.displayToast.bind(this);
   }
-
 
   buildCourseList() {
     this.courseList = [];
@@ -620,6 +622,7 @@ class DoenetChooser extends Component {
     axios.get(loadUserFoldersAndRepoUrl,payload)
     .then(resp=>{
       this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
+      
       this.folderIds = resp.data.folderIds;
       this.folders_loaded = true;
       callback();
@@ -695,6 +698,8 @@ class DoenetChooser extends Component {
               [].concat(this.flattenFolder(childId).itemType));
             itemsToBeAdded.push(childId);
             typeOfItemsToBeAdded.push("folder");
+          } else {
+            this.displayToast(`Public content cannot be made private: ${this.folderInfo[childId].title}`);
           }
         } else if (childType[i] == "content") {
           // check if public
@@ -702,6 +707,8 @@ class DoenetChooser extends Component {
             this.modifyPublicState(isPublic, [childId], ["content"]);
             itemsToBeAdded.push(childId);
             typeOfItemsToBeAdded.push("content");
+          } else {
+            this.displayToast(`Public content cannot be made private: ${this.branchId_info[childId].title}`);
           }
         } else if (childType[i] == "url") {
           // check if public
@@ -709,6 +716,8 @@ class DoenetChooser extends Component {
             this.modifyPublicState(isPublic, [childId], ["url"]);
             itemsToBeAdded.push(childId);
             typeOfItemsToBeAdded.push("url");
+          } else {
+            this.displayToast(`Public content cannot be made private: ${this.folderInfo[childId].title}`);
           }
         }
       });
@@ -737,7 +746,6 @@ class DoenetChooser extends Component {
       childIds.forEach(childId => {
           itemIds = itemIds.concat(this.flattenFolder(childId).itemIds);
       });
-      console.log(itemIds);
       
       this.modifyFolderChildrenRoot(this.folderInfo[folderId].rootId, itemIds, () => {
         this.loadUserFoldersAndRepo();
@@ -757,6 +765,7 @@ class DoenetChooser extends Component {
     // modify public/private state if parent is repo
     if (isRepo) {
       if (isPublic) {
+        this.displayToast(`Public content cannot be made private`);
         return; // public -> private not allowed
       } 
       // private -> private redundant, continue with removing    
@@ -893,6 +902,7 @@ class DoenetChooser extends Component {
       num++;
       title = "New Folder " + num; 
     }
+    this.displayToast("New folder created.");
     this.addNewFolder(title);
   }
 
@@ -1158,6 +1168,16 @@ class DoenetChooser extends Component {
     })
     .catch(error=>{this.setState({error:error})});
   }
+ 
+  ToastWrapper() {
+    const { add } = useToasts();
+    this.addToast = add;
+    return <React.Fragment></React.Fragment>
+  }
+
+  displayToast(message) {
+    this.addToast(message);
+  }
 
   render(){
 
@@ -1239,13 +1259,18 @@ class DoenetChooser extends Component {
       </React.Fragment>
     }
 
+   
+
     return (<React.Fragment>
       <DoenetHeader toolTitle="Chooser" headingTitle={"Choose Branches"} />
-      <div id="chooserContainer">
-        { this.leftNavPanel }
-        { this.topToolbar }
-        { this.mainSection }     
-      </div>
+      <ToastProvider>
+        <div id="chooserContainer">
+          <this.ToastWrapper/>
+          { this.leftNavPanel }
+          { this.topToolbar }
+          { this.mainSection }     
+        </div>
+      </ToastProvider>
     </React.Fragment>);
   }
 }

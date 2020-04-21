@@ -2,18 +2,27 @@ import MathComponent from './Math';
 
 export default class Equation extends MathComponent {
   static componentType = "equation";
+  static rendererType = "math";
 
-  updateState(args={}) {
-    super.updateState(args);
+  static returnStateVariableDefinitions() {
 
-    if(!this.childLogicSatisfied || this.unresolvedState.value) {
-      return;
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let originalValueDef = stateVariableDefinitions.value.definition;
+
+    stateVariableDefinitions.value.definition = function ({ dependencyValues }) {
+      let value = originalValueDef({ dependencyValues }).newValues.value;
+
+      let tree = value.tree;
+      if (!Array.isArray(tree) || tree[0] !== "=" || tree.length !== 3) {
+        console.warn("Invalid format for equation");
+      }
+
+      return { newValues: { value } }
+
     }
 
-    let tree = this.state.value.tree;
-    if(!Array.isArray(tree) || tree[0] !== "=" || tree.length !== 3) {
-      throw Error("Invalid format for equation");
-    }
+    return stateVariableDefinitions;
 
   }
 

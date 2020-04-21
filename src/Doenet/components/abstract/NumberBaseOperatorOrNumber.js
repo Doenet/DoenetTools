@@ -3,6 +3,7 @@ import me from 'math-expressions';
 
 export default class NumberBaseOperatorOrNumber extends NumberComponent {
   static componentType = "_numberbaseoperatorornumber";
+  static rendererType = "number";
 
   static modifySharedParameters({ sharedParameters, serializedComponent }) {
 

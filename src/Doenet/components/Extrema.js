@@ -1,34 +1,37 @@
 import BaseComponent from './abstract/BaseComponent';
-import {breakEmbeddedStringByCommas, breakIntoVectorComponents,
-  breakPiecesByEquals} from './commonsugar/breakstrings';
+import {
+  breakEmbeddedStringByCommas, breakIntoVectorComponents,
+  breakPiecesByEquals
+} from './commonsugar/breakstrings';
 
 export class Extremum extends BaseComponent {
   static componentType = "extremum";
+  static rendererType = undefined;
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let getVarName = function(piece) {
-      if(piece.length > 1) {
+    let getVarName = function (piece) {
+      if (piece.length > 1) {
         return;
       }
       let varName = piece[0]._string;
-      if(varName !== undefined) {
+      if (varName !== undefined) {
         return varName.trim();
       }
     }
 
-    let createLocationValueFromSugar = function({activeChildrenMatched}) {
+    let createLocationValueFromSugar = function ({ dependencyValues }) {
 
       let results = breakEmbeddedStringByCommas({
-        childrenList: activeChildrenMatched,
+        childrenList: dependencyValues.stringsAndMaths,
         classesToExtract: [
-          this.allComponentClasses.variables,
+          args.allComponentClasses.variables,
         ],
       });
 
-      if(results.success !== true) {
-        return {success: false}
+      if (results.success !== true) {
+        return { success: false }
       }
 
       let pieces = results.pieces;
@@ -38,8 +41,8 @@ export class Extremum extends BaseComponent {
 
       results = breakPiecesByEquals(pieces, true);
 
-      if(results.success !== true) {
-        return {success: false}
+      if (results.success !== true) {
+        return { success: false }
       }
 
       toDelete = [...toDelete, ...results.toDelete];
@@ -48,26 +51,26 @@ export class Extremum extends BaseComponent {
       let rhsByPiece = results.rhsByPiece;
 
 
-      let initialDefaultVars = ["x","y","z"];
+      let initialDefaultVars = ["x", "y", "z"];
       let variableNames = [];
       let newChildren = [];
 
       let nVariablesInChild = 0;
-      let nVariablesNeeded = Math.max(lhsByPiece.length,2);
-      if(variablesChild !== undefined) {
+      let nVariablesNeeded = Math.max(lhsByPiece.length, 2);
+      if (variablesChild !== undefined) {
         nVariablesInChild = variablesChild._component.state.ncomponents;
         newChildren.push(variablesChild);
       }
-      for(let i=0; i < Math.min(nVariablesInChild, nVariablesNeeded); i++) {
+      for (let i = 0; i < Math.min(nVariablesInChild, nVariablesNeeded); i++) {
         variableNames.push(variablesChild._component.state.variables[i].tree);
       }
-      for(let i=nVariablesInChild; i < nVariablesNeeded; i++) {
+      for (let i = nVariablesInChild; i < nVariablesNeeded; i++) {
         // if have more pieces that variables
         // make the variable be x, y, z, x4, x5, x6...
-        if(i < 3) {
+        if (i < 3) {
           variableNames.push(initialDefaultVars[i]);
-        }else {
-          variableNames.push("x" + (i+1));
+        } else {
+          variableNames.push("x" + (i + 1));
         }
       }
 
@@ -88,93 +91,93 @@ export class Extremum extends BaseComponent {
       let locationChildren = [];
       let valueChildren = [];
 
-      if(lhsByPiece.length === 1) {
-        if(rhsByPiece.length === 0) {
+      if (lhsByPiece.length === 1) {
+        if (rhsByPiece.length === 0) {
           let vectorResult = breakIntoVectorComponents(lhsByPiece[0]);
-          if(vectorResult.foundVector === true && vectorResult.vectorComponents.length === 2) {
+          if (vectorResult.foundVector === true && vectorResult.vectorComponents.length === 2) {
             locationChildren = vectorResult.vectorComponents[0];
             valueChildren = vectorResult.vectorComponents[1];
             toDelete = [...toDelete, ...vectorResult.toDelete];
-          }else {
+          } else {
             valueChildren = lhsByPiece[0];
           }
-        }else if(rhsByPiece.length !== 1) {
-          return {success: false}
-        }else {
-          if(getVarName(lhsByPiece[0]) === variableNames[1]) {
-            valueChildren =rhsByPiece[0];
-          }else if(getVarName(rhsByPiece[0]) === variableNames[1]) {
-            valueChildren =lhsByPiece[0];
-          }else if(getVarName(lhsByPiece[0]) === variableNames[0]) {
-            locationChildren =rhsByPiece[0];
-          }else if(getVarName(rhsByPiece[0]) === variableNames[0]) {
-            locationChildren =lhsByPiece[0];
-          }else {
-            return {success: false};
+        } else if (rhsByPiece.length !== 1) {
+          return { success: false }
+        } else {
+          if (getVarName(lhsByPiece[0]) === variableNames[1]) {
+            valueChildren = rhsByPiece[0];
+          } else if (getVarName(rhsByPiece[0]) === variableNames[1]) {
+            valueChildren = lhsByPiece[0];
+          } else if (getVarName(lhsByPiece[0]) === variableNames[0]) {
+            locationChildren = rhsByPiece[0];
+          } else if (getVarName(rhsByPiece[0]) === variableNames[0]) {
+            locationChildren = lhsByPiece[0];
+          } else {
+            return { success: false };
           }
         }
-      }else if(lhsByPiece.length !== 2) {
-        return {success: false};
-      }else {
+      } else if (lhsByPiece.length !== 2) {
+        return { success: false };
+      } else {
 
-        if(rhsByPiece.length === 0) {
-          locationChildren =lhsByPiece[0];
-          valueChildren =lhsByPiece[1];
-        }else if(rhsByPiece.length !== 2) {
-          return {success: false};
-        }else {
+        if (rhsByPiece.length === 0) {
+          locationChildren = lhsByPiece[0];
+          valueChildren = lhsByPiece[1];
+        } else if (rhsByPiece.length !== 2) {
+          return { success: false };
+        } else {
 
           let side;
-          if(getVarName(lhsByPiece[0]) === variableNames[1]) {
+          if (getVarName(lhsByPiece[0]) === variableNames[1]) {
             side = "l";
-          }else if(getVarName(rhsByPiece[0]) === variableNames[1]) {
+          } else if (getVarName(rhsByPiece[0]) === variableNames[1]) {
             side = "r";
           }
-          if(side !== undefined) {
-            if(side === "l") {
-              valueChildren =rhsByPiece[0];
-            }else {
-              valueChildren =lhsByPiece[0];
+          if (side !== undefined) {
+            if (side === "l") {
+              valueChildren = rhsByPiece[0];
+            } else {
+              valueChildren = lhsByPiece[0];
             }
-            if(getVarName(lhsByPiece[1]) === variableNames[0]) {
-              locationChildren =rhsByPiece[1];
-            }else if(getVarName(rhsByPiece[1]) === variableNames[0]) {
-              locationChildren =lhsByPiece[1];
-            }else {
-              return {success:false}
+            if (getVarName(lhsByPiece[1]) === variableNames[0]) {
+              locationChildren = rhsByPiece[1];
+            } else if (getVarName(rhsByPiece[1]) === variableNames[0]) {
+              locationChildren = lhsByPiece[1];
+            } else {
+              return { success: false }
             }
           } else {
-            if(getVarName(lhsByPiece[1]) === variableNames[1]) {
+            if (getVarName(lhsByPiece[1]) === variableNames[1]) {
               side = "l";
-            }else if(getVarName(rhsByPiece[1]) === variableNames[1]) {
+            } else if (getVarName(rhsByPiece[1]) === variableNames[1]) {
               side = "r";
             }
-            if(side === undefined) {
-              return {success: false };
+            if (side === undefined) {
+              return { success: false };
             }
-            if(side === "l") {
-              valueChildren =rhsByPiece[1];
-            }else {
-              valueChildren =lhsByPiece[1];
+            if (side === "l") {
+              valueChildren = rhsByPiece[1];
+            } else {
+              valueChildren = lhsByPiece[1];
             }
-            if(getVarName(lhsByPiece[0]) === variableNames[0]) {
-              locationChildren =rhsByPiece[0];
-            }else if(getVarName(rhsByPiece[0]) === variableNames[0]) {
-              locationChildren =lhsByPiece[0];
-            }else {
-              return {success:false};
+            if (getVarName(lhsByPiece[0]) === variableNames[0]) {
+              locationChildren = rhsByPiece[0];
+            } else if (getVarName(rhsByPiece[0]) === variableNames[0]) {
+              locationChildren = lhsByPiece[0];
+            } else {
+              return { success: false };
             }
           }
         }
       }
 
-      if(locationChildren.length > 0) {
+      if (locationChildren.length > 0) {
         newChildren.push({
           componentType: "location",
           children: locationChildren,
         })
       }
-      if(valueChildren.length > 0) {
+      if (valueChildren.length > 0) {
         newChildren.push({
           componentType: "value",
           children: valueChildren,
@@ -189,75 +192,83 @@ export class Extremum extends BaseComponent {
 
     }
 
-    let VariablesForSugar = childLogic.newLeaf({
-      name: "VariablesForSugar",
+    let variablesForSugar = childLogic.newLeaf({
+      name: "variablesForSugar",
       componentType: 'variables',
       comparison: 'atMost',
       number: 1,
     });
 
-    let AtLeastOneString = childLogic.newLeaf({
-      name: "AtLeastOneString",
+    let atLeastOneString = childLogic.newLeaf({
+      name: "atLeastOneString",
       componentType: 'string',
       comparison: 'atLeast',
       number: 1,
     });
-    
-    let AtLeastOneMath = childLogic.newLeaf({
-      name: "AtLeastOneMath",
+
+    let atLeastOneMath = childLogic.newLeaf({
+      name: "atLeastOneMath",
       componentType: 'math',
       comparison: 'atLeast',
       number: 1,
     });
 
-    let StringsAndMaths = childLogic.newOperator({
-      name: "StringsAndMaths",
+    let stringsAndMaths = childLogic.newOperator({
+      name: "stringsAndMaths",
       operator: 'or',
-      propositions: [AtLeastOneString, AtLeastOneMath],
+      propositions: [atLeastOneString, atLeastOneMath],
       requireConsecutive: true,
     });
 
-    let StringsAndMathsSugar = childLogic.newOperator({
-      name: "StringsAndMathsSugar",
+    let stringsAndMathsSugar = childLogic.newOperator({
+      name: "stringsAndMathsSugar",
       operator: 'and',
-      propositions: [VariablesForSugar, StringsAndMaths],
+      propositions: [variablesForSugar, stringsAndMaths],
       isSugar: true,
+      returnSugarDependencies: () => ({
+        stringsAndMaths: {
+          dependencyType: "childStateVariables",
+          childLogicName: "stringsAndMaths",
+          variableNames: ["value"]
+        }
+      }),
+      affectedBySugar: ["exactlyOneLocation", "exactlyOneValue"],
       replacementFunction: createLocationValueFromSugar,
     });
 
-    let ExactlyOneLocation = childLogic.newLeaf({
-      name: "ExactlyOneLocation",
+    let exactlyOneLocation = childLogic.newLeaf({
+      name: "exactlyOneLocation",
       componentType: 'location',
       number: 1,
     });
 
-    let ExactlyOneValue = childLogic.newLeaf({
-      name: "ExactlyOneValue",
+    let exactlyOneValue = childLogic.newLeaf({
+      name: "exactlyOneValue",
       componentType: 'value',
       number: 1,
     });
 
-    let LocationOrValue = childLogic.newOperator({
-      name: "LocationOrValue",
+    let locationOrValue = childLogic.newOperator({
+      name: "locationOrValue",
       operator: 'or',
-      propositions: [ExactlyOneLocation, ExactlyOneValue],
+      propositions: [exactlyOneLocation, exactlyOneValue],
     });
 
-    let Variables = childLogic.newLeaf({
-      name: "Variables",
+    let variables = childLogic.newLeaf({
+      name: "variables",
       componentType: 'variables',
       comparison: 'atMost',
       number: 1,
     });
 
-    let LocationValueVariables = childLogic.newOperator({
-      name: "LocationValueVariables",
+    let locationValueVariables = childLogic.newOperator({
+      name: "locationValueVariables",
       operator: 'and',
-      propositions: [LocationOrValue, Variables],
+      propositions: [locationOrValue, variables],
     });
 
-    let ExactlyOnePoint = childLogic.newLeaf({
-      name: "ExactlyOnePoint",
+    let exactlyOnePoint = childLogic.newLeaf({
+      name: "exactlyOnePoint",
       componentType: "point",
       number: 1,
     });
@@ -265,118 +276,103 @@ export class Extremum extends BaseComponent {
     childLogic.newOperator({
       name: "SugarXorLocationValue",
       operator: 'xor',
-      propositions: [LocationValueVariables, ExactlyOnePoint, StringsAndMathsSugar],
+      propositions: [locationValueVariables, exactlyOnePoint, stringsAndMathsSugar],
       setAsBase: true,
     });
 
     return childLogic;
   }
 
-  updateState(args={}) {
-    if(args.init === true) {
 
-      this.makePublicStateVariable({
-        variableName: "value",
-        componentType: "math",
-      })
-  
-      this.makePublicStateVariable({
+  static returnStateVariableDefinitions({ numerics }) {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions({ numerics });
+
+    let componentClass = this;
+
+    stateVariableDefinitions.value = {
+      public: true,
+      componentType: "math",
+      defaultValue: null,
+      additionalStateVariablesDefined: [{
         variableName: "location",
+        public: true,
         componentType: "math",
-      })
-  
-    }
-    
-    super.updateState(args);
+        defaultValue: null,
+      }],
+      returnDependencies: () => ({
+        pointChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOnePoint",
+          variableNames: ["nDimensions", "xs"]
+        },
+        locationChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneLocation",
+          variableNames: ["value"]
+        },
+        valueChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneValue",
+          variableNames: ["value"]
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        let location, value;
 
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.value = true;
-      this.unresolvedState.location = true;
-      return;
-    }
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-    
-      let pointInd = this.childLogic.returnMatches("ExactlyOnePoint");
-      if(pointInd.length === 1) {
-        this.state.pointChild = this.activeChildren[pointInd[0]];
-      }else {
-        delete this.state.pointChild;
-
-        let locationInd = this.childLogic.returnMatches("ExactlyOneLocation");
-        if(locationInd.length === 1) {
-          this.state.locationChild = this.activeChildren[locationInd[0]];
-        }else {
-          delete this.state.locationChild;
+        if (dependencyValues.pointChild.length === 1) {
+          let pointChild = dependencyValues.pointChild[0];
+          if (pointChild.stateValues.nDimensions !== 2) {
+            console.log("Cannot determine " + componentClass.componentType + " from a point that isn't 2D");
+            location = null;
+            value = null;
+          } else {
+            location = pointChild.state.xs[0];
+            value = pointChild.state.xs[1];
+          }
+        } else {
+          if (dependencyValues.locationChild.length === 1) {
+            location = dependencyValues.locationChild[0].stateValues.value;
+          }
+          if (dependencyValues.valueChild.length === 1) {
+            value = dependencyValues.valueChild[0].stateValues.value;
+          }
         }
 
-        let valueInd = this.childLogic.returnMatches("ExactlyOneValue");
-        if(valueInd.length === 1) {
-          this.state.valueChild = this.activeChildren[valueInd[0]];
-        }else {
-          delete this.state.valueChild;
+        let newValues = {};
+        let useEssentialOrDefaultValue = {};
+        let haveNewValues = false;
+        let haveEssential = false;
+        if (location === undefined) {
+          useEssentialOrDefaultValue.location = { variablesToCheck: ["location"] }
+          haveEssential = true;
+        } else {
+          newValues.location = location;
+          haveNewValues = true;
         }
+
+        if (value === undefined) {
+          useEssentialOrDefaultValue.value = { variablesToCheck: ["value"] }
+          haveEssential = true;
+        } else {
+          newValues.value = value;
+          haveNewValues = true;
+        }
+
+        let result = {};
+        if (haveNewValues) {
+          result.newValues = newValues;
+        }
+        if (haveEssential) {
+          result.useEssentialOrDefaultValue = useEssentialOrDefaultValue;
+        }
+
+        return result;
       }
     }
 
-    if(this.state.pointChild) {
-      if(this.state.pointChild.unresolvedState.coords) {
-        this.unresolvedState.value = true;
-        this.unresolvedState.location = true;
-      } else if(childrenChanged || trackChanges.getVariableChanges({
-        component: this.state.pointChild, variable: "coords"
-      })) {
-        delete this.unresolvedState.value;
-        delete this.unresolvedState.location;
-    
-        if(this.state.pointChild.state.ndimensions !== 2) {
-          console.log("Cannot determine " + this.componentType + " from a point that isn't 2D");
-          this.state.location = undefined;
-          this.state.value = undefined;
-        }else {
-          this.state.location = this.state.pointChild.state.xs[0];
-          this.state.value = this.state.pointChild.state.xs[1];
-        }
-      }
-    }else {
+    return stateVariableDefinitions;
 
-      if(this.state.locationChild) {
-        if(this.state.locationChild.unresolvedState.value) {
-          this.unresolvedState.location = true;
-        } else if(childrenChanged || trackChanges.getVariableChanges({
-          component: this.state.locationChild, variable: "value"
-        })) {
-          delete this.unresolvedState.location;
-          this.state.location = this.state.locationChild.state.value;
-        }
-      }else {
-        if(this._state.location.essential !== true) {
-          this.state.location = undefined;
-        }
-      }
-
-      if(this.state.valueChild) {
-        console.log(`for ${this.componentName}, valueChild is ${this.state.valueChild.state.value}`)
-        if(this.state.valueChild.unresolvedState.value) {
-          this.unresolvedState.value = true;
-          console.log('make value unresolved')
-        } else if(childrenChanged || trackChanges.getVariableChanges({
-          component: this.state.valueChild, variable: "value"
-        })) {
-          console.log('recording change');
-          delete this.unresolvedState.value;
-          this.state.value = this.state.valueChild.state.value;
-        }
-      }else {
-        if(this._state.value.essential !== true) {
-          this.state.value = undefined;
-        }
-      }
-
-    }
   }
 
 }

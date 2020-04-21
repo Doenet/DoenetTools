@@ -8,12 +8,13 @@ export default class SectioningComponent extends BlockComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.title = { default: "", componentType: "text" };
+    properties.title = { default: "", componentType: "text", forRenderer: true };
     properties.aggregatescores = { default: false };
     properties.weight = { default: 1 };
     // properties.possiblepoints = {default: undefined};
     // properties.aggregatebypoints = {default: false};
-
+    properties.feedbackDefinitions = { propagateToDescendants: true, mergeArrays: true }
+    properties.styleDefinitions = { propagateToDescendants: true, mergeArrays: true }
     return properties;
   }
 
@@ -37,7 +38,7 @@ export default class SectioningComponent extends BlockComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.containerTag = {
       returnDependencies: () => ({}),
@@ -49,7 +50,7 @@ export default class SectioningComponent extends BlockComponent {
       definition: () => ({ newValues: { viewedSolution: false } })
     }
 
-    stateVariableDefinitions.childrenWhoRender = {
+    stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {
           dependencyType: "childIdentity",
@@ -59,7 +60,7 @@ export default class SectioningComponent extends BlockComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues:
-            { childrenWhoRender: dependencyValues.activeChildren.map(x => x.componentName) }
+            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
         };
       }
     }

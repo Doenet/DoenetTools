@@ -44,7 +44,7 @@ export default class CollaborateGroups extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.collaborateGroups = {
       returnDependencies: () => ({

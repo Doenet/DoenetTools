@@ -3,6 +3,10 @@ import InlineComponent from './abstract/InlineComponent';
 export default class StringComponent extends InlineComponent {
   static componentType = "string";
 
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static get stateVariablesShadowedForReference() { return ["value"] };
+
   static createPropertiesObject() {
     return {};
   }
@@ -10,15 +14,22 @@ export default class StringComponent extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.value = {
+      additionalStateVariablesDefined: [{
+        variableName: "text",
+        public: true,
+        componentType: "text"
+      }],
       returnDependencies: () => ({}),
       defaultValue: "",
+      forRenderer: true,
       definition: function () {
         return {
           useEssentialOrDefaultValue: {
-            value: { variablesToCheck: "value" }
+            value: { variablesToCheck: "value" },
+            text: { variablesToCheck: "value" }
           }
         }
       },
@@ -35,27 +46,6 @@ export default class StringComponent extends InlineComponent {
 
     return stateVariableDefinitions;
 
-  }
-
-  get stateVariablesForReference() {
-    return ["value"];
-  }
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    this.renderer = new this.availableRenderers.text({
-      key: this.componentName,
-      text: this.stateValues.value,
-      suppressKeyRender: true,
-    });
-  }
-
-  updateRenderer() {
-    this.renderer.updateText(this.stateValues.value);
   }
 
 }

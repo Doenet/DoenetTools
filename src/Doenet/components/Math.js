@@ -1,15 +1,21 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
+import { convertValueToMathExpression } from '../utils/math';
 
 
 export default class MathComponent extends InlineComponent {
   static componentType = "math";
 
+  // used when creating new component via adapter or ref prop
   static primaryStateVariableForDefinition = "unnormalizedValue";
+
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static get stateVariablesShadowedForReference() { return ["unnormalizedValue"] };
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.format = { default: "text", validValues: new Set(["text", "latex"]) };
+    properties.format = { default: "text", validValues: ["text", "latex"] };
 
     // let simply==="" be full simplify so that can simplify <math simplify /> to get full simplification
     // TODO: do we want to support simplify===""?
@@ -17,12 +23,12 @@ export default class MathComponent extends InlineComponent {
       default: "none",
       toLowerCase: true,
       valueTransformations: { "": "full", "true": "full" },
-      validValues: new Set(["full", "numbers", "numberspreserveorder", "none"])
+      validValues: ["none", "full", "numbers", "numberspreserveorder"]
     };
     properties.expand = { default: false };
     properties.displayDigits = { default: 10 };
     properties.displaySmallAsZero = { default: false };
-    properties.renderMode = { default: "inline" };
+    properties.renderMode = { default: "inline", forRenderer: true };
     properties.unordered = { default: false };
     properties.createVectors = { default: false };
     properties.createIntervals = { default: false };
@@ -56,7 +62,7 @@ export default class MathComponent extends InlineComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.codePre = {
       // deferCalculation: false,
@@ -241,6 +247,7 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.latex = {
       public: true,
       componentType: "text",
+      forRenderer: true,
       returnDependencies: () => ({
         valueForDisplay: {
           dependencyType: "stateVariable",
@@ -385,12 +392,6 @@ export default class MathComponent extends InlineComponent {
   }
 
 
-  useChildrenForReference = false;
-
-  get stateVariablesForReference() {
-    return ["unnormalizedValue"];
-  }
-
   returnSerializeInstructions() {
     let skipChildren = this.childLogic.returnMatches("atLeastZeroStrings").length === 1 &&
       this.childLogic.returnMatches("atLeastZeroMaths").length === 0;
@@ -425,38 +426,8 @@ export default class MathComponent extends InlineComponent {
 
   adapters = ["number", "text"];
 
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    this.renderer = new this.availableRenderers.math({
-      key: this.componentName,
-      mathLatex: this.stateValues.latex,
-      renderMode: this.stateValues.renderMode,
-    });
-  }
-
-  updateRenderer() {
-    this.renderer.updateMathLatex(this.stateValues.latex);
-  }
-
 }
 
-
-export function convertValueToMathExpression(value) {
-  if (value === undefined || value === null) {
-    return me.fromAst('\uFF3F');  // long underscore
-  } else if (value instanceof me.class) {
-    return value;
-  } else if (typeof value === "number" || typeof value === "string") {
-    // let value be math-expression based on value
-    return me.fromAst(value);
-  } else {
-    return me.fromAst('\uFF3F');  // long underscore
-  }
-}
 
 function calculateCodePre({ dependencyValues }) {
 
@@ -548,7 +519,10 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
     }
   }
 
-  return { newValues: { expressionWithCodes } };
+  return {
+    newValues: { expressionWithCodes },
+    makeEssential: ["expressionWithCodes"]
+  };
 
 }
 
@@ -574,7 +548,10 @@ function calculateMathValue({ dependencyValues } = {}) {
   }
 
 
-  return { newValues: { unnormalizedValue: value } };
+  return {
+    newValues: { unnormalizedValue: value },
+    makeEssential: ["unnormalizedValue"]  // make essential since inverseDef sets it
+  };
 }
 
 function calculateCodesAdjacentToStrings({ dependencyValues }) {
@@ -900,7 +877,7 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
       let notAffected = [];
       let foundNotAffected = false;
       for (let [ind, value] of desiredExpression.tree.entries()) {
-        if (value === null) {
+        if (value === undefined) {
           foundNotAffected = true;
           notAffected.push(ind);
         } else {

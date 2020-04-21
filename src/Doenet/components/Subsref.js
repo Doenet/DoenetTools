@@ -33,7 +33,7 @@ export default class Subsref extends CompositeComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.fixed = {
       returnDependencies: () => ({}),

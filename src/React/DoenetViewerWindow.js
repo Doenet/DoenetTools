@@ -80,7 +80,8 @@ class DoenetViewerWindow extends Component {
         <ErrorBoundary  key={"doenetErrorBoundry"+this.updateNumber}>
             <DoenetViewer 
             key={"doenetviewer"+this.updateNumber} 
-            free={{doenetCode: this.state.doenetML, requestedVariant: this.state.requestedVariant}} 
+            // free={{doenetCode: this.state.doenetML, requestedVariant: this.state.requestedVariant}} 
+            doenetML={this.state.doenetML} 
             mode={{
               solutionType:this.state.solutionType,
               allowViewSolutionWithoutRoundTrip:this.state.allowViewSolutionWithoutRoundTrip,

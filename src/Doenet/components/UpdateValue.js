@@ -6,6 +6,11 @@ export default class UpdateValue extends BlockComponent {
     this.updateValue = this.updateValue.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     );
+
+    this.actions = {
+      updateValue: this.updateValue
+    };
+
   }
   static componentType = "updatevalue";
 
@@ -13,7 +18,7 @@ export default class UpdateValue extends BlockComponent {
     let properties = super.createPropertiesObject(args);
     // properties.width = {default: 300};
     // properties.height = {default: 50};
-    properties.label = { default: "update value" };
+    properties.label = { default: "update value", forRenderer: true };
 
     return properties;
   }
@@ -47,7 +52,7 @@ export default class UpdateValue extends BlockComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.targetedMathName = {
       returnDependencies: () => ({
@@ -98,24 +103,6 @@ export default class UpdateValue extends BlockComponent {
       }]
     });
 
-  }
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      return;
-    }
-
-    const actions = {
-      updateValue: this.updateValue,
-    }
-
-    this.renderer = new this.availableRenderers.updatevalue({
-      actions: actions,
-      key: this.componentName,
-      // width: this.state.width,
-      // height: this.state.height,
-      label: this.stateValues.label,
-    });
   }
 
 }
