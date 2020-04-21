@@ -3,23 +3,45 @@ import './header.css'
 import doenetImage from '../media/Doenet_Logo_cloud_only.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTh , faUser } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
+import styled from "styled-components";
 
-import {animated,useSpring} from 'react-spring';
+// import {animated,useSpring} from 'react-spring';
 import Menu from './menu.js'
 // import IndexedDB from '../services/IndexedDB';
 // import axios from 'axios';
 // import ConstrainToAngles from '../Doenet/components/ConstrainToAngles';
 
-
+const Picture = styled.div`
+    width:30px;
+    height:30px;
+  `
 
 class DoenetHeader extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      menuVisble:false,
-      showToolbox: false,
+      pic:null,
+      profile:{}
     }
+    this.pics = [
+      "bird",
+      "cat",
+      "dog",
+      "emu",
+      "fox",
+      "horse",
+      "penguin",
+      "squirrel",
+      "swan",
+      "turtle"
+    ];
+    //////////
+  this.profile={}
+  this.test=0
+  this._isMounted = false;
+    //////////
     this.permissionMenu=null
     this.select=null
     this.updateNumber = 0;
@@ -27,7 +49,6 @@ class DoenetHeader extends Component {
     this.adminAccess = 0;
     this.accessAllowed = 0;
     this.currentCourseId=""
-    console.log("HEADER !!")
     if (this.props.rights){
       this.rightToView = this.props.rights.rightToView
       this.rightToEdit = this.props.rights.rightToEdit
@@ -35,7 +56,7 @@ class DoenetHeader extends Component {
       
       this.coursesPermissions = this.props.rights.permissions  
     this.currentCourseId = this.props.rights.defaultId
-    if (this.coursesPermissions && this.currentCourseId){
+    if (this.coursesPermissions['courseInfo'] && this.currentCourseId){
       this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
       this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
     }
@@ -87,30 +108,22 @@ class DoenetHeader extends Component {
       "Profile": "/profile/",
     }
     this.navigationMenu = {}
-    Object.keys(this.toolTitleToLinkMap).map((toolTitle)=> {
-      // if (toolTitle!=this.props.toolTitle){
-        this.navigationMenu[toolTitle]={
-          showText:toolTitle,
-          url:(toolTitle!=this.props.toolTitle?this.toolTitleToLinkMap[toolTitle]:null)
-                     
-      }
-      // }
-      
-    })
-    // console.log("this.navigationMenu")
-    // console.log(this.navigationMenu)
-    this.changeOrderOfNavigationMenu()
-
+  this.currentProfilePicture="emu"
+    
     this.itemsToShowUpdated={}
     if (this.accessAllowed==="1"){
       this.itemsToShowUpdated['Student']={
         showText:"Student",
-      callBackFunction: this.props.rights.itemsToShow['Student']['callBackFunction']
+      callBackFunction: (this.props.rights.itemsToShow['Student']?
+      this.props.rights.itemsToShow['Student']['callBackFunction']:null)
       }
       if (this.adminAccess==="1"){
         this.itemsToShowUpdated['Instructor']={
           showText:"Instructor",
-        callBackFunction: this.props.rights.itemsToShow['Instructor']['callBackFunction']
+        callBackFunction: (
+          this.props.rights.itemsToShow['Instructor']?
+          this.props.rights.itemsToShow['Instructor']['callBackFunction']:
+          null)
         }
       }
     }
@@ -126,6 +139,56 @@ class DoenetHeader extends Component {
               // menuIcon={this.props.rights?this.props.rights.menuIcon:null}
               />
     )
+  }
+creatingToolsList(){
+  this.pics.map((pic)=>{
+    if (pic===this.profile['profilePicture'])
+    this.currentProfilePicture=pic
+  })
+  if(this.profile['toolAccess']!=undefined){
+    this.navigationMenu[this.props.toolTitle]={
+      showText:this.props.toolTitle,
+      url:undefined
+    }
+    this.profile['toolAccess'].map((toolTitle)=> {
+      if (toolTitle!=this.props.toolTitle){
+        this.navigationMenu[toolTitle]={
+          showText:toolTitle,
+          url:this.toolTitleToLinkMap[toolTitle]
+      }
+      }
+      
+  })
+  
+  // below reorganize list
+  /*let thisArray01 = []
+    Object.keys(this.navigationMenu).map((e)=>{
+      thisArray01.push(e)
+    })
+    
+    let copy01 = this.navigationMenu
+      thisArray01.map((e,index)=>{
+        if (e===this.props.toolTitle){
+          thisArray01.splice(index,1)
+          thisArray01.unshift(this.props.toolTitle)
+        }
+        
+      })
+      console.log("thisArray01")
+      console.log(thisArray01)
+      this.navigationMenu={}
+      thisArray01.map((e)=>{
+  
+          this.navigationMenu[e]={
+            showText:copy01[e]['showText'],
+            url: copy01[e]['url']}
+        
+        
+      })    
+      console.log("updated one:")
+      console.log(this.navigationMenu)*/
+  
+    }
   }
 changeOrderOfItemsToShowUpdated(){
   let thisArray = []
@@ -177,14 +240,14 @@ changeOrderOfNavigationMenu(){
       }
       
     })    
-    // this.navigationMenu = copy
     this.navigationMenu = copy01
-    
   }
 }
 
 courseChosenCallBack({e}){
-      this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+      if (this.coursesPermissions['courseInfo'])
+      {
+        this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
       this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
       if (this.accessAllowed==="1"){
         this.rightToView = true
@@ -195,10 +258,37 @@ courseChosenCallBack({e}){
       }
       // this.makePermissionList()
       this.props.rights.parentFunction(e);
-      this.forceUpdate()
+      this.forceUpdate()}
+}
+loadMyProfile(){
+  if (this._isMounted){
+    axios
+      .get(`/api/loadMyProfile.php`)
+      .then(resp => {
+        this.profile=resp.data
+        this.creatingToolsList();
+        console.log("LOADING MY PROFILE")
+        if (this._isMounted){
+          this.setState({pic:this.profile['profilePicture']})
+        }
+      })
+      .catch(error=>{this.setState({error:error})});
+  }
+  
 }
 
+componentDidMount(){
+
+  this._isMounted = true;
+  this.loadMyProfile();
+  console.log("inside comp")
+  console.log(this.profile)
+////////MANIPULATE THE this.navigationMenu 
+
+}
   componentWillUnmount(){
+    // this.setState({pic:null})
+    this._isMounted = false;
     // this.select = undefined
     this.selectPermission =undefined
     this.username = undefined;
@@ -225,21 +315,13 @@ courseChosenCallBack({e}){
     }
     
   }
-  // toggleToolbox = () => {
-  //   if (!this.state.showToolbox) {
-  //     document.addEventListener('click', this.toggleToolbox, false);
-  //   } else {
-  //     document.removeEventListener('click', this.toggleToolbox, false);
-  //   }
 
-  //   this.setState(prevState => ({
-  //     showToolbox: !prevState.showToolbox,
-  //   }));    
-  // }
 
 
 
   render() {  
+    console.log("inside header")
+    console.log(this.state.pic)
     return (
       <React.Fragment>
         <div className="headingContainerWrapper">
@@ -269,21 +351,35 @@ courseChosenCallBack({e}){
 
               </div>
               <div className="toolboxContainer" data-cy="toolboxButton" >
-              <Menu
+              {<Menu
               key={"menu01"+(this.updateNumber++)}           
               showThisRole={this.props.toolTitle} 
               itemsToShow = {this.navigationMenu}
               offsetPos={-18}
               menuIcon={faTh}
               grayTheseOut={this.props.toolTitle}
-              />
+              />}
               
               </div>
+              <Picture>
+                {this.state.pic?
+                <img 
+                src={`/profile_pictures/${this.state.pic}.jpg`}
+                width="30"
+                height="30"
+                >
+                </img>:null}
+              </Picture>
 
-              <div id="userButton" onClick={()=>alert('User Setting Feature Not Yet Available')}>
-                <FontAwesomeIcon id="userButtonIcon" icon={faUser}/>
+              {/* <div id="userButton" onClick={()=>alert('User Setting Feature Not Yet Available')}>
+                  <div className="ModalPicsContainer">{picElements}</div>
+                <div
+                key={`modalpic-${value}`}
+                pic={`/profile_pictures/${value}.jpg`}
+                alt={`${value} profile picture`}
+                >pic</div>
                 <div id="username" style={{display:"inline", marginLeft:"3px"}}>{ this.username }</div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>        

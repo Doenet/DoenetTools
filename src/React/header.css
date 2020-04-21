@@ -2,7 +2,33 @@
   height: 100%;
   margin-bottom: 100px;
 }
-
+.ModalPicsContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  max-height: 30em;
+  overflow: scroll;
+  margin-top: 1em;
+}
+.ProfilePicture{
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+  url("/profile_pictures/${props => props.pic}.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 10em;
+  height: 10em;
+  color: rgba(0, 0, 0, 0);
+  font-size: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-row: 1 / span 2;
+  margin: auto;
+  border-radius: 50%;
+  user-select: none;
+}
 .headingContainer{
   display: flex;
   flex-direction: row;

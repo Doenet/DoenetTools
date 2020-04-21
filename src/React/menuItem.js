@@ -28,11 +28,8 @@ color: grey;
 background: white;
 `
 const MenuItem = ({content,greyOut=false,object={},currentItem}) =>{
-  // console.log(`currentItem is ${currentItem}`)
   let firstItem = Object.keys(object)[0]
-  // console.log("typeof(currentItem)")
-  // console.log(Object.keys(object)[0])
-  // console.log(currentItem)
+
   let isFirst=false
   if (currentItem && currentItem===firstItem){
     isFirst=true
@@ -43,8 +40,6 @@ const MenuItem = ({content,greyOut=false,object={},currentItem}) =>{
     color: (ISFirst?"white":"black"), 
  }));
 
-  console.log(`ISFirst: ${ISFirst} `)
-  // console.log(ISFirst)
  let Animation=null;
  if (!greyOut){
   Animation=(

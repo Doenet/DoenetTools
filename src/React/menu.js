@@ -53,34 +53,36 @@ display: none;
     const Menu = ({showThisRole,itemsToShow,menuIcon,width,grayTheseOut=[],offsetPos=0,menuWidth}) =>{
       const node = useRef();
       const[currentItemDisplay,setcurrentItemDisplay] = useState(Object.keys(itemsToShow).length>0?showThisRole:"");
-      let rolesDisplay=[]
+      // let rolesDisplay=[]
       let updateNumber=0
       // console.log("itemsToShow")
       // console.log(itemsToShow)
-        Object.keys(itemsToShow).map(item=>{
-          // console.log(`item is..${item}`)
-          if (itemsToShow[item]['url']){    // exists URL
-            // console.log("YESS")
-            rolesDisplay.push(<p key={"op"+(updateNumber++)} 
-          onClick={()=>
-            window.location.href = itemsToShow[item]['url']
+
+        // Object.keys(itemsToShow).map(item=>{
+        //   // console.log(`item is..${item}`)
+        //   if (itemsToShow[item]['url']){    // exists URL
+        //     // console.log("YESS")
+        //     rolesDisplay.push(<p key={"op"+(updateNumber++)} 
+        //   onClick={()=>
+        //     window.location.href = itemsToShow[item]['url']
             
-            }>{itemsToShow[item]['showText']}</p>)
-          } else {                
-            // console.log("NOOO")
-                      // no url, exec callBack
-            rolesDisplay.push(<p key={"op"+(updateNumber++)} 
-          onClick={()=>
-            {setcurrentItemDisplay(item);
-              itemsToShow[item]["callBackFunction"](item)
-            }
-            }
-            >{itemsToShow[item]['showText']}
-            </p>
-            )
-          }
+        //     }>{itemsToShow[item]['showText']}</p>)
+        //   } else {                
+        //     // console.log("NOOO")
+        //               // no url, exec callBack
+        //     rolesDisplay.push(<p key={"op"+(updateNumber++)} 
+        //   onClick={()=>
+        //     {setcurrentItemDisplay(item);
+              
+        //       itemsToShow[item]["callBackFunction"](item)
+        //     }
+        //     }
+        //     >{itemsToShow[item]['showText']}
+        //     </p>
+        //     )
+        //   }
           
-        })
+        // })
         const navRef = useRef()
         const liRef = useRef()
       const [show, setShow] = useState(false);
@@ -157,9 +159,9 @@ display: none;
             display:"block"
           }}
          >{currentItemDisplay}
-         <FontAwesomeIcon
+         {currentItemDisplay!=""?<FontAwesomeIcon
          icon={faChevronDown}
-         size={'sm'}/>
+         size={'sm'}/>:null}
          </button>
          
          )
@@ -175,7 +177,9 @@ display: none;
                   window.location.href = itemsToShow[item]['url']
                 } else {
                   setcurrentItemDisplay(item);
-                  itemsToShow[item]["callBackFunction"](item)
+                  if (itemsToShow[item]["callBackFunction"]){
+                    itemsToShow[item]["callBackFunction"](item)
+                  }
                 }
               }}
                >

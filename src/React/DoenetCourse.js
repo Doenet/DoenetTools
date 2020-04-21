@@ -990,7 +990,8 @@ class DoenetCourse extends Component {
       if (this.usingDefaultCourseId){
         this.currentCourseId = resp.data.courseIds[0] // default when first load
       }
-          this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+      if (this.coursesPermissions['courseInfo']){
+        this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
           this.adminAccess=this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
           if (this.accessAllowed==="1"){
             this.rightToView = true
@@ -999,6 +1000,8 @@ class DoenetCourse extends Component {
               this.instructorRights = true
             }
           }
+      }
+          
 
           if (this.instructorRights){
             this.permissionRoles['Instructor']={
