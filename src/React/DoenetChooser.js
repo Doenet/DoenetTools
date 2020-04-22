@@ -1061,7 +1061,13 @@ class DoenetChooser extends Component {
 
   loadHeadingsAndAssignments() {
     const url = "/api/getHeaderAndAssignmentInfo.php";
-    axios(url).then(resp=>{
+    const data = {
+      courseId: "aI8sK4vmEhC5sdeSP3vNW"
+    }
+    const payload = {
+      params: data
+    }
+    axios.get(url, payload).then(resp=>{
       this.headingsInfo = {};
       this.assignmentsInfo = {};
       Object.keys(resp.data).map(itemId => {
@@ -1186,9 +1192,8 @@ class DoenetChooser extends Component {
                 <SpinningLoader/>
              </div>
     }
-
     // return <DoenetCourseOutline treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
-    //   updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
+      // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
 
     this.buildCourseList();
     this.buildLeftNavPanel();
