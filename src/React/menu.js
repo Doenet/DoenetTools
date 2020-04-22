@@ -50,7 +50,7 @@ display: none;
 
 
 
-    const Menu = ({showThisRole,itemsToShow,menuIcon,width,grayTheseOut=[],offsetPos=0,menuWidth}) =>{
+    const Menu = ({currentTool,showThisRole,itemsToShow,menuIcon,width,grayTheseOut=[],offsetPos=0,menuWidth}) =>{
       const node = useRef();
       const[currentItemDisplay,setcurrentItemDisplay] = useState(Object.keys(itemsToShow).length>0?showThisRole:"");
       // let rolesDisplay=[]
@@ -154,6 +154,7 @@ display: none;
           backgroundColor: "#6de5ff",
             color: "black",
             padding: "16px",
+            margin:"0",
             fontSize: "16px",
             cursor: "pointer",
             display:"block"
@@ -184,13 +185,17 @@ display: none;
               }}
                >
                   {!grayTheseOut.includes(item)?
-                 <MenuItem content={itemsToShow[item]['showText']}
+                 <MenuItem
+                 currentTool={currentTool}
+                 content={itemsToShow[item]['showText']}
                  object={itemsToShow}
                  currentItem={item}
                  />
                  :
-                 <MenuItem content={itemsToShow[item]['showText'] 
-                 } greyOut={true}/>
+                 <MenuItem
+                 currentTool={currentTool}
+                 content={itemsToShow[item]['showText']}
+                 greyOut={true}/>
                 }
                </animated.div>)
           ))}

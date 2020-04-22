@@ -3524,7 +3524,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                   this.alreadyLoadAllCourses = false
     
                   // this.AssignmentInfoChanged=true;
-                  console.log(" from parentFunction")
                   this.forceUpdate()
                   }
               }

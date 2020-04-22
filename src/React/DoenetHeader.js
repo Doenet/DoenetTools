@@ -22,7 +22,7 @@ class DoenetHeader extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      pic:null,
+      pic:(this.props.willProvideProfile?this.props.profile['profilePicture']:null),
       profile:{}
     }
     this.pics = [
@@ -130,6 +130,7 @@ class DoenetHeader extends Component {
     this.changeOrderOfItemsToShowUpdated()
     this.permissionMenu=(
       <Menu 
+              currentTool={this.props.toolTitle}
               key={"menu02"+(this.updateNumber++)}
               // showDropDown={this.state.menuVisble}
               showThisRole={this.props.rights?(this.props.rights.defaultRole+"  "):""} 
@@ -139,6 +140,10 @@ class DoenetHeader extends Component {
               // menuIcon={this.props.rights?this.props.rights.menuIcon:null}
               />
     )
+    if (this.props.willProvideProfile && this.props.profile){
+      this.profile = this.props.profile
+      this.creatingToolsList();
+    }
   }
 creatingToolsList(){
   this.pics.map((pic)=>{
@@ -266,23 +271,25 @@ loadMyProfile(){
       .get(`/api/loadMyProfile.php`)
       .then(resp => {
         this.profile=resp.data
-        this.creatingToolsList();
         console.log("LOADING MY PROFILE")
+        this.creatingToolsList();
         if (this._isMounted){
-          this.setState({pic:this.profile['profilePicture']})
+        this.setState({pic:this.profile['profilePicture']})
         }
       })
       .catch(error=>{this.setState({error:error})});
   }
+
+
   
 }
 
 componentDidMount(){
 
   this._isMounted = true;
+  if (!this.props.willProvideProfile){
   this.loadMyProfile();
-  console.log("inside comp")
-  console.log(this.profile)
+  }
 ////////MANIPULATE THE this.navigationMenu 
 
 }
@@ -332,6 +339,7 @@ componentDidMount(){
             </div>
             {this.props.headingTitle && <div className="headingTitle">
               <Menu
+              currentTool={this.props.toolTitle}
               width={"500px"}
               key={"menu00"+(this.updateNumber++)}           
               showThisRole={this.props.rights?(this.props.rights.courseInfo[this.currentCourseId]['courseName']+"  "):""}
@@ -352,10 +360,11 @@ componentDidMount(){
               </div>
               <div className="toolboxContainer" data-cy="toolboxButton" >
               {<Menu
+              currentTool={this.props.toolTitle}
               key={"menu01"+(this.updateNumber++)}           
               showThisRole={this.props.toolTitle} 
               itemsToShow = {this.navigationMenu}
-              offsetPos={-18}
+              offsetPos={-20}
               menuIcon={faTh}
               grayTheseOut={this.props.toolTitle}
               />}
