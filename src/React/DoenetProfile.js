@@ -3,7 +3,8 @@ import axios from "axios";
 axios.defaults.withCredentials = true;
 import DoenetHeader from "./DoenetHeader";
 import styled from "styled-components";
-
+import ToolLayout from './ToolLayout/ToolLayout';
+import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel';
 import "../profile/profile.css";
 import "../imports/doenet.css";
 import Textinput from "../imports/Textinput";
@@ -171,6 +172,7 @@ let SectionHeader = styled.h2`
   margin-bottom: 2em;
 `;
 
+
 export default function DoenetProfile(props) {
   /*
    * SECTION
@@ -322,16 +324,19 @@ export default function DoenetProfile(props) {
    * SECTION
    * Return
    */
+  const menuControlProfile = [<PageHeader>{myProfile.username}'s Profile</PageHeader>];
   return (
     <>
-      <DoenetHeader
+      {/* <DoenetHeader
         toolTitle="Profile"
         headingTitle="Edit My Profile"
         willProvideProfile={true}
         profile={myProfile}
-      ></DoenetHeader>
-      <PageHeader>{myProfile.username}'s Profile</PageHeader>
-      <ProfileContainer id="content">
+      ></DoenetHeader> */}
+      <ToolLayout>
+        <ToolLayoutPanel menuControl = {menuControlProfile}>
+        <PageHeader>{myProfile.username}'s Profile</PageHeader>
+        <ProfileContainer id="content">
         <ProfilePicture
           pic={myProfile.profilePicture}
           onClick={e => changeModalVisibility(e, "visible")}
@@ -404,6 +409,15 @@ export default function DoenetProfile(props) {
         <SpanAll>
           <SectionHeader>Your Roles</SectionHeader>
           <StyledSwitch
+            id="student"
+            onChange={e =>
+              updateMyProfile("roleStudent", e.target.checked, true)
+            } // updates immediately
+            checked={Number(myProfile.roleStudent)}
+          >
+            Student
+          </StyledSwitch>
+          <StyledSwitch
             id="instructor"
             onChange={e =>
               updateMyProfile("roleInstructor", e.target.checked, true)
@@ -421,7 +435,7 @@ export default function DoenetProfile(props) {
           >
             Course Designer
           </StyledSwitch>
-          <StyledSwitch
+          {/* <StyledSwitch
             id="watchdog"
             onChange={e =>
               updateMyProfile("roleWatchdog", e.target.checked, true)
@@ -448,13 +462,17 @@ export default function DoenetProfile(props) {
             checked={Number(myProfile.roleLiveDataCommunity)}
           >
             Live Data Community
-          </StyledSwitch>
+          </StyledSwitch> */}
           <h4>{"You have access to:"}</h4>
           <p>{myProfile.toolAccess.join(", ")}</p>
         </SpanAll>
 
         <SectionHeader>Invites</SectionHeader>
       </ProfileContainer>
+        </ToolLayoutPanel>
+      </ToolLayout>
+      
+      
     </>
   );
 }

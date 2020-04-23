@@ -115,7 +115,8 @@
     font-size: 13px;
     text-align: center;
     width: auto;
-    border-radius: 4px;
+    height:auto;
+    border-radius: 50%;
     cursor: pointer;
     background-color: none;
     padding: 7px 5px;

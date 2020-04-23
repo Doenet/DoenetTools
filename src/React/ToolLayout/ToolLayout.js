@@ -434,7 +434,7 @@ export default function ToolLayout(props) {
         <DoenetHeader  toolTitle="Example"/>
         { deviceType === "phone" ? <div ref={ container }>
         <div style={{ position: "fixed", top: "120px" }}>
-          <div style={{ height: "90vh", display: "flex" }}>
+          <div style={{ height: "95vh", display: "flex" }}>
           { (phoneVisiblePanel === "left" || allParts.length === 1) && <Left key="part1" id="leftpanel"> { leftNav } </Left> }
           { phoneVisiblePanel === "middle" && <Middle key="part2" id="middlepanel">{ middleNav } </Middle> }
           { phoneVisiblePanel === "right" && allParts.length > 2 &&  <Right key="part3" id="rightpanel">{ rightNav } </Right> }

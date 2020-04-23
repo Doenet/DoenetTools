@@ -93,7 +93,7 @@ class DoenetHeader extends Component {
       "Course" : "/course/",
       "Documentation" : "/docs/",
       "Gradebook": "/gradebook/",
-      "Profile": "/profile/",
+      // "Profile": "/profile/",
     }
 
   }
@@ -189,7 +189,35 @@ class DoenetHeader extends Component {
   }
 
 
+
   render() {
+
+    let toolBox = {};
+    this.toolUrl={
+      "Chooser" : "/chooser/",
+      "Course" : "/course/",
+      "Documentation" : "/docs/",
+      "Gradebook": "/gradebook/",
+      "Profile" : "/profile",
+    }
+    
+        //  <div className="toolboxContainer" data-cy="toolboxButton" onClick={this.toogleToolbox}>  
+        //       <FontAwesomeIcon id="toolboxButton" icon={faTh}/>
+        //         {this.state.showToolbox && 
+        //         <Toolbox show={this.state.showToolbox} toogleToolbox={this.toogleToolbox}>
+        //           {Object.keys(this.toolTitleToLinkMap).map((toolTitle, index)=> {
+        //             let currentUrl = window.location.href;
+        //             const navLinkClassName = currentUrl.includes(this.toolTitleToLinkMap[toolTitle]) ? 
+        //               "selectedToolboxNavLink" : "toolboxNavLink";
+        //             return( 
+        //               <div className={ navLinkClassName } key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolTitle }>
+        //                 <a href={ this.toolTitleToLinkMap[toolTitle] }>{toolTitle }</a>
+        //               </div>
+        //             )
+        //           })}
+        //         </Toolbox>}
+        //       </div>
+
 
     return (
       <React.Fragment>
@@ -208,6 +236,7 @@ class DoenetHeader extends Component {
               <Menu showThisRole={this.props.rights?this.props.rights.defaultRole:""} roles={this.roles} permissionCallback={this.props.rights?this.props.rights.permissionCallBack:null}/>
             {/* {this.selectPermission}           */}
 
+              {/* {toolBox} */}
               <div className="toolboxContainer" data-cy="toolboxButton" onClick={this.toogleToolbox}>  
               <FontAwesomeIcon id="toolboxButton" icon={faTh}/>
                 {this.state.showToolbox && 
@@ -224,7 +253,8 @@ class DoenetHeader extends Component {
                   })}
                 </Toolbox>}
               </div>
-              <div id="userButton" onClick={()=>alert('User Setting Feature Not Yet Available')}>
+              
+              <div id="userButton" onClick={()=>{location.href = "/Profile";}}>
                 <FontAwesomeIcon id="userButtonIcon" icon={faUser}/>
                 <div id="username" style={{display:"inline", marginLeft:"3px"}}>{ this.username }</div>
               </div>
