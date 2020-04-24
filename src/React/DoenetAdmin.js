@@ -2592,6 +2592,4 @@ this.forceUpdate()
 };
  */
 
-
-
 export default DoenetAdmin;

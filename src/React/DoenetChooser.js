@@ -38,13 +38,14 @@ class DoenetChooser extends Component {
     this.loadUserFoldersAndRepo();
     this.loadUserUrls();
     this.loadAllCourses();
-    this.loadHeadingsAndAssignments();
+    // this.loadHeadingsAndAssignments();
 
     this.branches_loaded = false;
     this.courses_loaded = false;
     this.folders_loaded = false;
     this.urls_loaded = false;
-    this.assignments_and_headings_loaded = false;
+    // this.assignments_and_headings_loaded = false;
+    this.assignments_and_headings_loaded = props.flags.assignments_and_headings_loaded;
 
     this.updateNumber = 0;
 
@@ -1186,6 +1187,7 @@ class DoenetChooser extends Component {
   }
 
   render(){
+    console.log(this.props);
 
     if (!this.courses_loaded || !this.assignments_and_headings_loaded){
       return <div style={{display:"flex",justifyContent:"center",alignItems:"center", height:"100vh"}}>
@@ -1194,6 +1196,9 @@ class DoenetChooser extends Component {
     }
     // return <DoenetCourseOutline treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
       // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
+
+    return <DoenetCourseOutline treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
+      updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
 
     this.buildCourseList();
     this.buildLeftNavPanel();
