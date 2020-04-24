@@ -38,12 +38,10 @@ let ProfileContainer = styled(WidthEnforcer)`
   grid-template-columns: 25em 1fr 1fr;
   grid-template-rows: 5em 5em 11em;
   grid-column-gap: 1em;
-
   @media screen and (max-width: 1000px) {
     grid-template-rows: 25em auto 5em;
     grid-template-columns: 1fr 1fr;
   }
-
   @media screen and (max-width: 600px) {
     grid-template-columns: 1fr;
   }
@@ -66,13 +64,11 @@ let ProfilePicture = styled.button`
   margin: auto;
   border-radius: 50%;
   user-select: none;
-
   &:hover, &:focus {
     background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
       url("/profile_pictures/${props => props.pic}.jpg");
     color: rgba(255, 255, 255, 1);
   }
-
   @media screen and (max-width: 1000px) {
     grid-column: 1 / -1;
   }
@@ -80,7 +76,6 @@ let ProfilePicture = styled.button`
 
 let WideTextinput = styled(Textinput)`
   grid-column: 2 / -1;
-
   @media screen and (max-width: 1000px) {
     grid-column: 1 / -1;
   }
@@ -152,7 +147,6 @@ let ModalPic = styled.button`
   background-repeat: no-repeat;
   background-size: cover;
   user-select: none;
-
   &:hover {
     background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
       url("${props => props.pic}");
@@ -334,8 +328,8 @@ export default function DoenetProfile(props) {
         profile={myProfile}
       ></DoenetHeader> */}
       <ToolLayout>
-        <ToolLayoutPanel menuControl = {menuControlProfile}>
-        <PageHeader>{myProfile.username}'s Profile</PageHeader>
+        <ToolLayoutPanel menuControls = {menuControlProfile}>
+        {/* <PageHeader>{myProfile.username}'s Profile</PageHeader> */}
         <ProfileContainer id="content">
         <ProfilePicture
           pic={myProfile.profilePicture}
@@ -475,4 +469,156 @@ export default function DoenetProfile(props) {
       
     </>
   );
+
+
+  // return (
+  //   <>
+  //     {/* <DoenetHeader
+  //       toolTitle="Profile"
+  //       headingTitle="Edit My Profile"
+  //       willProvideProfile={true}
+  //       profile={myProfile}
+  //     ></DoenetHeader> */}
+  //     <ToolLayout>
+  //       <ToolLayoutPanel menuControl = {menuControlProfile}>
+  //       <PageHeader>{myProfile.username}'s Profile</PageHeader>
+  //       <ProfileContainer id="content">
+  //       <ProfilePicture
+  //         pic={myProfile.profilePicture}
+  //         onClick={e => changeModalVisibility(e, "visible")}
+  //         name="changeProfilePicture"
+  //         id="changeProfilePicture"
+  //       >
+  //         CHANGE
+  //       </ProfilePicture>
+  //       <ProfilePicModal />
+
+  //       <Textinput
+  //         id="firstName"
+  //         label="First Name"
+  //         onChange={e => updateMyProfile("firstName", e.target.value)} // uses non-spammy updating
+  //       >
+  //         {myProfile.firstName}
+  //       </Textinput>
+  //       <Textinput
+  //         id="lastName"
+  //         label="Last Name"
+  //         onChange={e => updateMyProfile("lastName", e.target.value)} // uses non-spammy updating
+  //       >
+  //         {myProfile.lastName}
+  //       </Textinput>
+  //       <WideTextinput
+  //         id="email"
+  //         label="Email Address"
+  //         onChange={e => updateMyProfile("email", e.target.value)} // uses non-spammy updating
+  //       >
+  //         {myProfile.email}
+  //       </WideTextinput>
+  //       <WideTextinput
+  //         id="bio"
+  //         label="Bio"
+  //         onChange={e => updateMyProfile("bio", e.target.value)}
+  //         area={true}
+  //         maxlength="512"
+  //         rows="6"
+  //         resize="none"
+  //       >
+  //         {myProfile.bio}
+  //       </WideTextinput>
+
+  //       <SpanAll>
+  //         <SectionHeader>Tracking</SectionHeader>
+  //         <StyledSwitch
+  //           id="trackingconsent"
+  //           onChange={e =>
+  //             updateMyProfile("trackingConsent", e.target.checked, true)
+  //           } // updates immediately
+  //           checked={Number(myProfile.trackingConsent)}
+  //         >
+  //           I consent to the use of tracking technologies.
+  //         </StyledSwitch>
+  //         <p>
+  //           "I consent to the tracking of my progress and my activity on
+  //           educational websites which participate in Doenet; my data will be
+  //           used to provide my instructor with my grades on course assignments,
+  //           and anonymous data may be provided to content authors to improve the
+  //           educational effectiveness."
+  //           <br />
+  //           <br />
+  //           <em>
+  //             Revoking your consent may impact your ability to recieve credit
+  //             for coursework.
+  //           </em>
+  //         </p>
+  //       </SpanAll>
+
+  //       <SpanAll>
+  //         <SectionHeader>Your Roles</SectionHeader>
+  //         <StyledSwitch
+  //           id="student"
+  //           onChange={e =>
+  //             updateMyProfile("roleStudent", e.target.checked, true)
+  //           } // updates immediately
+  //           checked={Number(myProfile.roleStudent)}
+  //         >
+  //           Student
+  //         </StyledSwitch>
+  //         <StyledSwitch
+  //           id="instructor"
+  //           onChange={e =>
+  //             updateMyProfile("roleInstructor", e.target.checked, true)
+  //           } // updates immediately
+  //           checked={Number(myProfile.roleInstructor)}
+  //         >
+  //           Instructor
+  //         </StyledSwitch>
+  //         <StyledSwitch
+  //           id="course_designer"
+  //           onChange={
+  //             e => updateMyProfile("roleCourseDesigner", e.target.checked, true) // updates immediately
+  //           }
+  //           checked={Number(myProfile.roleCourseDesigner)}
+  //         >
+  //           Course Designer
+  //         </StyledSwitch>
+  //         {/* <StyledSwitch
+  //           id="watchdog"
+  //           onChange={e =>
+  //             updateMyProfile("roleWatchdog", e.target.checked, true)
+  //           } // updates immediately
+  //           checked={Number(myProfile.roleWatchdog)}
+  //         >
+  //           Watchdog
+  //         </StyledSwitch>
+  //         <StyledSwitch
+  //           id="community_ta"
+  //           onChange={e =>
+  //             updateMyProfile("roleCommunityTA", e.target.checked, true)
+  //           } // updates immediately
+  //           checked={Number(myProfile.roleCommunityTA)}
+  //         >
+  //           Community TA
+  //         </StyledSwitch>
+  //         <StyledSwitch
+  //           id="live_data_community"
+  //           onChange={
+  //             e =>
+  //               updateMyProfile("roleLiveDataCommunity", e.target.checked, true) // updates immediately
+  //           }
+  //           checked={Number(myProfile.roleLiveDataCommunity)}
+  //         >
+  //           Live Data Community
+  //         </StyledSwitch> */}
+  //         <h4>{"You have access to:"}</h4>
+  //         <p>{myProfile.toolAccess.join(", ")}</p>
+  //       </SpanAll>
+
+  //       <SectionHeader>Invites</SectionHeader>
+  //     </ProfileContainer>
+  //       </ToolLayoutPanel>
+  //     </ToolLayout>
+      
+      
+  //   </>
+  // );
 }

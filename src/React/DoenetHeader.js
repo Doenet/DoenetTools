@@ -253,7 +253,6 @@ class DoenetHeader extends Component {
                   })}
                 </Toolbox>}
               </div>
-              
               <div id="userButton" onClick={()=>{location.href = "/Profile";}}>
                 <FontAwesomeIcon id="userButtonIcon" icon={faUser}/>
                 <div id="username" style={{display:"inline", marginLeft:"3px"}}>{ this.username }</div>
