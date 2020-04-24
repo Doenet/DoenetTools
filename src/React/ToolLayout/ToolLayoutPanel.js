@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
-const TopContent = styled.div`
+const MenuContent = styled.div`
   display: flex;
   min-height: 40px;
 `;
 
-const MenuContent = styled.div`
+const MainContent = styled.div`
   margin: 1px;
 `;
 
@@ -18,14 +18,19 @@ export default class ToolLayoutPanel extends Component {
     }
     return (
       <>
-        <TopContent>
-          {menu} {this.props.leftMenu}
+        <MenuContent>
+          {menu} 
+          
+          {this.props.leftMenu}
           {this.props.middleMenu}
           {this.props.rightMenu}
-        </TopContent>
-        <MenuContent style={{ overflowY: "auto" }}>
-          {this.props.children}
         </MenuContent>
+
+        <MainContent 
+        style={{overflow:"scroll"}}
+        >
+          {this.props.children}
+        </MainContent>
       </>
     );
   }

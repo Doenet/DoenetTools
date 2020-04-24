@@ -376,7 +376,7 @@ export default function ToolLayout(props) {
 
   allParts.push(
     <Left key="part1" id="leftpanel">
-      {leftNav}
+      {leftNav} 
     </Left>
   );
 
@@ -431,7 +431,8 @@ export default function ToolLayout(props) {
 
   return (
       <>
-        <DoenetHeader  toolTitle="Example"/>
+        <DoenetHeader toolTitle={props.headerTitle}/>
+
         { deviceType === "phone" ? <div ref={ container }>
         <div style={{ position: "fixed", top: "120px" }}>
           <div style={{ height: "95vh", display: "flex" }}>

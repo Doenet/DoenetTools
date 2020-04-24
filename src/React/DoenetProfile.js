@@ -321,16 +321,9 @@ export default function DoenetProfile(props) {
   const menuControlProfile = [<PageHeader>{myProfile.username}'s Profile</PageHeader>];
   return (
     <>
-      {/* <DoenetHeader
-        toolTitle="Profile"
-        headingTitle="Edit My Profile"
-        willProvideProfile={true}
-        profile={myProfile}
-      ></DoenetHeader> */}
-      <ToolLayout>
-        <ToolLayoutPanel menuControls = {menuControlProfile}>
-        {/* <PageHeader>{myProfile.username}'s Profile</PageHeader> */}
-        <ProfileContainer id="content">
+    <ToolLayout headerTitle="Profile" >
+      <ToolLayoutPanel>
+      <ProfileContainer id="content">
         <ProfilePicture
           pic={myProfile.profilePicture}
           onClick={e => changeModalVisibility(e, "visible")}
@@ -404,8 +397,10 @@ export default function DoenetProfile(props) {
           <SectionHeader>Your Roles</SectionHeader>
           <StyledSwitch
             id="student"
-            onChange={e =>
+            onChange={e => {
+              e.preventDefault();
               updateMyProfile("roleStudent", e.target.checked, true)
+            }
             } // updates immediately
             checked={Number(myProfile.roleStudent)}
           >
@@ -463,8 +458,20 @@ export default function DoenetProfile(props) {
 
         <SectionHeader>Invites</SectionHeader>
       </ProfileContainer>
-        </ToolLayoutPanel>
-      </ToolLayout>
+      </ToolLayoutPanel>
+    </ToolLayout>
+
+
+     {/* <DoenetHeader
+        toolTitle="Profile"
+        // headingTitle="Edit My Profile"
+        willProvideProfile={true}
+        profile={myProfile}
+      ></DoenetHeader>  */}
+     
+        {/* <PageHeader>{myProfile.username}'s Profile</PageHeader>
+         */} 
+     
       
       
     </>
