@@ -158,7 +158,7 @@ export default class Answer extends InlineComponent {
           variableNames: ["value"]
         }
       }),
-      affectedBySugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
+      logicToWaitOnSugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
       replacementFunction: replaceFromOneString,
     });
 
@@ -220,7 +220,7 @@ export default class Answer extends InlineComponent {
           variableName: "size"
         }
       }),
-      affectedBySugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
+      logicToWaitOnSugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
       replacementFunction: replaceFromOneMath,
     });
 
@@ -282,7 +282,7 @@ export default class Answer extends InlineComponent {
           variableName: "size"
         }
       }),
-      affectedBySugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
+      logicToWaitOnSugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
 
       replacementFunction: replaceFromOneText,
     });
@@ -326,7 +326,7 @@ export default class Answer extends InlineComponent {
       comparison: 'atLeast',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["anyInlineComponents"],
+      logicToWaitOnSugar: ["anyInlineComponents"],
       replacementFunction: replaceFromJustChoices,
     });
 
@@ -497,7 +497,7 @@ export default class Answer extends InlineComponent {
           variableNames: ["incompleteType", "childForIncomplete", "splitIntoOptions"]
         }
       }),
-      affectedBySugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
+      logicToWaitOnSugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
       replacementFunction: replaceFromIncompleteAwards,
       condition: awardIsIncomplete,
     });

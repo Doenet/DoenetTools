@@ -53,7 +53,7 @@ export default class BooleanList extends InlineComponent {
           variableNames: ["value"]
         }
       }),
-      affectedBySugar: ["atLeastZeroBooleans"],
+      logicToWaitOnSugar: ["atLeastZeroBooleans"],
       replacementFunction: breakStringIntoBooleansByCommas,
     });
 

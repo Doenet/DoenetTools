@@ -159,7 +159,7 @@ export default class Line extends GraphicalComponent {
       propositions: [atLeastOneString, atLeastOneMath],
       requireConsecutive: true,
       isSugar: true,
-      affectedBySugar: ["exactlyOneEquation", "exactlyOneThrough"],
+      logicToWaitOnSugar: ["exactlyOneEquation", "exactlyOneThrough"],
       returnSugarDependencies: () => ({
         stringAndMathChildren: {
           dependencyType: "childStateVariables",
@@ -191,7 +191,7 @@ export default class Line extends GraphicalComponent {
       componentType: 'point',
       number: 2,
       isSugar: true,
-      affectedBySugar: ["exactlyOneThrough"],
+      logicToWaitOnSugar: ["exactlyOneThrough"],
       replacementFunction: addThrough,
     });
 

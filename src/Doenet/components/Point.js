@@ -91,7 +91,7 @@ export default class Point extends GraphicalComponent {
       propositions: [atLeastOneString, atLeastOneMath],
       requireConsecutive: true,
       isSugar: true,
-      affectedBySugar: ["exactlyOneCoords"],
+      logicToWaitOnSugar: ["exactlyOneCoords"],
       replacementFunction: addCoords,
     });
 
@@ -131,7 +131,7 @@ export default class Point extends GraphicalComponent {
       number: 1,
       isSugar: true,
       requireConsecutive: true,
-      affectedBySugar: ["atMostOneConstraints"],
+      logicToWaitOnSugar: ["atMostOneConstraints"],
       replacementFunction: addConstraints,
 
     });

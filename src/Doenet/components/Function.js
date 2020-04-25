@@ -49,7 +49,7 @@ export default class Function extends InlineComponent {
       propositions: [atLeastOneStrings, atLeastOneMaths],
       requireConsecutive: true,
       isSugar: true,
-      affectedBySugar: ["exactlyOneFormula"],
+      logicToWaitOnSugar: ["exactlyOneFormula"],
       replacementFunction: addFormula,
     });
 
@@ -109,7 +109,7 @@ export default class Function extends InlineComponent {
       operator: "or",
       propositions: [atLeastOneMaximum, atLeastOneMinimum, atLeastOneExtremum, atLeastOneThrough],
       isSugar: true,
-      affectedBySugar: ["atMostOneFunction"],
+      logicToWaitOnSugar: ["atMostOneFunction"],
       replacementFunction: addInterpolatedFunction,
     })
 

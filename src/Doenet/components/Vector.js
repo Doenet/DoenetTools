@@ -81,7 +81,7 @@ export default class Vector extends GraphicalComponent {
       componentType: 'point',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["exactlyOneHead"],
+      logicToWaitOnSugar: ["exactlyOneHead"],
       replacementFunction: addHead,
     });
 
@@ -90,7 +90,7 @@ export default class Vector extends GraphicalComponent {
       componentType: 'point',
       number: 2,
       isSugar: true,
-      affectedBySugar: ["exactlyOneEndpoints"],
+      logicToWaitOnSugar: ["exactlyOneEndpoints"],
       replacementFunction: addEndpoints,
     });
 
@@ -114,7 +114,7 @@ export default class Vector extends GraphicalComponent {
       propositions: [atLeastOneString, atLeastOneMath],
       requireConsecutive: true,
       isSugar: true,
-      affectedBySugar: ["exactlyOneEndpoints"],
+      logicToWaitOnSugar: ["exactlyOneEndpoints"],
       replacementFunction: addEndpoints,
     });
 
@@ -171,7 +171,7 @@ export default class Vector extends GraphicalComponent {
       componentType: 'point',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["exactlyOneTailForDisplacement"],
+      logicToWaitOnSugar: ["exactlyOneTailForDisplacement"],
       replacementFunction: addTail,
     });
 

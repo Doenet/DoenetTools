@@ -155,6 +155,7 @@ export default class Core {
     }
 
     this.unsatisfiedChildLogic = {};
+    this.childLogicWaitingOnSugar = {};
 
     // console.timeEnd('serialize doenetML');
 
@@ -3156,6 +3157,68 @@ export default class Core {
         // the name of the action state variable that to be created
         let applySugarStateVariable = `__childLogic_${childLogicName}`;
 
+
+        let childLogicAffected = [];
+        let childLogicWaiting = {};
+
+        if (childLogicComponent.logicToWaitOnSugar) {
+
+          // find all child logic components affected,
+          // not only those listed, but those who depend on those listed
+
+          // first create data structure listing all the child logic components
+          // that are affected by each child logic component
+          // Note: think this is typically not a long loop
+          // and this happens relatively rarely,
+          // so that it isn't worth precomputing this data structure
+          let childLogicDependencies = {};
+          for (let logicName in childLogic.logicComponents) {
+            let logicComponent = childLogic.logicComponents[logicName];
+            if (logicComponent.propositions) {
+              for (let proposition of logicComponent.propositions) {
+                if (childLogicDependencies[proposition.name] === undefined) {
+                  childLogicDependencies[proposition.name] = [];
+                }
+                childLogicDependencies[proposition.name].push(logicName);
+              }
+            }
+          }
+
+          // create an array of all childLogic components that are directly
+          // or indirectly dependent on the components that are listed
+          // as being affected by the sugar
+          childLogicAffected = [...childLogicComponent.logicToWaitOnSugar];
+          let logicToCheck = [...childLogicAffected];
+          let logicName = logicToCheck.pop();
+          while (logicName !== undefined) {
+            let newComponents = childLogicDependencies[logicName];
+            if (newComponents) {
+              for (let comp of newComponents) {
+                if (!childLogicAffected.includes(comp)) {
+                  childLogicAffected.push(comp);
+                  logicToCheck.push(comp);
+                }
+              }
+            }
+            logicName = logicToCheck.pop();
+          }
+
+          // for each childLogic component that is dependent on sugar
+          // add to data structure that lists all child logic components
+          // that are waiting on sugar
+          childLogicWaiting = this.childLogicWaitingOnSugar[component.componentName];
+          if (childLogicWaiting === undefined) {
+            childLogicWaiting = this.childLogicWaitingOnSugar[component.componentName] = {};
+          }
+          for (let affectedName of childLogicAffected) {
+            if (childLogicWaiting[affectedName] === undefined) {
+              childLogicWaiting[affectedName] = [];
+            }
+            childLogicWaiting[affectedName].push(applySugarStateVariable);
+          }
+        }
+
+
         // create an action state variable that will run when the sugar
         // dependencies are satisfied to:
         // - apply sugar
@@ -3180,6 +3243,19 @@ export default class Core {
             // delete state variable itself
             delete component.state[applySugarStateVariable];
 
+            // delete any childLogicWaiting
+            for (let affectedName of childLogicAffected) {
+              if (childLogicWaiting[affectedName] !== undefined) {
+                let index = childLogicWaiting[affectedName].indexOf(applySugarStateVariable);
+                if (index !== -1) {
+                  if (childLogicWaiting[affectedName].length === 1) {
+                    delete childLogicWaiting[affectedName];
+                  } else {
+                    childLogicWaiting[affectedName].splice(index, 1);
+                  }
+                }
+              }
+            }
             return { componentVarsDeleted: { [component.componentName]: [applySugarStateVariable] } }
 
           }
@@ -3820,6 +3896,37 @@ export default class Core {
           }
         }
       }
+
+      if (this.childLogicWaitingOnSugar[component.componentName] &&
+        this.childLogicWaitingOnSugar[component.componentName][dependencyDefinition.childLogicName]) {
+
+        // have state variables in component corresponding to the child logic
+        // with unresolved sugar
+        // so make a dependency to those sugar state variables
+        // This will prevent the current state variable from being resolved until
+        // after the sugar is applied
+
+        for (let childLogicStateVariable of this.childLogicWaitingOnSugar[component.componentName][dependencyDefinition.childLogicName]) {
+          let childLogicDependency = {
+            dependencyName: `_${dependencyName}_childLogic`,
+            dependencyType: 'stateVariable',
+            upstreamComponentName: component.componentName,
+            upstreamVariableName: stateVariable,
+            downstreamComponentName: component.componentName,
+            originalDownstreamVariableName: childLogicStateVariable,
+            mappedDownstreamVariableName: childLogicStateVariable,
+            valuesChanged: { [childLogicStateVariable]: { changed: true } },
+            requireChildLogicInitiallySatisfied: true,
+          };
+
+          newStateVariableDependencies[childLogicDependency.dependencyName] = childLogicDependency;
+          if (thisUpstream[childLogicStateVariable] === undefined) {
+            thisUpstream[childLogicStateVariable] = [];
+          }
+          thisUpstream[childLogicStateVariable].push(childLogicDependency);
+        }
+      }
+
 
     }
     else if (["descendantStateVariables", "descendantIdentity", "componentDescendantStateVariables", "componentDescendantIdentity"].includes(dependencyDefinition.dependencyType)) {

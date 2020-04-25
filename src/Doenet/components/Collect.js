@@ -34,7 +34,7 @@ export default class Collect extends CompositeComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["exactlyOneRefTarget"],
+      logicToWaitOnSugar: ["exactlyOneRefTarget"],
       replacementFunction: addRefTarget,
     });
 

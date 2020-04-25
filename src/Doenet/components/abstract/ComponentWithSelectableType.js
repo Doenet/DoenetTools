@@ -116,7 +116,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
           variableNames: ["value"],
         }
       }),
-      affectedBySugar: ["atMostOneChild"],
+      logicToWaitOnSugar: ["atMostOneChild"],
       replacementFunction: addType,
     });
 
@@ -173,6 +173,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneChild",
           variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
         },
       }),
       definition({ dependencyValues }) {

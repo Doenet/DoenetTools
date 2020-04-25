@@ -67,7 +67,7 @@ export default class NumberList extends InlineComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["atLeastZeroNumbers"],
+      logicToWaitOnSugar: ["atLeastZeroNumbers"],
       replacementFunction: breakStringIntoNumbersByCommas,
     });
 

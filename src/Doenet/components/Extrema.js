@@ -232,7 +232,7 @@ export class Extremum extends BaseComponent {
           variableNames: ["value"]
         }
       }),
-      affectedBySugar: ["exactlyOneLocation", "exactlyOneValue"],
+      logicToWaitOnSugar: ["exactlyOneLocation", "exactlyOneValue"],
       replacementFunction: createLocationValueFromSugar,
     });
 

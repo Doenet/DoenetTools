@@ -1180,7 +1180,7 @@ describe('SelectFromSequence Tag Tests',function() {
     })
   });
 
-  it('select multiple maths with excludes and excludecombiations',() => {
+  it('select multiple maths with excludes and excludecombinations',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample1" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>

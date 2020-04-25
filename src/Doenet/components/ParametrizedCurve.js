@@ -7,9 +7,6 @@ export default class ParametrizedCurve extends Curve {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.parameter = { default: me.fromAst('t'), propagateToDescendants: true };
-    properties.parmin = { default: me.fromAst(-10), propagateToDescendants: true };
-    properties.parmax = { default: me.fromAst(10), propagateToDescendants: TextTrackCue };
     properties.nDiscretizationPoints = { default: 500 };
     properties.periodic = { default: false };
     return properties;
@@ -37,7 +34,10 @@ export default class ParametrizedCurve extends Curve {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    delete stateVariableDefinitions.childrenToRender;
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { childrenToRender: [] } })
+    }
 
     stateVariableDefinitions.nVariables = {
       returnDependencies: () => ({
