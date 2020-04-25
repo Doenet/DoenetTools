@@ -536,6 +536,10 @@ export default class BaseComponent {
         [this.componentName]: [{
           dependencyType: "adapter",
           adapterVariable: adapterStateVariable,
+          adapterTargetIdentity: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          }
         }]
       }
     }

@@ -25,10 +25,10 @@ export default class Group extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+    stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({}),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { newValues: { readyToExpand: true } };
       },
     };
 

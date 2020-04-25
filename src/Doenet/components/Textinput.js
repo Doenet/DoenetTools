@@ -64,6 +64,7 @@ export default class Textinput extends Input {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneText",
           variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
         },
         prefill: {
           dependencyType: "stateVariable",

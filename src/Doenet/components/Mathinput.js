@@ -65,6 +65,7 @@ export default class Mathinput extends Input {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneMath",
           variableNames: ["value", "valueForDisplay"],
+          requireChildLogicInitiallySatisfied: true,
         },
         prefill: {
           dependencyType: "stateVariable",

@@ -137,8 +137,8 @@ export default class SelectFromSequence extends Sequence {
       definition: makeSelection,
     }
 
-    let originalReturnDependencies = stateVariableDefinitions.readyToExpandWhenResolved.returnDependencies;
-    stateVariableDefinitions.readyToExpandWhenResolved.returnDependencies = function () {
+    let originalReturnDependencies = stateVariableDefinitions.readyToExpand.returnDependencies;
+    stateVariableDefinitions.readyToExpand.returnDependencies = function () {
       let deps = originalReturnDependencies();
 
       deps.selectedValues = {

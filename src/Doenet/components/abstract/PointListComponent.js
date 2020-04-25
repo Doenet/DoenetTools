@@ -1,5 +1,6 @@
 import BaseComponent from './BaseComponent';
 import { returnBreakStringsSugarFunction } from '../commonsugar/breakstrings';
+import me from 'math-expressions';
 
 export default class PointListComponent extends BaseComponent {
   static componentType = "_pointlistcomponent";
@@ -204,10 +205,16 @@ export default class PointListComponent extends BaseComponent {
 
           if (!freshByKey[arrayKey]) {
             freshByKey[arrayKey] = true;
+            let coords;
+            if(dependencyValues.pointChild.length === 1) {
+              coords = dependencyValues.pointChild[0].stateValues.coords
+            } else {
+              coords = me.fromAst('\uff3f')
+            }
             return {
               newValues: {
                 points: {
-                  [arrayKey]: dependencyValues.pointChild[0].stateValues.coords
+                  [arrayKey]: coords
                 }
               }
             }

@@ -135,7 +135,7 @@ export default class Subsref extends CompositeComponent {
     };
 
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+    stateVariableDefinitions.readyToExpand = {
       stateVariablesDeterminingDependencies: [
         "targetSubs"
       ],
@@ -149,8 +149,8 @@ export default class Subsref extends CompositeComponent {
         if (compositeClass.isPrototypeOf(targetSubsClass)) {
           dependencies.targetSubsReady = {
             dependencyType: "componentStateVariable",
-            componentName: stateValues.targetSubs.componentName,
-            variableName: "readyToExpandWhenResolved"
+            componentIdentity: stateValues.targetSubs,
+            variableName: "readyToExpand"
           }
         }
 
@@ -158,7 +158,7 @@ export default class Subsref extends CompositeComponent {
 
       },
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { newValues: { readyToExpand: true } };
       },
     };
 

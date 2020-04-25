@@ -43,6 +43,20 @@ export default class CompositeComponent extends BaseComponent {
       })
     }
 
+
+    stateVariableDefinitions.recursiveReplacementsForProp = {
+      returnDependencies: () => ({
+        recursiveReplacementsForProp: {
+          dependencyType: "replacementIdentity",
+          recursive: true,
+          recurseForProp: true,
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { recursiveReplacementsForProp: dependencyValues.recursiveReplacementsForProp }
+      })
+    }
+
     return stateVariableDefinitions;
   }
 

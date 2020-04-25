@@ -530,9 +530,21 @@ export default class Vector extends GraphicalComponent {
             console.warn('vector cannot be determined from zero endpoints')
             return { newValues: { head: me.fromAst(0) } }
           } else if (dependencyValues.endpointsChild[0].stateValues.nPoints === 1) {
-            return { newValues: { head: dependencyValues.endpointsChild[0].stateValues.point1 } }
+            let head = dependencyValues.endpointsChild[0].stateValues.point1;
+            if(!head) {
+              // it is possible, when dependencies haven't been updated
+              // that don't have point1 set yet
+              head = me.fromAst(0);
+            }
+            return { newValues: { head } }
           } else if (dependencyValues.endpointsChild[0].stateValues.nPoints === 2) {
-            return { newValues: { head: dependencyValues.endpointsChild[0].stateValues.point2 } }
+            let head = dependencyValues.endpointsChild[0].stateValues.point2;
+            if(!head) {
+              // it is possible, when dependencies haven't been updated
+              // that don't have point2 set yet
+              head = me.fromAst(0);
+            }
+            return { newValues: { head } }
           } else if (dependencyValues.endpointsChild[0].stateValues.nPoints > 2) {
             console.warn('vector cannot be determined from more than two endpoints')
             return { newValues: { head: me.fromAst('\uff3f') } }
@@ -819,7 +831,13 @@ export default class Vector extends GraphicalComponent {
             console.warn('vector cannot be determined from zero endpoints')
             return { newValues: { tail: me.fromAst(0) } }
           } else if (dependencyValues.endpointsChild[0].stateValues.nPoints === 2) {
-            return { newValues: { tail: dependencyValues.endpointsChild[0].stateValues.point1 } }
+            let tail = dependencyValues.endpointsChild[0].stateValues.point1;
+            if(!tail) {
+              // it is possible, when dependencies haven't been updated
+              // that don't have point1 set yet
+              tail = me.fromAst(0);
+            }
+            return { newValues: { tail } }
           } else if (dependencyValues.endpointsChild[0].stateValues.nPoints > 2) {
             console.warn('vector cannot be determined from more than two endpoints')
             return { newValues: { tail: me.fromAst('\uff3f') } }

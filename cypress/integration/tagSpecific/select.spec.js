@@ -512,7 +512,7 @@ describe('Select Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     let samplemaths;
-
+    let sampleIndices;
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let samplereplacements = components['/sample1'].replacements;
@@ -532,6 +532,10 @@ describe('Select Tag Tests', function () {
         expect(choices3[ind].stateValues.value.tree).eq(samplemaths[ind]);
       }
 
+      sampleIndices = samplemaths.map(x => ["a","b","c"].indexOf(x));
+      expect(components["/sample1"].stateValues.selectedIndices).eqls(sampleIndices)
+      expect(components["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
+      expect(components['/pchoices3'].replacements[0].activeChildren[1].definingChildren[0].stateValues.selectedIndices).eqls(sampleIndices)
     });
 
 
@@ -552,6 +556,11 @@ describe('Select Tag Tests', function () {
         expect(choices2[ind].stateValues.value.tree).eq(samplemaths[ind]);
         expect(choices3[ind].stateValues.value.tree).eq(samplemaths[ind]);
       }
+
+      expect(components["/sample1"].stateValues.selectedIndices).eqls(sampleIndices)
+      expect(components["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
+      expect(components['/pchoices3'].replacements[0].activeChildren[1].definingChildren[0].stateValues.selectedIndices).eqls(sampleIndices)
+
     })
 
     cy.log("Values change to reflect ref sources");
@@ -579,6 +588,11 @@ describe('Select Tag Tests', function () {
         expect(choices2[ind].stateValues.value.tree).eq(newvalues[samplemaths[ind]]);
         expect(choices3[ind].stateValues.value.tree).eq(newvalues[samplemaths[ind]]);
       }
+
+      expect(components["/sample1"].stateValues.selectedIndices).eqls(sampleIndices)
+      expect(components["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
+      expect(components['/pchoices3'].replacements[0].activeChildren[1].definingChildren[0].stateValues.selectedIndices).eqls(sampleIndices)
+
     })
 
 
@@ -2890,6 +2904,81 @@ describe('Select Tag Tests', function () {
     </select>
   </aslist></p>
   
+  <p><ref name="x1a">x1</ref>, <ref name="y1a">y1</ref>, <ref name="z1a">z1</ref></p>
+  <p><ref name="x2a">X2</ref>, <ref name="y2a">Y2</ref>, <ref name="z2a">Z2</ref></p>
+  
+  <p> 
+    <ref name="n2">n3</ref>
+    <ref name="n">num1</ref>
+    <math name="num1"><ref>n2</ref>+<ref>num2</ref></math>
+    <math name="num2"><ref>n3</ref>+<ref>num3</ref></math>
+    <ref name="n3">num3</ref>
+    <number name="num3">1</number>
+  </p>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let x1 = components['/x1'].stateValues.value.tree;
+      let y1 = components['/y1'].stateValues.value.tree;
+      let z1 = components['/z1'].stateValues.value.tree;
+      let x2 = components['/x2'].stateValues.value.tree;
+      let y2 = components['/y2'].stateValues.value.tree;
+      let z2 = components['/z2'].stateValues.value.tree;
+
+      expect(["x", "y", "z"].includes(x1)).eq(true);
+      expect(["x", "y", "z"].includes(y1)).eq(true);
+      expect(["x", "y", "z"].includes(z1)).eq(true);
+      expect(["u", "v", "w"].includes(x2)).eq(true);
+      expect(["u", "v", "w"].includes(y2)).eq(true);
+      expect(["u", "v", "w"].includes(z2)).eq(true);
+
+      let x1a = components['/x1a'].replacements[0].stateValues.value.tree;
+      let y1a = components['/y1a'].replacements[0].stateValues.value.tree;
+      let z1a = components['/z1a'].replacements[0].stateValues.value.tree;
+      let x2a = components['/x2a'].replacements[0].stateValues.value.tree;
+      let y2a = components['/y2a'].replacements[0].stateValues.value.tree;
+      let z2a = components['/z2a'].replacements[0].stateValues.value.tree;
+
+      expect(x1a).eq(x1);
+      expect(y1a).eq(y1);
+      expect(z1a).eq(z1);
+      expect(x2a).eq(x2);
+      expect(y2a).eq(y2);
+      expect(z2a).eq(z2);
+
+    })
+  });
+
+  it('two selects with mutual dependence through intermediate refs, numbertoselect initially unresolved', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><aslist>
+    <select name="s1" assignnames="X1, y1, z1" withReplacement>
+      <numberToSelect><ref prop="numberToSelect">s2b</ref></numberToSelect>
+      <math>x</math><math>y</math><math>z</math>
+    </select>
+  </aslist></p>
+
+  <p><aslist>
+    <select name="s2" assignnames="X2, y2, z2">
+      <numberToSelect><ref>n</ref></numberToSelect>
+      <withReplacement><ref prop="withReplacement">s1b</ref></withReplacement>
+      <math>u</math><math>v</math><math>w</math>
+    </select>
+  </aslist></p>
+
+  <p><aslist><ref name="s1a">s1</ref></aslist></p>
+  <p><aslist><ref name="s2a">s2</ref></aslist></p>
+  <p><aslist><ref name="s1b">s1a</ref></aslist></p>
+  <p><aslist><ref name="s2b">s2a</ref></aslist></p>
+
   <p><ref name="x1a">x1</ref>, <ref name="y1a">y1</ref>, <ref name="z1a">z1</ref></p>
   <p><ref name="x2a">X2</ref>, <ref name="y2a">Y2</ref>, <ref name="z2a">Z2</ref></p>
   

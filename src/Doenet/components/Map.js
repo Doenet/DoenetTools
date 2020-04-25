@@ -136,7 +136,7 @@ export default class Map extends CompositeComponent {
       }
     }
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+    stateVariableDefinitions.readyToExpand = {
 
       returnDependencies: () => ({
         validBehavior: {
@@ -152,7 +152,7 @@ export default class Map extends CompositeComponent {
       definition: function () {
         // even with invalid behavior, still ready to expand
         // (it will just expand with zero replacements)
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { newValues: { readyToExpand: true } };
       },
     };
 
@@ -162,9 +162,9 @@ export default class Map extends CompositeComponent {
 
   static createSerializedReplacements({ component, workspace }) {
 
-    // evaluate readyToExpandWhenResolved so that it is marked fresh,
+    // evaluate readyToExpand so that it is marked fresh,
     // as it being marked stale triggers replacement update
-    component.stateValues.readyToExpandWhenResolved;
+    component.stateValues.readyToExpand;
 
     if (!component.stateValues.validBehavior) {
       workspace.lastReplacementParameters = {
@@ -302,9 +302,9 @@ export default class Map extends CompositeComponent {
 
     // console.log(`calculate replacement changes for ${component.componentName}`)
 
-    // evaluate readyToExpandWhenResolved so that it is marked fresh,
+    // evaluate readyToExpand so that it is marked fresh,
     // as it being marked stale triggers replacement update
-    component.stateValues.readyToExpandWhenResolved;
+    component.stateValues.readyToExpand;
 
     let replacementChanges = [];
 

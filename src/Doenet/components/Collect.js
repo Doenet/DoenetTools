@@ -326,14 +326,14 @@ export default class Collect extends CompositeComponent {
             if (!propVariableObj.componentType) {
               dependencies[`replacementComponentType${ind}`] = {
                 dependencyType: "componentStateVariableComponentType",
-                componentName: stateValues.collectedComponents[ind].componentName,
+                componentIdentity: stateValues.collectedComponents[ind],
                 variableName: propVariableObj.varName,
               }
             }
             if (propVariableObj.isArray) {
               dependencies[`targetArray${ind}`] = {
                 dependencyType: "componentStateVariable",
-                componentName: stateValues.collectedComponents[ind].componentName,
+                componentIdentity: stateValues.collectedComponents[ind],
                 variableName: propVariableObj.varName,
               }
             }
@@ -425,7 +425,7 @@ export default class Collect extends CompositeComponent {
     };
 
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+    stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({
         replacementClasses: {
           dependencyType: "stateVariable",
@@ -437,7 +437,7 @@ export default class Collect extends CompositeComponent {
         }
       }),
       definition: () => ({
-        newValues: { readyToExpandWhenResolved: true }
+        newValues: { readyToExpand: true }
       })
     }
 

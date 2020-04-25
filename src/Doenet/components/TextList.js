@@ -2,6 +2,7 @@ import InlineComponent from './abstract/InlineComponent';
 
 export default class TextList extends InlineComponent {
   static componentType = "textlist";
+  static rendererType = "aslist";
 
   // when another component has a property that is a textlist,
   // use the texts state variable to populate that property
@@ -161,12 +162,15 @@ export default class TextList extends InlineComponent {
           variableName: "maximumNumber",
         },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+
         let childrenToRender = [];
 
         for (let child of dependencyValues.textAndTextlistChildren) {
-
-          if (child.stateValues.childrenToRender) {
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "textlist"
+          })) {
             childrenToRender.push(...child.stateValues.childrenToRender);
           } else {
             childrenToRender.push(child.componentName);
@@ -185,14 +189,6 @@ export default class TextList extends InlineComponent {
     }
 
     return stateVariableDefinitions;
-  }
-
-  initializeRenderer() {
-    if (this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.aslist({
-        key: this.componentName,
-      });
-    }
   }
 
 }

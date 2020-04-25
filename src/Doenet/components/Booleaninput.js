@@ -64,6 +64,7 @@ export default class Booleaninput extends Input {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneBoolean",
           variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
         },
         prefill: {
           dependencyType: "stateVariable",

@@ -39,16 +39,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -84,16 +84,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -109,16 +109,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -141,16 +141,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -189,16 +189,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -234,16 +234,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -259,16 +259,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -291,16 +291,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -339,16 +339,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -384,16 +384,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -409,16 +409,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -441,16 +441,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -490,16 +490,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -536,16 +536,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -562,16 +562,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -595,16 +595,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -644,16 +644,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -690,16 +690,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -716,16 +716,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -749,16 +749,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -798,16 +798,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -844,16 +844,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -870,16 +870,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -903,16 +903,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -952,16 +952,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -998,16 +998,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -1024,16 +1024,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -1057,16 +1057,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -1106,16 +1106,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -1152,16 +1152,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -1178,16 +1178,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -1211,16 +1211,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -1260,16 +1260,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -1306,16 +1306,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -1332,16 +1332,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -1365,16 +1365,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -1414,16 +1414,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -1460,16 +1460,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -1486,16 +1486,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -1519,16 +1519,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -1568,16 +1568,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -1614,16 +1614,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -1640,16 +1640,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -1673,16 +1673,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -1722,16 +1722,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -1768,16 +1768,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -1794,16 +1794,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -1827,16 +1827,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -1876,16 +1876,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -1922,16 +1922,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -1948,16 +1948,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -1981,16 +1981,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -2030,16 +2030,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -2076,16 +2076,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -2102,16 +2102,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -2135,16 +2135,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -2183,16 +2183,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -2228,16 +2228,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -2253,16 +2253,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -2285,16 +2285,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move just head');
@@ -2336,16 +2336,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -2382,16 +2382,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -2408,16 +2408,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -2441,16 +2441,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -2490,16 +2490,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -2536,16 +2536,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -2562,16 +2562,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -2595,16 +2595,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -2644,16 +2644,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -2690,16 +2690,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -2716,16 +2716,16 @@ describe('Vector Tag Tests', function () {
         tail.movePoint({ x: tailx, y: taily });
         head.movePoint({ x: headx, y: heady });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -2749,16 +2749,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -2798,16 +2798,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -2844,16 +2844,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -2870,16 +2870,16 @@ describe('Vector Tag Tests', function () {
         head.movePoint({ x: headx, y: heady });
         tail.movePoint({ x: tailx, y: taily });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -2903,16 +2903,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -2952,16 +2952,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
       })
 
@@ -2998,16 +2998,16 @@ describe('Vector Tag Tests', function () {
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move reffed head and tail')
@@ -3024,16 +3024,16 @@ describe('Vector Tag Tests', function () {
         head.movePoint({ x: headx, y: heady });
         tail.movePoint({ x: tailx, y: taily });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", 0, 0]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", 0, 0]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
 
       cy.log('move displacement')
@@ -3057,16 +3057,16 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
         expect(tail.stateValues.xs[0].tree).eq(tailx);
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.tree).eqls(["tuple", displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.tree).eqls(["tuple", displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+        expect(displacement.stateValues.tail.tree).eqls(["vector", displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.tree).eqls(["vector", displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
       })
     })
   })
@@ -3137,16 +3137,16 @@ describe('Vector Tag Tests', function () {
         let v3hy = 6;
 
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v1tx, v1ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v1hx, v1hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v1tx, v1ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v2tx, v2ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v2hx, v2hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v2tx, v2ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v3tx, v3ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v3hx, v3hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v3tx, v3ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v3hx, v3hy]);
         }
 
       })
@@ -3172,16 +3172,16 @@ describe('Vector Tag Tests', function () {
         let v3hx = -3;
         let v3hy = 6;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v1tx, v1ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v1hx, v1hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v1tx, v1ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v2tx, v2ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v2hx, v2hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v2tx, v2ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v3tx, v3ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v3hx, v3hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v3tx, v3ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v3hx, v3hy]);
         }
       })
 
@@ -3206,16 +3206,16 @@ describe('Vector Tag Tests', function () {
         let v3hx = -3;
         let v3hy = 6;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v1tx, v1ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v1hx, v1hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v1tx, v1ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v2tx, v2ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v2hx, v2hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v2tx, v2ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v3tx, v3ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v3hx, v3hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v3tx, v3ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v3hx, v3hy]);
         }
       })
 
@@ -3240,16 +3240,16 @@ describe('Vector Tag Tests', function () {
         let v3hx = -3;
         let v3hy = 6;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v1tx, v1ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v1hx, v1hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v1tx, v1ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v2tx, v2ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v2hx, v2hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v2tx, v2ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v3tx, v3ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v3hx, v3hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v3tx, v3ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v3hx, v3hy]);
         }
       })
 
@@ -3275,16 +3275,16 @@ describe('Vector Tag Tests', function () {
         let v3hx = -3;
         let v3hy = 6;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v1tx, v1ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v1hx, v1hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v1tx, v1ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v2tx, v2ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v2hx, v2hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v2tx, v2ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v3tx, v3ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v3hx, v3hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v3tx, v3ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v3hx, v3hy]);
         }
       })
 
@@ -3310,16 +3310,16 @@ describe('Vector Tag Tests', function () {
         let v3hx = -3;
         let v3hy = 6;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v1tx, v1ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v1hx, v1hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v1tx, v1ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v2tx, v2ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v2hx, v2hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v2tx, v2ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v3tx, v3ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v3hx, v3hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v3tx, v3ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v3hx, v3hy]);
         }
       })
 
@@ -3345,16 +3345,16 @@ describe('Vector Tag Tests', function () {
         let v3hx = -3;
         let v3hy = 6;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v1tx, v1ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v1hx, v1hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v1tx, v1ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v2tx, v2ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v2hx, v2hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v2tx, v2ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v3tx, v3ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v3hx, v3hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v3tx, v3ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v3hx, v3hy]);
         }
       })
 
@@ -3380,16 +3380,16 @@ describe('Vector Tag Tests', function () {
         let v2hx = 5;
         let v2hy = -9;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v1tx, v1ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v1hx, v1hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v1tx, v1ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v2tx, v2ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v2hx, v2hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v2tx, v2ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v3tx, v3ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v3hx, v3hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v3tx, v3ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v3hx, v3hy]);
         }
       })
 
@@ -3415,16 +3415,16 @@ describe('Vector Tag Tests', function () {
         let v2hx = 5;
         let v2hy = -9;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v1tx, v1ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v1hx, v1hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v1tx, v1ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v2tx, v2ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v2hx, v2hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v2tx, v2ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v3tx, v3ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v3hx, v3hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v3tx, v3ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v3hx, v3hy]);
         }
       })
 
@@ -3450,16 +3450,16 @@ describe('Vector Tag Tests', function () {
         let v2hx = 5;
         let v2hy = -9;
         for (let name of vector1s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v1tx, v1ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v1hx, v1hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v1tx, v1ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v1hx, v1hy]);
         }
         for (let name of vector2s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v2tx, v2ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v2hx, v2hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v2tx, v2ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v2hx, v2hy]);
         }
         for (let name of vector3s) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", v3tx, v3ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", v3hx, v3hy]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", v3tx, v3ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", v3hx, v3hy]);
         }
       })
 
@@ -3518,15 +3518,15 @@ describe('Vector Tag Tests', function () {
         let dhead_ys = dtail_ys.map(y => y + displacement_y);
 
         for (let name of vectors) {
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", vector_tx, vector_ty]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", vector_hx, vector_hy]);
-          expect(components[name].stateValues.displacement.tree).eqls(["tuple", displacement_x, displacement_y]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", vector_tx, vector_ty]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", vector_hx, vector_hy]);
+          expect(components[name].stateValues.displacement.tree).eqls(["vector", displacement_x, displacement_y]);
         }
         for (let i = 0; i < 2; i++) {
           let name = displacements[i];
-          expect(components[name].stateValues.tail.tree).eqls(["tuple", dtail_xs[i], dtail_ys[i]]);
-          expect(components[name].stateValues.head.tree).eqls(["tuple", dhead_xs[i], dhead_ys[i]]);
-          expect(components[name].stateValues.displacement.tree).eqls(["tuple", displacement_x, displacement_y]);
+          expect(components[name].stateValues.tail.tree).eqls(["vector", dtail_xs[i], dtail_ys[i]]);
+          expect(components[name].stateValues.head.tree).eqls(["vector", dhead_xs[i], dhead_ys[i]]);
+          expect(components[name].stateValues.displacement.tree).eqls(["vector", displacement_x, displacement_y]);
         }
 
       })
@@ -3559,15 +3559,15 @@ describe('Vector Tag Tests', function () {
           let dhead_ys = dtail_ys.map(y => y + displacement_y);
 
           for (let name of vectors) {
-            expect(components[name].stateValues.tail.tree).eqls(["tuple", vector_tx, vector_ty]);
-            expect(components[name].stateValues.head.tree).eqls(["tuple", vector_hx, vector_hy]);
-            expect(components[name].stateValues.displacement.tree).eqls(["tuple", displacement_x, displacement_y]);
+            expect(components[name].stateValues.tail.tree).eqls(["vector", vector_tx, vector_ty]);
+            expect(components[name].stateValues.head.tree).eqls(["vector", vector_hx, vector_hy]);
+            expect(components[name].stateValues.displacement.tree).eqls(["vector", displacement_x, displacement_y]);
           }
           for (let i = 0; i < 2; i++) {
             let name = displacements[i];
-            expect(components[name].stateValues.tail.tree).eqls(["tuple", dtail_xs[i], dtail_ys[i]]);
-            expect(components[name].stateValues.head.tree).eqls(["tuple", dhead_xs[i], dhead_ys[i]]);
-            expect(components[name].stateValues.displacement.tree).eqls(["tuple", displacement_x, displacement_y]);
+            expect(components[name].stateValues.tail.tree).eqls(["vector", dtail_xs[i], dtail_ys[i]]);
+            expect(components[name].stateValues.head.tree).eqls(["vector", dhead_xs[i], dhead_ys[i]]);
+            expect(components[name].stateValues.displacement.tree).eqls(["vector", displacement_x, displacement_y]);
           }
         }
       })
@@ -3603,15 +3603,15 @@ describe('Vector Tag Tests', function () {
           });
 
           for (let name of vectors) {
-            expect(components[name].stateValues.tail.tree).eqls(["tuple", vector_tx, vector_ty]);
-            expect(components[name].stateValues.head.tree).eqls(["tuple", vector_hx, vector_hy]);
-            expect(components[name].stateValues.displacement.tree).eqls(["tuple", displacement_x, displacement_y]);
+            expect(components[name].stateValues.tail.tree).eqls(["vector", vector_tx, vector_ty]);
+            expect(components[name].stateValues.head.tree).eqls(["vector", vector_hx, vector_hy]);
+            expect(components[name].stateValues.displacement.tree).eqls(["vector", displacement_x, displacement_y]);
           }
           for (let j = 0; j < 2; j++) {
             let name = displacements[j];
-            expect(components[name].stateValues.tail.tree).eqls(["tuple", dtail_xs[j], dtail_ys[j]]);
-            expect(components[name].stateValues.head.tree).eqls(["tuple", dhead_xs[j], dhead_ys[j]]);
-            expect(components[name].stateValues.displacement.tree).eqls(["tuple", displacement_x, displacement_y]);
+            expect(components[name].stateValues.tail.tree).eqls(["vector", dtail_xs[j], dtail_ys[j]]);
+            expect(components[name].stateValues.head.tree).eqls(["vector", dhead_xs[j], dhead_ys[j]]);
+            expect(components[name].stateValues.displacement.tree).eqls(["vector", displacement_x, displacement_y]);
           }
         }
       })
@@ -3641,8 +3641,8 @@ describe('Vector Tag Tests', function () {
     cy.log('check initial values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", 1, 2]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", 3, 4]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", 1, 2]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", 3, 4]);
       expect(components['/_point3'].stateValues.xs[0].tree).eq(1);
       expect(components['/_point3'].stateValues.xs[1].tree).eq(2);
     });
@@ -3654,8 +3654,8 @@ describe('Vector Tag Tests', function () {
         tailcoords: [-4, 4],
         headcoords: [4, -4],
       })
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", -4, 4]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", 4, -4]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", -4, 4]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", 4, -4]);
 
       let xorig = -5;
       let yorig = 2;
@@ -3761,8 +3761,8 @@ describe('Vector Tag Tests', function () {
     cy.log('check initial values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", 1, 2]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", 3, 4]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", 1, 2]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", 3, 4]);
       expect(components['/_point3'].stateValues.xs[0].tree).eq(-5);
       expect(components['/_point3'].stateValues.xs[1].tree).eq(2);
     });
@@ -3774,8 +3774,8 @@ describe('Vector Tag Tests', function () {
         tailcoords: [-4, 4],
         headcoords: [4, -4],
       })
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", -4, 4]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", 4, -4]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", -4, 4]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", 4, -4]);
       expect(components['/_point3'].stateValues.xs[0].tree).eq(-5)
       expect(components['/_point3'].stateValues.xs[1].tree).eq(2)
     });
@@ -3895,10 +3895,10 @@ describe('Vector Tag Tests', function () {
     cy.log('check initial values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/original'].stateValues.tail.tree).eqls(["tuple", 0, 0]);
-      expect(components['/original'].stateValues.head.tree).eqls(["tuple", 1, 3]);
-      expect(components['/multiplied'].stateValues.tail.tree).eqls(["tuple", 0, 0]);
-      expect(components['/multiplied'].stateValues.head.tree).eqls(["tuple", 2, 6]);
+      expect(components['/original'].stateValues.tail.tree).eqls(["vector", 0, 0]);
+      expect(components['/original'].stateValues.head.tree).eqls(["vector", 1, 3]);
+      expect(components['/multiplied'].stateValues.tail.tree).eqls(["vector", 0, 0]);
+      expect(components['/multiplied'].stateValues.head.tree).eqls(["vector", 2, 6]);
     });
 
     cy.log('move original vector')
@@ -3906,10 +3906,10 @@ describe('Vector Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       components['/original'].moveVector({ headcoords: [-5, 1] })
-      expect(components['/original'].stateValues.tail.tree).eqls(["tuple", 0, 0]);
-      expect(components['/original'].stateValues.head.tree).eqls(["tuple", -5, 1]);
-      expect(components['/multiplied'].stateValues.tail.tree).eqls(["tuple", 0, 0]);
-      expect(components['/multiplied'].stateValues.head.tree).eqls(["tuple", -10, 2]);
+      expect(components['/original'].stateValues.tail.tree).eqls(["vector", 0, 0]);
+      expect(components['/original'].stateValues.head.tree).eqls(["vector", -5, 1]);
+      expect(components['/multiplied'].stateValues.tail.tree).eqls(["vector", 0, 0]);
+      expect(components['/multiplied'].stateValues.head.tree).eqls(["vector", -10, 2]);
     });
 
     cy.log('move multiplied vector')
@@ -3917,10 +3917,10 @@ describe('Vector Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       components['/multiplied'].moveVector({ headcoords: [6, -8] })
-      expect(components['/original'].stateValues.tail.tree).eqls(["tuple", 0, 0]);
-      expect(components['/original'].stateValues.head.tree).eqls(["tuple", 3, -4]);
-      expect(components['/multiplied'].stateValues.tail.tree).eqls(["tuple", 0, 0]);
-      expect(components['/multiplied'].stateValues.head.tree).eqls(["tuple", 6, -8]);
+      expect(components['/original'].stateValues.tail.tree).eqls(["vector", 0, 0]);
+      expect(components['/original'].stateValues.head.tree).eqls(["vector", 3, -4]);
+      expect(components['/multiplied'].stateValues.tail.tree).eqls(["vector", 0, 0]);
+      expect(components['/multiplied'].stateValues.head.tree).eqls(["vector", 6, -8]);
     });
 
     cy.log("Change factor");
@@ -3928,10 +3928,10 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/original'].stateValues.tail.tree).eqls(["tuple", 0, 0]);
-      expect(components['/original'].stateValues.head.tree).eqls(["tuple", 3, -4]);
-      expect(components['/multiplied'].stateValues.tail.tree).eqls(["tuple", 0, 0]);
-      expect(components['/multiplied'].stateValues.head.tree).eqls(["tuple", -9, 12]);
+      expect(components['/original'].stateValues.tail.tree).eqls(["vector", 0, 0]);
+      expect(components['/original'].stateValues.head.tree).eqls(["vector", 3, -4]);
+      expect(components['/multiplied'].stateValues.tail.tree).eqls(["vector", 0, 0]);
+      expect(components['/multiplied'].stateValues.head.tree).eqls(["vector", -9, 12]);
     });
 
     cy.log('move multiplied vector again')
@@ -3939,10 +3939,10 @@ describe('Vector Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       components['/multiplied'].moveVector({ headcoords: [-6, -3] })
-      expect(components['/original'].stateValues.tail.tree).eqls(["tuple", 0, 0]);
-      expect(components['/original'].stateValues.head.tree).eqls(["tuple", 2, 1]);
-      expect(components['/multiplied'].stateValues.tail.tree).eqls(["tuple", 0, 0]);
-      expect(components['/multiplied'].stateValues.head.tree).eqls(["tuple", -6, -3]);
+      expect(components['/original'].stateValues.tail.tree).eqls(["vector", 0, 0]);
+      expect(components['/original'].stateValues.head.tree).eqls(["vector", 2, 1]);
+      expect(components['/multiplied'].stateValues.tail.tree).eqls(["vector", 0, 0]);
+      expect(components['/multiplied'].stateValues.head.tree).eqls(["vector", -6, -3]);
     });
 
 
@@ -3984,15 +3984,15 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/u'].stateValues.tail.tree).eqls(["tuple", ...uTail]);
-      expect(components['/u'].stateValues.head.tree).eqls(["tuple", ...uHead]);
-      expect(components['/u'].stateValues.displacement.tree).eqls(["tuple", ...u]);
-      expect(components['/v'].stateValues.tail.tree).eqls(["tuple", ...vTail]);
-      expect(components['/v'].stateValues.head.tree).eqls(["tuple", ...vHead]);
-      expect(components['/v'].stateValues.displacement.tree).eqls(["tuple", ...v]);
-      expect(components['/w'].stateValues.tail.tree).eqls(["tuple", ...wTail]);
-      expect(components['/w'].stateValues.head.tree).eqls(["tuple", ...wHead]);
-      expect(components['/w'].stateValues.displacement.tree).eqls(["tuple", ...w]);
+      expect(components['/u'].stateValues.tail.tree).eqls(["vector", ...uTail]);
+      expect(components['/u'].stateValues.head.tree).eqls(["vector", ...uHead]);
+      expect(components['/u'].stateValues.displacement.tree).eqls(["vector", ...u]);
+      expect(components['/v'].stateValues.tail.tree).eqls(["vector", ...vTail]);
+      expect(components['/v'].stateValues.head.tree).eqls(["vector", ...vHead]);
+      expect(components['/v'].stateValues.displacement.tree).eqls(["vector", ...v]);
+      expect(components['/w'].stateValues.tail.tree).eqls(["vector", ...wTail]);
+      expect(components['/w'].stateValues.head.tree).eqls(["vector", ...wHead]);
+      expect(components['/w'].stateValues.displacement.tree).eqls(["vector", ...w]);
     });
 
     cy.log('moving tail of v just moves head of u')
@@ -4007,15 +4007,15 @@ describe('Vector Tag Tests', function () {
 
       v = vHead.map((x, i) => x - vTail[i]);
 
-      expect(components['/u'].stateValues.tail.tree).eqls(["tuple", ...uTail]);
-      expect(components['/u'].stateValues.head.tree).eqls(["tuple", ...uHead]);
-      expect(components['/u'].stateValues.displacement.tree).eqls(["tuple", ...u]);
-      expect(components['/v'].stateValues.tail.tree).eqls(["tuple", ...vTail]);
-      expect(components['/v'].stateValues.head.tree).eqls(["tuple", ...vHead]);
-      expect(components['/v'].stateValues.displacement.tree).eqls(["tuple", ...v]);
-      expect(components['/w'].stateValues.tail.tree).eqls(["tuple", ...wTail]);
-      expect(components['/w'].stateValues.head.tree).eqls(["tuple", ...wHead]);
-      expect(components['/w'].stateValues.displacement.tree).eqls(["tuple", ...w]);
+      expect(components['/u'].stateValues.tail.tree).eqls(["vector", ...uTail]);
+      expect(components['/u'].stateValues.head.tree).eqls(["vector", ...uHead]);
+      expect(components['/u'].stateValues.displacement.tree).eqls(["vector", ...u]);
+      expect(components['/v'].stateValues.tail.tree).eqls(["vector", ...vTail]);
+      expect(components['/v'].stateValues.head.tree).eqls(["vector", ...vHead]);
+      expect(components['/v'].stateValues.displacement.tree).eqls(["vector", ...v]);
+      expect(components['/w'].stateValues.tail.tree).eqls(["vector", ...wTail]);
+      expect(components['/w'].stateValues.head.tree).eqls(["vector", ...wHead]);
+      expect(components['/w'].stateValues.displacement.tree).eqls(["vector", ...w]);
     });
 
     cy.log('moving head of u keeps v displacement fixed')
@@ -4035,15 +4035,15 @@ describe('Vector Tag Tests', function () {
       wHead = w.map((x, i) => x + wTail[i]);
 
 
-      expect(components['/u'].stateValues.tail.tree).eqls(["tuple", ...uTail]);
-      expect(components['/u'].stateValues.head.tree).eqls(["tuple", ...uHead]);
-      expect(components['/u'].stateValues.displacement.tree).eqls(["tuple", ...u]);
-      expect(components['/v'].stateValues.tail.tree).eqls(["tuple", ...vTail]);
-      expect(components['/v'].stateValues.head.tree).eqls(["tuple", ...vHead]);
-      expect(components['/v'].stateValues.displacement.tree).eqls(["tuple", ...v]);
-      expect(components['/w'].stateValues.tail.tree).eqls(["tuple", ...wTail]);
-      expect(components['/w'].stateValues.head.tree).eqls(["tuple", ...wHead]);
-      expect(components['/w'].stateValues.displacement.tree).eqls(["tuple", ...w]);
+      expect(components['/u'].stateValues.tail.tree).eqls(["vector", ...uTail]);
+      expect(components['/u'].stateValues.head.tree).eqls(["vector", ...uHead]);
+      expect(components['/u'].stateValues.displacement.tree).eqls(["vector", ...u]);
+      expect(components['/v'].stateValues.tail.tree).eqls(["vector", ...vTail]);
+      expect(components['/v'].stateValues.head.tree).eqls(["vector", ...vHead]);
+      expect(components['/v'].stateValues.displacement.tree).eqls(["vector", ...v]);
+      expect(components['/w'].stateValues.tail.tree).eqls(["vector", ...wTail]);
+      expect(components['/w'].stateValues.head.tree).eqls(["vector", ...wHead]);
+      expect(components['/w'].stateValues.displacement.tree).eqls(["vector", ...w]);
     });
 
     cy.log('moving tail of u moves tail of w')
@@ -4059,15 +4059,15 @@ describe('Vector Tag Tests', function () {
       w = u.map((x, i) => x + v[i]);
       wTail = uTail;
 
-      expect(components['/u'].stateValues.tail.tree).eqls(["tuple", ...uTail]);
-      expect(components['/u'].stateValues.head.tree).eqls(["tuple", ...uHead]);
-      expect(components['/u'].stateValues.displacement.tree).eqls(["tuple", ...u]);
-      expect(components['/v'].stateValues.tail.tree).eqls(["tuple", ...vTail]);
-      expect(components['/v'].stateValues.head.tree).eqls(["tuple", ...vHead]);
-      expect(components['/v'].stateValues.displacement.tree).eqls(["tuple", ...v]);
-      expect(components['/w'].stateValues.tail.tree).eqls(["tuple", ...wTail]);
-      expect(components['/w'].stateValues.head.tree).eqls(["tuple", ...wHead]);
-      expect(components['/w'].stateValues.displacement.tree).eqls(["tuple", ...w]);
+      expect(components['/u'].stateValues.tail.tree).eqls(["vector", ...uTail]);
+      expect(components['/u'].stateValues.head.tree).eqls(["vector", ...uHead]);
+      expect(components['/u'].stateValues.displacement.tree).eqls(["vector", ...u]);
+      expect(components['/v'].stateValues.tail.tree).eqls(["vector", ...vTail]);
+      expect(components['/v'].stateValues.head.tree).eqls(["vector", ...vHead]);
+      expect(components['/v'].stateValues.displacement.tree).eqls(["vector", ...v]);
+      expect(components['/w'].stateValues.tail.tree).eqls(["vector", ...wTail]);
+      expect(components['/w'].stateValues.head.tree).eqls(["vector", ...wHead]);
+      expect(components['/w'].stateValues.displacement.tree).eqls(["vector", ...w]);
     });
 
     cy.log('moving tail of w moves tail of u')
@@ -4083,15 +4083,15 @@ describe('Vector Tag Tests', function () {
       u = uHead.map((x, i) => x - uTail[i]);
       w = u.map((x, i) => x + v[i]);
 
-      expect(components['/u'].stateValues.tail.tree).eqls(["tuple", ...uTail]);
-      expect(components['/u'].stateValues.head.tree).eqls(["tuple", ...uHead]);
-      expect(components['/u'].stateValues.displacement.tree).eqls(["tuple", ...u]);
-      expect(components['/v'].stateValues.tail.tree).eqls(["tuple", ...vTail]);
-      expect(components['/v'].stateValues.head.tree).eqls(["tuple", ...vHead]);
-      expect(components['/v'].stateValues.displacement.tree).eqls(["tuple", ...v]);
-      expect(components['/w'].stateValues.tail.tree).eqls(["tuple", ...wTail]);
-      expect(components['/w'].stateValues.head.tree).eqls(["tuple", ...wHead]);
-      expect(components['/w'].stateValues.displacement.tree).eqls(["tuple", ...w]);
+      expect(components['/u'].stateValues.tail.tree).eqls(["vector", ...uTail]);
+      expect(components['/u'].stateValues.head.tree).eqls(["vector", ...uHead]);
+      expect(components['/u'].stateValues.displacement.tree).eqls(["vector", ...u]);
+      expect(components['/v'].stateValues.tail.tree).eqls(["vector", ...vTail]);
+      expect(components['/v'].stateValues.head.tree).eqls(["vector", ...vHead]);
+      expect(components['/v'].stateValues.displacement.tree).eqls(["vector", ...v]);
+      expect(components['/w'].stateValues.tail.tree).eqls(["vector", ...wTail]);
+      expect(components['/w'].stateValues.head.tree).eqls(["vector", ...wHead]);
+      expect(components['/w'].stateValues.displacement.tree).eqls(["vector", ...w]);
     });
 
     cy.log('moving head of w moves head of v')
@@ -4107,15 +4107,15 @@ describe('Vector Tag Tests', function () {
 
       w = u.map((x, i) => x + v[i]);
 
-      expect(components['/u'].stateValues.tail.tree).eqls(["tuple", ...uTail]);
-      expect(components['/u'].stateValues.head.tree).eqls(["tuple", ...uHead]);
-      expect(components['/u'].stateValues.displacement.tree).eqls(["tuple", ...u]);
-      expect(components['/v'].stateValues.tail.tree).eqls(["tuple", ...vTail]);
-      expect(components['/v'].stateValues.head.tree).eqls(["tuple", ...vHead]);
-      expect(components['/v'].stateValues.displacement.tree).eqls(["tuple", ...v]);
-      expect(components['/w'].stateValues.tail.tree).eqls(["tuple", ...wTail]);
-      expect(components['/w'].stateValues.head.tree).eqls(["tuple", ...wHead]);
-      expect(components['/w'].stateValues.displacement.tree).eqls(["tuple", ...w]);
+      expect(components['/u'].stateValues.tail.tree).eqls(["vector", ...uTail]);
+      expect(components['/u'].stateValues.head.tree).eqls(["vector", ...uHead]);
+      expect(components['/u'].stateValues.displacement.tree).eqls(["vector", ...u]);
+      expect(components['/v'].stateValues.tail.tree).eqls(["vector", ...vTail]);
+      expect(components['/v'].stateValues.head.tree).eqls(["vector", ...vHead]);
+      expect(components['/v'].stateValues.displacement.tree).eqls(["vector", ...v]);
+      expect(components['/w'].stateValues.tail.tree).eqls(["vector", ...wTail]);
+      expect(components['/w'].stateValues.head.tree).eqls(["vector", ...wHead]);
+      expect(components['/w'].stateValues.displacement.tree).eqls(["vector", ...w]);
     });
 
     cy.log('moving head of v moves head of w')
@@ -4131,15 +4131,15 @@ describe('Vector Tag Tests', function () {
 
       w = u.map((x, i) => x + v[i]);
 
-      expect(components['/u'].stateValues.tail.tree).eqls(["tuple", ...uTail]);
-      expect(components['/u'].stateValues.head.tree).eqls(["tuple", ...uHead]);
-      expect(components['/u'].stateValues.displacement.tree).eqls(["tuple", ...u]);
-      expect(components['/v'].stateValues.tail.tree).eqls(["tuple", ...vTail]);
-      expect(components['/v'].stateValues.head.tree).eqls(["tuple", ...vHead]);
-      expect(components['/v'].stateValues.displacement.tree).eqls(["tuple", ...v]);
-      expect(components['/w'].stateValues.tail.tree).eqls(["tuple", ...wTail]);
-      expect(components['/w'].stateValues.head.tree).eqls(["tuple", ...wHead]);
-      expect(components['/w'].stateValues.displacement.tree).eqls(["tuple", ...w]);
+      expect(components['/u'].stateValues.tail.tree).eqls(["vector", ...uTail]);
+      expect(components['/u'].stateValues.head.tree).eqls(["vector", ...uHead]);
+      expect(components['/u'].stateValues.displacement.tree).eqls(["vector", ...u]);
+      expect(components['/v'].stateValues.tail.tree).eqls(["vector", ...vTail]);
+      expect(components['/v'].stateValues.head.tree).eqls(["vector", ...vHead]);
+      expect(components['/v'].stateValues.displacement.tree).eqls(["vector", ...v]);
+      expect(components['/w'].stateValues.tail.tree).eqls(["vector", ...wTail]);
+      expect(components['/w'].stateValues.head.tree).eqls(["vector", ...wHead]);
+      expect(components['/w'].stateValues.displacement.tree).eqls(["vector", ...w]);
     });
 
   });
@@ -4180,14 +4180,14 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/u'].stateValues.tail.tree).eqls(["tuple", ...uTail]);
-      expect(components['/u'].stateValues.head.tree).eqls(["tuple", ...uHead]);
-      expect(components['/u'].stateValues.displacement.tree).eqls(["tuple", ...u]);
+      expect(components['/u'].stateValues.tail.tree).eqls(["vector", ...uTail]);
+      expect(components['/u'].stateValues.head.tree).eqls(["vector", ...uHead]);
+      expect(components['/u'].stateValues.displacement.tree).eqls(["vector", ...u]);
       expect(components['/u'].stateValues.xs[0].tree).eqls(u[0]);
       expect(components['/u'].stateValues.xs[1].tree).eqls(u[1]);
-      expect(components['/v'].stateValues.tail.tree).eqls(["tuple", ...vTail]);
-      expect(components['/v'].stateValues.head.tree).eqls(["tuple", ...vHead]);
-      expect(components['/v'].stateValues.displacement.tree).eqls(["tuple", ...v]);
+      expect(components['/v'].stateValues.tail.tree).eqls(["vector", ...vTail]);
+      expect(components['/v'].stateValues.head.tree).eqls(["vector", ...vHead]);
+      expect(components['/v'].stateValues.displacement.tree).eqls(["vector", ...v]);
       expect(components['/v'].stateValues.xs[0].tree).eqls(v[0]);
       expect(components['/v'].stateValues.xs[1].tree).eqls(v[1]);
       expect(components['/v'].stateValues.xs[2].tree).eqls(v[2]);
@@ -4236,21 +4236,21 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4264,21 +4264,21 @@ describe('Vector Tag Tests', function () {
       x = hx - t1x;
       y = hy - t1y;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4294,21 +4294,21 @@ describe('Vector Tag Tests', function () {
       t1x = tx;
       t1y = ty;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4322,21 +4322,21 @@ describe('Vector Tag Tests', function () {
       x = hx - t1x;
       y = hy - t1y;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4352,21 +4352,21 @@ describe('Vector Tag Tests', function () {
       t1x = tx;
       t1y = ty;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4380,21 +4380,21 @@ describe('Vector Tag Tests', function () {
       x = hx - t3x;
       y = hy - t3y;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4410,21 +4410,21 @@ describe('Vector Tag Tests', function () {
       t3x = tx;
       t3y = ty;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4438,21 +4438,21 @@ describe('Vector Tag Tests', function () {
       x = hy - t4y;
       y = hx - t4x;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4468,21 +4468,21 @@ describe('Vector Tag Tests', function () {
       t4x = tx;
       t4y = ty;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4533,21 +4533,21 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4561,21 +4561,21 @@ describe('Vector Tag Tests', function () {
       x = hx - t1x;
       y = hy - t1y;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4591,21 +4591,21 @@ describe('Vector Tag Tests', function () {
       t1x = tx;
       t1y = ty;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4619,21 +4619,21 @@ describe('Vector Tag Tests', function () {
       x = hx - t1x;
       y = hy - t1y;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4649,21 +4649,21 @@ describe('Vector Tag Tests', function () {
       t1x = tx;
       t1y = ty;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4677,21 +4677,21 @@ describe('Vector Tag Tests', function () {
       x = hx - t3x;
       y = hy - t3y;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4707,21 +4707,21 @@ describe('Vector Tag Tests', function () {
       t3x = tx;
       t3y = ty;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4735,21 +4735,21 @@ describe('Vector Tag Tests', function () {
       x = hy - t4y;
       y = hx - t4x;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4765,21 +4765,21 @@ describe('Vector Tag Tests', function () {
       t4x = tx;
       t4y = ty;
 
-      expect(components['/v1'].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v1'].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v1'].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v1'].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v1'].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v1'].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["tuple", t1x, t1y]);
-      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["tuple", t1x + x, t1y + y]);
-      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v2'].replacements[0].stateValues.tail.tree).eqls(["vector", t1x, t1y]);
+      expect(components['/v2'].replacements[0].stateValues.head.tree).eqls(["vector", t1x + x, t1y + y]);
+      expect(components['/v2'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["tuple", t3x, t3y]);
-      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["tuple", t3x + x, t3y + y]);
-      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["tuple", x, y]);
+      expect(components['/v3'].replacements[0].stateValues.tail.tree).eqls(["vector", t3x, t3y]);
+      expect(components['/v3'].replacements[0].stateValues.head.tree).eqls(["vector", t3x + x, t3y + y]);
+      expect(components['/v3'].replacements[0].stateValues.displacement.tree).eqls(["vector", x, y]);
 
-      expect(components['/v4'].stateValues.tail.tree).eqls(["tuple", t4x, t4y]);
-      expect(components['/v4'].stateValues.head.tree).eqls(["tuple", t4x + y, t4y + x]);
-      expect(components['/v4'].stateValues.displacement.tree).eqls(["tuple", y, x]);
+      expect(components['/v4'].stateValues.tail.tree).eqls(["vector", t4x, t4y]);
+      expect(components['/v4'].stateValues.head.tree).eqls(["vector", t4x + y, t4y + x]);
+      expect(components['/v4'].stateValues.displacement.tree).eqls(["vector", y, x]);
 
     });
 
@@ -4816,13 +4816,13 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/v'].stateValues.tail.tree).eqls(["tuple", tx, ty]);
-      expect(components['/v'].stateValues.head.tree).eqls(["tuple", hx, hy]);
-      expect(components['/v'].stateValues.displacement.tree).eqls(["tuple", hx - tx, hy - ty]);
+      expect(components['/v'].stateValues.tail.tree).eqls(["vector", tx, ty]);
+      expect(components['/v'].stateValues.head.tree).eqls(["vector", hx, hy]);
+      expect(components['/v'].stateValues.displacement.tree).eqls(["vector", hx - tx, hy - ty]);
 
-      expect(components['/vt'].replacements[0].stateValues.coords.tree).eqls(["tuple", tx, ty]);
-      expect(components['/vh'].replacements[0].stateValues.coords.tree).eqls(["tuple", hx, hy]);
-      expect(components['/c'].stateValues.coords.tree).eqls(["tuple", hx, ty]);
+      expect(components['/vt'].replacements[0].stateValues.coords.tree).eqls(["vector", tx, ty]);
+      expect(components['/vh'].replacements[0].stateValues.coords.tree).eqls(["vector", hx, hy]);
+      expect(components['/c'].stateValues.coords.tree).eqls(["vector", hx, ty]);
 
     });
 
@@ -4834,13 +4834,13 @@ describe('Vector Tag Tests', function () {
 
       components['/v'].moveVector({ headcoords: [hx, hy], tailcoords: [tx, ty] });
 
-      expect(components['/v'].stateValues.tail.tree).eqls(["tuple", tx, ty]);
-      expect(components['/v'].stateValues.head.tree).eqls(["tuple", hx, hy]);
-      expect(components['/v'].stateValues.displacement.tree).eqls(["tuple", hx - tx, hy - ty]);
+      expect(components['/v'].stateValues.tail.tree).eqls(["vector", tx, ty]);
+      expect(components['/v'].stateValues.head.tree).eqls(["vector", hx, hy]);
+      expect(components['/v'].stateValues.displacement.tree).eqls(["vector", hx - tx, hy - ty]);
 
-      expect(components['/vt'].replacements[0].stateValues.coords.tree).eqls(["tuple", tx, ty]);
-      expect(components['/vh'].replacements[0].stateValues.coords.tree).eqls(["tuple", hx, hy]);
-      expect(components['/c'].stateValues.coords.tree).eqls(["tuple", hx, ty]);
+      expect(components['/vt'].replacements[0].stateValues.coords.tree).eqls(["vector", tx, ty]);
+      expect(components['/vh'].replacements[0].stateValues.coords.tree).eqls(["vector", hx, hy]);
+      expect(components['/c'].stateValues.coords.tree).eqls(["vector", hx, ty]);
 
     });
 
@@ -4853,13 +4853,13 @@ describe('Vector Tag Tests', function () {
 
       components['/vh'].replacements[0].movePoint({ x: hx, y: hy });
 
-      expect(components['/v'].stateValues.tail.tree).eqls(["tuple", tx, ty]);
-      expect(components['/v'].stateValues.head.tree).eqls(["tuple", hx, hy]);
-      expect(components['/v'].stateValues.displacement.tree).eqls(["tuple", hx - tx, hy - ty]);
+      expect(components['/v'].stateValues.tail.tree).eqls(["vector", tx, ty]);
+      expect(components['/v'].stateValues.head.tree).eqls(["vector", hx, hy]);
+      expect(components['/v'].stateValues.displacement.tree).eqls(["vector", hx - tx, hy - ty]);
 
-      expect(components['/vt'].replacements[0].stateValues.coords.tree).eqls(["tuple", tx, ty]);
-      expect(components['/vh'].replacements[0].stateValues.coords.tree).eqls(["tuple", hx, hy]);
-      expect(components['/c'].stateValues.coords.tree).eqls(["tuple", hx, ty]);
+      expect(components['/vt'].replacements[0].stateValues.coords.tree).eqls(["vector", tx, ty]);
+      expect(components['/vh'].replacements[0].stateValues.coords.tree).eqls(["vector", hx, hy]);
+      expect(components['/c'].stateValues.coords.tree).eqls(["vector", hx, ty]);
 
     });
 
@@ -4872,13 +4872,13 @@ describe('Vector Tag Tests', function () {
 
       components['/vt'].replacements[0].movePoint({ x: tx, y: ty });
 
-      expect(components['/v'].stateValues.tail.tree).eqls(["tuple", tx, ty]);
-      expect(components['/v'].stateValues.head.tree).eqls(["tuple", hx, hy]);
-      expect(components['/v'].stateValues.displacement.tree).eqls(["tuple", hx - tx, hy - ty]);
+      expect(components['/v'].stateValues.tail.tree).eqls(["vector", tx, ty]);
+      expect(components['/v'].stateValues.head.tree).eqls(["vector", hx, hy]);
+      expect(components['/v'].stateValues.displacement.tree).eqls(["vector", hx - tx, hy - ty]);
 
-      expect(components['/vt'].replacements[0].stateValues.coords.tree).eqls(["tuple", tx, ty]);
-      expect(components['/vh'].replacements[0].stateValues.coords.tree).eqls(["tuple", hx, hy]);
-      expect(components['/c'].stateValues.coords.tree).eqls(["tuple", hx, ty]);
+      expect(components['/vt'].replacements[0].stateValues.coords.tree).eqls(["vector", tx, ty]);
+      expect(components['/vh'].replacements[0].stateValues.coords.tree).eqls(["vector", hx, hy]);
+      expect(components['/c'].stateValues.coords.tree).eqls(["vector", hx, ty]);
 
     });
 
@@ -4891,13 +4891,13 @@ describe('Vector Tag Tests', function () {
 
       components['/c'].movePoint({ x: hx, y: ty });
 
-      expect(components['/v'].stateValues.tail.tree).eqls(["tuple", tx, ty]);
-      expect(components['/v'].stateValues.head.tree).eqls(["tuple", hx, hy]);
-      expect(components['/v'].stateValues.displacement.tree).eqls(["tuple", hx - tx, hy - ty]);
+      expect(components['/v'].stateValues.tail.tree).eqls(["vector", tx, ty]);
+      expect(components['/v'].stateValues.head.tree).eqls(["vector", hx, hy]);
+      expect(components['/v'].stateValues.displacement.tree).eqls(["vector", hx - tx, hy - ty]);
 
-      expect(components['/vt'].replacements[0].stateValues.coords.tree).eqls(["tuple", tx, ty]);
-      expect(components['/vh'].replacements[0].stateValues.coords.tree).eqls(["tuple", hx, hy]);
-      expect(components['/c'].stateValues.coords.tree).eqls(["tuple", hx, ty]);
+      expect(components['/vt'].replacements[0].stateValues.coords.tree).eqls(["vector", tx, ty]);
+      expect(components['/vh'].replacements[0].stateValues.coords.tree).eqls(["vector", hx, hy]);
+      expect(components['/c'].stateValues.coords.tree).eqls(["vector", hx, ty]);
 
     });
 
@@ -5045,111 +5045,111 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvd]);
-      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvtd]);
-      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvd]);
+      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvtd]);
+      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
     });
 
@@ -5179,111 +5179,111 @@ describe('Vector Tag Tests', function () {
       dvtd = [hvtd[0] - tvtd[0], hvtd[1] - tvtd[1]];
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
-      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvd]);
-      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvtd]);
-      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvd]);
+      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvtd]);
+      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
     });
 
@@ -5313,111 +5313,111 @@ describe('Vector Tag Tests', function () {
       dvtd = [hvtd[0] - tvtd[0], hvtd[1] - tvtd[1]];
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
-      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvd]);
-      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvtd]);
-      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvd]);
+      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvtd]);
+      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
     });
 
@@ -5440,57 +5440,57 @@ describe('Vector Tag Tests', function () {
       // defined by tail and displacement, displacement stays fixed and head changes
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
-      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
+      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
 
-      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
     });
 
@@ -5513,57 +5513,57 @@ describe('Vector Tag Tests', function () {
       // defined by head and displacement, displacement stays fixed and tail changes
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
-      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
+      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
 
-      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
     });
 
@@ -5586,57 +5586,57 @@ describe('Vector Tag Tests', function () {
       // defined by head and displacement, head stays fixed and tail changes
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
-      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvd]);
-      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvtd]);
-      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvd]);
+      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvtd]);
+      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
     });
 
@@ -5669,111 +5669,111 @@ describe('Vector Tag Tests', function () {
       hvd = [tvd[0] + dvd[0], tvd[1] + dvd[1]];
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
-      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvd]);
-      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvtd]);
-      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvd]);
+      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvtd]);
+      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
     });
 
@@ -5805,111 +5805,111 @@ describe('Vector Tag Tests', function () {
       // defined by head and displacement, displacement stays fixed and tail changes
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
-      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvd]);
-      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvtd]);
-      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvd]);
+      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvtd]);
+      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
     });
 
@@ -5941,111 +5941,111 @@ describe('Vector Tag Tests', function () {
       // defined by head and displacement, head stays fixed and tail changes
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
-      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvd]);
-      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvtd]);
-      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvd]);
+      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvtd]);
+      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
     });
 
@@ -6075,111 +6075,111 @@ describe('Vector Tag Tests', function () {
       dvtd = [hvtd[0] - tvtd[0], hvtd[1] - tvtd[1]];
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
-      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvd]);
-      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvtd]);
-      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvd]);
+      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvtd]);
+      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
     });
 
@@ -6209,111 +6209,111 @@ describe('Vector Tag Tests', function () {
       dvtd = [hvtd[0] - tvtd[0], hvtd[1] - tvtd[1]];
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
-      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvd]);
-      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvtd]);
-      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvd]);
+      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvtd]);
+      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
     });
 
@@ -6346,111 +6346,111 @@ describe('Vector Tag Tests', function () {
       hvd = [tvd[0] + dvd[0], tvd[1] + dvd[1]];
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
-      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvd]);
-      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvtd]);
-      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvd]);
+      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvtd]);
+      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
     });
 
@@ -6482,111 +6482,111 @@ describe('Vector Tag Tests', function () {
       // defined by head and displacement, displacement stays fixed and tail changes
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
-      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvd]);
-      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvtd]);
-      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvd]);
+      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvtd]);
+      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
     });
 
@@ -6618,111 +6618,111 @@ describe('Vector Tag Tests', function () {
       // defined by head and displacement, head stays fixed and tail changes
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
-      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvd]);
-      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvtd]);
-      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tvt'].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hvh'].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dvd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvd]);
+      expect(components['/tvth'].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hvth'].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/tvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/dvtd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvtd]);
+      expect(components['/hvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dvhd'].stateValues.coords.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt'].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt'].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh'].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh'].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd'].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth'].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth'].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd'].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd'].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd'].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd'].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/vt2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/vt2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/vt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/vh2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/vh2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/vh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/vd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/vd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/vd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/vth2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/vth2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/vth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/vtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.tail.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.head.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/vhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
-      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvt]);
-      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvt]);
-      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvt]);
+      expect(components['/tfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvt]);
+      expect(components['/hfvt2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvt]);
+      expect(components['/dfvt2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvt]);
 
-      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvh]);
-      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvh]);
-      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvh]);
+      expect(components['/tfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvh]);
+      expect(components['/hfvh2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvh]);
+      expect(components['/dfvh2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvh]);
 
-      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvd]);
-      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvd]);
-      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvd]);
+      expect(components['/tfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvd]);
+      expect(components['/hfvd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvd]);
+      expect(components['/dfvd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvd]);
 
-      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvth]);
-      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvth]);
-      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvth]);
+      expect(components['/tfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvth]);
+      expect(components['/hfvth2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvth]);
+      expect(components['/dfvth2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvth]);
 
-      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvtd]);
-      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvtd]);
-      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvtd]);
+      expect(components['/tfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvtd]);
+      expect(components['/hfvtd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvtd]);
+      expect(components['/dfvtd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvtd]);
 
-      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...tvhd]);
-      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["tuple", ...hvhd]);
-      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["tuple", ...dvhd]);
+      expect(components['/tfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...tvhd]);
+      expect(components['/hfvhd2'].replacements[0].stateValues.coords.simplify().tree).eqls(["vector", ...hvhd]);
+      expect(components['/dfvhd2'].replacements[0].stateValues.displacement.simplify().tree).eqls(["vector", ...dvhd]);
 
     });
 
@@ -6750,16 +6750,16 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", 2, 3]);
-      expect(components['/_math1'].stateValues.value.tree).eqls(["tuple", 2, 3]);
+      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", 2, 3]);
+      expect(components['/_math1'].stateValues.value.tree).eqls(["vector", 2, 3]);
     })
 
     cy.log("move vector head");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_vector1'].moveVector({ headcoords: [9, 7] })
-      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", 8, 5]);
-      expect(components['/_math1'].stateValues.value.tree).eqls(["tuple", 8, 5]);
+      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", 8, 5]);
+      expect(components['/_math1'].stateValues.value.tree).eqls(["vector", 8, 5]);
     })
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -6771,8 +6771,8 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_vector1'].moveVector({ tailcoords: [-2, 6] })
-      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", 11, 1]);
-      expect(components['/_math1'].stateValues.value.tree).eqls(["tuple", 11, 1]);
+      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", 11, 1]);
+      expect(components['/_math1'].stateValues.value.tree).eqls(["vector", 11, 1]);
     })
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -6813,12 +6813,12 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector3'].stateValues.head.tree).eqls(["tuple", x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector3'].stateValues.head.tree).eqls(["vector", x1, y1]);
 
     })
 
@@ -6829,12 +6829,12 @@ describe('Vector Tag Tests', function () {
       x2 = 7;
       y2 = -3;
       components['/_head1'].movePoint({ x: x2, y: y2 });
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector3'].stateValues.head.tree).eqls(["tuple", x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector3'].stateValues.head.tree).eqls(["vector", x1, y1]);
 
     })
 
@@ -6845,12 +6845,12 @@ describe('Vector Tag Tests', function () {
       x1 = -1;
       y1 = -4;
       components['/_tail1'].movePoint({ x: x1, y: y1 });
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector3'].stateValues.head.tree).eqls(["tuple", x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector3'].stateValues.head.tree).eqls(["vector", x1, y1]);
 
     })
 
@@ -6861,12 +6861,12 @@ describe('Vector Tag Tests', function () {
       x3 = 9;
       y3 = -8;
       components['/_tail2'].movePoint({ x: x3, y: y3 });
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector3'].stateValues.head.tree).eqls(["tuple", x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector3'].stateValues.head.tree).eqls(["vector", x1, y1]);
 
     })
 
@@ -6877,12 +6877,12 @@ describe('Vector Tag Tests', function () {
       x2 = 3;
       y2 = 2;
       components['/_head2'].movePoint({ x: x2, y: y2 });
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector3'].stateValues.head.tree).eqls(["tuple", x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector3'].stateValues.head.tree).eqls(["vector", x1, y1]);
 
     })
 
@@ -6893,12 +6893,12 @@ describe('Vector Tag Tests', function () {
       x1 = -5;
       y1 = 8;
       components['/_head3'].movePoint({ x: x1, y: y1 });
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector3'].stateValues.head.tree).eqls(["tuple", x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector3'].stateValues.head.tree).eqls(["vector", x1, y1]);
 
     })
 
@@ -6909,12 +6909,12 @@ describe('Vector Tag Tests', function () {
       x3 = 0;
       y3 = -5;
       components['/_tail3'].movePoint({ x: x3, y: y3 });
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector3'].stateValues.head.tree).eqls(["tuple", x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector3'].stateValues.head.tree).eqls(["vector", x1, y1]);
 
     })
 
@@ -6957,12 +6957,12 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector3'].stateValues.head.tree).eqls(["tuple", x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector3'].stateValues.head.tree).eqls(["vector", x1, y1]);
 
     })
 
@@ -6973,12 +6973,12 @@ describe('Vector Tag Tests', function () {
       x2 = 7;
       y2 = -3;
       components['/_endpoints1'].activeChildren[1].movePoint({ x: x2, y: y2 });
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector3'].stateValues.head.tree).eqls(["tuple", x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector3'].stateValues.head.tree).eqls(["vector", x1, y1]);
 
     })
 
@@ -6989,12 +6989,12 @@ describe('Vector Tag Tests', function () {
       x1 = -1;
       y1 = -4;
       components['/_endpoints1'].activeChildren[0].movePoint({ x: x1, y: y1 });
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector3'].stateValues.head.tree).eqls(["tuple", x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector3'].stateValues.head.tree).eqls(["vector", x1, y1]);
 
     })
 
@@ -7005,12 +7005,12 @@ describe('Vector Tag Tests', function () {
       x3 = 9;
       y3 = -8;
       components['/_endpoints2'].activeChildren[0].movePoint({ x: x3, y: y3 });
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector3'].stateValues.head.tree).eqls(["tuple", x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector3'].stateValues.head.tree).eqls(["vector", x1, y1]);
 
     })
 
@@ -7021,12 +7021,12 @@ describe('Vector Tag Tests', function () {
       x2 = 3;
       y2 = 2;
       components['/_endpoints2'].activeChildren[1].movePoint({ x: x2, y: y2 });
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector3'].stateValues.head.tree).eqls(["tuple", x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector3'].stateValues.head.tree).eqls(["vector", x1, y1]);
 
     })
 
@@ -7037,12 +7037,12 @@ describe('Vector Tag Tests', function () {
       x1 = -5;
       y1 = 8;
       components['/_endpoints3'].activeChildren[1].movePoint({ x: x1, y: y1 });
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector3'].stateValues.head.tree).eqls(["tuple", x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector3'].stateValues.head.tree).eqls(["vector", x1, y1]);
 
     })
 
@@ -7053,12 +7053,12 @@ describe('Vector Tag Tests', function () {
       x3 = 0;
       y3 = -5;
       components['/_endpoints3'].activeChildren[0].movePoint({ x: x3, y: y3 });
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["tuple", x2, y2]);
-      expect(components['/_vector3'].stateValues.tail.tree).eqls(["tuple", x3, y3]);
-      expect(components['/_vector3'].stateValues.head.tree).eqls(["tuple", x1, y1]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector3'].stateValues.tail.tree).eqls(["vector", x3, y3]);
+      expect(components['/_vector3'].stateValues.head.tree).eqls(["vector", x1, y1]);
 
     })
 
@@ -7116,9 +7116,9 @@ describe('Vector Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", 3, b]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", a, 4]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", dx, dy]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", 3, b]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", a, 4]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", dx, dy]);
         expect(x.stateValues.value.tree).eq(dx)
         expect(y.stateValues.value.tree).eq(dy)
       })
@@ -7151,9 +7151,9 @@ describe('Vector Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", 3, b2]);
-        expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", a2, 4]);
-        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", dx2, dy2]);
+        expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", 3, b2]);
+        expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", a2, 4]);
+        expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", dx2, dy2]);
         expect(x.stateValues.value.tree).eq(dx2)
         expect(y.stateValues.value.tree).eq(dy2)
       })
@@ -7185,9 +7185,9 @@ describe('Vector Tag Tests', function () {
       let displacementx = headx - tailx;
       let displacementy = heady - taily;
 
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
     })
 
@@ -7206,9 +7206,9 @@ describe('Vector Tag Tests', function () {
         tailcoords: [tailx, taily],
       });
 
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
     })
 
 
@@ -7237,9 +7237,9 @@ describe('Vector Tag Tests', function () {
       let displacementx = headx - tailx;
       let displacementy = heady - taily;
 
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
     })
 
@@ -7258,9 +7258,9 @@ describe('Vector Tag Tests', function () {
         headcoords: [headx, heady],
       });
 
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
     })
 
 
@@ -7289,9 +7289,9 @@ describe('Vector Tag Tests', function () {
       let displacementx = headx - tailx;
       let displacementy = heady - taily;
 
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
 
     })
 
@@ -7310,9 +7310,9 @@ describe('Vector Tag Tests', function () {
         tailcoords: [tailx, taily],
       });
 
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["tuple", tailx, taily]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["tuple", headx, heady]);
-      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["tuple", displacementx, displacementy]);
+      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", tailx, taily]);
+      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", headx, heady]);
+      expect(components['/_vector1'].stateValues.displacement.tree).eqls(["vector", displacementx, displacementy]);
     })
 
 

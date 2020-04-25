@@ -159,14 +159,14 @@ export default class Extract extends CompositeComponent {
             if (!propVariableObj.componentType) {
               dependencies[`replacementComponentType${ind}`] = {
                 dependencyType: "componentStateVariableComponentType",
-                componentName: stateValues.sourceComponents[ind].componentName,
+                componentIdentity: stateValues.sourceComponents[ind],
                 variableName: propVariableObj.varName,
               }
             }
             if (propVariableObj.isArray) {
               dependencies[`targetArray${ind}`] = {
                 dependencyType: "componentStateVariable",
-                componentName: stateValues.sourceComponents[ind].componentName,
+                componentIdentity: stateValues.sourceComponents[ind],
                 variableName: propVariableObj.varName,
               }
             }
@@ -248,7 +248,7 @@ export default class Extract extends CompositeComponent {
 
 
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+    stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({
         replacementClasses: {
           dependencyType: "stateVariable",
@@ -260,7 +260,7 @@ export default class Extract extends CompositeComponent {
         },
       }),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { newValues: { readyToExpand: true } };
       },
     };
 

@@ -481,8 +481,8 @@ export default class Point extends GraphicalComponent {
           }
         } else {
           // check if any of the unconstraintedXn's for a fresh n changed
-          for(let key in freshByKey) {
-            if(changes[`unconstrainedX${Number(key)+1}`]) {
+          for (let key in freshByKey) {
+            if (changes[`unconstrainedX${Number(key) + 1}`]) {
               delete freshByKey[key]
             }
           }
@@ -512,7 +512,7 @@ export default class Point extends GraphicalComponent {
         // console.log('definition of xs')
         // console.log(dependencyValues)
         // console.log(arrayKeys)
-        
+
         let freshByKey = freshnessInfo.freshByKey
 
         let arrayKey;
@@ -571,22 +571,32 @@ export default class Point extends GraphicalComponent {
           freshByKey[arrayKey] = true;
 
           if (dependencyValues.constraintsChild.length === 1) {
-            return {
-              newValues: {
-                xs:
-                {
-                  [arrayKey]:
-                    convertValueToMathExpression(
-                      dependencyValues.constraintsChild[0].stateValues[`constraintResult${arrayKey + 1}`]
-                    )
+            if (dependencyValues.constraintsChild[0].stateValues[`constraintResult${arrayKey + 1}`] === undefined) {
+              return {};
+            } else {
+              return {
+                newValues: {
+                  xs:
+                  {
+                    [arrayKey]:
+                      convertValueToMathExpression(
+                        dependencyValues.constraintsChild[0].stateValues[`constraintResult${arrayKey + 1}`]
+                      )
+                  }
                 }
               }
             }
           } else {
-            return {
-              newValues: {
-                xs: {
-                  [arrayKey]: dependencyValues[`unconstrainedX${arrayKey + 1}`]
+            if (dependencyValues[`unconstrainedX${arrayKey + 1}`] === undefined) {
+              return {};
+            } else {
+              return {
+                newValues: {
+                  xs: {
+                    [arrayKey]: convertValueToMathExpression(
+                      dependencyValues[`unconstrainedX${arrayKey + 1}`]
+                    )
+                  }
                 }
               }
             }

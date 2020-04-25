@@ -6,7 +6,7 @@ describe('Line Tag Tests', function () {
     cy.visit('/test')
   })
 
-  it('move points refed by line', () => {
+  it('move points reffed by line', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -32,10 +32,10 @@ describe('Line Tag Tests', function () {
       components['/_point1'].movePoint({ x: 5, y: -5 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(5)
       expect(components['/_point1'].stateValues.xs[1].tree).eq(-5)
-      expect(components['/_point1'].stateValues.coords.tree).eqls(['tuple', 5, -5])
+      expect(components['/_point1'].stateValues.coords.tree).eqls(['vector', 5, -5])
       expect(components['/_point2'].stateValues.xs[0].tree).eq(-4)
       expect(components['/_point2'].stateValues.xs[1].tree).eq(-1)
-      expect(components['/_point2'].stateValues.coords.tree).eqls(['tuple', -4, -1])
+      expect(components['/_point2'].stateValues.coords.tree).eqls(['vector', -4, -1])
 
     })
   })
@@ -63,10 +63,10 @@ describe('Line Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
       expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
-      expect(components['/_point1'].stateValues.coords.tree).eqls(['tuple', 1, 2])
+      expect(components['/_point1'].stateValues.coords.tree).eqls(['vector', 1, 2])
       expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
       expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
-      expect(components['/_point2'].stateValues.coords.tree).eqls(['tuple', 4, 7])
+      expect(components['/_point2'].stateValues.coords.tree).eqls(['vector', 4, 7])
 
       expect(components['/_line1'].stateValues.label).eq('l')
       expect(components['/_line1'].stateValues.slope.tree).eqls(['/', 5, 3])
@@ -101,10 +101,10 @@ describe('Line Tag Tests', function () {
       cy.window().then((win) => {
         expect(point1.stateValues.xs[0].tree).eq(1)
         expect(point1.stateValues.xs[1].tree).eq(2)
-        expect(point1.stateValues.coords.tree).eqls(['tuple', 1, 2])
+        expect(point1.stateValues.coords.tree).eqls(['vector', 1, 2])
         expect(point2.stateValues.xs[0].tree).eq(4)
         expect(point2.stateValues.xs[1].tree).eq(7)
-        expect(point2.stateValues.coords.tree).eqls(['tuple', 4, 7])
+        expect(point2.stateValues.coords.tree).eqls(['vector', 4, 7])
 
         expect(components['/_line1'].stateValues.label).eq('l')
         expect(components['/_line1'].stateValues.slope.tree).eqls(['/', 5, 3])
@@ -138,10 +138,10 @@ describe('Line Tag Tests', function () {
       cy.window().then((win) => {
         expect(point1.stateValues.xs[0].tree).eq(1)
         expect(point1.stateValues.xs[1].tree).eq(2)
-        expect(point1.stateValues.coords.tree).eqls(['tuple', 1, 2])
+        expect(point1.stateValues.coords.tree).eqls(['vector', 1, 2])
         expect(point2.stateValues.xs[0].tree).eq(4)
         expect(point2.stateValues.xs[1].tree).eq(7)
-        expect(point2.stateValues.coords.tree).eqls(['tuple', 4, 7])
+        expect(point2.stateValues.coords.tree).eqls(['vector', 4, 7])
 
         expect(components['/_line1'].stateValues.label).eq('l')
         expect(components['/_line1'].stateValues.slope.tree).eqls(['/', 5, 3])
@@ -178,10 +178,10 @@ describe('Line Tag Tests', function () {
       cy.window().then((win) => {
         expect(point1.stateValues.xs[0].tree).eq(1)
         expect(point1.stateValues.xs[1].tree).eq(2)
-        expect(point1.stateValues.coords.tree).eqls(['tuple', 1, 2])
+        expect(point1.stateValues.coords.tree).eqls(['vector', 1, 2])
         expect(point2.stateValues.xs[0].tree).eq(4)
         expect(point2.stateValues.xs[1].tree).eq(7)
-        expect(point2.stateValues.coords.tree).eqls(['tuple', 4, 7])
+        expect(point2.stateValues.coords.tree).eqls(['vector', 4, 7])
 
         expect(components['/_line1'].stateValues.label).eq('l')
         expect(components['/_line1'].stateValues.slope.tree).eqls(['/', 5, 3])
@@ -213,10 +213,10 @@ describe('Line Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
       expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
-      expect(components['/_point1'].stateValues.coords.tree).eqls(['tuple', 1, 2])
+      expect(components['/_point1'].stateValues.coords.tree).eqls(['vector', 1, 2])
       expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
       expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
-      expect(components['/_point2'].stateValues.coords.tree).eqls(['tuple', 4, 7])
+      expect(components['/_point2'].stateValues.coords.tree).eqls(['vector', 4, 7])
 
       expect(components['/_line1'].stateValues.label).eq('l')
       expect(components['/_line1'].stateValues.slope.tree).eqls(['/', 5, 3])
@@ -253,10 +253,10 @@ describe('Line Tag Tests', function () {
       cy.window().then((win) => {
         expect(point1.stateValues.xs[0].tree).eq(1)
         expect(point1.stateValues.xs[1].tree).eq(2)
-        expect(point1.stateValues.coords.tree).eqls(['tuple', 1, 2])
+        expect(point1.stateValues.coords.tree).eqls(['vector', 1, 2])
         expect(point2.stateValues.xs[0].tree).eq(4)
         expect(point2.stateValues.xs[1].tree).eq(7)
-        expect(point2.stateValues.coords.tree).eqls(['tuple', 4, 7])
+        expect(point2.stateValues.coords.tree).eqls(['vector', 4, 7])
 
         expect(components['/_line1'].stateValues.label).eq('l')
         expect(components['/_line1'].stateValues.slope.tree).eqls(['/', 5, 3])
@@ -1095,10 +1095,10 @@ describe('Line Tag Tests', function () {
         expect(point3.stateValues.xs[1].tree).eq(p1y)
         expect(point4.stateValues.xs[0].tree).eq(p2x)
         expect(point4.stateValues.xs[1].tree).eq(p2y)
-        expect(components['/_line1'].stateValues.points[0].tree).eqls(["tuple", p1x, p1y]);
-        expect(components['/_line1'].stateValues.points[1].tree).eqls(["tuple", p2x, p2y]);
-        expect(components['/_line2'].stateValues.points[0].tree).eqls(["tuple", p1x, p1y]);
-        expect(components['/_line2'].stateValues.points[1].tree).eqls(["tuple", p2x, p2y]);
+        expect(components['/_line1'].stateValues.points[0].tree).eqls(["vector", p1x, p1y]);
+        expect(components['/_line1'].stateValues.points[1].tree).eqls(["vector", p2x, p2y]);
+        expect(components['/_line2'].stateValues.points[0].tree).eqls(["vector", p1x, p1y]);
+        expect(components['/_line2'].stateValues.points[1].tree).eqls(["vector", p2x, p2y]);
       })
 
       cy.log('move first line up and to the right')
@@ -1139,10 +1139,10 @@ describe('Line Tag Tests', function () {
         expect(point3.stateValues.xs[1].tree).eq(p1y)
         expect(point4.stateValues.xs[0].tree).eq(p2x)
         expect(point4.stateValues.xs[1].tree).eq(p2y)
-        expect(components['/_line1'].stateValues.points[0].tree).eqls(["tuple", p1x, p1y]);
-        expect(components['/_line1'].stateValues.points[1].tree).eqls(["tuple", p2x, p2y]);
-        expect(components['/_line2'].stateValues.points[0].tree).eqls(["tuple", p1x, p1y]);
-        expect(components['/_line2'].stateValues.points[1].tree).eqls(["tuple", p2x, p2y]);
+        expect(components['/_line1'].stateValues.points[0].tree).eqls(["vector", p1x, p1y]);
+        expect(components['/_line1'].stateValues.points[1].tree).eqls(["vector", p2x, p2y]);
+        expect(components['/_line2'].stateValues.points[0].tree).eqls(["vector", p1x, p1y]);
+        expect(components['/_line2'].stateValues.points[1].tree).eqls(["vector", p2x, p2y]);
 
       })
 
@@ -1188,10 +1188,10 @@ describe('Line Tag Tests', function () {
         expect(point3.stateValues.xs[1].tree).eq(p1y)
         expect(point4.stateValues.xs[0].tree).eq(p2x)
         expect(point4.stateValues.xs[1].tree).eq(p2y)
-        expect(components['/_line1'].stateValues.points[0].tree).eqls(["tuple", p1x, p1y]);
-        expect(components['/_line1'].stateValues.points[1].tree).eqls(["tuple", p2x, p2y]);
-        expect(components['/_line2'].stateValues.points[0].tree).eqls(["tuple", p1x, p1y]);
-        expect(components['/_line2'].stateValues.points[1].tree).eqls(["tuple", p2x, p2y]);
+        expect(components['/_line1'].stateValues.points[0].tree).eqls(["vector", p1x, p1y]);
+        expect(components['/_line1'].stateValues.points[1].tree).eqls(["vector", p2x, p2y]);
+        expect(components['/_line2'].stateValues.points[0].tree).eqls(["vector", p1x, p1y]);
+        expect(components['/_line2'].stateValues.points[1].tree).eqls(["vector", p2x, p2y]);
 
       })
     })
@@ -1354,7 +1354,6 @@ describe('Line Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <extract prop="y"><ref prop="point1">_line1</ref></extract>
   <graph>
   <line>
     <point>(1,2)</point>
@@ -1384,16 +1383,12 @@ describe('Line Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#__math7 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    });
-
     let x = 1, y = 2;
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_line1'].stateValues.points[0].tree).eqls(["tuple", x, y]);
-      expect(components['/_line1'].stateValues.points[1].tree).eqls(["tuple", y, x]);
+      expect(components['/_line1'].stateValues.points[0].tree).eqls(["vector", x, y]);
+      expect(components['/_line1'].stateValues.points[1].tree).eqls(["vector", y, x]);
       expect(components['/x1'].stateValues.xs[0].tree).eq(x);
       expect(components['/x2'].stateValues.xs[0].tree).eq(y);
       expect(components['/y1'].stateValues.xs[1].tree).eq(y);
@@ -1406,8 +1401,8 @@ describe('Line Tag Tests', function () {
 
       x = 3;
       components['/x1'].movePoint({ x: x });
-      expect(components['/_line1'].stateValues.points[0].tree).eqls(["tuple", x, y]);
-      expect(components['/_line1'].stateValues.points[1].tree).eqls(["tuple", y, x]);
+      expect(components['/_line1'].stateValues.points[0].tree).eqls(["vector", x, y]);
+      expect(components['/_line1'].stateValues.points[1].tree).eqls(["vector", y, x]);
       expect(components['/x1'].stateValues.xs[0].tree).eq(x);
       expect(components['/x2'].stateValues.xs[0].tree).eq(y);
       expect(components['/y1'].stateValues.xs[1].tree).eq(y);
@@ -1420,8 +1415,8 @@ describe('Line Tag Tests', function () {
 
       y = 4;
       components['/x2'].movePoint({ x: y });
-      expect(components['/_line1'].stateValues.points[0].tree).eqls(["tuple", x, y]);
-      expect(components['/_line1'].stateValues.points[1].tree).eqls(["tuple", y, x]);
+      expect(components['/_line1'].stateValues.points[0].tree).eqls(["vector", x, y]);
+      expect(components['/_line1'].stateValues.points[1].tree).eqls(["vector", y, x]);
       expect(components['/x1'].stateValues.xs[0].tree).eq(x);
       expect(components['/x2'].stateValues.xs[0].tree).eq(y);
       expect(components['/y1'].stateValues.xs[1].tree).eq(y);
@@ -1434,8 +1429,8 @@ describe('Line Tag Tests', function () {
 
       y = -6;
       components['/y1'].movePoint({ y: y });
-      expect(components['/_line1'].stateValues.points[0].tree).eqls(["tuple", x, y]);
-      expect(components['/_line1'].stateValues.points[1].tree).eqls(["tuple", y, x]);
+      expect(components['/_line1'].stateValues.points[0].tree).eqls(["vector", x, y]);
+      expect(components['/_line1'].stateValues.points[1].tree).eqls(["vector", y, x]);
       expect(components['/x1'].stateValues.xs[0].tree).eq(x);
       expect(components['/x2'].stateValues.xs[0].tree).eq(y);
       expect(components['/y1'].stateValues.xs[1].tree).eq(y);
@@ -1448,8 +1443,8 @@ describe('Line Tag Tests', function () {
 
       x = -8;
       components['/y2'].movePoint({ y: x });
-      expect(components['/_line1'].stateValues.points[0].tree).eqls(["tuple", x, y]);
-      expect(components['/_line1'].stateValues.points[1].tree).eqls(["tuple", y, x]);
+      expect(components['/_line1'].stateValues.points[0].tree).eqls(["vector", x, y]);
+      expect(components['/_line1'].stateValues.points[1].tree).eqls(["vector", y, x]);
       expect(components['/x1'].stateValues.xs[0].tree).eq(x);
       expect(components['/x2'].stateValues.xs[0].tree).eq(y);
       expect(components['/y1'].stateValues.xs[1].tree).eq(y);
@@ -1503,12 +1498,12 @@ describe('Line Tag Tests', function () {
       let x3 = -1, y3 = 4;
 
       cy.window().then((win) => {
-        expect(components['/_line1'].stateValues.points[0].tree).eqls(["tuple", x2, y2]);
-        expect(components['/_line1'].stateValues.points[1].tree).eqls(["tuple", x1, y1]);
-        expect(components['/_line2'].stateValues.points[0].tree).eqls(["tuple", x3, y3]);
-        expect(components['/_line2'].stateValues.points[1].tree).eqls(["tuple", x2, y2]);
-        expect(components['/_line3'].stateValues.points[0].tree).eqls(["tuple", x1, y1]);
-        expect(components['/_line3'].stateValues.points[1].tree).eqls(["tuple", x3, y3]);
+        expect(components['/_line1'].stateValues.points[0].tree).eqls(["vector", x2, y2]);
+        expect(components['/_line1'].stateValues.points[1].tree).eqls(["vector", x1, y1]);
+        expect(components['/_line2'].stateValues.points[0].tree).eqls(["vector", x3, y3]);
+        expect(components['/_line2'].stateValues.points[1].tree).eqls(["vector", x2, y2]);
+        expect(components['/_line3'].stateValues.points[0].tree).eqls(["vector", x1, y1]);
+        expect(components['/_line3'].stateValues.points[1].tree).eqls(["vector", x3, y3]);
 
       })
 
@@ -1517,12 +1512,12 @@ describe('Line Tag Tests', function () {
         x2 = 7;
         y2 = -3;
         point1.movePoint({ x: x2, y: y2 });
-        expect(components['/_line1'].stateValues.points[0].tree).eqls(["tuple", x2, y2]);
-        expect(components['/_line1'].stateValues.points[1].tree).eqls(["tuple", x1, y1]);
-        expect(components['/_line2'].stateValues.points[0].tree).eqls(["tuple", x3, y3]);
-        expect(components['/_line2'].stateValues.points[1].tree).eqls(["tuple", x2, y2]);
-        expect(components['/_line3'].stateValues.points[0].tree).eqls(["tuple", x1, y1]);
-        expect(components['/_line3'].stateValues.points[1].tree).eqls(["tuple", x3, y3]);
+        expect(components['/_line1'].stateValues.points[0].tree).eqls(["vector", x2, y2]);
+        expect(components['/_line1'].stateValues.points[1].tree).eqls(["vector", x1, y1]);
+        expect(components['/_line2'].stateValues.points[0].tree).eqls(["vector", x3, y3]);
+        expect(components['/_line2'].stateValues.points[1].tree).eqls(["vector", x2, y2]);
+        expect(components['/_line3'].stateValues.points[0].tree).eqls(["vector", x1, y1]);
+        expect(components['/_line3'].stateValues.points[1].tree).eqls(["vector", x3, y3]);
 
       })
 
@@ -1531,12 +1526,12 @@ describe('Line Tag Tests', function () {
         x1 = -1;
         y1 = -4;
         point2.movePoint({ x: x1, y: y1 });
-        expect(components['/_line1'].stateValues.points[0].tree).eqls(["tuple", x2, y2]);
-        expect(components['/_line1'].stateValues.points[1].tree).eqls(["tuple", x1, y1]);
-        expect(components['/_line2'].stateValues.points[0].tree).eqls(["tuple", x3, y3]);
-        expect(components['/_line2'].stateValues.points[1].tree).eqls(["tuple", x2, y2]);
-        expect(components['/_line3'].stateValues.points[0].tree).eqls(["tuple", x1, y1]);
-        expect(components['/_line3'].stateValues.points[1].tree).eqls(["tuple", x3, y3]);
+        expect(components['/_line1'].stateValues.points[0].tree).eqls(["vector", x2, y2]);
+        expect(components['/_line1'].stateValues.points[1].tree).eqls(["vector", x1, y1]);
+        expect(components['/_line2'].stateValues.points[0].tree).eqls(["vector", x3, y3]);
+        expect(components['/_line2'].stateValues.points[1].tree).eqls(["vector", x2, y2]);
+        expect(components['/_line3'].stateValues.points[0].tree).eqls(["vector", x1, y1]);
+        expect(components['/_line3'].stateValues.points[1].tree).eqls(["vector", x3, y3]);
 
       })
 
@@ -1545,12 +1540,12 @@ describe('Line Tag Tests', function () {
         x3 = 9;
         y3 = -8;
         point3.movePoint({ x: x3, y: y3 });
-        expect(components['/_line1'].stateValues.points[0].tree).eqls(["tuple", x2, y2]);
-        expect(components['/_line1'].stateValues.points[1].tree).eqls(["tuple", x1, y1]);
-        expect(components['/_line2'].stateValues.points[0].tree).eqls(["tuple", x3, y3]);
-        expect(components['/_line2'].stateValues.points[1].tree).eqls(["tuple", x2, y2]);
-        expect(components['/_line3'].stateValues.points[0].tree).eqls(["tuple", x1, y1]);
-        expect(components['/_line3'].stateValues.points[1].tree).eqls(["tuple", x3, y3]);
+        expect(components['/_line1'].stateValues.points[0].tree).eqls(["vector", x2, y2]);
+        expect(components['/_line1'].stateValues.points[1].tree).eqls(["vector", x1, y1]);
+        expect(components['/_line2'].stateValues.points[0].tree).eqls(["vector", x3, y3]);
+        expect(components['/_line2'].stateValues.points[1].tree).eqls(["vector", x2, y2]);
+        expect(components['/_line3'].stateValues.points[0].tree).eqls(["vector", x1, y1]);
+        expect(components['/_line3'].stateValues.points[1].tree).eqls(["vector", x3, y3]);
 
       })
 
@@ -1559,12 +1554,12 @@ describe('Line Tag Tests', function () {
         x2 = 3;
         y2 = 2;
         point4.movePoint({ x: x2, y: y2 });
-        expect(components['/_line1'].stateValues.points[0].tree).eqls(["tuple", x2, y2]);
-        expect(components['/_line1'].stateValues.points[1].tree).eqls(["tuple", x1, y1]);
-        expect(components['/_line2'].stateValues.points[0].tree).eqls(["tuple", x3, y3]);
-        expect(components['/_line2'].stateValues.points[1].tree).eqls(["tuple", x2, y2]);
-        expect(components['/_line3'].stateValues.points[0].tree).eqls(["tuple", x1, y1]);
-        expect(components['/_line3'].stateValues.points[1].tree).eqls(["tuple", x3, y3]);
+        expect(components['/_line1'].stateValues.points[0].tree).eqls(["vector", x2, y2]);
+        expect(components['/_line1'].stateValues.points[1].tree).eqls(["vector", x1, y1]);
+        expect(components['/_line2'].stateValues.points[0].tree).eqls(["vector", x3, y3]);
+        expect(components['/_line2'].stateValues.points[1].tree).eqls(["vector", x2, y2]);
+        expect(components['/_line3'].stateValues.points[0].tree).eqls(["vector", x1, y1]);
+        expect(components['/_line3'].stateValues.points[1].tree).eqls(["vector", x3, y3]);
 
       })
 
@@ -1573,12 +1568,12 @@ describe('Line Tag Tests', function () {
         x1 = -5;
         y1 = 8;
         point5.movePoint({ x: x1, y: y1 });
-        expect(components['/_line1'].stateValues.points[0].tree).eqls(["tuple", x2, y2]);
-        expect(components['/_line1'].stateValues.points[1].tree).eqls(["tuple", x1, y1]);
-        expect(components['/_line2'].stateValues.points[0].tree).eqls(["tuple", x3, y3]);
-        expect(components['/_line2'].stateValues.points[1].tree).eqls(["tuple", x2, y2]);
-        expect(components['/_line3'].stateValues.points[0].tree).eqls(["tuple", x1, y1]);
-        expect(components['/_line3'].stateValues.points[1].tree).eqls(["tuple", x3, y3]);
+        expect(components['/_line1'].stateValues.points[0].tree).eqls(["vector", x2, y2]);
+        expect(components['/_line1'].stateValues.points[1].tree).eqls(["vector", x1, y1]);
+        expect(components['/_line2'].stateValues.points[0].tree).eqls(["vector", x3, y3]);
+        expect(components['/_line2'].stateValues.points[1].tree).eqls(["vector", x2, y2]);
+        expect(components['/_line3'].stateValues.points[0].tree).eqls(["vector", x1, y1]);
+        expect(components['/_line3'].stateValues.points[1].tree).eqls(["vector", x3, y3]);
 
       })
 
@@ -1587,12 +1582,12 @@ describe('Line Tag Tests', function () {
         x3 = 0;
         y3 = -5;
         point6.movePoint({ x: x3, y: y3 });
-        expect(components['/_line1'].stateValues.points[0].tree).eqls(["tuple", x2, y2]);
-        expect(components['/_line1'].stateValues.points[1].tree).eqls(["tuple", x1, y1]);
-        expect(components['/_line2'].stateValues.points[0].tree).eqls(["tuple", x3, y3]);
-        expect(components['/_line2'].stateValues.points[1].tree).eqls(["tuple", x2, y2]);
-        expect(components['/_line3'].stateValues.points[0].tree).eqls(["tuple", x1, y1]);
-        expect(components['/_line3'].stateValues.points[1].tree).eqls(["tuple", x3, y3]);
+        expect(components['/_line1'].stateValues.points[0].tree).eqls(["vector", x2, y2]);
+        expect(components['/_line1'].stateValues.points[1].tree).eqls(["vector", x1, y1]);
+        expect(components['/_line2'].stateValues.points[0].tree).eqls(["vector", x3, y3]);
+        expect(components['/_line2'].stateValues.points[1].tree).eqls(["vector", x2, y2]);
+        expect(components['/_line3'].stateValues.points[0].tree).eqls(["vector", x1, y1]);
+        expect(components['/_line3'].stateValues.points[1].tree).eqls(["vector", x3, y3]);
 
       })
 

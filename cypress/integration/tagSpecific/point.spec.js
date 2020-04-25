@@ -28,10 +28,10 @@ describe('Point Tag Tests', function () {
       components['/_point1'].movePoint({ x: -1, y: -7 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(-1)
       expect(components['/_point1'].stateValues.xs[1].tree).eq(-7)
-      expect(components['/_point1'].stateValues.coords.tree).eqls(['tuple', -1, -7])
+      expect(components['/_point1'].stateValues.coords.tree).eqls(['vector', -1, -7])
       expect(components['/_point2'].stateValues.xs[0].tree).eq(1)
       expect(components['/_point2'].stateValues.xs[1].tree).eq(-7)
-      expect(components['/_point2'].stateValues.coords.tree).eqls(['tuple', 1, -7])
+      expect(components['/_point2'].stateValues.coords.tree).eqls(['vector', 1, -7])
     })
   });
 
@@ -58,10 +58,10 @@ describe('Point Tag Tests', function () {
       components['/_point1'].movePoint({ x: -1, y: -7 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(-1)
       expect(components['/_point1'].stateValues.xs[1].tree).eq(-7)
-      expect(components['/_point1'].stateValues.coords.tree).eqls(['tuple', -1, -7])
+      expect(components['/_point1'].stateValues.coords.tree).eqls(['vector', -1, -7])
       expect(components['/_point2'].stateValues.xs[0].tree).eq(1)
       expect(components['/_point2'].stateValues.xs[1].tree).eq(-7)
-      expect(components['/_point2'].stateValues.coords.tree).eqls(['tuple', 1, -7])
+      expect(components['/_point2'].stateValues.coords.tree).eqls(['vector', 1, -7])
 
 
     })
@@ -72,10 +72,10 @@ describe('Point Tag Tests', function () {
       components['/_point2'].movePoint({ x: 4, y: 6 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(-1)
       expect(components['/_point1'].stateValues.xs[1].tree).eq(6)
-      expect(components['/_point1'].stateValues.coords.tree).eqls(['tuple', -1, 6])
+      expect(components['/_point1'].stateValues.coords.tree).eqls(['vector', -1, 6])
       expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
       expect(components['/_point2'].stateValues.xs[1].tree).eq(6)
-      expect(components['/_point2'].stateValues.coords.tree).eqls(['tuple', 4, 6])
+      expect(components['/_point2'].stateValues.coords.tree).eqls(['vector', 4, 6])
 
     })
   })
@@ -945,7 +945,7 @@ describe('Point Tag Tests', function () {
       components['/_point1'].movePoint({ x: 1.2, y: 3.6 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", 1, 4]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -959,7 +959,7 @@ describe('Point Tag Tests', function () {
       components['/_point1'].movePoint({ x: -9.8, y: -7.4 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(-10);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(-7);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", -10, -7]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -10, -7]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -996,7 +996,7 @@ describe('Point Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(3);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(5);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", 3, 5]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 3, 5]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1015,7 +1015,7 @@ describe('Point Tag Tests', function () {
       components['/_point1'].movePoint({ x: 3, y: 2.9 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(7);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(5);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", 7, 5]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 7, 5]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1059,15 +1059,15 @@ describe('Point Tag Tests', function () {
       components['/original'].movePoint({ x: 1.2, y: 3.6 });
       expect(components['/original'].stateValues.xs[0].tree).eq(1.2);
       expect(components['/original'].stateValues.xs[1].tree).eq(3.6);
-      expect(components['/original'].stateValues.coords.tree).eqls(["tuple", 1.2, 3.6]);
+      expect(components['/original'].stateValues.coords.tree).eqls(["vector", 1.2, 3.6]);
       expect(components['/original'].stateValues.constraintUsed).eq(false);
       expect(components['/constrained'].stateValues.xs[0].tree).eq(2);
       expect(components['/constrained'].stateValues.xs[1].tree).eq(5);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["tuple", 2, 5]);
+      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", 2, 5]);
       expect(components['/constrained'].stateValues.constraintUsed).eq(true);
       expect(components['/follower'].stateValues.xs[0].tree).eq(3);
       expect(components['/follower'].stateValues.xs[1].tree).eq(6);
-      expect(components['/follower'].stateValues.coords.tree).eqls(["tuple", 3, 6]);
+      expect(components['/follower'].stateValues.coords.tree).eqls(["vector", 3, 6]);
       expect(components['/follower'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1090,15 +1090,15 @@ describe('Point Tag Tests', function () {
       components['/constrained'].movePoint({ x: -3.4, y: 6.7 });
       expect(components['/original'].stateValues.xs[0].tree).eq(-4);
       expect(components['/original'].stateValues.xs[1].tree).eq(6);
-      expect(components['/original'].stateValues.coords.tree).eqls(["tuple", -4, 6]);
+      expect(components['/original'].stateValues.coords.tree).eqls(["vector", -4, 6]);
       expect(components['/original'].stateValues.constraintUsed).eq(false);
       expect(components['/constrained'].stateValues.xs[0].tree).eq(-3);
       expect(components['/constrained'].stateValues.xs[1].tree).eq(7);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["tuple", -3, 7]);
+      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", -3, 7]);
       expect(components['/constrained'].stateValues.constraintUsed).eq(true);
       expect(components['/follower'].stateValues.xs[0].tree).eq(-2);
       expect(components['/follower'].stateValues.xs[1].tree).eq(8);
-      expect(components['/follower'].stateValues.coords.tree).eqls(["tuple", -2, 8]);
+      expect(components['/follower'].stateValues.coords.tree).eqls(["vector", -2, 8]);
       expect(components['/follower'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1120,15 +1120,15 @@ describe('Point Tag Tests', function () {
       components['/follower'].movePoint({ x: 5.3, y: -2.2 });
       expect(components['/original'].stateValues.xs[0].tree).eq(3);
       expect(components['/original'].stateValues.xs[1].tree).eq(-4);
-      expect(components['/original'].stateValues.coords.tree).eqls(["tuple", 3, -4]);
+      expect(components['/original'].stateValues.coords.tree).eqls(["vector", 3, -4]);
       expect(components['/original'].stateValues.constraintUsed).eq(false);
       expect(components['/constrained'].stateValues.xs[0].tree).eq(4);
       expect(components['/constrained'].stateValues.xs[1].tree).eq(-3);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["tuple", 4, -3]);
+      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", 4, -3]);
       expect(components['/constrained'].stateValues.constraintUsed).eq(true);
       expect(components['/follower'].stateValues.xs[0].tree).eq(5);
       expect(components['/follower'].stateValues.xs[1].tree).eq(-2);
-      expect(components['/follower'].stateValues.coords.tree).eqls(["tuple", 5, -2]);
+      expect(components['/follower'].stateValues.coords.tree).eqls(["vector", 5, -2]);
       expect(components['/follower'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1195,13 +1195,13 @@ describe('Point Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/original'].stateValues.xs[0].tree).eq(1.2);
       expect(components['/original'].stateValues.xs[1].tree).eq(3.6);
-      expect(components['/original'].stateValues.coords.tree).eqls(["tuple", 1.2, 3.6]);
+      expect(components['/original'].stateValues.coords.tree).eqls(["vector", 1.2, 3.6]);
       expect(components['/constrained'].stateValues.xs[0].tree).eq(2.2);
       expect(components['/constrained'].stateValues.xs[1].tree).eq(4.6);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["tuple", 2.2, 4.6]);
+      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", 2.2, 4.6]);
       expect(components['/follower'].stateValues.xs[0].tree).eq(3.2);
       expect(components['/follower'].stateValues.xs[1].tree).eq(5.6);
-      expect(components['/follower'].stateValues.coords.tree).eqls(["tuple", 3.2, 5.6]);
+      expect(components['/follower'].stateValues.coords.tree).eqls(["vector", 3.2, 5.6]);
     })
 
 
@@ -1214,13 +1214,13 @@ describe('Point Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/original'].stateValues.xs[0].tree).eq(1.2);
       expect(components['/original'].stateValues.xs[1].tree).eq(3.6);
-      expect(components['/original'].stateValues.coords.tree).eqls(["tuple", 1.2, 3.6]);
+      expect(components['/original'].stateValues.coords.tree).eqls(["vector", 1.2, 3.6]);
       expect(components['/constrained'].stateValues.xs[0].tree).eq(2);
       expect(components['/constrained'].stateValues.xs[1].tree).eq(5);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["tuple", 2, 5]);
+      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", 2, 5]);
       expect(components['/follower'].stateValues.xs[0].tree).eq(3);
       expect(components['/follower'].stateValues.xs[1].tree).eq(6);
-      expect(components['/follower'].stateValues.coords.tree).eqls(["tuple", 3, 6]);
+      expect(components['/follower'].stateValues.coords.tree).eqls(["vector", 3, 6]);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1.2,3.6)')
@@ -1238,13 +1238,13 @@ describe('Point Tag Tests', function () {
       components['/constrained'].movePoint({ x: 5.3, y: -2.2 });
       expect(components['/original'].stateValues.xs[0].tree).eq(4);
       expect(components['/original'].stateValues.xs[1].tree).eq(-3);
-      expect(components['/original'].stateValues.coords.tree).eqls(["tuple", 4, -3]);
+      expect(components['/original'].stateValues.coords.tree).eqls(["vector", 4, -3]);
       expect(components['/constrained'].stateValues.xs[0].tree).eq(5);
       expect(components['/constrained'].stateValues.xs[1].tree).eq(-2);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["tuple", 5, -2]);
+      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", 5, -2]);
       expect(components['/follower'].stateValues.xs[0].tree).eq(6);
       expect(components['/follower'].stateValues.xs[1].tree).eq(-1);
-      expect(components['/follower'].stateValues.coords.tree).eqls(["tuple", 6, -1]);
+      expect(components['/follower'].stateValues.coords.tree).eqls(["vector", 6, -1]);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,−3)')
@@ -1266,13 +1266,13 @@ describe('Point Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/original'].stateValues.xs[0].tree).eq(4);
       expect(components['/original'].stateValues.xs[1].tree).eq(-3);
-      expect(components['/original'].stateValues.coords.tree).eqls(["tuple", 4, -3]);
+      expect(components['/original'].stateValues.coords.tree).eqls(["vector", 4, -3]);
       expect(components['/constrained'].stateValues.xs[0].tree).eq(4);
       expect(components['/constrained'].stateValues.xs[1].tree).eq(-1.9);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["tuple", 4, -1.9]);
+      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", 4, -1.9]);
       expect(components['/follower'].stateValues.xs[0].tree).eq(5);
       expect(components['/follower'].stateValues.xs[1].tree).to.be.approximately(-0.9, 1E-10);
-      expect(components['/follower'].stateValues.coords.tree.slice(0, 2)).eqls(["tuple", 5]);
+      expect(components['/follower'].stateValues.coords.tree.slice(0, 2)).eqls(["vector", 5]);
       expect(components['/follower'].stateValues.coords.tree[2]).to.be.approximately(-0.9, 1E-10);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1291,13 +1291,13 @@ describe('Point Tag Tests', function () {
       components['/constrained'].movePoint({ x: -0.6, y: -8.6 });
       expect(components['/original'].stateValues.xs[0].tree).eq(-3);
       expect(components['/original'].stateValues.xs[1].tree).eq(-9.4);
-      expect(components['/original'].stateValues.coords.tree).eqls(["tuple", -3, -9.4]);
+      expect(components['/original'].stateValues.coords.tree).eqls(["vector", -3, -9.4]);
       expect(components['/constrained'].stateValues.xs[0].tree).eq(-2);
       expect(components['/constrained'].stateValues.xs[1].tree).eq(-8.4);
-      expect(components['/constrained'].stateValues.coords.tree).eqls(["tuple", -2, -8.4]);
+      expect(components['/constrained'].stateValues.coords.tree).eqls(["vector", -2, -8.4]);
       expect(components['/follower'].stateValues.xs[0].tree).eq(-1);
       expect(components['/follower'].stateValues.xs[1].tree).eq(-7.4);
-      expect(components['/follower'].stateValues.coords.tree).eqls(["tuple", -1, -7.4]);
+      expect(components['/follower'].stateValues.coords.tree).eqls(["vector", -1, -7.4]);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−3,−9.4)')
@@ -1336,7 +1336,7 @@ describe('Point Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(-7);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(9);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", -7, 9]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -7, 9]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1350,7 +1350,7 @@ describe('Point Tag Tests', function () {
       components['/_point1'].movePoint({ x: 1.1, y: 3.6 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(1.1);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(3.6);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", 1.1, 3.6]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1.1, 3.6]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1364,7 +1364,7 @@ describe('Point Tag Tests', function () {
       components['/_point1'].movePoint({ x: 1.1, y: 3.9 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", 1, 4]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1406,7 +1406,7 @@ describe('Point Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(3);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(-3.4);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", 3, -3.4]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 3, -3.4]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
 
@@ -1417,7 +1417,7 @@ describe('Point Tag Tests', function () {
       components['/_point1'].movePoint({ x: 1.3, y: 3.9 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(1.3);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", 1.3, 4]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1.3, 4]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1431,7 +1431,7 @@ describe('Point Tag Tests', function () {
       components['/_point1'].movePoint({ x: 1.1, y: 3.9 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", 1, 4]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1445,7 +1445,7 @@ describe('Point Tag Tests', function () {
       components['/_point1'].movePoint({ x: 1.3, y: 3.7 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(1.3);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(3.7);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", 1.3, 3.7]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1.3, 3.7]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1497,7 +1497,7 @@ describe('Point Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(-7.1);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(8.9);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", -7.1, 8.9]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -7.1, 8.9]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1516,7 +1516,7 @@ describe('Point Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(-7);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(9);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", -7, 9]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -7, 9]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1533,7 +1533,7 @@ describe('Point Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(-7.1);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(8.9);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", -7.1, 8.9]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -7.1, 8.9]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1547,7 +1547,7 @@ describe('Point Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(-8);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(9.1);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", -8, 9.1]);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -8, 9.1]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1665,7 +1665,7 @@ describe('Point Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         expect(components['/a'].stateValues.xs[0].tree).eq(-1);
         expect(components['/a'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/a'].stateValues.coords.tree).eqls(["tuple", -1, -5]);
+        expect(components['/a'].stateValues.coords.tree).eqls(["vector", -1, -5]);
         expect(components['/a'].stateValues.constraintUsed).eq(false)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")
@@ -1759,7 +1759,7 @@ describe('Point Tag Tests', function () {
         components['/_point1'].movePoint({ x: 3.5, y: 5.5 });
         expect(components['/_point1'].stateValues.xs[0].tree).eq(3);
         expect(components['/_point1'].stateValues.xs[1].tree).eq(5);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", 3, 5]);
+        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 3, 5]);
         expect(components['/_point1'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
@@ -1816,7 +1816,7 @@ describe('Point Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         expect(components['/_point1'].stateValues.xs[0].tree).eq(3);
         expect(components['/_point1'].stateValues.xs[1].tree).eq(2);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", 3, 2]);
+        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 3, 2]);
         expect(components['/_point1'].stateValues.constraintUsed).eq(false);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")
@@ -1836,7 +1836,7 @@ describe('Point Tag Tests', function () {
         components['/_point1'].movePoint({ x: 9, y: -5 });
         expect(components['/_point1'].stateValues.xs[0].tree).eq(9);
         expect(components['/_point1'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", 9, -5]);
+        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 9, -5]);
         expect(components['/_point1'].stateValues.constraintUsed).eq(false);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")
@@ -1847,7 +1847,7 @@ describe('Point Tag Tests', function () {
         components['/_point1'].movePoint({ x: 3.1, y: 5.1 });
         expect(components['/_point1'].stateValues.xs[0].tree).eq(3);
         expect(components['/_point1'].stateValues.xs[1].tree).eq(5);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", 3, 5]);
+        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 3, 5]);
         expect(components['/_point1'].stateValues.constraintUsed).eq(true)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
@@ -1858,7 +1858,7 @@ describe('Point Tag Tests', function () {
         components['/_point1'].movePoint({ x: -9, y: 8 });
         expect(components['/_point1'].stateValues.xs[0].tree).eq(-9);
         expect(components['/_point1'].stateValues.xs[1].tree).eq(8);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["tuple", -9, 8]);
+        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -9, 8]);
         expect(components['/_point1'].stateValues.constraintUsed).eq(false);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")

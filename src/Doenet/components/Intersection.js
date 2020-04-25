@@ -1,5 +1,5 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import { postProcessRef} from '../utils/refs';
+import { postProcessRef } from '../utils/refs';
 import me from 'math-expressions';
 
 export default class Intersection extends CompositeComponent {
@@ -44,15 +44,16 @@ export default class Intersection extends CompositeComponent {
       })
     }
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+    stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({
         lineChildren: {
           dependencyType: "stateVariable",
           variableName: "lineChildren"
         }
       }),
+      markStale: () => ({ updateReplacements: true }),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { newValues: { readyToExpand: true } };
       },
     }
 
@@ -61,6 +62,10 @@ export default class Intersection extends CompositeComponent {
 
 
   static createSerializedReplacements({ component, components }) {
+
+    // evaluate readyToExpand so that it is marked fresh,
+    // as it being marked stale triggers replacement update
+    component.stateValues.readyToExpand;
 
     let numberLineChildren = component.stateValues.lineChildren.length;
 
@@ -146,6 +151,11 @@ export default class Intersection extends CompositeComponent {
   }
 
   static calculateReplacementChanges({ component, components }) {
+
+    // evaluate readyToExpand so that it is marked fresh,
+    // as it being marked stale triggers replacement update
+    component.stateValues.readyToExpand;
+
     let replacementChanges = [];
 
     let serializedIntersections = this.createSerializedReplacements({ component, components }).replacements;
