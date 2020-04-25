@@ -34,16 +34,16 @@ class DoenetChooser extends Component {
     };
 
 
-    this.loadUserContentBranches();
-    this.loadUserFoldersAndRepo();
-    this.loadUserUrls();
-    this.loadAllCourses();
+    // this.loadUserContentBranches();
+    // this.loadUserFoldersAndRepo();
+    // this.props.methods.loadUserUrls();
+    // this.loadAllCourses();
     // this.loadHeadingsAndAssignments();
 
-    this.branches_loaded = false;
-    this.courses_loaded = false;
-    this.folders_loaded = false;
-    this.urls_loaded = false;
+    // this.branches_loaded = false;
+    // this.props.flags.courses_loaded = false;
+    // this.folders_loaded = false;
+    // this.urls_loaded = false;
     // this.assignments_and_headings_loaded = false;
     this.assignments_and_headings_loaded = props.flags.assignments_and_headings_loaded;
 
@@ -67,7 +67,7 @@ class DoenetChooser extends Component {
     this.addContentToCourse = this.addContentToCourse.bind(this);
     this.removeContentFromCourse = this.removeContentFromCourse.bind(this);
     this.updateSelectedItems = this.updateSelectedItems.bind(this);
-    this.updateDirectoryStack = this.updateDirectoryStack.bind(this);
+    // this.updateDirectoryStack = this.updateDirectoryStack.bind(this);
     this.jumpToDirectory = this.jumpToDirectory.bind(this);
     this.saveUserContent = this.saveUserContent.bind(this);
     this.modifyRepoAccess = this.modifyRepoAccess.bind(this);
@@ -89,8 +89,8 @@ class DoenetChooser extends Component {
 
   buildCourseList() {
     this.courseList = [];
-    for(let courseId of this.courseIds){
-      let courseCode = this.courseInfo[courseId].courseCode;
+    for(let courseId of this.props.data.dataLists.courseIds){
+      let courseCode = this.props.data.dataInfo.courseInfo[courseId].courseCode;
 
       let classes = (this.state.selectedDrive === "Courses") && (courseId === this.state.selectedCourse) ? 
                       "leftNavPanelMenuItem activeLeftNavPanelMenuItem": "leftNavPanelMenuItem";
@@ -183,8 +183,8 @@ class DoenetChooser extends Component {
       if (this.state.selectedDrive === "Content") {
         toolbarTitle = this.state.selectedDrive;
       } else if (this.state.selectedDrive === "Courses") {
-        toolbarTitle = this.courseInfo[this.state.selectedCourse].courseCode + ' - '
-        + this.courseInfo[this.state.selectedCourse].courseName;
+        toolbarTitle = this.props.data.dataInfo.courseInfo[this.state.selectedCourse].courseCode + ' - '
+        + this.props.data.dataInfo.courseInfo[this.state.selectedCourse].courseName;
       }  else if (this.state.selectedDrive === "Global") {
         toolbarTitle = <React.Fragment>
             <FilterPanel loadFilteredContent={this.loadFilteredContent}/>
@@ -194,11 +194,11 @@ class DoenetChooser extends Component {
     } else if (this.state.activeSection === "add_course") {
       toolbarTitle = "Add New Course";
     } else if (this.state.activeSection === "edit_course") {
-      toolbarTitle = "Edit Course - " + this.courseInfo[this.state.selectedCourse].courseCode;
+      toolbarTitle = "Edit Course - " + this.props.data.dataInfo.courseInfo[this.state.selectedCourse].courseCode;
     } else if (this.state.activeSection === "add_url") {
       toolbarTitle = "Add New URL";
     } else if (this.state.activeSection === "edit_url") {
-      toolbarTitle = "Edit URL - " + this.urlInfo[this.state.selectedItems[0]].title;
+      toolbarTitle = "Edit URL - " + this.props.data.dataInfo.urlInfo[this.state.selectedItems[0]].title;
     }
 
     this.topToolbar = <React.Fragment>
@@ -212,7 +212,7 @@ class DoenetChooser extends Component {
     let newBranchId = nanoid();
     let num = 1;
     let title = "Untitled Document " + num; 
-    while (Object.values(this.branchId_info).filter(content => content.title.includes(title)).length != 0) {
+    while (Object.values(this.props.data.dataInfo.contentInfo).filter(content => content.title.includes(title)).length != 0) {
       num++;
       title = "Untitled Document " + num; 
     }
@@ -223,10 +223,10 @@ class DoenetChooser extends Component {
       branchId:newBranchId,
       publish:true
     }, (branchId) => {
-      this.loadUserContentBranches(() => {
+      this.props.methods.loadUserContentBranches(() => {
         // if not in base dir, add document to current folder
-        if (this.state.directoryStack.length !== 0) {
-          let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
+        if (this.props.appState.directoryStack.length !== 0) {
+          let currentFolderId = this.props.appState.directoryStack[this.props.appState.directoryStack.length - 1];
           this.addContentToFolder([branchId], ["content"], currentFolderId);
         } else {
           this.saveUserContent([branchId], ["content"], "insert"); // add to user root
@@ -234,7 +234,6 @@ class DoenetChooser extends Component {
       
         // set as selected and redirect to /editor 
         this.setState({
-          directoryStack: [],
           selectedItems: [branchId],
           selectedItemsType: ["content"],
           activeSection: "chooser",
@@ -244,6 +243,7 @@ class DoenetChooser extends Component {
           this.updateNumber++;
           setTimeout(function(){ window.location.href=`/editor?branchId=${branchId}`;}, 500);
         });
+        this.props.methods.updateDirectoryStack([]);
       })
     });
   }
@@ -332,11 +332,11 @@ class DoenetChooser extends Component {
         if (this.state.directoryStack.length !== 0) {
           let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
           this.addContentToFolder([urlId], ["url"], currentFolderId, () => {
-            this.loadUserUrls();
+            this.props.methods.loadUserUrls();
           });        
         } else {
           this.saveUserContent([urlId], ["url"], "insert", () => {  // add to user root
-            this.loadUserUrls(() => {
+            this.props.methods.loadUserUrls(() => {
               this.setState({
                 selectedItems: [urlId],
                 selectedItemsType: ["url"],
@@ -373,42 +373,42 @@ class DoenetChooser extends Component {
     })
   }
 
-  loadUserUrls(callback=(()=>{})) {
-    this.urls_loaded = false;
+  // loadUserUrls(callback=(()=>{})) {
+  //   this.urls_loaded = false;
 
-    const loadUserUrlsUrl ='/api/loadUserUrls.php';
-    const payload = {};
+  //   const loadUserUrlsUrl ='/api/loadUserUrls.php';
+  //   const payload = {};
     
-    axios.get(loadUserUrlsUrl,payload)
-    .then(resp=>{
-      this.urlInfo = Object.assign({}, this.urlInfo, resp.data.urlInfo);
-      this.urlIds = resp.data.urlIds;
-      this.urls_loaded = true;
-      callback();
-      this.forceUpdate();
-    });
-  }
+  //   axios.get(loadUserUrlsUrl,payload)
+  //   .then(resp=>{
+  //     this.props.data.dataInfo.urlInfo = Object.assign({}, this.props.data.dataInfo.urlInfo, resp.data.urlInfo);
+  //     this.props.data.dataLists.urlIds = resp.data.urlIds;
+  //     this.urls_loaded = true;
+  //     callback();
+  //     this.forceUpdate();
+  //   });
+  // }
 
-  loadUserContentBranches(callback=(()=>{})) {
-    this.branches_loaded = false;
+  // loadUserContentBranches(callback=(()=>{})) {
+  //   this.branches_loaded = false;
 
-    let currentFolderId = this.state.directoryStack.length === 0 ?
-                            "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
+  //   let currentFolderId = this.state.directoryStack.length === 0 ?
+  //                           "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
 
-    const data={folderId: currentFolderId};
-    const payload = {params: data};
+  //   const data={folderId: currentFolderId};
+  //   const payload = {params: data};
 
-    const loadBranchesUrl='/api/loadUserContent.php';
+  //   const loadBranchesUrl='/api/loadUserContent.php';
     
-    axios.get(loadBranchesUrl, payload)
-    .then(resp=>{
-      this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchId_info);
-      this.sort_order = resp.data.sort_order;
-      this.branches_loaded = true;
-      callback();
-      this.forceUpdate();
-    });
-  }
+  //   axios.get(loadBranchesUrl, payload)
+  //   .then(resp=>{
+  //     this.props.data.dataInfo.contentInfo = Object.assign({}, this.props.data.dataInfo.contentInfo, resp.data.branchId_info);
+  //     this.props.data.dataLists.contentIds = resp.data.sort_order;
+  //     this.branches_loaded = true;
+  //     callback();
+  //     this.forceUpdate();
+  //   });
+  // }
 
   saveContentToServer({documentName,code,branchId,publish=false}, callback=(()=>{})){
     const url='/api/saveContent.php';
@@ -459,7 +459,7 @@ class DoenetChooser extends Component {
     .then(resp => {
       // reload list of courses
       this.loadAllCourses(() => {
-        this.loadCourseContent(courseId, () => {
+        this.props.methods.loadCourseContent(courseId, () => {
           this.setState({
             selectedItems: [],
             activeSection: "chooser",
@@ -474,46 +474,46 @@ class DoenetChooser extends Component {
     })
   }
 
-  loadAllCourses(callback=(()=>{})) {
-    const loadCoursesUrl='/api/loadAllCourses.php';
-    const data={
-    }
-    const payload = {
-      params: data
-    }
+  // loadAllCourses(callback=(()=>{})) {
+  //   const loadCoursesUrl='/api/loadAllCourses.php';
+  //   const data={
+  //   }
+  //   const payload = {
+  //     params: data
+  //   }
 
-    axios.get(loadCoursesUrl,payload)
-    .then(resp=>{
-      this.courseInfo = resp.data.courseInfo;
-      this.courseIds = resp.data.courseIds;
-      callback();
-      this.courses_loaded = true;
-      this.forceUpdate();
-    });
-  }
+  //   axios.get(loadCoursesUrl,payload)
+  //   .then(resp=>{
+  //     this.props.data.dataInfo.courseInfo = resp.data.courseInfo;
+  //     this.props.data.dataLists.courseIds = resp.data.courseIds;
+  //     callback();
+  //     this.props.flags.courses_loaded = true;
+  //     this.forceUpdate();
+  //   });
+  // }
 
-  loadCourseContent(courseId, callback=(()=>{})) {
-    this.folders_loaded = false;
-    this.branches_loaded = false;
-    const loadCoursesUrl='/api/loadCourseContent.php';
-    const data={
-      courseId: courseId
-    }
-    const payload = {
-      params: data
-    }
+  // loadCourseContent(courseId, callback=(()=>{})) {
+  //   this.folders_loaded = false;
+  //   this.branches_loaded = false;
+  //   const loadCoursesUrl='/api/loadCourseContent.php';
+  //   const data={
+  //     courseId: courseId
+  //   }
+  //   const payload = {
+  //     params: data
+  //   }
 
-    axios.get(loadCoursesUrl,payload)
-    .then(resp=>{
-      this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchInfo);
-      // this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
-      this.folderInfo = {...this.folderInfo, ...resp.data.folderInfo};
-      this.folders_loaded = true;
-      this.branches_loaded = true;
-      callback();
-      this.forceUpdate();
-    });
-  }
+  //   axios.get(loadCoursesUrl,payload)
+  //   .then(resp=>{
+  //     this.props.data.dataInfo.contentInfo = Object.assign({}, this.props.data.dataInfo.contentInfo, resp.data.branchInfo);
+  //     // this.props.data.dataInfo.folderInfo = Object.assign({}, this.props.data.dataInfo.folderInfo, resp.data.folderInfo);
+  //     this.props.data.dataInfo.folderInfo = {...this.props.data.dataInfo.folderInfo, ...resp.data.folderInfo};
+  //     this.folders_loaded = true;
+  //     this.branches_loaded = true;
+  //     callback();
+  //     this.forceUpdate();
+  //   });
+  // }
 
   saveCourseContent(courseId, itemIds, itemTypes, operationType, callback=(()=>{})) {
     const url='/api/saveCourseContent.php';
@@ -544,7 +544,7 @@ class DoenetChooser extends Component {
       this.folders_loaded = false;
       this.branches_loaded = false;
       this.updateIndexedDBCourseContent(courseId);
-      this.loadCourseContent(courseId);
+      this.props.methods.loadCourseContent(courseId);
     } else if (drive === "Global") {
       this.setState({
         selectedItems: [],
@@ -552,9 +552,9 @@ class DoenetChooser extends Component {
         activeSection: "chooser",
         selectedDrive: drive,
         directoryStack: []});
-      this.sort_order = [];
-      this.folderIds = [];
-      this.urlIds = [];
+      this.props.data.dataLists.contentIds = [];
+      this.props.data.dataLists.folderIds = [];
+      this.props.data.dataLists.urlIds = [];
     } else {
       this.setState({
         selectedItems: [],
@@ -562,9 +562,9 @@ class DoenetChooser extends Component {
         activeSection: "chooser",
         selectedDrive: drive,
         directoryStack: []}, () => {
-          this.loadUserContentBranches();
-          this.loadUserFoldersAndRepo();
-          this.loadUserUrls();
+          this.props.methods.loadUserContentBranches();
+          this.props.methods.loadUserFoldersAndRepo();
+          this.props.methods.loadUserUrls();
       });
     }
     this.updateNumber++;
@@ -591,7 +591,7 @@ class DoenetChooser extends Component {
     // get current directory folderId/root
     let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
     // setup parent
-    let parentId = this.folderInfo[folderId] ? this.folderInfo[folderId].parentId : currentFolderId;
+    let parentId = this.props.data.dataInfo.folderInfo[folderId] ? this.props.data.dataInfo.folderInfo[folderId].parentId : currentFolderId;
     if (isRepo) parentId = "root";  // repo always at root
 
     const url='/api/saveFolder.php';
@@ -614,22 +614,22 @@ class DoenetChooser extends Component {
     })
   }
 
-  loadUserFoldersAndRepo(callback=(()=>{})) {
-    this.folders_loaded = false;
+  // loadUserFoldersAndRepo(callback=(()=>{})) {
+  //   this.folders_loaded = false;
 
-    const loadUserFoldersAndRepoUrl='/api/loadUserFoldersAndRepo.php';
-    const payload = {};
+  //   const loadUserFoldersAndRepoUrl='/api/loadUserFoldersAndRepo.php';
+  //   const payload = {};
     
-    axios.get(loadUserFoldersAndRepoUrl,payload)
-    .then(resp=>{
-      this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
+  //   axios.get(loadUserFoldersAndRepoUrl,payload)
+  //   .then(resp=>{
+  //     this.props.data.dataInfo.folderInfo = Object.assign({}, this.props.data.dataInfo.folderInfo, resp.data.folderInfo);
       
-      this.folderIds = resp.data.folderIds;
-      this.folders_loaded = true;
-      callback();
-      this.forceUpdate();
-    });
-  }
+  //     this.props.data.dataLists.folderIds = resp.data.folderIds;
+  //     this.folders_loaded = true;
+  //     callback();
+  //     this.forceUpdate();
+  //   });
+  // }
 
   addNewFolder(title) {
     // generate new folderId
@@ -638,8 +638,8 @@ class DoenetChooser extends Component {
     // check if parent folder is private or isPublic
     let isPublic = false;
     if (this.state.directoryStack.length != 0  // not in root
-      && this.folderInfo[this.state.directoryStack[0]].isRepo  // in repo
-      && this.folderInfo[this.state.directoryStack[0]].isPublic) {  // in public repo
+      && this.props.data.dataInfo.folderInfo[this.state.directoryStack[0]].isRepo  // in repo
+      && this.props.data.dataInfo.folderInfo[this.state.directoryStack[0]].isPublic) {  // in public repo
       isPublic = true;
     }
 
@@ -648,7 +648,7 @@ class DoenetChooser extends Component {
       if (this.state.directoryStack.length !== 0) {
         let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
         this.addContentToFolder([folderId], ["folder"], currentFolderId, () => {
-          this.loadUserFoldersAndRepo(() => {
+          this.props.methods.loadUserFoldersAndRepo(() => {
             this.setState({
               selectedItems: [folderId],
               selectedItemsType: ["folder"],
@@ -661,7 +661,7 @@ class DoenetChooser extends Component {
         });        
       } else {
         this.saveUserContent([folderId], ["folder"], "insert", () => {  // add to user root
-          this.loadUserFoldersAndRepo(() => {
+          this.props.methods.loadUserFoldersAndRepo(() => {
             this.setState({
               selectedItems: [folderId],
               selectedItemsType: ["folder"],
@@ -677,7 +677,7 @@ class DoenetChooser extends Component {
   }
 
   addContentToRepo(childIds, childType, repoId) {
-    let isPublic = this.folderInfo[repoId].isPublic;
+    let isPublic = this.props.data.dataInfo.folderInfo[repoId].isPublic;
 
     // modify public/private state if parent is repo
     if (isPublic) {
@@ -694,31 +694,31 @@ class DoenetChooser extends Component {
       childIds.forEach((childId, i) => {
         if (childType[i] == "folder") {
           // check if public
-          if (!this.folderInfo[childId].isPublic) {
+          if (!this.props.data.dataInfo.folderInfo[childId].isPublic) {
             this.modifyPublicState(isPublic, [].concat(this.flattenFolder(childId).itemIds),
               [].concat(this.flattenFolder(childId).itemType));
             itemsToBeAdded.push(childId);
             typeOfItemsToBeAdded.push("folder");
           } else {
-            this.displayToast(`Public content cannot be made private: ${this.folderInfo[childId].title}`);
+            this.displayToast(`Public content cannot be made private: ${this.props.data.dataInfo.folderInfo[childId].title}`);
           }
         } else if (childType[i] == "content") {
           // check if public
-          if (!this.branchId_info[childId].isPublic) {
+          if (!this.props.data.dataInfo.contentInfo[childId].isPublic) {
             this.modifyPublicState(isPublic, [childId], ["content"]);
             itemsToBeAdded.push(childId);
             typeOfItemsToBeAdded.push("content");
           } else {
-            this.displayToast(`Public content cannot be made private: ${this.branchId_info[childId].title}`);
+            this.displayToast(`Public content cannot be made private: ${this.props.data.dataInfo.contentInfo[childId].title}`);
           }
         } else if (childType[i] == "url") {
           // check if public
-          if (!this.urlInfo[childId].isPublic) {
+          if (!this.props.data.dataInfo.urlInfo[childId].isPublic) {
             this.modifyPublicState(isPublic, [childId], ["url"]);
             itemsToBeAdded.push(childId);
             typeOfItemsToBeAdded.push("url");
           } else {
-            this.displayToast(`Public content cannot be made private: ${this.folderInfo[childId].title}`);
+            this.displayToast(`Public content cannot be made private: ${this.props.data.dataInfo.folderInfo[childId].title}`);
           }
         }
       });
@@ -728,9 +728,9 @@ class DoenetChooser extends Component {
 
   addContentToFolder(childIds, childType, folderId, callback=(()=>{})) {
     let operationType = "insert";
-    let title = this.folderInfo[folderId].title;
-    let isRepo = this.folderInfo[folderId].isRepo;
-    let isPublic = this.folderInfo[folderId].isPublic;
+    let title = this.props.data.dataInfo.folderInfo[folderId].title;
+    let isRepo = this.props.data.dataInfo.folderInfo[folderId].isRepo;
+    let isPublic = this.props.data.dataInfo.folderInfo[folderId].isPublic;
 
 
     this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (folderId) => {
@@ -740,7 +740,7 @@ class DoenetChooser extends Component {
       // moving into folder
       //    from another root ~ set childItem.rootId = folderId.rootId
       //    from same root ~ set childItem.rootId = folderId.rootId
-      if (this.folderInfo[folderId].parentId == "root") { 
+      if (this.props.data.dataInfo.folderInfo[folderId].parentId == "root") { 
         this.saveUserContent(childIds, childType, "remove");
       }
       let itemIds = [];
@@ -748,10 +748,10 @@ class DoenetChooser extends Component {
           itemIds = itemIds.concat(this.flattenFolder(childId).itemIds);
       });
       
-      this.modifyFolderChildrenRoot(this.folderInfo[folderId].rootId, itemIds, () => {
-        this.loadUserFoldersAndRepo();
-        this.loadUserContentBranches();
-        this.loadUserUrls();
+      this.modifyFolderChildrenRoot(this.props.data.dataInfo.folderInfo[folderId].rootId, itemIds, () => {
+        this.props.methods.loadUserFoldersAndRepo();
+        this.props.methods.loadUserContentBranches();
+        this.props.methods.loadUserUrls();
         callback();
       });
     });
@@ -759,9 +759,9 @@ class DoenetChooser extends Component {
 
   removeContentFromFolder(childIds, childType, folderId, callback=(()=>{})) {
     let operationType = "remove";
-    let title = this.folderInfo[folderId].title;
-    let isRepo = this.folderInfo[folderId].isRepo;
-    let isPublic = this.folderInfo[folderId].isPublic;
+    let title = this.props.data.dataInfo.folderInfo[folderId].title;
+    let isRepo = this.props.data.dataInfo.folderInfo[folderId].isRepo;
+    let isPublic = this.props.data.dataInfo.folderInfo[folderId].isPublic;
 
     // modify public/private state if parent is repo
     if (isRepo) {
@@ -776,16 +776,16 @@ class DoenetChooser extends Component {
       // within same root ~ set childItem.rootId = folderId.rootId (unchanged)
       // to diff root ~ set childItem.rootId = folderId.rootId (changed)
       // to root ~ set childItem.rootId = childItem.id
-      if (this.folderInfo[folderId].parentId == "root") {
+      if (this.props.data.dataInfo.folderInfo[folderId].parentId == "root") {
         this.saveUserContent(childIds, childType, "insert");
         childIds.forEach(folderAtRoot => {
           this.modifyFolderChildrenRoot(folderAtRoot, [].concat(this.flattenFolder(folderAtRoot).itemIds), () => {
           });
         });
       }
-      this.loadUserContentBranches();
-      this.loadUserFoldersAndRepo();
-      this.loadUserUrls();
+      this.props.methods.loadUserContentBranches();
+      this.props.methods.loadUserFoldersAndRepo();
+      this.props.methods.loadUserUrls();
       // this.forceUpdate();
       callback();
     });
@@ -797,22 +797,22 @@ class DoenetChooser extends Component {
       let repoChildren = [];
       let repoChildrenType = [];
 
-      this.folderInfo[repoId].childFolders.forEach((childId, i) => {
+      this.props.data.dataInfo.folderInfo[repoId].childFolders.forEach((childId, i) => {
         repoChildren = repoChildren.concat(this.flattenFolder(childId).itemIds);
         repoChildrenType = repoChildrenType.concat(this.flattenFolder(childId).itemType);
       });
-      this.folderInfo[repoId].childContent.forEach((childId, i) => {
+      this.props.data.dataInfo.folderInfo[repoId].childContent.forEach((childId, i) => {
         repoChildren.push(childId);
         repoChildrenType.push("content");
       });
-      this.folderInfo[repoId].childUrls.forEach((childId, i) => {
+      this.props.data.dataInfo.folderInfo[repoId].childUrls.forEach((childId, i) => {
         repoChildren.push(childId);
         repoChildrenType.push("url");
       });
       this.modifyPublicState(true, [repoId].concat(repoChildren), ["folder"].concat(repoChildrenType), () => {
-        this.loadUserFoldersAndRepo();
-        this.loadUserContentBranches();
-        this.loadUserUrls();
+        this.props.methods.loadUserFoldersAndRepo();
+        this.props.methods.loadUserContentBranches();
+        this.props.methods.loadUserUrls();
       });
     }
   }
@@ -835,8 +835,8 @@ class DoenetChooser extends Component {
 
   renameFolder(folderId, newTitle) {
     this.saveFolder(folderId, newTitle, [], [], "", 
-      this.folderInfo[folderId].isRepo, this.folderInfo[folderId].isPublic, () => {
-      this.loadUserFoldersAndRepo();
+      this.props.data.dataInfo.folderInfo[folderId].isRepo, this.props.data.dataInfo.folderInfo[folderId].isPublic, () => {
+      this.props.methods.loadUserFoldersAndRepo();
     });
   }
 
@@ -856,22 +856,22 @@ class DoenetChooser extends Component {
   }
 
   flattenFolder(folderId) {
-    if (!this.folderInfo[folderId]) {
-      let currItemType =  this.branchId_info[folderId] === undefined ? "url" : "content";
+    if (!this.props.data.dataInfo.folderInfo[folderId]) {
+      let currItemType =  this.props.data.dataInfo.contentInfo[folderId] === undefined ? "url" : "content";
       return {itemIds: [folderId], itemType: [currItemType]};
     }
 
     let itemIds = [folderId]; 
     let itemType = ["folder"];
-    this.folderInfo[folderId].childFolders.forEach((childFolderId) => {
+    this.props.data.dataInfo.folderInfo[folderId].childFolders.forEach((childFolderId) => {
       itemIds = itemIds.concat(this.flattenFolder(childFolderId).itemIds);
       itemType = itemType.concat(this.flattenFolder(childFolderId).itemType);
     })
-    this.folderInfo[folderId].childContent.forEach((childContentId) => {
+    this.props.data.dataInfo.folderInfo[folderId].childContent.forEach((childContentId) => {
       itemIds.push(childContentId);
       itemType.push("content");
     })
-    this.folderInfo[folderId].childUrls.forEach((childUrlId) => {
+    this.props.data.dataInfo.folderInfo[folderId].childUrls.forEach((childUrlId) => {
       itemIds.push(childUrlId);
       itemType.push("url");
     })
@@ -898,7 +898,7 @@ class DoenetChooser extends Component {
     // TODO: let user input folder title
     let num = 1;
     let title = "New Folder " + num; 
-    while (Object.values(this.folderInfo).filter(folder => 
+    while (Object.values(this.props.data.dataInfo.folderInfo).filter(folder => 
       folder.title && folder.title.includes(title)).length != 0) {
       num++;
       title = "New Folder " + num; 
@@ -917,7 +917,7 @@ class DoenetChooser extends Component {
     let folderId = nanoid();
     this.saveFolder(folderId, title, [], [], "insert", true, false, () => {
       this.modifyRepoAccess(folderId, "insert", true, () => {  // add user to repo_access
-        this.loadUserFoldersAndRepo(() => {
+        this.props.methods.loadUserFoldersAndRepo(() => {
           this.setState({
             directoryStack: [],
             selectedItems: [folderId],
@@ -963,13 +963,13 @@ class DoenetChooser extends Component {
     })
   }
 
-  updateDirectoryStack(directoryStack) {
-    this.setState({
-      directoryStack: directoryStack
-    })
-    // this.loadUserFoldersAndRepo();
-    // this.loadUserContentBranches();
-  }
+  // updateDirectoryStack(directoryStack) {
+  //   this.setState({
+  //     directoryStack: directoryStack
+  //   })
+  //   // this.props.methods.loadUserFoldersAndRepo();
+  //   // this.loadUserContentBranches();
+  // }
 
   getAllSelectedItems = () => {
     this.browser.current.getAllSelectedItems();
@@ -984,8 +984,8 @@ class DoenetChooser extends Component {
       // update current course content
       indexedDB.insert("course_content_store", { 
         courseId: courseId,
-        courseContent: this.courseInfo[courseId].content,
-        courseFolders: this.courseInfo[courseId].folders,
+        courseContent: this.props.data.dataInfo.courseInfo[courseId].content,
+        courseFolders: this.props.data.dataInfo.courseInfo[courseId].folders,
       });
 
       // update last selected course
@@ -1050,8 +1050,8 @@ class DoenetChooser extends Component {
     axios.post(url, data)
     .then(resp => {
       callback();
-      this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchId_info);
-      this.sort_order = resp.data.sort_order;
+      this.props.data.dataInfo.contentInfo = Object.assign({}, this.props.data.dataInfo.contentInfo, resp.data.branchId_info);
+      this.props.data.dataLists.contentIds = resp.data.sort_order;
       this.branches_loaded = true;
       this.forceUpdate();
     })
@@ -1060,41 +1060,41 @@ class DoenetChooser extends Component {
     })
   }
 
-  loadHeadingsAndAssignments() {
-    const url = "/api/getHeaderAndAssignmentInfo.php";
-    const data = {
-      courseId: "aI8sK4vmEhC5sdeSP3vNW"
-    }
-    const payload = {
-      params: data
-    }
-    axios.get(url, payload).then(resp=>{
-      this.headingsInfo = {};
-      this.assignmentsInfo = {};
-      Object.keys(resp.data).map(itemId => {
-          // console.log(resp.data[itemId]["name"]);
-        if (resp.data[itemId]["attribute"] == "header") {
-          this.headingsInfo[itemId] = resp.data[itemId];
-          // process children
-          for (let i in resp.data[itemId]["childrenId"]) {
-            let childId = resp.data[itemId]["childrenId"][i];
-            if (childId == "") continue;
-            if (resp.data[childId]["attribute"] == "header") {
-              this.headingsInfo[itemId]["headingId"].push(childId);
-            } else {
-              this.headingsInfo[itemId]["assignmentId"].push(childId);
-            }
-          }
-        } else {
-          this.assignmentsInfo[itemId] = resp.data[itemId];
-        }
-      })
-      this.assignments_and_headings_loaded = true;
-      this.forceUpdate();
-    }).catch(error =>{
-      this.setState({error:error})
-    }); 
-  }
+  // loadHeadingsAndAssignments() {
+  //   const url = "/api/getHeaderAndAssignmentInfo.php";
+  //   const data = {
+  //     courseId: "aI8sK4vmEhC5sdeSP3vNW"
+  //   }
+  //   const payload = {
+  //     params: data
+  //   }
+  //   axios.get(url, payload).then(resp=>{
+  //     this.headingsInfo = {};
+  //     this.assignmentsInfo = {};
+  //     Object.keys(resp.data).map(itemId => {
+  //         // console.log(resp.data[itemId]["name"]);
+  //       if (resp.data[itemId]["attribute"] == "header") {
+  //         this.headingsInfo[itemId] = resp.data[itemId];
+  //         // process children
+  //         for (let i in resp.data[itemId]["childrenId"]) {
+  //           let childId = resp.data[itemId]["childrenId"][i];
+  //           if (childId == "") continue;
+  //           if (resp.data[childId]["attribute"] == "header") {
+  //             this.headingsInfo[itemId]["headingId"].push(childId);
+  //           } else {
+  //             this.headingsInfo[itemId]["assignmentId"].push(childId);
+  //           }
+  //         }
+  //       } else {
+  //         this.assignmentsInfo[itemId] = resp.data[itemId];
+  //       }
+  //     })
+  //     this.assignments_and_headings_loaded = true;
+  //     this.forceUpdate();
+  //   }).catch(error =>{
+  //     this.setState({error:error})
+  //   }); 
+  // }
 
   updateHeadingsAndAssignments(headingsInfo, assignmentsInfo) {
     this.headingsInfo = headingsInfo;
@@ -1187,18 +1187,18 @@ class DoenetChooser extends Component {
   }
 
   render(){
-    console.log(this.props);
+    const { data, flags } = this.props;
 
-    if (!this.courses_loaded || !this.assignments_and_headings_loaded){
+    if (!flags.courses_loaded || !flags.assignments_and_headings_loaded){
       return <div style={{display:"flex",justifyContent:"center",alignItems:"center", height:"100vh"}}>
                 <SpinningLoader/>
              </div>
     }
-    // return <DoenetCourseOutline treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
-      // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
 
-    return <DoenetCourseOutline treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
-      updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
+    // return <DoenetCourseOutline 
+    //   treeHeadingsInfo={data.dataInfo.courseHeadingsInfo} 
+    //   treeAssignmentsInfo={data.dataInfo.courseAssignmentsInfo} 
+    //   updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
 
     this.buildCourseList();
     this.buildLeftNavPanel();
@@ -1213,7 +1213,7 @@ class DoenetChooser extends Component {
                           handleNewCourseCreated={this.handleNewCourseCreated}
                           saveCourse={this.saveCourse}
                           selectedCourse={this.state.selectedCourse}
-                          selectedCourseInfo={this.courseInfo[this.state.selectedCourse]}
+                          selectedCourseInfo={this.props.data.dataInfo.courseInfo[this.state.selectedCourse]}
                           />;
     } else if (this.state.activeSection === "add_url" || this.state.activeSection === "edit_url") {
       this.mainSection = <UrlForm 
@@ -1222,7 +1222,7 @@ class DoenetChooser extends Component {
                           handleNewUrlCreated={this.handleNewUrlCreated}
                           saveUrl={this.saveUrl}
                           selectedUrl={this.state.selectedItems[this.state.selectedItems.length - 1]}
-                          selectedUrlInfo={this.urlInfo[this.state.selectedItems[this.state.selectedItems.length - 1]]}
+                          selectedUrlInfo={this.props.data.dataInfo.urlInfo[this.state.selectedItems[this.state.selectedItems.length - 1]]}
                           />;
     }
     else {
@@ -1230,20 +1230,20 @@ class DoenetChooser extends Component {
       let contentList = [];
       let urlList = [];
       if (this.state.selectedDrive == "Content" || this.state.selectedDrive == "Global") {
-        folderList = this.folderIds;
-        contentList = this.sort_order;
-        urlList = this.urlIds;
+        folderList = this.props.data.dataLists.folderIds;
+        contentList = this.props.data.dataLists.contentIds;
+        urlList = this.props.data.dataLists.urlIds;
       } else if (this.state.selectedDrive == "Courses") {
-        folderList = this.courseInfo[this.state.selectedCourse].folders;
-        contentList = this.courseInfo[this.state.selectedCourse].content;
-        urlList = this.courseInfo[this.state.selectedCourse].urls;
+        folderList = this.props.data.dataInfo.courseInfo[this.state.selectedCourse].folders;
+        contentList = this.props.data.dataInfo.courseInfo[this.state.selectedCourse].content;
+        urlList = this.props.data.dataInfo.courseInfo[this.state.selectedCourse].urls;
       }
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
-          loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
-          allContentInfo={this.branchId_info}
-          allFolderInfo={this.folderInfo}
-          allUrlInfo={this.urlInfo}
+          loading={!this.props.flags.folders_loaded || !this.props.flags.branches_loaded || !this.props.flags.urls_loaded}
+          allContentInfo={this.props.data.dataInfo.contentInfo}
+          allFolderInfo={this.props.data.dataInfo.folderInfo}
+          allUrlInfo={this.props.data.dataInfo.urlInfo}
           folderList={folderList}
           contentList={contentList}
           urlList={urlList}
@@ -1251,9 +1251,9 @@ class DoenetChooser extends Component {
           key={"browser"+this.updateNumber}                       // optional
           selectedDrive={this.state.selectedDrive}                // optional
           selectedCourse={this.state.selectedCourse}              // optional
-          allCourseInfo={this.courseInfo}                         // optional
+          allCourseInfo={this.props.data.dataInfo.courseInfo}                         // optional
           updateSelectedItems={this.updateSelectedItems}          // optional
-          updateDirectoryStack={this.updateDirectoryStack}        // optional
+          updateDirectoryStack={this.props.methods.updateDirectoryStack}        // optional
           addContentToFolder={this.addContentToFolder}            // optional
           addContentToRepo ={this.addContentToRepo}               // optional
           removeContentFromCourse={this.removeContentFromCourse}  // optional

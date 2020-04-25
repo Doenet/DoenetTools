@@ -5,10 +5,16 @@ export const ChooserContext = createContext();
 
 export const ChooserProvider = ({ children }) => {
   const [dataLists, setDataLists] = useState({
-    userContent: {},
+    contentIds: [],
+    folderIds: [],
+    urlIds: [],
+    courseIds: [],
   });
   const [dataInfo, setDataInfo] = useState({
-    userContentInfo: {},
+    contentInfo: {},
+    folderInfo: {},
+    urlInfo: {},
+    courseInfo: {},
     courseHeadingsInfo: {},
     courseAssignmentsInfo: {}
   });
@@ -19,112 +25,181 @@ export const ChooserProvider = ({ children }) => {
     urls_loaded: false,
     assignments_and_headings_loaded: false
   });
-  // 
+  const [appState, setAppState] = useState({
+    directoryStack: [],
+  });
 
   useEffect(() => {
-    const loadHeadingsAndAssignments = () => {
-      const url = "/api/getHeaderAndAssignmentInfo.php";
-      axios(url).then(resp => {
-        let tempHeadingsInfo = {};
-        let tempAssignmentsInfo = {};
-        Object.keys(resp.data).map(itemId => {
-            // console.log(resp.data[itemId]["name"]);
-          if (resp.data[itemId]["attribute"] == "header") {
-            tempHeadingsInfo[itemId] = resp.data[itemId];
-            // process children
-            for (let i in resp.data[itemId]["childrenId"]) {
-              let childId = resp.data[itemId]["childrenId"][i];
-              if (childId == "") continue;
-              if (resp.data[childId]["attribute"] == "header") {
-                tempHeadingsInfo[itemId]["headingId"].push(childId);
-              } else {
-                tempHeadingsInfo[itemId]["assignmentId"].push(childId);
-              }
-            }
-          } else {
-            tempAssignmentsInfo[itemId] = resp.data[itemId];
-          }
-        })
+    loadAllCourses();
+  }, [])
 
-        setDataInfo({
-          ...dataInfo,
-          courseHeadingsInfo: tempHeadingsInfo, 
-          courseAssignmentsInfo: tempAssignmentsInfo, 
-        })
-        setFlags({
-          ...flags,
-          assignments_and_headings_loaded: true
-        });
-      })
-    } 
+  useEffect(() => {
+    loadUserContentBranches();
+  }, [])
+
+  useEffect(() => {
+    loadUserFoldersAndRepo();
+  }, [])
+
+  useEffect(() => {
+    loadUserUrls();
+  }, [])
+
+  useEffect(() => {
     loadHeadingsAndAssignments();
-    console.log("useEffect")
-  }, [JSON.stringify(dataInfo.courseAssignmentsInfo), JSON.stringify(dataInfo.courseHeadingsInfo)])
+  }, [])  
 
-  console.log("rerender")
-  // useEffect(() => {
-    //   const loadUserContentBranches = () => {
-    //     setFlags({
-    //       ...flags,
-    //       branches_loaded: false
-    //     });
-    //     // TODO: persist directoryStack info
-    //     let currentFolderId = this.state.directoryStack.length === 0 ?
-    //                             "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
-    
-    //     const data={folderId: currentFolderId};
-    //     const payload = {params: data};
-    
-    //     const loadBranchesUrl='/api/loadUserContent.php';
-        
-    //     axios.get(loadBranchesUrl, payload)
-    //     .then(resp=>{
-    //       setDataInfo({
-    //         ...dataInfo,
-    //         userContentInfo: Object.assign({}, userContentInfo, resp.data.branchId_info)
-    //       })
-    //       setDataLists({
-    //         ...dataLists,
-    //         userContent: resp.data.sort_order
-    //       })
-    //       setFlags({
-    //         ...flags,
-    //         branches_loaded: true
-    //       });
-    //     });
-    //   };
-    //   // loadUserContentBranches();
-    // }, [data.userContentBranches])
+  const loadHeadingsAndAssignments = () => {
+    setFlags({ ...flags, assignments_and_headings_loaded: false });
+    const url = "/api/getHeaderAndAssignmentInfo.php";
+    const data = {
+      courseId: "aI8sK4vmEhC5sdeSP3vNW"
+    }
+    const payload = {
+      params: data
+    }
+    axios.get(url, payload).then(resp=>{
+      let tempHeadingsInfo = {};
+      let tempAssignmentsInfo = {};
+      Object.keys(resp.data).map(itemId => {
+          // console.log(resp.data[itemId]["name"]);
+        if (resp.data[itemId]["attribute"] == "header") {
+          tempHeadingsInfo[itemId] = resp.data[itemId];
+          // process children
+          for (let i in resp.data[itemId]["childrenId"]) {
+            let childId = resp.data[itemId]["childrenId"][i];
+            if (childId == "") continue;
+            if (resp.data[childId]["attribute"] == "header") {
+              tempHeadingsInfo[itemId]["headingId"].push(childId);
+            } else {
+              tempHeadingsInfo[itemId]["assignmentId"].push(childId);
+            }
+          }
+        } else {
+          tempAssignmentsInfo[itemId] = resp.data[itemId];
+        }
+      })
 
-  // HANDLES EVENTS / STATE MANIPULATION
-  const handleAppParamChange = (obj) => {
-      const newAppParam = Object.assign({}, appParam, obj);
-      setAppParam(newAppParam);
+      setDataInfo(dataInfo => ({
+        ...dataInfo,
+        courseHeadingsInfo: tempHeadingsInfo, 
+        courseAssignmentsInfo: tempAssignmentsInfo, 
+      }))
+      setFlags(flags => ({ ...flags, assignments_and_headings_loaded: true }));
+    })
+  } 
+
+  const loadUserContentBranches = (callback=(()=>{})) => {
+    setFlags({ ...flags, branches_loaded: false });
+    const directoryStack = appState.directoryStack;
+    let currentFolderId = directoryStack.length === 0 ?
+                            "root" : directoryStack[directoryStack.length - 1];
+
+    const data= {folderId: currentFolderId};
+    const payload = {params: data};
+
+    const loadBranchesUrl='/api/loadUserContent.php';
+    
+    axios.get(loadBranchesUrl, payload)
+    .then(resp=>{
+      setDataLists(dataLists => ({ ...dataLists, contentIds: resp.data.sort_order }))
+      setDataInfo(dataInfo => ({ ...dataInfo, contentInfo: Object.assign({}, dataInfo.contentInfo, resp.data.branchId_info)}))
+      setFlags(flags => ({ ...flags, branches_loaded: true }));
+      callback();
+    });
+  };  
+
+  const loadUserFoldersAndRepo = (callback=(()=>{})) => {
+    setFlags({ ...flags, folders_loaded: false });
+
+    const loadUserFoldersAndRepoUrl='/api/loadUserFoldersAndRepo.php';
+    const payload = {};
+    
+    axios.get(loadUserFoldersAndRepoUrl,payload)
+    .then(resp=>{
+      setDataLists(dataLists => ({ ...dataLists, folderIds: resp.data.folderIds }))
+      setDataInfo(dataInfo => ({ ...dataInfo, folderInfo: Object.assign({}, dataInfo.folderInfo, resp.data.folderInfo)}))
+      setFlags(flags => ({ ...flags, folders_loaded: true }));
+      callback();
+    });
+  };
+
+  const loadUserUrls = (callback=(()=>{})) => {
+    setFlags(flags => ({ ...flags, urls_loaded: false }));
+
+    const loadUserUrlsUrl ='/api/loadUserUrls.php';
+    const payload = {};
+    
+    axios.get(loadUserUrlsUrl,payload)
+    .then(resp=>{
+      setDataLists(dataLists => ({ ...dataLists, urlIds: resp.data.urlIds }))
+      setDataInfo(dataInfo => ({ ...dataInfo, urlInfo: Object.assign({}, dataInfo.urlInfo, resp.data.urlInfo)}))
+      setFlags(flags => ({ ...flags, urls_loaded: true }));
+      callback();
+    });
+  };
+
+  const loadAllCourses = (callback=(()=>{})) => {
+    setFlags({ ...flags, courses_loaded: true });
+    const loadCoursesUrl='/api/loadAllCourses.php';
+    const data={
+    }
+    const payload = {
+      params: data
+    }
+    axios.get(loadCoursesUrl, payload)
+    .then(resp=>{
+      setDataInfo(dataInfo => ({ ...dataInfo, courseInfo: Object.assign({}, dataInfo.courseInfo, resp.data.courseInfo) }))
+      setDataLists(dataLists => ({ ...dataLists, courseIds: resp.data.courseIds }))
+      setFlags(flags => ({ ...flags, courses_loaded: true }));
+      callback();
+    });
+  };
+
+  const loadCourseContent = (courseId, callback=(()=>{})) => {
+    setFlags({ ...flags, folders_loaded: false, branches_loaded: false});
+    
+    const loadCoursesUrl='/api/loadCourseContent.php';
+    const data={
+      courseId: courseId
+    }
+    const payload = {
+      params: data
+    }
+
+    axios.get(loadCoursesUrl,payload)
+    .then(resp=>{
+      setDataInfo(dataInfo => ({ 
+        ...dataInfo, 
+        folderInfo: Object.assign({}, dataInfo.folderInfo, resp.data.folderInfo),
+        contentInfo: Object.assign({}, dataInfo.contentInfo, resp.data.branchInfo)
+      }))
+      setFlags({ ...flags, folders_loaded: true, branches_loaded: true});
+      callback();
+    });
   }
 
-  const loadUserFoldersAndRepo = () => {
-
-  };
-
-  const loadUserUrls = () => {
-
-  };
-
-  const loadAllCourses = () => {
-
-  };
-
+  const updateDirectoryStack = (directoryStack) => {
+    setAppState({...appState, directoryStack: directoryStack})
+  }
 
   const providerValue = {
     data: {
       dataLists: dataLists,
       dataInfo: dataInfo
     },
+    appState: appState,
     methods: {
-      handleAppParamChange
+      updateDirectoryStack,
+      loadUserContentBranches,
+      loadAllCourses,
+      loadUserFoldersAndRepo,
+      loadUserUrls,
+      loadCourseContent
     },
     flags: flags
   }
+  console.log(providerValue)
 
   return (
     <ChooserContext.Provider value={providerValue}>

@@ -3,9 +3,9 @@ import { ChooserContext, ChooserProvider } from './ChooserContext'
 import DoenetChooser from '../DoenetChooser'
 
 const TempWrapper = () => {
-  const {data, methods, flags} = useContext(ChooserContext);
+  const {data, appState, methods, flags} = useContext(ChooserContext);
   return (
-    <DoenetChooser data={data} methods={methods} flags={flags}/>
+    <DoenetChooser data={data} appState={appState} methods={methods} flags={flags}/>
   );
 };
 
