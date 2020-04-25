@@ -26,7 +26,9 @@ export const ChooserProvider = ({ children }) => {
     assignments_and_headings_loaded: false
   });
   const [appState, setAppState] = useState({
-    directoryStack: [],
+    selectedItems: [],
+    selectedItemsType: [],
+    directoryStack: []
   });
 
   useEffect(() => {
@@ -180,7 +182,15 @@ export const ChooserProvider = ({ children }) => {
   }
 
   const updateDirectoryStack = (directoryStack) => {
-    setAppState({...appState, directoryStack: directoryStack})
+    setAppState(appState => ({...appState, directoryStack: directoryStack}))
+  }
+
+  const updateSelectedItems = ({selectedItems, selectedItemsType}) => {
+    setAppState(appState => ({
+      ...appState, 
+      selectedItems: selectedItems,
+      selectedItemsType: selectedItemsType,
+    }))
   }
 
   const providerValue = {
@@ -191,6 +201,7 @@ export const ChooserProvider = ({ children }) => {
     appState: appState,
     methods: {
       updateDirectoryStack,
+      updateSelectedItems,
       loadUserContentBranches,
       loadAllCourses,
       loadUserFoldersAndRepo,
@@ -199,7 +210,7 @@ export const ChooserProvider = ({ children }) => {
     },
     flags: flags
   }
-  console.log(providerValue)
+  // console.log(providerValue)
 
   return (
     <ChooserContext.Provider value={providerValue}>

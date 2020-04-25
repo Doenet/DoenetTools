@@ -420,7 +420,7 @@ class DoenetBranchBrowser extends Component {
       });
       
       if (this.props.updateSelectedItems !== null) {
-        this.props.updateSelectedItems(currentSelectedItems, currentSelectedItemsType);
+        this.props.updateSelectedItems({selectedItems: currentSelectedItems, selectedItemsType: currentSelectedItemsType});
       }
     } else if (window.event.shiftKey) {
       let currentSelectedItems = this.state.selectedItems;
@@ -437,7 +437,7 @@ class DoenetBranchBrowser extends Component {
         });
 
         if (this.props.updateSelectedItems !== null) {
-          this.props.updateSelectedItems([itemId], [type]);
+          this.props.updateSelectedItems({selectedItems: [itemId], selectedItemsType: [type]});
         }
         return;
       }
@@ -477,7 +477,7 @@ class DoenetBranchBrowser extends Component {
 
 
       if (this.props.updateSelectedItems !== null) {
-        this.props.updateSelectedItems(currentSelectedItems, currentSelectedItemsType);
+        this.props.updateSelectedItems({selectedItems: currentSelectedItems, selectedItemsType: currentSelectedItemsType});
       }
     } else {
       this.setState({
@@ -486,7 +486,7 @@ class DoenetBranchBrowser extends Component {
       });
 
       if (this.props.updateSelectedItems !== null) {
-        this.props.updateSelectedItems([itemId], [type]);
+        this.props.updateSelectedItems({selectedItems: [itemId], selectedItemsType: [type]});
       }
     }    
   }
@@ -495,7 +495,7 @@ class DoenetBranchBrowser extends Component {
     if (!this.disableEditing) {
       // redirect to editor
       window.location.href=`/editor?branchId=${branchId}`;
-      this.props.updateSelectedItems([branchId], ["content"]);
+      this.props.updateSelectedItems({selectedItems: [branchId], selectedItemsType: ["content"]});
     }
   }
 
@@ -554,8 +554,9 @@ class DoenetBranchBrowser extends Component {
   }
 
   openEditUrlForm() {
-    this.props.updateSelectedItems([this.state.selectedItems[this.state.selectedItems.length - 1]],
-      [this.state.selectedItemsType[this.state.selectedItemsType.length - 1]]);
+    this.props.updateSelectedItems({
+      selectedItems: [this.state.selectedItems[this.state.selectedItems.length - 1]],
+      selectedItemsType: [this.state.selectedItemsType[this.state.selectedItemsType.length - 1]]});
     this.props.openEditUrlForm();
   }
 

@@ -26,26 +26,10 @@ class DoenetChooser extends Component {
       errorInfo: null,
       selectedDrive: "Content",
       selectedCourse: null,
-      selectedItems: [],
-      selectedItemsType: [],
+
       showNewButtonMenu: false,
       activeSection: "chooser",
-      directoryStack: [],
     };
-
-
-    // this.loadUserContentBranches();
-    // this.loadUserFoldersAndRepo();
-    // this.props.methods.loadUserUrls();
-    // this.loadAllCourses();
-    // this.loadHeadingsAndAssignments();
-
-    // this.branches_loaded = false;
-    // this.props.flags.courses_loaded = false;
-    // this.folders_loaded = false;
-    // this.urls_loaded = false;
-    // this.assignments_and_headings_loaded = false;
-    this.assignments_and_headings_loaded = props.flags.assignments_and_headings_loaded;
 
     this.updateNumber = 0;
 
@@ -66,8 +50,6 @@ class DoenetChooser extends Component {
     this.removeContentFromFolder = this.removeContentFromFolder.bind(this);
     this.addContentToCourse = this.addContentToCourse.bind(this);
     this.removeContentFromCourse = this.removeContentFromCourse.bind(this);
-    this.updateSelectedItems = this.updateSelectedItems.bind(this);
-    // this.updateDirectoryStack = this.updateDirectoryStack.bind(this);
     this.jumpToDirectory = this.jumpToDirectory.bind(this);
     this.saveUserContent = this.saveUserContent.bind(this);
     this.modifyRepoAccess = this.modifyRepoAccess.bind(this);
@@ -101,11 +83,11 @@ class DoenetChooser extends Component {
             onClick={() => this.selectDrive("Courses", courseId)}>
             <FontAwesomeIcon className="menuDoughnutIcon" icon={faDotCircle}/>
             <span>{courseCode}</span>
-            {this.state.selectedItems.length !== 0 &&
+            {this.props.appState.selectedItems.length !== 0 &&
             <div className="addContentToCourseButtonWrapper">
               {this.state.selectedDrive !== "Courses" && 
                 <FontAwesomeIcon icon={faPlus} className="addContentButton"
-                onClick={() => this.addContentToCourse(courseId, this.state.selectedItems, this.state.selectedItemsType)}/>}
+                onClick={() => this.addContentToCourse(courseId, this.props.appState.selectedItems, this.props.appState.selectedItemsType)}/>}
             </div>}
         </li>
       );
@@ -198,7 +180,7 @@ class DoenetChooser extends Component {
     } else if (this.state.activeSection === "add_url") {
       toolbarTitle = "Add New URL";
     } else if (this.state.activeSection === "edit_url") {
-      toolbarTitle = "Edit URL - " + this.props.data.dataInfo.urlInfo[this.state.selectedItems[0]].title;
+      toolbarTitle = "Edit URL - " + this.props.data.dataInfo.urlInfo[this.props.appState.selectedItems[0]].title;
     }
 
     this.topToolbar = <React.Fragment>
@@ -234,8 +216,6 @@ class DoenetChooser extends Component {
       
         // set as selected and redirect to /editor 
         this.setState({
-          selectedItems: [branchId],
-          selectedItemsType: ["content"],
           activeSection: "chooser",
           selectedDrive: "Content"
         }, () => {
@@ -244,6 +224,10 @@ class DoenetChooser extends Component {
           setTimeout(function(){ window.location.href=`/editor?branchId=${branchId}`;}, 500);
         });
         this.props.methods.updateDirectoryStack([]);
+        this.props.methods.updateSelectedItems({
+          selectedItems: [branchId],
+          selectedItemsType: ["content"]
+        });
       })
     });
   }
@@ -338,12 +322,14 @@ class DoenetChooser extends Component {
           this.saveUserContent([urlId], ["url"], "insert", () => {  // add to user root
             this.props.methods.loadUserUrls(() => {
               this.setState({
-                selectedItems: [urlId],
-                selectedItemsType: ["url"],
                 activeSection: "chooser",
                 selectedDrive: "Content"
               }, () => { 
                 this.updateNumber++;
+              });
+              this.props.methods.updateSelectedItems({
+                selectedItems: [urlId],
+                selectedItemsType: ["url"]
               });
             });
           })  
@@ -372,43 +358,6 @@ class DoenetChooser extends Component {
       this.setState({error:error});
     })
   }
-
-  // loadUserUrls(callback=(()=>{})) {
-  //   this.urls_loaded = false;
-
-  //   const loadUserUrlsUrl ='/api/loadUserUrls.php';
-  //   const payload = {};
-    
-  //   axios.get(loadUserUrlsUrl,payload)
-  //   .then(resp=>{
-  //     this.props.data.dataInfo.urlInfo = Object.assign({}, this.props.data.dataInfo.urlInfo, resp.data.urlInfo);
-  //     this.props.data.dataLists.urlIds = resp.data.urlIds;
-  //     this.urls_loaded = true;
-  //     callback();
-  //     this.forceUpdate();
-  //   });
-  // }
-
-  // loadUserContentBranches(callback=(()=>{})) {
-  //   this.branches_loaded = false;
-
-  //   let currentFolderId = this.state.directoryStack.length === 0 ?
-  //                           "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
-
-  //   const data={folderId: currentFolderId};
-  //   const payload = {params: data};
-
-  //   const loadBranchesUrl='/api/loadUserContent.php';
-    
-  //   axios.get(loadBranchesUrl, payload)
-  //   .then(resp=>{
-  //     this.props.data.dataInfo.contentInfo = Object.assign({}, this.props.data.dataInfo.contentInfo, resp.data.branchId_info);
-  //     this.props.data.dataLists.contentIds = resp.data.sort_order;
-  //     this.branches_loaded = true;
-  //     callback();
-  //     this.forceUpdate();
-  //   });
-  // }
 
   saveContentToServer({documentName,code,branchId,publish=false}, callback=(()=>{})){
     const url='/api/saveContent.php';
@@ -461,8 +410,11 @@ class DoenetChooser extends Component {
       this.loadAllCourses(() => {
         this.props.methods.loadCourseContent(courseId, () => {
           this.setState({
-            selectedItems: [],
             activeSection: "chooser",
+          });
+          this.props.methods.updateSelectedItems({
+            selectedItems: [],
+            selectedItemsType: []
           });
           this.forceUpdate();
         });
@@ -473,47 +425,6 @@ class DoenetChooser extends Component {
       this.setState({error:error});
     })
   }
-
-  // loadAllCourses(callback=(()=>{})) {
-  //   const loadCoursesUrl='/api/loadAllCourses.php';
-  //   const data={
-  //   }
-  //   const payload = {
-  //     params: data
-  //   }
-
-  //   axios.get(loadCoursesUrl,payload)
-  //   .then(resp=>{
-  //     this.props.data.dataInfo.courseInfo = resp.data.courseInfo;
-  //     this.props.data.dataLists.courseIds = resp.data.courseIds;
-  //     callback();
-  //     this.props.flags.courses_loaded = true;
-  //     this.forceUpdate();
-  //   });
-  // }
-
-  // loadCourseContent(courseId, callback=(()=>{})) {
-  //   this.folders_loaded = false;
-  //   this.branches_loaded = false;
-  //   const loadCoursesUrl='/api/loadCourseContent.php';
-  //   const data={
-  //     courseId: courseId
-  //   }
-  //   const payload = {
-  //     params: data
-  //   }
-
-  //   axios.get(loadCoursesUrl,payload)
-  //   .then(resp=>{
-  //     this.props.data.dataInfo.contentInfo = Object.assign({}, this.props.data.dataInfo.contentInfo, resp.data.branchInfo);
-  //     // this.props.data.dataInfo.folderInfo = Object.assign({}, this.props.data.dataInfo.folderInfo, resp.data.folderInfo);
-  //     this.props.data.dataInfo.folderInfo = {...this.props.data.dataInfo.folderInfo, ...resp.data.folderInfo};
-  //     this.folders_loaded = true;
-  //     this.branches_loaded = true;
-  //     callback();
-  //     this.forceUpdate();
-  //   });
-  // }
 
   saveCourseContent(courseId, itemIds, itemTypes, operationType, callback=(()=>{})) {
     const url='/api/saveCourseContent.php';
@@ -535,38 +446,35 @@ class DoenetChooser extends Component {
   selectDrive(drive, courseId=null) {
     if (drive === "Courses") {
       this.setState({
-        selectedItems: [],
-        selectedItemsType: [],
         activeSection: "chooser",
         selectedDrive: drive,
         selectedCourse: courseId,
-        directoryStack: []});
-      this.folders_loaded = false;
-      this.branches_loaded = false;
+      });
       this.updateIndexedDBCourseContent(courseId);
       this.props.methods.loadCourseContent(courseId);
     } else if (drive === "Global") {
       this.setState({
-        selectedItems: [],
-        selectedItemsType: [],
         activeSection: "chooser",
         selectedDrive: drive,
-        directoryStack: []});
+      });
       this.props.data.dataLists.contentIds = [];
       this.props.data.dataLists.folderIds = [];
       this.props.data.dataLists.urlIds = [];
     } else {
       this.setState({
-        selectedItems: [],
-        selectedItemsType: [],
         activeSection: "chooser",
-        selectedDrive: drive,
-        directoryStack: []}, () => {
-          this.props.methods.loadUserContentBranches();
-          this.props.methods.loadUserFoldersAndRepo();
-          this.props.methods.loadUserUrls();
+        selectedDrive: drive
+      }, () => {
+        this.props.methods.loadUserContentBranches();
+        this.props.methods.loadUserFoldersAndRepo();
+        this.props.methods.loadUserUrls();
       });
     }
+    this.props.methods.updateSelectedItems({
+      selectedItems: [],
+      selectedItemsType: []
+    });
+    this.props.methods.updateDirectoryStack([]);
     this.updateNumber++;
   }
 
@@ -614,23 +522,6 @@ class DoenetChooser extends Component {
     })
   }
 
-  // loadUserFoldersAndRepo(callback=(()=>{})) {
-  //   this.folders_loaded = false;
-
-  //   const loadUserFoldersAndRepoUrl='/api/loadUserFoldersAndRepo.php';
-  //   const payload = {};
-    
-  //   axios.get(loadUserFoldersAndRepoUrl,payload)
-  //   .then(resp=>{
-  //     this.props.data.dataInfo.folderInfo = Object.assign({}, this.props.data.dataInfo.folderInfo, resp.data.folderInfo);
-      
-  //     this.props.data.dataLists.folderIds = resp.data.folderIds;
-  //     this.folders_loaded = true;
-  //     callback();
-  //     this.forceUpdate();
-  //   });
-  // }
-
   addNewFolder(title) {
     // generate new folderId
     let folderId = nanoid();
@@ -650,12 +541,14 @@ class DoenetChooser extends Component {
         this.addContentToFolder([folderId], ["folder"], currentFolderId, () => {
           this.props.methods.loadUserFoldersAndRepo(() => {
             this.setState({
-              selectedItems: [folderId],
-              selectedItemsType: ["folder"],
               activeSection: "chooser",
               selectedDrive: "Content"
             }, () => { 
               this.updateNumber++;
+            });
+            this.props.methods.updateSelectedItems({
+              selectedItems: [folderId],
+              selectedItemsType: ["folder"]
             });
           });
         });        
@@ -663,12 +556,14 @@ class DoenetChooser extends Component {
         this.saveUserContent([folderId], ["folder"], "insert", () => {  // add to user root
           this.props.methods.loadUserFoldersAndRepo(() => {
             this.setState({
-              selectedItems: [folderId],
-              selectedItemsType: ["folder"],
               activeSection: "chooser",
               selectedDrive: "Content"
             }, () => { 
               this.updateNumber++;
+            });
+            this.props.methods.updateSelectedItems({
+              selectedItems: [folderId],
+              selectedItemsType: ["folder"]
             });
           });
         });  
@@ -919,14 +814,16 @@ class DoenetChooser extends Component {
       this.modifyRepoAccess(folderId, "insert", true, () => {  // add user to repo_access
         this.props.methods.loadUserFoldersAndRepo(() => {
           this.setState({
-            directoryStack: [],
-            selectedItems: [folderId],
-            selectedItemsType: ["folder"],
             activeSection: "chooser",
             selectedDrive: "Content"
           }, () => { 
             this.updateNumber++;
           });
+          this.props.methods.updateSelectedItems({
+            selectedItems: [folderId],
+            selectedItemsType: ["folder"]
+          });
+          this.props.methods.updateDirectoryStack([]);
         });
       });  
     })
@@ -949,27 +846,12 @@ class DoenetChooser extends Component {
   }
 
   jumpToDirectory(directoryData) {
-    this.setState({
-      directoryStack: directoryData,
+    this.props.methods.updateSelectedItems({
       selectedItems: directoryData,
-      selectedItemsType: ["folder"],
-    })
+      selectedItemsType: ["folder"]
+    });
+    this.props.methods.updateDirectoryStack(directoryData);
   }
-
-  updateSelectedItems(selectedItems, selectedItemsType) {
-    this.setState({
-      selectedItems: selectedItems,
-      selectedItemsType: selectedItemsType,
-    })
-  }
-
-  // updateDirectoryStack(directoryStack) {
-  //   this.setState({
-  //     directoryStack: directoryStack
-  //   })
-  //   // this.props.methods.loadUserFoldersAndRepo();
-  //   // this.loadUserContentBranches();
-  // }
 
   getAllSelectedItems = () => {
     this.browser.current.getAllSelectedItems();
@@ -1221,8 +1103,8 @@ class DoenetChooser extends Component {
                           handleBack={this.toggleManageUrlForm}
                           handleNewUrlCreated={this.handleNewUrlCreated}
                           saveUrl={this.saveUrl}
-                          selectedUrl={this.state.selectedItems[this.state.selectedItems.length - 1]}
-                          selectedUrlInfo={this.props.data.dataInfo.urlInfo[this.state.selectedItems[this.state.selectedItems.length - 1]]}
+                          selectedUrl={this.props.appState.selectedItems[this.props.appState.selectedItems.length - 1]}
+                          selectedUrlInfo={this.props.data.dataInfo.urlInfo[this.props.appState.selectedItems[this.props.appState.selectedItems.length - 1]]}
                           />;
     }
     else {
@@ -1252,15 +1134,15 @@ class DoenetChooser extends Component {
           selectedDrive={this.state.selectedDrive}                // optional
           selectedCourse={this.state.selectedCourse}              // optional
           allCourseInfo={this.props.data.dataInfo.courseInfo}                         // optional
-          updateSelectedItems={this.updateSelectedItems}          // optional
+          updateSelectedItems={this.props.methods.updateSelectedItems}          // optional
           updateDirectoryStack={this.props.methods.updateDirectoryStack}        // optional
           addContentToFolder={this.addContentToFolder}            // optional
           addContentToRepo ={this.addContentToRepo}               // optional
           removeContentFromCourse={this.removeContentFromCourse}  // optional
           removeContentFromFolder={this.removeContentFromFolder}  // optional                  
           directoryData={this.state.directoryStack}               // optional
-          selectedItems={this.state.selectedItems}                // optional
-          selectedItemsType={this.state.selectedItemsType}        // optional
+          selectedItems={this.props.appState.selectedItems}                // optional
+          selectedItemsType={this.props.appState.selectedItemsType}        // optional
           renameFolder={this.renameFolder}                        // optional
           openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
           publicizeRepo={this.publicizeRepo}                      // optional
