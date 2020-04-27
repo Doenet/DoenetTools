@@ -325,9 +325,6 @@ export const ChooserProvider = ({ children }) => {
     }
     // updateHeadingsAndAssignments(currTreeHeadings, currTreeAssignments);
 
-    const newCourseHeadings = dataInfo.courseHeadingsInfo;
-    newCourseHeadings[appState.currentDraggedObject.sourceParentId][headingsChildrenListKey] = sourceParentChildrenList;
-    if (appState.currentDraggedObject.type == "parent") newCourseHeadings[appState.currentDraggedObject.id] = appState.currentDraggedObject.dataObject;
     setDataInfo(dataInfo => ({ ...dataInfo, courseHeadingsInfo: currTreeHeadings, courseAssignmentsInfo: currTreeAssignments }))
     setAppState(appState => ({ ...appState, 
       currentDraggedObject: {id: null, type: null, sourceContainerId: null},
