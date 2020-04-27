@@ -441,8 +441,8 @@ export default class Choiceinput extends Input {
   updateSelectedIndices({ selectedIndices }) {
     if (!this.stateValues.disabled) {
       this.requestUpdate({
-        updateType: "updateValue",
         updateInstructions: [{
+          updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "selectedIndices",
           value: selectedIndices

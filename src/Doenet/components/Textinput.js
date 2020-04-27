@@ -156,8 +156,8 @@ export default class Textinput extends Input {
 
   updateText({ text }) {
     this.requestUpdate({
-      updateType: "updateValue",
       updateInstructions: [{
+        updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "value",
         value: text,

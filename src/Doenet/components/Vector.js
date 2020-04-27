@@ -531,7 +531,7 @@ export default class Vector extends GraphicalComponent {
             return { newValues: { head: me.fromAst(0) } }
           } else if (dependencyValues.endpointsChild[0].stateValues.nPoints === 1) {
             let head = dependencyValues.endpointsChild[0].stateValues.point1;
-            if(!head) {
+            if (!head) {
               // it is possible, when dependencies haven't been updated
               // that don't have point1 set yet
               head = me.fromAst(0);
@@ -539,7 +539,7 @@ export default class Vector extends GraphicalComponent {
             return { newValues: { head } }
           } else if (dependencyValues.endpointsChild[0].stateValues.nPoints === 2) {
             let head = dependencyValues.endpointsChild[0].stateValues.point2;
-            if(!head) {
+            if (!head) {
               // it is possible, when dependencies haven't been updated
               // that don't have point2 set yet
               head = me.fromAst(0);
@@ -832,7 +832,7 @@ export default class Vector extends GraphicalComponent {
             return { newValues: { tail: me.fromAst(0) } }
           } else if (dependencyValues.endpointsChild[0].stateValues.nPoints === 2) {
             let tail = dependencyValues.endpointsChild[0].stateValues.point1;
-            if(!tail) {
+            if (!tail) {
               // it is possible, when dependencies haven't been updated
               // that don't have point1 set yet
               tail = me.fromAst(0);
@@ -1575,6 +1575,7 @@ export default class Vector extends GraphicalComponent {
         }
 
         updateInstructions.push({
+          updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "displacement",
           value: me.fromAst(["vector", ...displacement])
@@ -1583,6 +1584,7 @@ export default class Vector extends GraphicalComponent {
       } else {
         // set tail directly
         updateInstructions.push({
+          updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "tail",
           value: me.fromAst(["vector", ...tailcoords])
@@ -1596,6 +1598,7 @@ export default class Vector extends GraphicalComponent {
         if (!this.stateValues.basedOnHead && this.stateValues.basedOnDisplacement) {
           let displacement = tailcoords.map((x, i) => this.stateValues.numericalEndpoints[1][i] - x);
           updateInstructions.push({
+            updateType: "updateValue",
             componentName: this.componentName,
             stateVariable: "displacement",
             value: me.fromAst(["vector", ...displacement])
@@ -1610,6 +1613,7 @@ export default class Vector extends GraphicalComponent {
       // or not based on displacement
       if (this.stateValues.basedOnHead || !this.stateValues.basedOnDisplacement) {
         updateInstructions.push({
+          updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "head",
           value: me.fromAst(["vector", ...headcoords])
@@ -1623,6 +1627,7 @@ export default class Vector extends GraphicalComponent {
         }
         let displacement = tailcoords.map((x, i) => headcoords[i] - x);
         updateInstructions.push({
+          updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "displacement",
           value: me.fromAst(["vector", ...displacement])
@@ -1637,6 +1642,7 @@ export default class Vector extends GraphicalComponent {
         if (this.stateValues.basedOnHead && this.stateValues.basedOnDisplacement) {
           let displacement = headcoords.map((x, i) => x - this.stateValues.numericalEndpoints[0][i]);
           updateInstructions.push({
+            updateType: "updateValue",
             componentName: this.componentName,
             stateVariable: "displacement",
             value: me.fromAst(["vector", ...displacement])
@@ -1648,7 +1654,6 @@ export default class Vector extends GraphicalComponent {
 
 
     this.requestUpdate({
-      updateType: "updateValue",
       updateInstructions
     });
 

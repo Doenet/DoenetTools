@@ -987,8 +987,8 @@ export default class Point extends GraphicalComponent {
       components[1] = y;
     }
     this.requestUpdate({
-      updateType: "updateValue",
       updateInstructions: [{
+        updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "xs",
         value: components,

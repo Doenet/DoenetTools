@@ -9026,7 +9026,7 @@ export default class Core {
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
   }
 
-  requestUpdate({ updateType, updateInstructions, saveSerializedState }) {
+  requestUpdate({ updateInstructions, saveSerializedState }) {
 
     let updatesNeeded = {
       componentsTouched: [],
@@ -9039,15 +9039,14 @@ export default class Core {
       deletedComponents: {},
     }
 
-    let returnValue = { success: true };
+    let newStateVariableValues = {};
+    let originalComponents = [];
+    let workspace = {};
 
-    if (updateType === "updateValue") {
-      let newStateVariableValues = {};
-      let workspace = {};
+    for (let instruction of updateInstructions) {
+      originalComponents.push(instruction.componentName);
 
-      let originalComponents = [];
-
-      for (let instruction of updateInstructions) {
+      if (instruction.updateType === "updateValue") {
 
         let additionalChanges = this.requestComponentChanges({ instruction, workspace, updatesNeeded });
         for (let cName in additionalChanges.newStateVariableValues) {
@@ -9056,37 +9055,41 @@ export default class Core {
           }
           Object.assign(newStateVariableValues[cName], additionalChanges.newStateVariableValues[cName]);
         }
-
-        originalComponents.push(instruction.componentName);
+        
+      }else if (instruction.updateType === "addComponents") {
+        console.log("add component")
+      }else if (instruction.updateType === "deleteComponents") {
+        console.log("delete component")
       }
 
-      if (this.externalFunctions.localStateChanged) {
-        // TODO: make this call asynchronous
-        this.externalFunctions.localStateChanged({
-          newStateVariableValues,
-          contentId: this.contentId,
-          sourceOfUpdate: {
-            originalComponents
-          }
-        });
-      }
+    }
 
-      this.executeUpdateStateVariables({
+    //TODO: Inside for loop?
+    if (this.externalFunctions.localStateChanged) {
+      // TODO: make this call asynchronous
+      this.externalFunctions.localStateChanged({
         newStateVariableValues,
-        updatesNeeded,
-        saveSerializedState,
+        contentId: this.contentId,
         sourceOfUpdate: {
-          originalComponents,
-          local: true,
+          originalComponents
         }
       });
-
-    }
-    else if (updateType === "updateRendererOnly") {
-      this.coreUpdatedCallback({ doenetTags: this._renderComponents });
     }
 
-    return returnValue;
+
+    //TODO: Inside for loop?
+    this.executeUpdateStateVariables({
+      newStateVariableValues,
+      updatesNeeded,
+      saveSerializedState,
+      sourceOfUpdate: {
+        originalComponents,
+        local: true,
+      }
+    });
+    
+
+    return  { success: true };
   }
 
   executeUpdateStateVariables({ newStateVariableValues, updatesNeeded,

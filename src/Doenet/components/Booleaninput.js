@@ -160,8 +160,8 @@ export default class Booleaninput extends Input {
 
   updateBoolean({ boolean }) {
     this.requestUpdate({
-      updateType: "updateValue",
       updateInstructions: [{
+        updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "value",
         value: boolean,

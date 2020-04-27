@@ -1315,8 +1315,8 @@ export default class Line extends GraphicalComponent {
     let point2 = me.fromAst(["vector", ...point2coords]);
 
     this.requestUpdate({
-      updateType: "updateValue",
       updateInstructions: [{
+        updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "points",
         value: [point1, point2]
