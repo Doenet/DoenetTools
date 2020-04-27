@@ -1,0 +1,49 @@
+.leftpanel{
+  width:200px;
+  min-height: 1vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+}
+.middlepanel{
+  width: calc(100%-500px);
+  min-height: 1vh;
+  position: relative;
+  display:  flex;
+  flex-direction: column;
+
+}
+.rightpanel{
+  width:300px;
+  display: flex;
+  flex-direction: column;
+  min-height: 1vh;
+
+  position: relative;
+}
+
+.resizerfirst{
+  width: 5px;
+  border-right:1px solid black;
+  position:relative;
+  cursor: col-resize;
+  flex-shrink: 0;
+}
+
+.resizersecond{
+  width: 5px;
+  border-left: 1px solid black;
+  position: relative;
+  cursor: col-resize;
+  flex-shrink: 0;
+}
+.menucontent{
+  display:flex;
+  min-height: 40px;
+}
+.maincontent{
+  margin:1px;
+  overflow: scroll;
+  height:100%;
+}

@@ -1,14 +1,5 @@
 import React, { Component } from "react";
-import styled from "styled-components";
-
-const MenuContent = styled.div`
-  display: flex;
-  min-height: 40px;
-`;
-
-const MainContent = styled.div`
-  margin: 1px;
-`;
+import './toollayout.css'
 
 export default class ToolLayoutPanel extends Component {
   render() {
@@ -18,19 +9,17 @@ export default class ToolLayoutPanel extends Component {
     }
     return (
       <>
-        <MenuContent>
+        <div className="menucontent">
           {menu} 
-          
+
           {this.props.leftMenu}
           {this.props.middleMenu}
           {this.props.rightMenu}
-        </MenuContent>
+        </div>
 
-        <MainContent 
-        style={{overflow:"scroll"}}
-        >
+        <div className="maincontent">
           {this.props.children}
-        </MainContent>
+        </div>
       </>
     );
   }

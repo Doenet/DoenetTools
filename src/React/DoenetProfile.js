@@ -321,7 +321,7 @@ export default function DoenetProfile(props) {
   const menuControlProfile = [<PageHeader>{myProfile.username}'s Profile</PageHeader>];
   return (
     <>
-    <ToolLayout headerTitle="Profile" >
+    <ToolLayout toolTitle="Profile" >
       <ToolLayoutPanel>
       <ProfileContainer id="content">
         <ProfilePicture
@@ -456,7 +456,7 @@ export default function DoenetProfile(props) {
           <p>{myProfile.toolAccess.join(", ")}</p>
         </SpanAll>
 
-        <SectionHeader>Invites</SectionHeader>
+        {/* <SectionHeader>Invites</SectionHeader> */}
       </ProfileContainer>
       </ToolLayoutPanel>
     </ToolLayout>

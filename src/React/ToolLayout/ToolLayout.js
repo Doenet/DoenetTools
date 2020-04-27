@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DoenetHeader from "../DoenetHeader";
+import './toollayout.css';
 
 import {
   faChevronLeft,
@@ -192,45 +193,45 @@ export default function ToolLayout(props) {
 
   let allParts = [];
 
-  let Left = styled.div`
-    width: ${deviceType !== "phone" && leftWidth}px;
-    min-height: 1vh;
-    position: relative;
-    display: ${leftWidth === 0 ? "none" : "flex"};
-    flex-direction: column;
-  `;
+  // let Left = styled.div`
+  //   width: ${deviceType !== "phone" && leftWidth}px;
+  //   min-height: 1vh;
+  //   position: relative;
+  //   display: ${leftWidth === 0 ? "none" : "flex"};
+  //   flex-direction: column;
+  // `;
 
-  let Middle = styled.div`
-    width: ${deviceType !== "phone" && middleWidth}px;
-    min-height: 1vh;
-    position: relative;
-    display: ${middleWidth === 0 ? "none" : "flex"};
-    flex-direction: column;
-  `;
+  // let Middle = styled.div`
+  //   width: ${deviceType !== "phone" && middleWidth}px;
+  //   min-height: 1vh;
+  //   position: relative;
+  //   display: ${middleWidth === 0 ? "none" : "flex"};
+  //   flex-direction: column;
+  // `;
 
-  let Right = styled.div`
-    width: ${deviceType !== "phone" && rightWidth}px;
-    display: ${rightWidth === 0 ? "none" : "flex"};
-    flex-direction: column;
-    min-height: 1vh;
-    position: relative;
-  `;
+  // let Right = styled.div`
+  //   width: ${deviceType !== "phone" && rightWidth}px;
+  //   display: ${rightWidth === 0 ? "none" : "flex"};
+  //   flex-direction: column;
+  //   min-height: 1vh;
+  //   position: relative;
+  // `;
 
-  let ResizerFirst = styled.div`
-    width: 5px;
-    border-right: 1px solid black;
-    position: relative;
-    cursor: col-resize;
-    flex-shrink: 0;
-  `;
+  // let ResizerFirst = styled.div`
+  //   width: 5px;
+  //   border-right: 1px solid black;
+  //   position: relative;
+  //   cursor: col-resize;
+  //   flex-shrink: 0;
+  // `;
 
-  let ResizerSecond = styled.div`
-    width: 5px;
-    border-left: 1px solid black;
-    position: relative;
-    cursor: col-resize;
-    flex-shrink: 0;
-  `;
+  // let ResizerSecond = styled.div`
+  //   width: 5px;
+  //   border-left: 1px solid black;
+  //   position: relative;
+  //   cursor: col-resize;
+  //   flex-shrink: 0;
+  // `;
 
   const leftPanelHideable = () => {
     setLeftCloseBtn(false);
@@ -375,13 +376,16 @@ export default function ToolLayout(props) {
   });
 
   allParts.push(
-    <Left key="part1" id="leftpanel">
-      {leftNav} 
-    </Left>
+    // <Left key="part1" id="leftpanel">
+    //   {leftNav} 
+    // </Left>
+    <div key="part1" id="leftpanel" className="leftpanel" >
+      {leftNav}
+    </div>
   );
 
   if (props.children.length === 2 || props.children.length === 3) {
-    allParts.push(<ResizerFirst key="resizer1" id="first" />);
+    allParts.push(<div key="resizer1" id="first" className="resizerfirst"></div>);
   }
 
   let middleNav 
@@ -390,14 +394,17 @@ export default function ToolLayout(props) {
       middleMenu: renderMiddleMenu()
     });
     allParts.push(
-      <Middle key="part2" id="middlepanel">
+      // <Middle key="part2" id="middlepanel">
+      //   {middleNav}
+      // </Middle>
+      <div key="part2" id="middlepanel" className="middlepanel">
         {middleNav}
-      </Middle>
+      </div>
     );
   }
 
   if (props.children.length >= 3) {
-    allParts.push(<ResizerSecond key="resizer2" id="second" />);
+    allParts.push( <div key="resizer2" id="second" className="resizersecond"></div>);
   }
 
   let rightNav
@@ -406,9 +413,12 @@ export default function ToolLayout(props) {
       rightMenu: renderRightMenu()
     });
     allParts.push(
-      <Right key="part3" id="rightpanel">
+      // <Right key="part3" id="rightpanel">
+      //   {rightNav}
+      // </Right>
+      <div key="part3" id="rightpanel" className="rightpanel">
         {rightNav}
-      </Right>
+      </div>
     );
     }
 
@@ -431,7 +441,7 @@ export default function ToolLayout(props) {
 
   return (
       <>
-        <DoenetHeader toolTitle={props.headerTitle}/>
+        <DoenetHeader toolTitle={props.toolTitle} headingTitle={props.documentHeading} />
 
         { deviceType === "phone" ? <div ref={ container }>
         <div style={{ position: "fixed", top: "120px" }}>
