@@ -520,7 +520,7 @@ export default class BaseComponent {
 
     // look in state for matching public value
     let stateFromAdapter = this.state[adapterStateVariable];
-    if (stateFromAdapter === undefined || stateFromAdapter.public !== true) {
+    if (stateFromAdapter === undefined || (!stateFromAdapter.public && !adapterComponentType)) {
       throw Error("Invalid adapter " + adapterStateVariable + " in "
         + this.componentType);
     }

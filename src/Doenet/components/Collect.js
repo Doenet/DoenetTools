@@ -139,12 +139,10 @@ export default class Collect extends CompositeComponent {
     };
 
     stateVariableDefinitions.useProp = {
-      additionalStateVariablesDefined: ["propVariableName"],
       returnDependencies: () => ({
         propChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "childIdentity",
           childLogicName: "atMostOneProp",
-          variableNames: ["variableName"]
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -152,14 +150,12 @@ export default class Collect extends CompositeComponent {
           return {
             newValues: {
               useProp: false,
-              propVariableName: ""
             }
           };
         } else {
           return {
             newValues: {
               useProp: true,
-              propVariableName: dependencyValues.propChild[0].stateValues.variableName
             }
           };
         }
@@ -447,7 +443,7 @@ export default class Collect extends CompositeComponent {
     // Note: this collects components a second time when have a prop
     stateVariableDefinitions.needsReplacementsUpdatedWhenStale = {
       stateVariablesDeterminingDependencies: [
-        "componentTypesToCollect", "refTargetName", "propVariableObjs", "propVariableName"
+        "componentTypesToCollect", "refTargetName", "propVariableObjs"
       ],
       returnDependencies: function ({ stateValues }) {
         let dependencies = {
@@ -457,17 +453,17 @@ export default class Collect extends CompositeComponent {
           }
         }
 
-        // test based on propVariableObjs rather than propVariableName
-        // so that know we have a valid prop variable name
         if (stateValues.propVariableObjs === null) {
           dependencies.collectedComponents = {
             dependencyType: "stateVariable",
             variableName: "collectedComponents"
           }
         } else {
+          console.log(`return dependencies`)
+          console.log(stateValues.propVariableObjs)
           dependencies.descendantsWithProp = {
             dependencyType: "componentDescendantStateVariables",
-            variableNames: [stateValues.propVariableName],
+            variableNames: [stateValues.propVariableObjs[0].varName],
             ancestorName: stateValues.refTargetName,
             componentTypes: stateValues.componentTypesToCollect,
             useReplacementsForComposites: true,

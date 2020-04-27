@@ -2584,6 +2584,13 @@ export default class Core {
           }
         }
       };
+
+      for (let attribute of ["forRenderer", "entryPrefixes"]) {
+        if (attribute in propertySpecification) {
+          stateVariableDefinitions[property][attribute]
+            = propertySpecification[attribute];
+        }
+      }
     }
     // primaryStateVariableForDefinition is the state variable that the componentClass
     // being created has specified should be given the value when it
@@ -7587,6 +7594,8 @@ export default class Core {
 
           let componentInd = upDep.downstreamComponentNames.indexOf(componentName);
           if (componentInd === -1) {
+            console.log(upDep)
+            console.log(componentName)
             throw Error(`something went wrong as ${componentName} not a downstreamComponent of ${upDep.dependencyName}`);
           }
 

@@ -64,6 +64,28 @@ export default class MathComponent extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+
+    // valueShadow will be long underscore unless math was created
+    // from serialized state with value
+    stateVariableDefinitions.valueShadow = {
+      defaultValue: me.fromAst('\uff3f'),  // long underscore
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          valueShadow: { variablesToCheck: ["value", "valueShadow"] }
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "valueShadow",
+            value: desiredStateVariableValues.valueShadow
+          }]
+        };
+      }
+    }
+
     stateVariableDefinitions.codePre = {
       // deferCalculation: false,
       returnDependencies: () => ({
@@ -129,6 +151,10 @@ export default class MathComponent extends InlineComponent {
         codePre: {
           dependencyType: "stateVariable",
           variableName: "codePre"
+        },
+        valueShadow: {
+          dependencyType: "stateVariable",
+          variableName: "valueShadow"
         },
       }),
       set: convertValueToMathExpression, // TODO: implement
@@ -550,9 +576,8 @@ function calculateMathValue({ dependencyValues } = {}) {
   // if expressionWithCodes is null, there were no string or math children
   if (dependencyValues.expressionWithCodes === null) {
     return {
-      useEssentialOrDefaultValue: {
-        unnormalizedValue: { variablesToCheck: ["value", "unnormalizedValue"] }
-      }
+      newValues: { unnormalizedValue: dependencyValues.valueShadow },
+      makeEssential: ["unnormalizedValue"]  // make essential since inverseDef sets it
     }
   }
 
@@ -932,10 +957,18 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
       })
     }
 
+    let simplifiedExpression = desiredExpression.simplify();
     instructions.push({
       setStateVariable: "unnormalizedValue",
-      value: desiredExpression.simplify(),
+      value: simplifiedExpression,
     });
+
+    if (stringChildren.length === 0) {
+      instructions.push({
+        setDependency: "valueShadow",
+        desiredValue: simplifiedExpression,
+      });
+    }
     return {
       success: true,
       instructions
@@ -1145,7 +1178,7 @@ function getExpressionPieces({ expression, stateValues }) {
       }
     }
   }
-  
+
   let pieces = {};
   for (let x in matching) {
     let subMap = {};

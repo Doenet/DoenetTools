@@ -52,33 +52,6 @@ export default class Extract extends CompositeComponent {
       })
     }
 
-    stateVariableDefinitions.propVariableName = {
-      returnDependencies: () => ({
-        propChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneProp",
-          variableNames: ["variableName"]
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.propChild.length === 0) {
-          return {
-            newValues: {
-              propVariableName: ""
-            }
-          };
-        } else {
-          return {
-            newValues: {
-              propVariableName: dependencyValues.propChild[0].stateValues.variableName
-            }
-          };
-        }
-      }
-    }
-
-
-
     stateVariableDefinitions.effectiveTargetClasses = {
       returnDependencies: () => ({
         sourceComponents: {
@@ -270,13 +243,11 @@ export default class Extract extends CompositeComponent {
     // Note: this collects components a second time when have a prop
     stateVariableDefinitions.needsReplacementsUpdatedWhenStale = {
       stateVariablesDeterminingDependencies: [
-        "propVariableObjs", "propVariableName"
+        "propVariableObjs"
       ],
       returnDependencies: function ({ stateValues }) {
         let dependencies = {};
 
-        // test based on propVariableObjs rather than propVariableName
-        // so that know we have a valid prop variable name
         if (stateValues.propVariableObjs === null) {
           dependencies.children = {
             dependencyType: "childIdentity",
@@ -286,7 +257,7 @@ export default class Extract extends CompositeComponent {
           dependencies.childrenWithProp = {
             dependencyType: "childStateVariables",
             childLogicName: "anything",
-            variableNames: [stateValues.propVariableName],
+            variableNames: stateValues.propVariableObjs.map(x => x.varName),
           }
         }
 

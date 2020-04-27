@@ -57,7 +57,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(1)).closeTo(2 + 1, 1E-12);
       expect(f(2)).closeTo(2 + 4, 1E-12);
@@ -86,7 +86,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(3)).closeTo(2 + 1, 1E-12);
       expect(f(6)).closeTo(2 + 4, 1E-12);
@@ -115,7 +115,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(3)).closeTo(2 + 1 * 5, 1E-12);
       expect(f(6)).closeTo(2 + 4 * 5, 1E-12);
@@ -144,7 +144,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(3, 1E-12);
       expect(f(1)).closeTo(3 - 1, 1E-12);
       expect(f(2)).closeTo(3 - 4, 1E-12);
@@ -173,7 +173,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(3, 1E-12);
       expect(f(3)).closeTo(3 - 1, 1E-12);
       expect(f(6)).closeTo(3 - 4, 1E-12);
@@ -202,7 +202,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(3, 1E-12);
       expect(f(3)).closeTo(3 - 1 * 5, 1E-12);
       expect(f(6)).closeTo(3 - 4 * 5, 1E-12);
@@ -231,7 +231,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(4, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(0, 1E-12);
@@ -258,7 +258,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(4 - 3, 1E-12);
       expect(f(1)).closeTo(1 - 3, 1E-12);
       expect(f(2)).closeTo(0 - 3, 1E-12);
@@ -285,7 +285,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(4 - 3, 1E-12);
       expect(f(1)).closeTo(1 - 3, 1E-12);
       expect(f(2)).closeTo(0 - 3, 1E-12);
@@ -312,7 +312,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(4 - 3, 1E-12);
       expect(f(1)).closeTo(1 - 3, 1E-12);
       expect(f(2)).closeTo(0 - 3, 1E-12);
@@ -339,7 +339,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(4 - 3, 1E-12);
       expect(f(1)).closeTo(1 - 3, 1E-12);
       expect(f(2)).closeTo(0 - 3, 1E-12);
@@ -366,7 +366,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(-4 - 3, 1E-12);
       expect(f(1)).closeTo(-1 - 3, 1E-12);
       expect(f(2)).closeTo(0 - 3, 1E-12);
@@ -394,7 +394,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(0.5)).closeTo(0.5, 1E-12);
@@ -428,7 +428,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(0.5)).closeTo(0.5, 1E-12);
@@ -462,7 +462,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(0.5)).closeTo(0.5, 1E-12);
@@ -496,7 +496,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(0)).closeTo(2, 1E-12);
@@ -531,7 +531,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(0)).closeTo(5, 1E-12);
@@ -566,7 +566,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(0)).closeTo(5, 1E-12);
@@ -600,7 +600,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(-3)).closeTo(0, 1E-12);
       expect(f(-2 + 4 / 3)).closeTo(0, 1E-12);
@@ -632,7 +632,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(-3)).closeTo(0, 1E-12);
       expect(f(0)).closeTo(0, 1E-12);
@@ -661,7 +661,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-2)).closeTo(3, 1E-12);
       expect(f(-3)).closeTo(4, 1E-12);
       expect(f(-2 + 4 / 3)).closeTo(4, 1E-12);
@@ -693,7 +693,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-2)).closeTo(3, 1E-12);
       expect(f(-3)).closeTo(4, 1E-12);
       expect(f(0)).closeTo(4, 1E-12);
@@ -722,7 +722,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-2)).closeTo(3, 1E-12);
       expect(f(-3)).closeTo(2, 1E-12);
       expect(f(0)).closeTo(1, 1E-12);
@@ -752,7 +752,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-2)).closeTo(2, 1E-12);
       expect(f(-5)).closeTo(0, 1E-12);
       expect(f(-6)).closeTo(-1, 1E-12);
@@ -789,7 +789,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1, 1E-12);
       expect(f(-12)).closeTo(-1, 1E-12);
@@ -815,11 +815,11 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-6)).closeTo(-1, 1E-12);
-      expect(f(-2)).closeTo(-1+3*(-2+6), 1E-12);
-      expect(f(-12)).closeTo(-1+3*(-12+6), 1E-12);
-      expect(f(12)).closeTo(-1+3*(12+6), 1E-12);
+      expect(f(-2)).closeTo(-1 + 3 * (-2 + 6), 1E-12);
+      expect(f(-12)).closeTo(-1 + 3 * (-12 + 6), 1E-12);
+      expect(f(12)).closeTo(-1 + 3 * (12 + 6), 1E-12);
     })
   });
 
@@ -842,41 +842,41 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-6)).closeTo(-1, 1E-12);
-      expect(f(-2)).closeTo(-1+0*(-2+6), 1E-12);
-      expect(f(-12)).closeTo(-1+0*(-12+6), 1E-12);
-      expect(f(12)).closeTo(-1+0*(12+6), 1E-12);
+      expect(f(-2)).closeTo(-1 + 0 * (-2 + 6), 1E-12);
+      expect(f(-12)).closeTo(-1 + 0 * (-12 + 6), 1E-12);
+      expect(f(12)).closeTo(-1 + 0 * (12 + 6), 1E-12);
     })
 
     cy.get('#\\/_mathinput1_input').clear().type("2{enter}");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-6)).closeTo(-1, 1E-12);
-      expect(f(-2)).closeTo(-1+2*(-2+6), 1E-12);
-      expect(f(-12)).closeTo(-1+2*(-12+6), 1E-12);
-      expect(f(12)).closeTo(-1+2*(12+6), 1E-12);
+      expect(f(-2)).closeTo(-1 + 2 * (-2 + 6), 1E-12);
+      expect(f(-12)).closeTo(-1 + 2 * (-12 + 6), 1E-12);
+      expect(f(12)).closeTo(-1 + 2 * (12 + 6), 1E-12);
     })
 
     cy.get('#\\/_mathinput1_input').clear().type("-3{enter}");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-6)).closeTo(-1, 1E-12);
-      expect(f(-2)).closeTo(-1-3*(-2+6), 1E-12);
-      expect(f(-12)).closeTo(-1-3*(-12+6), 1E-12);
-      expect(f(12)).closeTo(-1-3*(12+6), 1E-12);
+      expect(f(-2)).closeTo(-1 - 3 * (-2 + 6), 1E-12);
+      expect(f(-12)).closeTo(-1 - 3 * (-12 + 6), 1E-12);
+      expect(f(12)).closeTo(-1 - 3 * (12 + 6), 1E-12);
     })
 
     cy.get('#\\/_mathinput1_input').clear().blur();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-6)).closeTo(-1, 1E-12);
-      expect(f(-2)).closeTo(-1+0*(-2+6), 1E-12);
-      expect(f(-12)).closeTo(-1+0*(-12+6), 1E-12);
-      expect(f(12)).closeTo(-1+0*(12+6), 1E-12);
+      expect(f(-2)).closeTo(-1 + 0 * (-2 + 6), 1E-12);
+      expect(f(-12)).closeTo(-1 + 0 * (-12 + 6), 1E-12);
+      expect(f(12)).closeTo(-1 + 0 * (12 + 6), 1E-12);
     })
 
 
@@ -902,28 +902,28 @@ describe('Function Tag Tests', function () {
     cy.log('with undefined slope, get line through points')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-6)).closeTo(-1, 1E-12);
-      expect(f(-2)).closeTo(-1+1*(-2+6), 1E-12);
-      expect(f(-12)).closeTo(-1+1*(-12+6), 1E-12);
-      expect(f(12)).closeTo(-1+1*(12+6), 1E-12);
+      expect(f(-2)).closeTo(-1 + 1 * (-2 + 6), 1E-12);
+      expect(f(-12)).closeTo(-1 + 1 * (-12 + 6), 1E-12);
+      expect(f(12)).closeTo(-1 + 1 * (12 + 6), 1E-12);
     })
 
     cy.get('#\\/_mathinput1_input').clear().type("2{enter}");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
-      expect(f(-6-0.01)).closeTo(-1-0.01*2, 1E-3);
+      let f = components['/_function1'].stateValues.numericalf;
+      expect(f(-6 - 0.01)).closeTo(-1 - 0.01 * 2, 1E-3);
       expect(f(-6)).closeTo(-1, 1E-12);
-      expect(f(-6+0.01)).closeTo(-1+0.01*2, 1E-3);
+      expect(f(-6 + 0.01)).closeTo(-1 + 0.01 * 2, 1E-3);
 
-      expect(f(3-0.01)).closeTo(8-0.01*2, 1E-3);
+      expect(f(3 - 0.01)).closeTo(8 - 0.01 * 2, 1E-3);
       expect(f(3)).closeTo(8, 1E-12);
-      expect(f(3+0.01)).closeTo(8+0.01*2, 1E-3);
+      expect(f(3 + 0.01)).closeTo(8 + 0.01 * 2, 1E-3);
 
       // extrapolate linearly
-      expect(f(-6-3)).closeTo(-1-3*2, 1E-12);
-      expect(f(3+3)).closeTo(8+3*2, 1E-12);
+      expect(f(-6 - 3)).closeTo(-1 - 3 * 2, 1E-12);
+      expect(f(3 + 3)).closeTo(8 + 3 * 2, 1E-12);
 
 
     })
@@ -931,29 +931,29 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_mathinput1_input').clear().type("-3{enter}");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
-      expect(f(-6-0.01)).closeTo(-1-0.01*(-3), 1E-3);
+      let f = components['/_function1'].stateValues.numericalf;
+      expect(f(-6 - 0.01)).closeTo(-1 - 0.01 * (-3), 1E-3);
       expect(f(-6)).closeTo(-1, 1E-12);
-      expect(f(-6+0.01)).closeTo(-1+0.01*(-3), 1E-3);
+      expect(f(-6 + 0.01)).closeTo(-1 + 0.01 * (-3), 1E-3);
 
-      expect(f(3-0.01)).closeTo(8-0.01*(-3), 1E-3);
+      expect(f(3 - 0.01)).closeTo(8 - 0.01 * (-3), 1E-3);
       expect(f(3)).closeTo(8, 1E-12);
-      expect(f(3+0.01)).closeTo(8+0.01*(-3), 1E-3);
+      expect(f(3 + 0.01)).closeTo(8 + 0.01 * (-3), 1E-3);
 
       // extrapolate linearly
-      expect(f(-6-3)).closeTo(-1-3*(-3), 1E-12);
-      expect(f(3+3)).closeTo(8+3*(-3), 1E-12);
+      expect(f(-6 - 3)).closeTo(-1 - 3 * (-3), 1E-12);
+      expect(f(3 + 3)).closeTo(8 + 3 * (-3), 1E-12);
 
     })
 
     cy.get('#\\/_mathinput1_input').clear().blur();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(-6)).closeTo(-1, 1E-12);
-      expect(f(-2)).closeTo(-1+1*(-2+6), 1E-12);
-      expect(f(-12)).closeTo(-1+1*(-12+6), 1E-12);
-      expect(f(12)).closeTo(-1+1*(12+6), 1E-12);
+      expect(f(-2)).closeTo(-1 + 1 * (-2 + 6), 1E-12);
+      expect(f(-12)).closeTo(-1 + 1 * (-12 + 6), 1E-12);
+      expect(f(12)).closeTo(-1 + 1 * (12 + 6), 1E-12);
     })
 
 
@@ -977,7 +977,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(3)).closeTo(2, 1E-12);
@@ -1015,18 +1015,18 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
-      expect(f(-0.01)).closeTo(2-0.01*0.5, 1E-3)
+      let f = components['/_function1'].stateValues.numericalf;
+      expect(f(-0.01)).closeTo(2 - 0.01 * 0.5, 1E-3)
       expect(f(0)).closeTo(2, 1E-12);
-      expect(f(0.01)).closeTo(2+0.01*0.5, 1E-3)
-    
-      expect(f(2-0.01)).closeTo(1-0.01*2, 1E-3)
-      expect(f(2)).closeTo(1, 1E-12);
-      expect(f(2+0.01)).closeTo(1+0.01*2, 1E-3)
+      expect(f(0.01)).closeTo(2 + 0.01 * 0.5, 1E-3)
 
-      expect(f(3-0.01)).closeTo(2-0.01*(-1), 1E-3)
+      expect(f(2 - 0.01)).closeTo(1 - 0.01 * 2, 1E-3)
+      expect(f(2)).closeTo(1, 1E-12);
+      expect(f(2 + 0.01)).closeTo(1 + 0.01 * 2, 1E-3)
+
+      expect(f(3 - 0.01)).closeTo(2 - 0.01 * (-1), 1E-3)
       expect(f(3)).closeTo(2, 1E-12);
-      expect(f(3+0.01)).closeTo(2+0.01*(-1), 1E-3)
+      expect(f(3 + 0.01)).closeTo(2 + 0.01 * (-1), 1E-3)
 
       // extrapolate linearly
       let slope = -1;
@@ -1059,7 +1059,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       assert.isNaN(f(0));
       assert.isNaN(f(1));
       assert.isNaN(f(2));
@@ -1085,7 +1085,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
       for (let x = -5; x <= 6; x += 0.1) {
         expect(f(x - 0.1)).lessThan(f(x));
       }
@@ -1129,22 +1129,22 @@ describe('Function Tag Tests', function () {
 
       let p = components['/_point1'];
 
-      let x = p.state.xs[0].evaluate_to_constant();
-      let y = p.state.xs[1].evaluate_to_constant();
+      let x = p.stateValues.xs[0].evaluate_to_constant();
+      let y = p.stateValues.xs[1].evaluate_to_constant();
 
       expect(6 - (x - 5) * (x - 5) / 25).closeTo(y, 1E-5);
 
       p.movePoint({ x: -8, y: 8 });
 
-      x = p.state.xs[0].evaluate_to_constant();
-      y = p.state.xs[1].evaluate_to_constant();
+      x = p.stateValues.xs[0].evaluate_to_constant();
+      y = p.stateValues.xs[1].evaluate_to_constant();
 
       expect(6 - (x - 5) * (x - 5) / 25).closeTo(y, 1E-5);
 
       p.movePoint({ x: 8, y: 8 });
 
-      x = p.state.xs[0].evaluate_to_constant();
-      y = p.state.xs[1].evaluate_to_constant();
+      x = p.stateValues.xs[0].evaluate_to_constant();
+      y = p.stateValues.xs[1].evaluate_to_constant();
 
       expect(6 - (x - 5) * (x - 5) * (2 / 9)).closeTo(y, 1E-5);
 
@@ -1169,7 +1169,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1196,7 +1196,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].returnNumericF();
+      let f = components['/_function1'].stateValues.numericalf;
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
@@ -1230,22 +1230,22 @@ describe('Function Tag Tests', function () {
 
       let p = components['/_point1'];
 
-      let x = p.state.xs[0].evaluate_to_constant();
-      let y = p.state.xs[1].evaluate_to_constant();
+      let x = p.stateValues.xs[0].evaluate_to_constant();
+      let y = p.stateValues.xs[1].evaluate_to_constant();
 
       expect(Math.log(2 * x)).closeTo(y, 1E-5);
 
       p.movePoint({ x: 8, y: 8 });
 
-      x = p.state.xs[0].evaluate_to_constant();
-      y = p.state.xs[1].evaluate_to_constant();
+      x = p.stateValues.xs[0].evaluate_to_constant();
+      y = p.stateValues.xs[1].evaluate_to_constant();
 
       expect(Math.log(2 * x)).closeTo(y, 1E-5);
 
       p.movePoint({ x: -8, y: -8 });
 
-      x = p.state.xs[0].evaluate_to_constant();
-      y = p.state.xs[1].evaluate_to_constant();
+      x = p.stateValues.xs[0].evaluate_to_constant();
+      y = p.stateValues.xs[1].evaluate_to_constant();
 
       expect(Math.log(2 * x)).closeTo(y, 1E-5);
 
@@ -1276,11 +1276,11 @@ describe('Function Tag Tests', function () {
     <ref prop="minima">_function1</ref>
     </graph>
 
-    <p>Number of maxima: <ref prop="numbermaxima">_function1</ref></p>
+    <p>Number of maxima: <ref prop="numbermaxima" name="numbermaxima">_function1</ref></p>
     <p>Maxima: <math simplify="none"><ref prop="maxima">_function1</ref></math></p>
-    <p>Number of minima: <ref prop="numberminima">_function1</ref></p>
+    <p>Number of minima: <ref prop="numberminima" name="numberminima">_function1</ref></p>
     <p>Minima: <math simplify="none"><ref prop="minima">_function1</ref></math></p>
-    <p>Number of extrema: <ref prop="numberextrema">_function1</ref></p>
+    <p>Number of extrema: <ref prop="numberextrema" name="numberextrema">_function1</ref></p>
     <p>Extrema: <math simplify="none"><ref prop="extrema">_function1</ref></math></p>
     `}, "*");
     });
@@ -1288,212 +1288,173 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.get('#__number1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2');
-    });
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(−2.15,7)(5,6)');
-    });
-    cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2');
-    });
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(−5,6)(3,4)');
-    });
-    cy.get('#__number3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('4');
-    });
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('(−5,6)(−2.15,7)(3,4)(5,6)');
-    });
-
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      components['/_point1'].movePoint({ x: 2, y: 2 });
+      let numberMaximaAnchor = '#' + components["/numbermaxima"].replacements[0].componentName;
+      let numberMinimaAnchor = '#' + components["/numberminima"].replacements[0].componentName;
+      let numberExtremaAnchor = '#' + components["/numberextrema"].replacements[0].componentName;
 
-      cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2');
-      });
+      cy.get(numberMaximaAnchor).should('have.text', '2');
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−1.5,7)(5,6)');
+        expect(text.trim()).equal('(−2.15,7)(5,6)');
       });
-      cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2');
-      });
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−5,6)(2,2)');
-      });
-      cy.get('#__number3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4');
-      });
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−5,6)(−1.5,7)(2,2)(5,6)');
-      });
-
-    });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      components['/_point1'].movePoint({ x: 3.6, y: 5.1 });
-
-      cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3');
-      });
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−1,7)(3.6,5.1)(5,6)');
-      });
-      cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3');
-      });
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−5,6)(3,4)(4.3,5)');
-      });
-      cy.get('#__number3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('6');
-      });
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−5,6)(−1,7)(3,4)(3.6,5.1)(4.3,5)(5,6)');
-      });
-
-    });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      components['/_point1'].movePoint({ x: 8, y: 9 });
-
-      cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2');
-      });
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−1,7)(5,6)');
-      });
-      cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3');
-      });
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−5,6)(3,4)(6.5,5)');
-      });
-      cy.get('#__number3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('5');
-      });
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−5,6)(−1,7)(3,4)(5,6)(6.5,5)');
-      });
-
-    });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      components['/_point1'].movePoint({ x: 5, y: 2 });
-
-      cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('0');
-      });
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿');
-      });
-      cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('0');
-      });
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿');
-      });
-      cy.get('#__number3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('0');
-      });
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿');
-      });
-
-    });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      components['/_point1'].movePoint({ x: -9, y: 0 });
-
-      cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3');
-      });
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−7,7)(−1,7)(5,6)');
-      });
-      cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2');
-      });
+      cy.get(numberMinimaAnchor).should('have.text', '2');
       cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−5,6)(3,4)');
       });
-      cy.get('#__number3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('5');
-      });
+      cy.get(numberExtremaAnchor).should('have.text', '4');
+
       cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−7,7)(−5,6)(−1,7)(3,4)(5,6)');
+        expect(text.trim()).equal('(−5,6)(−2.15,7)(3,4)(5,6)');
       });
 
-    });
 
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+        components['/_point1'].movePoint({ x: 2, y: 2 });
 
-      components['/_point4'].movePoint({ x: 8, y: 3 });
+        cy.get(numberMaximaAnchor).should('have.text', '2');
+        cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−1.5,7)(5,6)');
+        });
+        cy.get(numberMinimaAnchor).should('have.text', '2');
+        cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−5,6)(2,2)');
+        });
+        cy.get(numberExtremaAnchor).should('have.text', '4');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−5,6)(−1.5,7)(2,2)(5,6)');
+        });
 
-      cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1');
-      });
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(5,6)');
-      });
-      cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1');
-      });
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(8,3)');
-      });
-      cy.get('#__number3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2');
-      });
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(5,6)(8,3)');
       });
 
-    });
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+        components['/_point1'].movePoint({ x: 3.6, y: 5.1 });
 
-      components['/_point4'].movePoint({ x: 8, y: 6 });
+        cy.get(numberMaximaAnchor).should('have.text', '3');
+        cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−1,7)(3.6,5.1)(5,6)');
+        });
+        cy.get(numberMinimaAnchor).should('have.text', '3');
+        cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−5,6)(3,4)(4.3,5)');
+        });
+        cy.get(numberExtremaAnchor).should('have.text', '6');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−5,6)(−1,7)(3,4)(3.6,5.1)(4.3,5)(5,6)');
+        });
 
-      cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2');
-      });
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(5,6)(7,7)');
-      });
-      cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2');
-      });
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(6,5)(8,6)');
-      });
-      cy.get('#__number3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4');
-      });
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(5,6)(6,5)(7,7)(8,6)');
       });
 
-    });
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        components['/_point1'].movePoint({ x: 8, y: 9 });
+
+        cy.get(numberMaximaAnchor).should('have.text', '2');
+        cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−1,7)(5,6)');
+        });
+        cy.get(numberMinimaAnchor).should('have.text', '3');
+        cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−5,6)(3,4)(6.5,5)');
+        });
+        cy.get(numberExtremaAnchor).should('have.text', '5');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−5,6)(−1,7)(3,4)(5,6)(6.5,5)');
+        });
+
+      });
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        components['/_point1'].movePoint({ x: 5, y: 2 });
+
+        cy.get(numberMaximaAnchor).should('have.text', '0');
+        cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('＿');
+        });
+        cy.get(numberMinimaAnchor).should('have.text', '0');
+        cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('＿');
+        });
+        cy.get(numberExtremaAnchor).should('have.text', '0');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('＿');
+        });
+
+      });
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        components['/_point1'].movePoint({ x: -9, y: 0 });
+
+        cy.get(numberMaximaAnchor).should('have.text', '3');
+        cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−7,7)(−1,7)(5,6)');
+        });
+        cy.get(numberMinimaAnchor).should('have.text', '2');
+        cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−5,6)(3,4)');
+        });
+        cy.get(numberExtremaAnchor).should('have.text', '5');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−7,7)(−5,6)(−1,7)(3,4)(5,6)');
+        });
+
+      });
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        components['/_point4'].movePoint({ x: 8, y: 3 });
+
+        cy.get(numberMaximaAnchor).should('have.text', '1');
+        cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,6)');
+        });
+        cy.get(numberMinimaAnchor).should('have.text', '1');
+        cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(8,3)');
+        });
+        cy.get(numberExtremaAnchor).should('have.text', '2');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,6)(8,3)');
+        });
+
+      });
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        components['/_point4'].movePoint({ x: 8, y: 6 });
+
+        cy.get(numberMaximaAnchor).should('have.text', '2');
+        cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,6)(7,7)');
+        });
+        cy.get(numberMinimaAnchor).should('have.text', '2');
+        cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(6,5)(8,6)');
+        });
+        cy.get(numberExtremaAnchor).should('have.text', '4');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(5,6)(6,5)(7,7)(8,6)');
+        });
+
+      });
+    })
 
   });
 
-  it('calculated extrema from gaussians', () => {
+  it.only('calculated extrema from gaussians', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1511,17 +1472,17 @@ describe('Function Tag Tests', function () {
     <ref prop="extrema">_function1</ref>
     </graph>
     
-    <p>Number of maxima: <ref prop="numbermaxima">_function1</ref></p>
+    <p>Number of maxima: <ref prop="numbermaxima" name="numbermaxima">_function1</ref></p>
     <p>Maxima locations: <ref prop="maximumlocation1">_function1</ref>,
     <ref prop="maximumlocation2">_function1</ref></p>
     <p>Maxima values: <ref prop="maximumvalue1">_function1</ref>,
     <ref prop="maximumvalue2">_function1</ref></p>
-    <p>Number of minima: <ref prop="numberminima">_function1</ref></p>
+    <p>Number of minima: <ref prop="numberminima" name="numberminima">_function1</ref></p>
     <p>Minima locations: <ref prop="minimumlocation1">_function1</ref>,
     <ref prop="minimumlocation2">_function1</ref></p>
     <p>Minima values: <ref prop="minimumvalue1">_function1</ref>,
     <ref prop="minimumvalue2">_function1</ref></p>
-    <p>Number of extrema: <ref prop="numberextrema">_function1</ref></p>
+    <p>Number of extrema: <ref prop="numberextrema" name="numberextrema">_function1</ref></p>
     <p>Extrema locations: <ref prop="extremumlocation1">_function1</ref>,
     <ref prop="extremumlocation2">_function1</ref>,
     <ref prop="extremumlocation3">_function1</ref></p>
@@ -1534,136 +1495,35 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.get('#__number1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2');
-    });
-    cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
-    });
-    cy.get('#__number3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
-    });
-    cy.get('#__number4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
-    });
-    cy.get('#__number5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
-    });
-
-    cy.get('#__number6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1');
-    });
-    cy.get('#__number7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text.replace(/−/, '-'))).closeTo(1.5, 0.01);
-    });
-    cy.get('#__number8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text.replace(/−/, '-'))).closeTo(.21, 0.01);
-    });
-
-    cy.get('#__number9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3');
-    });
-    cy.get('#__number10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
-    });
-    cy.get('#__number11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text.replace(/−/, '-'))).closeTo(1.5, 0.01);
-    });
-    cy.get('#__number12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
-    });
-    cy.get('#__number13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
-    });
-    cy.get('#__number14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text.replace(/−/, '-'))).closeTo(.21, 0.01);
-    });
-    cy.get('#__number15').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
-    });
-
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      components['/_point2'].movePoint({ x: 3, y: -1 });
+      let numberMaximaAnchor = '#' + components["/numbermaxima"].replacements[0].componentName;
+      let numberMinimaAnchor = '#' + components["/numberminima"].replacements[0].componentName;
+      let numberExtremaAnchor = '#' + components["/numberextrema"].replacements[0].componentName;
 
-
-      cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1');
-      });
+      cy.get(numberMaximaAnchor).should('have.text', '2');
       cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
       });
-      cy.get('#__number3').should('not.exist');
+      cy.get('#__number3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
+      });
       cy.get('#__number4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
       });
-      cy.get('#__number5').should('not.exist');
+      cy.get('#__number5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
+      });
 
       cy.get('#__number6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1');
       });
       cy.get('#__number7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
-      });
-      cy.get('#__number8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
-      });
-
-
-      cy.get('#__number9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2');
-      });
-      cy.get('#__number10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
-      });
-      cy.get('#__number11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
-      });
-      cy.get('#__number12').should('not.exist');
-      cy.get('#__number13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
-      });
-      cy.get('#__number14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
-      });
-      cy.get('#__number15').should('not.exist');
-
-    });
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      components['/_point1'].movePoint({ x: 0, y: -1 });
-
-      cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1');
-      });
-      cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(1.5, 0.01);
       });
-      cy.get('#__number3').should('not.exist');
-      cy.get('#__number4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text.replace(/−/, '-'))).closeTo(-0.21, 0.01);
-      });
-      cy.get('#__number5').should('not.exist');
-
-      cy.get('#__number6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2');
-      });
-      cy.get('#__number7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
-      });
-      cy.get('#__number16').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
-      });
       cy.get('#__number8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
-      });
-      cy.get('#__number17').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
+        expect(Number(text.replace(/−/, '-'))).closeTo(.21, 0.01);
       });
 
       cy.get('#__number9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1675,22 +1535,128 @@ describe('Function Tag Tests', function () {
       cy.get('#__number11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(1.5, 0.01);
       });
-      cy.get('#__number12').should('not.exist');
-      cy.get('#__number18').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get('#__number12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
       });
       cy.get('#__number13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
+        expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
       });
       cy.get('#__number14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text.replace(/−/, '-'))).closeTo(-0.21, 0.01);
+        expect(Number(text.replace(/−/, '-'))).closeTo(.21, 0.01);
       });
-      cy.get('#__number15').should('not.exist');
-      cy.get('#__number19').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
+      cy.get('#__number15').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
       });
 
 
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        components['/_point2'].movePoint({ x: 3, y: -1 });
+
+
+        cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('1');
+        });
+        cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
+        });
+        cy.get('#__number3').should('not.exist');
+        cy.get('#__number4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
+        });
+        cy.get('#__number5').should('not.exist');
+
+        cy.get('#__number6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('1');
+        });
+        cy.get('#__number7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
+        });
+        cy.get('#__number8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
+        });
+
+
+        cy.get('#__number9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2');
+        });
+        cy.get('#__number10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
+        });
+        cy.get('#__number11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
+        });
+        cy.get('#__number12').should('not.exist');
+        cy.get('#__number13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
+        });
+        cy.get('#__number14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
+        });
+        cy.get('#__number15').should('not.exist');
+
+      });
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        components['/_point1'].movePoint({ x: 0, y: -1 });
+
+        cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('1');
+        });
+        cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(1.5, 0.01);
+        });
+        cy.get('#__number3').should('not.exist');
+        cy.get('#__number4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(-0.21, 0.01);
+        });
+        cy.get('#__number5').should('not.exist');
+
+        cy.get('#__number6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2');
+        });
+        cy.get('#__number7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
+        });
+        cy.get('#__number16').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
+        });
+        cy.get('#__number8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
+        });
+        cy.get('#__number17').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
+        });
+
+        cy.get('#__number9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3');
+        });
+        cy.get('#__number10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
+        });
+        cy.get('#__number11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(1.5, 0.01);
+        });
+        cy.get('#__number12').should('not.exist');
+        cy.get('#__number18').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
+        });
+        cy.get('#__number13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
+        });
+        cy.get('#__number14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(-0.21, 0.01);
+        });
+        cy.get('#__number15').should('not.exist');
+        cy.get('#__number19').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
+        });
+
+      });
     });
 
   });
@@ -2012,7 +1978,7 @@ describe('Function Tag Tests', function () {
 
       expect(f1.state.maximalocations[0]).eq(2);
       expect(f1.state.maximavalues[0]).eq(1);
-      
+
       expect(f1.state.xscale).eq(1);
       expect(f1.state.yscale).eq(5);
       expect(f2.state.xscale).eq(1);
@@ -2030,8 +1996,8 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      components['/_point1'].movePoint({x: 2, y: 6})
-      
+      components['/_point1'].movePoint({ x: 2, y: 6 })
+
       let f1 = components['/_function1'];
       let f2 = components['/_function2'];
       expect(f1.state.numbermaxima).eq(1);
@@ -2057,9 +2023,9 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      components['/_point2'].movePoint({x: 3, y: 7})
-      components['/_point3'].movePoint({x: 9, y: 0})
-      
+      components['/_point2'].movePoint({ x: 3, y: 7 })
+      components['/_point3'].movePoint({ x: 9, y: 0 })
+
       let f1 = components['/_function1'];
       let f2 = components['/_function2'];
       expect(f1.state.numbermaxima).eq(1);

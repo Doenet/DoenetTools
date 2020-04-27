@@ -275,12 +275,10 @@ export default class Ref extends CompositeComponent {
 
 
     stateVariableDefinitions.useProp = {
-      additionalStateVariablesDefined: ["propVariableName"],
       returnDependencies: () => ({
         propChild: {
-          dependencyType: "childStateVariables",
+          dependencyType: "childIdentity",
           childLogicName: "atMostOneProp",
-          variableNames: ["variableName"]
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -288,14 +286,12 @@ export default class Ref extends CompositeComponent {
           return {
             newValues: {
               useProp: false,
-              propVariableName: ""
             }
           };
         } else {
           return {
             newValues: {
               useProp: true,
-              propVariableName: dependencyValues.propChild[0].stateValues.variableName
             }
           };
         }
@@ -678,13 +674,11 @@ export default class Ref extends CompositeComponent {
 
     stateVariableDefinitions.needsReplacementsUpdatedWhenStale = {
       stateVariablesDeterminingDependencies: [
-        "refTargetName", "propVariableObjs", "propVariableName", "componentIdentitiesForProp"
+        "refTargetName", "propVariableObjs", "componentIdentitiesForProp"
       ],
       returnDependencies: function ({ stateValues }) {
         let dependencies = {}
 
-        // test based on propVariableObjs rather than propVariableName
-        // so that know we have a valid prop variable name
         if (stateValues.propVariableObjs === null) {
           dependencies.refTargetDescendentIdentity = {
             dependencyType: "componentDescendantIdentity",
@@ -695,10 +689,10 @@ export default class Ref extends CompositeComponent {
             recurseToMatchedChildren: true,
           }
         } else {
-          for(let [ind, cIdentity] of stateValues.componentIdentitiesForProp.entries()) {
-            dependencies["targetWithProp"+ind] = {
+          for (let [ind, cIdentity] of stateValues.componentIdentitiesForProp.entries()) {
+            dependencies["targetWithProp" + ind] = {
               dependencyType: "componentStateVariable",
-              variableName: stateValues.propVariableName,
+              variableName: stateValues.propVariableObjs[ind].varName,
               componentIdentity: cIdentity,
             }
           }
@@ -1174,7 +1168,7 @@ export default class Ref extends CompositeComponent {
     // if creating reference from a prop
     // manually create the serialized state
     if (component.stateValues.useProp) {
-      let componentOrReplacementNames = component.stateValues.componentIdentitiesForProp.map(x=>x.componentName);
+      let componentOrReplacementNames = component.stateValues.componentIdentitiesForProp.map(x => x.componentName);
 
       return {
         replacements: refReplacementFromProp({
@@ -1489,7 +1483,7 @@ export default class Ref extends CompositeComponent {
 
     let newSerializedChildren;
     if (component.stateValues.useProp) {
-      let componentOrReplacementNames = component.stateValues.componentIdentitiesForProp.map(x=>x.componentName);
+      let componentOrReplacementNames = component.stateValues.componentIdentitiesForProp.map(x => x.componentName);
 
       newSerializedChildren = refReplacementFromProp({ component, components, componentOrReplacementNames });
     } else {

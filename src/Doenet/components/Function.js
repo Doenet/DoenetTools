@@ -72,7 +72,7 @@ export default class Function extends InlineComponent {
       }
       return {
         success: true,
-        newChildren: [{ componentType: "interpolatedfunction" }],
+        newChildren: [{ componentType: "interpolatedfunction", children }],
       }
     }
 
@@ -362,6 +362,7 @@ export default class Function extends InlineComponent {
       },
       markStale: function ({ freshnessInfo, arrayKeys, changes }) {
 
+        let freshByKey = freshnessInfo.freshByKey
         let arrayKey;
         if (arrayKeys) {
           arrayKey = Number(arrayKeys[0]);
@@ -839,6 +840,8 @@ export default class Function extends InlineComponent {
 
       },
       markStale: function ({ freshnessInfo, arrayKeys, changes }) {
+
+        let freshByKey = freshnessInfo.freshByKey;
 
         let arrayKey;
         if (arrayKeys) {
@@ -1351,6 +1354,8 @@ export default class Function extends InlineComponent {
       },
       markStale: function ({ freshnessInfo, arrayKeys, changes }) {
 
+        let freshByKey = freshnessInfo.freshByKey;
+
         let arrayKey;
         if (arrayKeys) {
           arrayKey = Number(arrayKeys[0]);
@@ -1741,6 +1746,67 @@ export default class Function extends InlineComponent {
       }
     }
 
+
+    stateVariableDefinitions.numberMinima = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        minima: {
+          dependencyType: "stateVariable",
+          variableName: "minima"
+        }
+      }),
+      definition: function ({dependencyValues}) {
+        return {
+          newValues: {
+            numberMinima: dependencyValues.minima.length,
+          },
+          checkForActualChange: ["numberMinima"] 
+        }
+      }
+    }
+
+
+    stateVariableDefinitions.numberMaxima = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        maxima: {
+          dependencyType: "stateVariable",
+          variableName: "maxima"
+        }
+      }),
+      definition: function ({dependencyValues}) {
+        return {
+          newValues: {
+            numberMaxima: dependencyValues.maxima.length,
+          },
+          checkForActualChange: ["numberMaxima"] 
+        }
+      }
+    }
+
+
+    stateVariableDefinitions.numberExtrema = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        extrema: {
+          dependencyType: "stateVariable",
+          variableName: "extrema"
+        }
+      }),
+      definition: function ({dependencyValues}) {
+        return {
+          newValues: {
+            numberExtrema: dependencyValues.extrema.length,
+          },
+          checkForActualChange: ["numberExtrema"] 
+        }
+      }
+    }
+
+
     // stateVariableDefinitions.indexInParent = {
     //   returnDependencies: () => ({
     //     indexInParent: {
@@ -1878,58 +1944,64 @@ export default class Function extends InlineComponent {
 
   }
 
-  // allow to adapt into curve
-  get nAdapters() {
-    return 1;
-  }
-
-  getAdapter(ind) {
-
-    if (ind >= 1) {
-      return;
-    }
-
-    let newState = {
-      functionComponentName: this.componentName
-    };
+  adapters = [{
+    stateVariable: "numericalf",
+    componentType: "functioncurve"
+  }];
 
 
-    let downstreamStateVariables = [];
-    let upstreamStateVariables = [];
+  // // allow to adapt into curve
+  // get nAdapters() {
+  //   return 1;
+  // }
 
-    // copy any properties that match the adapter
-    // add them both to newState and to dependency state variables
-    let adapterClass = this.allComponentClasses.curve;
-    let availableClassProperties = adapterClass.createPropertiesObject({
-      standardComponentClasses: this.standardComponentClasses
-    });
+  // getAdapter(ind) {
 
-    for (let item in availableClassProperties) {
-      if (item in this._state) {
-        newState[item] = this.state[item];
-        downstreamStateVariables.push(item);
-        upstreamStateVariables.push(item);
-      }
-    }
+  //   if (ind >= 1) {
+  //     return;
+  //   }
 
-    let downDep = {
-      dependencyType: "adapter",
-      adapter: "curve",
-      downstreamStateVariables: downstreamStateVariables,
-      upstreamStateVariables: upstreamStateVariables,
-      includeDownstreamComponent: true,
-    }
+  //   let newState = {
+  //     functionComponentName: this.componentName
+  //   };
 
-    // TODO: if unresolved, should pass unresolvedState to curve
 
-    return {
-      componentType: "curve",
-      downstreamDependencies: {
-        [this.componentName]: [downDep]
-      },
-      state: newState,
-    };
+  //   let downstreamStateVariables = [];
+  //   let upstreamStateVariables = [];
 
-  }
+  //   // copy any properties that match the adapter
+  //   // add them both to newState and to dependency state variables
+  //   let adapterClass = this.allComponentClasses.curve;
+  //   let availableClassProperties = adapterClass.createPropertiesObject({
+  //     standardComponentClasses: this.standardComponentClasses
+  //   });
+
+  //   for (let item in availableClassProperties) {
+  //     if (item in this._state) {
+  //       newState[item] = this.state[item];
+  //       downstreamStateVariables.push(item);
+  //       upstreamStateVariables.push(item);
+  //     }
+  //   }
+
+  //   let downDep = {
+  //     dependencyType: "adapter",
+  //     adapter: "curve",
+  //     downstreamStateVariables: downstreamStateVariables,
+  //     upstreamStateVariables: upstreamStateVariables,
+  //     includeDownstreamComponent: true,
+  //   }
+
+  //   // TODO: if unresolved, should pass unresolvedState to curve
+
+  //   return {
+  //     componentType: "curve",
+  //     downstreamDependencies: {
+  //       [this.componentName]: [downDep]
+  //     },
+  //     state: newState,
+  //   };
+
+  // }
 
 }

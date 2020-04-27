@@ -18,28 +18,24 @@ export default class Curve extends GraphicalComponent {
     properties.showLabel.propagateToDescendants = true;
     properties.layer.propagateToDescendants = true;
 
-    if (this.componentType === "curve") {
-      // don't add these properties for components that inherit off curve
-      properties.parameter = { default: me.fromAst('t'), propagateToDescendants: true };
-      properties.parmin = { default: me.fromAst(-10), propagateToDescendants: true };
-      properties.parmax = { default: me.fromAst(10), propagateToDescendants: true };
-      // properties.flipFunction = { default: false, propagateToDescendants: true };
+    // some of these properties won't make sense for components that
+    // inherit off curve
+    // However, even those components should keep these properties
+    // so that code can assume that a curve has these properties
+    properties.parameter = { default: me.fromAst('t'), propagateToDescendants: true };
+    properties.parmin = { default: me.fromAst(-10), propagateToDescendants: true };
+    properties.parmax = { default: me.fromAst(10), propagateToDescendants: true };
 
-      properties.variables = {
-        componentType: "math",
-        entryPrefixes: ["var"],
-        dependentStateVariables: [{
-          dependencyName: "nVariables",
-          variableName: "nVariables"
-        }],
-        propagateToDescendants: true,
-        // distributeArrayEntriesToChildren: {
-        //   componentTypes: ["function"],
-        //   childProperty: "variable"
-        // }
-      }
-
+    properties.variables = {
+      componentType: "math",
+      entryPrefixes: ["var"],
+      dependentStateVariables: [{
+        dependencyName: "nVariables",
+        variableName: "nVariables"
+      }],
+      propagateToDescendants: true,
     }
+
     return properties;
   }
 
@@ -74,9 +70,6 @@ export default class Curve extends GraphicalComponent {
     }
 
     let createParametrizationFunctionOrThrough = function ({ dependencyValues, allComponentClasses, idRng }) {
-
-      console.log(`dependencyValues for create param function or through`)
-      console.log(dependencyValues)
 
       let results = breakEmbeddedStringByCommas({
         childrenList: dependencyValues.stringsAndMaths,
@@ -357,7 +350,7 @@ export default class Curve extends GraphicalComponent {
           variableName: "variables"
         },
       }),
-      affectedBySugar: ["exactlyOneCurve"],
+      logicToWaitOnSugar: ["exactlyOneCurve"],
       replacementFunction: createParametrizationFunctionOrThrough,
     });
 
@@ -386,7 +379,7 @@ export default class Curve extends GraphicalComponent {
       comparison: 'atLeast',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["exactlyOneCurve"],
+      logicToWaitOnSugar: ["exactlyOneCurve"],
       replacementFunction: addThroughAndBezierCurve,
     });
 
@@ -410,7 +403,7 @@ export default class Curve extends GraphicalComponent {
       componentType: 'through',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["exactlyOneCurve"],
+      logicToWaitOnSugar: ["exactlyOneCurve"],
       replacementFunction: addBezierCurve,
     });
 
@@ -438,7 +431,7 @@ export default class Curve extends GraphicalComponent {
       componentType: 'function',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["exactlyOneCurve"],
+      logicToWaitOnSugar: ["exactlyOneCurve"],
       replacementFunction: addFunctionCurve,
     });
 
@@ -468,7 +461,7 @@ export default class Curve extends GraphicalComponent {
       comparison: 'atLeast',
       number: 2,
       isSugar: true,
-      affectedBySugar: ["exactlyOneCurve"],
+      logicToWaitOnSugar: ["exactlyOneCurve"],
       replacementFunction: addParametrizedCurve,
     });
 
@@ -546,9 +539,6 @@ export default class Curve extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        console.log('definition of nVariables')
-        console.log(JSON.parse(JSON.stringify(dependencyValues)));
-
         if (dependencyValues.functionChild.length === 1) {
           return {
             newValues: { nVariables: 2 },
@@ -566,8 +556,6 @@ export default class Curve extends GraphicalComponent {
             childrenList: dependencyValues.stringAndMathChildren,
           });
 
-          console.log(results);
-
           if (!results.success) {
             return {
               useEssentialOrDefaultValue: {
@@ -577,8 +565,6 @@ export default class Curve extends GraphicalComponent {
           }
 
           results = breakPiecesByEquals(results.pieces, true);
-
-          console.log(results);
 
           if (!results.success) {
             return {

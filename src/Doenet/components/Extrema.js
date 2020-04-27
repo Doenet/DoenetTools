@@ -327,8 +327,8 @@ export class Extremum extends BaseComponent {
             location = null;
             value = null;
           } else {
-            location = pointChild.state.xs[0];
-            value = pointChild.state.xs[1];
+            location = pointChild.stateValues.xs[0];
+            value = pointChild.stateValues.xs[1];
           }
         } else {
           if (dependencyValues.locationChild.length === 1) {

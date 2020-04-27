@@ -4,19 +4,12 @@ export default class FunctionCurve extends Curve {
   static componentType = "functioncurve";
   static rendererType = "functioncurve";
 
+  static primaryStateVariableForDefinition = "f";
+
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.flipFunction = { default: false, forRenderer: true };
     properties.nDiscretizationPoints = { default: 500 };
-    properties.variables = {
-      componentType: "math",
-      entryPrefixes: ["var"],
-      dependentStateVariables: [{
-        dependencyName: "nVariables",
-        variableName: "nVariables"
-      }],
-      propagateToDescendants: true,
-    }
     return properties;
   }
 
@@ -26,8 +19,9 @@ export default class FunctionCurve extends Curve {
     childLogic.deleteAllLogic();
 
     childLogic.newLeaf({
-      name: "exactlyOneFunction",
+      name: "atMostOneFunction",
       componentType: 'function',
+      comparison: "atMost",
       number: 1,
       setAsBase: true,
     });
@@ -40,7 +34,10 @@ export default class FunctionCurve extends Curve {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions({ numerics });
 
-    delete stateVariableDefinitions.childrenToRender;
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { childrenToRender: [] } })
+    }
 
     stateVariableDefinitions.nVariables = {
       returnDependencies: () => ({}),
@@ -52,15 +49,26 @@ export default class FunctionCurve extends Curve {
       returnDependencies: () => ({
         functionChild: {
           dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneFunction",
+          childLogicName: "atMostOneFunction",
           variableNames: ["numericalf"]
         },
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          f: dependencyValues.functionChild[0].stateValues.numericalf
+      defaultValue: () => 0,
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.functionChild.length === 0) {
+          return {
+            useEssentialOrDefaultValue: {
+              numericalf: { variablesToCheck: ["numericalf"] }
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              f: dependencyValues.functionChild[0].stateValues.numericalf
+            }
+          }
         }
-      })
+      }
     }
 
     stateVariableDefinitions.nearestPoint = {
