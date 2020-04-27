@@ -42,7 +42,9 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
   }
 
   const onDraggableDragOverCb = (listId) => {
-    if (listId !== currentDraggedId) setOpen(true);
+    if (listId !== currentDraggedId) {
+      setOpen(true)
+    };
     onDraggableDragOver(listId, "parent")
   }
 

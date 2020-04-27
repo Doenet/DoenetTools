@@ -166,6 +166,7 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
     updateHeadingsAndAssignments(treeHeadings, treeAssignments);
   }
 
+  console.log("rerendered2")
 
   return (
     <CourseOutlineFrame>

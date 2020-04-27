@@ -743,7 +743,7 @@ class DoenetBranchBrowser extends Component {
                 </tbody>
               </table>
           </div>
-          <InfoPanel
+          {/* <InfoPanel
             selectedItems={this.state.selectedItems}
             selectedItemsType={this.state.selectedItemsType}
             selectedDrive={this.props.selectedDrive}
@@ -756,7 +756,7 @@ class DoenetBranchBrowser extends Component {
             openEditCourseForm={this.props.openEditCourseForm}
             publicizeRepo={this.props.publicizeRepo}
             openEditUrlForm={this.openEditUrlForm}
-          />
+          /> */}
         </div>
       </React.Fragment>
     );

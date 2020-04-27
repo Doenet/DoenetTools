@@ -12,8 +12,9 @@ import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown,
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
 import SpinningLoader from './SpinningLoader';
-import { SortableTreeView } from './TreeView/SortableTreeView'
-import DoenetCourseOutline from './DoenetCourseOutline'
+import { TreeView } from './TreeView/TreeView';
+import DoenetCourseOutline from './DoenetCourseOutline';
+import styled from 'styled-components';
 import { ToastContext, useToasts, ToastProvider } from './ToastManager';
 
 
@@ -1076,6 +1077,39 @@ class DoenetChooser extends Component {
                 <SpinningLoader/>
              </div>
     }
+    const CourseOutlineFrame = styled('div')`
+      display: flex;
+      flex-direction: row;
+      justify-content: left;
+      align-items: left;
+      text-align: left;
+      padding: 2em;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      grid-row: 2 / 3;
+      grid-column: 3 / 4;
+      transform: scale(1.2);
+      transform-origin: top left;
+      margin-top: 15px;
+      `
+
+    let tempTree = <CourseOutlineFrame>
+      <TreeView 
+          headingsInfo={this.props.data.dataInfo.courseHeadingsInfo} 
+          assignmentsInfo={this.props.data.dataInfo.courseAssignmentsInfo} 
+          currentDraggedObject={this.props.appState.currentDraggedObject}
+          onDragStart={this.props.methods.onDragStart}
+          onDragEnd={this.props.methods.onDragEnd}
+          onDraggableDragOver={this.props.methods.onTreeDraggableDragOver} 
+          onDropEnter={this.props.methods.onDropEnter}
+          onDrop={this.props.methods.onDrop} />
+      <DoenetCourseOutline 
+          treeHeadingsInfo={data.dataInfo.courseHeadingsInfo} 
+          treeAssignmentsInfo={data.dataInfo.courseAssignmentsInfo} 
+          updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
+    </CourseOutlineFrame>
+
+    return tempTree;
 
     // return <DoenetCourseOutline 
     //   treeHeadingsInfo={data.dataInfo.courseHeadingsInfo} 
@@ -1151,7 +1185,33 @@ class DoenetChooser extends Component {
       </React.Fragment>
     }
 
-   
+    // const CourseOutlineFrame = styled('div')`
+    //   display: flex;
+    //   flex-direction: row;
+    //   justify-content: left;
+    //   align-items: left;
+    //   text-align: left;
+    //   padding: 2em;
+    //   overflow-y: scroll;
+    //   overflow-x: hidden;
+    //   grid-row: 2 / 3;
+    //   grid-column: 3 / 4;
+    //   transform: scale(1.2);
+    //   transform-origin: top left;
+    //   margin-top: 15px;
+    //   `
+
+    // let tempTree = <CourseOutlineFrame>
+    //   <TreeView 
+    //       headingsInfo={this.props.data.dataInfo.courseHeadingsInfo} 
+    //       assignmentsInfo={this.props.data.dataInfo.courseAssignmentsInfo} 
+    //       currentDraggedObject={this.props.appState.currentDraggedObject}
+    //       onDragStart={this.props.methods.onDragStart}
+    //       onDragEnd={this.props.methods.onDragEnd}
+    //       onDraggableDragOver={this.props.methods.onTreeDraggableDragOver} 
+    //       onDropEnter={this.props.methods.onDropEnter}
+    //       onDrop={this.props.methods.onDrop} />
+    // </CourseOutlineFrame>
 
     return (<React.Fragment>
       <DoenetHeader toolTitle="Chooser" headingTitle={"Choose Branches"} />
@@ -1160,7 +1220,8 @@ class DoenetChooser extends Component {
           <this.ToastWrapper/>
           { this.leftNavPanel }
           { this.topToolbar }
-          { this.mainSection }     
+          { this.mainSection }
+          { tempTree }
         </div>
       </ToastProvider>
     </React.Fragment>);
