@@ -35,7 +35,7 @@ export default function DoenetExampleTool(props) {
       //   headerProps
       // }
       >
-        <ToolLayoutPanel panelName="Context Panel">
+        <ToolLayoutPanel panelName="Context Panel" leftPanelWidth="100px"> 
           <div>
             {alphabet} {alphabet} {alphabet}
             {alphabet} {alphabet} {alphabet}
@@ -54,16 +54,12 @@ export default function DoenetExampleTool(props) {
           panelName="Editor"
         >
           {alphabet} 
-          <button onClick={() => setX(x + 1)}> Count</button>
-        
-        {x}
-        <p>test</p>
           {alphabet} 
           {alphabet} {alphabet} {alphabet} {alphabet}  {alphabet} 
           {alphabet} {alphabet} {alphabet} {alphabet} 
         </ToolLayoutPanel>
 
-        <ToolLayoutPanel rightPanelWidth="500px"
+        <ToolLayoutPanel rightPanelWidth="400px"
           menuControls={menuControlsViewer} panelName="Viewer"
         >
           {alphabet} {alphabet} <button onClick={() => setX(x + 1)}> Count</button>

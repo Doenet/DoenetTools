@@ -16,6 +16,7 @@ const Container = styled.div`
   position: fixed;
   height:calc(100%-60px);
   margin-top: 60px;
+  overflow:hidden;
 `;
 
 const widthToDevice = () => {
@@ -126,10 +127,10 @@ export default function ToolLayout(props) {
   };
 
  const startResize = event => {
-    if (event.target.id === "first" || event.target.id === "second") {
+    // if (event.target.id === "first" || event.target.id === "second") {
       setCurrentResizer(event.target.id);
       setIsResizing(true);
-    }
+    // }
   };
 
   const stopResize = () => {
@@ -409,8 +410,8 @@ export default function ToolLayout(props) {
 
               <div key="part1" 
               id="leftpanel" 
-              style={{ position: "fixed", top: "120px",
-              height: 'calc(100vh-120px)'
+              style={{ position: "fixed", top: "120px"
+              
                }}
               className="phone">  {leftNav} </div>
             }
@@ -418,9 +419,7 @@ export default function ToolLayout(props) {
 
               <div key="part2" 
               id="middlepanel"
-              style={{ position: "fixed", top: "120px",
-               height: 'calc(100vh-120px)'
-                }}
+              style={{ position: "fixed", top: "120px"}}
 
               className="phone"
               >{middleNav} </div>
@@ -429,8 +428,7 @@ export default function ToolLayout(props) {
 
               <div key="part3"
                id="rightpanel"
-               style={{ position: "fixed", top: "120px", height: 'calc(100vh-160px)' }}
-
+               style={{ position: "fixed", top: "120px"}}
               className="phone"
                > {rightNav} </div>
             }

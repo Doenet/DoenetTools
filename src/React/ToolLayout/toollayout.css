@@ -8,22 +8,25 @@ body{
   display: flex;
   flex-direction: column;
   min-height: 1vh;
+  overflow: hidden;
 }
 
 .middlepanel{
   position: relative;
-
   display: flex;
   flex-direction: column;
   min-height: 1vh;
+  overflow: hidden;
+
 
 }
 .rightpanel{
   position: relative;
-  
   display: flex;
   flex-direction: column;
   min-height: 1vh; 
+  overflow: hidden;
+
 }
 
 .resizerfirst{
@@ -50,9 +53,22 @@ body{
 .maincontent{
   margin:1px;
   overflow: scroll;
-  height:100vh;
-  padding-bottom: 30vh;
+  -ms-overflow-style: none;
+  scrollbar-width:none;
+  height:calc(100vh - 100px);
 }
+
+.maincontent::-webkit-scrollbar {
+  display: none;
+}
+
+@media only screen and (max-width: 767px) {
+.maincontent{
+height:calc(100vh - 190px)
+}
+}
+
+
 
 .phonebuttoncontainer{
   display : flex;
