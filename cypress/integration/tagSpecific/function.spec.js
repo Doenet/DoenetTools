@@ -1454,7 +1454,7 @@ describe('Function Tag Tests', function () {
 
   });
 
-  it.only('calculated extrema from gaussians', () => {
+  it('calculated extrema from gaussians', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1473,22 +1473,22 @@ describe('Function Tag Tests', function () {
     </graph>
     
     <p>Number of maxima: <ref prop="numbermaxima" name="numbermaxima">_function1</ref></p>
-    <p>Maxima locations: <ref prop="maximumlocation1">_function1</ref>,
-    <ref prop="maximumlocation2">_function1</ref></p>
-    <p>Maxima values: <ref prop="maximumvalue1">_function1</ref>,
-    <ref prop="maximumvalue2">_function1</ref></p>
+    <p>Maxima locations: <ref prop="maximumlocation1" name="maximumlocation1">_function1</ref>,
+    <ref prop="maximumlocation2" name="maximumlocation2">_function1</ref></p>
+    <p>Maxima values: <ref prop="maximumvalue1" name="maximumvalue1">_function1</ref>,
+    <ref prop="maximumvalue2" name="maximumvalue2">_function1</ref></p>
     <p>Number of minima: <ref prop="numberminima" name="numberminima">_function1</ref></p>
-    <p>Minima locations: <ref prop="minimumlocation1">_function1</ref>,
-    <ref prop="minimumlocation2">_function1</ref></p>
-    <p>Minima values: <ref prop="minimumvalue1">_function1</ref>,
-    <ref prop="minimumvalue2">_function1</ref></p>
+    <p>Minima locations: <ref prop="minimumlocation1" name="minimumlocation1">_function1</ref>,
+    <ref prop="minimumlocation2" name="minimumlocation2">_function1</ref></p>
+    <p>Minima values: <ref prop="minimumvalue1" name="minimumvalue1">_function1</ref>,
+    <ref prop="minimumvalue2" name="minimumvalue2">_function1</ref></p>
     <p>Number of extrema: <ref prop="numberextrema" name="numberextrema">_function1</ref></p>
-    <p>Extrema locations: <ref prop="extremumlocation1">_function1</ref>,
-    <ref prop="extremumlocation2">_function1</ref>,
-    <ref prop="extremumlocation3">_function1</ref></p>
-    <p>Extrema values: <ref prop="extremumvalue1">_function1</ref>,
-    <ref prop="extremumvalue2">_function1</ref>,
-    <ref prop="extremumvalue3">_function1</ref></p>
+    <p>Extrema locations: <ref prop="extremumlocation1" name="extremumlocation1">_function1</ref>,
+    <ref prop="extremumlocation2" name="extremumlocation2">_function1</ref>,
+    <ref prop="extremumlocation3" name="extremumlocation3">_function1</ref></p>
+    <p>Extrema values: <ref prop="extremumvalue1" name="extremumvalue1">_function1</ref>,
+    <ref prop="extremumvalue2" name="extremumvalue2">_function1</ref>,
+    <ref prop="extremumvalue3" name="extremumvalue3">_function1</ref></p>
     `}, "*");
     });
 
@@ -1501,50 +1501,58 @@ describe('Function Tag Tests', function () {
       let numberMaximaAnchor = '#' + components["/numbermaxima"].replacements[0].componentName;
       let numberMinimaAnchor = '#' + components["/numberminima"].replacements[0].componentName;
       let numberExtremaAnchor = '#' + components["/numberextrema"].replacements[0].componentName;
+      let maximumLocation1Anchor = '#' + components["/maximumlocation1"].replacements[0].componentName;
+      let maximumLocation2Anchor = '#' + components["/maximumlocation2"].replacements[0].componentName;
+      let maximumValue1Anchor = '#' + components["/maximumvalue1"].replacements[0].componentName;
+      let maximumValue2Anchor = '#' + components["/maximumvalue2"].replacements[0].componentName;
+      let minimumLocation1Anchor = '#' + components["/minimumlocation1"].replacements[0].componentName;
+      let minimumValue1Anchor = '#' + components["/minimumvalue1"].replacements[0].componentName;
+      let extremumLocation1Anchor = '#' + components["/extremumlocation1"].replacements[0].componentName;
+      let extremumLocation2Anchor = '#' + components["/extremumlocation2"].replacements[0].componentName;
+      let extremumLocation3Anchor = '#' + components["/extremumlocation3"].replacements[0].componentName;
+      let extremumValue1Anchor = '#' + components["/extremumvalue1"].replacements[0].componentName;
+      let extremumValue2Anchor = '#' + components["/extremumvalue2"].replacements[0].componentName;
+      let extremumValue3Anchor = '#' + components["/extremumvalue3"].replacements[0].componentName;
 
       cy.get(numberMaximaAnchor).should('have.text', '2');
-      cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(maximumLocation1Anchor).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
       });
-      cy.get('#__number3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(maximumLocation2Anchor).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
       });
-      cy.get('#__number4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(maximumValue1Anchor).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
       });
-      cy.get('#__number5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(maximumValue2Anchor).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
       });
 
-      cy.get('#__number6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1');
-      });
-      cy.get('#__number7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(numberMinimaAnchor).should('have.text', '1');
+      cy.get(minimumLocation1Anchor).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(1.5, 0.01);
       });
-      cy.get('#__number8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(minimumValue1Anchor).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(.21, 0.01);
       });
 
-      cy.get('#__number9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3');
-      });
-      cy.get('#__number10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(numberExtremaAnchor).should('have.text', '3');
+      cy.get(extremumLocation1Anchor).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
       });
-      cy.get('#__number11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(extremumLocation2Anchor).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(1.5, 0.01);
       });
-      cy.get('#__number12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(extremumLocation3Anchor).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
       });
-      cy.get('#__number13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(extremumValue1Anchor).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
       });
-      cy.get('#__number14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(extremumValue2Anchor).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(.21, 0.01);
       });
-      cy.get('#__number15').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(extremumValue3Anchor).invoke('text').then((text) => {
         expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
       });
 
@@ -1555,46 +1563,41 @@ describe('Function Tag Tests', function () {
         components['/_point2'].movePoint({ x: 3, y: -1 });
 
 
-        cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('1');
-        });
-        cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(numberMaximaAnchor).should('have.text', '1');
+        cy.get(maximumLocation1Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
         });
-        cy.get('#__number3').should('not.exist');
-        cy.get('#__number4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(maximumLocation2Anchor).should('not.exist');
+        cy.get(maximumValue1Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
         });
-        cy.get('#__number5').should('not.exist');
+        cy.get(maximumValue2Anchor).should('not.exist');
 
-        cy.get('#__number6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('1');
-        });
-        cy.get('#__number7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+
+        cy.get(numberMinimaAnchor).should('have.text', '1');
+        cy.get(minimumLocation1Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
         });
-        cy.get('#__number8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(minimumValue1Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
         });
 
 
-        cy.get('#__number9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('2');
-        });
-        cy.get('#__number10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(numberExtremaAnchor).should('have.text', '2');
+        cy.get(extremumLocation1Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
         });
-        cy.get('#__number11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(extremumLocation2Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
         });
-        cy.get('#__number12').should('not.exist');
-        cy.get('#__number13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(extremumLocation3Anchor).should('not.exist');
+        cy.get(extremumValue1Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(1, 0.01);
         });
-        cy.get('#__number14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(extremumValue2Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
         });
-        cy.get('#__number15').should('not.exist');
+        cy.get(extremumValue3Anchor).should('not.exist');
 
       });
 
@@ -1604,55 +1607,60 @@ describe('Function Tag Tests', function () {
 
         components['/_point1'].movePoint({ x: 0, y: -1 });
 
-        cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('1');
-        });
-        cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        let minimumLocation2Anchor = '#' + components["/minimumlocation2"].replacements[0].componentName;
+        let minimumValue2Anchor = '#' + components["/minimumvalue2"].replacements[0].componentName;
+
+        let extremumLocation3AnchorOld = extremumLocation3Anchor;
+        let extremumLocation3Anchor = '#' + components["/extremumlocation3"].replacements[0].componentName;
+        let extremumValue3AnchorOld = extremumValue3Anchor;
+        let extremumValue3Anchor = '#' + components["/extremumvalue3"].replacements[0].componentName;
+
+
+        cy.get(numberMaximaAnchor).should('have.text', '1');
+        cy.get(maximumLocation1Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(1.5, 0.01);
         });
-        cy.get('#__number3').should('not.exist');
-        cy.get('#__number4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(maximumLocation2Anchor).should('not.exist');
+        cy.get(maximumValue1Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(-0.21, 0.01);
         });
-        cy.get('#__number5').should('not.exist');
+        cy.get(maximumValue2Anchor).should('not.exist');
 
-        cy.get('#__number6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('2');
-        });
-        cy.get('#__number7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+
+        cy.get(numberMinimaAnchor).should('have.text', '2');
+        cy.get(minimumLocation1Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
         });
-        cy.get('#__number16').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(minimumLocation2Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
         });
-        cy.get('#__number8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(minimumValue1Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
         });
-        cy.get('#__number17').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(minimumValue2Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
         });
 
-        cy.get('#__number9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('3');
-        });
-        cy.get('#__number10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+
+        cy.get(numberExtremaAnchor).should('have.text', '3');
+        cy.get(extremumLocation1Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(0, 0.01);
         });
-        cy.get('#__number11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(extremumLocation2Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(1.5, 0.01);
         });
-        cy.get('#__number12').should('not.exist');
-        cy.get('#__number18').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(extremumLocation3AnchorOld).should('not.exist')
+        cy.get(extremumLocation3Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
         });
-        cy.get('#__number13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(extremumValue1Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
         });
-        cy.get('#__number14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(Number(text.replace(/−/, '-'))).closeTo(-0.21, 0.01);
+        cy.get(extremumValue2Anchor).invoke('text').then((text) => {
+          expect(Number(text.replace(/−/, '-'))).closeTo(-.21, 0.01);
         });
-        cy.get('#__number15').should('not.exist');
-        cy.get('#__number19').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(extremumValue3AnchorOld).should('not.exist')
+        cy.get(extremumValue3Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
         });
 
@@ -1682,9 +1690,9 @@ describe('Function Tag Tests', function () {
 
       let f = components['/_function1'];
 
-      expect(f.state.numbermaxima).eq(0);
-      expect(f.state.numberminima).eq(0);
-      expect(f.state.numberextrema).eq(0);
+      expect(f.stateValues.numberMaxima).eq(0);
+      expect(f.stateValues.numberMinima).eq(0);
+      expect(f.stateValues.numberExtrema).eq(0);
 
     });
 
@@ -1697,38 +1705,38 @@ describe('Function Tag Tests', function () {
 
       let f = components['/_function1'];
 
-      expect(f.state.numbermaxima).eq(200 / period);
+      expect(f.stateValues.numberMaxima).eq(200 / period);
 
-      let maximalocations = f.state.maximalocations;
-      for (let m of maximalocations) {
+      let maximaLocations = f.stateValues.maximaLocations;
+      for (let m of maximaLocations) {
         expect(((m % period) + period) % period).closeTo(period / 4, 0.0001);
       }
 
-      let maximavalues = f.state.maximavalues;
-      for (let m of maximavalues) {
+      let maximaValues = f.stateValues.maximaValues;
+      for (let m of maximaValues) {
         expect(m).closeTo(1, 0.0001);
       }
 
-      expect(f.state.numberminima).eq(200 / period);
+      expect(f.stateValues.numberMinima).eq(200 / period);
 
-      let minimalocations = f.state.minimalocations;
+      let minimalocations = f.stateValues.minimaLocations;
       for (let m of minimalocations) {
         expect(((m % period) + period) % period).closeTo(3 * period / 4, 0.0001);
       }
 
-      let minimavalues = f.state.minimavalues;
-      for (let m of minimavalues) {
+      let minimaValues = f.stateValues.minimaValues;
+      for (let m of minimaValues) {
         expect(m).closeTo(-1, 0.0001);
       }
 
-      expect(f.state.numberextrema).eq(400 / period);
+      expect(f.stateValues.numberExtrema).eq(400 / period);
 
-      let extremalocations = f.state.minimalocations;
+      let extremalocations = f.stateValues.minimaLocations;
       for (let m of extremalocations) {
         expect(((m % (period / 2)) + (period / 2)) % (period / 2)).closeTo(period / 4, 0.0001);
       }
 
-      let extremavalues = f.state.minimavalues;
+      let extremavalues = f.stateValues.minimaValues;
       for (let m of extremavalues) {
         expect(Math.abs(m)).closeTo(1, 0.0001);
       }
@@ -1744,38 +1752,38 @@ describe('Function Tag Tests', function () {
 
       let f = components['/_function1'];
 
-      expect(f.state.numbermaxima).eq(200 / period);
+      expect(f.stateValues.numberMaxima).eq(200 / period);
 
-      let maximalocations = f.state.maximalocations;
-      for (let m of maximalocations) {
+      let maximaLocations = f.stateValues.maximaLocations;
+      for (let m of maximaLocations) {
         expect(((m % period) + period) % period).closeTo(period / 4, 0.0001);
       }
 
-      let maximavalues = f.state.maximavalues;
-      for (let m of maximavalues) {
+      let maximaValues = f.stateValues.maximaValues;
+      for (let m of maximaValues) {
         expect(m).closeTo(1, 0.0001);
       }
 
-      expect(f.state.numberminima).eq(200 / period);
+      expect(f.stateValues.numberMinima).eq(200 / period);
 
-      let minimalocations = f.state.minimalocations;
+      let minimalocations = f.stateValues.minimaLocations;
       for (let m of minimalocations) {
         expect(((m % period) + period) % period).closeTo(3 * period / 4, 0.0001);
       }
 
-      let minimavalues = f.state.minimavalues;
-      for (let m of minimavalues) {
+      let minimaValues = f.stateValues.minimaValues;
+      for (let m of minimaValues) {
         expect(m).closeTo(-1, 0.0001);
       }
 
-      expect(f.state.numberextrema).eq(400 / period);
+      expect(f.stateValues.numberExtrema).eq(400 / period);
 
-      let extremalocations = f.state.minimalocations;
+      let extremalocations = f.stateValues.minimaLocations;
       for (let m of extremalocations) {
         expect(((m % (period / 2)) + (period / 2)) % (period / 2)).closeTo(period / 4, 0.0001);
       }
 
-      let extremavalues = f.state.minimavalues;
+      let extremavalues = f.stateValues.minimaValues;
       for (let m of extremavalues) {
         expect(Math.abs(m)).closeTo(1, 0.0001);
       }
@@ -1807,9 +1815,9 @@ describe('Function Tag Tests', function () {
 
       let f = components['/_function1'];
 
-      expect(f.state.numbermaxima).eq(0);
-      expect(f.state.numberminima).eq(0);
-      expect(f.state.numberextrema).eq(0);
+      expect(f.stateValues.numberMaxima).eq(0);
+      expect(f.stateValues.numberMinima).eq(0);
+      expect(f.stateValues.numberExtrema).eq(0);
 
     });
 
@@ -1843,15 +1851,15 @@ describe('Function Tag Tests', function () {
       let maximaLocations = [-11.6660173492088, 3.18454272065031, 9.77300453148004];
       let maximaValues = [0.00247762462709702, -1.92014417815870, 0.0129202046449760]
 
-      expect(f.state.numbermaxima).eq(3);
-      expect(f.state.numberminima).eq(1);
-      expect(f.state.numberextrema).eq(4);
+      expect(f.stateValues.numberMaxima).eq(3);
+      expect(f.stateValues.numberMinima).eq(1);
+      expect(f.stateValues.numberExtrema).eq(4);
 
-      expect(f.state.minimavalues[0]).closeTo(minimaValues[0], 0.000001);
-      expect(f.state.minimalocations[0]).closeTo(minimaLocations[0], 0.000001);
+      expect(f.stateValues.minimaValues[0]).closeTo(minimaValues[0], 0.000001);
+      expect(f.stateValues.minimaLocations[0]).closeTo(minimaLocations[0], 0.000001);
       for (let i in maximaLocations) {
-        expect(f.state.maximavalues[i]).closeTo(maximaValues[i], 0.000001);
-        expect(f.state.maximalocations[i]).closeTo(maximaLocations[i], 0.000001);
+        expect(f.stateValues.maximaValues[i]).closeTo(maximaValues[i], 0.000001);
+        expect(f.stateValues.maximaLocations[i]).closeTo(maximaLocations[i], 0.000001);
       }
 
     });
@@ -1881,9 +1889,9 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let f = components['/_function1'];
-      expect(f.state.numbermaxima).eq(0);
-      expect(f.state.numberminima).eq(0);
-      expect(f.state.numberextrema).eq(0);
+      expect(f.stateValues.numberMaxima).eq(0);
+      expect(f.stateValues.numberMinima).eq(0);
+      expect(f.stateValues.numberExtrema).eq(0);
 
     });
 
@@ -1915,12 +1923,12 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let f = components['/_function1'];
-      expect(f.state.numbermaxima).eq(1);
-      expect(f.state.numberminima).eq(0);
-      expect(f.state.numberextrema).eq(1);
+      expect(f.stateValues.numberMaxima).eq(1);
+      expect(f.stateValues.numberMinima).eq(0);
+      expect(f.stateValues.numberExtrema).eq(1);
 
-      expect(f.state.maximalocations[0]).closeTo(2.614, 0.001);
-      expect(f.state.maximavalues[0]).closeTo(3.820, 0.001);
+      expect(f.stateValues.maximaLocations[0]).closeTo(2.614, 0.001);
+      expect(f.stateValues.maximaValues[0]).closeTo(3.820, 0.001);
 
     });
 
@@ -1955,8 +1963,8 @@ describe('Function Tag Tests', function () {
     </function>
     </graph>
     
-    <p>Number of maxima: <ref prop="numbermaxima">_function2</ref></p>
-    <p>Number of minima: <ref prop="numberminima">_function2</ref></p>
+    <p>Number of maxima: <ref prop="numbermaxima" name="numbermaxima">_function2</ref></p>
+    <p>Number of minima: <ref prop="numberminima" name="numberminima">_function2</ref></p>
     
     `}, "*");
     });
@@ -1967,87 +1975,82 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let f1 = components['/_function1'];
-      let f2 = components['/_function2'];
-      expect(f1.state.numbermaxima).eq(1);
-      expect(f1.state.numberminima).eq(2);
-      expect(f1.state.numberextrema).eq(3);
-      expect(f2.state.numbermaxima).eq(2);
-      expect(f2.state.numberminima).eq(1);
-      expect(f2.state.numberextrema).eq(3);
+      let numberMaximaAnchor = '#' + components["/numbermaxima"].replacements[0].componentName;
+      let numberMinimaAnchor = '#' + components["/numberminima"].replacements[0].componentName;
 
-      expect(f1.state.maximalocations[0]).eq(2);
-      expect(f1.state.maximavalues[0]).eq(1);
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
 
-      expect(f1.state.xscale).eq(1);
-      expect(f1.state.yscale).eq(5);
-      expect(f2.state.xscale).eq(1);
-      expect(f2.state.yscale).eq(5);
+        let f1 = components['/_function1'];
+        let f2 = components['/_function2'];
+        expect(f1.stateValues.numberMaxima).eq(1);
+        expect(f1.stateValues.numberMinima).eq(2);
+        expect(f1.stateValues.numberExtrema).eq(3);
+        expect(f2.stateValues.numberMaxima).eq(2);
+        expect(f2.stateValues.numberMinima).eq(1);
+        expect(f2.stateValues.numberExtrema).eq(3);
 
-    });
+        expect(f1.stateValues.maximaLocations[0]).eq(2);
+        expect(f1.stateValues.maximaValues[0]).eq(1);
 
-    cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
+        expect(f1.stateValues.xscale).eq(1);
+        expect(f1.stateValues.yscale).eq(5);
+        expect(f2.stateValues.xscale).eq(1);
+        expect(f2.stateValues.yscale).eq(5);
+
+      });
+
+      cy.get(numberMaximaAnchor).should('have.text','2')
+      cy.get(numberMinimaAnchor).should('have.text','1')
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        components['/_point1'].movePoint({ x: 2, y: 6 })
+
+        let f1 = components['/_function1'];
+        let f2 = components['/_function2'];
+        expect(f1.stateValues.numberMaxima).eq(1);
+        expect(f1.stateValues.numberMinima).eq(2);
+        expect(f1.stateValues.numberExtrema).eq(3);
+        expect(f2.stateValues.numberMaxima).eq(1);
+        expect(f2.stateValues.numberMinima).eq(0);
+        expect(f2.stateValues.numberExtrema).eq(1);
+
+        expect(f1.stateValues.maximaLocations[0]).eq(1);
+        expect(f1.stateValues.maximaValues[0]).eq(0);
+
+      });
+
+      cy.get(numberMaximaAnchor).should('have.text','1')
+      cy.get(numberMinimaAnchor).should('have.text','0')
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        components['/_point2'].movePoint({ x: 3, y: 7 })
+        components['/_point3'].movePoint({ x: 9, y: 0 })
+
+        let f1 = components['/_function1'];
+        let f2 = components['/_function2'];
+        expect(f1.stateValues.numberMaxima).eq(1);
+        expect(f1.stateValues.numberMinima).eq(2);
+        expect(f1.stateValues.numberExtrema).eq(3);
+        expect(f2.stateValues.numberMaxima).eq(2);
+        expect(f2.stateValues.numberMinima).eq(2);
+        expect(f2.stateValues.numberExtrema).eq(4);
+
+        expect(f1.stateValues.maximaLocations[0]).eq(2);
+        expect(f1.stateValues.maximaValues[0]).eq(2);
+
+      });
+
+      cy.get(numberMaximaAnchor).should('have.text','2')
+      cy.get(numberMinimaAnchor).should('have.text','2')
+
+
     })
-    cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      components['/_point1'].movePoint({ x: 2, y: 6 })
-
-      let f1 = components['/_function1'];
-      let f2 = components['/_function2'];
-      expect(f1.state.numbermaxima).eq(1);
-      expect(f1.state.numberminima).eq(2);
-      expect(f1.state.numberextrema).eq(3);
-      expect(f2.state.numbermaxima).eq(1);
-      expect(f2.state.numberminima).eq(0);
-      expect(f2.state.numberextrema).eq(1);
-
-      expect(f1.state.maximalocations[0]).eq(1);
-      expect(f1.state.maximavalues[0]).eq(0);
-
-    });
-
-    cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
-    cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('0')
-    })
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      components['/_point2'].movePoint({ x: 3, y: 7 })
-      components['/_point3'].movePoint({ x: 9, y: 0 })
-
-      let f1 = components['/_function1'];
-      let f2 = components['/_function2'];
-      expect(f1.state.numbermaxima).eq(1);
-      expect(f1.state.numberminima).eq(2);
-      expect(f1.state.numberextrema).eq(3);
-      expect(f2.state.numbermaxima).eq(2);
-      expect(f2.state.numberminima).eq(2);
-      expect(f2.state.numberextrema).eq(4);
-
-      expect(f1.state.maximalocations[0]).eq(2);
-      expect(f1.state.maximavalues[0]).eq(2);
-
-    });
-
-    cy.get('#__number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    })
-    cy.get('#__number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('2')
-    })
-
-
 
   });
 

@@ -205,22 +205,6 @@ export default class Extract extends CompositeComponent {
     }
 
 
-    stateVariableDefinitions.replacementClassesForProp = {
-      returnDependencies: () => ({
-        replacementClasses: {
-          dependencyType: "stateVariable",
-          variableName: "replacementClasses"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues: { replacementClassesForProp: dependencyValues.replacementClasses }
-        };
-      },
-    };
-
-
-
     stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({
         replacementClasses: {

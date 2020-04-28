@@ -406,20 +406,6 @@ export default class Collect extends CompositeComponent {
     }
 
 
-    stateVariableDefinitions.replacementClassesForProp = {
-      returnDependencies: () => ({
-        replacementClasses: {
-          dependencyType: "stateVariable",
-          variableName: "replacementClasses"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues: { replacementClassesForProp: dependencyValues.replacementClasses }
-        };
-      },
-    };
-
 
     stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({

@@ -3458,7 +3458,16 @@ export default class Core {
         for (let indComponent of index.slice(0, index.length - 1)) {
           aVals = aVals[indComponent];
         }
-        aVals[index[index.length - 1]] = value;
+        if (value === undefined) {
+          let lastInd = index[index.length - 1];
+          // don't extend length of array by adding an undefined entry
+          if (aVals.length >= lastInd + 1) {
+            aVals[lastInd] = value;
+          }
+
+        } else {
+          aVals[index[index.length - 1]] = value;
+        }
       };
       stateVarObj.getArrayValue = function ({ arrayKey }) {
         let index = stateVarObj.keyToIndex(arrayKey);
@@ -3474,7 +3483,14 @@ export default class Core {
       // since it is just the string version of the index
       stateVarObj.keyToIndex = key => Number(key);
       stateVarObj.setArrayValue = function ({ value, arrayKey }) {
-        stateVarObj.arrayValues[arrayKey] = value;
+        if (value === undefined) {
+          // don't extend length of array by adding on undefined value
+          if (stateVarObj.arrayValues.length >= Number(arrayKey) + 1) {
+            stateVarObj.arrayValues[arrayKey] = value;
+          }
+        } else {
+          stateVarObj.arrayValues[arrayKey] = value;
+        }
       };
       stateVarObj.getArrayValue = function ({ arrayKey }) {
         return stateVarObj.arrayValues[arrayKey];
@@ -4463,12 +4479,15 @@ export default class Core {
         standardComponentClasses: this.standardComponentClasses,
         allPossibleProperties: this.allPossibleProperties,
       });
+
+      let arrayEntryPrefixesLongestToShortest = Object.keys(stateVarInfo.arrayEntryPrefixes).sort((a, b) => b.length - a.length)
+
       let foundAllVarNames = true;
       for (let vName of variableNames) {
         if (!(vName in stateVarInfo.stateVariableDescriptions ||
           vName in stateVarInfo.aliases)) {
           let foundPrefix = false;
-          for (let prefix in stateVarInfo.arrayEntryPrefixes) {
+          for (let prefix of arrayEntryPrefixesLongestToShortest) {
             if (vName.slice(0, prefix.length) === prefix) {
               foundPrefix = true;
               break;
@@ -4642,7 +4661,7 @@ export default class Core {
       if (additionalStateVariablesDefined) {
         noChanges.push(...additionalStateVariablesDefined)
       }
-      // console.log(`no changes for ${stateVariable}`);
+      // console.log(`no changes for ${stateVariable} of ${component.componentName}`);
       // console.log(noChanges)
       result = { noChanges };
     } else {
@@ -4937,8 +4956,14 @@ export default class Core {
 
       if (component.state[varName].isArray) {
         let arrayVarNamesChanged = [];
-        for (let arrayKeyChanged in valuesChanged[varName].arrayKeysChanged) {
-          arrayVarNamesChanged.push(...component.state[varName].allVarNamesThatIncludeArrayKey(arrayKeyChanged))
+        if (valuesChanged[varName].changedEntireArray) {
+          if (component.state[varName].arrayEntryNames) {
+            arrayVarNamesChanged = component.state[varName].arrayEntryNames;
+          }
+        } else {
+          for (let arrayKeyChanged in valuesChanged[varName].arrayKeysChanged) {
+            arrayVarNamesChanged.push(...component.state[varName].allVarNamesThatIncludeArrayKey(arrayKeyChanged))
+          }
         }
         for (let arrayVarName of arrayVarNamesChanged) {
           this.recordActualChangeInUpstreamDependencies({
@@ -5769,8 +5794,10 @@ export default class Core {
 
     let foundArrayEntry = false;
 
+    let arrayEntryPrefixesLongestToShortest = Object.keys(component.arrayEntryPrefixes).sort((a, b) => b.length - a.length)
+
     // check if stateVariable begins when an arrayEntry
-    for (let arrayEntryPrefix in component.arrayEntryPrefixes) {
+    for (let arrayEntryPrefix of arrayEntryPrefixesLongestToShortest) {
       if (stateVariable.substring(0, arrayEntryPrefix.length) === arrayEntryPrefix) {
         // found a reference to an arrayEntry that hasn't been created yet
         // attempt to resolve this arrayEntry
@@ -7594,8 +7621,6 @@ export default class Core {
 
           let componentInd = upDep.downstreamComponentNames.indexOf(componentName);
           if (componentInd === -1) {
-            console.log(upDep)
-            console.log(componentName)
             throw Error(`something went wrong as ${componentName} not a downstreamComponent of ${upDep.dependencyName}`);
           }
 
@@ -9055,10 +9080,10 @@ export default class Core {
           }
           Object.assign(newStateVariableValues[cName], additionalChanges.newStateVariableValues[cName]);
         }
-        
-      }else if (instruction.updateType === "addComponents") {
+
+      } else if (instruction.updateType === "addComponents") {
         console.log("add component")
-      }else if (instruction.updateType === "deleteComponents") {
+      } else if (instruction.updateType === "deleteComponents") {
         console.log("delete component")
       }
 
@@ -9087,9 +9112,9 @@ export default class Core {
         local: true,
       }
     });
-    
 
-    return  { success: true };
+
+    return { success: true };
   }
 
   executeUpdateStateVariables({ newStateVariableValues, updatesNeeded,

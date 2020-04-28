@@ -379,7 +379,7 @@ export default class Ref extends CompositeComponent {
     // then the componentType is determined by refTarget state variable
     stateVariableDefinitions.replacementClasses = {
       additionalStateVariablesDefined: [
-        "stateVariablesRequested", "validProp", "componentTypeByTarget"
+        "stateVariablesRequested", "validProp", "componentTypeByTarget", "potentialReplacementClasses"
       ],
       stateVariablesDeterminingDependencies: [
         "propVariableObjs", "refTarget",
@@ -419,7 +419,7 @@ export default class Ref extends CompositeComponent {
                 variableName: propVariableObj.varName,
               }
             }
-            if (propVariableObj.isArray) {
+            if (propVariableObj.isArray || propVariableObj.isArrayEntry) {
               dependencies[`targetArray${ind}`] = {
                 dependencyType: "componentStateVariable",
                 componentIdentity: stateValues.refTarget,
@@ -439,6 +439,7 @@ export default class Ref extends CompositeComponent {
               stateVariablesRequested: null,
               validProp: null,
               componentTypeByTarget: null,
+              potentialReplacementClasses: dependencyValues.effectiveTargetClasses,
             }
           };
         }
@@ -451,6 +452,7 @@ export default class Ref extends CompositeComponent {
               stateVariablesRequested: null,
               validProp: false,
               componentTypeByTarget: null,
+              potentialReplacementClasses: null,
             }
           };
         }
@@ -458,6 +460,7 @@ export default class Ref extends CompositeComponent {
         let replacementClasses = [];
         let stateVariablesRequested = [];
         let componentTypeByTarget = [];
+        let potentialReplacementClasses = [];
 
         for (let [ind, propVariableObj] of dependencyValues.propVariableObjs.entries()) {
           let componentType = propVariableObj.componentType;
@@ -469,14 +472,33 @@ export default class Ref extends CompositeComponent {
             replacementClasses.push(...componentType.map(x =>
               componentInfoObjects.allComponentClasses[x])
             );
+            potentialReplacementClasses.push(...componentType.map(x =>
+              componentInfoObjects.allComponentClasses[x])
+            )
           } else if (propVariableObj.isArray) {
             // TODO: what about multi-dimensional arrays?
             let arrayLength = dependencyValues[`targetArray${ind}`].length;
             let componentClass = componentInfoObjects.allComponentClasses[componentType];
             replacementClasses.push(...Array(arrayLength).fill(componentClass));
             componentType = Array(arrayLength).fill(componentType);
+            potentialReplacementClasses.push(componentClass)
+          } else if (propVariableObj.isArrayEntry) {
+            // TODO: what about multi-dimensional arrays?
+            let arrayLength = 1;
+            
+            let targetArrayEntry = dependencyValues[`targetArray${ind}`];
+            if(Array.isArray(targetArrayEntry)) {
+              arrayLength = targetArrayEntry.length;
+            } else if(targetArrayEntry === undefined) {
+              arrayLength = 0;
+            }
+            let componentClass = componentInfoObjects.allComponentClasses[componentType];
+            replacementClasses.push(...Array(arrayLength).fill(componentClass));
+            componentType = Array(arrayLength).fill(componentType);
+            potentialReplacementClasses.push(componentClass)
           } else {
             replacementClasses.push(componentInfoObjects.allComponentClasses[componentType]);
+            potentialReplacementClasses.push(componentInfoObjects.allComponentClasses[componentType]);
           }
 
           componentTypeByTarget.push(componentType);
@@ -493,6 +515,7 @@ export default class Ref extends CompositeComponent {
             stateVariablesRequested,
             validProp: true,
             componentTypeByTarget,
+            potentialReplacementClasses,
           }
         };
 
@@ -760,8 +783,14 @@ export default class Ref extends CompositeComponent {
   get allPotentialRendererTypes() {
 
     let allPotentialRendererTypes = [];
+    
+    let allReplacementClasses = [
+      ...this.stateValues.replacementClasses,
+      ...this.stateValues.replacementClassesForProp,
+      ...this.stateValues.potentialReplacementClasses,
+    ]
 
-    for (let replacementClass of this.stateValues.replacementClassesForProp) {
+    for (let replacementClass of allReplacementClasses) {
       let rendererType = replacementClass.rendererType;
       if (rendererType && !allPotentialRendererTypes.includes(rendererType)) {
         allPotentialRendererTypes.push(rendererType);
