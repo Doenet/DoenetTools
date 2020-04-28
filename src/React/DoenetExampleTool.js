@@ -30,54 +30,46 @@ export default function DoenetExampleTool(props) {
   return (
     <>
 
-      <ToolLayout toolTitle="exampletool" documentHeading="example"
+      <ToolLayout toolTitle="Exampletool" headingTitle="Example" 
       // header={
       //   headerProps
       // }
       >
-        <ToolLayoutPanel>
-          <div >
+        <ToolLayoutPanel panelName="Context Panel">
+          <div>
+            {alphabet} {alphabet} {alphabet}
             {alphabet} {alphabet} {alphabet}
             <button onClick={() => setX(x + 1)}> Count</button>
-            <button onClick={() => setX(x + 1)}> Count</button>
-            <button onClick={() => setX(x + 1)}> Count</button>
-
-
-
+        
             {x}
             <p>test</p>
+            {alphabet} {alphabet} {alphabet}
+            {alphabet} {alphabet} {alphabet}
+
           </div>
         </ToolLayoutPanel>
 
-
-
-        <ToolLayoutPanel
+        <ToolLayoutPanel 
           menuControls={menuControlsEditor}
           panelName="Editor"
         >
-
-          {alphabet} {alphabet} {alphabet} {alphabet} {alphabet} {alphabet}
-          {alphabet}
-          {alphabet}
+          {alphabet} 
           <button onClick={() => setX(x + 1)}> Count</button>
-          <button onClick={() => setX(x + 1)}> Count</button>
-          <button onClick={() => setX(x + 1)}> Count</button>
-          {alphabet}
-          {alphabet} {alphabet} {alphabet} {alphabet} {alphabet} {alphabet}
-          {alphabet}
-          {alphabet}
-          {alphabet}
+        
+        {x}
+        <p>test</p>
+          {alphabet} 
+          {alphabet} {alphabet} {alphabet} {alphabet}  {alphabet} 
+          {alphabet} {alphabet} {alphabet} {alphabet} 
         </ToolLayoutPanel>
 
-        <ToolLayoutPanel
+        <ToolLayoutPanel rightPanelWidth="500px"
           menuControls={menuControlsViewer} panelName="Viewer"
         >
           {alphabet} {alphabet} <button onClick={() => setX(x + 1)}> Count</button>
-          <button onClick={() => setX(x + 1)}> Count</button>
-          <button onClick={() => setX(x + 1)}> Count</button>{alphabet} {alphabet}
+     {alphabet} {alphabet}
         </ToolLayoutPanel>
       </ToolLayout>
-
 
 
     </>

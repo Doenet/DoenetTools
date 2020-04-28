@@ -202,28 +202,42 @@ class DoenetHeader extends Component {
     }
     
  
-    toolBox =  this.toolTitleToLinkMap && (Object.keys(this.toolTitleToLinkMap).length > 0) ? 
+    // if(this.toolTitleToLinkMap === null ){
+    //   return ( 
+    //       <>  
+    //     <div className={ navLinkClassName } key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolTitle }
+    //     >
+    //       {/* <a href={ this.toolTitleToLinkMap[toolTitle] }>{toolTitle}</a> */}
+    //       <p>Loading...</p>
+    //     </div>
+    //     </>
+    //   )
+    // }
+    
+    toolBox =  this.toolTitleToLinkMap &&
   
   <div className="toolboxContainer" data-cy="toolboxButton" onClick={this.toogleToolbox}>  
    
     <FontAwesomeIcon id="toolboxButton" icon={faTh}/>
-      {this.state.showToolbox && 
-      <Toolbox show={this.state.showToolbox} toogleToolbox={this.toogleToolbox}>
-        {Object.keys(this.toolTitleToLinkMap).sort().map((toolTitle, index)=> {
+      { this.state.showToolbox &&
+       <Toolbox show={this.state.showToolbox} toogleToolbox={this.toogleToolbox}>
+       { Object.keys(this.toolTitleToLinkMap).length > 0 ?
+       <div>
+        { Object.keys(this.toolTitleToLinkMap).sort().map((toolTitle, index)=> {
           let currentUrl = window.location.href;
           const navLinkClassName = currentUrl.includes(this.toolTitleToLinkMap[toolTitle]) ? 
             "selectedToolboxNavLink" : "toolboxNavLink";
-          return( 
-            
-            <div className={ navLinkClassName } key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolTitle }
-            >
+          return(
+            <div className={ navLinkClassName } key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolTitle }>
               <a href={ this.toolTitleToLinkMap[toolTitle] }>{toolTitle}</a>
             </div>
-          )
-        })}
-      </Toolbox>}
-      </div> : <p>Loading</p> 
-
+          ) 
+        }
+        ) }
+        </div>
+        : <p>Loading</p> }
+      </Toolbox> }
+      </div> 
 
     return (
       <React.Fragment>
@@ -234,13 +248,13 @@ class DoenetHeader extends Component {
               <span>{this.props.toolTitle}</span>
             </div>
             {this.props.headingTitle && <div className="headingTitle">
-              {/* <span>{ headingTitle }</span> */}
-              <span>{ this.select }</span>
+              <span>{this.props.headingTitle }</span>
+              {/* <span>{ this.select }</span> */}
             </div>}
             <div className="headingToolbar">
 
               <Menu showThisRole={this.props.rights?this.props.rights.defaultRole:""} roles={this.roles} permissionCallback={this.props.rights?this.props.rights.permissionCallBack:null}/>
-            {/* {this.selectPermission}           */}
+            {/* {this.selectPermission}     */}
 
               {toolBox}
 
@@ -260,7 +274,7 @@ class DoenetHeader extends Component {
                   })}
                 </Toolbox>}
               </div> */}
-              <div id="userButton" onClick={()=>{location.href = "/Profile";}}>
+               <div id="userButton" onClick={()=>{location.href = "/Profile";}}>
                 <FontAwesomeIcon id="userButtonIcon" icon={faUser}/>
                 <div id="username" style={{display:"inline", marginLeft:"3px"}}>{ this.username }</div>
               </div>

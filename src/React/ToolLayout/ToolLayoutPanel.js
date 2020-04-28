@@ -9,9 +9,8 @@ export default class ToolLayoutPanel extends Component {
     }
     return (
       <>
-        <div className="menucontent">
+      <div className="menucontent">
           {menu} 
-
           {this.props.leftMenu}
           {this.props.middleMenu}
           {this.props.rightMenu}
@@ -20,6 +19,7 @@ export default class ToolLayoutPanel extends Component {
         <div className="maincontent">
           {this.props.children}
         </div>
+       
       </>
     );
   }

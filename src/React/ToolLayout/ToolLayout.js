@@ -14,7 +14,7 @@ import {
 const Container = styled.div`
   display: flex;
   position: fixed;
-  height: 100vh;
+  height:calc(100%-60px);
   margin-top: 60px;
 `;
 
@@ -29,10 +29,22 @@ const widthToDevice = () => {
 export default function ToolLayout(props) {
   var w = window.innerWidth;
   let leftW;
+  let rightW;
   if(props.children && Array.isArray(props.children)) {
-    leftW = 200;
+    if(props.leftPanelWidth){
+      leftW = props.leftPanelWidth
+    }else{
+      leftW = 200;
+    }
+   
   }
-  const rightW = 300;
+  
+  if(props.rightPanelWidth){
+    rightW = props.rightPanelWidth
+  }else{
+    rightW = 300;
+  }
+ 
   const resizerW = 6;
 
   //Assume 3 if 1 child then we don't worry about middleW
@@ -64,7 +76,7 @@ export default function ToolLayout(props) {
     setRightCloseBtn(true);
    
     if (deviceType === "computer") {
-      // window.addEventListener("resize", handleWindowResize);
+      window.addEventListener("resize",  windowResizeHandler);
       window.addEventListener("mouseup", stopResize);
       window.addEventListener("touchend", stopResize);
       container && container.current && container.current.addEventListener("touchstart", startResize);
@@ -72,7 +84,7 @@ export default function ToolLayout(props) {
       container && container.current && container.current.addEventListener("mousedown", startResize);
       container && container.current && container.current.addEventListener("mousemove", resizingResizer);
       return () => {
-        // window.removeEventListener("resize", handleWindowResize);
+        window.removeEventListener("resize",  windowResizeHandler);
         window.removeEventListener("touchend", stopResize);
         window.removeEventListener("mouseup", stopResize);
         container && container.current && container.current.removeEventListener("touchstart", startResize);
@@ -93,13 +105,12 @@ export default function ToolLayout(props) {
   });
 
   const windowResizeHandler = () => {
+    console.log("window")
     let deviceWidth = widthToDevice();
     if (deviceType !== deviceWidth) {
       setDeviceType(deviceWidth);
     }
     let w = window.innerWidth;
-
-   
    let middleW =
     w - leftWidth - rightWidth - resizerW - resizerW;
   let rightW = rightWidth;
@@ -193,47 +204,9 @@ export default function ToolLayout(props) {
 
   let allParts = [];
 
-  // let Left = styled.div`
-  //   width: ${deviceType !== "phone" && leftWidth}px;
-  //   min-height: 1vh;
-  //   position: relative;
-  //   display: ${leftWidth === 0 ? "none" : "flex"};
-  //   flex-direction: column;
-  // `;
-
-  // let Middle = styled.div`
-  //   width: ${deviceType !== "phone" && middleWidth}px;
-  //   min-height: 1vh;
-  //   position: relative;
-  //   display: ${middleWidth === 0 ? "none" : "flex"};
-  //   flex-direction: column;
-  // `;
-
-  // let Right = styled.div`
-  //   width: ${deviceType !== "phone" && rightWidth}px;
-  //   display: ${rightWidth === 0 ? "none" : "flex"};
-  //   flex-direction: column;
-  //   min-height: 1vh;
-  //   position: relative;
-  // `;
-
-  // let ResizerFirst = styled.div`
-  //   width: 5px;
-  //   border-right: 1px solid black;
-  //   position: relative;
-  //   cursor: col-resize;
-  //   flex-shrink: 0;
-  // `;
-
-  // let ResizerSecond = styled.div`
-  //   width: 5px;
-  //   border-left: 1px solid black;
-  //   position: relative;
-  //   cursor: col-resize;
-  //   flex-shrink: 0;
-  // `;
 
   const leftPanelHideable = () => {
+    console.log("left close");
     setLeftCloseBtn(false);
     setLeftOpenBtn(true);
     let leftW = leftWidth;
@@ -251,6 +224,7 @@ export default function ToolLayout(props) {
   };
 
   const rightPanelHideable = () => {
+
     setRightCloseBtn(false);
     setRightOpenBtn(true);
     let rightW = rightWidth;
@@ -376,16 +350,18 @@ export default function ToolLayout(props) {
   });
 
   allParts.push(
-    // <Left key="part1" id="leftpanel">
-    //   {leftNav} 
-    // </Left>
-    <div key="part1" id="leftpanel" className="leftpanel" >
+
+    <div key="part1" 
+    id="leftpanel" 
+    className="leftpanel"
+    style={{width:`${leftWidth}px`, display:`${leftWidth === 0 ? "none" : "flex"} `}} >
       {leftNav}
     </div>
   );
 
   if (props.children.length === 2 || props.children.length === 3) {
-    allParts.push(<div key="resizer1" id="first" className="resizerfirst"></div>);
+    allParts.push(<div key="resizer1" id="first" className="resizerfirst"
+    ></div>);
   }
 
   let middleNav 
@@ -394,10 +370,11 @@ export default function ToolLayout(props) {
       middleMenu: renderMiddleMenu()
     });
     allParts.push(
-      // <Middle key="part2" id="middlepanel">
-      //   {middleNav}
-      // </Middle>
-      <div key="part2" id="middlepanel" className="middlepanel">
+      <div key="part2" 
+      id="middlepanel"
+       className="middlepanel"
+       style={{width:`${middleWidth}px`,  display:`${middleWidth === 0 ? "none" : "flex"} `}} >
+       
         {middleNav}
       </div>
     );
@@ -413,64 +390,71 @@ export default function ToolLayout(props) {
       rightMenu: renderRightMenu()
     });
     allParts.push(
-      // <Right key="part3" id="rightpanel">
-      //   {rightNav}
-      // </Right>
-      <div key="part3" id="rightpanel" className="rightpanel">
+      <div key="part3" 
+      id="rightpanel" 
+      className="rightpanel"  style={{width:`${rightWidth}px`,display:`${rightWidth === 0 ? "none" : "flex"}`}}>
         {rightNav}
       </div>
     );
     }
 
-  const PhoneContainer = styled.div`
-    display : flex;
-    width: 100%;
-    bottom: 0.1px;
-    height: 40px;
-    position: fixed;
-    left: 0px;
-    text-align: center;
-  `;
-  
-  const PhoneButton = styled.button`
-    color: white;
-    background-color: black;
-    width: 100%;
-
-  `;
-
   return (
       <>
-        <DoenetHeader toolTitle={props.toolTitle} headingTitle={props.documentHeading} />
+        <DoenetHeader toolTitle={props.toolTitle} headingTitle={props.headingTitle} />
 
-        { deviceType === "phone" ? <div ref={ container }>
-        <div style={{ position: "fixed", top: "120px" }}>
-          <div style={{ height: "95vh", display: "flex" }}>
-          { (phoneVisiblePanel === "left" || allParts.length === 1) && <Left key="part1" id="leftpanel"> { leftNav } </Left> }
-          { phoneVisiblePanel === "middle" && <Middle key="part2" id="middlepanel">{ middleNav } </Middle> }
-          { phoneVisiblePanel === "right" && allParts.length > 2 &&  <Right key="part3" id="rightpanel">{ rightNav } </Right> }
-          </div>
-          <PhoneContainer>
-          { leftNav && middleNav && (
-            <>
-              <PhoneButton onClick={() => setPhoneVisiblePanel("left")}>
-                { leftNav.props.panelName }
-              </PhoneButton>
-                <PhoneButton onClick={() => setPhoneVisiblePanel("middle")}>
-                     { middleNav.props.panelName }
-                </PhoneButton>
-                </>
-              )
+      {deviceType === "phone" ? <div ref={container}>
+        
+          <div>
+            {(phoneVisiblePanel === "left" || allParts.length === 1) &&
+
+              <div key="part1" 
+              id="leftpanel" 
+              style={{ position: "fixed", top: "120px",
+              height: 'calc(100vh-120px)'
+               }}
+              className="phone">  {leftNav} </div>
             }
-              { rightNav && (
-                <PhoneButton onClick={() => setPhoneVisiblePanel("right")}>
-                   { rightNav.props.panelName }
-                </PhoneButton>
-              )}
-            </PhoneContainer>
-          )}
+            {phoneVisiblePanel === "middle" &&
+
+              <div key="part2" 
+              id="middlepanel"
+              style={{ position: "fixed", top: "120px",
+               height: 'calc(100vh-120px)'
+                }}
+
+              className="phone"
+              >{middleNav} </div>
+            }
+            {phoneVisiblePanel === "right" && allParts.length > 2 &&
+
+              <div key="part3"
+               id="rightpanel"
+               style={{ position: "fixed", top: "120px", height: 'calc(100vh-160px)' }}
+
+              className="phone"
+               > {rightNav} </div>
+            }
+          </div>
+
+          <div className="phonebuttoncontainer">
+            {leftNav && middleNav && (
+              <>
+                <button className="phonebutton" onClick={() => setPhoneVisiblePanel("left")}>
+                  {leftNav.props.panelName}
+                </button>
+                <button className="phonebutton" onClick={() => setPhoneVisiblePanel("middle")}>
+                  {middleNav.props.panelName}
+                </button>
+              </>
+            )
+            }
+            {rightNav && (
+              <button className="phonebutton" onClick={() => setPhoneVisiblePanel("right")}>
+                {rightNav.props.panelName}
+              </button>
+            )}
+          </div>
         </div>
-      </div>
       :
       <Container ref={ container }>{ allParts }</Container>
     }
