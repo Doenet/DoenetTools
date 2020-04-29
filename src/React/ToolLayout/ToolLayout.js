@@ -6,6 +6,8 @@ import './toollayout.css';
 
 import {
   faChevronLeft,
+  faChevronCircleRight,
+  faChevronCircleLeft,
   faChevronRight
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -43,7 +45,7 @@ export default function ToolLayout(props) {
   if(props.rightPanelWidth){
     rightW = props.rightPanelWidth
   }else{
-    rightW = 300;
+    rightW = 400;
   }
  
   const resizerW = 6;
@@ -278,11 +280,10 @@ export default function ToolLayout(props) {
       <>
         { leftOpenBtn && (
           <FontAwesomeIcon
-            icon={faChevronRight}
+            icon={faChevronCircleRight}
             style={{
               position: "absolute",
-              border: "1px solid black",
-              background: "white",
+              color:"grey",
               display: "block",
               alignSelf: "center"
             }}
@@ -291,11 +292,10 @@ export default function ToolLayout(props) {
         )}
         { rightOpenBtn && (
           <FontAwesomeIcon
-            icon={faChevronLeft}
+            icon={faChevronCircleLeft}
             style={{
               position: "absolute",
-              border: "1px solid black",
-              background: "white",
+              color:"grey",
               right: "1px",
               alignSelf: "center"
             }}
@@ -314,11 +314,10 @@ export default function ToolLayout(props) {
             style={{
               position: "absolute",
               right: "0px",
-              border: "1px solid black",
-              background: "white",
+              color:"grey",
               alignSelf: "center"
             }}
-            icon={faChevronLeft}
+            icon={faChevronCircleLeft}
             onClick={leftPanelHideable}
           />
         )}
@@ -333,11 +332,10 @@ export default function ToolLayout(props) {
           <FontAwesomeIcon
             style={{
               position: "absolute",
-              border: "1px solid black",
-              background: "white",
+              color:"grey",
               alignSelf: "center"
             }}
-            icon={faChevronRight}
+            icon={faChevronCircleRight}
             onClick={rightPanelHideable}
           />
         )}
@@ -370,6 +368,7 @@ export default function ToolLayout(props) {
       middleNav = React.cloneElement(props.children[1], {
       middleMenu: renderMiddleMenu()
     });
+
     allParts.push(
       <div key="part2" 
       id="middlepanel"
@@ -385,11 +384,13 @@ export default function ToolLayout(props) {
     allParts.push( <div key="resizer2" id="second" className="resizersecond"></div>);
   }
 
+ 
   let rightNav
   if (props.children[2]) {
       rightNav = React.cloneElement(props.children[2], {
       rightMenu: renderRightMenu()
     });
+
     allParts.push(
       <div key="part3" 
       id="rightpanel" 

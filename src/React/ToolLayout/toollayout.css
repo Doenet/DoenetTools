@@ -48,11 +48,15 @@ body{
 .menucontent{
   display:flex;
   min-height: 40px;
+  margin:0px;
+  padding:0px;
 }
 
 .maincontent{
-  margin:1px;
+  margin:0px;
+  padding:0px;
   overflow: scroll;
+  /* position: relative; */
   -ms-overflow-style: none;
   scrollbar-width:none;
   height:calc(100vh - 100px);
@@ -60,11 +64,14 @@ body{
 
 .maincontent::-webkit-scrollbar {
   display: none;
+
 }
 
 @media only screen and (max-width: 767px) {
 .maincontent{
-height:calc(100vh - 190px)
+height:calc(100vh - 190px);
+/* position: relative; */
+
 }
 }
 

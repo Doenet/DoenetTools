@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import './toollayout.css'
 
 export default class ToolLayoutPanel extends Component {
@@ -11,6 +12,7 @@ export default class ToolLayoutPanel extends Component {
       <>
       <div className="menucontent">
           {menu} 
+          
           {this.props.leftMenu}
           {this.props.middleMenu}
           {this.props.rightMenu}
