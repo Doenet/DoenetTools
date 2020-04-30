@@ -59,12 +59,12 @@ export default function DoenetExampleTool(props) {
           {alphabet} {alphabet} {alphabet} {alphabet} 
         </ToolLayoutPanel>
 
-        <ToolLayoutPanel rightPanelWidth="400px"
+        {/* <ToolLayoutPanel rightPanelWidth="400px"
           menuControls={menuControlsViewer} panelName="Viewer"
         >
           {alphabet} {alphabet} <button onClick={() => setX(x + 1)}> Count</button>
      {alphabet} {alphabet}
-        </ToolLayoutPanel>
+        </ToolLayoutPanel> */}
       </ToolLayout>
 
 
