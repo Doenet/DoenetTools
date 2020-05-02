@@ -362,7 +362,7 @@ export default class Function extends InlineComponent {
       },
       markStale: function ({ freshnessInfo, arrayKeys, changes }) {
 
-        let freshByKey = freshnessInfo.freshByKey
+        let freshByKey = freshnessInfo.minima.freshByKey
         let arrayKey;
         if (arrayKeys) {
           arrayKey = Number(arrayKeys[0]);
@@ -377,7 +377,7 @@ export default class Function extends InlineComponent {
               delete freshByKey[key];
             }
 
-            return { fresh: false }
+            return { fresh: { minima: false } }
 
           } else {
 
@@ -405,31 +405,31 @@ export default class Function extends InlineComponent {
 
         if (changes.numericalf || changes.xscale) {
           // everything is stale
-          let freshByKey = freshnessInfo.freshByKey
           for (let key in freshByKey) {
             delete freshByKey[key];
           }
-          return { fresh: false }
+          return { fresh: { minima: false } }
         }
 
 
         if (arrayKey === undefined) {
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { minima: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { minima: true } }
           }
         } else {
-          // asked for just one component
-          return { fresh: freshByKey[arrayKey] === true }
+          // asked for just one component, so will be interpreted
+          // as giving freshness of just array entry
+          return { fresh: { minima: freshByKey[arrayKey] === true } }
         }
 
       },
       definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.minima.freshByKey;
 
         if (dependencyValues.functionChild.length === 1) {
 
@@ -524,7 +524,7 @@ export default class Function extends InlineComponent {
           if (fleft < fx) {
             if (minimumAtPreviousRight) {
               if (Number.isFinite(fleft)) {
-                minimaList.push(me.fromAst(["tuple", xleft, fleft]));
+                minimaList.push(me.fromAst(["vector", xleft, fleft]));
               }
             }
             minimumAtPreviousRight = false;
@@ -537,7 +537,7 @@ export default class Function extends InlineComponent {
             if (fx < fright && fx < fleft &&
               fx < f(x + result.tol) && fx < f(x - result.tol) &&
               Number.isFinite(fx)) {
-              minimaList.push(me.fromAst(["tuple", x, fx]));
+              minimaList.push(me.fromAst(["vector", x, fx]));
             }
           }
         }
@@ -587,7 +587,7 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.minimaLocations.freshByKey;
 
         if (arrayKey === undefined) {
           if (changes.minima) {
@@ -603,10 +603,10 @@ export default class Function extends InlineComponent {
 
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { minimaLocations: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { minimaLocations: true } }
           }
 
         } else {
@@ -619,7 +619,8 @@ export default class Function extends InlineComponent {
               delete freshByKey[arrayKey];
             }
           }
-          return { fresh: freshByKey[arrayKey] === true }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { minimaLocations: freshByKey[arrayKey] === true } }
 
         }
 
@@ -631,12 +632,12 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.minimaLocations.freshByKey;
 
 
         if (arrayKey === undefined) {
 
-          if(changes.minima && changes.minima.valuesChanged.minima.changed.changedEntireArray) {
+          if (changes.minima && changes.minima.valuesChanged.minima.changed.changedEntireArray) {
             // if entire array is changed, then send in an array
             // to indicate have completely new values
 
@@ -737,7 +738,7 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.minimaValues.freshByKey;
 
         if (arrayKey === undefined) {
           if (changes.minima) {
@@ -753,10 +754,10 @@ export default class Function extends InlineComponent {
 
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { minimaValues: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { minimaValues: true } }
           }
 
         } else {
@@ -769,7 +770,8 @@ export default class Function extends InlineComponent {
               delete freshByKey[arrayKey];
             }
           }
-          return { fresh: freshByKey[arrayKey] === true }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { minimaValues: freshByKey[arrayKey] === true } }
 
         }
 
@@ -781,12 +783,12 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.minimaValues.freshByKey;
 
 
         if (arrayKey === undefined) {
 
-          if(changes.minima && changes.minima.valuesChanged.minima.changed.changedEntireArray) {
+          if (changes.minima && changes.minima.valuesChanged.minima.changed.changedEntireArray) {
             // if entire array is changed, then send in an array
             // to indicate have completely new values
 
@@ -896,7 +898,7 @@ export default class Function extends InlineComponent {
       },
       markStale: function ({ freshnessInfo, arrayKeys, changes }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.maxima.freshByKey;
 
         let arrayKey;
         if (arrayKeys) {
@@ -912,7 +914,7 @@ export default class Function extends InlineComponent {
               delete freshByKey[key];
             }
 
-            return { fresh: false }
+            return { fresh: { maxima: false } }
 
           } else {
 
@@ -940,31 +942,30 @@ export default class Function extends InlineComponent {
 
         if (changes.numericalf || changes.xscale) {
           // everything is stale
-          let freshByKey = freshnessInfo.freshByKey
           for (let key in freshByKey) {
             delete freshByKey[key];
           }
-          return { fresh: false }
+          return { fresh: { maxima: false } }
         }
 
 
         if (arrayKey === undefined) {
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { maxima: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { maxima: true } }
           }
         } else {
           // asked for just one component
-          return { fresh: freshByKey[arrayKey] === true }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { maxima: freshByKey[arrayKey] === true } }
         }
 
       },
       definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
-
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.maxima.freshByKey;
 
         if (dependencyValues.functionChild.length === 1) {
 
@@ -1059,7 +1060,7 @@ export default class Function extends InlineComponent {
           if (fleft < fx) {
             if (maximumAtPreviousRight) {
               if (Number.isFinite(fleft)) {
-                maximaList.push(me.fromAst(["tuple", xleft, fleft]));
+                maximaList.push(me.fromAst(["vector", xleft, -fleft]));
               }
             }
             maximumAtPreviousRight = false;
@@ -1072,7 +1073,7 @@ export default class Function extends InlineComponent {
             if (fx < fright && fx < fleft &&
               fx < f(x + result.tol) && fx < f(x - result.tol) &&
               Number.isFinite(fx)) {
-              maximaList.push(me.fromAst(["tuple", x, -fx]));
+              maximaList.push(me.fromAst(["vector", x, -fx]));
             }
           }
         }
@@ -1122,7 +1123,7 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.maximaLocations.freshByKey;
 
         if (arrayKey === undefined) {
           if (changes.maxima) {
@@ -1138,10 +1139,10 @@ export default class Function extends InlineComponent {
 
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { maximaLocations: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { maximaLocations: true } }
           }
 
         } else {
@@ -1154,7 +1155,8 @@ export default class Function extends InlineComponent {
               delete freshByKey[arrayKey];
             }
           }
-          return { fresh: freshByKey[arrayKey] === true }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { maximaLocations: freshByKey[arrayKey] === true } }
 
         }
 
@@ -1166,11 +1168,11 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.maximaLocations.freshByKey;
 
         if (arrayKey === undefined) {
 
-          if(changes.maxima && changes.maxima.valuesChanged.maxima.changed.changedEntireArray) {
+          if (changes.maxima && changes.maxima.valuesChanged.maxima.changed.changedEntireArray) {
             // if entire array is changed, then send in an array
             // to indicate have completely new values
 
@@ -1268,7 +1270,7 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.maximaValues.freshByKey;
 
         if (arrayKey === undefined) {
           if (changes.maxima) {
@@ -1284,10 +1286,10 @@ export default class Function extends InlineComponent {
 
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { maximaValues: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { maximaValues: true } }
           }
 
         } else {
@@ -1300,7 +1302,8 @@ export default class Function extends InlineComponent {
               delete freshByKey[arrayKey];
             }
           }
-          return { fresh: freshByKey[arrayKey] === true }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { maximaValues: freshByKey[arrayKey] === true } }
 
         }
 
@@ -1312,12 +1315,12 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.maximaValues.freshByKey;
 
 
         if (arrayKey === undefined) {
 
-          if(changes.maxima && changes.maxima.valuesChanged.maxima.changed.changedEntireArray) {
+          if (changes.maxima && changes.maxima.valuesChanged.maxima.changed.changedEntireArray) {
             // if entire array is changed, then send in an array
             // to indicate have completely new values
 
@@ -1404,7 +1407,6 @@ export default class Function extends InlineComponent {
     }
 
 
-
     stateVariableDefinitions.extrema = {
       public: true,
       componentType: "point",
@@ -1459,7 +1461,7 @@ export default class Function extends InlineComponent {
       },
       markStale: function ({ freshnessInfo, arrayKeys, changes }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.extrema.freshByKey;
 
         let arrayKey;
         if (arrayKeys) {
@@ -1475,7 +1477,7 @@ export default class Function extends InlineComponent {
               delete freshByKey[key];
             }
 
-            return { fresh: false }
+            return { fresh: { extrema: false } }
 
           } else {
 
@@ -1503,31 +1505,31 @@ export default class Function extends InlineComponent {
 
         if (changes.minima || changes.maxima) {
           // everything is stale
-          let freshByKey = freshnessInfo.freshByKey
           for (let key in freshByKey) {
             delete freshByKey[key];
           }
-          return { fresh: false }
+          return { fresh: { extrema: false } }
         }
 
 
         if (arrayKey === undefined) {
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { extrema: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { extrema: true } }
           }
         } else {
           // asked for just one component
-          return { fresh: freshByKey[arrayKey] === true }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { extrema: freshByKey[arrayKey] === true } }
         }
 
       },
       definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.extrema.freshByKey;
 
         // for extream functionChild dependency only if it is length 1
         if (dependencyValues.functionChild) {
@@ -1639,7 +1641,7 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.extremaLocations.freshByKey;
 
         if (arrayKey === undefined) {
           if (changes.extrema) {
@@ -1655,10 +1657,10 @@ export default class Function extends InlineComponent {
 
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { extremaLocations: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { extremaLocations: true } }
           }
 
         } else {
@@ -1671,7 +1673,8 @@ export default class Function extends InlineComponent {
               delete freshByKey[arrayKey];
             }
           }
-          return { fresh: freshByKey[arrayKey] === true }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { extremaLocations: freshByKey[arrayKey] === true } }
 
         }
 
@@ -1683,12 +1686,12 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.extremaLocations.freshByKey;
 
 
         if (arrayKey === undefined) {
 
-          if(changes.extrema && changes.extrema.valuesChanged.extrema.changed.changedEntireArray) {
+          if (changes.extrema && changes.extrema.valuesChanged.extrema.changed.changedEntireArray) {
             // if entire array is changed, then send in an array
             // to indicate have completely new values
 
@@ -1789,7 +1792,7 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.extremaValues.freshByKey;
 
         if (arrayKey === undefined) {
           if (changes.extrema) {
@@ -1805,10 +1808,10 @@ export default class Function extends InlineComponent {
 
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { extremaValues: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { extremaValues: true } }
           }
 
         } else {
@@ -1830,7 +1833,8 @@ export default class Function extends InlineComponent {
               delete freshByKey[arrayKey];
             }
           }
-          return { fresh: freshByKey[arrayKey] === true }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { extremaValues: freshByKey[arrayKey] === true } }
 
         }
 
@@ -1842,12 +1846,12 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.extremaValues.freshByKey;
 
 
         if (arrayKey === undefined) {
 
-          if(changes.extrema && changes.extrema.valuesChanged.extrema.changed.changedEntireArray) {
+          if (changes.extrema && changes.extrema.valuesChanged.extrema.changed.changedEntireArray) {
             // if entire array is changed, then send in an array
             // to indicate have completely new values
 

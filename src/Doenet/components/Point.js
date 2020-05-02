@@ -356,7 +356,7 @@ export default class Point extends GraphicalComponent {
         // as xs won't be able to take advantage of it due
         // possible constraints that could introduce dependencies among components? 
 
-        let freshByKey = freshnessInfo.freshByKey
+        let freshByKey = freshnessInfo.unconstrainedXs.freshByKey
         if (changes.coordsShadow || changes.coordsChild || changes.nDimensions) {
           // if based on coords or number of dimensions changed
           // always regard as the whole entry changed
@@ -372,7 +372,7 @@ export default class Point extends GraphicalComponent {
           // as core will recurse markStale to upstream dependents now
           // but won't recurse again if there are additional changes
           // (as fresh===false indicates everything is already stale)
-          return { fresh: false }
+          return { fresh: { unconstrainedXs: false } }
 
         } else {
 
@@ -394,14 +394,14 @@ export default class Point extends GraphicalComponent {
           if (arrayKey === undefined) {
             if (Object.keys(freshByKey).length === 0) {
               // asked for entire array and it is all stale
-              return { fresh: false }
+              return { fresh: { unconstrainedXs: false } }
             } else {
               // asked for entire array, but it has some fresh elements
-              return { partiallyFresh: true }
+              return { partiallyFresh: { unconstrainedXs: true } }
             }
           } else {
             // asked for just one component
-            return { fresh: freshByKey[arrayKey] === true }
+            return { fresh: { unconstrainedXs: freshByKey[arrayKey] === true } }
           }
 
         }
@@ -458,7 +458,7 @@ export default class Point extends GraphicalComponent {
         // console.log(arrayKeys)
         // console.log(changes)
 
-        let freshByKey = freshnessInfo.freshByKey
+        let freshByKey = freshnessInfo.xs.freshByKey
 
         let arrayKey;
         if (arrayKeys) {
@@ -493,16 +493,16 @@ export default class Point extends GraphicalComponent {
         if (arrayKey === undefined) {
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { xs: false } }
           } else {
             // asked for entire array, but it has some fresh elements
             // (we don't know here how many elements xs has, 
             // so can't determine if completely fresh)
-            return { partiallyFresh: true }
+            return { partiallyFresh: { xs: true } }
           }
         } else {
           // asked for just one component
-          return { fresh: freshByKey[arrayKey] === true }
+          return { fresh: { xs: freshByKey[arrayKey] === true } }
         }
 
       },
@@ -513,7 +513,7 @@ export default class Point extends GraphicalComponent {
         // console.log(dependencyValues)
         // console.log(arrayKeys)
 
-        let freshByKey = freshnessInfo.freshByKey
+        let freshByKey = freshnessInfo.xs.freshByKey
 
         let arrayKey;
         if (arrayKeys) {
@@ -807,7 +807,7 @@ export default class Point extends GraphicalComponent {
       },
       markStale({ freshnessInfo, changes, arrayKeys }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.numericalXs.freshByKey;
 
         let arrayKey;
         if (arrayKeys) {
@@ -825,12 +825,12 @@ export default class Point extends GraphicalComponent {
           }
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: {numericalXs:false }}
           } else {
             // asked for entire array, but it has some fresh elements
             // (we don't know here how many elements numericalXs has, 
             // so can't determine if completely fresh)
-            return { partiallyFresh: true }
+            return { partiallyFresh: {numericalXs:true }}
           }
         } else {
 
@@ -841,13 +841,13 @@ export default class Point extends GraphicalComponent {
             delete freshByKey[arrayKey];
           }
 
-          return { fresh: freshByKey[arrayKey] === true };
+          return { fresh: {numericalXs:freshByKey[arrayKey] === true }};
         }
 
       },
       definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
 
-        let freshByKey = freshnessInfo.freshByKey
+        let freshByKey = freshnessInfo.numericalXs.freshByKey
 
 
         let arrayKey;
@@ -1040,7 +1040,7 @@ function calculateUnconstrainedXs({ dependencyValues, arrayKeys, freshnessInfo }
 
   } else {
 
-    let freshByKey = freshnessInfo.freshByKey
+    let freshByKey = freshnessInfo.unconstrainedXs.freshByKey
 
     let arrayKey;
     if (arrayKeys) {

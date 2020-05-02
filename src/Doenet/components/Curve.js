@@ -152,23 +152,18 @@ export default class Curve extends GraphicalComponent {
       let newChildren = [];
 
       if (lhsByPiece.length === 1) {
+        let functionChildren;
+        let flip = false;
         if (rhsByPiece.length === 0) {
           // with just one piece and no equal sign
           // the curve is the graph of a function
-          newChildren = [{
-            componentType: "functioncurve",
-            children: [{
-              componentType: "function",
-              children: lhsByPiece[0]
-            }]
-          }]
+          functionChildren = lhsByPiece[0];
         } else {
           // one piece with an equal sign
           // the curve should be an implicit function
           // For now, just implement a function in the case
           // where either lhs or rhs is the string corresponding to var2
-          let functionChildren;
-          let flip = false;
+
           if (getVarName(lhsByPiece[0]) === dependencyValues.variables[1].tree) {
             functionChildren = rhsByPiece[0];
           } else if (getVarName(rhsByPiece[0]) === dependencyValues.variables[1].tree) {
@@ -183,47 +178,47 @@ export default class Curve extends GraphicalComponent {
             console.log("General form of equation for curve not implemented")
             return { success: false }
           }
-
-          let functionCurveName = createUniqueName("functioncurve", idRng);
-
-
-          let functionCurveChildren = [];
-          let variableName = "var1";
-          if (flip) {
-            functionCurveChildren.push({
-              componentType: "flipfunction",
-              state: { value: true }
-            });
-            variableName = "var2";
-          }
-
-          functionChildren.push({
-            componentType: "variable",
-            children: [{
-              componentType: "ref",
-              children: [{
-                componentType: "reftarget",
-                state: { refTargetName: functionCurveName }
-              },
-              {
-                componentType: "prop",
-                state: { variableName }
-              }]
-            }]
-          })
-
-          functionCurveChildren.push({
-            componentType: "function",
-            children: functionChildren,
-          })
-
-          newChildren = [{
-            componentType: "functioncurve",
-            children: functionCurveChildren,
-            doenetAttributes: { componentName: functionCurveName },
-          }]
-
         }
+
+        let functionCurveName = createUniqueName("functioncurve", idRng);
+
+
+        let functionCurveChildren = [];
+        let variableName = "var1";
+        if (flip) {
+          functionCurveChildren.push({
+            componentType: "flipfunction",
+            state: { value: true }
+          });
+          variableName = "var2";
+        }
+
+        functionChildren.push({
+          componentType: "variable",
+          children: [{
+            componentType: "ref",
+            children: [{
+              componentType: "reftarget",
+              state: { refTargetName: functionCurveName }
+            },
+            {
+              componentType: "prop",
+              state: { variableName }
+            }]
+          }]
+        })
+
+        functionCurveChildren.push({
+          componentType: "function",
+          children: functionChildren,
+        })
+
+        newChildren = [{
+          componentType: "functioncurve",
+          children: functionCurveChildren,
+          doenetAttributes: { componentName: functionCurveName },
+        }]
+
       } else {
 
         let parametrizedCurveName = createUniqueName("parametrizedcurve", idRng);
@@ -476,7 +471,7 @@ export default class Curve extends GraphicalComponent {
       operator: 'xor',
       propositions: [
         stringsAndMaths, atLeastOnePoint, exactlyOneThrough,
-        exactlyOneFunction, atLeastTwoFunctions,
+        atLeastTwoFunctions, exactlyOneFunction,
         exactlyOneCurve
       ],
       setAsBase: true
@@ -610,17 +605,30 @@ export default class Curve extends GraphicalComponent {
     }
 
     stateVariableDefinitions.childrenToRender = {
+      additionalStateVariablesDefined: ["curveChild"],
       returnDependencies: () => ({
         curveChild: {
           dependencyType: "childIdentity",
           childLogicName: "exactlyOneCurve"
         }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          childrenToRender: [dependencyValues.curveChild[0].componentName]
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.curveChild.length === 0) {
+          return {
+            newValues: {
+              childrenToRender: [],
+              curveChild: null
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              childrenToRender: [dependencyValues.curveChild[0].componentName],
+              curveChild: dependencyValues.curveChild[0].componentName
+            }
+          }
         }
-      })
+      }
     }
 
     return stateVariableDefinitions;

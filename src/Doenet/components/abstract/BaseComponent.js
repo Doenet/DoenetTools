@@ -98,17 +98,17 @@ export default class BaseComponent {
 
     // include any potential renderer type that could be
     // created from a public state variable
-    for(let varName in this.state) {
-      if(this.state[varName].public) {
+    for (let varName in this.state) {
+      if (this.state[varName].public) {
         let componentTypes = this.state[varName].componentType;
-        if(!Array.isArray(componentTypes)) {
+        if (!Array.isArray(componentTypes)) {
           componentTypes = [componentTypes]
         }
-        for(let componentType of componentTypes) {
+        for (let componentType of componentTypes) {
           let componentClass = this.allComponentClasses[componentType];
-          if(componentClass) {
-            let rendererType  = componentClass.rendererType;
-            if(rendererType && !allPotentialRendererTypes.includes(rendererType)) {
+          if (componentClass) {
+            let rendererType = componentClass.rendererType;
+            if (rendererType && !allPotentialRendererTypes.includes(rendererType)) {
               allPotentialRendererTypes.push(rendererType)
             }
           }
@@ -215,7 +215,9 @@ export default class BaseComponent {
 
     let defAttributesToCopy = [
       "returnDependencies", "definition",
-      "inverseDefinition", "stateVariablesDeterminingDependencies"
+      "inverseDefinition", "stateVariablesDeterminingDependencies",
+      "isArray",
+      "markStale", "getPreviousDependencyValuesForMarkStale",
     ];
 
     let stateVariableDefinitions = {};
@@ -228,7 +230,9 @@ export default class BaseComponent {
         for (let [ind, otherVarObj] of thisDef.additionalStateVariablesDefined.entries()) {
           let defCopy = {};
           for (let attr of defAttributesToCopy) {
-            defCopy[attr] = thisDef[attr];
+            if (attr in thisDef) {
+              defCopy[attr] = thisDef[attr];
+            }
           }
           defCopy.additionalStateVariablesDefined = [...thisDef.additionalStateVariablesDefined];
           defCopy.additionalStateVariablesDefined[ind] = varName;

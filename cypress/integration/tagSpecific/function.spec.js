@@ -2000,8 +2000,8 @@ describe('Function Tag Tests', function () {
 
       });
 
-      cy.get(numberMaximaAnchor).should('have.text','2')
-      cy.get(numberMinimaAnchor).should('have.text','1')
+      cy.get(numberMaximaAnchor).should('have.text', '2')
+      cy.get(numberMinimaAnchor).should('have.text', '1')
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -2022,8 +2022,8 @@ describe('Function Tag Tests', function () {
 
       });
 
-      cy.get(numberMaximaAnchor).should('have.text','1')
-      cy.get(numberMinimaAnchor).should('have.text','0')
+      cy.get(numberMaximaAnchor).should('have.text', '1')
+      cy.get(numberMinimaAnchor).should('have.text', '0')
 
 
       cy.window().then((win) => {
@@ -2046,12 +2046,168 @@ describe('Function Tag Tests', function () {
 
       });
 
-      cy.get(numberMaximaAnchor).should('have.text','2')
-      cy.get(numberMinimaAnchor).should('have.text','2')
+      cy.get(numberMaximaAnchor).should('have.text', '2')
+      cy.get(numberMinimaAnchor).should('have.text', '2')
 
 
     })
 
+  });
+
+  it('shadowed sugar works correctly with initially unresolved', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput />
+    <mathinput />
+    
+    <function>
+    <xscale><ref prop="value">_mathinput1</ref></xscale>
+    <ref prop="value">_mathinput2</ref>x^3
+    +1
+    </function>
+    
+    <graph>
+      <ref name="f1a">_function1</ref>
+    </graph>
+    <p><ref prop="xscale">f1a</ref></p>
+    <p><ref prop="xscale">_function1</ref></p>
+    
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/_p1').should('have.text', 'NaN')
+    cy.get('#\\/_p2').should('have.text', 'NaN')
+
+    cy.get('#\\/_mathinput1_input').type('1{enter}')
+    cy.get('#\\/_mathinput2_input').type('2{enter}')
+
+    cy.get('#\\/_p1').should('have.text', '1')
+    cy.get('#\\/_p2').should('have.text', '1')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components["/_function1"].stateValues.numericalf(-2)).eq(2*(-2)**3+1)
+    });
+
+
+    cy.get('#\\/_mathinput1_input').clear().type('3{enter}')
+    cy.get('#\\/_mathinput2_input').clear().type('4{enter}')
+
+    cy.get('#\\/_p1').should('have.text', '3')
+    cy.get('#\\/_p2').should('have.text', '3')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components["/_function1"].stateValues.numericalf(-2)).eq(4*(-2)**3+1)
+    });
+
+  });
+
+  it.only('extrema of quartic, reffed multipled times', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput prefill="1" />
+    <mathinput prefill="0" />
+    <mathinput prefill="-2" />
+    
+    <function>
+    <ref prop="value">_mathinput1</ref>x^4
+    +<ref prop="value">_mathinput2</ref>x^3
+    +<ref prop="value">_mathinput3</ref>x^2
+    + 1
+    </function>
+    
+    <graph>
+      <ref name="f1a">_function1</ref>
+      <ref name="maxima" prop="maxima">_function1</ref>
+      <ref name="minima" prop="minima">f1a</ref>
+    </graph>
+    <graph>
+      <ref name="f1b">f1a</ref>
+      <ref name="extremum1" prop="extremum1">f1b</ref>
+      <ref name="extremum2" prop="extremum2">f1b</ref>
+      <ref name="extremum3" prop="extremum3">f1b</ref>
+    </graph>
+    
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components["/maxima"].replacements.length).eq(1);
+      expect(components["/maxima"].replacements[0].stateValues.coords.tree).eqls(["vector", 0,1]);
+      expect(components["/minima"].replacements.length).eq(2);
+      expect(components["/minima"].replacements[0].stateValues.coords.tree).eqls(["vector", -1,0]);
+      expect(components["/minima"].replacements[1].stateValues.coords.tree).eqls(["vector", 1,0]);
+      expect(components["/extremum1"].replacements.length).eq(1);
+      expect(components["/extremum1"].replacements[0].stateValues.coords.tree).eqls(["vector", -1,0]);
+      expect(components["/extremum2"].replacements.length).eq(1);
+      expect(components["/extremum2"].replacements[0].stateValues.coords.tree).eqls(["vector", 0, 1]);
+      expect(components["/extremum3"].replacements.length).eq(1);
+      expect(components["/extremum3"].replacements[0].stateValues.coords.tree).eqls(["vector", 1,0]);
+
+    });
+
+    cy.get("#\\/_mathinput2_input").clear().type('2{enter}');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components["/maxima"].replacements.length).eq(1);
+      expect(components["/maxima"].replacements[0].stateValues.coords.tree).eqls(["vector", 0,1]);
+      expect(components["/minima"].replacements.length).eq(2);
+      let min1 = components["/minima"].replacements[0].stateValues.coords.tree;
+      expect(min1[1]).closeTo(-2, 0.00001)
+      expect(min1[2]).closeTo(-7, 0.00001)
+      
+      let min2 = components["/minima"].replacements[1].stateValues.coords.tree;
+      expect(min2[1]).closeTo(0.5, 0.00001)
+      expect(min2[2]).closeTo(13/16, 0.00001)
+
+      expect(components["/extremum1"].replacements.length).eq(1);
+      min1 = components["/extremum1"].replacements[0].stateValues.coords.tree;
+      expect(min1[1]).closeTo(-2, 0.00001)
+      expect(min1[2]).closeTo(-7, 0.00001)
+      
+      expect(components["/extremum2"].replacements.length).eq(1);
+      expect(components["/extremum2"].replacements[0].stateValues.coords.tree).eqls(["vector", 0, 1]);
+
+      expect(components["/extremum3"].replacements.length).eq(1);
+      min2 = components["/extremum3"].replacements[0].stateValues.coords.tree;
+      expect(min2[1]).closeTo(0.5, 0.00001)
+      expect(min2[2]).closeTo(13/16, 0.00001)
+
+    });
+
+    cy.get("#\\/_mathinput1_input").clear().type('-1{enter}');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components["/maxima"].replacements.length).eq(1);
+      expect(components["/maxima"].replacements[0].stateValues.coords.tree).eqls(["vector", 0,1]);
+      expect(components["/minima"].replacements.length).eq(0);
+
+      expect(components["/extremum1"].replacements.length).eq(1);
+      expect(components["/extremum1"].replacements[0].stateValues.coords.tree).eqls(["vector", 0, 1]);
+
+      expect(components["/extremum2"].replacements.length).eq(0);
+      expect(components["/extremum3"].replacements.length).eq(0);
+
+    });
   });
 
 

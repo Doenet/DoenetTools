@@ -1893,7 +1893,8 @@ export default class Core {
           for (let varName in this.upstreamDependencies[childName]) {
             for (let [ind, upDep] of this.upstreamDependencies[childName][varName].entries()) {
               if (upDep.dependencyType !== "childStateVariables" && upDep.dependencyType !== "childIdentity") {
-                if (upDep.dependencyName === "refTargetVariable") {
+                if (upDep.dependencyName === "refTargetVariable" || upDep.dependencyName == "targetReadyToExpand"
+                  || upDep.dependencyName.slice(0, 17) == "__composites_for_") {
 
                   let upstreamComponentName = upDep.upstreamComponentName;
                   if (upDep.downstreamComponentNames && upDep.downstreamComponentNames.length > 1) {
@@ -1902,9 +1903,11 @@ export default class Core {
                     let ind = upDep.downstreamComponentNames.indexOf(componentName);
                     upDep.downstreamComponentNames.splice(ind, 1);
                   } else {
-                    delete this.downstreamDependencies[upstreamComponentName][upDep.upstreamVariableName][upDep.dependencyName];
-                    if (Object.keys(this.downstreamDependencies[upstreamComponentName][upDep.upstreamVariableName]).length == 0) {
-                      delete this.downstreamDependencies[upstreamComponentName][upDep.upstreamVariableName];
+                    if (this.downstreamDependencies[upstreamComponentName]) {
+                      delete this.downstreamDependencies[upstreamComponentName][upDep.upstreamVariableName][upDep.dependencyName];
+                      if (Object.keys(this.downstreamDependencies[upstreamComponentName][upDep.upstreamVariableName]).length == 0) {
+                        delete this.downstreamDependencies[upstreamComponentName][upDep.upstreamVariableName];
+                      }
                     }
                   }
 
@@ -2038,12 +2041,16 @@ export default class Core {
 
     // go through the defining children of shadowing component
     // if they aren't in shadowChanges.childrenToDelete
-    // we should be able to the component they are shadoing in originalChildren
+    // we should be able to find the component they are shadowing in originalChildren
     // so that we can modify serializedChildren to be a createComponent
     // refering to the shadowChild
 
-    for (let shadowingChild of shadowingComponent.definingChildren) {
+
+    let definingIndsInSugar = [];
+
+    for (let [childInd, shadowingChild] of shadowingComponent.definingChildren.entries()) {
       if (shadowChanges.childrenToDelete.includes(shadowingChild.componentName)) {
+        definingIndsInSugar.push(childInd);
         continue;
       }
 
@@ -2062,15 +2069,39 @@ export default class Core {
         }
         shadowedChild.createdComponent = true;
         shadowedChild.componentName = shadowingChild.componentName;
+        definingIndsInSugar.push(childInd);
       } else {
 
-        shadowChanges.childrenToDelete.push(shadowingChild.componentName)
+        // check if shadowingChild is shadowing another defining child
+        let shadowedComponentName = shadowingChild.shadows.componentName;
+        if (!originalComponent.definingChildren.map(x => x.componentName).includes(shadowedComponentName)) {
 
+          shadowChanges.childrenToDelete.push(shadowingChild.componentName)
+          definingIndsInSugar.push(childInd);
+
+        }
       }
 
     }
 
+    // check if there is a gap in defining inds in sugar
+    for (let i = 1; i < definingIndsInSugar.length; i++) {
+      if (definingIndsInSugar[i] - definingIndsInSugar[i - 1] !== 1) {
+        // this shouldn't happen
+        throw Error('Sugar translated to shadowing components affects non-consecutive defining children');
+      }
+    }
+
     shadowChanges.newChildren = serializedChildren;
+
+    if (definingIndsInSugar.length > 0) {
+      shadowChanges.firstDefiningIndex = Math.min(...definingIndsInSugar);
+      let lastDefiningIndex = Math.max(...definingIndsInSugar);
+      shadowChanges.nDefiningIndices = lastDefiningIndex - shadowChanges.firstDefiningIndex + 1;
+    } else {
+      shadowChanges.firstDefiningIndex = 0;
+      shadowChanges.nDefiningIndices = 0;
+    }
 
     let result = this.replaceDefiningChildrenBySugar({
       component: shadowingComponent,
@@ -3347,6 +3378,7 @@ export default class Core {
     // - arrayStateVariable: the name of the array for which this is an entry
     // - arrayKeys: an array of the key(s) that constitute this entry
     // - markStale: function from array state variable
+    // - freshnessInfo: object from array state variable
     // - getValueFromArrayValues: function used to get this entry's value
 
     stateVarObj.isArrayEntry = true;
@@ -3354,7 +3386,29 @@ export default class Core {
 
     stateVarObj.arrayStateVariable = arrayStateVariable;
     let arrayStateVarObj = component.state[arrayStateVariable];
+    stateVarObj.definition = arrayStateVarObj.definition;
+    stateVarObj.inverseDefinition = arrayStateVarObj.inverseDefinition;
     stateVarObj.markStale = arrayStateVarObj.markStale;
+    stateVarObj.freshnessInfo = arrayStateVarObj.freshnessInfo;
+    stateVarObj.getPreviousDependencyValuesForMarkStale = arrayStateVarObj.getPreviousDependencyValuesForMarkStale;
+
+    // if any of the additional state variables defined are arrays,
+    // (which should be all of them)
+    // transform to their array entry
+    if (arrayStateVarObj.additionalStateVariablesDefined) {
+      stateVarObj.additionalStateVariablesDefined = [];
+
+      for (let varName of arrayStateVarObj.additionalStateVariablesDefined) {
+        let sObj = component.state[varName];
+        if (sObj.isArray) {
+          // TODO: what about array entries that have more than one array key?
+          let arrayEntryVarName = sObj.arrayVarNameFromArrayKey(arrayKeys[0]);
+          stateVarObj.additionalStateVariablesDefined.push(arrayEntryVarName);
+        } else {
+          stateVarObj.additionalStateVariablesDefined.push(varName);
+        }
+      }
+    }
 
     // add this entry name to the array's list of its entries
     if (!arrayStateVarObj.arrayEntryNames) {
@@ -4633,19 +4687,25 @@ export default class Core {
 
     let definitionArgs = this.getStateVariableDependencyValues({ component, stateVariable });
     definitionArgs.componentInfoObjects = this.componentInfoObjects;
-    definitionArgs.freshnessInfo = stateVarObj.freshnessInfo;
-
-    let definitionFunction = stateVarObj.definition;
-
-    let additionalStateVariablesDefined = stateVarObj.additionalStateVariablesDefined;
+    let varNameForFreshness = stateVariable;
 
     if (stateVarObj.isArrayEntry) {
+      varNameForFreshness = stateVarObj.arrayStateVariable
       definitionArgs.arrayKeys = stateVarObj.arrayKeys;
-      let arrayStateVariable = stateVarObj.arrayStateVariable;
-      let arrayStateVarObj = component.state[arrayStateVariable];
-      additionalStateVariablesDefined = arrayStateVarObj.additionalStateVariablesDefined;
-      definitionArgs.freshnessInfo = arrayStateVarObj.freshnessInfo;
-      definitionFunction = arrayStateVarObj.definition;
+    }
+
+    definitionArgs.freshnessInfo = { [varNameForFreshness]: stateVarObj.freshnessInfo };
+
+    let additionalStateVariablesDefined = stateVarObj.additionalStateVariablesDefined;
+    if (additionalStateVariablesDefined) {
+      for (let varName of additionalStateVariablesDefined) {
+        let vNameForFreshness = varName;
+        let sObj = component.state[varName];
+        if (sObj.isArrayEntry) {
+          vNameForFreshness = sObj.arrayStateVariable;
+        }
+        definitionArgs.freshnessInfo[vNameForFreshness] = sObj.freshnessInfo;
+      }
     }
 
     if (component instanceof this.allComponentClasses._composite) {
@@ -4665,7 +4725,7 @@ export default class Core {
       // console.log(noChanges)
       result = { noChanges };
     } else {
-      result = definitionFunction(definitionArgs);
+      result = stateVarObj.definition(definitionArgs);
     }
 
     let receivedValue = {
@@ -4823,6 +4883,7 @@ export default class Core {
         // delete before assigning value to remove any getter for the property
         delete component.state[varName].value;
         component.state[varName].value = result.newValues[varName];
+        delete component.state[varName].usedDefault;
 
         if (result.checkForActualChange && result.checkForActualChange.includes(varName)) {
           // TODO: should this be a deep comparison?
@@ -5832,6 +5893,28 @@ export default class Core {
             componentVarsDeleted[cName].push(...results.componentVarsDeleted[cName])
           }
           foundArrayEntry = true;
+
+          // create an additional array entry state variables
+          // specified as additional state variables defined
+          if (component.state[stateVariable].additionalStateVariablesDefined) {
+            for (let additionalVar of component.state[stateVariable].additionalStateVariablesDefined) {
+              if (!component.state[additionalVar]) {
+                let result2 = this.createFromArrayEntry({
+                  stateVariable: additionalVar,
+                  component, updatesNeeded
+                });
+                Object.assign(varsUnresolved, result2.varsUnresolved);
+                for (let cName in result2.componentVarsDeleted) {
+                  if (!componentVarsDeleted[cName]) {
+                    componentVarsDeleted[cName] = [];
+                  }
+                  componentVarsDeleted[cName].push(...results2.componentVarsDeleted[cName])
+                }
+
+              }
+            }
+          }
+
           break;
         }
       }
@@ -7379,24 +7462,34 @@ export default class Core {
 
     updatesNeeded.componentsTouched.push(component.componentName);
 
-    let stateVarObj = component.state[varName];
+    let allStateVariablesAffected = { [varName]: component.state[varName] };
+    if (component.state[varName].additionalStateVariablesDefined) {
+      component.state[varName].additionalStateVariablesDefined.forEach(x => allStateVariablesAffected[x] = component.state[x]);
+    }
 
     // if don't have a getter set, this indicates that, before this markStale function,
     // stateVarObj was fresh.
-    let varWasFresh = !(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)
+    let aVarWasFresh = Object.values(allStateVariablesAffected).some(x => !(Object.getOwnPropertyDescriptor(x, 'value').get || x.immutable));
 
     // record whether or not stateVarObj was partially fresh before we do any more processing
     // as we might change the attribute partiallyFresh from the result of markStale
-    let varWasPartiallyFresh = stateVarObj.partiallyFresh;
+    let aVarWasPartiallyFresh = aVarWasFresh || Object.values(allStateVariablesAffected).some(x => x.partiallyFresh);
 
-    let foundVarChange = true;
+    let varsChanged = {};
+    for (let vName in allStateVariablesAffected) {
+      varsChanged[vName] = true;
+    }
 
-    if (varWasFresh || varWasPartiallyFresh) {
+    if (aVarWasPartiallyFresh) {
 
-      let result = this.processMarkStale({ component, varName });
+      let result = this.processMarkStale({ component, varName, allStateVariablesAffected });
 
       if (result.fresh) {
-        foundVarChange = false;
+        for (let vName in result.fresh) {
+          if (result.fresh[vName]) {
+            delete varsChanged[vName];
+          }
+        }
       }
 
       if (result.updateReplacements) {
@@ -7414,33 +7507,36 @@ export default class Core {
 
     }
 
-    // check foundVarChange again, as it could have been
-    // set to false when processing markStale
-    if (foundVarChange) {
+    for (let vName in varsChanged) {
+
+      let stateVarObj = component.state[vName];
 
       // delete recursive dependency values, if they exist
       delete stateVarObj.recursiveDependencyValues;
 
-      if (varWasFresh) {
+      if (aVarWasFresh) {
 
         // save old value
         // mark stale by putting getter back in place to get a new value next time it is requested
         stateVarObj._previousValue = stateVarObj.value;
         delete stateVarObj.value;
         let getStateVar = this.getStateVariableValue;
-        Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component, stateVariable: varName }), configurable: true });
+        Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component, stateVariable: vName }), configurable: true });
       }
+    }
+
+    for (let vName in varsChanged) {
 
       // if stateVarObj was fresh (and also if stateVarObj was marked partiallyFresh before started processing),
       // we recurse on upstream dependents
-      if (varWasFresh || varWasPartiallyFresh) {
-        this.markUpstreamDependentsStale({ component, varName, updatesNeeded });
+      if (aVarWasPartiallyFresh) {
+        this.markUpstreamDependentsStale({ component, varName: vName, updatesNeeded });
       }
     }
 
   }
 
-  processMarkStale({ component, varName }) {
+  processMarkStale({ component, varName, allStateVariablesAffected }) {
     // if the stateVariable varName (or its array state variable)
     // has a markStale function, then run that function,
     // giving it arguments with information about what changed
@@ -7459,18 +7555,15 @@ export default class Core {
 
     let stateVarObj = component.state[varName];
 
-    let stateVarForMarkStale = stateVarObj;
-    if (stateVarObj.isArrayEntry) {
-      stateVarForMarkStale = component.state[stateVarObj.arrayStateVariable]
-    }
-
-    if (!stateVarForMarkStale.markStale) {
-      return { fresh: false }
+    if (!stateVarObj.markStale) {
+      let fresh = {};
+      Object.keys(allStateVariablesAffected).forEach(x => fresh[x] = false)
+      return { fresh }
     }
 
     let changes = {};
     let downDeps = this.downstreamDependencies[component.componentName][varName];
-    let previousValues = {};
+    let previousDependencyValues = {};
 
     for (let dependencyName in downDeps) {
       let dep = downDeps[dependencyName];
@@ -7491,88 +7584,102 @@ export default class Core {
       if (foundDepChange) {
         changes[dependencyName] = depChanges;
       }
-      let foundPreviousValues = false;
-      let previousValuesForThisDep;
 
-      let cNames = [];
-      let multipleComponents = false;
-      if (dep.downstreamComponentName) {
-        cNames = [dep.downstreamComponentName];
-      } else if (dep.downstreamComponentNames) {
-        cNames = dep.downstreamComponentNames;
-        multipleComponents = true;
-        previousValuesForThisDep = [];
-      }
+      if (stateVarObj.getPreviousDependencyValuesForMarkStale) {
 
-      for (let [ind, cName] of cNames.entries()) {
-        let vNames = [];
-        let multipleVariables = false;
-        if (dep.mappedDownstreamVariableName) {
-          vNames = [dep.mappedDownstreamVariableName];
-        } else if (dep.mappedDownstreamVariableNames) {
-          vNames = dep.mappedDownstreamVariableNames;
-          if (multipleComponents) {
-            vNames = vNames[ind];
-          }
-          multipleVariables = true;
+        let foundPreviousDependencyValues = false;
+        let previousValuesForThisDep;
+
+        let cNames = [];
+        let multipleComponents = false;
+        if (dep.downstreamComponentName) {
+          cNames = [dep.downstreamComponentName];
+        } else if (dep.downstreamComponentNames) {
+          cNames = dep.downstreamComponentNames;
+          multipleComponents = true;
+          previousValuesForThisDep = [];
         }
 
-        let compState = this._components[cName].state;
-
-        let prevValForThisComp;
-
-        if (multipleVariables) {
-          prevValForThisComp = { stateValues: {} };
-        }
-
-        for (let vName of vNames) {
-          let stObj = compState[vName];
-
-          if (!stObj) {
-            continue;
+        for (let [ind, cName] of cNames.entries()) {
+          let vNames = [];
+          let multipleVariables = false;
+          if (dep.mappedDownstreamVariableName) {
+            vNames = [dep.mappedDownstreamVariableName];
+          } else if (dep.mappedDownstreamVariableNames) {
+            vNames = dep.mappedDownstreamVariableNames;
+            if (multipleComponents) {
+              vNames = vNames[ind];
+            }
+            multipleVariables = true;
           }
 
-          foundPreviousValues = true;
+          let compState = this._components[cName].state;
 
-          let prevVal = stObj._previousValue;
-
-          let varWasFresh = !(Object.getOwnPropertyDescriptor(stObj, 'value').get || stObj.immutable);
-          if (varWasFresh) {
-            prevVal = stObj.value;
-          }
-
-          if (typeof prevVal === "object" && prevVal !== null) {
-            prevVal = new Proxy(prevVal, readOnlyProxyHandler);
-          }
+          let prevValForThisComp;
 
           if (multipleVariables) {
-            prevValForThisComp.stateValues[vName] = prevVal;
+            prevValForThisComp = { stateValues: {} };
+          }
+
+          for (let vName of vNames) {
+            let stObj = compState[vName];
+
+            if (!stObj) {
+              continue;
+            }
+
+            foundPreviousDependencyValues = true;
+
+            let prevVal = stObj._previousValue;
+
+            let varWasFresh = !(Object.getOwnPropertyDescriptor(stObj, 'value').get || stObj.immutable);
+            if (varWasFresh) {
+              prevVal = stObj.value;
+            }
+
+            if (typeof prevVal === "object" && prevVal !== null) {
+              prevVal = new Proxy(prevVal, readOnlyProxyHandler);
+            }
+
+            if (multipleVariables) {
+              prevValForThisComp.stateValues[vName] = prevVal;
+            } else {
+              prevValForThisComp = prevVal;
+            }
+
+          }
+
+          if (multipleComponents) {
+            previousValuesForThisDep.push(prevValForThisComp);
           } else {
-            prevValForThisComp = prevVal;
+            previousValuesForThisDep = prevValForThisComp;
           }
 
         }
 
-        if (multipleComponents) {
-          previousValuesForThisDep.push(prevValForThisComp);
-        } else {
-          previousValuesForThisDep = prevValForThisComp;
+        if (foundPreviousDependencyValues) {
+          previousDependencyValues[dependencyName] = previousValuesForThisDep;
         }
 
       }
-
-      if (foundPreviousValues) {
-        previousValues[dependencyName] = previousValuesForThisDep;
-      }
-
     }
 
-    let result = stateVarForMarkStale.markStale({
-      freshnessInfo: stateVarForMarkStale.freshnessInfo,
+    let freshnessInfo = {};
+    for (let vName in allStateVariablesAffected) {
+      let vNameForFreshness = vName;
+      if (stateVarObj.isArrayEntry) {
+        vNameForFreshness = allStateVariablesAffected[vName].arrayStateVariable
+      }
+
+      freshnessInfo[vNameForFreshness] = allStateVariablesAffected[vName].freshnessInfo;
+    }
+
+
+    let result = stateVarObj.markStale({
+      freshnessInfo,
       changes,
       arrayKeys: stateVarObj.arrayKeys,
-      varName,  // include varName in case multiple state variables defined
-      previousValues,
+      previousDependencyValues,
     });
 
 
@@ -7583,9 +7690,36 @@ export default class Core {
     // the indication that we don't need to recurse)
     //
     if (result.partiallyFresh) {
-      stateVarObj.partiallyFresh = true;
+      for (let vName in allStateVariablesAffected) {
+        if (result.partiallyFresh[vName]) {
+          allStateVariablesAffected[vName].partiallyFresh = true;
+        } else {
+          delete allStateVariablesAffected[vName].partiallyFresh;
+        }
+      }
     } else {
-      delete stateVarObj.partiallyFresh;
+      for (let vName in allStateVariablesAffected) {
+        delete allStateVariablesAffected[vName].partiallyFresh;
+      }
+    }
+
+    if (stateVarObj.isArrayEntry) {
+      // if have array entry, then intrepret fresh as indiciating
+      // freshness of array entry, not whole array
+      let translatedFresh = {};
+      // TODO: what about array entries that have more than one array key?
+      let arrayKey = stateVarObj.arrayKeys[0];
+      for (let vName in result.fresh) {
+        let sVarObj = component.state[vName];
+        if (sVarObj.isArray) {
+          let arrayEntryVarName = sVarObj.arrayVarNameFromArrayKey(arrayKey);
+          translatedFresh[arrayEntryVarName] = result.fresh[vName];
+        } else {
+          translatedFresh[vName] = result.fresh[vName]
+        }
+      }
+
+      result.fresh = translatedFresh;
     }
     return result;
   }
@@ -7720,25 +7854,40 @@ export default class Core {
 
           let upVarName = upDep.upstreamVariableName;
           let upDepComponent = this._components[upDep.upstreamComponentName];
-          let upVar = upDepComponent.state[upVarName];
+          // let upVar = upDepComponent.state[upVarName];
+
+          let allStateVariablesAffected = { [upVarName]: upDepComponent.state[upVarName] };
+          if (upDepComponent.state[upVarName].additionalStateVariablesDefined) {
+            upDepComponent.state[upVarName].additionalStateVariablesDefined.forEach(x => allStateVariablesAffected[x] = upDepComponent.state[x]);
+          }
 
           // if don't have a getter set, this indicates that, before this markStale function,
-          // upVar was fresh.
-          let upVarWasFresh = !(Object.getOwnPropertyDescriptor(upVar, 'value').get || upVar.immutable)
+          // stateVarObj was fresh.
+          let aVarWasFresh = Object.values(allStateVariablesAffected).some(x => !(Object.getOwnPropertyDescriptor(x, 'value').get || x.immutable));
 
-          // record whether or not upVar was partially fresh before we do any more processing
+          // record whether or not stateVarObj was partially fresh before we do any more processing
           // as we might change the attribute partiallyFresh from the result of markStale
-          let upVarWasPartiallyFresh = upVar.partiallyFresh;
+          let aVarWasPartiallyFresh = aVarWasFresh || Object.values(allStateVariablesAffected).some(x => x.partiallyFresh);
 
-          if (upVarWasFresh || upVarWasPartiallyFresh) {
+          let varsChanged = {};
+          for (let vName in allStateVariablesAffected) {
+            varsChanged[vName] = true;
+          }
+
+          if (aVarWasPartiallyFresh) {
 
             let result = this.processMarkStale({
               component: upDepComponent,
               varName: upVarName,
+              allStateVariablesAffected,
             });
 
             if (result.fresh) {
-              foundVarChange = false;
+              for (let vName in result.fresh) {
+                if (result.fresh[vName]) {
+                  delete varsChanged[vName];
+                }
+              }
             }
 
             if (result.updateReplacements) {
@@ -7748,7 +7897,7 @@ export default class Core {
             if (result.updateDependencies) {
               updatesNeeded.componentsToUpdateDependencies.push(
                 ...result.updateDependencies.map(varName => ({
-                  componentName: component.componentName,
+                  componentName: upDepComponent.componentName,
                   varName
                 }))
               )
@@ -7756,28 +7905,33 @@ export default class Core {
 
           }
 
-          // check foundVarChange again, as it could have been
-          // set to false when processing markStale
-          if (foundVarChange) {
+
+          for (let vName in varsChanged) {
+
+            let stateVarObj = upDepComponent.state[vName];
 
             // delete recursive dependency values, if they exist
-            delete upVar.recursiveDependencyValues;
+            delete stateVarObj.recursiveDependencyValues;
 
-            if (upVarWasFresh) {
+            if (aVarWasFresh) {
 
               // save old value
               // mark stale by putting getter back in place to get a new value next time it is requested
-              upVar._previousValue = upVar.value;
-              delete upVar.value;
-              Object.defineProperty(upVar, 'value', { get: () => getStateVar({ component: upDepComponent, stateVariable: upVarName }), configurable: true });
+              stateVarObj._previousValue = stateVarObj.value;
+              delete stateVarObj.value;
+              Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component: upDepComponent, stateVariable: vName }), configurable: true });
             }
+
+          }
+
+          for (let vName in varsChanged) {
 
             // if upVar was fresh (and also if upVar was marked partiallyFresh before started processing),
             // we recurse on upstream dependents
-            if (upVarWasFresh || upVarWasPartiallyFresh) {
+            if (aVarWasPartiallyFresh) {
               this.markUpstreamDependentsStale({
                 component: upDepComponent,
-                varName: upVarName,
+                varName: vName,
                 updatesNeeded
               });
             }
@@ -9418,13 +9572,11 @@ export default class Core {
     inverseDefinitionArgs.overrideFixed = instruction.overrideFixed;
 
     let stateVarObj = component.state[stateVariable];
-    let inverseDefinitionFunction = stateVarObj.inverseDefinition;
 
     let stateVariableForWorkspace = stateVariable;
 
     if (stateVarObj.isArrayEntry) {
       let arrayStateVariable = stateVarObj.arrayStateVariable;
-      inverseDefinitionFunction = component.state[arrayStateVariable].inverseDefinition;
       stateVariableForWorkspace = arrayStateVariable;
 
       let desiredValuesForArray = {};
@@ -9465,7 +9617,7 @@ export default class Core {
     updatesNeeded.componentsTouched.push(component.componentName);
     let newStateVariableValues = {};
 
-    if (!inverseDefinitionFunction) {
+    if (!stateVarObj.inverseDefinition) {
       console.warn(`Cannot change state variable ${stateVariable} of ${component.componentName} as it doesn't have an inverse definition`);
       return { newStateVariableValues };
     }
@@ -9480,7 +9632,7 @@ export default class Core {
       return { newStateVariableValues };
     }
 
-    let inverseResult = inverseDefinitionFunction(inverseDefinitionArgs);
+    let inverseResult = stateVarObj.inverseDefinition(inverseDefinitionArgs);
 
     if (!inverseResult.success) {
       console.log(`Changing ${stateVariable} of ${component.componentName} did not succeed.`);

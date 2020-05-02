@@ -81,20 +81,24 @@ export default class Variables extends MathList {
     return stateVariableDefinitions;
   }
 
-  static markStateForPropertyValue({ freshnessInfo }) {
+  static markStaleForPropertyValue({ freshnessInfo }) {
 
     // just mark everything stale
-    let freshByKey = freshnessInfo.freshByKey;
+    let freshByKey = Object.values(freshnessInfo)[0].freshByKey;
     for (let key in freshByKey) {
       delete freshByKey[key];
     }
+
+
+
+    return { fresh: { [Object.keys(freshnessInfo)[0]]: false } }
   }
 
   static definitionForPropertyValue({ dependencyValues, propertySpecification, propertyChild,
     arrayKeys, freshnessInfo,
   }) {
 
-    let freshByKey = freshnessInfo.freshByKey;
+    let freshByKey = Object.values(freshnessInfo)[0].freshByKey;
 
     let arrayKey;
     if (arrayKeys) {

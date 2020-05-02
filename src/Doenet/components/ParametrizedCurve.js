@@ -203,11 +203,8 @@ export default class ParametrizedCurve extends Curve {
             let result = numerics.fminbr(minfunc, [tIntervalMin, tIntervalMax]);
             tAtMin = result.x;
 
-            let x1AtMin = -10 * Math.log(1 / tAtMin - 1);
-            let x2AtMin = dependencyValues.f(x1AtMin)
-            if (dependencyValues.flipFunction) {
-              [x1AtMin, x2AtMin] = [x2AtMin, x1AtMin]
-            }
+            let x1AtMin = dependencyValues.fs[0](tAtMin);
+            let x2AtMin = dependencyValues.fs[1](tAtMin);
 
             result = {
               x1: x1AtMin,

@@ -107,13 +107,12 @@ export default class PointListComponent extends BaseComponent {
           }
         }
       },
-      markStale: function ({ freshnessInfo, changes, arrayKeys, previousValues }) {
+      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
         // console.log('mark stale for pointlist points')
         // console.log(changes);
         // console.log(arrayKeys);
-        // console.log(previousValues);
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.points.freshByKey;
 
         let arrayKey;
         if (arrayKeys) {
@@ -136,12 +135,12 @@ export default class PointListComponent extends BaseComponent {
 
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { points: false } }
           } else {
             // asked for entire array, but it has some fresh elements
             // (we don't know here how many elements points has, 
             // so can't determine if completely fresh)
-            return { partiallyFresh: true }
+            return { partiallyFresh: { points: true } }
           }
         } else {
 
@@ -158,13 +157,13 @@ export default class PointListComponent extends BaseComponent {
             }
           }
 
-          return { fresh: freshByKey[arrayKey] === true };
+          return { fresh: { points: freshByKey[arrayKey] === true } };
         }
 
       },
       definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.points.freshByKey;
 
         // console.log('definition of points for pointlist')
         // console.log(JSON.parse(JSON.stringify(freshByKey)));
@@ -206,7 +205,7 @@ export default class PointListComponent extends BaseComponent {
           if (!freshByKey[arrayKey]) {
             freshByKey[arrayKey] = true;
             let coords;
-            if(dependencyValues.pointChild.length === 1) {
+            if (dependencyValues.pointChild.length === 1) {
               coords = dependencyValues.pointChild[0].stateValues.coords
             } else {
               coords = me.fromAst('\uff3f')

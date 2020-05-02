@@ -344,7 +344,7 @@ export default class Line extends GraphicalComponent {
       },
       markStale: function ({ freshnessInfo, changes, arrayKeys }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.points.freshByKey;
 
         // console.log('markStale for line points')
         // console.log(JSON.parse(JSON.stringify(freshByKey)));
@@ -400,19 +400,19 @@ export default class Line extends GraphicalComponent {
         if (arrayKey === undefined) {
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { points: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { points: true } }
           }
         } else {
           // asked for just one component
-          return { fresh: freshByKey[arrayKey] === true }
+          return { fresh: { points: freshByKey[arrayKey] === true } }
         }
 
       },
       definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.points.freshByKey;
 
         // console.log('definition of line points');
         // console.log(dependencyValues)

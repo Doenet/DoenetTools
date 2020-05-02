@@ -1286,11 +1286,11 @@ export default class Vector extends GraphicalComponent {
       }),
       markStale: function ({ freshnessInfo }) {
         // mark it all stake
-        freshnessInfo.freshByKey = {};
+        freshnessInfo.xs.freshByKey = {};
         return { fresh: false }
       },
       definition: function ({ dependencyValues, freshnessInfo }) {
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.xs.freshByKey;
 
         if (Object.keys(freshByKey).length > 0) {
           // if anything is fresh, it all is fresh

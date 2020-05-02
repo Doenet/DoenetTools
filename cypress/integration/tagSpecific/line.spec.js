@@ -565,7 +565,7 @@ describe('Line Tag Tests', function () {
       expect(components['/_line1'].stateValues.yintercept.evaluate_to_constant()).closeTo(yintercept, 1E-12);
     })
 
-    cy.log('move point 3')
+    cy.log('move point 1')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       point1x = -5;

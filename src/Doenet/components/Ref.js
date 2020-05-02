@@ -379,10 +379,12 @@ export default class Ref extends CompositeComponent {
     // then the componentType is determined by refTarget state variable
     stateVariableDefinitions.replacementClasses = {
       additionalStateVariablesDefined: [
-        "stateVariablesRequested", "validProp", "componentTypeByTarget", "potentialReplacementClasses"
+        "stateVariablesRequested", "validProp",
+        "componentTypeByTarget", "potentialReplacementClasses",
       ],
       stateVariablesDeterminingDependencies: [
         "propVariableObjs", "refTarget",
+        "componentIdentitiesForProp"
       ],
       returnDependencies: function ({ stateValues }) {
 
@@ -415,15 +417,15 @@ export default class Ref extends CompositeComponent {
             if (!propVariableObj.componentType) {
               dependencies[`replacementComponentType${ind}`] = {
                 dependencyType: "componentStateVariableComponentType",
-                componentIdentity: stateValues.refTarget,
+                componentIdentity: stateValues.componentIdentitiesForProp[ind],
                 variableName: propVariableObj.varName,
               }
             }
             if (propVariableObj.isArray || propVariableObj.isArrayEntry) {
               dependencies[`targetArray${ind}`] = {
                 dependencyType: "componentStateVariable",
-                componentIdentity: stateValues.refTarget,
                 variableName: propVariableObj.varName,
+                componentIdentity: stateValues.componentIdentitiesForProp[ind],
               }
             }
           }
@@ -485,11 +487,11 @@ export default class Ref extends CompositeComponent {
           } else if (propVariableObj.isArrayEntry) {
             // TODO: what about multi-dimensional arrays?
             let arrayLength = 1;
-            
+
             let targetArrayEntry = dependencyValues[`targetArray${ind}`];
-            if(Array.isArray(targetArrayEntry)) {
+            if (Array.isArray(targetArrayEntry)) {
               arrayLength = targetArrayEntry.length;
-            } else if(targetArrayEntry === undefined) {
+            } else if (targetArrayEntry === undefined) {
               arrayLength = 0;
             }
             let componentClass = componentInfoObjects.allComponentClasses[componentType];
@@ -783,7 +785,7 @@ export default class Ref extends CompositeComponent {
   get allPotentialRendererTypes() {
 
     let allPotentialRendererTypes = [];
-    
+
     let allReplacementClasses = [
       ...this.stateValues.replacementClasses,
       ...this.stateValues.replacementClassesForProp,

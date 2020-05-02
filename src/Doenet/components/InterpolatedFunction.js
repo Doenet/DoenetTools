@@ -134,21 +134,22 @@ export default class InterpolatedFunction extends Function {
           variableNames: ["points", "slope", "nPoints"]
         }
       }),
-      markStale: function ({ freshnessInfo, changes, arrayKeys, previousValues }) {
-        let freshByKey = freshnessInfo.freshByKey;
+      getPreviousDependencyValuesForMarkStale: true,
+      markStale: function ({ freshnessInfo, changes, arrayKeys, previousDependencyValues }) {
+        let freshByKey = freshnessInfo.prescribedPoints.freshByKey;
 
         // console.log('mark stale for prescribed points');
         // console.log(JSON.parse(JSON.stringify(freshByKey)));
         // console.log(JSON.parse(JSON.stringify(changes)))
         // console.log(arrayKeys);
-        // console.log(previousValues);
+        // console.log(previousDependencyValues);
 
         if (changes.throughChildren) {
           if (changes.throughChildren.componentIdentitiesChanged) {
 
             // if any through children changed, everything is stale
-            freshnessInfo.freshByKey = {};
-            return { fresh: false }
+            freshnessInfo.prescribedPoints.freshByKey = {};
+            return { fresh: { prescribedPoints: false } }
 
           } else {
             let valuesChanged = changes.throughChildren.valuesChanged;
@@ -156,8 +157,8 @@ export default class InterpolatedFunction extends Function {
             if (valuesChanged.some(x => x.nPoints)) {
               // if number of points changed for any through points,
               // everything is stale
-              freshnessInfo.freshByKey = {};
-              return { fresh: false }
+              freshnessInfo.prescribedPoints.freshByKey = {};
+              return { fresh: { prescribedPoints: false } }
             }
 
             // through children didn't change
@@ -170,7 +171,7 @@ export default class InterpolatedFunction extends Function {
 
             for (let [throughInd, throughChange] of valuesChanged.entries()) {
 
-              let previousThrough = previousValues.throughChildren[throughInd];
+              let previousThrough = previousDependencyValues.throughChildren[throughInd];
               let nPointsInThrough = previousThrough.stateValues.points.length;
 
               if (throughChange) {
@@ -209,20 +210,20 @@ export default class InterpolatedFunction extends Function {
         if (arrayKey === undefined) {
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { prescribedPoints: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { prescribedPoints: true } }
           }
         } else {
           // asked for just one component
-          return { fresh: freshByKey[arrayKey] === true }
+          return { fresh: { prescribedPoints: freshByKey[arrayKey] === true } }
         }
 
 
       },
       definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.prescribedPoints.freshByKey;
 
         // console.log('definition of prescribed points')
         // console.log(dependencyValues);
@@ -494,13 +495,13 @@ export default class InterpolatedFunction extends Function {
       markStale: function ({ freshnessInfo, arrayKeys, changes }) {
 
         // with any change, mark whole array as stale
-        freshnessInfo.freshByKey = {}
-        return { fresh: false }
+        freshnessInfo.minima.freshByKey = {}
+        return { fresh: { minima: false } }
 
       },
       definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.minima.freshByKey;
 
         if (Object.keys(freshByKey).length > 0) {
           // if anything is fresh, it all is fresh
@@ -658,13 +659,13 @@ export default class InterpolatedFunction extends Function {
       markStale: function ({ freshnessInfo, arrayKeys, changes }) {
 
         // with any change, mark whole array as stale
-        freshnessInfo.freshByKey = {}
-        return { fresh: false }
+        freshnessInfo.maxima.freshByKey = {}
+        return { fresh: { maxima: false } }
 
       },
       definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.maxima.freshByKey;
 
         if (Object.keys(freshByKey).length > 0) {
           // if anything is fresh, it all is fresh
@@ -822,13 +823,13 @@ export default class InterpolatedFunction extends Function {
       markStale: function ({ freshnessInfo }) {
 
         // with any change, mark whole array as stale
-        freshnessInfo.freshByKey = {}
-        return { fresh: false }
+        freshnessInfo.extrema.freshByKey = {}
+        return { fresh: { extrema: false } }
 
       },
       definition: function ({ dependencyValues, freshnessInfo }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.extrema.freshByKey;
 
         // freshByKey is all or nothing
         // so if it contains anything, then everything is fresh
