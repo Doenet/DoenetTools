@@ -7,6 +7,8 @@ import { faFileAlt, faFolder, faArrowUp,
 import "./branchBrowser.css";
 import SpinningLoader from './SpinningLoader';
 import styled from 'styled-components';
+import DropItem from "./TreeView/components/drop-item";
+import DragItem from "./TreeView/components/drag-item";
 
 function formatTimestamp(date) {  
   let delta = Math.round((new Date - new Date(date)) / 1000);
@@ -68,7 +70,10 @@ class DoenetBranchBrowser extends Component {
       selectedItems: props.selectedItems,
       selectedItemsType: props.selectedItemsType,
       sortBy: "title",
-      sortOrderAsc: "ASC"
+      sortOrderAsc: "ASC",
+      currentDraggedObject: {id: null, type: null, sourceContainerId: null, sourceContainerType: null, dataObject: null, sourceParentId: null},
+      originalTreeParentsAndLeaves: { parents: null, leaves: null },
+      validDrop: true,
     }
 
     // handle null props
@@ -95,6 +100,11 @@ class DoenetBranchBrowser extends Component {
     this.sortFolders = this.sortFolders.bind(this);
     this.sortUrls = this.sortUrls.bind(this);
     this.openEditUrlForm = this.openEditUrlForm.bind(this);
+    this.onDragStart = this.onDragStart.bind(this);
+    this.onDragEnd = this.onDragEnd.bind(this);
+    this.onTreeDraggableDragOver = this.onTreeDraggableDragOver.bind(this);
+    this.onDropEnter = this.onDropEnter.bind(this);
+    this.onDrop = this.onDrop.bind(this);
   }
 
   getAllSelectedItems() {
@@ -331,7 +341,10 @@ class DoenetBranchBrowser extends Component {
         showRemoveItemIcon={showRemoveItemIcon}
         handleRemoveContent={this.props.selectedDrive === "Content" ? 
                             this.handleRemoveContentFromCurrentFolder :
-                            this.handleRemoveContentFromCourse}/>);
+                            this.handleRemoveContentFromCourse}
+        onDragStart={this.onDragStart}
+        onDragEnd={this.onDragEnd}
+        onDragOver={this.onTreeDraggableDragOver}/>);
         
     }
   }
@@ -680,6 +693,149 @@ class DoenetBranchBrowser extends Component {
     }
   }
 
+  onDragStart(draggedId, draggedType, sourceContainerId) {
+    console.log("onDragStart")
+
+    let dataObjectSource = this.props.allContentInfo;
+    if (draggedType == "folder") dataObjectSource = this.props.allFolderInfo;
+    else if (draggedType == "url") dataObjectSource = this.props.allUrlInfo;
+
+    const dataObject = dataObjectSource[draggedId];
+    const sourceParentId = dataObjectSource[draggedId].parentId;
+    
+    this.setState({
+      currentDraggedObject: {id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId},
+      // originalTreeParentsAndLeaves: { 
+      //   parents: JSON.parse(JSON.stringify(this.headingsInfo)), 
+      //   leaves: JSON.parse(JSON.stringify(this.assignmentsInfo))
+      // },
+      // validDrop: false
+    })
+  }
+
+  onTreeDraggableDragOver(id, type) {
+    console.log("treeDraggableDragOver")
+    // draggedType must be equal to dragOver type
+    // if (type != this.state.currentDraggedObject.type || id == "UltimateHeader") return;
+
+    // const draggedOverItemInfo = type == "leaf" ? this.assignmentsInfo : this.headingsInfo;
+    // const headingsChildrenListKey = type == "leaf" ? "assignmentId" : "headingId";
+    // const currentDraggedObjectInfo = this.state.currentDraggedObject.type == "leaf" ? this.assignmentsInfo : this.headingsInfo;
+
+    // const draggedOverItemParentListId = draggedOverItemInfo[id]["parent"];
+    // const draggedOverItemIndex = this.headingsInfo[draggedOverItemParentListId][headingsChildrenListKey]
+    //   .findIndex(itemId => itemId == id);
+
+    // const draggedItemParentListId = currentDraggedObjectInfo[this.state.currentDraggedObject.id]["parent"];
+
+    // // if the item is dragged over itself, ignore
+    // if (this.state.currentDraggedObject.id == id || draggedItemParentListId != draggedOverItemParentListId) {
+    //   return;
+    // } 
+
+    // // filter out the currently dragged item
+    // const items = this.headingsInfo[draggedOverItemParentListId][headingsChildrenListKey].filter(itemId => itemId != this.state.currentDraggedObject.id);
+    // // add the dragged item after the dragged over item
+    // items.splice(draggedOverItemIndex, 0, this.state.currentDraggedObject.id);
+
+    // this.headingsInfo[draggedOverItemParentListId][headingsChildrenListKey] = items;
+    // this.forceUpdate();
+  };
+
+  onDropEnter (listId) {
+    console.log("onDropEnter")
+
+    // // check current draggable source == tree
+    // // true then continue
+    // // false then (extract from original source, insert into tree at base level)
+
+    // // temp fix, do we want to allow assignments at base level
+    // if (listId == "UltimateHeader" && this.state.currentDraggedObject.type == "leaf") return;
+
+    // const currentDraggedObjectInfo = this.state.currentDraggedObject.dataObject;
+    // const previousParentId = currentDraggedObjectInfo.parent;
+
+    // if (previousParentId == listId || listId == this.state.currentDraggedObject.id) // prevent heading from becoming a child of itself 
+    //   return;
+    
+    // const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "assignmentId" : "headingId";
+    // const previousList = this.headingsInfo[previousParentId][headingsChildrenListKey];
+    // const currentList = this.headingsInfo[listId][headingsChildrenListKey];
+    // // remove from previous list
+    // if (previousParentId !== this.state.currentDraggedObject.sourceParentId) {
+    //   const indexInList = previousList.findIndex(itemId => itemId == this.state.currentDraggedObject.id);
+    //   if (indexInList > -1) {
+    //     previousList.splice(indexInList, 1);
+    //   }
+    // }
+    // if (listId !== this.state.currentDraggedObject.sourceParentId) {
+    //   // add to current list
+    //   currentList.push(this.state.currentDraggedObject.id);     
+    // }
+
+    // this.headingsInfo[previousParentId][headingsChildrenListKey] = previousList;
+    // this.headingsInfo[listId][headingsChildrenListKey] = currentList;
+    // this.setState({
+    //   currentDraggedObject: {
+    //     ...this.state.currentDraggedObject, 
+    //     dataObject: {...this.state.currentDraggedObject.dataObject,
+    //       parent : listId}
+    //   }
+    // })
+  }
+
+  onDragEnd () {
+    console.log("onDragEnd")
+    // // dropped outsize valid dropzone
+    // let currTreeHeadings = this.headingsInfo;
+    // let currTreeAssignments = this.assignmentsInfo;
+    // if (!this.state.validDrop) {
+    //   currTreeHeadings = this.state.originalTreeParentsAndLeaves.parents;
+    //   currTreeAssignments = this.state.originalTreeParentsAndLeaves.leaves;
+    // }
+    // // updateHeadingsAndAssignments(currTreeHeadings, currTreeAssignments);
+
+    // this.headingsInfo = currTreeHeadings;
+    // this.assignmentsInfo = currTreeAssignments;
+    // this.setState({
+    //   currentDraggedObject: {id: null, type: null, sourceContainerId: null},
+    //   originalTreeParentsAndLeaves: { parents: null, leaves: null },
+    //   validDrop: true
+    // })
+  }
+
+  onDrop () {
+    console.log("onDrop")
+    // // update courseHeadingsInfo/courseAssignmentsInfo currentDraggedObject parentId
+    // // remove currentDraggedObject from sourceParentId children list
+    // if (this.state.currentDraggedObject.type == "leaf") {
+    //   const newCourseAssignments = this.assignmentsInfo;
+    //   newCourseAssignments[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
+    //   setDataInfo(dataInfo => ({ ...dataInfo, courseAssignmentsInfo: newCourseAssignments }))
+    // }
+    // const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "assignmentId" : "headingId";
+    // const sourceParentChildrenList = this.headingsInfo[this.state.currentDraggedObject.sourceParentId][headingsChildrenListKey];
+    
+    // if (this.state.currentDraggedObject.dataObject.parent !== this.state.currentDraggedObject.sourceParentId) {
+    //   const indexInSourceParentChildrenList = sourceParentChildrenList.findIndex(itemId => itemId == this.state.currentDraggedObject.id);
+    //   if (indexInSourceParentChildrenList > -1) {
+    //     sourceParentChildrenList.splice(indexInSourceParentChildrenList, 1);
+    //   }
+    // }
+    
+    // // updateHeadingsAndAssignments(courseHeadingsInfo, courseAssignmentsInfo);
+    
+    // // update headings
+    // const newCourseHeadings = this.headingsInfo;
+    // this.headingsInfo[this.state.currentDraggedObject.sourceParentId][headingsChildrenListKey] = sourceParentChildrenList;
+    // if (this.state.currentDraggedObject.type == "parent") this.headingsInfo[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
+    // this.setState({
+    //   currentDraggedObject: {id: null, type: null, sourceContainerId: null},
+    //   validDrop: true
+    // })
+  }
+
+
   render() {
 
     if (this.props.loading){
@@ -763,42 +919,50 @@ class DoenetBranchBrowser extends Component {
   }
 }
 
-class File extends React.Component {
-  constructor(props) {
-    super(props);
+const File = ({ branchId, classes, onClick, onDoubleClick, title, publishDate,
+  draftDate, isShared, isPublic, tableIndex, showRemoveItemIcon, handleRemoveContent,
+  onDragStart, onDragOver, onDragEnd }) => {
+
+  const onDraggableDragOverCb = (listId) => {
+    onDragOver(listId, "content")
   }
 
-  render() {
+  const onDragStartCb = (listId, ev) => {
+    onDragStart(listId, "content", "branchBrowser");
+  }
 
-    return(
+  return(
+    <DragItem id={branchId} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
+      <>
       <tr
-      className={this.props.classes}
-      onClick={() => this.props.onClick(this.props.branchId, "content", this.props.tableIndex)}
-      onDoubleClick={() => this.props.onDoubleClick(this.props.branchId)}
-      data-cy={this.props.branchId}>
+      className={classes}
+      onClick={() => onClick(branchId, "content", tableIndex)}
+      onDoubleClick={() => onDoubleClick(branchId)}
+      data-cy={branchId}>
         <td className="browserItemName">
-          {this.props.isShared && this.props.isPublic ? 
+          {isShared && isPublic ? 
             <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/> :
             <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3D6EC9", "margin": "0px 15px"}}/>}
-          <span>{this.props.title}</span>
+          <span>{title}</span>
         </td>
         <td className="draftDate">
-          <span>{this.props.draftDate}</span>
+          <span>{draftDate}</span>
         </td>
         <td className="publishDate">
           <div style={{"position":"relative"}}>
-            {this.props.showRemoveItemIcon && 
+            {showRemoveItemIcon && 
             <div className="removeContentButtonWrapper">
               <FontAwesomeIcon icon={faArrowRight} className="removeContentButton" 
-              onClick={() => this.props.handleRemoveContent(this.props.branchId)}/>
+              onClick={() => handleRemoveContent(branchId)}/>
               <div className="removeContentButtonInfo"><span>Move out folder</span></div>
             </div>}
-            <span>{this.props.publishDate}</span>
+            <span>{publishDate}</span>
           </div>          
         </td>
       </tr>
-    );
-  }
+      </>
+    </DragItem>
+  );
 }
 
 class Url extends React.Component {

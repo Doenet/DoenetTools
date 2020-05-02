@@ -83,7 +83,20 @@ function buildTreeStructure({headingsInfo, assignmentsInfo, onDragStart, onDragE
     </div>
   </React.Fragment>;
   
-  return treeStructure;
+  // return treeStructure;
+
+  return buildTreeStructureHelper(
+    { parentHeadingId: "UltimateHeader", 
+      parentNodeHeadingId: "UltimateHeader",
+      headingsInfo: headingsInfo, 
+      assignmentsInfo: assignmentsInfo, 
+      onDragStart: onDragStart, 
+      onDragEnd: onDragEnd, 
+      onDraggableDragOver: onDraggableDragOver, 
+      onDrop: onDrop, 
+      onDropEnter: onDropEnter, 
+      currentDraggedObject: currentDraggedObject,
+      currentDraggedOverContainerId: currentDraggedOverContainerId});
 }
 
 function buildTreeStructureHelper({parentHeadingId, parentNodeHeadingId, headingsInfo, assignmentsInfo, 

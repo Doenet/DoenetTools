@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 
 export const ChooserContext = createContext();
@@ -84,7 +84,6 @@ export const ChooserProvider = ({ children }) => {
           tempAssignmentsInfo[itemId] = resp.data[itemId];
         }
       })
-
       setDataInfo(dataInfo => ({
         ...dataInfo,
         courseHeadingsInfo: tempHeadingsInfo, 
@@ -215,7 +214,6 @@ export const ChooserProvider = ({ children }) => {
   }
 
   const onTreeDraggableDragOver = (id, type) => {
-    console.log("treeDraggableDragOver")
     // draggedType must be equal to dragOver type
     if (type != appState.currentDraggedObject.type || id == "UltimateHeader") return;
 
@@ -239,13 +237,6 @@ export const ChooserProvider = ({ children }) => {
     // add the dragged item after the dragged over item
     items.splice(draggedOverItemIndex, 0, appState.currentDraggedObject.id);
 
-    // update headings
-    // const newCourseHeadings = dataInfo.courseHeadingsInfo;
-    // newCourseHeadings[draggedOverItemParentListId][headingsChildrenListKey] = items;
-    // setDataInfo(dataInfo => ({ 
-    //   ...dataInfo,
-    //   courseHeadingsInfo: newCourseHeadings
-    // }))
     setDataInfo(dataInfo => { 
       const newDataInfo = {...dataInfo};
       newDataInfo.courseHeadingsInfo[draggedOverItemParentListId][headingsChildrenListKey] = items;
@@ -254,14 +245,13 @@ export const ChooserProvider = ({ children }) => {
   };
 
   const onDropEnter = (listId) => {
-    console.log("onDropEnter")
 
-    // check current draggable source == tree
+        // check current draggable source == tree
     // true then continue
     // false then (extract from original source, insert into tree at base level)
 
     // temp fix, do we want to allow assignments at base level
-    if (listId == "UltimateHeader" && appState.currentDraggedObject.type == "leaf") return;
+    // if (listId == "UltimateHeader" && currentDraggedObject.type == "leaf") return;
 
     const currentDraggedObjectInfo = appState.currentDraggedObject.dataObject;
     const previousParentId = currentDraggedObjectInfo.parent;
@@ -284,22 +274,6 @@ export const ChooserProvider = ({ children }) => {
       currentList.push(appState.currentDraggedObject.id);     
     }
 
-    // // update headings
-    // const newCourseHeadings = dataInfo.courseHeadingsInfo;
-    // newCourseHeadings[previousParentId][headingsChildrenListKey] = previousList;
-    // newCourseHeadings[listId][headingsChildrenListKey] = currentList;
-    // setDataInfo(dataInfo => ({ 
-    //   ...dataInfo,
-    //   courseHeadingsInfo: newCourseHeadings
-    // }))
-    // // update dragged object
-    // const newCurrentDraggedObject = appState.currentDraggedObject;
-    // newCurrentDraggedObject.dataObject.parent = listId;
-    // setAppState(appState => ({ 
-    //   ...appState,
-    //   currentDraggedObject: newCurrentDraggedObject
-    // }))
-
     setDataInfo(dataInfo => { 
       const newDataInfo = {...dataInfo};
       newDataInfo.courseHeadingsInfo[previousParentId][headingsChildrenListKey] = previousList;
@@ -314,8 +288,6 @@ export const ChooserProvider = ({ children }) => {
   }
 
   const onDragEnd = () => {
-    console.log("onDragEnd")
-    console.log(appState)
     // dropped outsize valid dropzone
     let currTreeHeadings = dataInfo.courseHeadingsInfo;
     let currTreeAssignments = dataInfo.courseAssignmentsInfo;
@@ -334,7 +306,6 @@ export const ChooserProvider = ({ children }) => {
   }
 
   const onDrop = () => {
-    console.log("onDrop")
     // update courseHeadingsInfo/courseAssignmentsInfo currentDraggedObject parentId
     // remove currentDraggedObject from sourceParentId children list
     if (appState.currentDraggedObject.type == "leaf") {
@@ -365,7 +336,12 @@ export const ChooserProvider = ({ children }) => {
     }))
   }
 
-  console.log("rerendered")
+    // onDropEnter:
+  // if currentDraggedObject == null (from another sourceContainer)
+  // use ref.current to obtain currentDraggedObject and set currentDraggedObject
+  // 
+
+
 
   const providerValue = {
     data: {

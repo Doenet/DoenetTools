@@ -1,11 +1,17 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import styled from 'styled-components'
 import { TreeView } from './TreeView/TreeView'
 
 
-const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHeadingsAndAssignments,
-  courseFoldersInfo, courseContentInfo, updateCourseFoldersAndContent }) => {
-  const [currentDraggedObject, setCurrentDraggedObject] = useState({id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null});
+const DoenetCourseOutline = React.memo(({ treeHeadingsInfo, treeAssignmentsInfo, updateHeadingsAndAssignments }) => {
+  const [currentDraggedObject, setCurrentDraggedObject] = useState({
+    id: null, 
+    type: null,
+    sourceContainerId: null,   
+    sourceContainerType: null,   // tree || browser
+    dataObject: null, 
+    sourceParentId: null,
+  });
   const [treeHeadings, setTreeHeadings] = useState(treeHeadingsInfo);
   const [treeAssignments, setTreeAssignments] = useState(treeAssignmentsInfo);
   const [originalTreeHeadingsAndAssignments, setOriginalTreeHeadingsAndAssignments] = useState({
@@ -67,13 +73,6 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
 
   const onDropEnter = (listId) => {
 
-    // check current draggable source == tree
-    // true then continue
-    // false then (extract from original source, insert into tree at base level)
-
-    // temp fix, do we want to allow assignments at base level
-    if (listId == "UltimateHeader" && currentDraggedObject.type == "leaf") return;
-
     const currentDraggedObjectInfo = currentDraggedObject.dataObject;
     const previousParentId = currentDraggedObjectInfo.parent;
 
@@ -129,8 +128,10 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
     setTreeAssignments(currTreeAssignments);
     setTreeHeadings(currTreeHeadings);
     updateHeadingsAndAssignments(currTreeHeadings, currTreeAssignments);
-    setCurrentDraggedObject({id: null, type: null, sourceContainerId: null});
     setOriginalTreeHeadingsAndAssignments({ headings: null, assignments: null });
+    setCurrentDraggedObject({id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null});
+    updateCurrentDraggedObjectProps({id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null});
+    
   }
 
   const onDrop = () => {
@@ -162,11 +163,10 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
     })
     
     setValidDrop(true);
-    setCurrentDraggedObject({id: null, type: null, sourceContainerId: null});
+    setCurrentDraggedObject({id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null});
+    updateCurrentDraggedObjectProps({id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null});
     updateHeadingsAndAssignments(treeHeadings, treeAssignments);
   }
-
-  console.log("rerendered2")
 
   return (
     <CourseOutlineFrame>
@@ -179,11 +179,9 @@ const DoenetCourseOutline = ({ treeHeadingsInfo, treeAssignmentsInfo, updateHead
           onDraggableDragOver={onTreeDraggableDragOver} 
           onDropEnter={onDropEnter}
           onDrop={onDrop} />
-        
-        <TempChooser><span>Temp chooser</span></TempChooser>
     </CourseOutlineFrame>
   );
-}
+});
 
 const CourseOutlineFrame = styled('div')`
   display: flex;
