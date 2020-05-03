@@ -4,7 +4,7 @@ import { Global } from './components/tree-node/styles'
 import "./index.css";
 
 
-export const TreeView = ({headingsInfo, assignmentsInfo, currentDraggedObject, onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter}) => {
+export const TreeView = ({sourceContainerId, headingsInfo, assignmentsInfo, currentDraggedObject, onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter}) => {
   const [currentDraggedOverContainerId, setCurrentDraggedOverContainerId] = useState(null);
 
   // handle dragEnd
@@ -12,17 +12,21 @@ export const TreeView = ({headingsInfo, assignmentsInfo, currentDraggedObject, o
     if (currentDraggedObject.id == null) setCurrentDraggedOverContainerId(null);
   }, [currentDraggedObject])
 
+  const onDragStartCb = (listId, type) => {
+    onDragStart && onDragStart(listId, type, sourceContainerId);
+  }
+  
+  const onDragEndCb = () => {
+    onDragEnd && onDragEnd(sourceContainerId);
+  }
+
   const onDropCb = () => {
     onDrop && onDrop();
   }
 
   const onDropEnterCb = (id) => {
     setCurrentDraggedOverContainerId(id); 
-    onDropEnter && onDropEnter(id);
-  }
-
-  const onMouseUp = () => {
-    // console.log("HERERE");
+    onDropEnter && onDropEnter(id, sourceContainerId);
   }
 
   return (
@@ -30,14 +34,13 @@ export const TreeView = ({headingsInfo, assignmentsInfo, currentDraggedObject, o
     { buildTreeStructure({
         headingsInfo: headingsInfo, 
         assignmentsInfo: assignmentsInfo, 
-        onDragStart: onDragStart, 
-        onDragEnd: onDragEnd, 
+        onDragStart: onDragStartCb, 
+        onDragEnd: onDragEndCb, 
         onDraggableDragOver: onDraggableDragOver, 
         onDrop: onDropCb, 
         onDropEnter: onDropEnterCb, 
         currentDraggedOverContainerId: currentDraggedOverContainerId,
         currentDraggedObject: currentDraggedObject,
-        onMouseUp: onMouseUp
       }) 
     }
     </>

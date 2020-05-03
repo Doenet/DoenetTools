@@ -336,12 +336,6 @@ export const ChooserProvider = ({ children }) => {
     }))
   }
 
-    // onDropEnter:
-  // if currentDraggedObject == null (from another sourceContainer)
-  // use ref.current to obtain currentDraggedObject and set currentDraggedObject
-  // 
-
-
 
   const providerValue = {
     data: {

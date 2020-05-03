@@ -552,6 +552,22 @@ input[type=number]::-webkit-outer-spin-button {
   outline: none;
 }
 
+.tree {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: left;
+  text-align: left;
+  padding: 2em;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  grid-row: 2 / 3;
+  grid-column: 3 / 4;
+  transform: scale(1.2);
+  transform-origin: top left;
+  margin-top: 15px;
+}
+
 @media only screen and (max-width: 375px) {
   #chooserContainer {
     display: block;

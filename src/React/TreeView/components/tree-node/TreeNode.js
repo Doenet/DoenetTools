@@ -48,9 +48,9 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
     onDraggableDragOver(listId, "parent")
   }
 
-  const onDragStartCb = (listId, ev) => {
+  const onDragStartCb = (listId) => {
     setOpen(false);
-    onDragStart(listId, "parent", ev)
+    onDragStart(listId, "parent")
   }
 
   let DroppableParentNode = 
