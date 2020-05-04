@@ -25,9 +25,6 @@ export class Extremum extends BaseComponent {
 
       let results = breakEmbeddedStringByCommas({
         childrenList: dependencyValues.stringsAndMaths,
-        classesToExtract: [
-          args.allComponentClasses.variables,
-        ],
       });
 
       if (results.success !== true) {
@@ -37,7 +34,7 @@ export class Extremum extends BaseComponent {
       let pieces = results.pieces;
       let toDelete = results.toDelete;
 
-      let variablesChild = results.componentsExtracted[0];
+      let variablesChild = dependencyValues.variables[0];
 
       results = breakPiecesByEquals(pieces, true);
 
@@ -58,11 +55,14 @@ export class Extremum extends BaseComponent {
       let nVariablesInChild = 0;
       let nVariablesNeeded = Math.max(lhsByPiece.length, 2);
       if (variablesChild !== undefined) {
-        nVariablesInChild = variablesChild._component.state.ncomponents;
-        newChildren.push(variablesChild);
+        nVariablesInChild = variablesChild.stateValues.nComponents;
+        newChildren.push({
+          createdComponent: true,
+          componentName: variablesChild.componentName
+        });
       }
       for (let i = 0; i < Math.min(nVariablesInChild, nVariablesNeeded); i++) {
-        variableNames.push(variablesChild._component.state.variables[i].tree);
+        variableNames.push(variablesChild.stateValues.maths[i].tree);
       }
       for (let i = nVariablesInChild; i < nVariablesNeeded; i++) {
         // if have more pieces that variables
@@ -230,6 +230,11 @@ export class Extremum extends BaseComponent {
           dependencyType: "childStateVariables",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"]
+        },
+        variables: {
+          dependencyType: "childStateVariables",
+          childLogicName: "variablesForSugar",
+          variableNames: ["nComponents", "maths"]
         }
       }),
       logicToWaitOnSugar: ["exactlyOneLocation", "exactlyOneValue"],

@@ -363,8 +363,6 @@ export default class Sequence extends CompositeComponent {
       }),
       defaultValue: [],
       definition: function ({ dependencyValues }) {
-        console.log('definition of specified exclude')
-        console.log(dependencyValues)
         if (dependencyValues.excludeChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
@@ -529,8 +527,6 @@ export default class Sequence extends CompositeComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        console.log(`definition of to/from etc.`)
-        console.log(dependencyValues);
 
         let from = dependencyValues.specifiedFrom;
         let to = dependencyValues.specifiedTo;

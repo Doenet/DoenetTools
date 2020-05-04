@@ -3416,17 +3416,16 @@ export default class Core {
     }
     arrayStateVarObj.arrayEntryNames.push(stateVariable);
 
-    // Each arrayEntry state variable will have a funciton getValueFromArrayValue
+    // Each arrayEntry state variable will have a function getValueFromArrayValue
     // that will be used to retrieve the actual value of the components
     // specified by this entry from the whole array stored in arrayValues
     // Note: getValueFromArrayValues assumes that arrayValues has been populated
     if (arrayStateVarObj.getEntryValues) {
       // the function getEntryValues must have been overwritten by the class
       // so use this function instead
-      stateVarObj.getValueFromArrayValues = function () {//({ overridesByKey } = {}) {
+      stateVarObj.getValueFromArrayValues = function () {
         return arrayStateVarObj.getEntryValues({
           varName: stateVariable,
-          // overridesByKey
         });
       };
     }
@@ -3436,17 +3435,10 @@ export default class Core {
       // (returning a scalar instead if it is just a single value)
       // It uses the function getArrayValue, which gets the values
       // from arrayValues of the corresponding array state variable
-      // Any values in overridesByKey are used instead of values
-      // from the array state variable
-      stateVarObj.getValueFromArrayValues = function () {//({ overridesByKey } = {}) {
+      stateVarObj.getValueFromArrayValues = function () {
         let value = [];
         for (let arrayKey of stateVarObj.arrayKeys) {
-          // if (overridesByKey && arrayKey in overridesByKey) {
-          //   value.push(overridesByKey[arrayKey]);
-          // }
-          // else {
           value.push(arrayStateVarObj.getArrayValue({ arrayKey }));
-          // }
         }
         if (value.length === 1) {
           return value[0];
@@ -3531,6 +3523,30 @@ export default class Core {
         }
         return aVals[index[index.length - 1]];
       };
+      if (!stateVarObj.getArrayKeysFromVarName) {
+        // the default function for getArrayKeysFromVarName ignores the
+        // array entry prefix, but is just based on the variable ending.
+        // A component class's function could use arrayEntryPrefix
+        stateVarObj.getArrayKeysFromVarName = function ({ arrayEntryPrefix, varEnding }) {
+          let nums = varEnding.split('_').map(x => Number(x))
+          if (nums.length === stateVarObj.nDimensions && nums.every(x => Number.isInteger(x))) {
+            return [String(nums.map(x => x - 1))];
+          } else {
+            return;
+          }
+        };
+      }
+
+      if (!stateVarObj.arrayVarNameFromArrayKey) {
+        stateVarObj.arrayVarNameFromArrayKey = function (arrayKey) {
+          return entryPrefixes[0] + arrayKey.split(',').map(x => Number(x) + 1).join('_')
+        };
+      }
+      if (!stateVarObj.allVarNamesThatIncludeArrayKey) {
+        stateVarObj.allVarNamesThatIncludeArrayKey = function (arrayKey) {
+          return [entryPrefixes[0] + arrayKey.split(',').map(x => Number(x) + 1).join('_')];
+        };
+      }
     }
     else {
       // for a single dimension, can just use arrayKey directly
@@ -3549,25 +3565,36 @@ export default class Core {
       stateVarObj.getArrayValue = function ({ arrayKey }) {
         return stateVarObj.arrayValues[arrayKey];
       };
+
+      if (!stateVarObj.getArrayKeysFromVarName) {
+        // the default function for getArrayKeysFromVarName ignores the
+        // array entry prefix, but is just based on the variable ending.
+        // A component class's function could use arrayEntryPrefix
+        stateVarObj.getArrayKeysFromVarName = function ({ arrayEntryPrefix, varEnding }) {
+          let num = Number(varEnding);
+          if (Number.isInteger(num)) {
+            return [String(num - 1)];
+          } else {
+            return;
+          }
+        };
+      }
+
+      if (!stateVarObj.arrayVarNameFromArrayKey) {
+        stateVarObj.arrayVarNameFromArrayKey = function (arrayKey) {
+          return entryPrefixes[0] + String(Number(arrayKey) + 1);
+        };
+      }
+      if (!stateVarObj.allVarNamesThatIncludeArrayKey) {
+        stateVarObj.allVarNamesThatIncludeArrayKey = function (arrayKey) {
+          return [entryPrefixes[0] + String(Number(arrayKey) + 1)];
+        };
+      }
     }
 
     // converting from index to key is the same for single and multiple
     // dimensions, as we just want the string representation
     stateVarObj.indexToKey = index => String(index);
-
-    if (!stateVarObj.getArrayKeysFromVarName) {
-      // the default function for getArrayKeysFromVarName ignores the
-      // array entry prefix, but is just based on the variable ending.
-      // A component class's function could use arrayEntryPrefix
-      stateVarObj.getArrayKeysFromVarName = function ({ arrayEntryPrefix, varEnding }) {
-        let num = Number(varEnding);
-        if (Number.isInteger(num)) {
-          return [String(num - 1)];
-        } else {
-          return;
-        }
-      };
-    }
 
     let entryPrefixes = stateVarObj.entryPrefixes;
 
@@ -3575,16 +3602,7 @@ export default class Core {
       entryPrefixes = [stateVariable]
     }
 
-    if (!stateVarObj.arrayVarNameFromArrayKey) {
-      stateVarObj.arrayVarNameFromArrayKey = function (arrayKey) {
-        return entryPrefixes[0] + String(Number(arrayKey) + 1);
-      };
-    }
-    if (!stateVarObj.allVarNamesThatIncludeArrayKey) {
-      stateVarObj.allVarNamesThatIncludeArrayKey = function (arrayKey) {
-        return [entryPrefixes[0] + String(Number(arrayKey) + 1)];
-      };
-    }
+
     if (!component.arrayEntryPrefixes) {
       component.arrayEntryPrefixes = {};
     }

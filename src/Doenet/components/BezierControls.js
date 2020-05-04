@@ -1,22 +1,23 @@
 import BaseComponent from './abstract/BaseComponent';
-import {breakEmbeddedStringByCommas, breakIntoVectorComponents} from './commonsugar/breakstrings';
+import { breakEmbeddedStringByCommas, breakIntoVectorComponents } from './commonsugar/breakstrings';
 import me from 'math-expressions';
 
 export default class BezierControls extends BaseComponent {
   static componentType = "beziercontrols";
-  
-  static returnChildLogic (args) {
+  static rendererType = "container";
+
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.deleteAllLogic();
 
-    let checkIfMathVector = function(compList) {
-      if(compList.length === 1) {
+    let checkIfMathVector = function (compList) {
+      if (compList.length === 1) {
         let component = compList[0]._component;
-        if(component !== undefined && component.componentType==="math") {
+        if (component !== undefined && component.componentType === "math") {
           let tree = component.state.value.tree;
-          if(tree !== undefined) {
-            if(Array.isArray(tree) && (tree[0] === "tuple" || tree[0] === "vector")) {
+          if (tree !== undefined) {
+            if (Array.isArray(tree) && (tree[0] === "tuple" || tree[0] === "vector")) {
               return true;
             }
           }
@@ -25,31 +26,33 @@ export default class BezierControls extends BaseComponent {
       return false;
     }
 
-    let createControlList = function({activeChildrenMatched}) {
+    let createControlList = function ({ dependencyValues }) {
 
       let results = breakEmbeddedStringByCommas({
-        childrenList: activeChildrenMatched,
-        classesToExtract: [this.allComponentClasses.defaultcontrols],
+        childrenList: dependencyValues.stringsAndMaths,
       });
 
-      if(results.success !== true) {
-        return {success: false}
+      if (results.success !== true) {
+        return { success: false }
       }
 
-      let defaultcontrolsChild = results.componentsExtracted[0];
+      let defaultcontrolsChild = dependencyValues.defaultControls[0];
       let pieces = results.pieces;
       let toDelete = results.toDelete;
 
       let newChildren = [];
       let controlsAreVectors = false;
-      if(defaultcontrolsChild !== undefined) {
-        newChildren.push(defaultcontrolsChild);
-        if(defaultcontrolsChild._component.state.value === "vector") {
+      if (defaultcontrolsChild !== undefined) {
+        newChildren.push({
+          createdComponent: true,
+          componentName: defaultcontrolsChild.componentName
+        });
+        if (defaultcontrolsChild.stateValues.value === "vector") {
           controlsAreVectors = true;
         }
       }
 
-      for(let ind=0; ind < pieces.length; ind++) {
+      for (let ind = 0; ind < pieces.length; ind++) {
         let piece = pieces[ind];
 
         // each piece must be a vector (if not, we won't sugar)
@@ -59,21 +62,21 @@ export default class BezierControls extends BaseComponent {
         let componentsAreVectors = false;
         let vectorComponents;
         let result = breakIntoVectorComponents(piece);
-        if(result.foundVector !== true) {
+        if (result.foundVector !== true) {
           // check if is a single math that is a tuple or vector
-          if(!checkIfMathVector(piece)) {
-            return {success: false};
+          if (!checkIfMathVector(piece)) {
+            return { success: false };
           }
         } else {
-        
+
           vectorComponents = result.vectorComponents;
 
           // check if each component is itself a vector
           componentsAreVectors = true;
-          for(let comp of vectorComponents) {
+          for (let comp of vectorComponents) {
             let result2 = breakIntoVectorComponents(comp);
-            if(result2.foundVector !== true) {
-              if(!checkIfMathVector(comp)) {
+            if (result2.foundVector !== true) {
+              if (!checkIfMathVector(comp)) {
                 componentsAreVectors = false;
                 break;
               }
@@ -84,12 +87,12 @@ export default class BezierControls extends BaseComponent {
         let children;
         let controlType = "point";
         let controlListType = "controlpoints";
-        if(controlsAreVectors) {
+        if (controlsAreVectors) {
           controlType = "vector";
           controlListType = "controlvectors";
         }
 
-        if(componentsAreVectors) {
+        if (componentsAreVectors) {
           // found a piece that is a vector of vectors
           // Instead of using the piece itself as the children for the control,
           // we'll use the vector components of the piece
@@ -99,19 +102,19 @@ export default class BezierControls extends BaseComponent {
           // that we encountered in the initial breaking into components
           toDelete = [...toDelete, ...result.toDelete];
 
-          children = vectorComponents.map(x=> ({
+          children = vectorComponents.map(x => ({
             componentType: controlType,
             children: x
           }));
 
-        }else {
+        } else {
           // if not vector of vectors, just keep original children from piece
           children = [{
             componentType: controlType,
             children: piece
           }]
         }
-        
+
         newChildren.push({
           componentType: controlListType,
           children: children
@@ -140,7 +143,7 @@ export default class BezierControls extends BaseComponent {
       comparison: 'atLeast',
       number: 1,
     });
-    
+
     let atLeastOneMath = childLogic.newLeaf({
       name: "atLeastOneMath",
       componentType: 'math',
@@ -160,6 +163,19 @@ export default class BezierControls extends BaseComponent {
       operator: 'and',
       propositions: [defaultControlsForSugar, stringsAndMaths],
       isSugar: true,
+      returnSugarDependencies: () => ({
+        stringsAndMaths: {
+          dependencyType: "childStateVariables",
+          childLogicName: "stringsAndMaths",
+          variableNames: ["value"]
+        },
+        defaultControls: {
+          dependencyType: "childStateVariables",
+          childLogicName: "defaultControlsForSugar",
+          variableNames: ["value"],
+        }
+      }),
+      logicToWaitOnSugar: ["atLeastOneControlpoints", "atLeastOneControlvectors"],
       replacementFunction: createControlList,
     });
 
@@ -169,7 +185,7 @@ export default class BezierControls extends BaseComponent {
       comparison: 'atMost',
       number: 1,
     });
-  
+
     let atLeastOnePoint = childLogic.newLeaf({
       name: "atLeastOnePoint",
       componentType: 'point',
@@ -222,8 +238,243 @@ export default class BezierControls extends BaseComponent {
     return childLogic;
   }
 
-  updateState(args={}) {
-    if(args.init) {
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.controls = {
+      isArray: true,
+      entryPrefixes: ["control"],
+      nDimensinos: 2,
+      returnDependencies: function ({ arrayKeys }) {
+        if (arrayKeys === undefined) {
+          return {
+            controlChildren: {
+              dependencyType: "childStateVariables",
+              childLogicName: "atLeastOneControl",
+              variableNames: ["coords", "displacement", "points", "nPoints", "vectors", "nVectors"],
+              variablesOptional: true
+            }
+          }
+        } else {
+          let dependencies = {};
+
+          for (let arrayKey of arrayKeys) {
+            let arrayIndex = arrayKey.split(",").map(x => Number(x));
+
+            if (arrayIndex[1] === 0) {
+              dependencies['controlChild' + arrayKey] = {
+                dependencyType: "childStateVariables",
+                childLogicName: "atLeastOneControl",
+                variableNames: ["coords", "displacement", "point1", "vector1"],
+                variablesOptional: true,
+                childIndices: [arrayIndex[0]],
+              }
+            } else if(arrayIndex[1] === 1) {
+              dependencies['controlChild' + arrayKey] = {
+                dependencyType: "childStateVariables",
+                childLogicName: "atLeastOneControl",
+                variableNames: ["point2", "vector2"],
+                variablesOptional: true,
+                childIndices: [arrayIndex[0]],
+              }
+            }
+          }
+
+          return dependencies;
+        }
+      },
+      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
+        // console.log('mark stale for beziercontrols controls')
+        // console.log(changes);
+        // console.log(arrayKeys);
+
+        let freshByKey = freshnessInfo.controls.freshByKey;
+
+
+        if (arrayKeys === undefined) {
+
+          if (changes.controlChildren) {
+            if (changes.controlChildren.componentIdentitiesChanged) {
+              for (let key in freshByKey) {
+                delete freshByKey[key];
+              }
+            } else {
+              for (let ind in changes.controlChildren.valuesChanged) {
+                // TODO: check which of the components actually changed
+                console.log(`changes from control child ${ind}`);
+                console.log(changes.controlChildren.valuesChanged[ind])
+                delete freshByKey[[ind,0]];
+                delete freshByKey[[ind,1]];
+              }
+            }
+          }
+
+          if (Object.keys(freshByKey).length === 0) {
+            // asked for entire array and it is all stale
+            return { fresh: { controls: false } }
+          } else {
+            // asked for entire array, but it has some fresh elements
+            // (we don't know here how many elements controls has, 
+            // so can't determine if completely fresh)
+            return { partiallyFresh: { controls: true } }
+          }
+        } else {
+
+          // have arrayKeys
+          // so asked for just one component
+
+          if (changes.controlChild) {
+            if (changes.controlChild.componentIdentitiesChanged) {
+              delete freshByKey[arrayKey];
+            } else {
+              if (changes.controlChild.valuesChanged[0]) {
+                delete freshByKey[arrayKey];
+              }
+            }
+          }
+
+          return { fresh: { controls: freshByKey[arrayKey] === true } };
+        }
+
+      },
+      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
+
+        let freshByKey = freshnessInfo.controls.freshByKey;
+
+        // console.log('definition of controls for beziercontrols')
+        // console.log(JSON.parse(JSON.stringify(freshByKey)));
+        // console.log(JSON.parse(JSON.stringify(dependencyValues)))
+        // console.log(JSON.parse(JSON.stringify(changes)))
+        // console.log(arrayKeys);
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+
+        if (arrayKey === undefined) {
+          if (changes.controlChildren && changes.controlChildren.componentIdentitiesChanged) {
+            // send array so that now should overwrite entire array
+            for (let key in dependencyValues.controlChildren) {
+              freshByKey[key] = true;
+            }
+
+            return {
+              newValues: {
+                controls: dependencyValues.controlChildren.map(x => getControl(x)),
+              }
+            }
+          }
+
+          let newControlValues = {};
+          for (let arrayKey in dependencyValues.controlChildren) {
+            if (!freshByKey[arrayKey]) {
+              freshByKey[arrayKey] = true;
+              newControlValues[arrayKey] = getControl(dependencyValues.controlChildren[arrayKey]);
+            }
+          }
+          return { newValues: { controls: newControlValues } }
+        } else {
+
+          // have arrayKey
+
+          if (!freshByKey[arrayKey]) {
+            freshByKey[arrayKey] = true;
+            let control;
+            if (dependencyValues.controlChildren.length === 1) {
+              control = getControl(dependencyValues.controlChildren[0])
+            }
+            return {
+              newValues: {
+                controls: {
+                  [arrayKey]: control
+                }
+              }
+            }
+          } else {
+            // arrayKey asked for didn't change
+            // don't need to report noChanges for array state variable
+            return {};
+          }
+        }
+      },
+      inverseDefinition: function ({ desiredStateVariableValues,
+        dependencyValues, arrayKeys
+      }) {
+
+        // console.log('inverse definition of controls of beziercontrols')
+        // console.log(desiredStateVariableValues)
+        // console.log(arrayKeys);
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+
+        if (arrayKey === undefined) {
+          // working with entire array
+
+          let instructions = [];
+          for (let key in desiredStateVariableValues.controls) {
+            if (!dependencyValues.controlChildren[key]) {
+              return { success: false }
+            }
+            instructions.push(invertControls({
+              dependencyName: "controlChildren",
+              desiredValue: desiredStateVariableValues.controls[key],
+              childIndex: key,
+              controlChild: dependencyValues.controlChildren[key]
+            }))
+            // instructions.push({
+            //   setDependency: "pointChildren",
+            //   desiredValue: desiredStateVariableValues.points[key],
+            //   childIndex: key,
+            //   variableIndex: 0
+            // })
+          }
+
+          return {
+            success: true,
+            instructions
+          }
+        } else {
+
+          // just have one arrayKey
+          if (!dependencyValues.controlChildren[arrayKey]) {
+            return { success: false }
+          }
+          return {
+            success: true,
+            instructions: [
+              invertControls({
+                dependencyName: "controlChild",
+                desiredValue: desiredStateVariableValues.controls[arrayKey],
+                childIndex: 0,
+                controlChild: dependencyValues.controlChildren[arrayKey]
+              })
+            ]
+            // instructions: [{
+            //   setDependency: "pointChild",
+            //   desiredValue: desiredStateVariableValues.points[arrayKey],
+            //   childIndex: 0,
+            //   variableIndex: 0
+            // }]
+          }
+
+        }
+
+      }
+    }
+
+    return stateVariableDefinitions;
+
+  }
+
+  updateState(args = {}) {
+    if (args.init) {
       this.makeArrayVariable({
         variableName: "controls",
         trackChanges: true
@@ -232,137 +483,18 @@ export default class BezierControls extends BaseComponent {
 
     super.updateState(args);
 
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.controls = true;
-      return;
-    }
 
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
+    if (childrenChanged) {
       let controlInds = this.childLogic.returnMatches("atLeastOneControl");
       this.state.controlChildren = controlInds.map(x => this.activeChildren[x]);
     }
 
-    if(childrenChanged) {
+    if (childrenChanged) {
       this.state.controls = [];
     }
 
-    for(let [ind, child] of this.state.controlChildren.entries()) {
-      if(child instanceof this.allComponentClasses.controlvectors) {
-        if(child.unresolvedState.vectors ||
-            child.state.vectors.some(x=>x.unresolvedState.displacement)) {
-          if(this.unresolvedState.controls === undefined) {
-            this.unresolvedState.controls = {isArray: true, arrayComponents: {}}
-          }
-          this.unresolvedState.controls.arrayComponents[ind] = true;
-          continue;
-        }
-        if(childrenChanged || trackChanges.getVariableChanges({
-          component: child, variable: "vectors"
-        }) || child.state.vectors.some(x=>trackChanges.getVariableChanges({
-          component: x, variable: "displacement"
-        }))) {
-          if(child.state.nVectors === 0) {
-            console.log("can't create beizer controlvector with zero vectors");
-            this.state.controls[ind] = {
-              controlType: "vector",
-              vectors: [me.fromAst(0)],
-            };
-          }else if(child.state.nVectors === 1) {
-            let vector = child.state.vectors[0].state.displacement.copy();
-            this.state.controls[ind] = {
-              controlType: "vector",
-              vectors: [vector],
-            };
-          }else if(child.state.nVectors === 2) {
-            let vectors = [
-              child.state.vectors[0].state.displacement.copy(),
-              child.state.vectors[1].state.displacement.copy()
-            ];
-            this.state.controls[ind] = {
-              controlType: "vector",
-              vectors: vectors,
-            };
-          }else {
-            throw Error("can't create beizer controlvector with more than two vectors");
-          }
-        }
-      }else if(child instanceof this.allComponentClasses.controlpoints) {
-        if(child.unresolvedState.points ||
-            child.state.points.some(x=>x.unresolvedState.coords)) {
-          if(this.unresolvedState.controls === undefined) {
-            this.unresolvedState.controls = {isArray: true, arrayComponents: {}}
-          }
-          this.unresolvedState.controls.arrayComponents[ind] = true;
-          continue;
-        }
-        if(childrenChanged || trackChanges.getVariableChanges({
-          component: child, variable: "points"
-        }) || child.state.points.some(x=>trackChanges.getVariableChanges({
-          component: x, variable: "coords"
-        }))) {
-          if(child.state.nPoints === 0) {
-            console.log("can't create beizer controlpoint with zero points");
-            this.state.controls[ind] = {
-              controlType: "point",
-              points: [me.fromAst(0)],
-            };
-          } else if(child.state.nPoints === 1) {
-            let point = child.state.points[0].state.coords.copy();
-            this.state.controls[ind] = {
-              controlType: "point",
-              points: [point],
-            };
-          }else if(child.state.nPoints === 2) {
-            let points = [
-              child.state.points[0].state.coords.copy(),
-              child.state.points[1].state.coords.copy()
-            ];
-            this.state.controls[ind] = {
-              controlType: "point",
-              points: points,
-            };
-          }else {
-            throw Error("can't create bezier controlpoint with more than two points");
-          }
-        }
-      }else if(child instanceof this.allComponentClasses.vector) {
-        if(child.unresolvedState.displacement) {
-          if(this.unresolvedState.controls === undefined) {
-            this.unresolvedState.controls = {isArray: true, arrayComponents: {}}
-          }
-          this.unresolvedState.controls.arrayComponents[ind] = true;
-          continue;
-        }
-        if(childrenChanged || trackChanges.getVariableChanges({
-          component: child, variable: "displacement"
-        })) {
-          let vector = child.state.displacement.copy();
-          this.state.controls[ind] = {
-            controlType: "vector",
-            vectors: [vector],
-          };
-        }
-      }else if(child instanceof this.allComponentClasses.point) {
-        if(child.unresolvedState.coords) {
-          if(this.unresolvedState.controls === undefined) {
-            this.unresolvedState.controls = {isArray: true, arrayComponents: {}}
-          }
-          this.unresolvedState.controls.arrayComponents[ind] = true;
-          continue;
-        }
-        if(childrenChanged || trackChanges.getVariableChanges({
-          component: child, variable: "coords"
-        })) {
-          let point = child.state.coords.copy();
-          this.state.controls[ind] = {
-            controlType: "point",
-            points: [point],
-          };
-        }
-      }
+    for (let [ind, child] of this.state.controlChildren.entries()) {
+
     }
 
   }
@@ -375,54 +507,34 @@ export default class BezierControls extends BaseComponent {
     return ["controls"];
   }
 
-  calculateDownstreamChanges({stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate}) {
+  calculateDownstreamChanges({ stateVariablesToUpdate, stateVariableChangesToSave,
+    dependenciesToUpdate }) {
 
     let newControls = {};
     let newStateVariables = {};
-    for(let varName in stateVariablesToUpdate) {
-      if(varName === "controls") {
-        if(newStateVariables[varName] === undefined) {
+    for (let varName in stateVariablesToUpdate) {
+      if (varName === "controls") {
+        if (newStateVariables[varName] === undefined) {
           newStateVariables[varName] = {
             isArray: true,
             changes: { arrayComponents: {} }
           }
         }
-        for(let ind in stateVariablesToUpdate[varName].changes.arrayComponents) {
-          newControls[ind] = newStateVariables[varName].changes.arrayComponents[ind] = 
+        for (let ind in stateVariablesToUpdate[varName].changes.arrayComponents) {
+          newControls[ind] = newStateVariables[varName].changes.arrayComponents[ind] =
             stateVariablesToUpdate[varName].changes.arrayComponents[ind];
         }
       }
-    } 
+    }
 
-    for(let ind in newControls) {
+    for (let ind in newControls) {
       let child = this.state.controlChildren[ind];
-      if(child === undefined) {
+      if (child === undefined) {
         continue;
       }
       let name = child.componentName;
 
-      if(child instanceof this.allComponentClasses.controlvectors) {
-        let vectors = child.state.vectors;
-        for(let ind2=0; ind2 < vectors.length; ind2++) {
-          if(newControls[ind][ind2] !== undefined) {
-            let vectorName = vectors[ind2].componentName;
-            dependenciesToUpdate[vectorName] = {displacement: {changes: newControls[ind][ind2]}};
-          }
-        }
-      }else if(child instanceof this.allComponentClasses.controlpoints) {
-        let points = child.state.points;
-        for(let ind2=0; ind2 < points.length; ind2++) {
-          if(newControls[ind][ind2] !== undefined) {
-            let pointName = points[ind2].componentName;
-            dependenciesToUpdate[pointName] = {coords: {changes: newControls[ind][ind2]}};
-          }
-        }
-      }else if(child instanceof this.allComponentClasses.vector) {
-        dependenciesToUpdate[name] = {displacement: {changes: newControls[ind][0]}};
-      }else if(child instanceof this.allComponentClasses.point) {
-        dependenciesToUpdate[name] = {coords: {changes: newControls[ind][0]}};
-      }
+
     }
 
     // this.updateShadowSources({
@@ -431,7 +543,95 @@ export default class BezierControls extends BaseComponent {
     // });
 
     return true;
-    
+
+  }
+
+}
+
+function getControls(child) {
+  if (child.stateValues.vectors) {
+    if (child.stateValues.nVectors === 0) {
+      console.log("can't create bezier controlvector with zero vectors");
+      return {
+        controlType: "vector",
+        vectors: [me.fromAst(0)],
+      };
+    }
+    if (child.stateValues.nVectors > 2) {
+      throw Error("can't create bezier controlvector with more than two vectors");
+    }
+    return {
+      controlType: "vector",
+      vectors: child.stateValues.vectors,
+    };
+  } else if (child.stateValues.points) {
+    if (child.stateValues.nPoints === 0) {
+      console.log("can't create bezier controlpoint with zero points");
+      return {
+        controlType: "point",
+        points: [me.fromAst(0)],
+      };
+    }
+    if (child.stateValues.nPoints > 2) {
+      throw Error("can't create bezier controlpoint with more than two points");
+    }
+    return {
+      controlType: "point",
+      points: child.stateValues.points,
+    };
+  } else if (child.stateValues.displacement) {
+    return {
+      controlType: "vector",
+      vectors: [child.stateValues.displacement],
+    };
+  } else {
+    return {
+      controlType: "point",
+      points: [child.stateValues.coords],
+    };
+  }
+
+}
+
+function invertControls({
+  dependencyName,
+  desiredValue,
+  childIndex,
+  controlChild,
+}) {
+
+  // variableNames: ["coords", "displacement", "points", "nPoints", "vectors", "nVectors"],
+
+  if (controlChild.stateValues.vectors) {
+
+    return {
+      setDependency: dependencyName,
+      desiredValue,
+      childIndex,
+      variableIndex: 4
+    }
+  }
+
+  if (child instanceof this.allComponentClasses.controlvectors) {
+    let vectors = child.state.vectors;
+    for (let ind2 = 0; ind2 < vectors.length; ind2++) {
+      if (newControls[ind][ind2] !== undefined) {
+        let vectorName = vectors[ind2].componentName;
+        dependenciesToUpdate[vectorName] = { displacement: { changes: newControls[ind][ind2] } };
+      }
+    }
+  } else if (child instanceof this.allComponentClasses.controlpoints) {
+    let points = child.state.points;
+    for (let ind2 = 0; ind2 < points.length; ind2++) {
+      if (newControls[ind][ind2] !== undefined) {
+        let pointName = points[ind2].componentName;
+        dependenciesToUpdate[pointName] = { coords: { changes: newControls[ind][ind2] } };
+      }
+    }
+  } else if (child instanceof this.allComponentClasses.vector) {
+    dependenciesToUpdate[name] = { displacement: { changes: newControls[ind][0] } };
+  } else if (child instanceof this.allComponentClasses.point) {
+    dependenciesToUpdate[name] = { coords: { changes: newControls[ind][0] } };
   }
 
 }

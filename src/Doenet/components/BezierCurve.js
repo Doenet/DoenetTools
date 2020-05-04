@@ -112,9 +112,298 @@ export default class BezierCurve extends Curve {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.nVariables = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { nVariables: 2 } })
+    }
+
+    stateVariableDefinitions.throughPoints = {
+      public: true,
+      componentType: "point",
+      isArray: true,
+      entryPrefixes: ["throughPoint"],
+      additionalStateVariablesDefined: [{
+        variableName: "throughPointsAreNumeric",
+        entryPrefixes: ["throughPointIsNumeric"]
+      }],
+      returnDependencies: function ({ arrayKeys }) {
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+        if (arrayKey === undefined) {
+          return ({
+            throughChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneThrough",
+              variableNames: ["points"]
+            }
+          })
+        } else {
+          return ({
+            throughChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneThrough",
+              variableNames: ["point" + (arrayKey + 1)]
+            }
+          })
+        }
+      },
+      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
+
+        let freshByKeyPoints = freshnessInfo.throughPoints.freshByKey;
+        let freshByKeyNumeric = freshnessInfo.throughPointsAreNumeric.freshByKey;
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+
+        if (changes.throughChild) {
+
+          if (changes.throughChild.componentIdentitiesChanged) {
+
+            // if throughChild changed
+            // then the entire points array of line is also changed
+            for (let key in freshByKeyPoints) {
+              delete freshByKeyPoints[key];
+            }
+            for (let key in freshByKeyNumeric) {
+              delete freshByKeyNumeric[key];
+            }
+          } else {
+
+            let valuesChanged = changes.throughChild.valuesChanged[0];
+
+            if (arrayKey === undefined) {
+
+              if (valuesChanged.points) {
+                // if have the same points from throughChild
+                // then just check if any of those points values
+                // are no longer fresh
+                let newFreshByKey = valuesChanged.points.freshnessInfo.freshByKey;
+                for (let key in freshByKeyPoints) {
+                  if (!newFreshByKey[key]) {
+                    delete freshByKeyPoints[key];
+                  }
+                }
+                for (let key in freshByKeyNumeric) {
+                  if (!newFreshByKey[key]) {
+                    delete freshByKeyNumeric[key];
+                  }
+                }
+              }
+            } else {
+              if (valuesChanged["point" + (arrayKey + 1)]) {
+                delete freshByKeyPoints[arrayKey];
+                delete freshByKeyNumeric[arrayKey];
+              }
+            }
+
+          }
+        }
+
+        if (arrayKey === undefined) {
+          let fresh = {};
+          let partiallyFresh = {}
+          if (Object.keys(freshByKeyPoints).length === 0) {
+            // asked for entire array and it is all stale
+            fresh.throughPoints = false;
+          } else {
+            // asked for entire array, but it has some fresh elements
+            partiallyFresh.throughPoints = false;
+          }
+          if (Object.keys(freshByKeyNumeric).length === 0) {
+            // asked for entire array and it is all stale
+            fresh.throughPointsAreNumeric = false;
+          } else {
+            // asked for entire array, but it has some fresh elements
+            partiallyFresh.throughPointsAreNumeric = false;
+          }
+
+          return { fresh, partiallyFresh }
+        } else {
+          // asked for just one component
+          return {
+            fresh: {
+              throughPoints: freshByKeyPoints[arrayKey] === true,
+              throughPointsAreNumeric: freshByKeyNumeric[arrayKey] === true
+            }
+          }
+        }
+
+      },
+      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
+
+        let freshByKeyPoints = freshnessInfo.throughPoints.freshByKey;
+        let freshByKeyNumeric = freshnessInfo.throughPointsAreNumeric.freshByKey;
+
+        // console.log(`definition of throughPoints`)
+        // console.log(changes);
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+
+        if (dependencyValues.throughChild.length === 1) {
+
+          if (arrayKey === undefined) {
+            let throughPoints = dependencyValues.throughChild[0].stateValues.points;
+
+            let overwriteArray = changes.throughChild.componentIdentitiesChanged;
+
+            if (changes.throughChild.valuesChanged[0].points.changed.changedEntireArray) {
+              overwriteArray = true;
+            }
+
+            if (overwriteArray) {
+              // send array to indicate that should overwrite entire array
+              for (let key in throughPoints) {
+                freshByKeyPoints[key] = true;
+                freshByKeyNumeric[key] = true;
+              }
+
+              let newPointValues = [];
+              let newPointsAreNumeric = [];
+
+              for (let coords of throughPoints) {
+                let { coordsNumeric, numericEntries } = getNumericalCoords(coords)
+                newPointValues.push(coordsNumeric);
+                newPointsAreNumeric.push(numericEntries);
+              }
+
+              return {
+                newValues: {
+                  throughPoints: newPointValues,
+                  throughPointsAreNumeric: newPointsAreNumeric
+                }
+              }
+            }
+
+            let newPointValues = {};
+            let newPointsAreNumeric = {}
+            for (let key in throughPoints) {
+              if (!freshByKeyPoints[key]) {
+                freshByKeyPoints[key] = true;
+                freshByKeyNumeric[key] = true;
+                let { coordsNumeric, numericEntries } = getNumericalCoords(throughPoints[key])
+                newPointValues[key] = coordsNumeric;
+                newPointsAreNumeric[key] = numericEntries;
+
+              }
+            }
+            return {
+              newValues: {
+                throughPoints: newPointValues,
+                throughPointsAreNumeric: newPointsAreNumeric
+              }
+            }
+
+          } else {
+            // have an arrayKey defined
+
+            if (!freshByKeyPoints[arrayKey]) {
+              freshByKeyPoints[arrayKey] = true;
+              freshByKeyNumeric[arrayKey] = true;
+              let { coordsNumeric, numericEntries } = getNumericalCoords(dependencyValues.throughChild[0].stateValues["point" + (arrayKey + 1)])
+
+              return {
+                newValues: {
+                  throughPoints: {
+                    [arrayKey]: coordsNumeric
+                  },
+                  throughPointsAreNumeric: {
+                    [arrayKey]: numericEntries
+                  }
+                }
+              }
+            } else {
+              // arrayKey asked for didn't change
+              // don't need to report noChanges for array state variable
+              return {};
+            }
+          }
+
+        } else {
+          return {
+            newValues: { throughPoints: [], throughPointsAreNumeric: [] }
+          }
+        }
+      },
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues,
+        stateValues, initialChange, arrayKeys
+      }) {
+
+        // if not draggable, then disallow initial change 
+        if (initialChange && !stateValues.draggable) {
+          return { success: false };
+        }
+
+        if ("throughPointsAreNumeric" in desiredStateVariableValues) {
+          return { success: false }
+        }
+
+        if ("throughChild" in dependencyValues) {
+
+          let arrayKey;
+          if (arrayKeys) {
+            arrayKey = Number(arrayKeys[0]);
+          }
+
+          if (arrayKey === undefined) {
+            // working with entire array
+
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "throughChild",
+                desiredValue: desiredStateVariableValues.throughPoints,
+                childIndex: 0,
+                variableIndex: 0
+              }]
+            }
+          } else {
+
+            // just have one arrayKey
+            // so child variable of throughChild is an array entry (rather than array)
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "throughChild",
+                desiredValue: desiredStateVariableValues.throughPoints[arrayKey],
+                childIndex: 0,
+                variableIndex: 0,
+              }]
+            }
+
+          }
+        }
+
+      }
+    }
 
 
 
+    stateVariableDefinitions.numericalEntries = {
+      returnDependencies: () => ({
+        throughPointsAreNumeric: {
+          dependencyType: "stateVariable",
+          variableName: "throughPointsAreNumeric"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { numericalEntries: dependencyValues.throughPointsAreNumeric.every(x => x) },
+        checkForActualChange: ["numericalEntries"]
+      })
+    }
+
+    stateVariableDefinitions.nearestPoint = {
+      returnDependencies: () => ({}),
+      definition: ({ dependencyValues }) => ({
+        newValues: { nearestPoint: me.fromText("(1,2)") }
+      })
+    }
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
@@ -125,7 +414,7 @@ export default class BezierCurve extends Curve {
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          childrenToRender: [dependencyValues.throughChild[0].componentName]
+          childrenToRender: dependencyValues.throughChild.map(x => x.componentName)
         }
       })
     }
@@ -148,15 +437,6 @@ export default class BezierCurve extends Curve {
       // skip setting up variables if child logic overwritten
       if (!this.curveChildLogicOverwritten) {
 
-        this.makePublicStateVariableArray({
-          variableName: "throughpoints",
-          componentType: "point",
-          stateVariableForRef: "coords",
-        });
-        this.makePublicStateVariableArrayEntry({
-          entryName: "throughpoint",
-          arrayVariableName: "throughpoints",
-        });
         this.makePublicStateVariableArray({
           variableName: "controlpoints",
           componentType: "point",
@@ -197,17 +477,17 @@ export default class BezierCurve extends Curve {
 
 
 
-        this.calculateBezierParameters();
+    this.calculateBezierParameters();
 
-        this.state.parameterizationMax = this.state.throughpoints.length - 1;
-        if (this.state.extrapolateBackward) {
-          this.state.parameterizationMin = -this.state.parameterizationMax;
-        } else {
-          this.state.parameterizationMin = 0;
-        }
-        if (this.state.extrapolateForward) {
-          this.state.parameterizationMax *= 2;
-        }
+    this.state.parameterizationMax = this.state.throughpoints.length - 1;
+    if (this.state.extrapolateBackward) {
+      this.state.parameterizationMin = -this.state.parameterizationMax;
+    } else {
+      this.state.parameterizationMin = 0;
+    }
+    if (this.state.extrapolateForward) {
+      this.state.parameterizationMax *= 2;
+    }
 
 
   }
@@ -242,30 +522,9 @@ export default class BezierCurve extends Curve {
     let points = this.state.throughChild.state.points;
     let nPoints = this.state.throughChild.state.nPoints;
 
-    this.state.throughpoints = [];
-    for (let i = 0; i < nPoints; i++) {
-      let coords = points[i].state.coords;
-      if (coords === undefined || coords.tree.length !== 3) {
-        this.state.numericEntries = false;
-        this.state.throughpoints.push(me.fromAst(["tuple", NaN, NaN]));
-        continue;
-      }
-      let coordsNumeric = ["tuple"];
-      for (let j = 0; j < 2; j++) {
-        let comp = coords.get_component(j).evaluate_to_constant();
-        if (Number.isFinite(comp)) {
-          coordsNumeric.push(comp);
-        } else {
-          coordsNumeric.push(NaN);
-          this.state.numericEntries = false;
-        }
-      }
-      this.state.throughpoints.push(me.fromAst(coordsNumeric));
-    }
-
     this.state.nPoints = this.state.throughpoints.length;
 
-    // Step 2: if controls were explicilty specified via children
+    // Step 2: if controls were explicitly specified via children
     // set the controlvectors as prescribed
     // and mark the corresponding points as being currently controlled
     if (this.state.controlsChild) {
@@ -1454,6 +1713,36 @@ export default class BezierCurve extends Curve {
 
     return true;
 
+  }
+
+}
+
+
+function getNumericalCoords(coords) {
+  if (coords.tree.length !== 3) {
+    return {
+      numericEntries: false,
+      coordsNumeric: me.fromAst(["vector", NaN, NaN])
+    }
+  }
+
+  let coordsNumeric = ["vector"];
+  let numericEntries = true;
+  for (let j = 0; j < 2; j++) {
+    let comp = coords.get_component(j).evaluate_to_constant();
+    if (Number.isFinite(comp)) {
+      coordsNumeric.push(comp);
+    } else {
+      coordsNumeric.push(NaN);
+      numericEntries = false;
+    }
+  }
+
+  coordsNumeric = me.fromAst(coordsNumeric);
+
+  return {
+    numericEntries,
+    coordsNumeric,
   }
 
 }
