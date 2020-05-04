@@ -3,6 +3,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { resolve } = require('path');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
 
@@ -65,10 +66,15 @@ module.exports = {
             } 
           },
         ],
+      },
+      {
+        test: /\.ttf$/,
+        use: ['file-loader']
       }
     ]
   },
   plugins: [
+    new MonacoWebpackPlugin(),
     new HtmlWebPackPlugin({
       chunks: ['index.js'],
       template: "./src/index.html",
