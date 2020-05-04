@@ -1,11 +1,11 @@
 <?php
 $roleAccessList = array(
-  "roleStudent" => array("chooser", "course", "gradebook", "profile"),
-  "roleInstructor" => array("chooser", "course", "documentation", "gradebook", "profile"),
-  "roleCourseDesigner" => array("chooser", "course" /*?*/, "documentation", "profile"),
-  "roleWatchdog" => array(/*???*/"profile"),
-  "roleCommunityTA" => array(/*???*/"profile"),
-  "roleLiveDataCommunity" => array(/*???*/"profile")
+  "roleStudent" => array("Chooser", "Course", "Profile"),
+  "roleInstructor" => array("Chooser", "Course", "Documentation", "Gradebook", "Profile"),
+  "roleCourseDesigner" => array("Chooser", "Course", "Documentation", "Profile"),
+  "roleWatchdog" => array(/*???*/"Profile"),
+  "roleCommunityTA" => array(/*???*/"Profile"),
+  "roleLiveDataCommunity" => array(/*???*/"Profile")
 );
 
 $toolAccessList = [];
@@ -14,4 +14,3 @@ if ($roles != []) {
     $toolAccessList = array_values(array_unique(array_merge($toolAccessList, $roleAccessList[$roles[$i]])));
   }
 }
-

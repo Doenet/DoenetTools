@@ -1,0 +1,114 @@
+body{
+  background-color: rgb(246, 248, 255);
+  padding: 0;
+  margin: 0;
+}
+.leftpanel{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 1vh;
+  overflow: hidden;
+}
+
+.middlepanel{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 1vh;
+  overflow: hidden;
+
+}
+.rightpanel{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 1vh; 
+  overflow: hidden;
+
+}
+.column-resizer{
+  cursor: col-resize;
+}
+.left-resizer{
+  cursor: e-resize;
+
+}
+
+.right-resizer{
+  cursor: w-resize;
+
+}
+
+.resizer{
+  width: 6px;
+  background-color: #f0eded;
+  position:relative;
+  flex-shrink: 0;
+}
+
+/* .resizerfirst{
+  width: 6px;
+  background-color: black;
+  position:relative;
+  cursor: col-resize;
+  flex-shrink: 0;
+}
+
+.resizersecond{
+  width: 6px;
+  background-color: black;
+  position: relative;
+  cursor: col-resize;
+  flex-shrink: 0;
+} */
+
+.menucontent{
+  display:flex;
+  min-height: 40px;
+  margin:0px;
+  padding:0px;
+}
+
+.maincontent{
+  margin:0px;
+  padding:0px;
+  overflow: scroll;
+  position: relative;
+  height: calc(100vh - 60px);
+}
+.shrink-height{
+  height:calc(100vh - 100px) !important;
+}
+
+
+@media only screen and (max-width: 767px) {
+.maincontent{
+height:calc(100vh - 120px);
+position: relative;
+
+}
+
+.shrink-height{
+  height:calc(100vh - 160px) !important;
+}
+
+}
+
+ .phonebuttoncontainer{
+  display : flex;
+  width: 100%;
+  bottom: 0.1px;
+  height: calc(100vh - 96vh);
+  position: fixed;
+  left: 0px;
+  z-index:5;
+  text-align: center;
+  background-color: darkorange;
+}
+
+.phonebutton{
+    color: white;
+    background-color: black;
+    width: 100%;
+} 
