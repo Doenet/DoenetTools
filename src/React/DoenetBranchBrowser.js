@@ -71,9 +71,6 @@ class DoenetBranchBrowser extends Component {
       selectedItemsType: props.selectedItemsType,
       sortBy: "title",
       sortOrderAsc: "ASC",
-      currentDraggedObject: {id: null, type: null, sourceContainerId: null, sourceContainerType: null, dataObject: null, sourceParentId: null},
-      originalTreeParentsAndLeaves: { parents: null, leaves: null },
-      validDrop: true,
     }
 
     // handle null props
@@ -100,6 +97,8 @@ class DoenetBranchBrowser extends Component {
     this.sortFolders = this.sortFolders.bind(this);
     this.sortUrls = this.sortUrls.bind(this);
     this.openEditUrlForm = this.openEditUrlForm.bind(this);
+    this.onDragStartCb = this.onDragStartCb.bind(this);
+    this.onDragEndCb = this.onDragEndCb.bind(this);
   }
 
   getAllSelectedItems() {
@@ -337,8 +336,8 @@ class DoenetBranchBrowser extends Component {
         handleRemoveContent={this.props.selectedDrive === "Content" ? 
                             this.handleRemoveContentFromCurrentFolder :
                             this.handleRemoveContentFromCourse}
-        onDragStart={this.props.onDragStart}
-        onDragEnd={this.props.onDragEnd}
+        onDragStart={this.onDragStartCb}
+        onDragEnd={this.onDragEndCb}
         onDragOver={this.props.onDraggableDragOver}/>);
         
     }
@@ -688,6 +687,23 @@ class DoenetBranchBrowser extends Component {
     }
   }
 
+  onDragStartCb(draggedId, draggedType) {
+    this.props.onDragStart && 
+      this.props.onDragStart({
+        draggedId: draggedId, 
+        draggedType: draggedType, 
+        sourceContainerId: this.props.containerId, 
+        parentsInfo: this.props.allFolderInfo, 
+        leavesInfo: this.props.allContentInfo });
+  }
+
+  onDragEndCb() {
+    this.props.onDragEnd && 
+      this.props.onDragEnd({
+        containerId: this.props.containerId, 
+        parentsInfo: this.props.allFolderInfo, 
+        leavesInfo: this.props.allContentInfo });
+  }
 
   render() {
 
@@ -766,8 +782,8 @@ const File = ({ branchId, classes, onClick, onDoubleClick, title, publishDate,
     onDragOver(listId, "content")
   }
 
-  const onDragStartCb = (listId, ev) => {
-    onDragStart(listId, "content", "branchBrowser");
+  const onDragStartCb = (draggedId) => {
+    onDragStart(draggedId, "content");
   }
 
   return(

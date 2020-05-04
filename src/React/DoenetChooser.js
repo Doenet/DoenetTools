@@ -32,11 +32,12 @@ class DoenetChooser extends Component {
       activeSection: "chooser",
       directoryStack: [],
       currentDraggedObject: {id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null},
-      validDrop: true,
     };
 
     this.containerCache = {};
-    this.draggedobjectCache = null;
+    this.cachedCurrentDraggedObject = null;
+    this.lastDroppedContainerId = null;
+    this.validDrop = true;
 
     this.loadUserContentBranches();
     this.loadUserFoldersAndRepo();
@@ -92,9 +93,10 @@ class DoenetChooser extends Component {
     this.onTreeDragEnd = this.onTreeDragEnd.bind(this);
     this.onTreeDraggableDragOver = this.onTreeDraggableDragOver.bind(this);
     this.onTreeDropEnter = this.onTreeDropEnter.bind(this);
+    this.onTreeDropLeave = this.onTreeDropLeave.bind(this);
     this.onTreeDrop = this.onTreeDrop.bind(this);
     this.onBrowserDragStart = this.onBrowserDragStart.bind(this);
-    this.onBrowserEnd = this.onBrowserEnd.bind(this);
+    this.onBrowserDragEnd = this.onBrowserDragEnd.bind(this);
     this.onBrowserDropEnter = this.onBrowserDropEnter.bind(this);
     this.onBrowserDrop = this.onBrowserDrop.bind(this);
   }
@@ -1198,23 +1200,25 @@ class DoenetChooser extends Component {
     this.addToast(message);
   }
 
-  onTreeDragStart(draggedId, draggedType, sourceContainerId) {
+  onTreeDragStart(draggedId, draggedType, sourceContainerId, parentsInfo, leavesInfo) {
     console.log("onTreeDragStart")
-    const dataObjectSource = draggedType == "leaf" ? this.assignmentsInfo : this.headingsInfo;
+    const dataObjectSource = draggedType == "leaf" ? leavesInfo : parentsInfo;
     const dataObject = dataObjectSource[draggedId];
     const sourceParentId = dataObjectSource[draggedId].parent;
     
     this.setState({
       currentDraggedObject: {id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId},
-      validDrop: false
     })
     this.containerCache = {
       ...this.containerCache,
       [sourceContainerId]: {
-        parents: JSON.parse(JSON.stringify(this.headingsInfo)), 
-        leaves: JSON.parse(JSON.stringify(this.assignmentsInfo))
+        parents: JSON.parse(JSON.stringify(parentsInfo)), 
+        leaves: JSON.parse(JSON.stringify(leavesInfo))
       }
     }
+    this.cachedCurrentDraggedObject = {id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId};
+    this.validDrop = false;
+    this.lastDroppedContainerId = null;
   }
 
   onTreeDraggableDragOver(id, type) {
@@ -1245,18 +1249,18 @@ class DoenetChooser extends Component {
     this.forceUpdate();
   };
 
-  onTreeDropEnter (listId, sourceContainerId) {
+  onTreeDropEnter (listId, containerId) {
     console.log("onTreeDropEnter")
 
     // check current draggable source == tree
     // false then (extract from original source, insert into tree at base level)
     // dragged object coming from different container
-    if (this.state.currentDraggedObject.sourceContainerId != sourceContainerId && 
+    if (this.state.currentDraggedObject.sourceContainerId != containerId && 
       this.state.currentDraggedObject.type != "leaf") {
       // create clone of current tree structure (headings, assignments)
       this.containerCache = {
         ...this.containerCache,
-        [sourceContainerId]: {
+        [containerId]: {
           parents: JSON.parse(JSON.stringify(this.headingsInfo)),   // TODO: add flexbility
           leaves: JSON.parse(JSON.stringify(this.assignmentsInfo))
         }
@@ -1312,15 +1316,24 @@ class DoenetChooser extends Component {
     this.setState({ currentDraggedObject: currentDraggedObject })
   }
 
-  onTreeDragEnd (sourceContainerId) {
+  onTreeDropLeave() {
+    // if not across containers, return
+    // Content -> Course :  Reset course data, reset content data (object return to source content), reset draggedObj
+    // Content -> Content :  Reset content data (object return to source content), reset draggedObj
+    // Course -> Content : Not allowed
+    // Course -> Course : Reset both courses data (object return to source course), reset draggedObj
+    
+    console.log("onTreeDropLeave")
+  }
+
+  onTreeDragEnd (containerId) {
     console.log("onTreeDragEnd")
-    console.log(this.containerCache)
     // dropped outsize valid dropzone
     let currTreeHeadings = this.headingsInfo;
     let currTreeAssignments = this.assignmentsInfo;
-    if (!this.state.validDrop) {
-      currTreeHeadings = this.containerCache[sourceContainerId].parents;
-      currTreeAssignments = this.containerCache[sourceContainerId].leaves;
+    if (!this.validDrop) {
+      currTreeHeadings = this.containerCache[containerId].parents;
+      currTreeAssignments = this.containerCache[containerId].leaves;
     }
     // updateHeadingsAndAssignments(currTreeHeadings, currTreeAssignments);
 
@@ -1328,15 +1341,17 @@ class DoenetChooser extends Component {
     this.assignmentsInfo = currTreeAssignments;
     this.setState({
       currentDraggedObject: {id: null, type: null, sourceContainerId: null},
-      validDrop: true
     });
     this.containerCache = {
       ...this.containerCache,
-      [sourceContainerId]: {parents: null, leaves: null}
+      [containerId]: {parents: null, leaves: null}
     }
+    this.cachedCurrentDraggedObject = null;
+    this.validDrop = true;
+    this.lastDroppedContainerId = null;
   }
 
-  onTreeDrop () {
+  onTreeDrop (containerId) {
     console.log("onTreeDrop")
     // update courseHeadingsInfo/courseAssignmentsInfo currentDraggedObject parentId
     // remove currentDraggedObject from sourceParentId children list
@@ -1363,15 +1378,16 @@ class DoenetChooser extends Component {
     if (this.state.currentDraggedObject.type == "parent") this.headingsInfo[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
     this.setState({
       currentDraggedObject: {id: null, type: null, sourceContainerId: null},
-      validDrop: true
     })
+    this.validDrop = true;
+    this.lastDroppedContainerId = containerId;
   }
 
-  onBrowserDragStart(draggedId, draggedType, sourceContainerId) {
+  onBrowserDragStart({draggedId, draggedType, sourceContainerId, parentsInfo, leavesInfo}) {
     console.log("onDragStart")
 
-    let dataObjectSource = this.branchId_info;
-    if (draggedType == "folder") dataObjectSource = this.folderInfo;
+    let dataObjectSource = leavesInfo;
+    if (draggedType == "folder") dataObjectSource = parentsInfo;
     else if (draggedType == "url") dataObjectSource = this.urlInfo;
 
     const dataObject = dataObjectSource[draggedId];
@@ -1379,12 +1395,16 @@ class DoenetChooser extends Component {
     
     this.setState({
       currentDraggedObject: {id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId},
-      // originalTreeParentsAndLeaves: { 
-      //   parents: JSON.parse(JSON.stringify(this.headingsInfo)), 
-      //   leaves: JSON.parse(JSON.stringify(this.assignmentsInfo))
-      // },
-      // validDrop: false
     })
+    this.containerCache = {
+      ...this.containerCache,
+      [sourceContainerId]: {
+        parents: JSON.parse(JSON.stringify(parentsInfo)), 
+        leaves: JSON.parse(JSON.stringify(leavesInfo))
+      }
+    }
+    this.cachedCurrentDraggedObject = {id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId};
+    this.validDrop = false;
   }
 
   onBrowserDropEnter (listId) {
@@ -1429,31 +1449,43 @@ class DoenetChooser extends Component {
     // })
   }
 
-  onBrowserEnd () {
-    console.log("onDragEnd")
-    // // dropped outsize valid dropzone
-    // let currTreeHeadings = this.headingsInfo;
-    // let currTreeAssignments = this.assignmentsInfo;
-    // if (!this.state.validDrop) {
-    //   currTreeHeadings = this.state.originalTreeParentsAndLeaves.parents;
-    //   currTreeAssignments = this.state.originalTreeParentsAndLeaves.leaves;
-    // }
-    // // updateHeadingsAndAssignments(currTreeHeadings, currTreeAssignments);
+  onBrowserDragEnd ({containerId, parentsInfo, leavesInfo}) {
+    console.log("onBrowserDragEnd")
+    let currParentsInfo = parentsInfo;
+    let currChildrenInfo = leavesInfo;
 
-    // this.headingsInfo = currTreeHeadings;
-    // this.assignmentsInfo = currTreeAssignments;
-    // this.setState({
-    //   currentDraggedObject: {id: null, type: null, sourceContainerId: null},
-    //   originalTreeParentsAndLeaves: { parents: null, leaves: null },
-    //   validDrop: true
-    // })
+    // dropped across containers && content -> content
+    if (containerId != this.lastDroppedContainerId) { 
+      // remove current dragged item from data
+      // save data
+    } else {
+      // dropped outsize valid dropzone    
+      if (!this.validDrop) {
+        currParentsInfo = this.containerCache[containerId].parents;
+        currChildrenInfo = this.containerCache[containerId].leaves;
+      }
+
+    }
+    this.folderInfo = currParentsInfo;
+    this.branchId_info = currChildrenInfo;
+    // save folderInfo and branchId_info
+
+    this.setState({
+      currentDraggedObject: {id: null, type: null, sourceContainerId: null},
+    })
+    this.containerCache = {
+      ...this.containerCache,
+      [containerId]: {parents: null, leaves: null}
+    }
+    this.cachedCurrentDraggedObject = null;
   }
 
-  onBrowserDrop () {
+  onBrowserDrop (containerId, parentsInfo, leavesInfo) {
+    console.log(this.containerCache)
     console.log("onDrop")
     // // update courseHeadingsInfo/courseAssignmentsInfo currentDraggedObject parentId
     // // remove currentDraggedObject from sourceParentId children list
-    // if (this.state.currentDraggedObject.type == "leaf") {
+    // if (this.state.currentDraggedObject.type == "content") {
     //   const newCourseAssignments = this.assignmentsInfo;
     //   newCourseAssignments[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
     //   setDataInfo(dataInfo => ({ ...dataInfo, courseAssignmentsInfo: newCourseAssignments }))
@@ -1478,6 +1510,8 @@ class DoenetChooser extends Component {
     //   currentDraggedObject: {id: null, type: null, sourceContainerId: null},
     //   validDrop: true
     // })
+    // this.validDrop = true;
+    // this.lastDroppedContainerId = containerId;
   }
 
   render(){
@@ -1507,7 +1541,8 @@ class DoenetChooser extends Component {
       `
 
     let tempTree = <div className="tree">
-      <TreeView 
+      <TreeView
+          containerId={"tree"}
           headingsInfo={this.headingsInfo} 
           assignmentsInfo={this.assignmentsInfo} 
           currentDraggedObject={this.state.currentDraggedObject}
@@ -1559,6 +1594,7 @@ class DoenetChooser extends Component {
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
           loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
+          containerId={"browser"}
           allContentInfo={this.branchId_info}
           allFolderInfo={this.folderInfo}
           allUrlInfo={this.urlInfo}
@@ -1583,7 +1619,7 @@ class DoenetChooser extends Component {
           openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
           publicizeRepo={this.publicizeRepo}                      // optional
           onDragStart={this.onBrowserDragStart}
-          onDragEnd={this.onBrowserEnd}
+          onDragEnd={this.onBrowserDragEnd}
           onDraggableDragOver={() => {}} 
           onDropEnter={this.onBrowserDropEnter}
           onDrop={this.onBrowserDrop}

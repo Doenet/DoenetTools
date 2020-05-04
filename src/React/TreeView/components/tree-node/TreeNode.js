@@ -27,7 +27,7 @@ const TreeNode = memo(({ children, name, style, defaultOpen = false }) => {
   )
 })
 
-export const ParentNode = memo(({ children, data, style, defaultOpen = false, id, onDrop, onDraggableDragOver, onDragStart, onDragEnd, onDropEnter, draggedOver, currentDraggedId, currentDraggedType}) => {
+export const ParentNode = memo(({ children, data, style, defaultOpen = false, id, onDrop, onDraggableDragOver, onDragStart, onDragEnd, onDropEnter, onDropLeave, draggedOver, currentDraggedId, currentDraggedType}) => {
   const [isOpen, setOpen] = useState(defaultOpen)
   const previous = usePrevious(isOpen)
   const [bind, { height: viewHeight }] = useMeasure()
@@ -36,10 +36,6 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
     to: { height: isOpen ? viewHeight : 0, opacity: isOpen ? 1 : 0, transform: `translate3d(${isOpen ? 0 : 20}px,0,0)` }
   })
   const Icon = Icons[`${children ? (isOpen ? 'Minus' : 'Plus') : 'Close'}SquareO`]
-
-  const onDropEnterCb = (listId) => {
-    onDropEnter(listId)
-  }
 
   const onDraggableDragOverCb = (listId) => {
     if (listId !== currentDraggedId) {
@@ -57,7 +53,7 @@ export const ParentNode = memo(({ children, data, style, defaultOpen = false, id
     <Frame>
       <Icon style={{ ...toggle, opacity: children ? 1 : 0.3 }} onClick={() => setOpen(!isOpen)} />
       <Title style={style}>{data}</Title>
-      <DropItem id={id} onDrop={onDrop} onDropEnter={onDropEnterCb} >
+      <DropItem id={id} onDrop={onDrop} onDropEnter={onDropEnter} onDropLeave={onDropLeave} >
         <Content draggedover={draggedOver.toString()} style={{ opacity, height: isOpen && previous === isOpen ? 'auto' : height }}>
           {children[0].length == 0 && children[1].length == 0 && <div style={{height: "20px"}} />}
           <a.div style={{ transform }} {...bind} children={children} />
@@ -80,8 +76,8 @@ export const LeafNode = memo(({ id, data, styles, onDragStart, onDragOver, onDra
     onDragOver(listId, "leaf")
   }
 
-  const onDragStartCb = (listId, ev) => {
-    onDragStart(listId, "leaf", ev)
+  const onDragStartCb = (draggedId) => {
+    onDragStart(draggedId, "leaf")
   }
 
   return (
