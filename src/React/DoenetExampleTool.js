@@ -16,50 +16,50 @@ const alphabet =
   "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z ";
 export default function DoenetExampleTool(props) {
 
-
   let [x, setX] = useState(0);
   const menuControls = [<Button >Search</Button>];
   const menuControlsEditor = [<Button>Edit</Button>]
   const menuControlsViewer = [<Button>Update</Button>];
 
-  const headerProps = {
-    title: 'test',
-    key: '1'
-  };
-
   return (
     <>
-
-      <ToolLayout toolTitle="Exampletool" headingTitle="Example" leftPanelWidth='200' rightPanelWidth='400'
-      // header={
-      //   headerProps
-      // }
+      {/* ToolLayout    
+         toolTitle - same tool title in DoenetHeader(can send as props in anytool )
+         headingTitle - Header text in middle of Header
+         leftPanelWidth - can add width of first child of ToolLayout
+         rightPanelWidth - can add width of third child if available in ToolLayout
+      ) */}
+      <ToolLayout toolTitle="Tool Example" headingTitle="Example Heading"
+      //  leftPanelWidth= '100' // !> 300
+      //  rightPanelWidth= '200' // !> 500
       >
-        <ToolLayoutPanel key="one" panelName="Context Panel"> 
+        {/* ToolLayoutPanel 
+              menuControls - menu controls can be defined & send as prop
+              panelName - In phone the button container button's name label
+        */}
+
+        <ToolLayoutPanel key="one" panelName="Context Panel">
           <div>
-            {alphabet} {alphabet} {alphabet}
-            {alphabet} {alphabet} {alphabet}
+            {alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}
             <button onClick={() => setX(x + 1)}> Count</button>{x}
             <p>test</p>
-            {alphabet} {alphabet} {alphabet}
-            {alphabet} {alphabet} {alphabet}
           </div>
-        </ToolLayoutPanel> 
+        </ToolLayoutPanel>
 
         <ToolLayoutPanel key="two" menuControls={menuControlsEditor} panelName="Editor">
-          {alphabet} 
-          {alphabet} 
-          {alphabet} {alphabet} {alphabet} {alphabet}  {alphabet} 
-          {alphabet} {alphabet} {alphabet} {alphabet} 
+          <div>
+            {alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}
+            
+          </div>
         </ToolLayoutPanel>
 
         <ToolLayoutPanel key="three" menuControls={menuControlsViewer} panelName="Viewer">
-          {alphabet} {alphabet} <button onClick={() => setX(x + 1)}> Count</button>
-          {alphabet} {alphabet}
+          <div>
+            {alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}
+           
+          </div>
         </ToolLayoutPanel>
       </ToolLayout>
-
-
     </>
   );
 }

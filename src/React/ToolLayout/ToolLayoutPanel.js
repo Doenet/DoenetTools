@@ -1,12 +1,9 @@
 import React, { Component } from "react";
 import PlacementContext from "./PlacementContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import {
-  faChevronLeft,
   faChevronCircleRight,
   faChevronCircleLeft,
-  faChevronRight
 } from "@fortawesome/free-solid-svg-icons";
 
 
@@ -16,11 +13,12 @@ export default class ToolLayoutPanel extends Component {
   static contextType = PlacementContext;
 
   render() {
-  
+
     let menu = null;
     if (this.props.menuControls) {
       menu = [...this.props.menuControls];
     } 
+
     //Context collapse and open panels 
     const leftPanelCloseButton = () => {
       return (
@@ -88,18 +86,16 @@ export default class ToolLayoutPanel extends Component {
       );
     };
   
-  
     return (
       <>
-      <div className="menucontent">
-          {menu} 
-     {this.context.position ==='left'? leftPanelCloseButton():
-     this.context.position ==='middle'? middleOpenLeftRightButton():
-     this.context.position ==='right'? rightPanelCloseButton():''}
+        {!this.context.visibilityMenuControl.hideMenu ? <div className="menucontent">
+          {menu}
+          {!this.context.visibilityMenuControl.hideCollapse ? this.context.position === 'left' ? leftPanelCloseButton() :
+            this.context.position === 'middle' ? middleOpenLeftRightButton() :
+              this.context.position === 'right' ? rightPanelCloseButton() : '':''}
+        </div>:''}
 
-        </div>
-
-        <div className="maincontent">
+        <div className={!!this.context.visibilityMenuControl.hideMenu ? 'maincontent' : 'maincontent shrink-height' }>
           {this.props.children}
         </div>
        

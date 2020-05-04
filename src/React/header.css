@@ -1,6 +1,5 @@
 .headingContainerWrapper {
   height: 100%;
-  /* margin-bottom: 100px; */
 }
 
 .headingContainer{
@@ -235,6 +234,7 @@
 
   .headingToolbar {
     display:flex;
+    width: 250px;
     justify-content: space-between;
     /* padding: 0 20px; */
     padding: 0px 40px 0px 40px;
@@ -273,11 +273,11 @@
     right: -55px;
   }
 
+
   .headingContainerWrapper {
     height: 100%;
     position: fixed;
     width:100%;
-    /* margin-bottom: 130px; */
   }
 
   .headingContainer{
@@ -292,16 +292,3 @@
 
 }
 
-@media only screen and (max-width: 320px) {
-  .headingToolbar {
-    width: 100%;
-  }
-
-  .toolbox {
-    width: 160px;
-  }
-
-  #username {
-    display: none;
-  }
-}
