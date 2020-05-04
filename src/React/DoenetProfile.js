@@ -3,7 +3,8 @@ import axios from "axios";
 axios.defaults.withCredentials = true;
 import DoenetHeader from "./DoenetHeader";
 import styled from "styled-components";
-
+import ToolLayout from './ToolLayout/ToolLayout';
+import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel';
 import "../profile/profile.css";
 import "../imports/doenet.css";
 import Textinput from "../imports/Textinput";
@@ -35,15 +36,13 @@ let ProfileContainer = styled(WidthEnforcer)`
   padding: 3em;
   display: grid;
   grid-template-columns: 25em 1fr 1fr;
-  grid-template-rows: 5em 5em 11em;
-  grid-column-gap: 1em;
-
+  grid-template-rows: 4em 5em 5em 11em;
+  grid-column-gap: 10px;
   @media screen and (max-width: 1000px) {
-    grid-template-rows: 25em auto 5em;
+    grid-template-rows: 2em 25em auto 5em;
     grid-template-columns: 1fr 1fr;
   }
-
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 767px) {
     grid-template-columns: 1fr;
   }
 `;
@@ -61,17 +60,15 @@ let ProfilePicture = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  grid-row: 1 / span 2;
+  grid-row: 2 / span 2;
   margin: auto;
   border-radius: 50%;
   user-select: none;
-
   &:hover, &:focus {
     background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
       url("/profile_pictures/${props => props.pic}.jpg");
     color: rgba(255, 255, 255, 1);
   }
-
   @media screen and (max-width: 1000px) {
     grid-column: 1 / -1;
   }
@@ -79,7 +76,6 @@ let ProfilePicture = styled.button`
 
 let WideTextinput = styled(Textinput)`
   grid-column: 2 / -1;
-
   @media screen and (max-width: 1000px) {
     grid-column: 1 / -1;
   }
@@ -151,7 +147,6 @@ let ModalPic = styled.button`
   background-repeat: no-repeat;
   background-size: cover;
   user-select: none;
-
   &:hover {
     background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
       url("${props => props.pic}");
@@ -165,11 +160,14 @@ let StyledSwitch = styled(Switch)`
 
 let PageHeader = styled.h1`
   text-align: center;
+  grid-row: 1 / 2;
+  grid-column: 1 / -1;
 `;
 let SectionHeader = styled.h2`
   margin-top: 2em;
   margin-bottom: 2em;
 `;
+
 
 export default function DoenetProfile(props) {
   /*
@@ -322,16 +320,19 @@ export default function DoenetProfile(props) {
    * SECTION
    * Return
    */
+
+  let toolAccess = <p>{myProfile.toolAccess.join(", ")}</p>
+  console.log(myProfile.toolAccess.length);
+  if (myProfile.toolAccess.length === 0){
+    toolAccess = <p>You have no access to tools.</p>
+  }
+
   return (
     <>
-      <DoenetHeader
-        toolTitle="Profile"
-        headingTitle="Edit My Profile"
-        willProvideProfile={true}
-        profile={myProfile}
-      ></DoenetHeader>
-      <PageHeader>{myProfile.username}'s Profile</PageHeader>
+    <ToolLayout toolTitle="Profile" >
+      <ToolLayoutPanel>
       <ProfileContainer id="content">
+      <PageHeader>{myProfile.username}'s Profile</PageHeader>
         <ProfilePicture
           pic={myProfile.profilePicture}
           onClick={e => changeModalVisibility(e, "visible")}
@@ -404,6 +405,17 @@ export default function DoenetProfile(props) {
         <SpanAll>
           <SectionHeader>Your Roles</SectionHeader>
           <StyledSwitch
+            id="student"
+            onChange={e => {
+              e.preventDefault();
+              updateMyProfile("roleStudent", e.target.checked, true)
+            }
+            } // updates immediately
+            checked={Number(myProfile.roleStudent)}
+          >
+            Student
+          </StyledSwitch>
+          <StyledSwitch
             id="instructor"
             onChange={e =>
               updateMyProfile("roleInstructor", e.target.checked, true)
@@ -421,7 +433,7 @@ export default function DoenetProfile(props) {
           >
             Course Designer
           </StyledSwitch>
-          <StyledSwitch
+          {/* <StyledSwitch
             id="watchdog"
             onChange={e =>
               updateMyProfile("roleWatchdog", e.target.checked, true)
@@ -448,13 +460,27 @@ export default function DoenetProfile(props) {
             checked={Number(myProfile.roleLiveDataCommunity)}
           >
             Live Data Community
-          </StyledSwitch>
+          </StyledSwitch> */}
           <h4>{"You have access to:"}</h4>
-          <p>{myProfile.toolAccess.join(", ")}</p>
+          {toolAccess}
         </SpanAll>
 
-        <SectionHeader>Invites</SectionHeader>
+        {/* <SectionHeader>Invites</SectionHeader> */}
       </ProfileContainer>
+      </ToolLayoutPanel>
+    </ToolLayout>
+
+
+     {/* <DoenetHeader
+        toolTitle="Profile"
+        // headingTitle="Edit My Profile"
+        willProvideProfile={true}
+        profile={myProfile}
+      ></DoenetHeader>  */}
+
     </>
   );
+
+
+  
 }
