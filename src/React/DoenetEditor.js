@@ -3,18 +3,8 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 import crypto from 'crypto';
 import DoenetViewer from './DoenetViewer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExternalLinkAlt as externalLink } from '@fortawesome/free-solid-svg-icons';
-import { faWindowClose as closeExternalLink } from '@fortawesome/free-solid-svg-icons';
-import { faChevronLeft as openPanel } from '@fortawesome/free-solid-svg-icons';
-import { faChevronRight as closePanel } from '@fortawesome/free-solid-svg-icons';
 import "./editor.css";
-// import * as ComponentTypes from '../Doenet/ComponentTypes';
 import allComponents from '../../docs/complete-docs.json';
-import AceEditor from 'react-ace';
-import brace from 'brace';
-import 'brace/mode/xml';
-import 'brace/theme/textmate';
 import ErrorBoundary from './ErrorBoundary';
 import ToolLayout from './ToolLayout/ToolLayout';
 import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel';
@@ -60,40 +50,42 @@ class CodeEditor extends React.Component {
 
   render() {
     const { code, theme } = this.state;
-    const options = {
-      selectOnLineNumbers: true,
-      roundedSelection: false,
-      readOnly: false,
-      cursorStyle: "line",
-      automaticLayout: false,
-    };
+
     return (
-      <div>
-        <div>
-          <button onClick={this.changeEditorValue} type="button">
-            Change value
-          </button>
-          <button onClick={this.changeBySetState} type="button">
-            Change by setState
-          </button>
-          <button onClick={this.setDarkTheme} type="button">
-            Set dark theme
-          </button>
-          <button onClick={this.setLightTheme} type="button">
-            Set light theme
-          </button>
-        </div>
-        <hr />
+      // <div>
+      //   <div>
+      //     <button onClick={this.changeEditorValue} type="button">
+      //       Change value
+      //     </button>
+      //     <button onClick={this.changeBySetState} type="button">
+      //       Change by setState
+      //     </button>
+      //     <button onClick={this.setDarkTheme} type="button">
+      //       Set dark theme
+      //     </button>
+      //     <button onClick={this.setLightTheme} type="button">
+      //       Set light theme
+      //     </button>
+      //   </div>
+      //   <hr />
         <MonacoEditor
-          height="400"
-          language="javascript"
+          // height="400"
+          language="xml"
           value={code}
-          options={options}
+          // options={options}
+          options={{
+            selectOnLineNumbers: false,
+            minimap: {enabled:false},
+            fontSize: this.state.fontSize,
+            scrollBeyondLastLine: false,
+            showFoldingControls: "always",
+            features:["folding","caretOperations","scrollBeyondLastLine"]
+          }}
           onChange={this.onChange}
           editorDidMount={this.editorDidMount}
           theme={theme}
         />
-      </div>
+      // </div>
     );
   }
 }
@@ -427,7 +419,7 @@ class DoenetEditor extends Component {
         let title_text = `${this.state.documentTitle} (version ${this.state.version})`;
     
       return (
-      <ToolLayout headerTitle="Editor" toolTitle={title_text}>
+      <ToolLayout toolTitle="Editor" headingTitle={title_text}>
         <ToolLayoutPanel menuControls={[contextPanelMenu]}>
         <div >
               {/* {contextPanel} */}
