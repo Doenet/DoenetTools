@@ -40,39 +40,15 @@ class CodeEditor extends React.Component {
     this.setState({ code: "// code changed by setState! \n" });
   };
 
-  setDarkTheme = () => {
-    this.setState({ theme: "vs-dark" });
-  };
-
-  setLightTheme = () => {
-    this.setState({ theme: "vs-light" });
-  };
-
   render() {
     const { code, theme } = this.state;
 
     return (
-      // <div>
-      //   <div>
-      //     <button onClick={this.changeEditorValue} type="button">
-      //       Change value
-      //     </button>
-      //     <button onClick={this.changeBySetState} type="button">
-      //       Change by setState
-      //     </button>
-      //     <button onClick={this.setDarkTheme} type="button">
-      //       Set dark theme
-      //     </button>
-      //     <button onClick={this.setLightTheme} type="button">
-      //       Set light theme
-      //     </button>
-      //   </div>
-      //   <hr />
+ 
         <MonacoEditor
           // height="400"
           language="xml"
           value={code}
-          // options={options}
           options={{
             selectOnLineNumbers: false,
             minimap: {enabled:false},
@@ -85,11 +61,9 @@ class CodeEditor extends React.Component {
           editorDidMount={this.editorDidMount}
           theme={theme}
         />
-      // </div>
     );
   }
 }
-
 
 class DoenetEditor extends Component {
   constructor(props) {
@@ -177,23 +151,16 @@ class DoenetEditor extends Component {
     this.editorDOM = null;
     this.monacoDOM = null;
 
-    this.handleDoenetMLChange = this.handleDoenetMLChange.bind(this);
     this.saveDoenetMLChanges = this.saveDoenetMLChanges.bind(this);
     this.handleViewerUpdate = this.handleViewerUpdate.bind(this);
     this.publish = this.publish.bind(this);
     this.should_publish_button_be_enabled = this.should_publish_button_be_enabled.bind(this);
     this.describe_version = this.describe_version.bind(this);
-    this.editorDidMount = this.editorDidMount.bind(this);
-    this.updateEditor = this.updateEditor.bind(this);
+    // this.handleDoenetMLChange = this.handleDoenetMLChange.bind(this);
+    // this.editorDidMount = this.editorDidMount.bind(this);
+    // this.updateEditor = this.updateEditor.bind(this);
 
     this.viewerWindow = null;
-  }
-
-  editorDidMount(editor, monaco){
-    this.editorDOM = editor;
-    this.monacoDOM = monaco;
-    // this.updateEditor();
-    this.editorDOM.focus();
   }
 
   describe_version({publish_button_enabled,doenetML}){
@@ -261,51 +228,6 @@ class DoenetEditor extends Component {
     }
   }
 
-  updateEditor(editorDoenetML, e){
-    console.log('updateEditor',editorDoenetML);
-    console.log('state viewerDoenetML',this.state.viewerDoenetML);
-    
-    if (editorDoenetML !== this.state.editorDoenetML){
-    // this.editorDOM.setValue(editorDoenetML)
-    // this.setState({editorDoenetML})
-    this.setState({viewerDoenetML:editorDoenetML})
-    }
-  }
-
-  handleDoenetMLChange(editorDoenetML, e) {
-    // console.log('onChange',editorDoenetML,e);
-    
-    if (this.saveTimer === null) {
-      this.saveTimer = setTimeout(
-        () => { this.saveDoenetMLChanges({ blur: false }); }
-        , 3000);
-    }
-    if (this.contentIdInURL){
-      history.replaceState({},"title","?branchId="+this.branchId);
-      this.contentIdInURL = false;
-    }
-
-    let publish_button_enabled = this.should_publish_button_be_enabled({editorDoenetML});
-    let version = this.describe_version({publish_button_enabled:publish_button_enabled,doenetML:editorDoenetML})
-
-    
-    let documentTitle = this.calculate_documentTitle({doenetML:editorDoenetML,currentTitle:this.state.documentTitle});
-    // if (e.action === 'remove') {
-    //   let cursor = this.refs.aceEditor.editor.selection.getCursor();
-    //   const row = cursor.row;
-    //   const column = cursor.column;
-      //this.exceptionForRemoveCode = editorDoenetML;
-      // this.updateContextPanel(row, column);
-    // }
-
-    this.setState({ 
-      editorDoenetML: editorDoenetML, 
-      publish_button_enabled:publish_button_enabled,
-      documentTitle: documentTitle,
-      version: version,
-     });
-  }
-
   saveDoenetMLChanges({ blur=false, publish=false }) {
 
     if (blur) {
@@ -365,6 +287,51 @@ class DoenetEditor extends Component {
     this.setState({viewerDoenetML:this.state.editorDoenetML});
   }
 
+  // updateEditor(editorDoenetML, e){
+  //   console.log('updateEditor',editorDoenetML);
+  //   console.log('state viewerDoenetML',this.state.viewerDoenetML);
+    
+  //   if (editorDoenetML !== this.state.editorDoenetML){
+  //   // this.editorDOM.setValue(editorDoenetML)
+  //   // this.setState({editorDoenetML})
+  //   this.setState({viewerDoenetML:editorDoenetML})
+  //   }
+  // }
+
+    // editorDidMount(editor, monaco){
+  //   this.editorDOM = editor;
+  //   this.monacoDOM = monaco;
+  //   // this.updateEditor();
+  //   this.editorDOM.focus();
+  // }
+
+  onChange = (newValue) => {
+
+        if (this.saveTimer === null) {
+      this.saveTimer = setTimeout(
+        () => { this.saveDoenetMLChanges({ blur: false }); }
+        , 3000);
+    }
+
+        if (this.contentIdInURL){
+          history.replaceState({},"title","?branchId="+this.branchId);
+          this.contentIdInURL = false;
+        }
+
+    let publish_button_enabled = this.should_publish_button_be_enabled({newValue});
+    console.log("publish_button_enabled",publish_button_enabled)
+    let documentTitle = this.calculate_documentTitle({doenetML:newValue,currentTitle:this.state.documentTitle});
+    let version = this.describe_version({publish_button_enabled:publish_button_enabled,doenetML:newValue})
+  
+
+        this.setState({ 
+      editorDoenetML: newValue, 
+      publish_button_enabled:publish_button_enabled,
+      documentTitle: documentTitle,
+      version: version,
+     });
+  };
+
   render() {
 
     if (this.state.loading){
@@ -374,6 +341,8 @@ class DoenetEditor extends Component {
     if (!this.state.accessAllowed){
       return (<p>You don't have Admin access.</p>)
     }
+
+    const { editorDoenetML } = this.state;
 
     
     let textEditorMenu = <React.Fragment>
@@ -422,41 +391,34 @@ class DoenetEditor extends Component {
       <ToolLayout toolTitle="Editor" headingTitle={title_text}>
         <ToolLayoutPanel menuControls={[contextPanelMenu]}>
         <div >
-              {/* {contextPanel} */}
-              {this.text}
+              {contextPanel}
             </div>
         </ToolLayoutPanel>
         <ToolLayoutPanel menuControls={[textEditorMenu]}>
         <div style={{width:"100%",height:"calc(100vh - 42px)",backgroundColor:"blue"}} >
-          <CodeEditor />
-           {/* <MonacoEditor key="main_text_editor"
-        language="xml"
-        theme="vs-light"
-        // onChange={this.updateEditor}
-        onChange={(text,e)=>{
-          console.log(text)
-          this.text = text;
-          this.forceUpdate();
-          // this.setState({title:text})
-        }
-        }
-        options={{
-          selectOnLineNumbers: false,
-          minimap: {enabled:false},
-          fontSize: this.state.fontSize,
-          scrollBeyondLastLine: false,
-          showFoldingControls: "always",
-          features:["folding","caretOperations","scrollBeyondLastLine"]
-        }}
-        // onChange={this.handleDoenetMLChange}
-        editorDidMount={this.editorDidMount}
-      /> */}
+
+         <MonacoEditor
+          language="xml"
+          value={editorDoenetML}
+          options={{
+            selectOnLineNumbers: false,
+            minimap: {enabled:false},
+            fontSize: this.state.fontSize,
+            scrollBeyondLastLine: false,
+            showFoldingControls: "always",
+            features:["folding","caretOperations","scrollBeyondLastLine"]
+          }}
+          onChange={this.onChange}
+          // editorDidMount={this.editorDidMount}
+          theme="vs-light"
+
+        />
         </div>
        
 
             </ToolLayoutPanel>
         <ToolLayoutPanel menuControls={[doenetViewerMenu]}>
-          {/* {doenetViewer} */}
+          {doenetViewer}
         </ToolLayoutPanel>
          </ToolLayout>);
     
