@@ -1,5 +1,6 @@
 import BaseComponent from './BaseComponent';
 import { returnBreakStringsSugarFunction } from '../commonsugar/breakstrings';
+import me from 'math-expressions';
 
 export default class VectorListComponent extends BaseComponent {
   static componentType = "_vectorlistcomponent";
@@ -208,8 +209,6 @@ export default class VectorListComponent extends BaseComponent {
             let displacement;
             if (dependencyValues.vectorChild.length === 1) {
               displacement = dependencyValues.vectorChild[0].stateValues.displacement
-            } else {
-              displacement = me.fromAst('\uff3f')
             }
             return {
               newValues: {

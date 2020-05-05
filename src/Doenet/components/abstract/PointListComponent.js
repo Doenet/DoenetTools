@@ -207,8 +207,6 @@ export default class PointListComponent extends BaseComponent {
             let coords;
             if (dependencyValues.pointChild.length === 1) {
               coords = dependencyValues.pointChild[0].stateValues.coords
-            } else {
-              coords = me.fromAst('\uff3f')
             }
             return {
               newValues: {
