@@ -14,7 +14,7 @@ export const TreeView = ({containerId, headingsInfo, assignmentsInfo, currentDra
   }, [currentDraggedObject])
 
   const onDragStartCb = (draggedId, type) => {
-    onDragStart && onDragStart(draggedId, type, containerId, headingsInfo, assignmentsInfo);
+    onDragStart && onDragStart(draggedId, type, containerId);
   }
   
   const onDragEndCb = () => {
@@ -30,8 +30,13 @@ export const TreeView = ({containerId, headingsInfo, assignmentsInfo, currentDra
     onDropEnter && onDropEnter(id, containerId);
   }
 
+  const onDraggableDragOverCb = (id, type) => {
+    onDraggableDragOver && onDraggableDragOver(id, type, containerId);
+  }
+
   const onDropLeaveCb = (id) => {
     if (currentDraggedObject.dataObject == null) return;
+    // console.log(id + " " + currentDraggedObject.dataObject.parent)
     if (id === "UltimateHeader" && currentDraggedObject.dataObject.parent === "UltimateHeader") {
       // onDropLeave && onDropLeave(id, containerId);
     }
@@ -44,7 +49,7 @@ export const TreeView = ({containerId, headingsInfo, assignmentsInfo, currentDra
         assignmentsInfo: assignmentsInfo, 
         onDragStart: onDragStartCb, 
         onDragEnd: onDragEndCb, 
-        onDraggableDragOver: onDraggableDragOver, 
+        onDraggableDragOver: onDraggableDragOverCb, 
         onDrop: onDropCb, 
         onDropEnter: onDropEnterCb, 
         onDropLeave: onDropLeaveCb, 
