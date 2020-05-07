@@ -10,60 +10,6 @@ import ToolLayout from './ToolLayout/ToolLayout';
 import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel';
 import MonacoEditor from 'react-monaco-editor';
 
-class CodeEditor extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      code: "// type your code... \n",
-      theme: "vs-light",
-    };
-  }
-
-  onChange = (newValue) => {
-    console.log("onChange", newValue,this.state.code); // eslint-disable-line no-console
-    this.setState({code:newValue})
-  };
-
-  editorDidMount = (editor) => {
-    // eslint-disable-next-line no-console
-    console.log("editorDidMount", editor, editor.getValue(), editor.getModel());
-    this.editor = editor;
-  };
-
-  changeEditorValue = () => {
-    if (this.editor) {
-      this.editor.setValue("// code changed! \n");
-    }
-  };
-
-  changeBySetState = () => {
-    this.setState({ code: "// code changed by setState! \n" });
-  };
-
-  render() {
-    const { code, theme } = this.state;
-
-    return (
- 
-        <MonacoEditor
-          // height="400"
-          language="xml"
-          value={code}
-          options={{
-            selectOnLineNumbers: false,
-            minimap: {enabled:false},
-            fontSize: this.state.fontSize,
-            scrollBeyondLastLine: false,
-            showFoldingControls: "always",
-            features:["folding","caretOperations","scrollBeyondLastLine"]
-          }}
-          onChange={this.onChange}
-          editorDidMount={this.editorDidMount}
-          theme={theme}
-        />
-    );
-  }
-}
 
 class DoenetEditor extends Component {
   constructor(props) {
@@ -332,6 +278,36 @@ class DoenetEditor extends Component {
      });
   };
 
+  editorDidMount = (editor,monaco) => {
+    // eslint-disable-next-line no-console
+    // console.log("editorDidMount", editor, editor.getValue(), editor.getModel());
+    this.editorDOM = editor;
+    this.monacoDOM = monaco;
+    // console.log("editorDOM",editor)
+    let model = this.editorDOM.getModel();
+    // console.log(model._tokenization)
+    console.log('tokens')
+    console.log(model.getLineContent(2));
+    // console.log(model._tokens)
+    // let tokens = this.editorDOM.tokenize(editor.getValue(),'xml')
+    // console.log(tokens)
+
+    this.editorDOM.onDidChangeCursorSelection(e =>{
+      this.onSelectionsChange(e.selection, ...e.secondarySelections)
+    })
+  };
+  onSelectionsChange = (selection,secondarySelections) => {
+    if (secondarySelections){
+      console.log('secondary!')
+      return;
+    }
+    console.log('selection',selection)
+    let model = this.editorDOM.getModel();
+    console.log(model)
+    console.log(model._tokenization)
+
+  }
+
   render() {
 
     if (this.state.loading){
@@ -362,7 +338,7 @@ class DoenetEditor extends Component {
     </React.Fragment>
 
     let contextPanel = <p>Context Panel is Coming Soon!</p>
-    let contextPanelMenu = <p>Coming Soon!</p>
+    let contextPanelMenu = null;
 
 
     // console.log(this.state.viewerDoenetML)
@@ -387,6 +363,7 @@ class DoenetEditor extends Component {
    
         let title_text = `${this.state.documentTitle} (version ${this.state.version})`;
     
+        console.log('RENDER REFRESH')
       return (
       <ToolLayout toolTitle="Editor" headingTitle={title_text}>
         <ToolLayoutPanel menuControls={[contextPanelMenu]}>
@@ -409,7 +386,7 @@ class DoenetEditor extends Component {
             features:["folding","caretOperations","scrollBeyondLastLine"]
           }}
           onChange={this.onChange}
-          // editorDidMount={this.editorDidMount}
+          editorDidMount={this.editorDidMount}
           theme="vs-light"
 
         />

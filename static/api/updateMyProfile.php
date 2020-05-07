@@ -23,7 +23,8 @@ $possiblePictures = array(
     "penguin",
     "squirrel",
     "swan",
-    "turtle"
+    "turtle",
+    "quokka"
 );
 
 if (in_array($changeField, $changeableStrings)) {

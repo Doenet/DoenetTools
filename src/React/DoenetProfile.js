@@ -280,7 +280,8 @@ export default function DoenetProfile(props) {
       "penguin",
       "squirrel",
       "swan",
-      "turtle"
+      "turtle",
+      "quokka"
     ];
 
     let picElements = pics.map((value, index) => {
