@@ -9,6 +9,8 @@ import ErrorBoundary from './ErrorBoundary';
 import ToolLayout from './ToolLayout/ToolLayout';
 import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel';
 import MonacoEditor from 'react-monaco-editor';
+import PlacementContext from "./ToolLayout/PlacementContext";
+
 
 
 class DoenetEditor extends Component {
@@ -108,6 +110,9 @@ class DoenetEditor extends Component {
 
     this.viewerWindow = null;
   }
+
+  static contextType = PlacementContext;
+
 
   describe_version({publish_button_enabled,doenetML}){
     if (publish_button_enabled){
@@ -284,10 +289,10 @@ class DoenetEditor extends Component {
     this.editorDOM = editor;
     this.monacoDOM = monaco;
     // console.log("editorDOM",editor)
-    let model = this.editorDOM.getModel();
+    this.model = this.editorDOM.getModel();
     // console.log(model._tokenization)
-    console.log('tokens')
-    console.log(model.getLineContent(2));
+    // console.log('tokens')
+    // console.log(model.getLineContent(2));
     // console.log(model._tokens)
     // let tokens = this.editorDOM.tokenize(editor.getValue(),'xml')
     // console.log(tokens)
@@ -302,9 +307,9 @@ class DoenetEditor extends Component {
       return;
     }
     console.log('selection',selection)
-    let model = this.editorDOM.getModel();
-    console.log(model)
-    console.log(model._tokenization)
+    // let model = this.editorDOM.getModel();
+    console.log('model',this.model)
+    // console.log(model._tokenization)
 
   }
 
@@ -373,7 +378,7 @@ class DoenetEditor extends Component {
         </ToolLayoutPanel>
         <ToolLayoutPanel menuControls={[textEditorMenu]}>
         <div style={{width:"100%",height:"calc(100vh - 42px)",backgroundColor:"blue"}} >
-
+       <p>width:{this.context.width}</p> 
          <MonacoEditor
           language="xml"
           value={editorDoenetML}

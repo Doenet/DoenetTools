@@ -274,7 +274,7 @@ export default function ToolLayout(props) {
   }
   visibilityMenuControl.hideMenu = !Array.isArray(props.children) && !leftNavContent.props.menuControls;
   visibilityMenuControl.hideCollapse = !Array.isArray(props.children);
-  let leftNav = <PlacementContext.Provider value={{ leftCloseBtn: leftCloseBtn, position: 'left', visibilityMenuControl, leftPanelHideable }}>{leftNavContent}</PlacementContext.Provider>
+  let leftNav = <PlacementContext.Provider value={{ leftCloseBtn: leftCloseBtn, position: 'left', visibilityMenuControl, leftPanelHideable, width:leftWidth, height:"no idea" }}>{leftNavContent}</PlacementContext.Provider>
   allParts.push(<div key="part1" id="leftpanel" className="leftpanel" style={{ width: `${leftWidth}px`, display: `${leftWidth === 0 ? "none" : "flex"} ` }} >{leftNav}</div>);
 
   //Resizer
@@ -283,7 +283,7 @@ export default function ToolLayout(props) {
   //Props children[1]
   let middleNav
   if (props.children[1]) {
-    middleNav = <PlacementContext.Provider value={{ rightOpenBtn, leftOpenBtn, position: 'middle', visibilityMenuControl, leftPanelVisible, rightPanelVisible }}> {props.children[1]}</PlacementContext.Provider>
+    middleNav = <PlacementContext.Provider value={{ rightOpenBtn, leftOpenBtn, position: 'middle', visibilityMenuControl, leftPanelVisible, rightPanelVisible, width: middleWidth, height: "no idea" }}> {props.children[1]}</PlacementContext.Provider>
     allParts.push(<div key="part2" id="middlepanel" className="middlepanel" style={{ width: `${middleWidth}px`, display: `${middleWidth === 0 ? "none" : "flex"} ` }} >  {middleNav}</div>);
   }
 
@@ -293,7 +293,7 @@ export default function ToolLayout(props) {
   //Props children[2]
   let rightNav
   if (props.children[2]) {
-    rightNav = <PlacementContext.Provider value={{ rightCloseBtn, position: 'right', visibilityMenuControl, rightPanelHideable }}>{props.children[2]}  </PlacementContext.Provider>
+    rightNav = <PlacementContext.Provider value={{ rightCloseBtn, position: 'right', visibilityMenuControl, rightPanelHideable, width:rightWidth, height: "no idea" }}>{props.children[2]}  </PlacementContext.Provider>
     allParts.push(<div key="part3" id="rightpanel" className="rightpanel" style={{ width: `${rightWidth}px`, display: `${rightWidth === 0 ? "none" : "flex"}` }}>{rightNav}</div>);
   }
   return (
