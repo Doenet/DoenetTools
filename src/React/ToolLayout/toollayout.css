@@ -73,24 +73,24 @@ body{
 .maincontent{
   margin:0px;
   padding:0px;
-  overflow: scroll;
+  overflow: auto;
   position: relative;
-  height: calc(100vh - 60px);
+  height: calc(100vh - 50px);
 }
 .shrink-height{
-  height:calc(100vh - 100px) !important;
+  height:calc(100vh - 90px) !important;
 }
 
 
 @media only screen and (max-width: 767px) {
 .maincontent{
-height:calc(100vh - 120px);
+height:calc(100vh - 90px);
 position: relative;
 
 }
 
 .shrink-height{
-  height:calc(100vh - 160px) !important;
+  height:calc(100vh - 120px) !important;
 }
 
 }
@@ -112,3 +112,4 @@ position: relative;
     background-color: black;
     width: 100%;
 } 
+ 

@@ -11,8 +11,8 @@ import './toollayout.css';
 const Container = styled.div`
   display: flex;
   position: fixed;
-  height:calc(100%-60px);
-  margin-top: 60px;
+  height:calc(100%-50px);
+  margin-top: 50px;
   overflow:hidden;
 `;
 
@@ -137,7 +137,7 @@ export default function ToolLayout(props) {
         event = e;
       }
       if (currentResizer === "first") {
-        console.log(event.target.className);
+        // console.log(event.target.className);
 
         const firstResizer = document.querySelector('#first.resizer');
         let leftW = event.clientX - resizerW / 2;
@@ -298,15 +298,15 @@ export default function ToolLayout(props) {
   }
   return (
     <>
-      <DoenetHeader toolTitle={props.toolTitle} headingTitle={props.headingTitle} />
+      <DoenetHeader toolTitle={props.toolTitle} headingTitle={props.headingTitle} headerConfig={props.headerConfig}/>
       {deviceType === "phone" ? <div ref={container}>
         <div>
           {(phoneVisiblePanel === "left" || allParts.length === 1) &&
-            <div key="part1" id="leftpanel" style={{ position: "fixed", top: "120px" }} >{leftNav}</div>}
+            <div key="part1" id="leftpanel" style={{ position: "fixed", top: "50px" }} >{leftNav}</div>}
           {phoneVisiblePanel === "middle" &&
-            <div key="part2" id="middlepanel" style={{ position: "fixed", top: "120px" }}>{middleNav} </div>}
+            <div key="part2" id="middlepanel" style={{ position: "fixed", top: "50px" }}>{middleNav} </div>}
           {phoneVisiblePanel === "right" && allParts.length > 2 &&
-            <div key="part3" id="rightpanel" style={{ position: "fixed", top: "120px" }} > {rightNav} </div>}
+            <div key="part3" id="rightpanel" style={{ position: "fixed", top: "50px" }} > {rightNav} </div>}
         </div>
 
         {props.children.length > 1 && <div className="phonebuttoncontainer" >
@@ -328,3 +328,11 @@ export default function ToolLayout(props) {
     </>
   );
 }
+
+
+
+
+
+
+
+

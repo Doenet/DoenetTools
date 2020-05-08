@@ -38,7 +38,7 @@ export default function DoenetExampleTool(props) {
               panelName - In phone the button container button's name label
         */}
 
-        <ToolLayoutPanel key="one" panelName="Context Panel">
+        <ToolLayoutPanel key="one" menuControls={menuControls} panelName="Context Panel">
           <div>
             {alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}
             <button onClick={() => setX(x + 1)}> Count</button>{x}

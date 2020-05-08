@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 axios.defaults.withCredentials = true;
-import DoenetHeader from "./DoenetHeader";
+// import DoenetHeader from "./DoenetHeader";
 import styled from "styled-components";
 import ToolLayout from './ToolLayout/ToolLayout';
 import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel';
@@ -329,7 +329,7 @@ export default function DoenetProfile(props) {
 
   return (
     <>
-    <ToolLayout toolTitle="Profile" >
+    <ToolLayout toolTitle="Profile" headerConfig={myProfile}>
       <ToolLayoutPanel>
       <ProfileContainer id="content">
       <PageHeader>{myProfile.username}'s Profile</PageHeader>

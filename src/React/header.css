@@ -1,6 +1,4 @@
-.headingContainerWrapper {
-  height: 100%;
-}
+
 
 .headingContainer{
   display: flex;
@@ -10,12 +8,13 @@
   justify-content: space-between;
   padding: 6px;
   width: 100%;
-  height: 60px;
+  height: 50px; 
   position: fixed;
   top: 0;
   left: 0;
   box-shadow: 0 2px 6px 0 rgba(0,0,0,.28);
   z-index: 5;
+  line-height: 0;
 }
 .select {
   background-color: #6de5ff;
@@ -63,7 +62,7 @@
   position: relative;
   width: 400px;
   display:flex;
-  margin-left: 10px;
+  margin: 0px 20px 0px 10px;
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
@@ -108,18 +107,19 @@
   transition: 300ms;
 }
 
-#userButton {
-    display: flex;
-    flex-direction: row;
-    font-size: 13px;
+#userButton-anonymous {
+    /* display: flex; */
+    /* flex-direction: row; */
+    /* font-size: 13px; */
     text-align: center;
-    width: auto;
-    height:auto;
+    width: 28px;
+    height: 28px;
+    /* height: 30px; */
     border-radius: 50%;
-    cursor: pointer;
+    /* cursor: pointer; */
     background-color: none;
-    padding: 7px 5px;
-    color:#333333;
+    padding: 5px 0px;
+    color: #333333;
     text-transform: none;
     font-weight: 700;
     border: 0.5px solid;
@@ -128,17 +128,17 @@
     margin: 0px 10px;
 }
 
-#userButton:hover, #userButton:hover #userButtonIcon {
+#userButton-anonymous:hover, #userButton-anonymous:hover #userButtonIcon {
   background-color: #fff;
   border-color: #fff;
   color: #6d4445;
 }
 
 #userButtonIcon {
-  font-size: 16px;
-  margin: 1px auto;
+  font-size: 15px;
+  margin: 0px 0px 0px 1px;
   display: inline;
-  background: none;
+  background: no-repeat;
   color: #333333;
   transition: 300ms;
 }
@@ -218,32 +218,73 @@
   color: rgb(177, 177, 177);
   text-decoration: none;
 }
+.hamburger{
+  display: none;
+}
+.menu-slider{
+  display: none;
+}
 
 @media only screen and (max-width: 767px) {
-
-  .toolTitle {
+  .menu-slider{
     display: block;
     width: 100%;
-    text-align: center;
-    padding: 0px;
+    height: 100px;
+    position: fixed;
+    background-color: #6de5ff;
+    z-index: -1;
+    transition: all 0.5s ease-in-out;
+  }
+  .menu-slider.off {
+    top:-100px;
+
+  }
+  .menu-slider.on {
+    top: 50px;
+  }
+  .hamburger{
+    height:50px;
+    min-width: 32px;
+    display: flex;
+    padding: 0px 0px 0px 20px;
+    align-items: center;
+  }
+  #hamburger-icon{
+    vertical-align: middle;
+    font-size: 20px;
+  }
+  .slider-item{
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;    
+  }
+  .toolTitle {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    padding: 0px 20px;
+    height: 40px;
+
   }
 
   .toolTitle span {
     font-size: 18px;
+    vertical-align: middle;
   }
 
   .headingToolbar {
     display:flex;
-    width: 250px;
-    justify-content: space-between;
+    width: 150px;
+    /* justify-content: space-between; */
     /* padding: 0 20px; */
-    padding: 0px 40px 0px 40px;
-    margin: 0 auto;
+    padding: 0px 10px 0px 40px;
+    margin: 0px 20px 0px 10px;
     text-align: center;
   }
 
   .headingTitle {
-    display: block;
+    display: none;
     width: 100%;
     max-width: none;
     margin: 0 auto;
@@ -257,15 +298,53 @@
   #doenetLogo {
     height: 30px;
     cursor: pointer;
+    vertical-align: middle;
   }
 
   #toolboxButton {
     font-size: 16px;
   }
 
-  #userIcon {
+  /* #userIcon {
     font-size: 16px;
+  } */
+
+  #userButton-anonymous{
+    display: flex;
+    align-items: center;
+    padding: 0px;
+    width: 30px;
+    height: 30px;
+    
+    /* flex-direction: row; */
+    font-size: 13px;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 7px 5px;
+    color:#333333;
+    text-transform: none;
+    font-weight: 700;
+    border: 0.5px solid;
+    border-color: #333333;
+    transition: 300ms;
+    margin: 0px 10px;
   }
+
+  #userButtonIcon{
+    font-size: 15px;
+    margin: 1px 1px 1px 2px;
+    display: inline;
+    background: no-repeat;
+    color: #333333;
+    transition: 300ms;
+  }
+  #userButton-registered{
+    display: none;
+  }
+  #userButton-phone{
+    display: block;
+  }
+
 
   .toolbox {
     width: 160px;
@@ -273,22 +352,26 @@
     right: -55px;
   }
 
-
-  .headingContainerWrapper {
-    height: 100%;
-    position: fixed;
-    width:100%;
-  }
-
   .headingContainer{
-    position: absolute;
-    flex-direction: column;
+    position: fixed;
     justify-content: space-around;
-    height: 120px;
+    height: 50px;
     padding: 0px;
+    line-height: 0;
   }
-
+  .dropdown{
+    display: none;
   
-
+  }
+  .dropbtn{
+    display: none;
+  }
+  .toolboxContainer{
+    display: none;
+  }
+  
 }
+
+
+
 
