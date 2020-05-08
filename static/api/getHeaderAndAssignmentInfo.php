@@ -36,14 +36,14 @@ $result = $conn->query($sql);
 while ($row = $result->fetch_assoc()){ 
     $id = $row["assignmentId"];
     $response_arr->$id = new stdClass();
-    $response_arr->$id->name=$row["assignmentName"];
-    $response_arr->$id->attribute="assignment";
+    $response_arr->$id->title=$row["assignmentName"];
+    $response_arr->$id->type="assignment";
     $response_arr->$id->contentId=$row["contentId"];
     $response_arr->$id->branchId=$row["sourceBranchId"];
     $response_arr->$id->assignedDate=$row["assignedDate"];
     $response_arr->$id->dueDate=$row["dueDate"];
     $response_arr->$id->numberOfAttemptsAllowed=$row["numberOfAttemptsAllowed"];
-    $response_arr->$id->parent=$row["parentId"];
+    $response_arr->$id->parentId=$row["parentId"];
     // $object = [ $row["assignmentId"]=> [
     // "name"=>$row["assignmentName"],
     // "attr"=>"assignment",
@@ -63,12 +63,12 @@ while ($row = $result->fetch_assoc()){
   if (!property_exists($response_arr,$id)){
 
     $response_arr->$id = new stdClass();
-    $response_arr->$id->name=$row["headingText"];
-    $response_arr->$id->attribute="header";
+    $response_arr->$id->title=$row["headingText"];
+    $response_arr->$id->type="header";
     $response_arr->$id->childrenId=[$row["childrenId"]];
-    $response_arr->$id->headingId=array();
-    $response_arr->$id->assignmentId=array();
-    $response_arr->$id->parent=$row["parentId"];
+    $response_arr->$id->childHeadings=array();
+    $response_arr->$id->childAssignments=array();
+    $response_arr->$id->parentId=$row["parentId"];
   }else {
     array_push($response_arr->$id->childrenId,$row["childrenId"]);    
   } 

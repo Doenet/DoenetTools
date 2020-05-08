@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { TreeView } from './TreeView/TreeView'
 
 
-const DoenetCourseOutline = React.memo(({ treeHeadingsInfo, treeAssignmentsInfo, updateHeadingsAndAssignments }) => {
+const DoenetCourseOutline = React.memo(({ containerId, treeHeadingsInfo, treeAssignmentsInfo, updateHeadingsAndAssignments }) => {
   const [currentDraggedObject, setCurrentDraggedObject] = useState({
     id: null, 
     type: null,
@@ -171,6 +171,7 @@ const DoenetCourseOutline = React.memo(({ treeHeadingsInfo, treeAssignmentsInfo,
   return (
     <CourseOutlineFrame>
         <TreeView 
+          containerId={containerId}
           headingsInfo={treeHeadings} 
           assignmentsInfo={treeAssignments} 
           currentDraggedObject={currentDraggedObject}

@@ -63,7 +63,6 @@ export const TreeView = ({containerId, headingsInfo, assignmentsInfo, currentDra
 
 function buildTreeStructure({headingsInfo, assignmentsInfo, onDragStart, onDragEnd, 
   onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject, currentDraggedOverContainerId}) {
-  let baseLevelHeadings = headingsInfo["UltimateHeader"]["headingId"];
   
   // let treeStructure = <React.Fragment>
   //   <div>
@@ -154,7 +153,7 @@ function buildTreeStructureHelper({parentHeadingId, parentNodeHeadingId, heading
   let subTree = <ParentNode 
     id={parentHeadingId}
     key={parentHeadingId} 
-    data={headingsInfo[parentHeadingId]["name"]} // do not render dragged item
+    data={parentHeadingId == "UltimateHeader" ? "Assignments Outline" : headingsInfo[parentHeadingId]["title"]}
     onDrop={onDrop} 
     onDropEnter={onDropEnter}
     onDropLeave={onDropLeave}
@@ -166,7 +165,7 @@ function buildTreeStructureHelper({parentHeadingId, parentNodeHeadingId, heading
     currentDraggedType={currentDraggedObject.type}
     style={ getItemStyle(currentDraggedObject, parentNodeHeadingId, parentHeadingId) }> 
       { // iterate through children headings to generate tree recursively
-      headingsInfo[parentHeadingId]["headingId"].map(headingId => {
+      headingsInfo[parentHeadingId]["childHeadings"].map(headingId => {
         return buildTreeStructureHelper(
           { parentHeadingId: headingId, 
             parentNodeHeadingId: parentHeadingId,
@@ -182,13 +181,13 @@ function buildTreeStructureHelper({parentHeadingId, parentNodeHeadingId, heading
             currentDraggedOverContainerId: currentDraggedOverContainerId});
       })}
       { // iterate through children assigments to generate tree recursively
-      headingsInfo[parentHeadingId]["assignmentId"].map((assignmentId, index) => {
+      headingsInfo[parentHeadingId]["childAssignments"].map((assignmentId, index) => {
         
         return <LeafNode 
           index={index}
           id={assignmentId} 
           key={assignmentId} 
-          data={assignmentsInfo[assignmentId]["name"]} 
+          data={assignmentsInfo[assignmentId]["title"]} 
           styles={ Object.assign({color: '#0083e3'}, 
             getItemStyle(currentDraggedObject, parentHeadingId, assignmentId))
           }

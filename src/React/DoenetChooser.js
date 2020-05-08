@@ -1087,17 +1087,16 @@ class DoenetChooser extends Component {
       let tempHeadingsInfo = {};
       let tempAssignmentsInfo = {};
       Object.keys(resp.data).map(itemId => {
-          // console.log(resp.data[itemId]["name"]);
-        if (resp.data[itemId]["attribute"] == "header") {
+        if (resp.data[itemId]["type"] == "header") {
           tempHeadingsInfo[itemId] = resp.data[itemId];
           // process children
           for (let i in resp.data[itemId]["childrenId"]) {
             let childId = resp.data[itemId]["childrenId"][i];
             if (childId == "") continue;
-            if (resp.data[childId]["attribute"] == "header") {
-              tempHeadingsInfo[itemId]["headingId"].push(childId);
+            if (resp.data[childId]["type"] == "header") {
+              tempHeadingsInfo[itemId]["childHeadings"].push(childId);
             } else {
-              tempHeadingsInfo[itemId]["assignmentId"].push(childId);
+              tempHeadingsInfo[itemId]["childAssignments"].push(childId);
             }
           }
         } else {
@@ -1123,7 +1122,7 @@ class DoenetChooser extends Component {
     let assignmentId_parentID_array = [];
     let assignmentId_array = Object.keys(assignmentsInfo)
     assignmentId_array.forEach(id=>{
-      assignmentId_parentID_array.push(assignmentsInfo[id]['parent']);
+      assignmentId_parentID_array.push(assignmentsInfo[id]['parentId']);
     })
     let headerID_array = Object.keys(headingsInfo);
     let headerID_array_to_payload = []
@@ -1132,14 +1131,14 @@ class DoenetChooser extends Component {
     let headerID_name = []
     headerID_array.forEach(currentHeaderId=>{
       let currentHeaderObj=headingsInfo[currentHeaderId]
-      let name = currentHeaderObj['name']
+      let name = currentHeaderObj['title']
       if (name==null){
         name="NULL"
       }
-      let currentHeaderObjHeadingIdArray = currentHeaderObj['headingId']
+      let currentHeaderObjHeadingIdArray = currentHeaderObj['childHeadings']
       let lengthOfHeadingId = currentHeaderObjHeadingIdArray.length
-      let currentHeaderObjAssignmentIdArray = currentHeaderObj['assignmentId']
-      let currentHeaderObjParentId = currentHeaderObj['parent']
+      let currentHeaderObjAssignmentIdArray = currentHeaderObj['childAssignments']
+      let currentHeaderObjParentId = currentHeaderObj['parentId']
       let lengthOfAssigmentId = currentHeaderObjAssignmentIdArray.length
       let iterator = 0
       if (lengthOfHeadingId==0 && lengthOfAssigmentId==0){
@@ -1207,7 +1206,7 @@ class DoenetChooser extends Component {
     console.log("onTreeDragStart")
     const dataObjectSource = draggedType == "leaf" ? this.assignmentsInfo[sourceContainerId] : this.headingsInfo[sourceContainerId];
     const dataObject = dataObjectSource[draggedId];
-    const sourceParentId = dataObjectSource[draggedId].parent;
+    const sourceParentId = dataObjectSource[draggedId].parentId;
     
     this.setState({
       currentDraggedObject: {id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId},
@@ -1229,14 +1228,14 @@ class DoenetChooser extends Component {
     if (type != this.state.currentDraggedObject.type || id == "UltimateHeader") return;
 
     const draggedOverItemInfo = type == "leaf" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
-    const headingsChildrenListKey = type == "leaf" ? "assignmentId" : "headingId";
+    const headingsChildrenListKey = type == "leaf" ? "childAssignments" : "childHeadings";
     const currentDraggedObjectInfo = this.state.currentDraggedObject.type == "leaf" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
 
-    const draggedOverItemParentListId = draggedOverItemInfo[id]["parent"];
+    const draggedOverItemParentListId = draggedOverItemInfo[id]["parentId"];
     const draggedOverItemIndex = this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]
       .findIndex(itemId => itemId == id);
 
-    const draggedItemParentListId = currentDraggedObjectInfo[this.state.currentDraggedObject.id]["parent"];
+    const draggedItemParentListId = currentDraggedObjectInfo[this.state.currentDraggedObject.id]["parentId"];
 
     // if the item is dragged over itself, ignore
     if (this.state.currentDraggedObject.id == id || draggedItemParentListId != draggedOverItemParentListId) {
@@ -1274,14 +1273,14 @@ class DoenetChooser extends Component {
       switch (this.state.currentDraggedObject.type) {
         case "content":
           newObject = {
-            name: draggedObjectInfo.title,
-            attribute: "assignment",
+            title: draggedObjectInfo.title,
+            type: "assignment",
             contentId: draggedObjectInfo.contentIds[0].contentId,
             branchId: this.state.currentDraggedObject.id,
             assignedDate: null,
             dueDate: null,
             numberOfAttemptsAllowed: "3",
-            parent: listId
+            parentId: listId
           };
           break;
         case "folder":
@@ -1300,7 +1299,7 @@ class DoenetChooser extends Component {
       if (this.state.currentDraggedObject.type == "content" || this.state.currentDraggedObject.type == "leaf") {
         this.assignmentsInfo[containerId] = Object.assign(this.assignmentsInfo[containerId], {[this.state.currentDraggedObject.id]: newObject});
         this.headingsInfo[containerId][listId].childrenId.push(newObject.branchId);
-        this.headingsInfo[containerId][listId].assignmentId.push(newObject.branchId);
+        this.headingsInfo[containerId][listId].childAssignments.push(newObject.branchId);
         const currentDraggedObject = this.state.currentDraggedObject;
         currentDraggedObject.dataObject = newObject;
         currentDraggedObject.type = "leaf";
@@ -1316,12 +1315,12 @@ class DoenetChooser extends Component {
     }
 
     const currentDraggedObjectInfo = this.state.currentDraggedObject.dataObject;
-    const previousParentId = currentDraggedObjectInfo.parent;
+    const previousParentId = currentDraggedObjectInfo.parentId;
 
     if (previousParentId == listId || listId == this.state.currentDraggedObject.id) // prevent heading from becoming a child of itself 
       return;
     
-    const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "assignmentId" : "headingId";
+    const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "childAssignments" : "childHeadings";
     const previousList = this.headingsInfo[containerId][previousParentId][headingsChildrenListKey];
     const currentList = this.headingsInfo[containerId][listId][headingsChildrenListKey];
     // remove from previous list
@@ -1339,7 +1338,7 @@ class DoenetChooser extends Component {
     this.headingsInfo[containerId][previousParentId][headingsChildrenListKey] = previousList;
     this.headingsInfo[containerId][listId][headingsChildrenListKey] = currentList;
     const currentDraggedObject = this.state.currentDraggedObject;
-    currentDraggedObject.dataObject.parent = listId;
+    currentDraggedObject.dataObject.parentId = listId;
     this.setState({ currentDraggedObject: currentDraggedObject })
   }
 
@@ -1384,10 +1383,10 @@ class DoenetChooser extends Component {
       newCourseAssignments[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
       this.assignmentsInfo[containerId] = newCourseAssignments;
     }
-    const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "assignmentId" : "headingId";
+    const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "childAssignments" : "childHeadings";
     const sourceParentChildrenList = this.headingsInfo[containerId][this.state.currentDraggedObject.sourceParentId][headingsChildrenListKey];
     
-    if (this.state.currentDraggedObject.dataObject.parent !== this.state.currentDraggedObject.sourceParentId) {
+    if (this.state.currentDraggedObject.dataObject.parentId !== this.state.currentDraggedObject.sourceParentId) {
       const indexInSourceParentChildrenList = sourceParentChildrenList.findIndex(itemId => itemId == this.state.currentDraggedObject.id);
       if (indexInSourceParentChildrenList > -1) {
         sourceParentChildrenList.splice(indexInSourceParentChildrenList, 1);
@@ -1441,12 +1440,12 @@ class DoenetChooser extends Component {
     // if (listId == "UltimateHeader" && this.state.currentDraggedObject.type == "leaf") return;
 
     // const currentDraggedObjectInfo = this.state.currentDraggedObject.dataObject;
-    // const previousParentId = currentDraggedObjectInfo.parent;
+    // const previousParentId = currentDraggedObjectInfo.parentId;
 
     // if (previousParentId == listId || listId == this.state.currentDraggedObject.id) // prevent heading from becoming a child of itself 
     //   return;
     
-    // const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "assignmentId" : "headingId";
+    // const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "childAssignments" : "childHeadings";
     // const previousList = this.headingsInfo[previousParentId][headingsChildrenListKey];
     // const currentList = this.headingsInfo[listId][headingsChildrenListKey];
     // // remove from previous list
@@ -1467,7 +1466,7 @@ class DoenetChooser extends Component {
     //   currentDraggedObject: {
     //     ...this.state.currentDraggedObject, 
     //     dataObject: {...this.state.currentDraggedObject.dataObject,
-    //       parent : listId}
+    //       parentId : listId}
     //   }
     // })
   }
@@ -1502,7 +1501,6 @@ class DoenetChooser extends Component {
   }
 
   onBrowserDrop (containerId, parentsInfo, leavesInfo) {
-    console.log(this.containerCache)
     console.log("onDrop")
     // // update courseHeadingsInfo/courseAssignmentsInfo currentDraggedObject parentId
     // // remove currentDraggedObject from sourceParentId children list
@@ -1511,10 +1509,10 @@ class DoenetChooser extends Component {
     //   newCourseAssignments[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
     //   setDataInfo(dataInfo => ({ ...dataInfo, courseAssignmentsInfo: newCourseAssignments }))
     // }
-    // const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "assignmentId" : "headingId";
+    // const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "childAssignments" : "childHeadings";
     // const sourceParentChildrenList = this.headingsInfo[this.state.currentDraggedObject.sourceParentId][headingsChildrenListKey];
     
-    // if (this.state.currentDraggedObject.dataObject.parent !== this.state.currentDraggedObject.sourceParentId) {
+    // if (this.state.currentDraggedObject.dataObject.parentId !== this.state.currentDraggedObject.sourceParentId) {
     //   const indexInSourceParentChildrenList = sourceParentChildrenList.findIndex(itemId => itemId == this.state.currentDraggedObject.id);
     //   if (indexInSourceParentChildrenList > -1) {
     //     sourceParentChildrenList.splice(indexInSourceParentChildrenList, 1);
