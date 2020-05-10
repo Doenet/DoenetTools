@@ -84,6 +84,7 @@ if ($result->num_rows > 0){
                 "title"=>$row["title"],
                 "publishDate" => "",
                 "draftDate" => "",
+                "type" => "content",
                 "parentId" => $row["parentId"],
                 "rootId" => $row["rootId"],
                 "isPublic" => ($row["isPublic"] == 1)

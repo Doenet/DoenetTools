@@ -15,6 +15,7 @@ import SpinningLoader from './SpinningLoader';
 import { TreeView } from './TreeView/TreeView';
 import styled from 'styled-components';
 import { ToastContext, useToasts, ToastProvider } from './ToastManager';
+import ChooserConstants from './chooser/ChooserConstants';
 
 
 class DoenetChooser extends Component {
@@ -396,6 +397,7 @@ class DoenetChooser extends Component {
     axios.get(loadUserUrlsUrl,payload)
     .then(resp=>{
       this.urlInfo = Object.assign({}, this.urlInfo, resp.data.urlInfo);
+      this.userUrlInfo = resp.data.urlInfo;
       this.urlIds = resp.data.urlIds;
       this.urls_loaded = true;
       callback();
@@ -417,6 +419,7 @@ class DoenetChooser extends Component {
     axios.get(loadBranchesUrl, payload)
     .then(resp=>{
       this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchId_info);
+      this.userContentInfo = resp.data.branchId_info;
       this.sort_order = resp.data.sort_order;
       this.branches_loaded = true;
       callback();
@@ -509,6 +512,7 @@ class DoenetChooser extends Component {
   loadCourseContent(courseId, callback=(()=>{})) {
     this.folders_loaded = false;
     this.branches_loaded = false;
+    this.url_loaded = false;
     const loadCoursesUrl='/api/loadCourseContent.php';
     const data={
       courseId: courseId
@@ -520,10 +524,14 @@ class DoenetChooser extends Component {
     axios.get(loadCoursesUrl,payload)
     .then(resp=>{
       this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchInfo);
-      // this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
+      this.urlInfo = Object.assign({}, this.urlInfo, resp.data.urlInfo);
       this.folderInfo = {...this.folderInfo, ...resp.data.folderInfo};
+      this.courseContentInfo = Object.assign({}, this.courseContentInfo, {[courseId]: resp.data.branchInfo});
+      this.courseFolderInfo = Object.assign({}, this.courseFolderInfo, {[courseId]: resp.data.folderInfo});
+      this.courseUrlInfo = Object.assign({}, this.courseUrlInfo, {[courseId]: resp.data.urlInfo});
       this.folders_loaded = true;
       this.branches_loaded = true;
+      this.url_loaded = true;
       callback();
       this.forceUpdate();
     });
@@ -637,8 +645,8 @@ class DoenetChooser extends Component {
     axios.get(loadUserFoldersAndRepoUrl,payload)
     .then(resp=>{
       this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
-      
       this.folderIds = resp.data.folderIds;
+      this.userFolderInfo = resp.data.folderInfo;
       this.folders_loaded = true;
       callback();
       this.forceUpdate();
@@ -1089,14 +1097,16 @@ class DoenetChooser extends Component {
       Object.keys(resp.data).map(itemId => {
         if (resp.data[itemId]["type"] == "header") {
           tempHeadingsInfo[itemId] = resp.data[itemId];
+          tempHeadingsInfo[itemId]["childFolders"] = [];
+          tempHeadingsInfo[itemId]["childContent"] = [];
           // process children
           for (let i in resp.data[itemId]["childrenId"]) {
             let childId = resp.data[itemId]["childrenId"][i];
             if (childId == "") continue;
             if (resp.data[childId]["type"] == "header") {
-              tempHeadingsInfo[itemId]["childHeadings"].push(childId);
+              tempHeadingsInfo[itemId]["childFolders"].push(childId);
             } else {
-              tempHeadingsInfo[itemId]["childAssignments"].push(childId);
+              tempHeadingsInfo[itemId]["childContent"].push(childId);
             }
           }
         } else {
@@ -1135,9 +1145,9 @@ class DoenetChooser extends Component {
       if (name==null){
         name="NULL"
       }
-      let currentHeaderObjHeadingIdArray = currentHeaderObj['childHeadings']
+      let currentHeaderObjHeadingIdArray = currentHeaderObj['childFolders']
       let lengthOfHeadingId = currentHeaderObjHeadingIdArray.length
-      let currentHeaderObjAssignmentIdArray = currentHeaderObj['childAssignments']
+      let currentHeaderObjAssignmentIdArray = currentHeaderObj['childContent']
       let currentHeaderObjParentId = currentHeaderObj['parentId']
       let lengthOfAssigmentId = currentHeaderObjAssignmentIdArray.length
       let iterator = 0
@@ -1202,33 +1212,56 @@ class DoenetChooser extends Component {
     this.addToast(message);
   }
 
-  onTreeDragStart(draggedId, draggedType, sourceContainerId) {
+  onTreeDragStart(draggedId, draggedType, sourceContainerId, sourceContainerType) {
     console.log("onTreeDragStart")
-    const dataObjectSource = draggedType == "leaf" ? this.assignmentsInfo[sourceContainerId] : this.headingsInfo[sourceContainerId];
+    // get dataObjectSource
+    let dataObjectSource = {};
+    if (sourceContainerType == ChooserConstants.COURSE_ASSIGNMENTS_TYPE) {
+      dataObjectSource = draggedType == "leaf" ? this.assignmentsInfo[sourceContainerId] : this.headingsInfo[sourceContainerId];
+      this.containerCache = {
+        ...this.containerCache,
+        [sourceContainerId]: {
+          parents: JSON.parse(JSON.stringify(this.headingsInfo[sourceContainerId])), 
+          leaves: JSON.parse(JSON.stringify(this.assignmentsInfo[sourceContainerId]))
+        }
+      }
+      
+    } else if (sourceContainerType == ChooserConstants.COURSE_ASSIGNMENTS_TYPE) {
+      dataObjectSource = draggedType == "leaf" ? this.assignmentsInfo[sourceContainerId] : this.headingsInfo[sourceContainerId];
+      this.containerCache = {
+        ...this.containerCache,
+        [sourceContainerId]: {
+          parents: JSON.parse(JSON.stringify(this.headingsInfo[sourceContainerId])), 
+          leaves: JSON.parse(JSON.stringify(this.assignmentsInfo[sourceContainerId]))
+        }
+      }
+    } else if (sourceContainerType == ChooserConstants.COURSE_ASSIGNMENTS_TYPE) {
+      dataObjectSource = draggedType == "leaf" ? this.assignmentsInfo[sourceContainerId] : this.headingsInfo[sourceContainerId];
+      this.containerCache = {
+        ...this.containerCache,
+        [sourceContainerId]: {
+          parents: JSON.parse(JSON.stringify(this.headingsInfo[sourceContainerId])), 
+          leaves: JSON.parse(JSON.stringify(this.assignmentsInfo[sourceContainerId]))
+        }
+      }
+    }
     const dataObject = dataObjectSource[draggedId];
     const sourceParentId = dataObjectSource[draggedId].parentId;
     
     this.setState({
       currentDraggedObject: {id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId},
     })
-    this.containerCache = {
-      ...this.containerCache,
-      [sourceContainerId]: {
-        parents: JSON.parse(JSON.stringify(this.headingsInfo[sourceContainerId])), 
-        leaves: JSON.parse(JSON.stringify(this.assignmentsInfo[sourceContainerId]))
-      }
-    }
     this.cachedCurrentDraggedObject = {id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId};
     this.validDrop = false;
     this.lastDroppedContainerId = null;
   }
 
-  onTreeDraggableDragOver(id, type, containerId) {
+  onTreeDraggableDragOver(id, type, containerId, containerType) {
     // draggedType must be equal to dragOver type
     if (type != this.state.currentDraggedObject.type || id == "UltimateHeader") return;
 
     const draggedOverItemInfo = type == "leaf" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
-    const headingsChildrenListKey = type == "leaf" ? "childAssignments" : "childHeadings";
+    const headingsChildrenListKey = type == "leaf" ? "childContent" : "childFolders";
     const currentDraggedObjectInfo = this.state.currentDraggedObject.type == "leaf" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
 
     const draggedOverItemParentListId = draggedOverItemInfo[id]["parentId"];
@@ -1297,9 +1330,9 @@ class DoenetChooser extends Component {
       }
 
       if (this.state.currentDraggedObject.type == "content" || this.state.currentDraggedObject.type == "leaf") {
-        this.assignmentsInfo[containerId] = Object.assign(this.assignmentsInfo[containerId], {[this.state.currentDraggedObject.id]: newObject});
+        this.assignmentsInfo[containerId] = Object.assign({}, this.assignmentsInfo[containerId], {[this.state.currentDraggedObject.id]: newObject});
         this.headingsInfo[containerId][listId].childrenId.push(newObject.branchId);
-        this.headingsInfo[containerId][listId].childAssignments.push(newObject.branchId);
+        this.headingsInfo[containerId][listId].childContent.push(newObject.branchId);
         const currentDraggedObject = this.state.currentDraggedObject;
         currentDraggedObject.dataObject = newObject;
         currentDraggedObject.type = "leaf";
@@ -1320,7 +1353,7 @@ class DoenetChooser extends Component {
     if (previousParentId == listId || listId == this.state.currentDraggedObject.id) // prevent heading from becoming a child of itself 
       return;
     
-    const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "childAssignments" : "childHeadings";
+    const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "childContent" : "childFolders";
     const previousList = this.headingsInfo[containerId][previousParentId][headingsChildrenListKey];
     const currentList = this.headingsInfo[containerId][listId][headingsChildrenListKey];
     // remove from previous list
@@ -1383,7 +1416,7 @@ class DoenetChooser extends Component {
       newCourseAssignments[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
       this.assignmentsInfo[containerId] = newCourseAssignments;
     }
-    const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "childAssignments" : "childHeadings";
+    const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "childContent" : "childFolders";
     const sourceParentChildrenList = this.headingsInfo[containerId][this.state.currentDraggedObject.sourceParentId][headingsChildrenListKey];
     
     if (this.state.currentDraggedObject.dataObject.parentId !== this.state.currentDraggedObject.sourceParentId) {
@@ -1432,43 +1465,6 @@ class DoenetChooser extends Component {
   onBrowserDropEnter (listId) {
     console.log("onDropEnter")
 
-    // // check current draggable source == tree
-    // // true then continue
-    // // false then (extract from original source, insert into tree at base level)
-
-    // // temp fix, do we want to allow assignments at base level
-    // if (listId == "UltimateHeader" && this.state.currentDraggedObject.type == "leaf") return;
-
-    // const currentDraggedObjectInfo = this.state.currentDraggedObject.dataObject;
-    // const previousParentId = currentDraggedObjectInfo.parentId;
-
-    // if (previousParentId == listId || listId == this.state.currentDraggedObject.id) // prevent heading from becoming a child of itself 
-    //   return;
-    
-    // const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "childAssignments" : "childHeadings";
-    // const previousList = this.headingsInfo[previousParentId][headingsChildrenListKey];
-    // const currentList = this.headingsInfo[listId][headingsChildrenListKey];
-    // // remove from previous list
-    // if (previousParentId !== this.state.currentDraggedObject.sourceParentId) {
-    //   const indexInList = previousList.findIndex(itemId => itemId == this.state.currentDraggedObject.id);
-    //   if (indexInList > -1) {
-    //     previousList.splice(indexInList, 1);
-    //   }
-    // }
-    // if (listId !== this.state.currentDraggedObject.sourceParentId) {
-    //   // add to current list
-    //   currentList.push(this.state.currentDraggedObject.id);     
-    // }
-
-    // this.headingsInfo[previousParentId][headingsChildrenListKey] = previousList;
-    // this.headingsInfo[listId][headingsChildrenListKey] = currentList;
-    // this.setState({
-    //   currentDraggedObject: {
-    //     ...this.state.currentDraggedObject, 
-    //     dataObject: {...this.state.currentDraggedObject.dataObject,
-    //       parentId : listId}
-    //   }
-    // })
   }
 
   onBrowserDragEnd ({containerId, parentsInfo, leavesInfo}) {
@@ -1502,35 +1498,7 @@ class DoenetChooser extends Component {
 
   onBrowserDrop (containerId, parentsInfo, leavesInfo) {
     console.log("onDrop")
-    // // update courseHeadingsInfo/courseAssignmentsInfo currentDraggedObject parentId
-    // // remove currentDraggedObject from sourceParentId children list
-    // if (this.state.currentDraggedObject.type == "content") {
-    //   const newCourseAssignments = this.assignmentsInfo;
-    //   newCourseAssignments[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
-    //   setDataInfo(dataInfo => ({ ...dataInfo, courseAssignmentsInfo: newCourseAssignments }))
-    // }
-    // const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "childAssignments" : "childHeadings";
-    // const sourceParentChildrenList = this.headingsInfo[this.state.currentDraggedObject.sourceParentId][headingsChildrenListKey];
     
-    // if (this.state.currentDraggedObject.dataObject.parentId !== this.state.currentDraggedObject.sourceParentId) {
-    //   const indexInSourceParentChildrenList = sourceParentChildrenList.findIndex(itemId => itemId == this.state.currentDraggedObject.id);
-    //   if (indexInSourceParentChildrenList > -1) {
-    //     sourceParentChildrenList.splice(indexInSourceParentChildrenList, 1);
-    //   }
-    // }
-    
-    // // updateHeadingsAndAssignments(courseHeadingsInfo, courseAssignmentsInfo);
-    
-    // // update headings
-    // const newCourseHeadings = this.headingsInfo;
-    // this.headingsInfo[this.state.currentDraggedObject.sourceParentId][headingsChildrenListKey] = sourceParentChildrenList;
-    // if (this.state.currentDraggedObject.type == "parent") this.headingsInfo[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
-    // this.setState({
-    //   currentDraggedObject: {id: null, type: null, sourceContainerId: null},
-    //   validDrop: true
-    // })
-    // this.validDrop = true;
-    // this.lastDroppedContainerId = containerId;
   }
 
   render(){
@@ -1540,7 +1508,6 @@ class DoenetChooser extends Component {
                 <SpinningLoader/>
              </div>
     }
-
     // return <DoenetCourseOutline treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
       // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
       const CourseOutlineFrame = styled('div')`
@@ -1559,18 +1526,54 @@ class DoenetChooser extends Component {
       margin-top: 15px;
       `
 
+    // let tempTree = <div className="tree">
+    //   <TreeView
+    //     containerId={"aI8sK4vmEhC5sdeSP3vNW"}
+    //     loading={!this.assignments_and_headings_loaded}
+    //     parentsInfo={this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
+    //     childrenInfo={this.assignmentsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
+    //     currentDraggedObject={this.state.currentDraggedObject}
+    //     onDragStart={this.onTreeDragStart}
+    //     onDragEnd={this.onTreeDragEnd}
+    //     onDraggableDragOver={this.onTreeDraggableDragOver} 
+    //     onDropEnter={this.onTreeDropEnter}
+    //     onDrop={this.onTreeDrop} />
+    //   </div>
+
+    // process root folder for tree rendering
+    if (this.folders_loaded && this.branches_loaded && this.urls_loaded) {
+      this.userFolderInfo["UltimateHeader"] = {};
+      this.userFolderInfo["UltimateHeader"]["childContent"] = [];
+      this.userFolderInfo["UltimateHeader"]["childFolders"] = [];
+      this.userFolderInfo["UltimateHeader"]["childUrls"] = [];
+      Object.keys(this.userContentInfo).forEach((branchId) => {
+        if (this.userContentInfo[branchId].parentId == "root") this.userFolderInfo["UltimateHeader"]["childContent"].push(branchId);
+      })
+      Object.keys(this.userUrlInfo).forEach((urlId) => {
+        if (this.userUrlInfo[urlId].parentId == "root") this.userFolderInfo["UltimateHeader"]["childUrls"].push(urlId);
+      })
+      Object.keys(this.userFolderInfo).forEach((folderId) => {
+        if (this.userFolderInfo[folderId].parentId == "root") this.userFolderInfo["UltimateHeader"]["childFolders"].push(folderId);
+      })
+      for (let folderId in this.userFolderInfo) {
+        this.userFolderInfo[folderId]["childrenList"] = [...this.userFolderInfo[folderId]["childContent"],
+          ...this.userFolderInfo[folderId]["childFolders"], ...this.userFolderInfo[folderId]["childUrls"]];
+      }
+    }
+
     let tempTree = <div className="tree">
       <TreeView
-          containerId={"aI8sK4vmEhC5sdeSP3vNW"}
-          headingsInfo={this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
-          assignmentsInfo={this.assignmentsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
-          currentDraggedObject={this.state.currentDraggedObject}
-          onDragStart={this.onTreeDragStart}
-          onDragEnd={this.onTreeDragEnd}
-          onDraggableDragOver={this.onTreeDraggableDragOver} 
-          onDropEnter={this.onTreeDropEnter}
-          onDrop={this.onTreeDrop} />
-    </div>
+        containerId={"user"}
+        loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
+        parentsInfo={this.userFolderInfo} 
+        childrenInfo={{...this.userFolderInfo, ...this.userContentInfo, ...this.userUrlInfo}} 
+        currentDraggedObject={this.state.currentDraggedObject}
+        onDragStart={this.onTreeDragStart}
+        onDragEnd={this.onTreeDragEnd}
+        onDraggableDragOver={this.onTreeDraggableDragOver} 
+        onDropEnter={this.onTreeDropEnter}
+        onDrop={this.onTreeDrop} />
+      </div>
 
     this.buildCourseList();
     this.buildLeftNavPanel();

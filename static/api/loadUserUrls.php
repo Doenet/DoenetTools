@@ -64,6 +64,7 @@ if ($result->num_rows > 0){
       $url_info_arr[$row["urlId"]] = array(
         "title" => $row["title"],
         "url" => $row["url"],
+        "type" => "url",
         "description" => $row["description"],
         "publishDate" => $row["publishDate"],
         "usesDoenetAPI" => ($row["usesDoenetAPI"] == 1),

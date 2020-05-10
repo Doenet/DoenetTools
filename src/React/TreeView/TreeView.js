@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { LeafNode, ParentNode } from "./components/tree-node/TreeNode"
-import { Global } from './components/tree-node/styles'
 import "./index.css";
+import SpinningLoader from '../SpinningLoader';
 
 
-export const TreeView = ({containerId, headingsInfo, assignmentsInfo, currentDraggedObject, 
+export const TreeView = ({containerId, loading, parentsInfo, childrenInfo, currentDraggedObject, 
   onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave}) => {
   const [currentDraggedOverContainerId, setCurrentDraggedOverContainerId] = useState(null);
 
@@ -41,12 +41,18 @@ export const TreeView = ({containerId, headingsInfo, assignmentsInfo, currentDra
       // onDropLeave && onDropLeave(id, containerId);
     }
   }
+  
+  if (loading){
+    return <div style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
+      <SpinningLoader/>
+    </div>
+  }
 
   return (
     <>
     { buildTreeStructure({
-        headingsInfo: headingsInfo, 
-        assignmentsInfo: assignmentsInfo, 
+        parentsInfo: parentsInfo, 
+        childrenInfo: childrenInfo, 
         onDragStart: onDragStartCb, 
         onDragEnd: onDragEndCb, 
         onDraggableDragOver: onDraggableDragOverCb, 
@@ -61,51 +67,14 @@ export const TreeView = ({containerId, headingsInfo, assignmentsInfo, currentDra
   );
 }
 
-function buildTreeStructure({headingsInfo, assignmentsInfo, onDragStart, onDragEnd, 
+function buildTreeStructure({parentsInfo, childrenInfo, onDragStart, onDragEnd, 
   onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject, currentDraggedOverContainerId}) {
-  
-  // let treeStructure = <React.Fragment>
-  //   <div>
-  //     <ParentNode 
-  //     id="UltimateHeader"
-  //     key="ultimateHeader"
-  //     data="Tree 1"
-  //     onDrop={onDrop} 
-  //     onDragStart={onDragStart}
-  //     onDragEnd={onDragEnd} 
-  //     onDropEnter={onDropEnter}
-  //     onDraggableDragOver={onDraggableDragOver}
-  //     draggedOver={currentDraggedOverContainerId == "UltimateHeader" && 
-  //       currentDraggedObject.type !== "leaf"}
-  //     currentDraggedId={currentDraggedObject.id}
-  //     currentDraggedType={currentDraggedObject.type}
-  //     defaultOpen={true} > 
-  //     {// iterate through base level headings to generate tree recursively
-  //     baseLevelHeadings.map(baseHeadingId => {
-  //       return buildTreeStructureHelper(
-  //         { parentHeadingId: baseHeadingId, 
-  //           parentNodeHeadingId: "UltimateHeader",
-  //           headingsInfo: headingsInfo, 
-  //           assignmentsInfo: assignmentsInfo, 
-  //           onDragStart: onDragStart, 
-  //           onDragEnd: onDragEnd, 
-  //           onDraggableDragOver: onDraggableDragOver, 
-  //           onDrop: onDrop, 
-  //           onDropEnter: onDropEnter, 
-  //           currentDraggedObject: currentDraggedObject,
-  //           currentDraggedOverContainerId: currentDraggedOverContainerId});
-  //     })}
-  //     </ParentNode>
-  //   </div>
-  // </React.Fragment>;
-  
-  // return treeStructure;
 
   return buildTreeStructureHelper(
     { parentHeadingId: "UltimateHeader", 
       parentNodeHeadingId: "UltimateHeader",
-      headingsInfo: headingsInfo, 
-      assignmentsInfo: assignmentsInfo, 
+      parentsInfo: parentsInfo, 
+      childrenInfo: childrenInfo, 
       onDragStart: onDragStart, 
       onDragEnd: onDragEnd, 
       onDraggableDragOver: onDraggableDragOver, 
@@ -116,7 +85,7 @@ function buildTreeStructure({headingsInfo, assignmentsInfo, onDragStart, onDragE
       currentDraggedOverContainerId: currentDraggedOverContainerId});
 }
 
-function buildTreeStructureHelper({parentHeadingId, parentNodeHeadingId, headingsInfo, assignmentsInfo, 
+function buildTreeStructureHelper({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, 
   onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
    currentDraggedOverContainerId}) {
 
@@ -153,7 +122,7 @@ function buildTreeStructureHelper({parentHeadingId, parentNodeHeadingId, heading
   let subTree = <ParentNode 
     id={parentHeadingId}
     key={parentHeadingId} 
-    data={parentHeadingId == "UltimateHeader" ? "Assignments Outline" : headingsInfo[parentHeadingId]["title"]}
+    data={parentHeadingId == "UltimateHeader" ? "Assignments Outline" : parentsInfo[parentHeadingId]["title"]}
     onDrop={onDrop} 
     onDropEnter={onDropEnter}
     onDropLeave={onDropLeave}
@@ -165,12 +134,12 @@ function buildTreeStructureHelper({parentHeadingId, parentNodeHeadingId, heading
     currentDraggedType={currentDraggedObject.type}
     style={ getItemStyle(currentDraggedObject, parentNodeHeadingId, parentHeadingId) }> 
       { // iterate through children headings to generate tree recursively
-      headingsInfo[parentHeadingId]["childHeadings"].map(headingId => {
+      parentsInfo[parentHeadingId]["childFolders"].map(parentId => {
         return buildTreeStructureHelper(
-          { parentHeadingId: headingId, 
+          { parentHeadingId: parentId, 
             parentNodeHeadingId: parentHeadingId,
-            headingsInfo: headingsInfo, 
-            assignmentsInfo: assignmentsInfo, 
+            parentsInfo: parentsInfo, 
+            childrenInfo: childrenInfo, 
             onDragStart: onDragStart, 
             onDragEnd: onDragEnd, 
             onDraggableDragOver: onDraggableDragOver, 
@@ -181,15 +150,15 @@ function buildTreeStructureHelper({parentHeadingId, parentNodeHeadingId, heading
             currentDraggedOverContainerId: currentDraggedOverContainerId});
       })}
       { // iterate through children assigments to generate tree recursively
-      headingsInfo[parentHeadingId]["childAssignments"].map((assignmentId, index) => {
+      parentsInfo[parentHeadingId]["childrenList"].map((childId, index) => {
         
         return <LeafNode 
           index={index}
-          id={assignmentId} 
-          key={assignmentId} 
-          data={assignmentsInfo[assignmentId]["title"]} 
+          id={childId} 
+          key={childId} 
+          data={childrenInfo[childId]["title"]}
           styles={ Object.assign({color: '#0083e3'}, 
-            getItemStyle(currentDraggedObject, parentHeadingId, assignmentId))
+            getItemStyle(currentDraggedObject, parentHeadingId, childId))
           }
           onDragStart={onDragStart} 
           onDragEnd={onDragEnd} 
