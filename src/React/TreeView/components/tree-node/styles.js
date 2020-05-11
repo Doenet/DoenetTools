@@ -52,6 +52,13 @@ const Frame = styled('div')`
   pointer-events: ${props => props.draggable ? "none" : "auto" };
 `
 
+const ListItem = styled('div')`
+  display: flex;
+  align-items: center;
+  padding: 0px;
+  margin: 1px 0px;
+`
+
 const Title = styled('span')`
   vertical-align: middle;
 `
@@ -72,4 +79,4 @@ const toggle = {
   verticalAlign: 'middle'
 }
 
-export { Global, Frame, Content, toggle, Title }
+export { Global, Frame, ListItem, Content, toggle, Title }

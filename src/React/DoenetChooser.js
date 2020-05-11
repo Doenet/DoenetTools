@@ -1556,8 +1556,8 @@ class DoenetChooser extends Component {
         if (this.userFolderInfo[folderId].parentId == "root") this.userFolderInfo["UltimateHeader"]["childFolders"].push(folderId);
       })
       for (let folderId in this.userFolderInfo) {
-        this.userFolderInfo[folderId]["childrenList"] = [...this.userFolderInfo[folderId]["childContent"],
-          ...this.userFolderInfo[folderId]["childFolders"], ...this.userFolderInfo[folderId]["childUrls"]];
+        this.userFolderInfo[folderId]["childrenList"] = [...this.userFolderInfo[folderId]["childFolders"],
+          ...this.userFolderInfo[folderId]["childContent"], ...this.userFolderInfo[folderId]["childUrls"]];
       }
     }
 

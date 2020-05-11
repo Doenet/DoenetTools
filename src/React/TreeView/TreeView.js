@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import { LeafNode, ParentNode } from "./components/tree-node/TreeNode"
 import "./index.css";
 import SpinningLoader from '../SpinningLoader';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileAlt, faFolder, faLink} from '@fortawesome/free-solid-svg-icons';
 
 
 export const TreeView = ({containerId, loading, parentsInfo, childrenInfo, currentDraggedObject, 
@@ -118,11 +120,15 @@ function buildTreeStructureHelper({parentHeadingId, parentNodeHeadingId, parents
       })
     }
   }
+  
+  const itemType = parentsInfo[parentHeadingId]["type"];
 
   let subTree = <ParentNode 
     id={parentHeadingId}
     key={parentHeadingId} 
-    data={parentHeadingId == "UltimateHeader" ? "Assignments Outline" : parentsInfo[parentHeadingId]["title"]}
+    title={parentHeadingId == "UltimateHeader" ? "Assignments Outline" : parentsInfo[parentHeadingId]["title"]}
+    type={itemType}
+    itemIcon = {Icons(itemType)}
     onDrop={onDrop} 
     onDropEnter={onDropEnter}
     onDropLeave={onDropLeave}
@@ -132,7 +138,8 @@ function buildTreeStructureHelper({parentHeadingId, parentNodeHeadingId, parents
     onDraggableDragOver={onDraggableDragOver}
     currentDraggedId={currentDraggedObject.id}
     currentDraggedType={currentDraggedObject.type}
-    style={ getItemStyle(currentDraggedObject, parentNodeHeadingId, parentHeadingId) }> 
+    style={ Object.assign({marginLeft: '5px'}, 
+      getItemStyle(currentDraggedObject, parentNodeHeadingId, parentHeadingId)) }> 
       { // iterate through children headings to generate tree recursively
       parentsInfo[parentHeadingId]["childFolders"].map(parentId => {
         return buildTreeStructureHelper(
@@ -151,13 +158,16 @@ function buildTreeStructureHelper({parentHeadingId, parentNodeHeadingId, parents
       })}
       { // iterate through children assigments to generate tree recursively
       parentsInfo[parentHeadingId]["childrenList"].map((childId, index) => {
+        const itemType = childrenInfo[childId]["type"];
         
         return <LeafNode 
           index={index}
           id={childId} 
           key={childId} 
-          data={childrenInfo[childId]["title"]}
-          styles={ Object.assign({color: '#0083e3'}, 
+          title={childrenInfo[childId]["title"]}
+          type={itemType}
+          itemIcon = {Icons(itemType)}
+          styles={ Object.assign({color: '#0083e3', marginLeft: '5px'}, 
             getItemStyle(currentDraggedObject, parentHeadingId, childId))
           }
           onDragStart={onDragStart} 
@@ -168,3 +178,59 @@ function buildTreeStructureHelper({parentHeadingId, parentNodeHeadingId, parents
 
   return subTree;
 }
+
+const Icons = (iconName) => {
+  const FolderIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
+    style={{
+      fontSize: "16px", 
+      color: "#737373", 
+    }}
+  />;
+  const RepoIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
+    style={{
+      fontSize: "16px", 
+      color: "#3aac90", 
+    }}
+  />;
+  const ContentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt}
+    style={{
+      fontSize: "16px", 
+      color: "#3D6EC9", 
+    }}
+  />;
+  const UrlIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faLink}
+    style={{
+      fontSize: "16px", 
+      color: "#a7a7a7", 
+    }}
+  />;
+  const HeadingIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
+    style={{
+      fontSize: "16px", 
+      color: "#a7a7a7", 
+    }}
+  />;
+  const AssignmentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt} 
+    style={{
+      fontSize: "16px", 
+      color: "#a7a7a7", 
+    }}
+  />;
+
+  switch(iconName){
+    case "folder":
+      return FolderIcon;
+    case "repo":
+      return RepoIcon;
+    case "content":
+      return ContentIcon;
+    case "url":
+      return UrlIcon;
+    case "heading":
+      return HeadingIcon;
+    case "assignment":
+      return AssignmentIcon;
+    default:
+      return <span></span>;
+  } 
+};
