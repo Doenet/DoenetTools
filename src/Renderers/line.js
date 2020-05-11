@@ -17,7 +17,9 @@ export default class Line extends DoenetRenderer {
 
   createGraphicalObject() {
 
-    if(this.doenetSvData.numericalPoints.length !== 2) {
+    if (this.doenetSvData.numericalPoints.length !== 2 ||
+      this.doenetSvData.numericalPoints.some(x => x.length !== 2)
+    ) {
       return;
     }
 
@@ -77,14 +79,15 @@ export default class Line extends DoenetRenderer {
       return;
     }
 
-    // even lines that are hidden have renderers
-    // (or this could be called before createGraphicalObject
-    // for dynamically added components)
-    // so this could be called even for lines that don't have a JXG line created
     if (this.lineJXG === undefined) {
-      return;
+      return this.createGraphicalObject();
     }
 
+    if (this.doenetSvData.numericalPoints.length !== 2 ||
+      this.doenetSvData.numericalPoints.some(x => x.length !== 2)
+    ) {
+      return this.deleteGraphicalObject();
+    }
 
     let validCoords = true;
 
@@ -159,7 +162,7 @@ export default class Line extends DoenetRenderer {
       return null;
     }
 
-    if(this.props.board) {
+    if (this.props.board) {
       return <><a name={this.componentName} />{this.children}</>
     }
 

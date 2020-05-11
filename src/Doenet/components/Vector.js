@@ -1263,7 +1263,7 @@ export default class Vector extends GraphicalComponent {
 
         // should check for actual change
         // as frequently the dimension doesn't change
-        return { newValues: { nDimensions }, checkForActualChange: ["nDimensions"] };
+        return { newValues: { nDimensions }, checkForActualChange: { nDimensions: true } };
 
       }
 

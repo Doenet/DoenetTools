@@ -1933,7 +1933,7 @@ export default class Function extends InlineComponent {
           newValues: {
             numberMinima: dependencyValues.minima.length,
           },
-          checkForActualChange: ["numberMinima"]
+          checkForActualChange: { numberMinima: true }
         }
       }
     }
@@ -1953,7 +1953,7 @@ export default class Function extends InlineComponent {
           newValues: {
             numberMaxima: dependencyValues.maxima.length,
           },
-          checkForActualChange: ["numberMaxima"]
+          checkForActualChange: { numberMaxima: true }
         }
       }
     }
@@ -1973,7 +1973,7 @@ export default class Function extends InlineComponent {
           newValues: {
             numberExtrema: dependencyValues.extrema.length,
           },
-          checkForActualChange: ["numberExtrema"]
+          checkForActualChange: { numberExtrema: true }
         }
       }
     }

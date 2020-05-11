@@ -216,7 +216,7 @@ export default class BaseComponent {
     let defAttributesToCopy = [
       "returnDependencies", "definition",
       "inverseDefinition", "stateVariablesDeterminingDependencies",
-      "isArray",
+      "isArray", "nDimensions",
       "markStale", "getPreviousDependencyValuesForMarkStale",
     ];
 

@@ -277,10 +277,16 @@ export default class PointListComponent extends BaseComponent {
           childLogicName: "atLeastZeroPoints",
         }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: { nPoints: dependencyValues.pointChildren.length },
-        checkForActualChange: ["nPoints"]
-      })
+      definition: function ({ dependencyValues, changes }) {
+        // console.log(`definition of nPoints`);
+        // console.log(dependencyValues);
+        // console.log(changes);
+        
+        return {
+          newValues: { nPoints: dependencyValues.pointChildren.length },
+          checkForActualChange: { nPoints: true }
+        }
+      }
     }
 
 

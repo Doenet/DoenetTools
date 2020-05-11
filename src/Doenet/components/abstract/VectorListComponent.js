@@ -281,7 +281,7 @@ export default class VectorListComponent extends BaseComponent {
       }),
       definition: ({ dependencyValues }) => ({
         newValues: { nVectors: dependencyValues.vectorChildren.length },
-        checkForActualChange: ["nVectors"]
+        checkForActualChange: { nVectors: true }
       })
     }
 

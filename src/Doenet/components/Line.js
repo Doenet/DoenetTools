@@ -447,16 +447,36 @@ export default class Line extends GraphicalComponent {
           if (arrayKey === undefined) {
             let throughPoints = dependencyValues.throughChild[0].stateValues.points;
 
-            if (changes.throughChild.componentIdentitiesChanged) {
+            let useEssentialOrDefaultValue;
+            if (throughPoints.length < 2) {
+              freshByKey[1] = true;
+              useEssentialOrDefaultValue = {
+                points: {
+                  1: { defaultValue: me.fromAst(["vector", 0, 0]) }
+                }
+              }
+              if (throughPoints.length < 1) {
+                freshByKey[0] = true;
+                useEssentialOrDefaultValue.points[0] = { defaultValue: me.fromAst(["vector", 1, 0]) }
+              }
+            }
+
+            if (changes.throughChild.componentIdentitiesChanged ||
+              changes.throughChild.valuesChanged[0].points.changed.changedEntireArray
+            ) {
               // send array to indicate that should overwrite entire array
               for (let key in throughPoints) {
                 freshByKey[key] = true;
               }
-              return {
+              let result = {
                 newValues: {
                   points: throughPoints
                 }
               }
+              if (useEssentialOrDefaultValue) {
+                result.useEssentialOrDefaultValue = useEssentialOrDefaultValue;
+              }
+              return result
             }
 
             let newPointValues = {};
@@ -466,17 +486,42 @@ export default class Line extends GraphicalComponent {
                 newPointValues[key] = throughPoints[key]
               }
             }
-            return { newValues: { points: newPointValues } }
+            let result = { newValues: { points: newPointValues } };
+            if (useEssentialOrDefaultValue) {
+              result.useEssentialOrDefaultValue = useEssentialOrDefaultValue;
+            }
+
+            return result
 
           } else {
             // have an arrayKey defined
 
             if (!freshByKey[arrayKey]) {
               freshByKey[arrayKey] = true;
+              let coords = dependencyValues.throughChild[0].stateValues["point" + (arrayKey + 1)];
+              if (coords === undefined) {
+                if (arrayKey === 1) {
+                  return {
+                    useEssentialOrDefaultValue: {
+                      points: {
+                        1: { defaultValue: me.fromAst(["vector", 0, 0]) }
+                      }
+                    }
+                  }
+                } else if (arrayKey === 0) {
+                  return {
+                    useEssentialOrDefaultValue: {
+                      points: {
+                        0: { defaultValue: me.fromAst(["vector", 1, 0]) }
+                      }
+                    }
+                  }
+                }
+              }
               return {
                 newValues: {
                   points: {
-                    [arrayKey]: dependencyValues.throughChild[0].stateValues["point" + (arrayKey + 1)]
+                    [arrayKey]: coords
                   }
                 }
               }
@@ -489,7 +534,13 @@ export default class Line extends GraphicalComponent {
 
         } else {
           return {
-            newValues: { points: [] }
+            useEssentialOrDefaultValue: {
+              points: {
+                0: { defaultValue: me.fromAst(["vector", 1, 0]) },
+                1: { defaultValue: me.fromAst(["vector", 0, 0]) }
+              }
+            },
+            makeEssential: ["points"]
           }
         }
       },
@@ -497,10 +548,12 @@ export default class Line extends GraphicalComponent {
         stateValues, initialChange, arrayKeys
       }) {
 
-        // console.log(`inverseDefinition of points`);
-        // console.log(desiredStateVariableValues.points)
+        // console.log(`inverseDefinition of points of line`);
+        // console.log(desiredStateVariableValues)
         // console.log(JSON.parse(JSON.stringify(stateValues)))
         // console.log(arrayKeys);
+        // console.log(dependencyValues);
+
 
         // if not draggable, then disallow initial change 
         if (initialChange && !stateValues.draggable) {
@@ -508,40 +561,96 @@ export default class Line extends GraphicalComponent {
         }
 
         if ("throughChild" in dependencyValues) {
-          if (dependencyValues.throughChild.length !== 1) {
-            console.log('cannot invert points for line not based on points')
-            return { success: false }
-          }
 
           let arrayKey;
           if (arrayKeys) {
             arrayKey = Number(arrayKeys[0]);
           }
 
+          if (dependencyValues.throughChild.length !== 1) {
+            // no through child, so have essential points
+
+            if (arrayKey === undefined) {
+              // working with entire array
+              return {
+                success: true,
+                instructions: [{
+                  setStateVariable: "points",
+                  value: desiredStateVariableValues.points
+                }]
+              }
+            } else {
+              // have just an arrayKey
+              return {
+                success: true,
+                instructions: [{
+                  setStateVariable: "points",
+                  value: desiredStateVariableValues.points[arrayKey],
+                  arrayKey
+                }]
+              }
+            }
+          }
+
+
           if (arrayKey === undefined) {
             // working with entire array
+            let nThroughPoints = dependencyValues.throughChild[0].stateValues.points.length;
 
+            let pointForThroughChild = desiredStateVariableValues.points.slice(0, nThroughPoints);
+
+            let instructions = [{
+              setDependency: "throughChild",
+              desiredValue: pointForThroughChild,
+              childIndex: 0,
+              variableIndex: 0
+            }]
+
+            if (nThroughPoints < 2) {
+              instructions.push({
+                setStateVariable: "points",
+                value: desiredStateVariableValues.points[1],
+                arrayKey: 1,
+              });
+              if (nThroughPoints < 1) {
+                instructions.push({
+                  setStateVariable: "points",
+                  value: desiredStateVariableValues.points[0],
+                  arrayKey: 0,
+                });
+              }
+            }
             return {
               success: true,
-              instructions: [{
-                setDependency: "throughChild",
-                desiredValue: desiredStateVariableValues.points,
-                childIndex: 0,
-                variableIndex: 0
-              }]
+              instructions
             }
           } else {
 
             // just have one arrayKey
             // so child variable of throughChild is an array entry (rather than array)
-            return {
-              success: true,
-              instructions: [{
+
+            let instructions;
+
+            let coords = dependencyValues.throughChild[0].stateValues["point" + (arrayKey + 1)];
+
+            if (coords === undefined) {
+              instructions = [{
+                setStateVariable: "points",
+                value: desiredStateVariableValues.points[arrayKey],
+                arrayKey
+              }]
+            } else {
+              instructions = [{
                 setDependency: "throughChild",
                 desiredValue: desiredStateVariableValues.points[arrayKey],
                 childIndex: 0,
                 variableIndex: 0,
               }]
+            }
+
+            return {
+              success: true,
+              instructions
             }
 
           }
@@ -679,7 +788,7 @@ export default class Line extends GraphicalComponent {
           if (changes.equationChild && changes.equationChild.componentIdentitiesChanged) {
             return {
               newValues: { nDimensions: 2 },
-              checkForActualChange: ["nDimensions"]
+              checkForActualChange: { nDimensions: true }
             }
           } else {
             return { noChanges: ["nDimensions"] }
@@ -695,7 +804,7 @@ export default class Line extends GraphicalComponent {
             }
             return {
               newValues: { nDimensions },
-              checkForActualChange: ["nDimensions"]
+              checkForActualChange: { nDimensions: true }
             }
           } else {
             // line through zero points

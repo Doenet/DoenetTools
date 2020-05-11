@@ -266,7 +266,7 @@ export default class Point extends GraphicalComponent {
 
           // if based on coords, should check for actual change
           // as frequently the dimension doesn't change
-          return { newValues: { nDimensions }, checkForActualChange: ["nDimensions"] };
+          return { newValues: { nDimensions }, checkForActualChange: { nDimensions: true } };
 
 
         } else {
@@ -286,7 +286,7 @@ export default class Point extends GraphicalComponent {
           }
         }
 
-        return { newValues: { nDimensions }, checkForActualChange: ["nDimensions"] };
+        return { newValues: { nDimensions }, checkForActualChange: { nDimensions: true } };
 
       }
     }
@@ -825,12 +825,12 @@ export default class Point extends GraphicalComponent {
           }
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: {numericalXs:false }}
+            return { fresh: { numericalXs: false } }
           } else {
             // asked for entire array, but it has some fresh elements
             // (we don't know here how many elements numericalXs has, 
             // so can't determine if completely fresh)
-            return { partiallyFresh: {numericalXs:true }}
+            return { partiallyFresh: { numericalXs: true } }
           }
         } else {
 
@@ -841,7 +841,7 @@ export default class Point extends GraphicalComponent {
             delete freshByKey[arrayKey];
           }
 
-          return { fresh: {numericalXs:freshByKey[arrayKey] === true }};
+          return { fresh: { numericalXs: freshByKey[arrayKey] === true } };
         }
 
       },
