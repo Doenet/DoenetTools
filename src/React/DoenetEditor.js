@@ -378,8 +378,9 @@ class DoenetEditor extends Component {
         </ToolLayoutPanel>
         <ToolLayoutPanel menuControls={[textEditorMenu]}>
         <div style={{width:"100%",height:"calc(100vh - 42px)",backgroundColor:"blue"}} >
-       <p>width:{this.context.width}</p> 
          <MonacoEditor
+          width="100vw"
+          height="calc(100vh - 40px)"
           language="xml"
           value={editorDoenetML}
           options={{
