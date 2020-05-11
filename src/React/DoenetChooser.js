@@ -1226,25 +1226,34 @@ class DoenetChooser extends Component {
         }
       }
       
-    } else if (sourceContainerType == ChooserConstants.COURSE_ASSIGNMENTS_TYPE) {
-      dataObjectSource = draggedType == "leaf" ? this.assignmentsInfo[sourceContainerId] : this.headingsInfo[sourceContainerId];
+    } else if (sourceContainerType == ChooserConstants.USER_CONTENT_TYPE) {
+      dataObjectSource = this.userFolderInfo;
+      if (draggedType !== "folder" && draggedType !== "repo") {
+        dataObjectSource = draggedType == "content" ? this.userContentInfo : this.userUrlInfo;
+      }
       this.containerCache = {
         ...this.containerCache,
         [sourceContainerId]: {
-          parents: JSON.parse(JSON.stringify(this.headingsInfo[sourceContainerId])), 
-          leaves: JSON.parse(JSON.stringify(this.assignmentsInfo[sourceContainerId]))
+          folders: JSON.parse(JSON.stringify(this.userFolderInfo)), 
+          content: JSON.parse(JSON.stringify(this.userContentInfo)),
+          urls: JSON.parse(JSON.stringify(this.userUrlInfo))
         }
       }
-    } else if (sourceContainerType == ChooserConstants.COURSE_ASSIGNMENTS_TYPE) {
-      dataObjectSource = draggedType == "leaf" ? this.assignmentsInfo[sourceContainerId] : this.headingsInfo[sourceContainerId];
+    } else if (sourceContainerType == ChooserConstants.COURSE_CONTENT_TYPE) {
+      dataObjectSource = this.courseFolderInfo[sourceContainerId];
+      if (draggedType !== "folder" && draggedType !== "repo") {
+        dataObjectSource = draggedType == "content" ? this.courseContentInfo[sourceContainerId] : this.courseUrlInfo[sourceContainerId];
+      }
       this.containerCache = {
         ...this.containerCache,
         [sourceContainerId]: {
-          parents: JSON.parse(JSON.stringify(this.headingsInfo[sourceContainerId])), 
-          leaves: JSON.parse(JSON.stringify(this.assignmentsInfo[sourceContainerId]))
+          folders: JSON.parse(JSON.stringify(this.courseFolderInfo[sourceContainerId])), 
+          content: JSON.parse(JSON.stringify(this.courseContentInfo[sourceContainerId])),
+          urls: JSON.parse(JSON.stringify(this.courseUrlInfo[sourceContainerId]))
         }
       }
     }
+    console.log(dataObjectSource);
     const dataObject = dataObjectSource[draggedId];
     const sourceParentId = dataObjectSource[draggedId].parentId;
     
@@ -1284,95 +1293,95 @@ class DoenetChooser extends Component {
     this.forceUpdate();
   };
 
-  onTreeDropEnter (listId, containerId) {
+  onTreeDropEnter (listId, containerId, containerType) {
     console.log("onTreeDropEnter")
 
-    // check current draggable source == tree
-    // false then (extract from original source, insert into tree at base level)
-    // dragged object coming from different container
-    if (this.state.currentDraggedObject.sourceContainerId != containerId) {
-      // create clone of current tree structure (headings, assignments)
-      this.containerCache = {
-        ...this.containerCache,
-        [containerId]: {
-          parents: JSON.parse(JSON.stringify(this.headingsInfo[containerId])),   // TODO: handle multiple courses/content
-          leaves: JSON.parse(JSON.stringify(this.assignmentsInfo[containerId]))
-        }
-      }
-      // insert copy into current container at base level (parentId = listId) 
-      const draggedObjectInfo = this.state.currentDraggedObject.dataObject;
-      let newObject = {};
-      let newObjectChildren = [];
-      switch (this.state.currentDraggedObject.type) {
-        case "content":
-          newObject = {
-            title: draggedObjectInfo.title,
-            type: "assignment",
-            contentId: draggedObjectInfo.contentIds[0].contentId,
-            branchId: this.state.currentDraggedObject.id,
-            assignedDate: null,
-            dueDate: null,
-            numberOfAttemptsAllowed: "3",
-            parentId: listId
-          };
-          break;
-        case "folder":
-          // create new heading + assignments
-          break;
-        case "leaf":
-          // TODO: verify if working correctly
-          newObject = draggedObjectInfo;
-          break;
-        case "parent":
-          newObject = draggedObjectInfo;
-          // TODO: get all assignments in parent, insert -> newObjectChildren
-          break;
-      }
+    // // check current draggable source == tree
+    // // false then (extract from original source, insert into tree at base level)
+    // // dragged object coming from different container
+    // if (this.state.currentDraggedObject.sourceContainerId != containerId) {
+    //   // create clone of current tree structure (headings, assignments)
+    //   this.containerCache = {
+    //     ...this.containerCache,
+    //     [containerId]: {
+    //       parents: JSON.parse(JSON.stringify(this.headingsInfo[containerId])),   // TODO: handle multiple courses/content
+    //       leaves: JSON.parse(JSON.stringify(this.assignmentsInfo[containerId]))
+    //     }
+    //   }
+    //   // insert copy into current container at base level (parentId = listId) 
+    //   const draggedObjectInfo = this.state.currentDraggedObject.dataObject;
+    //   let newObject = {};
+    //   let newObjectChildren = [];
+    //   switch (this.state.currentDraggedObject.type) {
+    //     case "content":
+    //       newObject = {
+    //         title: draggedObjectInfo.title,
+    //         type: "assignment",
+    //         contentId: draggedObjectInfo.contentIds[0].contentId,
+    //         branchId: this.state.currentDraggedObject.id,
+    //         assignedDate: null,
+    //         dueDate: null,
+    //         numberOfAttemptsAllowed: "3",
+    //         parentId: listId
+    //       };
+    //       break;
+    //     case "folder":
+    //       // create new heading + assignments
+    //       break;
+    //     case "leaf":
+    //       // TODO: verify if working correctly
+    //       newObject = draggedObjectInfo;
+    //       break;
+    //     case "parent":
+    //       newObject = draggedObjectInfo;
+    //       // TODO: get all assignments in parent, insert -> newObjectChildren
+    //       break;
+    //   }
 
-      if (this.state.currentDraggedObject.type == "content" || this.state.currentDraggedObject.type == "leaf") {
-        this.assignmentsInfo[containerId] = Object.assign({}, this.assignmentsInfo[containerId], {[this.state.currentDraggedObject.id]: newObject});
-        this.headingsInfo[containerId][listId].childrenId.push(newObject.branchId);
-        this.headingsInfo[containerId][listId].childContent.push(newObject.branchId);
-        const currentDraggedObject = this.state.currentDraggedObject;
-        currentDraggedObject.dataObject = newObject;
-        currentDraggedObject.type = "leaf";
-        currentDraggedObject.sourceParentId = listId;
-        currentDraggedObject.sourceContainerId = containerId;
-        this.setState({currentDraggedObject: currentDraggedObject});  
-      } else {  // "folder" || "heading"
-        // insert new heading into headings
-        // if any objectChildren, insert into assignments
-      }
+    //   if (this.state.currentDraggedObject.type == "content" || this.state.currentDraggedObject.type == "leaf") {
+    //     this.assignmentsInfo[containerId] = Object.assign({}, this.assignmentsInfo[containerId], {[this.state.currentDraggedObject.id]: newObject});
+    //     this.headingsInfo[containerId][listId].childrenId.push(newObject.branchId);
+    //     this.headingsInfo[containerId][listId].childContent.push(newObject.branchId);
+    //     const currentDraggedObject = this.state.currentDraggedObject;
+    //     currentDraggedObject.dataObject = newObject;
+    //     currentDraggedObject.type = "leaf";
+    //     currentDraggedObject.sourceParentId = listId;
+    //     currentDraggedObject.sourceContainerId = containerId;
+    //     this.setState({currentDraggedObject: currentDraggedObject});  
+    //   } else {  // "folder" || "heading"
+    //     // insert new heading into headings
+    //     // if any objectChildren, insert into assignments
+    //   }
 
-      return;
-    }
+    //   return;
+    // }
 
-    const currentDraggedObjectInfo = this.state.currentDraggedObject.dataObject;
-    const previousParentId = currentDraggedObjectInfo.parentId;
+    // const currentDraggedObjectInfo = this.state.currentDraggedObject.dataObject;
+    // const previousParentId = currentDraggedObjectInfo.parentId;
 
-    if (previousParentId == listId || listId == this.state.currentDraggedObject.id) // prevent heading from becoming a child of itself 
-      return;
+    // if (previousParentId == listId || listId == this.state.currentDraggedObject.id) // prevent heading from becoming a child of itself 
+    //   return;
     
-    const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "childContent" : "childFolders";
-    const previousList = this.headingsInfo[containerId][previousParentId][headingsChildrenListKey];
-    const currentList = this.headingsInfo[containerId][listId][headingsChildrenListKey];
-    // remove from previous list
-    if (previousParentId !== this.state.currentDraggedObject.sourceParentId) {
-      const indexInList = previousList.findIndex(itemId => itemId == this.state.currentDraggedObject.id);
-      if (indexInList > -1) {
-        previousList.splice(indexInList, 1);
-      }
-    }
-    if (listId !== this.state.currentDraggedObject.sourceParentId) {
-      // add to current list
-      currentList.push(this.state.currentDraggedObject.id);     
-    }
+    // const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "childContent" : "childFolders";
+    // const previousList = this.headingsInfo[containerId][previousParentId][headingsChildrenListKey];
+    // const currentList = this.headingsInfo[containerId][listId][headingsChildrenListKey];
+    // // remove from previous list
+    // if (previousParentId !== this.state.currentDraggedObject.sourceParentId) {
+    //   const indexInList = previousList.findIndex(itemId => itemId == this.state.currentDraggedObject.id);
+    //   if (indexInList > -1) {
+    //     previousList.splice(indexInList, 1);
+    //   }
+    // }
+    // if (listId !== this.state.currentDraggedObject.sourceParentId) {
+    //   // add to current list
+    //   currentList.push(this.state.currentDraggedObject.id);     
+    // }
 
-    this.headingsInfo[containerId][previousParentId][headingsChildrenListKey] = previousList;
-    this.headingsInfo[containerId][listId][headingsChildrenListKey] = currentList;
-    const currentDraggedObject = this.state.currentDraggedObject;
-    currentDraggedObject.dataObject.parentId = listId;
-    this.setState({ currentDraggedObject: currentDraggedObject })
+    // this.headingsInfo[containerId][previousParentId][headingsChildrenListKey] = previousList;
+    // this.headingsInfo[containerId][listId][headingsChildrenListKey] = currentList;
+    // const currentDraggedObject = this.state.currentDraggedObject;
+    // currentDraggedObject.dataObject.parentId = listId;
+    // this.setState({ currentDraggedObject: currentDraggedObject })
   }
 
   onTreeDropLeave() {
@@ -1385,7 +1394,7 @@ class DoenetChooser extends Component {
     console.log("onTreeDropLeave")
   }
 
-  onTreeDragEnd (containerId) {
+  onTreeDragEnd (containerId, containerType) {
     console.log("onTreeDragEnd")
     // dropped outsize valid dropzone
     let currTreeHeadings = this.headingsInfo[containerId];
@@ -1407,7 +1416,7 @@ class DoenetChooser extends Component {
     this.lastDroppedContainerId = null;
   }
 
-  onTreeDrop (containerId) {
+  onTreeDrop (containerId, containerType) {
     console.log("onTreeDrop")
     // update courseHeadingsInfo/courseAssignmentsInfo currentDraggedObject parentId
     // remove currentDraggedObject from sourceParentId children list
@@ -1556,17 +1565,18 @@ class DoenetChooser extends Component {
         if (this.userFolderInfo[folderId].parentId == "root") this.userFolderInfo["UltimateHeader"]["childFolders"].push(folderId);
       })
       for (let folderId in this.userFolderInfo) {
-        this.userFolderInfo[folderId]["childrenList"] = [...this.userFolderInfo[folderId]["childFolders"],
-          ...this.userFolderInfo[folderId]["childContent"], ...this.userFolderInfo[folderId]["childUrls"]];
+        this.userFolderInfo[folderId]["childrenList"] = [...this.userFolderInfo[folderId]["childContent"], 
+        ...this.userFolderInfo[folderId]["childUrls"]];
       }
     }
 
     let tempTree = <div className="tree">
       <TreeView
         containerId={"user"}
+        containerType={ChooserConstants.USER_CONTENT_TYPE}
         loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
         parentsInfo={this.userFolderInfo} 
-        childrenInfo={{...this.userFolderInfo, ...this.userContentInfo, ...this.userUrlInfo}} 
+        childrenInfo={{...this.userContentInfo, ...this.userUrlInfo}} 
         currentDraggedObject={this.state.currentDraggedObject}
         onDragStart={this.onTreeDragStart}
         onDragEnd={this.onTreeDragEnd}

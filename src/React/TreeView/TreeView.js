@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faFolder, faLink} from '@fortawesome/free-solid-svg-icons';
 
 
-export const TreeView = ({containerId, loading, parentsInfo, childrenInfo, currentDraggedObject, 
+export const TreeView = ({containerId, containerType, loading, parentsInfo, childrenInfo, currentDraggedObject, 
   onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave}) => {
   const [currentDraggedOverContainerId, setCurrentDraggedOverContainerId] = useState(null);
 
@@ -16,31 +16,31 @@ export const TreeView = ({containerId, loading, parentsInfo, childrenInfo, curre
   }, [currentDraggedObject])
 
   const onDragStartCb = (draggedId, type) => {
-    onDragStart && onDragStart(draggedId, type, containerId);
+    onDragStart && onDragStart(draggedId, type, containerId, containerType);
   }
   
   const onDragEndCb = () => {
-    onDragEnd && onDragEnd(containerId);
+    onDragEnd && onDragEnd(containerId, containerType);
   }
 
   const onDropCb = () => {
-    onDrop && onDrop(containerId);
+    onDrop && onDrop(containerId, containerType);
   }
 
   const onDropEnterCb = (id) => {
     setCurrentDraggedOverContainerId(id); 
-    onDropEnter && onDropEnter(id, containerId);
+    onDropEnter && onDropEnter(id, containerId, containerType);
   }
 
   const onDraggableDragOverCb = (id, type) => {
-    onDraggableDragOver && onDraggableDragOver(id, type, containerId);
+    onDraggableDragOver && onDraggableDragOver(id, type, containerId, containerType);
   }
 
   const onDropLeaveCb = (id) => {
     if (currentDraggedObject.dataObject == null) return;
     // console.log(id + " " + currentDraggedObject.dataObject.parent)
     if (id === "UltimateHeader" && currentDraggedObject.dataObject.parent === "UltimateHeader") {
-      // onDropLeave && onDropLeave(id, containerId);
+      // onDropLeave && onDropLeave(id, containerId, containerType);
     }
   }
   
@@ -52,7 +52,9 @@ export const TreeView = ({containerId, loading, parentsInfo, childrenInfo, curre
 
   return (
     <>
-    { buildTreeStructure({
+    { buildTreeStructure({ 
+        parentHeadingId: "UltimateHeader", 
+        parentNodeHeadingId: "UltimateHeader",
         parentsInfo: parentsInfo, 
         childrenInfo: childrenInfo, 
         onDragStart: onDragStartCb, 
@@ -61,33 +63,14 @@ export const TreeView = ({containerId, loading, parentsInfo, childrenInfo, curre
         onDrop: onDropCb, 
         onDropEnter: onDropEnterCb, 
         onDropLeave: onDropLeaveCb, 
-        currentDraggedOverContainerId: currentDraggedOverContainerId,
         currentDraggedObject: currentDraggedObject,
-      }) 
+        currentDraggedOverContainerId: currentDraggedOverContainerId })
     }
     </>
   );
 }
 
-function buildTreeStructure({parentsInfo, childrenInfo, onDragStart, onDragEnd, 
-  onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject, currentDraggedOverContainerId}) {
-
-  return buildTreeStructureHelper(
-    { parentHeadingId: "UltimateHeader", 
-      parentNodeHeadingId: "UltimateHeader",
-      parentsInfo: parentsInfo, 
-      childrenInfo: childrenInfo, 
-      onDragStart: onDragStart, 
-      onDragEnd: onDragEnd, 
-      onDraggableDragOver: onDraggableDragOver, 
-      onDrop: onDrop, 
-      onDropEnter: onDropEnter, 
-      onDropLeave: onDropLeave, 
-      currentDraggedObject: currentDraggedObject,
-      currentDraggedOverContainerId: currentDraggedOverContainerId});
-}
-
-function buildTreeStructureHelper({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, 
+function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, 
   onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
    currentDraggedOverContainerId}) {
 
@@ -142,19 +125,19 @@ function buildTreeStructureHelper({parentHeadingId, parentNodeHeadingId, parents
       getItemStyle(currentDraggedObject, parentNodeHeadingId, parentHeadingId)) }> 
       { // iterate through children headings to generate tree recursively
       parentsInfo[parentHeadingId]["childFolders"].map(parentId => {
-        return buildTreeStructureHelper(
-          { parentHeadingId: parentId, 
-            parentNodeHeadingId: parentHeadingId,
-            parentsInfo: parentsInfo, 
-            childrenInfo: childrenInfo, 
-            onDragStart: onDragStart, 
-            onDragEnd: onDragEnd, 
-            onDraggableDragOver: onDraggableDragOver, 
-            onDrop: onDrop, 
-            onDropEnter: onDropEnter, 
-            onDropLeave: onDropLeave,
-            currentDraggedObject: currentDraggedObject,
-            currentDraggedOverContainerId: currentDraggedOverContainerId});
+        return buildTreeStructure({ 
+          parentHeadingId: parentId, 
+          parentNodeHeadingId: parentHeadingId,
+          parentsInfo: parentsInfo, 
+          childrenInfo: childrenInfo, 
+          onDragStart: onDragStart, 
+          onDragEnd: onDragEnd, 
+          onDraggableDragOver: onDraggableDragOver, 
+          onDrop: onDrop, 
+          onDropEnter: onDropEnter, 
+          onDropLeave: onDropLeave,
+          currentDraggedObject: currentDraggedObject,
+          currentDraggedOverContainerId: currentDraggedOverContainerId});
       })}
       { // iterate through children assigments to generate tree recursively
       parentsInfo[parentHeadingId]["childrenList"].map((childId, index) => {
