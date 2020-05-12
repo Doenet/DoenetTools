@@ -329,7 +329,7 @@ export default function DoenetProfile(props) {
 
   return (
     <>
-    <ToolLayout toolTitle="Profile" headerConfig={myProfile}>
+    <ToolLayout toolName="Profile" headerConfig={myProfile}>
       <ToolLayoutPanel>
       <ProfileContainer id="content">
       <PageHeader>{myProfile.username}'s Profile</PageHeader>
@@ -472,7 +472,7 @@ export default function DoenetProfile(props) {
 
 
      {/* <DoenetHeader
-        toolTitle="Profile"
+        toolName="Profile"
         // headingTitle="Edit My Profile"
         willProvideProfile={true}
         profile={myProfile}
