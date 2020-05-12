@@ -142,7 +142,7 @@ class DoenetHeader extends Component {
     axios
       .get(`/api/loadMyProfile.php`)
       .then(resp => {
-        console.dir(resp.data);
+        // console.dir(resp.data);
         this.setState({
           myProfile: resp.data
         });
@@ -240,14 +240,14 @@ class DoenetHeader extends Component {
   }
 
   toggleSlider = () => {
-    debugger;
     this.setState(prevState => ({
       sliderVisible: !prevState.sliderVisible
     }));
+    this.props.onChange(!this.state.sliderVisible);
   }
 
+
   render() {
-    debugger;
     const sliderClass = this.state.sliderVisible ? 'menu-slider on' : 'menu-slider off';
 
     let toolBox = {};
@@ -268,13 +268,13 @@ class DoenetHeader extends Component {
           <Toolbox show={this.state.showToolbox} toogleToolbox={this.toogleToolbox}>
             {Object.keys(this.toolTitleToLinkMap).length > 0 ?
               <div>
-                {Object.keys(this.toolTitleToLinkMap).sort().map((toolTitle, index) => {
+                {Object.keys(this.toolTitleToLinkMap).sort().map((toolName, index) => {
                   let currentUrl = window.location.href;
-                  const navLinkClassName = currentUrl.includes(this.toolTitleToLinkMap[toolTitle]) ?
+                  const navLinkClassName = currentUrl.includes(this.toolTitleToLinkMap[toolName]) ?
                     "selectedToolboxNavLink" : "toolboxNavLink";
                   return (
-                    <div className={navLinkClassName} key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolTitle}>
-                      <a href={this.toolTitleToLinkMap[toolTitle]}>{toolTitle}</a>
+                    <div className={navLinkClassName} key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolName}>
+                      <a href={this.toolTitleToLinkMap[toolName]}>{toolName}</a>
                     </div>
                   )
                 }
@@ -286,19 +286,18 @@ class DoenetHeader extends Component {
     return (
       <React.Fragment>
         <div className="headingContainer">
-          <div className="hamburger" onClick={this.toggleSlider.bind(this)}>
-            <FontAwesomeIcon id='hamburger-icon' fontSize='16px' icon={this.state.sliderVisible ? faCaretDown : faCaretRight} />
+          <div className="headerPlayBtn" onClick={this.toggleSlider.bind(this)}>
+            <FontAwesomeIcon id='headerPlayBtn-icon' fontSize='16px' icon={this.state.sliderVisible ? faCaretDown : faCaretRight} />
           </div>
-          <div className="toolTitle">
+          <div className="toolName">
             <img id="doenetLogo" onClick={() => { location.href = "/"; }} src={doenetImage} height='40px' />
-            <span>{this.props.toolTitle}</span>
+            <span>{this.props.toolName}</span>
           </div>
 
           {this.props.headingTitle && <div className="headingTitle">
             <span>{this.props.headingTitle}</span>
             {/* <span>{ this.select }</span> */}
           </div>}
-
           <div className="headingToolbar">
             {this.props.rights && this.props.rights.defaultRole && <Menu activeRole={this.props.rights.defaultRole} roles={this.roles} permissionCallback={this.props.rights ? this.props.rights.permissionCallBack : null} />}
             {/* {this.selectPermission}     */}
@@ -318,31 +317,36 @@ class DoenetHeader extends Component {
 
             }
           </div>
-          <div className={sliderClass}>
+          
+        </div>
+
+        <div className={sliderClass}>
             <div className="slider-item">
-              {this.props.headingTitle}
+          {this.props.headingTitle && <div className="headingTitlePhone">
+            <span>{this.props.headingTitle}</span>
+          </div>}
             </div>
+
             <div className="slider-item">
-            {this.props.rights && this.props.rights.defaultRole && <Menu activeRole={this.props.rights.defaultRole} roles={this.roles} permissionCallback={this.props.rights ? this.props.rights.permissionCallBack : null} />}
-            {/* {this.selectPermission}     */}
-            {toolBox}
-            {!this.state.myProfile.profilePicture &&
-             <div id="userButton-anonymous" onClick={() => { location.href = "/Profile"; }}>
-              <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
+              {
+              this.props.rights && this.props.rights.defaultRole && <Menu activeRole={this.props.rights.defaultRole} roles={this.roles} permissionCallback={this.props.rights ? this.props.rights.permissionCallBack : null} />}
+              {toolBox}
+              {!this.state.myProfile.profilePicture &&
+                <div id="userButton-anonymous-phone" onClick={() => { location.href = "/Profile"; }}>
+                  <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
+                </div>
+              }
+              {this.state.myProfile.profilePicture &&
+                <div id="userButton-phone" onClick={() => { location.href = "/Profile"; }}>
+                  <ProfilePicture
+                    pic={this.state.myProfile.profilePicture}
+                    name="changeProfilePicture"
+                    id="changeProfilePicture"
+                  >
+                  </ProfilePicture>
+                </div>}
             </div>
-            }
-            {this.state.myProfile.profilePicture && 
-            <div id="userButton-phone" onClick={() => { location.href = "/Profile"; }}>
-              <ProfilePicture
-                pic={this.state.myProfile.profilePicture}
-                name="changeProfilePicture"
-                id="changeProfilePicture"
-              >
-              </ProfilePicture>
-            </div>}
           </div>
-        </div>
-        </div>
       </React.Fragment>
     );
   }
