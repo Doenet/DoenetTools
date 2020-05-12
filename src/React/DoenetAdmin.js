@@ -2529,7 +2529,7 @@ this.forceUpdate()
       return (<React.Fragment>
         <div className="courseContainer">
           
-          <DoenetHeader toolTitle="Admin" headingTitle={this.courseName} />
+          <DoenetHeader toolName="Admin" headingTitle={this.courseName} />
           <div className="homeLeftNav">
             {overview_component}
             {syllabus_component}
@@ -2563,7 +2563,7 @@ this.forceUpdate()
       </React.Fragment>);
     } else {
       return (<React.Fragment>
-        <DoenetHeader toolTitle="Admin" headingTitle={this.courseName} />
+        <DoenetHeader toolName="Admin" headingTitle={this.courseName} />
         <div>PERMISSION DENIED</div>
       </React.Fragment>)
     }

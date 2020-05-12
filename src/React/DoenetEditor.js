@@ -370,7 +370,7 @@ class DoenetEditor extends Component {
     
         console.log('RENDER REFRESH')
       return (
-      <ToolLayout toolTitle="Editor" headingTitle={title_text}>
+      <ToolLayout toolName="Editor" headingTitle={title_text}>
         <ToolLayoutPanel menuControls={[contextPanelMenu]}>
         <div >
               {contextPanel}

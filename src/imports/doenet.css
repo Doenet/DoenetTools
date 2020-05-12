@@ -3,6 +3,7 @@ body {
     background-color: rgb(246, 248, 255);
     font-family: "Lato", "Open Sans", sans-serif;
     line-height: 1.6em;
+    overflow: hidden;
 }
 
 a {

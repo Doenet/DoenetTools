@@ -4,16 +4,15 @@ import PlacementContext from './PlacementContext';
 import DoenetHeader from "../DoenetHeader";
 import './toollayout.css';
 
-
 //This component deals with resizing and resizers
 
 // styled component for the toollayout container with no header
 const Container = styled.div`
   display: flex;
   position: fixed;
-  height:calc(100%-60px);
-  margin-top: 60px;
+  height:calc(100%-50px);
   overflow:hidden;
+  z-index:0;
 `;
 
 const widthToDevice = () => {
@@ -58,6 +57,7 @@ export default function ToolLayout(props) {
   const [rightCloseBtn, setRightCloseBtn] = useState(true);
   const [leftOpenBtn, setLeftOpenBtn] = useState(false);
   const [rightOpenBtn, setRightOpenBtn] = useState(false);
+  const [sliderVisible, setSliderVisible] = useState(false);
   const [phoneVisiblePanel, setPhoneVisiblePanel] = useState("middle");
   const [middleWidth, setMiddleWidth] = useState(middleW);
   const container = useRef();
@@ -65,11 +65,9 @@ export default function ToolLayout(props) {
 
 
   useEffect(() => {
-    // window.addEventListener("resize", windowResizeHandler);
     setLeftCloseBtn(true);
     setRightCloseBtn(true);
     if (deviceType === "computer") {
-      // window.addEventListener("resize", windowResizeHandler);
       window.addEventListener("mouseup", stopResize);
       window.addEventListener("touchend", stopResize);
       container && container.current && container.current.addEventListener("touchstart", startResize);
@@ -77,7 +75,6 @@ export default function ToolLayout(props) {
       container && container.current && container.current.addEventListener("mousedown", startResize);
       container && container.current && container.current.addEventListener("mousemove", resizingResizer);
       return () => {
-        // window.removeEventListener("resize", windowResizeHandler);
         window.removeEventListener("touchend", stopResize);
         window.removeEventListener("mouseup", stopResize);
         container && container.current && container.current.removeEventListener("touchstart", startResize);
@@ -91,9 +88,7 @@ export default function ToolLayout(props) {
       setRightCloseBtn(false);
       setRightOpenBtn(false);
     }
-    // return () => {
-    //   window.removeEventListener("resize", windowResizeHandler);
-    // };
+
   });
 
   const windowResizeHandler = () => {
@@ -137,7 +132,7 @@ export default function ToolLayout(props) {
         event = e;
       }
       if (currentResizer === "first") {
-        console.log(event.target.className);
+        // console.log(event.target.className);
 
         const firstResizer = document.querySelector('#first.resizer');
         let leftW = event.clientX - resizerW / 2;
@@ -266,15 +261,27 @@ export default function ToolLayout(props) {
     setMiddleWidth(middleW);
     setRightWidth(rightW);
   };
+
+  const showCollapseMenu = (flag) => {
+    setSliderVisible(flag);
+  }
   //Props children[0]
   let leftNavContent = props.children && Array.isArray(props.children) ? props.children[0] : props.children;
   let visibilityMenuControl = {
+    sliderVisible: false,
     hideMenu: false,
-    hideCollapse: false
-  }
+    hideCollapse: false,
+    showFooter: false,
+    hideFooter: false
+  };
+
   visibilityMenuControl.hideMenu = !Array.isArray(props.children) && !leftNavContent.props.menuControls;
+  visibilityMenuControl.showFooter = deviceType === "phone" && !!Array.isArray(props.children) && props.children.length > 1;
+  visibilityMenuControl.hideFooter = deviceType === "phone" && props.children.length < 2 && !Array.isArray(props.children);
+  visibilityMenuControl.sliderVisible = deviceType === "phone" && sliderVisible;
   visibilityMenuControl.hideCollapse = !Array.isArray(props.children);
-  let leftNav = <PlacementContext.Provider value={{ leftCloseBtn: leftCloseBtn, position: 'left', visibilityMenuControl, leftPanelHideable, width:leftWidth, height:"no idea" }}>{leftNavContent}</PlacementContext.Provider>
+
+  let leftNav = <PlacementContext.Provider value={{ leftCloseBtn: leftCloseBtn, width: `${leftWidth}px`, position: 'left', visibilityMenuControl, leftPanelHideable }}>{leftNavContent}</PlacementContext.Provider>
   allParts.push(<div key="part1" id="leftpanel" className="leftpanel" style={{ width: `${leftWidth}px`, display: `${leftWidth === 0 ? "none" : "flex"} ` }} >{leftNav}</div>);
 
   //Resizer
@@ -296,17 +303,18 @@ export default function ToolLayout(props) {
     rightNav = <PlacementContext.Provider value={{ rightCloseBtn, position: 'right', visibilityMenuControl, rightPanelHideable, width:rightWidth, height: "no idea" }}>{props.children[2]}  </PlacementContext.Provider>
     allParts.push(<div key="part3" id="rightpanel" className="rightpanel" style={{ width: `${rightWidth}px`, display: `${rightWidth === 0 ? "none" : "flex"}` }}>{rightNav}</div>);
   }
+  const footerClass = props.children.length > 1 ? 'footer-on' : 'footer-off';
   return (
     <>
-      <DoenetHeader toolTitle={props.toolTitle} headingTitle={props.headingTitle} />
+      <DoenetHeader toolName={props.toolName} headingTitle={props.headingTitle} headerConfig={props.headerConfig} onChange={showCollapseMenu} />
       {deviceType === "phone" ? <div ref={container}>
-        <div>
+        <div className={footerClass}>
           {(phoneVisiblePanel === "left" || allParts.length === 1) &&
-            <div key="part1" id="leftpanel" style={{ position: "fixed", top: "120px" }} >{leftNav}</div>}
+            <div key="part1" id="leftpanel" >{leftNav}</div>}
           {phoneVisiblePanel === "middle" &&
-            <div key="part2" id="middlepanel" style={{ position: "fixed", top: "120px" }}>{middleNav} </div>}
+            <div key="part2" id="middlepanel" >{middleNav} </div>}
           {phoneVisiblePanel === "right" && allParts.length > 2 &&
-            <div key="part3" id="rightpanel" style={{ position: "fixed", top: "120px" }} > {rightNav} </div>}
+            <div key="part3" id="rightpanel"  > {rightNav} </div>}
         </div>
 
         {props.children.length > 1 && <div className="phonebuttoncontainer" >
@@ -328,3 +336,11 @@ export default function ToolLayout(props) {
     </>
   );
 }
+
+
+
+
+
+
+
+
