@@ -539,7 +539,7 @@ class DoenetEditor extends Component {
     
       return (
       <React.Fragment>
-         <DoenetHeader toolTitle="Editor" headingTitle={title_text} />   
+         <DoenetHeader toolName="Editor" headingTitle={title_text} />   
        
        <div id="editorContainer">
 

@@ -3381,7 +3381,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
 
           (<DoenetHeader 
             key={"doenetHeader"+(this.updateNumber++)}
-            toolTitle="Course" 
+            toolName="Course" 
             headingTitle = {this.courseName}
            
             rights = {

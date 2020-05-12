@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 axios.defaults.withCredentials = true;
-import DoenetHeader from "./DoenetHeader";
+// import DoenetHeader from "./DoenetHeader";
 import styled from "styled-components";
 import ToolLayout from './ToolLayout/ToolLayout';
 import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel';
@@ -222,7 +222,7 @@ export default function DoenetProfile(props) {
       axios
         .put(
           `/api/updateMyProfile.php?changeField=${f}&toValue=${
-            typeof v === "boolean" ? Number(v) : v // we must change this to 1 or 0, else it will be sent as "true" or "false". the server wants "1" or "0"
+          typeof v === "boolean" ? Number(v) : v // we must change this to 1 or 0, else it will be sent as "true" or "false". the server wants "1" or "0"
           }`
         )
         .then(resp => {
@@ -291,7 +291,7 @@ export default function DoenetProfile(props) {
           alt={`${value} profile picture`}
           onClick={e => {
             updateMyProfile("profilePicture", value, true); // updates immediately
-            setMyProfile(prev => prev = {...prev, "profilePicture": value}); // use the previous state to create a state where profilePicture is value
+            setMyProfile(prev => prev = { ...prev, "profilePicture": value }); // use the previous state to create a state where profilePicture is value
             changeModalVisibility(e, "hidden");
           }}
         >
@@ -323,117 +323,117 @@ export default function DoenetProfile(props) {
 
   let toolAccess = <p>{myProfile.toolAccess.join(", ")}</p>
   console.log(myProfile.toolAccess.length);
-  if (myProfile.toolAccess.length === 0){
+  if (myProfile.toolAccess.length === 0) {
     toolAccess = <p>You have no access to tools.</p>
   }
 
   return (
     <>
-    <ToolLayout toolTitle="Profile" >
-      <ToolLayoutPanel>
-      <ProfileContainer id="content">
-      <PageHeader>{myProfile.username}'s Profile</PageHeader>
-        <ProfilePicture
-          pic={myProfile.profilePicture}
-          onClick={e => changeModalVisibility(e, "visible")}
-          name="changeProfilePicture"
-          id="changeProfilePicture"
-        >
-          CHANGE
+      <ToolLayout toolName="Profile" headerConfig={myProfile}>
+        <ToolLayoutPanel>
+          <ProfileContainer id="content">
+            <PageHeader>{myProfile.username}'s Profile</PageHeader>
+            <ProfilePicture
+              pic={myProfile.profilePicture}
+              onClick={e => changeModalVisibility(e, "visible")}
+              name="changeProfilePicture"
+              id="changeProfilePicture"
+            >
+              CHANGE
         </ProfilePicture>
-        <ProfilePicModal />
+            <ProfilePicModal />
 
-        <Textinput
-          id="firstName"
-          label="First Name"
-          onChange={e => updateMyProfile("firstName", e.target.value)} // uses non-spammy updating
-        >
-          {myProfile.firstName}
-        </Textinput>
-        <Textinput
-          id="lastName"
-          label="Last Name"
-          onChange={e => updateMyProfile("lastName", e.target.value)} // uses non-spammy updating
-        >
-          {myProfile.lastName}
-        </Textinput>
-        <WideTextinput
-          id="email"
-          label="Email Address"
-          onChange={e => updateMyProfile("email", e.target.value)} // uses non-spammy updating
-        >
-          {myProfile.email}
-        </WideTextinput>
-        <WideTextinput
-          id="bio"
-          label="Bio"
-          onChange={e => updateMyProfile("bio", e.target.value)}
-          area={true}
-          maxlength="512"
-          rows="6"
-          resize="none"
-        >
-          {myProfile.bio}
-        </WideTextinput>
+            <Textinput
+              id="firstName"
+              label="First Name"
+              onChange={e => updateMyProfile("firstName", e.target.value)} // uses non-spammy updating
+            >
+              {myProfile.firstName}
+            </Textinput>
+            <Textinput
+              id="lastName"
+              label="Last Name"
+              onChange={e => updateMyProfile("lastName", e.target.value)} // uses non-spammy updating
+            >
+              {myProfile.lastName}
+            </Textinput>
+            <WideTextinput
+              id="email"
+              label="Email Address"
+              onChange={e => updateMyProfile("email", e.target.value)} // uses non-spammy updating
+            >
+              {myProfile.email}
+            </WideTextinput>
+            <WideTextinput
+              id="bio"
+              label="Bio"
+              onChange={e => updateMyProfile("bio", e.target.value)}
+              area={true}
+              maxlength="512"
+              rows="6"
+              resize="none"
+            >
+              {myProfile.bio}
+            </WideTextinput>
 
-        <SpanAll>
-          <SectionHeader>Tracking</SectionHeader>
-          <StyledSwitch
-            id="trackingconsent"
-            onChange={e =>
-              updateMyProfile("trackingConsent", e.target.checked, true)
-            } // updates immediately
-            checked={Number(myProfile.trackingConsent)}
-          >
-            I consent to the use of tracking technologies.
+            <SpanAll>
+              <SectionHeader>Tracking</SectionHeader>
+              <StyledSwitch
+                id="trackingconsent"
+                onChange={e =>
+                  updateMyProfile("trackingConsent", e.target.checked, true)
+                } // updates immediately
+                checked={Number(myProfile.trackingConsent)}
+              >
+                I consent to the use of tracking technologies.
           </StyledSwitch>
-          <p>
-            "I consent to the tracking of my progress and my activity on
-            educational websites which participate in Doenet; my data will be
-            used to provide my instructor with my grades on course assignments,
-            and anonymous data may be provided to content authors to improve the
-            educational effectiveness."
+              <p>
+                "I consent to the tracking of my progress and my activity on
+                educational websites which participate in Doenet; my data will be
+                used to provide my instructor with my grades on course assignments,
+                and anonymous data may be provided to content authors to improve the
+                educational effectiveness."
             <br />
-            <br />
-            <em>
-              Revoking your consent may impact your ability to recieve credit
-              for coursework.
+                <br />
+                <em>
+                  Revoking your consent may impact your ability to recieve credit
+                  for coursework.
             </em>
-          </p>
-        </SpanAll>
+              </p>
+            </SpanAll>
 
-        <SpanAll>
-          <SectionHeader>Your Roles</SectionHeader>
-          <StyledSwitch
-            id="student"
-            onChange={e => {
-              e.preventDefault();
-              updateMyProfile("roleStudent", e.target.checked, true)
-            }
-            } // updates immediately
-            checked={Number(myProfile.roleStudent)}
-          >
-            Student
+            <SpanAll>
+              <SectionHeader>Your Roles</SectionHeader>
+              <StyledSwitch
+                id="student"
+                onChange={e => {
+                  e.preventDefault();
+                  updateMyProfile("roleStudent", e.target.checked, true)
+                }
+                } // updates immediately
+                checked={Number(myProfile.roleStudent)}
+              >
+                Student
           </StyledSwitch>
-          <StyledSwitch
-            id="instructor"
-            onChange={e =>
-              updateMyProfile("roleInstructor", e.target.checked, true)
-            } // updates immediately
-            checked={Number(myProfile.roleInstructor)}
-          >
-            Instructor
+              <StyledSwitch
+                id="instructor"
+                onChange={e =>
+                  updateMyProfile("roleInstructor", e.target.checked, true)
+                } // updates immediately
+                checked={Number(myProfile.roleInstructor)}
+              >
+                Instructor
           </StyledSwitch>
-          <StyledSwitch
-            id="course_designer"
-            onChange={
-              e => updateMyProfile("roleCourseDesigner", e.target.checked, true) // updates immediately
-            }
-            checked={Number(myProfile.roleCourseDesigner)}
-          >
-            Course Designer
+              <StyledSwitch
+                id="course_designer"
+                onChange={
+                  e => updateMyProfile("roleCourseDesigner", e.target.checked, true) // updates immediately
+                }
+                checked={Number(myProfile.roleCourseDesigner)}
+              >
+                Course Designer
           </StyledSwitch>
-          {/* <StyledSwitch
+              {/* <StyledSwitch
             id="watchdog"
             onChange={e =>
               updateMyProfile("roleWatchdog", e.target.checked, true)
@@ -461,18 +461,18 @@ export default function DoenetProfile(props) {
           >
             Live Data Community
           </StyledSwitch> */}
-          <h4>{"You have access to:"}</h4>
-          {toolAccess}
-        </SpanAll>
+              <h4>{"You have access to:"}</h4>
+              {toolAccess}
+            </SpanAll>
 
-        {/* <SectionHeader>Invites</SectionHeader> */}
-      </ProfileContainer>
-      </ToolLayoutPanel>
-    </ToolLayout>
+            {/* <SectionHeader>Invites</SectionHeader> */}
+          </ProfileContainer>
+        </ToolLayoutPanel>
+      </ToolLayout>
 
 
-     {/* <DoenetHeader
-        toolTitle="Profile"
+      {/* <DoenetHeader
+        toolName="Profile"
         // headingTitle="Edit My Profile"
         willProvideProfile={true}
         profile={myProfile}
@@ -482,5 +482,5 @@ export default function DoenetProfile(props) {
   );
 
 
-  
+
 }

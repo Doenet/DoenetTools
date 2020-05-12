@@ -1,8 +1,8 @@
 import React, {useState } from 'react';
 import './menu.css';
 import {animated,useSpring} from 'react-spring';
-    const Menu = ({showThisRole,roles,permissionCallback}) =>{
-      const[currentRole,setCurrentRole] = useState(roles.length>0?showThisRole:"N/A");
+    const Menu = ({activeRole,roles,permissionCallback}) =>{
+      const[currentRole,setCurrentRole] = useState(activeRole);
       let rolesDisplay=[]
       let updateNumber=0
       if (!permissionCallback){
