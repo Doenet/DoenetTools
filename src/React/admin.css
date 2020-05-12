@@ -298,6 +298,7 @@ margin: 10px;
 .SectionContainer-Active {
   display:flex;
   justify-content: flex-end;
+  /* background-color: rgb(181, 237, 181); */
   background-color: rgb(151, 155, 151);
   padding: 2;
 
