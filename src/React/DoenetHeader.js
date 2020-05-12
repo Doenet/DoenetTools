@@ -286,7 +286,7 @@ class DoenetHeader extends Component {
     return (
       <React.Fragment>
         <div className="headingContainer">
-          <div className="headerPlayBtn" onClick={this.toggleSlider.bind(this)}>
+          <div className="headerPlayBtn" onClick={this.toggleSlider}>
             <FontAwesomeIcon id='headerPlayBtn-icon' fontSize='16px' icon={this.state.sliderVisible ? faCaretDown : faCaretRight} />
           </div>
           <div className="toolName">
@@ -321,13 +321,13 @@ class DoenetHeader extends Component {
         </div>
 
         <div className={sliderClass}>
-          <div className="slider-item">
+          <div className="extended-header">
             {this.props.headingTitle && <div className="headingTitlePhone">
               <span>{this.props.headingTitle}</span>
             </div>}
           </div>
 
-          <div className="slider-item">
+          <div className="extended-header">
             {
               this.props.rights && this.props.rights.defaultRole && <Menu activeRole={this.props.rights.defaultRole} roles={this.roles} permissionCallback={this.props.rights ? this.props.rights.permissionCallBack : null} />}
             {toolBox}
