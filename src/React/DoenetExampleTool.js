@@ -19,7 +19,7 @@ export default function DoenetExampleTool(props) {
          leftPanelWidth - can add width of first child of ToolLayout
          rightPanelWidth - can add width of third child if available in ToolLayout
       ) */}
-      <ToolLayout toolName ="Example" headingTitle ="Example Heading"
+      <ToolLayout toolName="Example" headingTitle="Example Heading"
       //  leftPanelWidth= '100' // !> 300
       //  rightPanelWidth= '200' // !> 500
       >
@@ -32,7 +32,7 @@ export default function DoenetExampleTool(props) {
           <div>
             {alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}
             <button onClick={() => setX(x + 1)}> Count</button>{x}
-           <p>test</p>  
+            <p>test</p>
           </div>
         </ToolLayoutPanel>
 
@@ -45,7 +45,7 @@ export default function DoenetExampleTool(props) {
         <ToolLayoutPanel key="three" menuControls={menuControlsViewer} panelName="Viewer">
           <div>
             {alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}
-           
+
           </div>
         </ToolLayoutPanel>
       </ToolLayout>

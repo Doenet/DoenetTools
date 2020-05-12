@@ -4,6 +4,7 @@ body{
   margin: 0;
   overflow: hidden;
 }
+
 .leftpanel{
   position: relative;
   display: flex;
@@ -18,27 +19,26 @@ body{
   flex-direction: column;
   min-height: 1vh;
   overflow: hidden;
-
 }
+
 .rightpanel{
   position: relative;
   display: flex;
   flex-direction: column;
   min-height: 1vh; 
   overflow: hidden;
-
 }
+
 .column-resizer{
   cursor: col-resize;
 }
+
 .left-resizer{
   cursor: e-resize;
-
 }
 
 .right-resizer{
   cursor: w-resize;
-
 }
 
 .resizer{
@@ -48,7 +48,6 @@ body{
   flex-shrink: 0;
 }
 
-
 .menucontent{
   display:flex;
   min-height: 40px;
@@ -57,13 +56,10 @@ body{
   background-color:rgba(232,236,238,.5);
 }
 
-
-
 @media only screen and (max-width: 767px) {
   .footer-on {
     margin-bottom: 30px;
   }
-
 
  .phonebuttoncontainer{
   display : flex;
@@ -81,5 +77,6 @@ body{
     background-color: black;
     width: 100%;
 } 
+
 }
  

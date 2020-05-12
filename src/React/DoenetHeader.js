@@ -317,36 +317,36 @@ class DoenetHeader extends Component {
 
             }
           </div>
-          
+
         </div>
 
         <div className={sliderClass}>
-            <div className="slider-item">
-          {this.props.headingTitle && <div className="headingTitlePhone">
-            <span>{this.props.headingTitle}</span>
-          </div>}
-            </div>
-
-            <div className="slider-item">
-              {
-              this.props.rights && this.props.rights.defaultRole && <Menu activeRole={this.props.rights.defaultRole} roles={this.roles} permissionCallback={this.props.rights ? this.props.rights.permissionCallBack : null} />}
-              {toolBox}
-              {!this.state.myProfile.profilePicture &&
-                <div id="userButton-anonymous-phone" onClick={() => { location.href = "/Profile"; }}>
-                  <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
-                </div>
-              }
-              {this.state.myProfile.profilePicture &&
-                <div id="userButton-phone" onClick={() => { location.href = "/Profile"; }}>
-                  <ProfilePicture
-                    pic={this.state.myProfile.profilePicture}
-                    name="changeProfilePicture"
-                    id="changeProfilePicture"
-                  >
-                  </ProfilePicture>
-                </div>}
-            </div>
+          <div className="slider-item">
+            {this.props.headingTitle && <div className="headingTitlePhone">
+              <span>{this.props.headingTitle}</span>
+            </div>}
           </div>
+
+          <div className="slider-item">
+            {
+              this.props.rights && this.props.rights.defaultRole && <Menu activeRole={this.props.rights.defaultRole} roles={this.roles} permissionCallback={this.props.rights ? this.props.rights.permissionCallBack : null} />}
+            {toolBox}
+            {!this.state.myProfile.profilePicture &&
+              <div id="userButton-anonymous-phone" onClick={() => { location.href = "/Profile"; }}>
+                <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
+              </div>
+            }
+            {this.state.myProfile.profilePicture &&
+              <div id="userButton-phone" onClick={() => { location.href = "/Profile"; }}>
+                <ProfilePicture
+                  pic={this.state.myProfile.profilePicture}
+                  name="changeProfilePicture"
+                  id="changeProfilePicture"
+                >
+                </ProfilePicture>
+              </div>}
+          </div>
+        </div>
       </React.Fragment>
     );
   }

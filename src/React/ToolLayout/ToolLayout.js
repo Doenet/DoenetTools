@@ -88,7 +88,7 @@ export default function ToolLayout(props) {
       setRightCloseBtn(false);
       setRightOpenBtn(false);
     }
-   
+
   });
 
   const windowResizeHandler = () => {
@@ -272,12 +272,12 @@ export default function ToolLayout(props) {
     hideMenu: false,
     hideCollapse: false,
     showFooter: false,
-    hideFooter:false
+    hideFooter: false
   };
 
   visibilityMenuControl.hideMenu = !Array.isArray(props.children) && !leftNavContent.props.menuControls;
   visibilityMenuControl.showFooter = deviceType === "phone" && !!Array.isArray(props.children) && props.children.length > 1;
-  visibilityMenuControl.hideFooter = deviceType === "phone" &&  props.children.length < 2 && !Array.isArray(props.children) ;
+  visibilityMenuControl.hideFooter = deviceType === "phone" && props.children.length < 2 && !Array.isArray(props.children);
   visibilityMenuControl.sliderVisible = deviceType === "phone" && sliderVisible;
   visibilityMenuControl.hideCollapse = !Array.isArray(props.children);
 
