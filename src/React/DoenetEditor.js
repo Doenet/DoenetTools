@@ -370,13 +370,14 @@ class DoenetEditor extends Component {
     
         console.log('RENDER REFRESH')
       return (
-      <ToolLayout toolName="Editor" headingTitle={title_text}>
-        <ToolLayoutPanel menuControls={[contextPanelMenu]}>
-        <div >
-              {contextPanel}
-            </div>
+      <ToolLayout toolName="Editor" headingTitle={title_text} leftPanelWidth="100" rightPanelWidth="500">
+        <ToolLayoutPanel menuControls={[contextPanelMenu]} panelName="left nav">
+        <div >Left Nav</div>
         </ToolLayoutPanel>
-        <ToolLayoutPanel menuControls={[textEditorMenu]}>
+        <ToolLayoutPanel menuControls={[doenetViewerMenu]} panelName="Viewer">
+          {doenetViewer}
+        </ToolLayoutPanel>
+        <ToolLayoutPanel menuControls={[textEditorMenu]} panelName="DoenetML">
         <div style={{width:"100%",height:"calc(100vh - 42px)",backgroundColor:"blue"}} >
          <MonacoEditor
           width="100vw"
@@ -387,6 +388,7 @@ class DoenetEditor extends Component {
             selectOnLineNumbers: false,
             minimap: {enabled:false},
             fontSize: this.state.fontSize,
+            automaticLayout: true,
             scrollBeyondLastLine: false,
             showFoldingControls: "always",
             features:["folding","caretOperations","scrollBeyondLastLine"]
@@ -400,9 +402,7 @@ class DoenetEditor extends Component {
        
 
             </ToolLayoutPanel>
-        <ToolLayoutPanel menuControls={[doenetViewerMenu]}>
-          {doenetViewer}
-        </ToolLayoutPanel>
+        
          </ToolLayout>);
     
      
