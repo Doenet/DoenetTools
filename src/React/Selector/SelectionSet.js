@@ -10,6 +10,15 @@ import {
 } from "react-router-dom";
 // import {animated,useSpring} from 'react-spring';
 // TO-DO: add documentation for this componenet
+// documentation for this componenet how options work
+/**
+ * first selectionSet takes in allElements and determines if it is a independent item or set
+ * if it is an independent item then it checks if it is a link or not
+ * the callBack will check either the key exists in OverloadingFunctionOnItems or 
+ *   if the key has a value called 'callBack' or
+ * exists a CommonCallBack function. By arranging this way the program will prioritize either callBack function
+ * exists in OverloadingFunctionOnItems or as a 'callBack' value of the key
+ */
 const IndependentItemNotSelected = styled.div`
 
 font-size: 18px;
