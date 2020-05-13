@@ -52,7 +52,7 @@ display: none;
 
 
 
-    const Menu = ({currentTool,showThisRole,itemsToShow,menuIcon,width,grayTheseOut=[],offsetPos=0,menuWidth}) =>{
+    const Menu = ({currentTool,showThisRole,itemsToShow={},menuIcon,width,grayTheseOut=[],offsetPos=0,menuWidth}) =>{
       const node = useRef();
       console.log("from menu")
       const [MenuWidth,setMenuWidth] = useState(menuWidth);

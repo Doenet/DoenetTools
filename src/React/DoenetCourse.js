@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import DoenetViewer from '../React/DoenetViewer';
 import axios from 'axios';
 import './course.css';
-import DoenetHeader from './DoenetHeader';
+// import DoenetHeader from './DoenetHeader';
 import nanoid from 'nanoid';
 import query from '../queryParamFuncs';
 import DoenetBox from '../React/DoenetBox';
@@ -986,7 +986,7 @@ class DoenetCourse extends Component {
       this.alreadyHasCourseInfo = true
       this.courseInfo = resp.data.courseInfo;
       this.courseIdsArray = resp.data.courseIds;
-
+      this.coursesToChoose={}
       this.courseIdsArray.map((id)=>{
         this.coursesToChoose[id]={
           showText:this.courseInfo[id]['courseName'],
@@ -3630,8 +3630,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       this.saveAssignmentInfo()
     }
     // making courses to choose
-    this.coursesToChoose={}
     if (this.courseIdsArray!=[]){
+    this.coursesToChoose={}
       this.courseIdsArray.map((id)=>{
         this.coursesToChoose[id]={
           showText:this.courseInfo[id]['courseName'],
