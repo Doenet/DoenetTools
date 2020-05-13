@@ -412,7 +412,7 @@ class DoenetHome extends Component {
 
     return (<React.Fragment>
 
-      <DoenetHeader toolTitle="Home" headingTitle="Test" />
+      <DoenetHeader toolName="Home" headingTitle="Test" />
       <div className="homeContainer">
         <div className="homeHeading">
         <img src={doenetImage} height='48px' />

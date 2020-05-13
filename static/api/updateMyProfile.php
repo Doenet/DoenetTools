@@ -6,13 +6,13 @@ header("Access-Control-Allow-Credentials: true");
 //header('Content-Type: application/json');
 
 include "db_connection.php";
-$_PUT = json_decode(file_get_contents("php://input"),true);
+// $_PUT = json_decode(file_get_contents("php://input"),true);
 
 $changeField = mysqli_real_escape_string($conn, $_REQUEST["changeField"]);
 $toValue = mysqli_real_escape_string($conn, $_REQUEST["toValue"]);
 
 $changeableStrings = array("email", "lastName", "firstName", "profilePicture", "bio");
-$changeableInts = array("trackingConsent", "roleInstructor", "roleCourseDesigner", "roleWatchdog", "roleCommunityTA", "roleLiveDataCommunity");
+$changeableInts = array("trackingConsent","roleStudent", "roleInstructor", "roleCourseDesigner", "roleWatchdog", "roleCommunityTA", "roleLiveDataCommunity");
 $possiblePictures = array(
     "bird",
     "cat",
@@ -23,7 +23,8 @@ $possiblePictures = array(
     "penguin",
     "squirrel",
     "swan",
-    "turtle"
+    "turtle",
+    "quokka"
 );
 
 if (in_array($changeField, $changeableStrings)) {

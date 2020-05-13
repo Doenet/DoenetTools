@@ -1267,7 +1267,7 @@ class DoenetChooser extends Component {
    
 
     return (<React.Fragment>
-      <DoenetHeader toolTitle="Chooser" headingTitle={"Choose Branches"} />
+      <DoenetHeader toolName="Chooser" headingTitle={"Choose Branches"} />
       <ToastProvider>
         <div id="chooserContainer">
           <this.ToastWrapper/>

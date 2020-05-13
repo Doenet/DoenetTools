@@ -3241,6 +3241,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     <React.Fragment>
       <div className="courseContainer">
 
+
         <ToolLayout>
         <ToolLayoutPanel
             key={"TLP01"+this.updateNumber++}
@@ -3261,7 +3262,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
               :null)
             ]}
           >
-        <Router>
+   <Router>
           <>
 
           

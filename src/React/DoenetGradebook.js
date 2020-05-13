@@ -643,7 +643,7 @@ export default class DoenetGradebook extends Component {
 
         return (
             <>
-                <DoenetHeader toolTitle="Gradebook" headingTitle="TODO: courseName" />
+                <DoenetHeader toolName="Gradebook" headingTitle="TODO: courseName" />
                 <Router basename="/gradebook">
                     <div id="gradebookContainer">
                         <div id="leftNav">
