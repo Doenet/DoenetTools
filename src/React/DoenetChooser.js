@@ -1104,6 +1104,7 @@ class DoenetChooser extends Component {
           tempHeadingsInfo[itemId] = resp.data[itemId];
           tempHeadingsInfo[itemId]["childFolders"] = [];
           tempHeadingsInfo[itemId]["childContent"] = [];
+          tempHeadingsInfo[itemId]["childrenList"] = [];
           // process children
           for (let i in resp.data[itemId]["childrenId"]) {
             let childId = resp.data[itemId]["childrenId"][i];
@@ -1114,6 +1115,7 @@ class DoenetChooser extends Component {
               tempHeadingsInfo[itemId]["childContent"].push(childId);
             }
           }
+          tempHeadingsInfo[itemId]["childrenList"] = tempHeadingsInfo[itemId]["childContent"];
         } else {
           tempAssignmentsInfo[itemId] = resp.data[itemId];
         }
@@ -1523,37 +1525,7 @@ class DoenetChooser extends Component {
                 <SpinningLoader/>
              </div>
     }
-    return <div>
-    <SwitchableContainers initialValue="tab-react" values={["tab-react", "tab-vue"]}>
-      <div className="switchable-toggle-container">
-        <SwitchableContainer>
-          <FontAwesomeIcon icon={faDotCircle} style={{"fontSize":"17px", "marginRight":"5px"}}/>
-        </SwitchableContainer>  
-      </div>
-      <SwitchableContainerPanel name="tab-react">
-        <p>
-          React.js is a JavaScript library used for building UI. It
-          is maintained by <strong>Facebook</strong> and a community
-          of individual developers and companies.
-        </p>
-        <p>
-          React can be used as a base in the development of
-          single-page or mobile applications.
-        </p>
-      </SwitchableContainerPanel>
-      <SwitchableContainerPanel name="tab-vue">
-        <p>
-          Vue.js is an open-source JavaScript framework for building
-          user interfaces and single-page applications.
-        </p>
-        <p>
-          Vue.js features an incrementally adoptable architecture
-          that focuses on declarative rendering and component
-          composition.
-        </p>
-      </SwitchableContainerPanel>
-    </SwitchableContainers>
-  </div>
+    
     // return <DoenetAssignmentTree treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
       // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
       const CourseOutlineFrame = styled('div')`
@@ -1572,19 +1544,20 @@ class DoenetChooser extends Component {
       margin-top: 15px;
       `
 
-    // let tempTree = <div className="tree">
-    //   <TreeView
-    //     containerId={"aI8sK4vmEhC5sdeSP3vNW"}
-    //     loading={!this.assignments_and_headings_loaded}
-    //     parentsInfo={this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
-    //     childrenInfo={this.assignmentsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
-    //     currentDraggedObject={this.state.currentDraggedObject}
-    //     onDragStart={this.onTreeDragStart}
-    //     onDragEnd={this.onTreeDragEnd}
-    //     onDraggableDragOver={this.onTreeDraggableDragOver} 
-    //     onDropEnter={this.onTreeDropEnter}
-    //     onDrop={this.onTreeDrop} />
-    //   </div>
+    let assignmentsTree = <div className="tree" style={{padding: "5em 2em"}}>
+      <TreeView
+        containerId={"aI8sK4vmEhC5sdeSP3vNW"}
+        containerType={ChooserConstants.COURSE_ASSIGNMENTS_TYPE}
+        loading={!this.assignments_and_headings_loaded}
+        parentsInfo={this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
+        childrenInfo={this.assignmentsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
+        currentDraggedObject={this.state.currentDraggedObject}
+        onDragStart={this.onTreeDragStart}
+        onDragEnd={this.onTreeDragEnd}
+        onDraggableDragOver={this.onTreeDraggableDragOver} 
+        onDropEnter={this.onTreeDropEnter}
+        onDrop={this.onTreeDrop} />
+      </div>
 
     // process root folder for tree rendering
     if (this.folders_loaded && this.branches_loaded && this.urls_loaded) {
@@ -1607,7 +1580,7 @@ class DoenetChooser extends Component {
       }
     }
 
-    let tempTree = <div className="tree">
+    let userTree = <div className="tree">
       <TreeView
         containerId={"user"}
         containerType={ChooserConstants.USER_CONTENT_TYPE}
@@ -1698,7 +1671,6 @@ class DoenetChooser extends Component {
     }
 
    
-
     return (<React.Fragment>
       <DoenetHeader toolTitle="Chooser" headingTitle={"Choose Branches"} />
       <ToastProvider>
@@ -1706,8 +1678,22 @@ class DoenetChooser extends Component {
           <this.ToastWrapper/>
           { this.leftNavPanel }
           { this.topToolbar }
-          { this.mainSection }     
-          { tempTree }
+          <div id="mainPanel">
+            <SwitchableContainers initialValue="browser" values={["browser", "tree"]}>
+              <div className="switchable-toggle-container">
+                <SwitchableContainer>
+                  <FontAwesomeIcon icon={faDotCircle} style={{fontSize:"17px"}}/>
+                </SwitchableContainer>  
+              </div>
+              <SwitchableContainerPanel name="browser">
+                { this.mainSection }     
+              </SwitchableContainerPanel>
+              <SwitchableContainerPanel name="tree">
+                { userTree }    
+              </SwitchableContainerPanel>
+            </SwitchableContainers>
+          </div>
+          { assignmentsTree }
           {/* <InfoPanel
             selectedItems={this.state.selectedItems}
             selectedItemsType={this.state.selectedItemsType}

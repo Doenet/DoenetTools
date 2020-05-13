@@ -50,6 +50,7 @@ export const TreeView = ({containerId, containerType, loading, parentsInfo, chil
     </div>
   }
 
+
   return (
     <>
     { buildTreeStructure({ 
@@ -109,8 +110,9 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
   let subTree = <ParentNode 
     id={parentHeadingId}
     key={parentHeadingId} 
-    title={parentHeadingId == "root" ? "Assignments Outline" : parentsInfo[parentHeadingId]["title"]}
+    title={parentHeadingId == "root" ? "Tree" : parentsInfo[parentHeadingId]["title"]}
     type={itemType}
+    defaultOpen={parentHeadingId == "root"}
     itemIcon = {Icons(itemType)}
     onDrop={onDrop} 
     onDropEnter={onDropEnter}
@@ -209,7 +211,7 @@ const Icons = (iconName) => {
       return ContentIcon;
     case "url":
       return UrlIcon;
-    case "heading":
+    case "header":
       return HeadingIcon;
     case "assignment":
       return AssignmentIcon;
