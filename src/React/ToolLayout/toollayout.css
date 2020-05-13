@@ -1,0 +1,82 @@
+body{
+  background-color: rgb(246, 248, 255);
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.leftpanel{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 1vh;
+  overflow: hidden;
+}
+
+.middlepanel{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 1vh;
+  overflow: hidden;
+}
+
+.rightpanel{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 1vh; 
+  overflow: hidden;
+}
+
+.column-resizer{
+  cursor: col-resize;
+}
+
+.left-resizer{
+  cursor: e-resize;
+}
+
+.right-resizer{
+  cursor: w-resize;
+}
+
+.resizer{
+  width: 6px;
+  background-color: #f0eded;
+  position:relative;
+  flex-shrink: 0;
+}
+
+.menucontent{
+  display:flex;
+  min-height: 40px;
+  margin:0px;
+  padding:0px;
+  background-color:rgba(232,236,238,.5);
+}
+
+@media only screen and (max-width: 767px) {
+  .footer-on {
+    margin-bottom: 30px;
+  }
+
+ .phonebuttoncontainer{
+  display : flex;
+  width: 100%;
+  bottom: 0.1px;
+  left: 0px;
+  position: fixed;
+  z-index:5;
+  text-align: center;
+  background-color: darkorange;
+}
+
+.phonebutton{
+    color: white;
+    background-color: black;
+    width: 100%;
+} 
+
+}
+ 

@@ -1,3 +1,4 @@
+
 import React, {useState,useEffect,useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {animated,useSpring,useTransition,useChain} from 'react-spring';
@@ -71,6 +72,7 @@ display: none;
       // console.log(menuWidth)
       const[currentItemDisplay,setcurrentItemDisplay] = useState(Object.keys(itemsToShow).length>0?showThisRole:"");
       // let rolesDisplay=[]
+
       let updateNumber=0
       // console.log("itemsToShow")
       // console.log(itemsToShow)

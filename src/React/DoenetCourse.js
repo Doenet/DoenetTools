@@ -3682,6 +3682,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     <React.Fragment>
       <div className="courseContainer">
 
+
       {(this.courseIdsArray!=[] && this.courseInfo!={}?
 
 (<DoenetHeader 
@@ -3829,7 +3830,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                   type:"IndependentItem",
                   thisElementLabel:"choice01",
                   // callBack:(()=>{console.log("choice001")}),
-                },
                 element02:{
                   type:"IndependentSet",
                   thisElementLabel:"Set01",
