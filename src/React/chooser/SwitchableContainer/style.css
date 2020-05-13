@@ -1,0 +1,34 @@
+.containers {
+  display: grid;
+  grid-row-gap: 18px;
+}
+
+.container-list {
+  display: flex;
+}
+
+.container {
+  cursor: pointer;
+  grid-row: 1;
+  display: grid;
+  grid-row-gap: 6px;
+  place-items: center;
+  padding-right: 18px;
+  font-size: 1.2em;
+}
+
+.container-divider {
+  height: 3px;
+  min-width: 100%;
+  width: 80px;
+  background-color: #999;
+  transition: 0.2s ease-in;
+}
+
+.container:not(.active):hover .container-divider {
+  background-color: #777;
+}
+
+.container.active .container-divider {
+  background-color: #333;
+}

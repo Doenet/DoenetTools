@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { TreeView } from './TreeView/TreeView'
 
 
-const DoenetCourseOutline = React.memo(({ containerId, treeHeadingsInfo, treeAssignmentsInfo, updateHeadingsAndAssignments }) => {
+const DoenetAssignmentTree = React.memo(({ containerId, treeHeadingsInfo, treeAssignmentsInfo, updateHeadingsAndAssignments }) => {
   const [currentDraggedObject, setCurrentDraggedObject] = useState({
     id: null, 
     type: null,
@@ -40,7 +40,7 @@ const DoenetCourseOutline = React.memo(({ containerId, treeHeadingsInfo, treeAss
 
   const onTreeDraggableDragOver = (id, type) => {
     // draggedType must be equal to dragOver type
-    if (type != currentDraggedObject.type || id == "UltimateHeader") return;
+    if (type != currentDraggedObject.type || id == "root") return;
 
     const draggedOverItemInfo = type == "leaf" ? treeAssignments : treeHeadings;
     const headingsChildrenListKey = type == "leaf" ? "assignmentId" : "headingId";
@@ -205,4 +205,4 @@ const TempChooser = styled('div')`
   height: 15em;
 `
 
-export default DoenetCourseOutline;
+export default DoenetAssignmentTree;

@@ -1605,7 +1605,7 @@ this.forceUpdate()
 
     iterator = 0;
     // establish level 0
-    this.heading_obj["UltimateHeader"]["childHeadings"].forEach(element=>{
+    this.heading_obj["root"]["childHeadings"].forEach(element=>{
       element= element.toString()
       let title = this.heading_obj[element]["title"]
       let object = {id:element,title:title,type:"header",level:0}
@@ -1667,9 +1667,9 @@ buildTree(){
   // making space
   this.tree = [];
   // this.tree_route = [];
-  let addHeaderToTheEndOfUltimateHeader=(<span className="Section-Icon-Box">         
+  let addHeaderToTheEndOfRoot=(<span className="Section-Icon-Box">         
       <FontAwesomeIcon className="Section-Icon" 
-       onClick ={()=>{this.addNewHeaderAtTheEndUltimateHeader()}} icon={faPlus}/></span>);
+       onClick ={()=>{this.addNewHeaderAtTheEndRoot()}} icon={faPlus}/></span>);
   let addingAssignmentArray = this.AddedAssignmentObjArray 
 
   if (this.makeTreeArray.length>0) {
@@ -1684,7 +1684,7 @@ buildTree(){
       let addingArrowAfterAssignment = null;
       let addingArrowUnderHeader=null;
 
-      let addHeaderPlusUnderUltimateHeader=null;
+      let addHeaderPlusUnderRoot=null;
 
     this.makeTreeArray.forEach((element,index)=>{
       let title = element["title"]
@@ -1717,7 +1717,7 @@ buildTree(){
     //  onClick ={()=>{this.moveHeaderRight({headerObj:element})}} icon={faArrowRight}/></span>)
     //   }
     //   console.log(this.heading_obj[id])
-    // if (this.heading_obj[id]['parentId']!="UltimateHeader"){
+    // if (this.heading_obj[id]['parentId']!="root"){
     //     leftArrow = (<span className="Section-Icon-Box">         
     //     <FontAwesomeIcon className="Section-Icon" data-cy={"arrowLeft"+index}
     //      onClick ={()=>{this.moveHeaderLeft({headerObj:element})}} icon={faArrowLeft}/></span>)
@@ -1795,9 +1795,9 @@ buildTree(){
       // console.log("link is "+link)
       if (level==0) { // only header can have level 0
         if (this.enableMode==='header'){
-          addHeaderPlusUnderUltimateHeader=(<span className="Section-Icon-Box">         
+          addHeaderPlusUnderRoot=(<span className="Section-Icon-Box">         
         <FontAwesomeIcon className="Section-Icon" data-cy ="plus"
-         onClick ={()=>{this.addNewHeaderUnderUltimateHeader({headerObj:element});
+         onClick ={()=>{this.addNewHeaderUnderRoot({headerObj:element});
          this.makeTreeVisible({loadSpecificId:""})}} icon={faPlus}/></span>)
       }}
       let tree_branch = null;
@@ -1851,8 +1851,8 @@ buildTree(){
              </div>)
       }
       // this.tree.push(tree_branch)
-      if (addHeaderPlusUnderUltimateHeader!=null && type==='header'){
-        this.tree.push(addHeaderPlusUnderUltimateHeader)
+      if (addHeaderPlusUnderRoot!=null && type==='header'){
+        this.tree.push(addHeaderPlusUnderRoot)
       }
       this.tree.push(tree_branch)
       if (addingArrowAfterAssignment!=null && type==='assignment'){
@@ -1870,7 +1870,7 @@ buildTree(){
     //  this.tree.push(<p>Empty Tree</p>)
   }
   if (this.enableMode==='header'){
-    this.tree.push(addHeaderToTheEndOfUltimateHeader)
+    this.tree.push(addHeaderToTheEndOfRoot)
   }
 
 }
@@ -2090,7 +2090,7 @@ this.saveTree();
 }
 moveHeaderLeft({headerObj}){
 /**
- * possess a left arrow when exists parent that not "UltimateHeader"
+ * possess a left arrow when exists parent that not "root"
  * get the id of the current header as currentHeaderId
  * find currentHeaderId's parentId in this.header_obj
  * splice currentHeaderId out of currentHeaderId's parentId headingId array
@@ -2212,9 +2212,9 @@ this.forceUpdate();
 this.saveTree();
 
 }
-addNewHeaderUnderUltimateHeader ({headerObj}){
+addNewHeaderUnderRoot ({headerObj}){
 let currentHeaderId = headerObj['id']
-let myParentObj = this.heading_obj["UltimateHeader"];
+let myParentObj = this.heading_obj["root"];
 let length = myParentObj['childHeadings'].length
 let currentHeaderIdIndexInsideParentHeadingIdArray = 
           myParentObj['childHeadings'].indexOf(currentHeaderId)
@@ -2223,15 +2223,15 @@ let ID = nanoid();
 
 if (addAtIndex===0){
   // console.log("case 1")
-  this.heading_obj["UltimateHeader"]['childHeadings'].unshift(ID)
+  this.heading_obj["root"]['childHeadings'].unshift(ID)
 } else if (addAtIndex===(length-1)){
   // console.log("case 2")
-  this.heading_obj["UltimateHeader"]['childHeadings'].push(ID)
+  this.heading_obj["root"]['childHeadings'].push(ID)
 } else {
   // console.log("case 3")
-  this.heading_obj["UltimateHeader"]['childHeadings'].splice(addAtIndex+1,0,ID)
+  this.heading_obj["root"]['childHeadings'].splice(addAtIndex+1,0,ID)
 }
-this.heading_obj [ID]={title:"untitled header",parentId:"UltimateHeader",childAssignments:[],childHeadings:[]}
+this.heading_obj [ID]={title:"untitled header",parentId:"root",childAssignments:[],childHeadings:[]}
 
 // change enableMode to "position" .Adding duplicate assignmentId will break the rule of adding arrow
 // as one ID can both a middle and first element at the same time
@@ -2241,10 +2241,10 @@ this.forceUpdate();
 this.saveTree();
 
 }
-addNewHeaderAtTheEndUltimateHeader(){
+addNewHeaderAtTheEndRoot(){
 let ID = nanoid();
-this.heading_obj["UltimateHeader"]['childHeadings'].unshift(ID)
-this.heading_obj [ID]={title:"untitled header",parentId:"UltimateHeader",childAssignments:[],childHeadings:[]}
+this.heading_obj["root"]['childHeadings'].unshift(ID)
+this.heading_obj [ID]={title:"untitled header",parentId:"root",childAssignments:[],childHeadings:[]}
 this.buildTreeArray();
 this.buildTree();
 this.forceUpdate();
@@ -2260,7 +2260,7 @@ addNewHeaderToHeader({headerObj}){
  */
 /*Assume addedHeader is fully filled and 
 stores only {IdOfAssignment:<someID>,title:<someName>} */
-// TODO: header can't be added under UltimateHeader
+// TODO: header can't be added under Root
 // console.log("running addNewHeaderToHeader")
 let currentHeaderId = headerObj['id']
 let newHeaderId = nanoid();
@@ -2285,7 +2285,7 @@ let id = headerObj['id']
 let currentHeaderObject = 
     this.heading_obj[id];
 let parentId;
-//if (currentHeaderObject["parentId"]!="UltimateHeader"){
+//if (currentHeaderObject["parentId"]!="root"){
 parentId = currentHeaderObject["parentId"]
 
 //}
@@ -2315,7 +2315,7 @@ this.deleteHeader({headerObj:currentChildHeaderObj})
 //delete myself
 //this.heading_obj.splice(indexOfHeader,1)
 delete this.heading_obj[id]
-//if (currentHeaderObject["parentId"]!="UltimateHeader"){
+//if (currentHeaderObject["parentId"]!="root"){
 // let indexOfHeaderParent = this.headerId_arr.indexOf(parentId)  
 let currentHeaderObjectParentHeadingId = 
     this.heading_obj[parentId]["childHeadings"];

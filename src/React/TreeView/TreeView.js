@@ -39,7 +39,7 @@ export const TreeView = ({containerId, containerType, loading, parentsInfo, chil
   const onDropLeaveCb = (id) => {
     if (currentDraggedObject.dataObject == null) return;
     // console.log(id + " " + currentDraggedObject.dataObject.parent)
-    if (id === "UltimateHeader" && currentDraggedObject.dataObject.parent === "UltimateHeader") {
+    if (id === "root" && currentDraggedObject.dataObject.parent === "root") {
       // onDropLeave && onDropLeave(id, containerId, containerType);
     }
   }
@@ -53,8 +53,8 @@ export const TreeView = ({containerId, containerType, loading, parentsInfo, chil
   return (
     <>
     { buildTreeStructure({ 
-        parentHeadingId: "UltimateHeader", 
-        parentNodeHeadingId: "UltimateHeader",
+        parentHeadingId: "root", 
+        parentNodeHeadingId: "root",
         parentsInfo: parentsInfo, 
         childrenInfo: childrenInfo, 
         onDragStart: onDragStartCb, 
@@ -109,7 +109,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
   let subTree = <ParentNode 
     id={parentHeadingId}
     key={parentHeadingId} 
-    title={parentHeadingId == "UltimateHeader" ? "Assignments Outline" : parentsInfo[parentHeadingId]["title"]}
+    title={parentHeadingId == "root" ? "Assignments Outline" : parentsInfo[parentHeadingId]["title"]}
     type={itemType}
     itemIcon = {Icons(itemType)}
     onDrop={onDrop} 

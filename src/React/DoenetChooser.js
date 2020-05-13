@@ -16,6 +16,13 @@ import { TreeView } from './TreeView/TreeView';
 import styled from 'styled-components';
 import { ToastContext, useToasts, ToastProvider } from './ToastManager';
 import ChooserConstants from './chooser/ChooserConstants';
+import {
+  SwitchableContainers,
+  SwitchableContainerList,
+  SwitchableContainer,
+  SwitchableContainerPanel,
+  SwitchableContainerDivider
+} from './chooser/SwitchableContainer';
 
 
 class DoenetChooser extends Component {
@@ -1267,7 +1274,7 @@ class DoenetChooser extends Component {
 
   onTreeDraggableDragOver(id, type, containerId, containerType) {
     // draggedType must be equal to dragOver type
-    if (type != this.state.currentDraggedObject.type || id == "UltimateHeader") return;
+    if (type != this.state.currentDraggedObject.type || id == "root") return;
 
     const draggedOverItemInfo = type == "leaf" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
     const headingsChildrenListKey = type == "leaf" ? "childContent" : "childFolders";
@@ -1417,14 +1424,15 @@ class DoenetChooser extends Component {
   }
 
   onTreeDrop (containerId, containerType) {
+    console.log(this.headingsInfo);
     console.log("onTreeDrop")
     // update courseHeadingsInfo/courseAssignmentsInfo currentDraggedObject parentId
     // remove currentDraggedObject from sourceParentId children list
-    if (this.state.currentDraggedObject.type == "leaf") {
-      const newCourseAssignments = this.assignmentsInfo[containerId];
-      newCourseAssignments[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
-      this.assignmentsInfo[containerId] = newCourseAssignments;
-    }
+    // if (this.state.currentDraggedObject.type == "leaf") {
+    //   const newCourseAssignments = this.assignmentsInfo[containerId];
+    //   newCourseAssignments[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
+    //   this.assignmentsInfo[containerId] = newCourseAssignments;
+    // }
     const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "childContent" : "childFolders";
     const sourceParentChildrenList = this.headingsInfo[containerId][this.state.currentDraggedObject.sourceParentId][headingsChildrenListKey];
     
@@ -1517,7 +1525,43 @@ class DoenetChooser extends Component {
                 <SpinningLoader/>
              </div>
     }
-    // return <DoenetCourseOutline treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
+  //   return <div className="App">
+  //   <SwitchableContainers initialValue="tab-react">
+  //     <SwitchableContainerList>
+  //       <SwitchableContainer name="tab-react">
+  //         <div>React.js</div>
+  //         <SwitchableContainerDivider />
+  //       </SwitchableContainer>
+  //       <SwitchableContainer name="tab-vue">
+  //         <div>Vue.js</div>
+  //         <SwitchableContainerDivider />
+  //       </SwitchableContainer>
+  //     </SwitchableContainerList>
+  //     <SwitchableContainerPanel name="tab-react">
+  //       <p>
+  //         React.js is a JavaScript library used for building UI. It
+  //         is maintained by <strong>Facebook</strong> and a community
+  //         of individual developers and companies.
+  //       </p>
+  //       <p>
+  //         React can be used as a base in the development of
+  //         single-page or mobile applications.
+  //       </p>
+  //     </SwitchableContainerPanel>
+  //     <SwitchableContainerPanel name="tab-vue">
+  //       <p>
+  //         Vue.js is an open-source JavaScript framework for building
+  //         user interfaces and single-page applications.
+  //       </p>
+  //       <p>
+  //         Vue.js features an incrementally adoptable architecture
+  //         that focuses on declarative rendering and component
+  //         composition.
+  //       </p>
+  //     </SwitchableContainerPanel>
+  //   </SwitchableContainers>
+  // </div>
+    // return <DoenetAssignmentTree treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
       // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
       const CourseOutlineFrame = styled('div')`
       display: flex;
@@ -1551,18 +1595,18 @@ class DoenetChooser extends Component {
 
     // process root folder for tree rendering
     if (this.folders_loaded && this.branches_loaded && this.urls_loaded) {
-      this.userFolderInfo["UltimateHeader"] = {};
-      this.userFolderInfo["UltimateHeader"]["childContent"] = [];
-      this.userFolderInfo["UltimateHeader"]["childFolders"] = [];
-      this.userFolderInfo["UltimateHeader"]["childUrls"] = [];
+      this.userFolderInfo["root"] = {};
+      this.userFolderInfo["root"]["childContent"] = [];
+      this.userFolderInfo["root"]["childFolders"] = [];
+      this.userFolderInfo["root"]["childUrls"] = [];
       Object.keys(this.userContentInfo).forEach((branchId) => {
-        if (this.userContentInfo[branchId].parentId == "root") this.userFolderInfo["UltimateHeader"]["childContent"].push(branchId);
+        if (this.userContentInfo[branchId].parentId == "root") this.userFolderInfo["root"]["childContent"].push(branchId);
       })
       Object.keys(this.userUrlInfo).forEach((urlId) => {
-        if (this.userUrlInfo[urlId].parentId == "root") this.userFolderInfo["UltimateHeader"]["childUrls"].push(urlId);
+        if (this.userUrlInfo[urlId].parentId == "root") this.userFolderInfo["root"]["childUrls"].push(urlId);
       })
       Object.keys(this.userFolderInfo).forEach((folderId) => {
-        if (this.userFolderInfo[folderId].parentId == "root") this.userFolderInfo["UltimateHeader"]["childFolders"].push(folderId);
+        if (this.userFolderInfo[folderId].parentId == "root") this.userFolderInfo["root"]["childFolders"].push(folderId);
       })
       for (let folderId in this.userFolderInfo) {
         this.userFolderInfo[folderId]["childrenList"] = [...this.userFolderInfo[folderId]["childContent"], 
