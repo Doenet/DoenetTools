@@ -18,10 +18,8 @@ import { ToastContext, useToasts, ToastProvider } from './ToastManager';
 import ChooserConstants from './chooser/ChooserConstants';
 import {
   SwitchableContainers,
-  SwitchableContainerList,
   SwitchableContainer,
   SwitchableContainerPanel,
-  SwitchableContainerDivider
 } from './chooser/SwitchableContainer';
 
 
@@ -1525,42 +1523,37 @@ class DoenetChooser extends Component {
                 <SpinningLoader/>
              </div>
     }
-  //   return <div className="App">
-  //   <SwitchableContainers initialValue="tab-react">
-  //     <SwitchableContainerList>
-  //       <SwitchableContainer name="tab-react">
-  //         <div>React.js</div>
-  //         <SwitchableContainerDivider />
-  //       </SwitchableContainer>
-  //       <SwitchableContainer name="tab-vue">
-  //         <div>Vue.js</div>
-  //         <SwitchableContainerDivider />
-  //       </SwitchableContainer>
-  //     </SwitchableContainerList>
-  //     <SwitchableContainerPanel name="tab-react">
-  //       <p>
-  //         React.js is a JavaScript library used for building UI. It
-  //         is maintained by <strong>Facebook</strong> and a community
-  //         of individual developers and companies.
-  //       </p>
-  //       <p>
-  //         React can be used as a base in the development of
-  //         single-page or mobile applications.
-  //       </p>
-  //     </SwitchableContainerPanel>
-  //     <SwitchableContainerPanel name="tab-vue">
-  //       <p>
-  //         Vue.js is an open-source JavaScript framework for building
-  //         user interfaces and single-page applications.
-  //       </p>
-  //       <p>
-  //         Vue.js features an incrementally adoptable architecture
-  //         that focuses on declarative rendering and component
-  //         composition.
-  //       </p>
-  //     </SwitchableContainerPanel>
-  //   </SwitchableContainers>
-  // </div>
+    return <div>
+    <SwitchableContainers initialValue="tab-react" values={["tab-react", "tab-vue"]}>
+      <div className="switchable-toggle-container">
+        <SwitchableContainer>
+          <FontAwesomeIcon icon={faDotCircle} style={{"fontSize":"17px", "marginRight":"5px"}}/>
+        </SwitchableContainer>  
+      </div>
+      <SwitchableContainerPanel name="tab-react">
+        <p>
+          React.js is a JavaScript library used for building UI. It
+          is maintained by <strong>Facebook</strong> and a community
+          of individual developers and companies.
+        </p>
+        <p>
+          React can be used as a base in the development of
+          single-page or mobile applications.
+        </p>
+      </SwitchableContainerPanel>
+      <SwitchableContainerPanel name="tab-vue">
+        <p>
+          Vue.js is an open-source JavaScript framework for building
+          user interfaces and single-page applications.
+        </p>
+        <p>
+          Vue.js features an incrementally adoptable architecture
+          that focuses on declarative rendering and component
+          composition.
+        </p>
+      </SwitchableContainerPanel>
+    </SwitchableContainers>
+  </div>
     // return <DoenetAssignmentTree treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
       // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
       const CourseOutlineFrame = styled('div')`

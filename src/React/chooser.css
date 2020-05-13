@@ -568,6 +568,14 @@ input[type=number]::-webkit-outer-spin-button {
   margin-top: 15px;
 }
 
+.switchable-toggle-container {
+  cursor: pointer;
+  display: flex;
+  min-height: 30px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 @media only screen and (max-width: 375px) {
   #chooserContainer {
     display: block;

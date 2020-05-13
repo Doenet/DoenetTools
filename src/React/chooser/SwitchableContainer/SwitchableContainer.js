@@ -1,5 +1,4 @@
 import React, { createContext, useState, useContext } from 'react';
-
 import './style.css';
 
 const SwitchableContainerContext = createContext();
@@ -7,15 +6,22 @@ const SwitchableContainerContext = createContext();
 function SwitchableContainers(props) {
   const {
     initialValue,
+    values = [],
     className = '',
     children,
     ...restProps
   } = props;
 
   const [activeContainer, changeContainer] = useState(initialValue);
-  const containerProviderValue = { activeContainer, changeContainer };
 
-  const classNames = `containers ${className}`;
+  const nextContainer = () => {
+    const nextActiveContainer = values[(values.indexOf(activeContainer) + 1) % values.length];
+    changeContainer(nextActiveContainer);
+  }
+
+  const containerProviderValue = { activeContainer, nextContainer };
+
+  const classNames = `switchable-containers ${className}`;
 
   return (
     <SwitchableContainerContext.Provider value={containerProviderValue}>
@@ -29,7 +35,7 @@ function SwitchableContainers(props) {
 function SwitchableContainerList(props) {
   const { className = '', children, ...restProps } = props;
 
-  const classNames = `container-list ${className}`;
+  const classNames = `switchable-container-list ${className}`;
 
   return (
     <div className={classNames} {...restProps}>
@@ -50,13 +56,13 @@ function SwitchableContainer(props) {
   const containerContext = useContext(SwitchableContainerContext);
 
   const classNames = `
-    container
+  switchable-container
     ${containerContext.activeContainer === name ? 'active' : ''}
     ${className}
   `;
 
   const handleClick = event => {
-    containerContext.changeContainer(name);
+    containerContext.nextContainer();
     onClick(event);
   };
 
@@ -72,7 +78,7 @@ function SwitchableContainerPanel(props) {
 
   const containerContext = useContext(SwitchableContainerContext);
 
-  const classNames = `container-panel ${className}`;
+  const classNames = `switchable-container-panel ${className}`;
 
   return (
     containerContext.activeContainer === name && (
@@ -84,7 +90,7 @@ function SwitchableContainerPanel(props) {
 }
 
 function SwitchableContainerDivider() {
-  return <div className="container-divider" />;
+  return <div className="switchable-container-divider" />;
 }
 
 SwitchableContainers.List = SwitchableContainerList;

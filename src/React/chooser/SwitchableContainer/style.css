@@ -1,20 +1,15 @@
-.containers {
-  display: grid;
-  grid-row-gap: 18px;
+.switchable-containers {
+  display: flex;
+  flex-direction: column;
 }
 
-.container-list {
+.switchable-container-list {
   display: flex;
 }
 
-.container {
+.switchable-container {
   cursor: pointer;
-  grid-row: 1;
-  display: grid;
-  grid-row-gap: 6px;
-  place-items: center;
-  padding-right: 18px;
-  font-size: 1.2em;
+  padding: 10px;
 }
 
 .container-divider {
@@ -25,10 +20,10 @@
   transition: 0.2s ease-in;
 }
 
-.container:not(.active):hover .container-divider {
+.switchable-container:not(.active):hover .switchable-container-divider {
   background-color: #777;
 }
 
-.container.active .container-divider {
+.switchable-container.active .switchable-container-divider {
   background-color: #333;
 }
