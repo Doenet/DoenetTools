@@ -74,7 +74,7 @@ export const TreeView = ({containerId, containerType, loading, parentsInfo, chil
 function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, 
   onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
    currentDraggedOverContainerId}) {
-
+  console.log(parentsInfo["root"]["childContent"])
   const getItemStyle = (currentDraggedObject, parentNodeHeadingId, currentItemId) => {
     let itemDragged = currentDraggedObject.id == currentItemId;
     let isShadow = itemDragged && 

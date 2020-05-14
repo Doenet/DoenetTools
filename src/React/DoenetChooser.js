@@ -7,7 +7,7 @@ import "./chooser.css";
 import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown, 
-  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, faLink} 
+  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, faLink, faRedoAlt} 
   from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
@@ -1224,12 +1224,12 @@ class DoenetChooser extends Component {
     // get dataObjectSource
     let dataObjectSource = {};
     if (sourceContainerType == ChooserConstants.COURSE_ASSIGNMENTS_TYPE) {
-      dataObjectSource = draggedType == "leaf" ? this.assignmentsInfo[sourceContainerId] : this.headingsInfo[sourceContainerId];
+      dataObjectSource = draggedType == "assignment" ? this.assignmentsInfo[sourceContainerId] : this.headingsInfo[sourceContainerId];
       this.containerCache = {
         ...this.containerCache,
         [sourceContainerId]: {
-          parents: JSON.parse(JSON.stringify(this.headingsInfo[sourceContainerId])), 
-          leaves: JSON.parse(JSON.stringify(this.assignmentsInfo[sourceContainerId]))
+          folders: JSON.parse(JSON.stringify(this.headingsInfo[sourceContainerId])), 
+          content: JSON.parse(JSON.stringify(this.assignmentsInfo[sourceContainerId]))
         }
       }
       
@@ -1260,7 +1260,6 @@ class DoenetChooser extends Component {
         }
       }
     }
-    console.log(dataObjectSource);
     const dataObject = dataObjectSource[draggedId];
     const sourceParentId = dataObjectSource[draggedId].parentId;
     
@@ -1276,9 +1275,9 @@ class DoenetChooser extends Component {
     // draggedType must be equal to dragOver type
     if (type != this.state.currentDraggedObject.type || id == "root") return;
 
-    const draggedOverItemInfo = type == "leaf" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
-    const headingsChildrenListKey = type == "leaf" ? "childContent" : "childFolders";
-    const currentDraggedObjectInfo = this.state.currentDraggedObject.type == "leaf" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
+    const draggedOverItemInfo = type == "assignment" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
+    const headingsChildrenListKey = type == "assignment" ? "childContent" : "childFolders";
+    const currentDraggedObjectInfo = this.state.currentDraggedObject.type == "assignment" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
 
     const draggedOverItemParentListId = draggedOverItemInfo[id]["parentId"];
     const draggedOverItemIndex = this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]
@@ -1296,9 +1295,78 @@ class DoenetChooser extends Component {
     // add the dragged item after the dragged over item
     items.splice(draggedOverItemIndex, 0, this.state.currentDraggedObject.id);
 
+    // console.log(items)
     this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey] = items;
+    // console.log(this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]);
     this.forceUpdate();
   };
+
+  // onTreeDraggableDragOver(id, type, containerId, containerType) {
+  //   // draggedType must be equal to dragOver type
+  //   if (type != this.state.currentDraggedObject.type || id == "root") return;
+
+  //   // determine data type and its corresponding data source
+  //   let draggedOverDataObjectSource = {};
+  //   let draggedOverParentDataObjectSource = {};
+  //   let headingsChildrenListKey = "";
+  //   switch(containerType) {
+  //     case ChooserConstants.COURSE_ASSIGNMENTS_TYPE:
+  //       draggedOverParentDataObjectSource = this.headingsInfo[containerId];  
+  //       draggedOverDataObjectSource = type == "assignment" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
+  //       headingsChildrenListKey = type == "assignment" ? "childContent" : "childFolders";
+  //       break;
+  //     case ChooserConstants.USER_CONTENT_TYPE:
+  //       draggedOverParentDataObjectSource = this.userFolderInfo;
+  //       draggedOverDataObjectSource = type == "content" ? this.userContentInfo : this.userFolderInfo;
+  //       headingsChildrenListKey = type == "content" ? "childContent" : "childFolders";
+  //       if (type == "url") {
+  //         draggedOverDataObjectSource = this.userUrlInfo;
+  //         headingsChildrenListKey = "childUrls";
+  //       }
+  //       break;
+  //     case ChooserConstants.COURSE_CONTENT_TYPE:
+  //       draggedOverParentDataObjectSource = this.courseFolderInfo[containerId];
+  //       draggedOverDataObjectSource = type == "content" ? this.courseContentInfo[containerId] : this.courseFolderInfo[containerId];
+  //       headingsChildrenListKey = type == "content" ? "childContent" : "childFolders";
+  //       if (type == "url") {
+  //         draggedOverDataObjectSource = this.courseUrlInfo[containerId];
+  //         headingsChildrenListKey = "childUrls";
+  //       }
+  //       break;
+  //   }
+
+  //   const draggedOverItemParentListId = draggedOverDataObjectSource[id]["parentId"];
+  //   const draggedOverItemIndex = draggedOverParentDataObjectSource[draggedOverItemParentListId][headingsChildrenListKey]
+  //     .findIndex(itemId => itemId == id);
+
+  //   const draggedItemParentListId = this.state.currentDraggedObject.dataObject["parentId"];
+
+  //   // if the item is dragged over itself, ignore
+  //   if (this.state.currentDraggedObject.id == id || draggedItemParentListId != draggedOverItemParentListId) {
+  //     return;
+  //   } 
+
+  //   // filter out the currently dragged item
+  //   const items = draggedOverParentDataObjectSource[draggedOverItemParentListId][headingsChildrenListKey].filter(itemId => itemId != this.state.currentDraggedObject.id);
+  //   // add the dragged item after the dragged over item
+  //   items.splice(draggedOverItemIndex, 0, this.state.currentDraggedObject.id);
+
+  //   // update data
+  //   switch(containerType) {
+  //     case ChooserConstants.COURSE_ASSIGNMENTS_TYPE:
+  //       // console.log(this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]);
+  //       this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey] = items;
+  //       // console.log(this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]);
+  //       break;
+  //     case ChooserConstants.USER_CONTENT_TYPE:
+  //       this.userFolderInfo[draggedOverItemParentListId][headingsChildrenListKey] = items;
+  //       break;
+  //     case ChooserConstants.COURSE_CONTENT_TYPE:
+  //       this.courseFolderInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey] = items;
+  //       break;
+  //   }
+  //   this.forceUpdate();
+  // };
 
   onTreeDropEnter (listId, containerId, containerType) {
     console.log("onTreeDropEnter")
@@ -1403,17 +1471,17 @@ class DoenetChooser extends Component {
 
   onTreeDragEnd (containerId, containerType) {
     console.log("onTreeDragEnd")
-    // dropped outsize valid dropzone
-    let currTreeHeadings = this.headingsInfo[containerId];
-    let currTreeAssignments = this.assignmentsInfo[containerId];
-    if (!this.validDrop) {
-      currTreeHeadings = this.containerCache[containerId].parents;
-      currTreeAssignments = this.containerCache[containerId].leaves;
-    }
-    // updateHeadingsAndAssignments(currTreeHeadings, currTreeAssignments);
+    // // dropped outsize valid dropzone
+    // let currTreeHeadings = this.headingsInfo[containerId];
+    // let currTreeAssignments = this.assignmentsInfo[containerId];
+    // if (!this.validDrop) {
+    //   currTreeHeadings = this.containerCache[containerId]["folders"];
+    //   currTreeAssignments = this.containerCache[containerId]["content"];
+    // }
+    // // updateHeadingsAndAssignments(currTreeHeadings, currTreeAssignments);
 
-    this.headingsInfo[containerId] = currTreeHeadings;
-    this.assignmentsInfo[containerId] = currTreeAssignments;
+    // this.headingsInfo[containerId] = currTreeHeadings;
+    // this.assignmentsInfo[containerId] = currTreeAssignments;
     this.setState({
       currentDraggedObject: {id: null, type: null, sourceContainerId: null},
     });
@@ -1424,7 +1492,6 @@ class DoenetChooser extends Component {
   }
 
   onTreeDrop (containerId, containerType) {
-    console.log(this.headingsInfo);
     console.log("onTreeDrop")
     // update courseHeadingsInfo/courseAssignmentsInfo currentDraggedObject parentId
     // remove currentDraggedObject from sourceParentId children list
@@ -1433,7 +1500,7 @@ class DoenetChooser extends Component {
     //   newCourseAssignments[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
     //   this.assignmentsInfo[containerId] = newCourseAssignments;
     // }
-    const headingsChildrenListKey = this.state.currentDraggedObject.type == "leaf" ? "childContent" : "childFolders";
+    const headingsChildrenListKey = this.state.currentDraggedObject.type == "assignment" ? "childContent" : "childFolders";
     const sourceParentChildrenList = this.headingsInfo[containerId][this.state.currentDraggedObject.sourceParentId][headingsChildrenListKey];
     
     if (this.state.currentDraggedObject.dataObject.parentId !== this.state.currentDraggedObject.sourceParentId) {
@@ -1447,7 +1514,7 @@ class DoenetChooser extends Component {
     
     // update headings
     this.headingsInfo[containerId][this.state.currentDraggedObject.sourceParentId][headingsChildrenListKey] = sourceParentChildrenList;
-    if (this.state.currentDraggedObject.type == "parent") this.headingsInfo[containerId][this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
+    if (this.state.currentDraggedObject.type == "header") this.headingsInfo[containerId][this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
     this.setState({
       currentDraggedObject: {id: null, type: null, sourceContainerId: null},
     })
@@ -1543,7 +1610,7 @@ class DoenetChooser extends Component {
       transform-origin: top left;
       margin-top: 15px;
       `
-
+    console.log("chooser rerender")
     let assignmentsTree = <div className="tree" style={{padding: "5em 2em"}}>
       <TreeView
         containerId={"aI8sK4vmEhC5sdeSP3vNW"}
@@ -1682,7 +1749,7 @@ class DoenetChooser extends Component {
             <SwitchableContainers initialValue="browser" values={["browser", "tree"]}>
               <div className="switchable-toggle-container">
                 <SwitchableContainer>
-                  <FontAwesomeIcon icon={faDotCircle} style={{fontSize:"17px"}}/>
+                  <FontAwesomeIcon icon={faRedoAlt} style={{fontSize:"17px"}}/>
                 </SwitchableContainer>  
               </div>
               <SwitchableContainerPanel name="browser">
