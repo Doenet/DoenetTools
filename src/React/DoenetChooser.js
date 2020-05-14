@@ -1271,75 +1271,19 @@ class DoenetChooser extends Component {
     this.lastDroppedContainerId = null;
   }
 
-  onTreeDraggableDragOver(id, type, containerId, containerType) {
-    // draggedType must be equal to dragOver type
-    if (type != this.state.currentDraggedObject.type || id == "root") return;
-
-    const draggedOverItemInfo = type == "assignment" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
-    const headingsChildrenListKey = type == "assignment" ? "childContent" : "childFolders";
-    const currentDraggedObjectInfo = this.state.currentDraggedObject.type == "assignment" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
-
-    const draggedOverItemParentListId = draggedOverItemInfo[id]["parentId"];
-    const draggedOverItemIndex = this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]
-      .findIndex(itemId => itemId == id);
-
-    const draggedItemParentListId = currentDraggedObjectInfo[this.state.currentDraggedObject.id]["parentId"];
-
-    // if the item is dragged over itself, ignore
-    if (this.state.currentDraggedObject.id == id || draggedItemParentListId != draggedOverItemParentListId) {
-      return;
-    } 
-
-    // filter out the currently dragged item
-    const items = this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey].filter(itemId => itemId != this.state.currentDraggedObject.id);
-    // add the dragged item after the dragged over item
-    items.splice(draggedOverItemIndex, 0, this.state.currentDraggedObject.id);
-
-    // console.log(items)
-    this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey] = items;
-    // console.log(this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]);
-    this.forceUpdate();
-  };
-
   // onTreeDraggableDragOver(id, type, containerId, containerType) {
   //   // draggedType must be equal to dragOver type
   //   if (type != this.state.currentDraggedObject.type || id == "root") return;
 
-  //   // determine data type and its corresponding data source
-  //   let draggedOverDataObjectSource = {};
-  //   let draggedOverParentDataObjectSource = {};
-  //   let headingsChildrenListKey = "";
-  //   switch(containerType) {
-  //     case ChooserConstants.COURSE_ASSIGNMENTS_TYPE:
-  //       draggedOverParentDataObjectSource = this.headingsInfo[containerId];  
-  //       draggedOverDataObjectSource = type == "assignment" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
-  //       headingsChildrenListKey = type == "assignment" ? "childContent" : "childFolders";
-  //       break;
-  //     case ChooserConstants.USER_CONTENT_TYPE:
-  //       draggedOverParentDataObjectSource = this.userFolderInfo;
-  //       draggedOverDataObjectSource = type == "content" ? this.userContentInfo : this.userFolderInfo;
-  //       headingsChildrenListKey = type == "content" ? "childContent" : "childFolders";
-  //       if (type == "url") {
-  //         draggedOverDataObjectSource = this.userUrlInfo;
-  //         headingsChildrenListKey = "childUrls";
-  //       }
-  //       break;
-  //     case ChooserConstants.COURSE_CONTENT_TYPE:
-  //       draggedOverParentDataObjectSource = this.courseFolderInfo[containerId];
-  //       draggedOverDataObjectSource = type == "content" ? this.courseContentInfo[containerId] : this.courseFolderInfo[containerId];
-  //       headingsChildrenListKey = type == "content" ? "childContent" : "childFolders";
-  //       if (type == "url") {
-  //         draggedOverDataObjectSource = this.courseUrlInfo[containerId];
-  //         headingsChildrenListKey = "childUrls";
-  //       }
-  //       break;
-  //   }
+  //   const draggedOverItemInfo = type == "assignment" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
+  //   const headingsChildrenListKey = type == "assignment" ? "childContent" : "childFolders";
+  //   const currentDraggedObjectInfo = this.state.currentDraggedObject.type == "assignment" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
 
-  //   const draggedOverItemParentListId = draggedOverDataObjectSource[id]["parentId"];
-  //   const draggedOverItemIndex = draggedOverParentDataObjectSource[draggedOverItemParentListId][headingsChildrenListKey]
+  //   const draggedOverItemParentListId = draggedOverItemInfo[id]["parentId"];
+  //   const draggedOverItemIndex = this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]
   //     .findIndex(itemId => itemId == id);
 
-  //   const draggedItemParentListId = this.state.currentDraggedObject.dataObject["parentId"];
+  //   const draggedItemParentListId = currentDraggedObjectInfo[this.state.currentDraggedObject.id]["parentId"];
 
   //   // if the item is dragged over itself, ignore
   //   if (this.state.currentDraggedObject.id == id || draggedItemParentListId != draggedOverItemParentListId) {
@@ -1347,26 +1291,84 @@ class DoenetChooser extends Component {
   //   } 
 
   //   // filter out the currently dragged item
-  //   const items = draggedOverParentDataObjectSource[draggedOverItemParentListId][headingsChildrenListKey].filter(itemId => itemId != this.state.currentDraggedObject.id);
+  //   const items = this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey].filter(itemId => itemId != this.state.currentDraggedObject.id);
   //   // add the dragged item after the dragged over item
   //   items.splice(draggedOverItemIndex, 0, this.state.currentDraggedObject.id);
 
-  //   // update data
-  //   switch(containerType) {
-  //     case ChooserConstants.COURSE_ASSIGNMENTS_TYPE:
-  //       // console.log(this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]);
-  //       this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey] = items;
-  //       // console.log(this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]);
-  //       break;
-  //     case ChooserConstants.USER_CONTENT_TYPE:
-  //       this.userFolderInfo[draggedOverItemParentListId][headingsChildrenListKey] = items;
-  //       break;
-  //     case ChooserConstants.COURSE_CONTENT_TYPE:
-  //       this.courseFolderInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey] = items;
-  //       break;
-  //   }
+  //   // console.log(items)
+  //   this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey] = items;
+  //   this.headingsInfo[containerId][draggedOverItemParentListId]["childrenList"] = items;
+  //   // console.log(this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]);
   //   this.forceUpdate();
   // };
+
+  onTreeDraggableDragOver(id, type, containerId, containerType) {
+    // draggedType must be equal to dragOver type
+    if (type != this.state.currentDraggedObject.type || id == "root") return;
+
+    // determine data type and its corresponding data source
+    let draggedOverDataObjectSource = {};
+    let draggedOverParentDataObjectSource = {};
+    let headingsChildrenListKey = "";
+    switch(containerType) {
+      case ChooserConstants.COURSE_ASSIGNMENTS_TYPE:
+        draggedOverParentDataObjectSource = this.headingsInfo[containerId];  
+        draggedOverDataObjectSource = type == "assignment" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
+        headingsChildrenListKey = type == "assignment" ? "childContent" : "childFolders";
+        break;
+      case ChooserConstants.USER_CONTENT_TYPE:
+        draggedOverParentDataObjectSource = this.userFolderInfo;
+        draggedOverDataObjectSource = type == "content" ? this.userContentInfo : this.userFolderInfo;
+        headingsChildrenListKey = type == "content" ? "childContent" : "childFolders";
+        if (type == "url") {
+          draggedOverDataObjectSource = this.userUrlInfo;
+          headingsChildrenListKey = "childUrls";
+        }
+        break;
+      case ChooserConstants.COURSE_CONTENT_TYPE:
+        draggedOverParentDataObjectSource = this.courseFolderInfo[containerId];
+        draggedOverDataObjectSource = type == "content" ? this.courseContentInfo[containerId] : this.courseFolderInfo[containerId];
+        headingsChildrenListKey = type == "content" ? "childContent" : "childFolders";
+        if (type == "url") {
+          draggedOverDataObjectSource = this.courseUrlInfo[containerId];
+          headingsChildrenListKey = "childUrls";
+        }
+        break;
+    }
+
+    const draggedOverItemParentListId = draggedOverDataObjectSource[id]["parentId"];
+    const draggedOverItemIndex = draggedOverParentDataObjectSource[draggedOverItemParentListId][headingsChildrenListKey]
+      .findIndex(itemId => itemId == id);
+
+    const draggedItemParentListId = this.state.currentDraggedObject.dataObject["parentId"];
+
+    // if the item is dragged over itself, ignore
+    if (this.state.currentDraggedObject.id == id || draggedItemParentListId != draggedOverItemParentListId) {
+      return;
+    } 
+
+    // filter out the currently dragged item
+    const items = draggedOverParentDataObjectSource[draggedOverItemParentListId][headingsChildrenListKey].filter(itemId => itemId != this.state.currentDraggedObject.id);
+    // add the dragged item after the dragged over item
+    items.splice(draggedOverItemIndex, 0, this.state.currentDraggedObject.id);
+
+    // update data
+    switch(containerType) {
+      case ChooserConstants.COURSE_ASSIGNMENTS_TYPE:
+        // console.log(this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]);
+        this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey] = items;
+        this.headingsInfo[containerId][draggedOverItemParentListId]["childrenList"] = items;
+        // console.log(this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]);
+        break;
+      case ChooserConstants.USER_CONTENT_TYPE:
+        this.userFolderInfo[draggedOverItemParentListId][headingsChildrenListKey] = items;
+        break;
+      case ChooserConstants.COURSE_CONTENT_TYPE:
+        this.courseFolderInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey] = items;
+        break;
+    }
+    this.forceUpdate();
+  };
 
   onTreeDropEnter (listId, containerId, containerType) {
     console.log("onTreeDropEnter")
