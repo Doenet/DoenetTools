@@ -11,6 +11,9 @@ body{
   flex-direction: column;
   min-height: 1vh;
   overflow: hidden;
+  /* background-color: #e3d2d2; */
+
+  /* background-color: #6de5ff; */
 }
 
 .middlepanel{
@@ -43,18 +46,29 @@ body{
 
 .resizer{
   width: 6px;
-  background-color: #f0eded;
+  /* border-left:1px solid #E3E2E2; */
+  background-color: #E3E2E2;
   position:relative;
   flex-shrink: 0;
 }
 
 .menucontent{
-  display:flex;
+  /* display:flex; */
   min-height: 40px;
   margin:0px;
-  padding:0px;
-  background-color:rgba(232,236,238,.5);
+  /* padding:10px 0px 10px 0px; */
+  /* background-color:rgba(232,236,238,.5); */
+  z-index: 3;
+  background-color: white;
+  border-bottom: 1px solid #E3E2E2;
+  align-content: space-between;
+    align-items: center;
 }
+.menuControls{
+  margin: 10px 0;
+  display: inline-block;
+}
+
 
 @media only screen and (max-width: 767px) {
   .footer-on {
@@ -77,6 +91,10 @@ body{
     background-color: black;
     width: 100%;
 } 
-
+.virtual-footer{
+  height:60px;
+  background-color:#E3E2E2;
+  ;
+}
 }
  

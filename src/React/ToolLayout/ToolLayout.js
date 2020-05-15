@@ -10,7 +10,7 @@ import './toollayout.css';
 const Container = styled.div`
   display: flex;
   position: fixed;
-  height:calc(100%-50px);
+  height:calc(100vh - 50px);
   overflow:hidden;
   z-index:0;
 `;
@@ -58,6 +58,7 @@ export default function ToolLayout(props) {
   const [leftOpenBtn, setLeftOpenBtn] = useState(false);
   const [rightOpenBtn, setRightOpenBtn] = useState(false);
   const [sliderVisible, setSliderVisible] = useState(false);
+  const [headerSectionCount, setHeaderSectionCount] = useState(1);
   const [phoneVisiblePanel, setPhoneVisiblePanel] = useState("middle");
   const [middleWidth, setMiddleWidth] = useState(middleW);
   const container = useRef();
@@ -262,8 +263,9 @@ export default function ToolLayout(props) {
     setRightWidth(rightW);
   };
 
-  const showCollapseMenu = (flag) => {
+  const showCollapseMenu = (flag, count) => {
     setSliderVisible(flag);
+    setHeaderSectionCount(count);
   }
   //Props children[0]
   let leftNavContent = props.children && Array.isArray(props.children) ? props.children[0] : props.children;
@@ -272,17 +274,18 @@ export default function ToolLayout(props) {
     hideMenu: false,
     hideCollapse: false,
     showFooter: false,
-    hideFooter: false
+    hideFooter: false,
+    headerSectionCount
   };
 
   visibilityMenuControl.hideMenu = !Array.isArray(props.children) && !leftNavContent.props.menuControls;
   visibilityMenuControl.showFooter = deviceType === "phone" && !!Array.isArray(props.children) && props.children.length > 1;
-  visibilityMenuControl.hideFooter = deviceType === "phone" && props.children.length < 2 && !Array.isArray(props.children);
+  visibilityMenuControl.hideFooter = deviceType === "phone" && !Array.isArray(props.children);
   visibilityMenuControl.sliderVisible = deviceType === "phone" && sliderVisible;
   visibilityMenuControl.hideCollapse = !Array.isArray(props.children);
 
-  let leftNav = <PlacementContext.Provider value={{ leftCloseBtn: leftCloseBtn, width: `${leftWidth}px`, position: 'left', visibilityMenuControl, leftPanelHideable }}>{leftNavContent}</PlacementContext.Provider>
-  allParts.push(<div key="part1" id="leftpanel" className="leftpanel" style={{ width: `${leftWidth}px`, display: `${leftWidth === 0 ? "none" : "flex"} ` }} >{leftNav}</div>);
+  let leftNav = <PlacementContext.Provider value={{ leftCloseBtn: leftCloseBtn, width: `${leftWidth}px`, position: 'left', visibilityMenuControl, leftPanelHideable, isResizing }}>{leftNavContent}</PlacementContext.Provider>
+  allParts.push(<div key="part1" id="leftpanel" className="leftpanel" style={{ width: `${leftWidth}px`, display: `${leftWidth === 0 ? "none" : "flex"} `}} >{leftNav}</div>);
 
   //Resizer
   if (props.children.length === 2 || props.children.length === 3) { allParts.push(<div key="resizer1" id="first" className="resizer column-resizer"></div>); }
@@ -290,7 +293,7 @@ export default function ToolLayout(props) {
   //Props children[1]
   let middleNav
   if (props.children[1]) {
-    middleNav = <PlacementContext.Provider value={{ rightOpenBtn, leftOpenBtn, position: 'middle', visibilityMenuControl, leftPanelVisible, rightPanelVisible }}> {props.children[1]}</PlacementContext.Provider>
+    middleNav = <PlacementContext.Provider value={{ rightOpenBtn, leftOpenBtn, position: 'middle', visibilityMenuControl, leftPanelVisible, rightPanelVisible,isResizing }}> {props.children[1]}</PlacementContext.Provider>
     allParts.push(<div key="part2" id="middlepanel" className="middlepanel" style={{ width: `${middleWidth}px`, display: `${middleWidth === 0 ? "none" : "flex"} ` }} >  {middleNav}</div>);
   }
 
@@ -300,7 +303,7 @@ export default function ToolLayout(props) {
   //Props children[2]
   let rightNav
   if (props.children[2]) {
-    rightNav = <PlacementContext.Provider value={{ rightCloseBtn, position: 'right', visibilityMenuControl, rightPanelHideable }}>{props.children[2]}  </PlacementContext.Provider>
+    rightNav = <PlacementContext.Provider value={{ rightCloseBtn, position: 'right', visibilityMenuControl, rightPanelHideable,isResizing }}>{props.children[2]}  </PlacementContext.Provider>
     allParts.push(<div key="part3" id="rightpanel" className="rightpanel" style={{ width: `${rightWidth}px`, display: `${rightWidth === 0 ? "none" : "flex"}` }}>{rightNav}</div>);
   }
   const footerClass = props.children.length > 1 ? 'footer-on' : 'footer-off';
