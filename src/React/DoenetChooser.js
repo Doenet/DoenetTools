@@ -45,6 +45,10 @@ class DoenetChooser extends Component {
     this.lastDroppedContainerId = null;
     this.validDrop = true;
 
+    this.courseFolderInfo = {};
+    this.courseContentInfo = {};
+    this.courseUrlInfo = {};
+
     this.loadUserContentBranches();
     this.loadUserFoldersAndRepo();
     this.loadUserUrls();
@@ -533,7 +537,7 @@ class DoenetChooser extends Component {
     .then(resp=>{
       this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchInfo);
       this.urlInfo = Object.assign({}, this.urlInfo, resp.data.urlInfo);
-      this.folderInfo = {...this.folderInfo, ...resp.data.folderInfo};
+      this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
       this.courseContentInfo = Object.assign({}, this.courseContentInfo, {[courseId]: resp.data.branchInfo});
       this.courseFolderInfo = Object.assign({}, this.courseFolderInfo, {[courseId]: resp.data.folderInfo});
       this.courseUrlInfo = Object.assign({}, this.courseUrlInfo, {[courseId]: resp.data.urlInfo});
@@ -1208,7 +1212,6 @@ class DoenetChooser extends Component {
     }
     axios.post(urlGetCode,data)
     .then(resp=>{
-      // console.log(resp.data)
     })
     .catch(error=>{this.setState({error:error})});
   }
@@ -1275,37 +1278,6 @@ class DoenetChooser extends Component {
     this.lastDroppedContainerId = null;
   }
 
-  // onTreeDraggableDragOver(id, type, containerId, containerType) {
-  //   // draggedType must be equal to dragOver type
-  //   if (type != this.state.currentDraggedObject.type || id == "root") return;
-
-  //   const draggedOverItemInfo = type == "assignment" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
-  //   const headingsChildrenListKey = type == "assignment" ? "childContent" : "childFolders";
-  //   const currentDraggedObjectInfo = this.state.currentDraggedObject.type == "assignment" ? this.assignmentsInfo[containerId] : this.headingsInfo[containerId];
-
-  //   const draggedOverItemParentListId = draggedOverItemInfo[id]["parentId"];
-  //   const draggedOverItemIndex = this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]
-  //     .findIndex(itemId => itemId == id);
-
-  //   const draggedItemParentListId = currentDraggedObjectInfo[this.state.currentDraggedObject.id]["parentId"];
-
-  //   // if the item is dragged over itself, ignore
-  //   if (this.state.currentDraggedObject.id == id || draggedItemParentListId != draggedOverItemParentListId) {
-  //     return;
-  //   } 
-
-  //   // filter out the currently dragged item
-  //   const items = this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey].filter(itemId => itemId != this.state.currentDraggedObject.id);
-  //   // add the dragged item after the dragged over item
-  //   items.splice(draggedOverItemIndex, 0, this.state.currentDraggedObject.id);
-
-  //   // console.log(items)
-  //   this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey] = items;
-  //   this.headingsInfo[containerId][draggedOverItemParentListId]["childrenList"] = items;
-  //   // console.log(this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]);
-  //   this.forceUpdate();
-  // };
-
   onTreeDraggableDragOver(id, type, containerId, containerType) {
     // draggedType must be equal to dragOver type
     if (type != this.state.currentDraggedObject.type || id == "root") return;
@@ -1370,6 +1342,7 @@ class DoenetChooser extends Component {
         break;
       case ChooserConstants.COURSE_CONTENT_TYPE:
         this.courseFolderInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey] = items;
+        // handle childrenList
         break;
     }
     this.forceUpdate();
@@ -1617,24 +1590,22 @@ class DoenetChooser extends Component {
       transform-origin: top left;
       margin-top: 15px;
       `
-    console.log("chooser rerender")
-    // let assignmentsTree = <div className="tree" style={{padding: "5em 2em"}}>
-    //   <TreeView
-    //     containerId={"aI8sK4vmEhC5sdeSP3vNW"}
-    //     containerType={ChooserConstants.COURSE_ASSIGNMENTS_TYPE}
-    //     loading={!this.assignments_and_headings_loaded}
-    //     parentsInfo={this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
-    //     childrenInfo={this.assignmentsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
-    //     currentDraggedObject={this.state.currentDraggedObject}
-    //     onDragStart={this.onTreeDragStart}
-    //     onDragEnd={this.onTreeDragEnd}
-    //     onDraggableDragOver={this.onTreeDraggableDragOver} 
-    //     onDropEnter={this.onTreeDropEnter}
-    //     onDrop={this.onTreeDrop} />
-    //   </div>
+    let assignmentsTree = <div className="tree" style={{padding: "5em 2em"}}>
+      <TreeView
+        containerId={"aI8sK4vmEhC5sdeSP3vNW"}
+        containerType={ChooserConstants.COURSE_ASSIGNMENTS_TYPE}
+        loading={!this.assignments_and_headings_loaded}
+        parentsInfo={this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
+        childrenInfo={this.assignmentsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
+        currentDraggedObject={this.state.currentDraggedObject}
+        onDragStart={this.onTreeDragStart}
+        onDragEnd={this.onTreeDragEnd}
+        onDraggableDragOver={this.onTreeDraggableDragOver} 
+        onDropEnter={this.onTreeDropEnter}
+        onDrop={this.onTreeDrop} />
+      </div>
 
     // process root folder for tree rendering
-    console.log(this.userContentReloaded)
     if (this.folders_loaded && this.branches_loaded && this.urls_loaded && this.userContentReloaded) {
       this.userContentReloaded = false;
       this.userFolderInfo["root"] = {};
@@ -1656,20 +1627,6 @@ class DoenetChooser extends Component {
       }
     }
 
-    let userTree = <div className="tree">
-      <TreeView
-        containerId={"user"}
-        containerType={ChooserConstants.USER_CONTENT_TYPE}
-        loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
-        parentsInfo={this.userFolderInfo} 
-        childrenInfo={{...this.userContentInfo, ...this.userUrlInfo}} 
-        currentDraggedObject={this.state.currentDraggedObject}
-        onDragStart={this.onTreeDragStart}
-        onDragEnd={this.onTreeDragEnd}
-        onDraggableDragOver={this.onTreeDraggableDragOver} 
-        onDropEnter={this.onTreeDropEnter}
-        onDrop={this.onTreeDrop} />
-      </div>
 
     this.buildCourseList();
     this.buildLeftNavPanel();
@@ -1700,15 +1657,43 @@ class DoenetChooser extends Component {
       let folderList = [];
       let contentList = [];
       let urlList = [];
+      let treeContainerId = "";
+      let treeContainerType = "";
+      let treeParentsInfo = {};
+      let treeChildrenInfo = {};
       if (this.state.selectedDrive == "Content" || this.state.selectedDrive == "Global") {
         folderList = this.folderIds;
         contentList = this.sort_order;
         urlList = this.urlIds;
+        treeContainerId = "user";
+        treeContainerType = ChooserConstants.USER_CONTENT_TYPE;
+        treeParentsInfo = this.userFolderInfo;
+        treeChildrenInfo = {...this.userContentInfo, ...this.userUrlInfo};
       } else if (this.state.selectedDrive == "Courses") {
         folderList = this.courseInfo[this.state.selectedCourse].folders;
         contentList = this.courseInfo[this.state.selectedCourse].content;
         urlList = this.courseInfo[this.state.selectedCourse].urls;
+        treeContainerId = this.state.selectedCourse;
+        treeContainerType = ChooserConstants.COURSE_CONTENT_TYPE;
+        treeParentsInfo = this.courseFolderInfo[this.state.selectedCourse];
+        treeChildrenInfo = {...this.courseContentInfo[this.state.selectedCourse], ...this.courseUrlInfo[this.state.selectedCourse]};
       }
+
+      this.tree = <div className="tree">
+        <TreeView
+          containerId={treeContainerId}
+          containerType={treeContainerType}
+          loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
+          parentsInfo={treeParentsInfo} 
+          childrenInfo={treeChildrenInfo} 
+          currentDraggedObject={this.state.currentDraggedObject}
+          onDragStart={this.onTreeDragStart}
+          onDragEnd={this.onTreeDragEnd}
+          onDraggableDragOver={this.onTreeDraggableDragOver} 
+          onDropEnter={this.onTreeDropEnter}
+          onDrop={this.onTreeDrop} />
+        </div>
+
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
           loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
@@ -1765,11 +1750,11 @@ class DoenetChooser extends Component {
                 { this.mainSection }     
               </SwitchableContainerPanel>
               <SwitchableContainerPanel name="tree">
-                { userTree }    
+                { this.tree }
               </SwitchableContainerPanel>
             </SwitchableContainers>
           </div>
-          {/* { assignmentsTree } */}
+          { assignmentsTree }
           {/* <InfoPanel
             selectedItems={this.state.selectedItems}
             selectedItemsType={this.state.selectedItemsType}
