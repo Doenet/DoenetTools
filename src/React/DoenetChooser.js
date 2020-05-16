@@ -56,6 +56,7 @@ class DoenetChooser extends Component {
     this.folders_loaded = false;
     this.urls_loaded = false;
     this.assignments_and_headings_loaded = false;
+    this.userContentReloaded = false;
 
     this.updateNumber = 0;
 
@@ -405,6 +406,7 @@ class DoenetChooser extends Component {
       this.userUrlInfo = resp.data.urlInfo;
       this.urlIds = resp.data.urlIds;
       this.urls_loaded = true;
+      this.userContentReloaded = true;
       callback();
       this.forceUpdate();
     });
@@ -427,6 +429,7 @@ class DoenetChooser extends Component {
       this.userContentInfo = resp.data.branchId_info;
       this.sort_order = resp.data.sort_order;
       this.branches_loaded = true;
+      this.userContentReloaded = true;
       callback();
       this.forceUpdate();
     });
@@ -653,6 +656,7 @@ class DoenetChooser extends Component {
       this.folderIds = resp.data.folderIds;
       this.userFolderInfo = resp.data.folderInfo;
       this.folders_loaded = true;
+      this.userContentReloaded = true;
       callback();
       this.forceUpdate();
     });
@@ -1355,13 +1359,14 @@ class DoenetChooser extends Component {
     // update data
     switch(containerType) {
       case ChooserConstants.COURSE_ASSIGNMENTS_TYPE:
-        // console.log(this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]);
         this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey] = items;
         this.headingsInfo[containerId][draggedOverItemParentListId]["childrenList"] = items;
-        // console.log(this.headingsInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey]);
         break;
       case ChooserConstants.USER_CONTENT_TYPE:
+        // console.log(items);
         this.userFolderInfo[draggedOverItemParentListId][headingsChildrenListKey] = items;
+        this.userFolderInfo[draggedOverItemParentListId]["childrenList"] = [...this.userFolderInfo[draggedOverItemParentListId]["childContent"], 
+        ...this.userFolderInfo[draggedOverItemParentListId]["childUrls"]];
         break;
       case ChooserConstants.COURSE_CONTENT_TYPE:
         this.courseFolderInfo[containerId][draggedOverItemParentListId][headingsChildrenListKey] = items;
@@ -1613,23 +1618,25 @@ class DoenetChooser extends Component {
       margin-top: 15px;
       `
     console.log("chooser rerender")
-    let assignmentsTree = <div className="tree" style={{padding: "5em 2em"}}>
-      <TreeView
-        containerId={"aI8sK4vmEhC5sdeSP3vNW"}
-        containerType={ChooserConstants.COURSE_ASSIGNMENTS_TYPE}
-        loading={!this.assignments_and_headings_loaded}
-        parentsInfo={this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
-        childrenInfo={this.assignmentsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
-        currentDraggedObject={this.state.currentDraggedObject}
-        onDragStart={this.onTreeDragStart}
-        onDragEnd={this.onTreeDragEnd}
-        onDraggableDragOver={this.onTreeDraggableDragOver} 
-        onDropEnter={this.onTreeDropEnter}
-        onDrop={this.onTreeDrop} />
-      </div>
+    // let assignmentsTree = <div className="tree" style={{padding: "5em 2em"}}>
+    //   <TreeView
+    //     containerId={"aI8sK4vmEhC5sdeSP3vNW"}
+    //     containerType={ChooserConstants.COURSE_ASSIGNMENTS_TYPE}
+    //     loading={!this.assignments_and_headings_loaded}
+    //     parentsInfo={this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
+    //     childrenInfo={this.assignmentsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
+    //     currentDraggedObject={this.state.currentDraggedObject}
+    //     onDragStart={this.onTreeDragStart}
+    //     onDragEnd={this.onTreeDragEnd}
+    //     onDraggableDragOver={this.onTreeDraggableDragOver} 
+    //     onDropEnter={this.onTreeDropEnter}
+    //     onDrop={this.onTreeDrop} />
+    //   </div>
 
     // process root folder for tree rendering
-    if (this.folders_loaded && this.branches_loaded && this.urls_loaded) {
+    console.log(this.userContentReloaded)
+    if (this.folders_loaded && this.branches_loaded && this.urls_loaded && this.userContentReloaded) {
+      this.userContentReloaded = false;
       this.userFolderInfo["root"] = {};
       this.userFolderInfo["root"]["childContent"] = [];
       this.userFolderInfo["root"]["childFolders"] = [];
@@ -1762,7 +1769,7 @@ class DoenetChooser extends Component {
               </SwitchableContainerPanel>
             </SwitchableContainers>
           </div>
-          { assignmentsTree }
+          {/* { assignmentsTree } */}
           {/* <InfoPanel
             selectedItems={this.state.selectedItems}
             selectedItemsType={this.state.selectedItemsType}
