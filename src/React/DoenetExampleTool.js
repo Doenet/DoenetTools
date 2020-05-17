@@ -1,55 +1,55 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
-import styled from "styled-components";
-
-const Button = styled.button`
-  width: 60px;
-  height: 25px;
-  border: 1px solid lightgrey;
-  position: relative;
-  top: 10px;
-  left: 20px;
-`;
 
 const alphabet =
   "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z ";
-export default class DoenetExampleTool extends Component {
-  render() {
-    const menuControls = [<Button>Search</Button>];
-    const menuControlsEditor = [<Button>Edit</Button>];
-    const menuControlsViewer = [<Button>Update</Button>];
+export default function DoenetExampleTool(props) {
 
-    return (
-      <>
-        <ToolLayout>
+  let [x, setX] = useState(0);
+  const menuControls = [<button >Search</button>];
+  const menuControlsEditor = [<button>Edit</button>]
+  const menuControlsViewer = [<button>Update</button>];
 
-       <ToolLayoutPanel
-            // menuControls={menuControls}
-            panelName="context"
-          >
-            {alphabet} {alphabet} {alphabet} {alphabet}
-          </ToolLayoutPanel> 
+  return (
+    <>
+      {/* ToolLayout    
+         toolName - same tool title in DoenetHeader(can send as props in anytool )
+         headingTitle - Header text in middle of Header
+         leftPanelWidth - can add width of first child of ToolLayout
+         rightPanelWidth - can add width of third child if available in ToolLayout
+      ) */}
+      <ToolLayout toolName="Example" headingTitle="Example Heading"
+      //  leftPanelWidth= '100' // !> 300
+      //  rightPanelWidth= '200' // !> 500
+      >
+        {/* ToolLayoutPanel 
+              menuControls - menu controls can be defined & send as prop
+              panelName - In phone the button container button's name label
+        */}
 
-       <ToolLayoutPanel
-            menuControls={menuControlsEditor}
-            panelName="Editor">
+        <ToolLayoutPanel key="one" menuControls={menuControls} panelName="Context Panel">
+          <div>
+            {alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}
+            <button onClick={() => setX(x + 1)}> Count</button>{x}
+            <p>test</p>
+          </div>
+        </ToolLayoutPanel>
 
-            {alphabet} {alphabet} {alphabet} {alphabet} {alphabet} {alphabet}
-            {alphabet}
-            {alphabet}
-            {alphabet}
-            {alphabet} {alphabet} {alphabet} {alphabet} {alphabet} {alphabet}
-            {alphabet}
-            {alphabet}
-            {alphabet}
-          </ToolLayoutPanel>
+        <ToolLayoutPanel key="two" menuControls={menuControlsEditor} panelName="Editor">
+          <div>
+            {alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}
+          </div>
+        </ToolLayoutPanel>
 
-          {/* <ToolLayoutPanel menuControls={menuControlsViewer} panelName="Viewer">
-            {alphabet} {alphabet} {alphabet} {alphabet}
-          </ToolLayoutPanel>  */}
-        </ToolLayout>
-      </>
-    );
-  }
+        <ToolLayoutPanel key="three" menuControls={menuControlsViewer} panelName="Viewer">
+          <div>
+            {alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}
+
+          </div>
+        </ToolLayoutPanel>
+      </ToolLayout>
+    </>
+  );
 }
+
