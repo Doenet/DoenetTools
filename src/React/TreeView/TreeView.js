@@ -4,6 +4,7 @@ import "./index.css";
 import SpinningLoader from '../SpinningLoader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faFolder, faLink} from '@fortawesome/free-solid-svg-icons';
+import ChooserConstants from "../chooser/ChooserConstants";
 
 
 export const TreeView = ({containerId, containerType, loading, parentsInfo, childrenInfo, currentDraggedObject, 
@@ -50,7 +51,6 @@ export const TreeView = ({containerId, containerType, loading, parentsInfo, chil
     </div>
   }
 
-
   return (
     <>
     { buildTreeStructure({ 
@@ -74,13 +74,11 @@ export const TreeView = ({containerId, containerType, loading, parentsInfo, chil
 function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, 
   onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
    currentDraggedOverContainerId}) {
-    // console.log(parentsInfo["root"]["childContent"])
-  // console.log(parentsInfo["root"]["childrenList"])
   const getItemStyle = (currentDraggedObject, parentNodeHeadingId, currentItemId) => {
     let itemDragged = currentDraggedObject.id == currentItemId;
     let isShadow = itemDragged && 
-      currentDraggedObject.dataObject.parent == parentNodeHeadingId &&
-      currentDraggedObject.sourceParentId != currentDraggedObject.dataObject.parent;
+      currentDraggedObject.dataObject.parentId == parentNodeHeadingId &&
+      currentDraggedObject.sourceParentId != currentDraggedObject.dataObject.parentId;
 
     if (!itemDragged) {  // item not dragged
       return ({
@@ -88,7 +86,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
         background: "none",
         padding: "0px"
       })
-    } else if (isShadow) {
+    } else if (itemDragged && isShadow) {  // copy of item
       return ({
         width: "100%",
         border: "0px",
@@ -97,7 +95,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
         color: "#fdfdfd",
         boxShadow: "0 0 3px rgba(0, 0, 0, .2)"
       })
-    } else {
+    } else {  // item itself
       return ({
         border: "2px dotted #37ceff",
         background: "#fff",
@@ -105,8 +103,8 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
       })
     }
   }
-  
   const itemType = parentsInfo[parentHeadingId]["type"];
+  const childrenList = [...parentsInfo[parentHeadingId]["childContent"], ...parentsInfo[parentHeadingId]["childUrls"]];
 
   let subTree = <ParentNode 
     id={parentHeadingId}
@@ -143,7 +141,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           currentDraggedOverContainerId: currentDraggedOverContainerId});
       })}
       { // iterate through children assigments to generate tree recursively
-      parentsInfo[parentHeadingId]["childrenList"].map((childId, index) => {
+      childrenList.map((childId, index) => {
         const itemType = childrenInfo[childId]["type"];
         
         return <LeafNode 

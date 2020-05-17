@@ -68,6 +68,9 @@ while ($row = $result->fetch_assoc()){
     $response_arr->$id->childrenId=[$row["childrenId"]];
     $response_arr->$id->childHeadings=array();
     $response_arr->$id->childAssignments=array();
+    $response_arr->$id->childFolders=array();
+    $response_arr->$id->childContent=array();
+    $response_arr->$id->childUrls=array();
     $response_arr->$id->parentId=$row["parentId"];
   }else {
     array_push($response_arr->$id->childrenId,$row["childrenId"]);    
