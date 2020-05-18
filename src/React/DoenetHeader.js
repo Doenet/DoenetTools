@@ -21,8 +21,8 @@ const ProfilePicture = styled.button`
   background-size: cover;
   transition: 300ms;
   color: #333333;
-  width:30px;
-  height:30px;
+  width:40px;
+  height:40px;
   display: inline;
   color: rgba(0, 0, 0, 0);
   justify-content: center;
@@ -30,6 +30,29 @@ const ProfilePicture = styled.button`
   border-radius: 50%;
   
 `;
+const ExtendedHeader = styled.div`
+  display: none;
+  width: 100%;
+  background-color: white;
+  z-index: 1;
+  transition: all 0.5s ease-in-out;
+  @media (max-width: 768px){
+    display: block !important;
+    &.on {
+      margin-top: 0px;
+      opacity: 1;
+    }
+     
+    &.off {
+      margin-top: ${props => '-'+props.extendedMarginOffTop+'px'};
+      opacity: 0;
+      margin-bottom: 50px;
+    }
+  }
+
+   
+`;
+
 
 class DoenetHeader extends Component {
 
@@ -42,15 +65,12 @@ class DoenetHeader extends Component {
       myProfile: {}
     }
 
-
-
     this.select = null
-
     this.updateNumber = 0;
-    this.roles = []
-
+    this.roles = [];
     this.adminAccess = 0;
     this.accessAllowed = 0;
+    this.headerSectionCount = 1;
     if (this.props.rights) {
       this.rightToView = this.props.rights.rightToView
       this.rightToEdit = this.props.rights.rightToEdit
@@ -140,7 +160,7 @@ class DoenetHeader extends Component {
 
   loadMyProfile() {
     axios
-      .get(`/api/loadMyProfile.php`)
+      .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
       .then(resp => {
         // console.dir(resp.data);
         this.setState({
@@ -243,13 +263,16 @@ class DoenetHeader extends Component {
     this.setState(prevState => ({
       sliderVisible: !prevState.sliderVisible
     }));
-    this.props.onChange(!this.state.sliderVisible);
+    this.props.onChange(!this.state.sliderVisible, this.headerSectionCount);
   }
 
 
   render() {
-    const sliderClass = this.state.sliderVisible ? 'menu-slider on' : 'menu-slider off';
-
+    const sliderClass = this.state.sliderVisible ? 'on' : 'off';
+    if (!!this.refs.extendedHeader) {
+      this.headerSectionCount = this.refs.extendedHeader.children.length;
+    }
+    const extendedMarginOffTop = (this.headerSectionCount + 1) * 50;
     let toolBox = {};
     this.toolUrl = {
       "Chooser": "/chooser/",
@@ -320,12 +343,13 @@ class DoenetHeader extends Component {
 
         </div>
 
-        <div className={sliderClass}>
-          <div className="extended-header">
-            {this.props.headingTitle && <div className="headingTitlePhone">
+        {/* <div className={sliderClass} ref='extendedHeader' style={extendedOffMargin}> */}
+        <ExtendedHeader className={sliderClass} ref='extendedHeader' extendedMarginOffTop={extendedMarginOffTop}>
+          {this.props.headingTitle && <div className="extended-header">
+            <div className="headingTitlePhone">
               <span>{this.props.headingTitle}</span>
-            </div>}
-          </div>
+            </div>
+          </div>}
 
           <div className="extended-header">
             {
@@ -346,7 +370,8 @@ class DoenetHeader extends Component {
                 </ProfilePicture>
               </div>}
           </div>
-        </div>
+          {/* </div> */}
+        </ExtendedHeader>
       </React.Fragment>
     );
   }

@@ -184,9 +184,9 @@ export default function DoenetProfile(props) {
 
   function loadMyProfile() {
     axios
-      .get(`/api/loadMyProfile.php`)
+      .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
       .then(resp => {
-        console.dir(resp.data);
+        // console.dir(resp.data);
         setMyProfile(resp.data);
       })
       .catch(err => console.error(err.response.toString()));
@@ -226,8 +226,8 @@ export default function DoenetProfile(props) {
           }`
         )
         .then(resp => {
-          console.log(`updated profile with ${f}: ${v}`);
-          console.dir(resp.data);
+          // console.log(`updated profile with ${f}: ${v}`);
+          // console.dir(resp.data);
           setMyProfile(resp.data); // because the states of all the inputs are controlled by themselves (the value/children prop is only used to initialize the element, not for updates), this will not cause a malignant race condition. This is at the loss of recieving updates when the profile is changed externally.
         })
         .catch(err => console.error(err.response.toString()));
@@ -323,7 +323,7 @@ export default function DoenetProfile(props) {
    */
 
   let toolAccess = <p>{myProfile.toolAccess.join(", ")}</p>
-  console.log(myProfile.toolAccess.length);
+  // console.log(myProfile.toolAccess.length);
   if (myProfile.toolAccess.length === 0) {
     toolAccess = <p>You have no access to tools.</p>
   }
