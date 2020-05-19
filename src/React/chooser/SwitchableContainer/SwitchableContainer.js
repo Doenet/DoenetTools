@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import './style.css';
 
 const SwitchableContainerContext = createContext();
@@ -6,6 +6,7 @@ const SwitchableContainerContext = createContext();
 function SwitchableContainers(props) {
   const {
     initialValue,
+    currentValue,
     values = [],
     className = '',
     children,
@@ -13,6 +14,10 @@ function SwitchableContainers(props) {
   } = props;
 
   const [activeContainer, changeContainer] = useState(initialValue);
+
+  useEffect(() => {
+    changeContainer(currentValue);
+  }, [currentValue])
 
   const nextContainer = () => {
     const nextActiveContainer = values[(values.indexOf(activeContainer) + 1) % values.length];

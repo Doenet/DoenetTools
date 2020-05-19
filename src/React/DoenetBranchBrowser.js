@@ -9,47 +9,8 @@ import SpinningLoader from './SpinningLoader';
 import styled from 'styled-components';
 import DropItem from "./TreeView/components/drop-item";
 import DragItem from "./TreeView/components/drag-item";
+import { formatTimestamp } from './chooser/utility';
 
-function formatTimestamp(date) {  
-  let delta = Math.round((new Date - new Date(date)) / 1000);
-
-  let minute = 60;
-  let hour = minute * 60;
-  let day = hour * 24;
-  let week = day * 7;
-  let month = 30 * day;
-  let year = 52 * week;
-
-  let result = "";
-
-  if (delta < minute) {
-    result = 'Just now';
-  } else if (delta < hour) {
-    result = Math.floor(delta / minute) + ' minute(s) ago';
-  } else if (delta < day) {
-    result = Math.floor(delta / hour) + ' hour(s) ago';
-  } else if (delta < day * 2) {
-    result = 'Yesterday';
-  } else if (delta < week) {
-    result = Math.floor(delta / day) + ' day(s) ago';
-  } else if (delta < month) {
-    let weekNumber = Math.floor(delta / week);
-    let dayNumber = Math.floor((delta - (weekNumber * week)) / day);
-    if (dayNumber !== 0) result = `${weekNumber} week(s) and ${dayNumber} day(s) ago`;
-    else result = `${weekNumber} week(s) ago`;
-  } else if (delta < year) {
-    let monthNumber = Math.floor(delta / month);
-    let dayNumber = Math.floor((delta - (monthNumber * month)) / day);
-    if (dayNumber !== 0) result = `${monthNumber} month(s) and ${dayNumber} day(s) ago`;
-    else result = `${monthNumber} month(s) ago`;
-  } else {  // years
-    let yearNumber = Math.floor(delta / year);
-    let monthNumber = Math.floor((delta - (yearNumber * year)) / month);
-    if (monthNumber !== 0) result = `${yearNumber} year(s) and ${monthNumber} month(s) ago`;
-    else result = `${yearNumber} year(s) ago`;
-  }
-  return result;
-}
 
 class DoenetBranchBrowser extends Component {
   static defaultProps = {
@@ -427,7 +388,7 @@ class DoenetBranchBrowser extends Component {
       });
       
       if (this.props.updateSelectedItems !== null) {
-        this.props.updateSelectedItems({selectedItems: currentSelectedItems, selectedItemsType: currentSelectedItemsType});
+        this.props.updateSelectedItems(currentSelectedItems, currentSelectedItemsType);
       }
     } else if (window.event.shiftKey) {
       let currentSelectedItems = this.state.selectedItems;
@@ -444,7 +405,7 @@ class DoenetBranchBrowser extends Component {
         });
 
         if (this.props.updateSelectedItems !== null) {
-          this.props.updateSelectedItems({selectedItems: [itemId], selectedItemsType: [type]});
+          this.props.updateSelectedItems([itemId], [type]);
         }
         return;
       }
@@ -484,7 +445,7 @@ class DoenetBranchBrowser extends Component {
 
 
       if (this.props.updateSelectedItems !== null) {
-        this.props.updateSelectedItems({selectedItems: currentSelectedItems, selectedItemsType: currentSelectedItemsType});
+        this.props.updateSelectedItems(currentSelectedItems, currentSelectedItemsType);
       }
     } else {
       this.setState({
@@ -493,7 +454,7 @@ class DoenetBranchBrowser extends Component {
       });
 
       if (this.props.updateSelectedItems !== null) {
-        this.props.updateSelectedItems({selectedItems: [itemId], selectedItemsType: [type]});
+        this.props.updateSelectedItems([itemId], [type]);
       }
     }    
   }
@@ -502,7 +463,7 @@ class DoenetBranchBrowser extends Component {
     if (!this.disableEditing) {
       // redirect to editor
       window.location.href=`/editor?branchId=${branchId}`;
-      this.props.updateSelectedItems({selectedItems: [branchId], selectedItemsType: ["content"]});
+      this.props.updateSelectedItems([branchId], ["content"]);
     }
   }
 
@@ -561,9 +522,9 @@ class DoenetBranchBrowser extends Component {
   }
 
   openEditUrlForm() {
-    this.props.updateSelectedItems({
-      selectedItems: [this.state.selectedItems[this.state.selectedItems.length - 1]],
-      selectedItemsType: [this.state.selectedItemsType[this.state.selectedItemsType.length - 1]]});
+    this.props.updateSelectedItems(
+      [this.state.selectedItems[this.state.selectedItems.length - 1]],
+      [this.state.selectedItemsType[this.state.selectedItemsType.length - 1]]);
     this.props.openEditUrlForm();
   }
 

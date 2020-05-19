@@ -16,11 +16,14 @@ import { TreeView } from './TreeView/TreeView';
 import styled from 'styled-components';
 import { ToastContext, useToasts, ToastProvider } from './ToastManager';
 import ChooserConstants from './chooser/ChooserConstants';
+import { formatTimestamp } from './chooser/utility';
 import {
   SwitchableContainers,
   SwitchableContainer,
   SwitchableContainerPanel,
 } from './chooser/SwitchableContainer';
+import ToolLayout from "./ToolLayout/ToolLayout";
+import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 
 
 class DoenetChooser extends Component {
@@ -38,6 +41,7 @@ class DoenetChooser extends Component {
       activeSection: "chooser",
       directoryStack: [],
       currentDraggedObject: {id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null},
+      panelsCollection: {"first": {activePanel: "browser"}}
     };
 
     this.containerCache = {};
@@ -1699,45 +1703,57 @@ class DoenetChooser extends Component {
 
    
     return (<React.Fragment>
-      <DoenetHeader toolName="Chooser" headingTitle={"Choose Branches"} />
+      {/* <DoenetHeader toolName="Chooser" headingTitle={"Choose Branches"} /> */}
       <ToastProvider>
-        <div id="chooserContainer">
-          <this.ToastWrapper/>
-          { this.leftNavPanel }
-          { this.topToolbar }
-          <div id="mainPanel">
-            <SwitchableContainers initialValue="browser" values={["browser", "tree"]}>
-              <div className="switchable-toggle-container">
-                <SwitchableContainer>
-                  <FontAwesomeIcon icon={faRedoAlt} style={{fontSize:"17px"}}/>
-                </SwitchableContainer>  
-              </div>
-              <SwitchableContainerPanel name="browser">
-                { this.mainSection }     
-              </SwitchableContainerPanel>
-              <SwitchableContainerPanel name="tree">
-                { this.tree }
-              </SwitchableContainerPanel>
-            </SwitchableContainers>
-          </div>
-          { assignmentsTree }
-          {/* <InfoPanel
-            selectedItems={this.state.selectedItems}
-            selectedItemsType={this.state.selectedItemsType}
-            selectedDrive={this.state.selectedDrive}
-            selectedCourse={this.state.selectedCourse}
-            allFolderInfo={this.folderInfo}
-            allContentInfo={this.branchId_info}
-            allUrlInfo={this.urlInfo}
-            allCourseInfo={this.courseInfo}
-            publicizeRepo={this.publicizeRepo}
-            openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
-            openEditUrlForm={() => this.toggleManageUrlForm("edit_url")} */}
-          />
-        </div>
+        <this.ToastWrapper/>
+        <ToolLayout>
+          <ToolLayoutPanel panelName="Navigation Panel">
+            { this.leftNavPanel }  
+          </ToolLayoutPanel>
+          <ToolLayoutPanel panelName="Main Panel">
+            <MainPanel 
+              panelId="first"
+              activePanel={this.state.panelsCollection["first"].activePanel}
+              browserPanel={this.mainSection}
+              treePanel={this.tree}
+            />
+          </ToolLayoutPanel>
+          <ToolLayoutPanel panelName="Info Panel">
+            <InfoPanel
+              selectedItems={this.state.selectedItems}
+              selectedItemsType={this.state.selectedItemsType}
+              selectedDrive={this.state.selectedDrive}
+              selectedCourse={this.state.selectedCourse}
+              allFolderInfo={this.folderInfo}
+              allContentInfo={this.branchId_info}
+              allUrlInfo={this.urlInfo}
+              allCourseInfo={this.courseInfo}
+              publicizeRepo={this.publicizeRepo}
+              openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
+              openEditUrlForm={() => this.toggleManageUrlForm("edit_url")}
+            />
+          </ToolLayoutPanel>
+        </ToolLayout>
+
       </ToastProvider>
     </React.Fragment>);
   }
+}
+
+const MainPanel = ({panelId, activePanel, browserPanel, treePanel}) => {
+
+  return <div className="mainPanel">
+    <SwitchableContainers initialValue="browser" currentValue={activePanel} values={["browser", "tree"]}>
+      <SwitchableContainerPanel name="browser">
+        { browserPanel }     
+      </SwitchableContainerPanel>
+      <SwitchableContainerPanel name="tree">
+        <div style={{ paddingLeft: "1em" }}>
+          { treePanel }
+        </div>
+      </SwitchableContainerPanel>
+    </SwitchableContainers>
+  </div>;
 }
 
 class CourseForm extends React.Component {
@@ -2488,8 +2504,6 @@ class InfoPanel extends Component {
             e.preventDefault();
             
             this.addUsername[selectedItemId] = e.target.value;
-            // console.log(e.target.value);
-            // console.log(this.addUsername);
 
           }}></input>
         <button onClick={()=>{
