@@ -41,7 +41,7 @@ class DoenetChooser extends Component {
       activeSection: "chooser",
       directoryStack: [],
       currentDraggedObject: {id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null},
-      panelsCollection: {"first": {activePanel: "browser"}}
+      panelsCollection: {"first": {values:["browser", "tree"], activeContainer: "browser"}}
     };
 
     this.containerCache = {};
@@ -115,6 +115,7 @@ class DoenetChooser extends Component {
     this.onBrowserDropEnter = this.onBrowserDropEnter.bind(this);
     this.onBrowserDrop = this.onBrowserDrop.bind(this);
     this.getDataSource = this.getDataSource.bind(this);
+    this.switchPanelContainer = this.switchPanelContainer.bind(this);
   }
 
   buildCourseList() {
@@ -1539,6 +1540,22 @@ class DoenetChooser extends Component {
     
   }
 
+  switchPanelContainer(panelId) {
+    const values = this.state.panelsCollection[panelId].values;
+    const currentActiveContainer = this.state.panelsCollection[panelId].activeContainer;
+    const nextActiveContainer = values[(values.indexOf(currentActiveContainer) + 1) % values.length];
+    const newPanelData = {
+      values: values,
+      activeContainer: nextActiveContainer
+    }
+    this.setState({
+      panelsCollection: {
+        ...this.state.panelsCollection,
+        [panelId]: newPanelData
+      }
+    })
+  }
+
   render(){
 
     if (!this.courses_loaded || !this.assignments_and_headings_loaded){
@@ -1649,7 +1666,7 @@ class DoenetChooser extends Component {
         treeChildrenInfo = {...this.courseContentInfo[this.state.selectedCourse], ...this.courseUrlInfo[this.state.selectedCourse]};
       }
 
-      this.tree = <div className="tree">
+      this.tree = <div className="tree" style={{ paddingLeft: "1em" }}>
         <TreeView
           containerId={treeContainerId}
           containerType={treeContainerType}
@@ -1701,6 +1718,10 @@ class DoenetChooser extends Component {
       </React.Fragment>
     }
 
+    const switchPanelButton = <button style={{background: "none", border: "none", cursor: "pointer", outline: "none"}}>
+        <FontAwesomeIcon onClick={() => this.switchPanelContainer("first")} icon={faRedoAlt} style={{fontSize:"17px"}}/>
+      </button>;
+    const mainPanelMenuControls = [switchPanelButton];
    
     return (<React.Fragment>
       {/* <DoenetHeader toolName="Chooser" headingTitle={"Choose Branches"} /> */}
@@ -1710,12 +1731,18 @@ class DoenetChooser extends Component {
           <ToolLayoutPanel panelName="Navigation Panel">
             { this.leftNavPanel }  
           </ToolLayoutPanel>
-          <ToolLayoutPanel panelName="Main Panel">
+          <ToolLayoutPanel 
+            panelName="Main Panel"
+            menuControls={mainPanelMenuControls}
+          >
             <MainPanel 
               panelId="first"
-              activePanel={this.state.panelsCollection["first"].activePanel}
-              browserPanel={this.mainSection}
-              treePanel={this.tree}
+              initialContainer="browser"
+              activeContainer={this.state.panelsCollection["first"].activeContainer}
+              containersData={[
+                { name: "browser", container: this.mainSection },
+                { name: "tree", container: this.tree },
+              ]}
             />
           </ToolLayoutPanel>
           <ToolLayoutPanel panelName="Info Panel">
@@ -1740,18 +1767,14 @@ class DoenetChooser extends Component {
   }
 }
 
-const MainPanel = ({panelId, activePanel, browserPanel, treePanel}) => {
-
+const MainPanel = ({panelId, initialContainer, activeContainer, containersData}) => {
   return <div className="mainPanel">
-    <SwitchableContainers initialValue="browser" currentValue={activePanel} values={["browser", "tree"]}>
-      <SwitchableContainerPanel name="browser">
-        { browserPanel }     
-      </SwitchableContainerPanel>
-      <SwitchableContainerPanel name="tree">
-        <div style={{ paddingLeft: "1em" }}>
-          { treePanel }
-        </div>
-      </SwitchableContainerPanel>
+    <SwitchableContainers initialValue={initialContainer} currentValue={activeContainer}>
+      {containersData.map((containerData) => {
+        return <SwitchableContainerPanel name={containerData.name}>
+          { containerData.container }     
+        </SwitchableContainerPanel>
+      })}
     </SwitchableContainers>
   </div>;
 }
