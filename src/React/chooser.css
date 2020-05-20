@@ -76,18 +76,18 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 #newContentButtonMenu {
-  position:absolute;
+  position: fixed;
   width: 225px;
   height: auto;
-  top: 2px;
-  right: 15px;
+  top: 54px;
+  left: 5px;
   background: #fff;
   border: 1px solid #ccc;
   border-color: rgba(0,0,0,.2);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
   border-radius: 2px;
   padding: 0px;
-  z-index: 1;
+  z-index: 6;
 }
 
 .newContentButtonMenuSection { 
