@@ -146,39 +146,6 @@ class DoenetChooser extends Component {
   buildLeftNavPanel() {
     this.leftNavPanel = <React.Fragment>
       <div className="leftNavPanel">
-        <div id="newContentButtonContainer">
-          <div id="newContentButton" data-cy="newContentButton" onClick={this.toggleNewButtonMenu}>
-            <FontAwesomeIcon icon={faPlus} style={{"fontSize":"25px", "color":"#43aa90"}}/>
-            <span>New</span>
-            {this.state.showNewButtonMenu && 
-              <div id="newContentButtonMenu" data-cy="newContentMenu">
-                <div className="newContentButtonMenuSection">
-                  <div className="newContentButtonMenuItem" onClick={this.handleNewDocument} data-cy="newDocumentButton">
-                    <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#a7a7a7", "marginRight":"18px"}}/>
-                    <span>DoenetML</span>
-                  </div>
-                  <div className="newContentButtonMenuItem" onClick={() => this.toggleManageUrlForm("add_url")} data-cy="newUrlButton">
-                    <FontAwesomeIcon icon={faLink} style={{"fontSize":"18px", "color":"#a7a7a7", "marginRight":"18px"}}/>
-                    <span>URL</span>
-                  </div>
-                  <div className="newContentButtonMenuItem" onClick={this.handleNewFolder} data-cy="newFolderButton">
-                    <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#a7a7a7", "marginRight":"18px"}}/>
-                    <span>Folder</span>
-                  </div>
-                  <div className="newContentButtonMenuItem" onClick={this.handleNewRepo} data-cy="newRepoButton">
-                    <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#3aac90", "marginRight":"18px"}}/>
-                    <span>Repository</span>
-                  </div>
-                </div>
-                <div className="newContentButtonMenuSection">
-                  <div className="newContentButtonMenuItem" onClick={() => this.toggleManageCourseForm("add_course")} data-cy="newCourseButton">
-                    <FontAwesomeIcon icon={faChalkboard} style={{"fontSize":"16px", "color":"#a7a7a7", "marginRight":"13px"}}/>
-                    <span>Course</span>
-                  </div>
-                </div>                
-              </div>}
-          </div>
-        </div>
         <div id="leftNavPanelMenu">
           <div className={"Content" === this.state.selectedDrive ? 
                     "leftNavPanelMenuItem activeLeftNavPanelMenuItem": "leftNavPanelMenuItem"} 
@@ -1718,17 +1685,55 @@ class DoenetChooser extends Component {
       </React.Fragment>
     }
 
+    const newItemButton = <div id="newContentButtonContainer">
+        <div id="newContentButton" data-cy="newContentButton" onClick={this.toggleNewButtonMenu}>
+        <FontAwesomeIcon icon={faPlus} style={{"fontSize":"21px", "color":"#43aa90"}}/>
+        <span>New</span>
+        {this.state.showNewButtonMenu && 
+          <div id="newContentButtonMenu" data-cy="newContentMenu">
+            <div className="newContentButtonMenuSection">
+              <div className="newContentButtonMenuItem" onClick={this.handleNewDocument} data-cy="newDocumentButton">
+                <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#a7a7a7", "marginRight":"18px"}}/>
+                <span>DoenetML</span>
+              </div>
+              <div className="newContentButtonMenuItem" onClick={() => this.toggleManageUrlForm("add_url")} data-cy="newUrlButton">
+                <FontAwesomeIcon icon={faLink} style={{"fontSize":"18px", "color":"#a7a7a7", "marginRight":"18px"}}/>
+                <span>URL</span>
+              </div>
+              <div className="newContentButtonMenuItem" onClick={this.handleNewFolder} data-cy="newFolderButton">
+                <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#a7a7a7", "marginRight":"18px"}}/>
+                <span>Folder</span>
+              </div>
+              <div className="newContentButtonMenuItem" onClick={this.handleNewRepo} data-cy="newRepoButton">
+                <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#3aac90", "marginRight":"18px"}}/>
+                <span>Repository</span>
+              </div>
+            </div>
+            <div className="newContentButtonMenuSection">
+              <div className="newContentButtonMenuItem" onClick={() => this.toggleManageCourseForm("add_course")} data-cy="newCourseButton">
+                <FontAwesomeIcon icon={faChalkboard} style={{"fontSize":"16px", "color":"#a7a7a7", "marginRight":"13px"}}/>
+                <span>Course</span>
+              </div>
+            </div>                
+          </div>}
+      </div>
+    </div>
+
     const switchPanelButton = <button style={{background: "none", border: "none", cursor: "pointer", outline: "none"}}>
         <FontAwesomeIcon onClick={() => this.switchPanelContainer("first")} icon={faRedoAlt} style={{fontSize:"17px"}}/>
       </button>;
+
+    const navigationPanelMenuControls = [newItemButton];
     const mainPanelMenuControls = [switchPanelButton];
    
     return (<React.Fragment>
-      {/* <DoenetHeader toolName="Chooser" headingTitle={"Choose Branches"} /> */}
       <ToastProvider>
         <this.ToastWrapper/>
-        <ToolLayout>
-          <ToolLayoutPanel panelName="Navigation Panel">
+        <ToolLayout toolName="Chooser">
+          <ToolLayoutPanel 
+            panelName="Navigation Panel"
+            menuControls={navigationPanelMenuControls}
+          >
             { this.leftNavPanel }  
           </ToolLayoutPanel>
           <ToolLayoutPanel 
