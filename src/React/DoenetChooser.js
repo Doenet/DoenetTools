@@ -101,7 +101,7 @@ class DoenetChooser extends Component {
     this.saveUrl = this.saveUrl.bind(this);
     this.handleNewUrlCreated = this.handleNewUrlCreated.bind(this);
     this.updateHeadingsAndAssignments = this.updateHeadingsAndAssignments.bind(this);
-    this.saveTree = this.saveTree.bind(this);
+    this.saveCourseTree = this.saveCourseTree.bind(this);
     this.ToastWrapper = this.ToastWrapper.bind(this);
     this.displayToast = this.displayToast.bind(this);
     this.onTreeDragStart = this.onTreeDragStart.bind(this);
@@ -1078,26 +1078,27 @@ class DoenetChooser extends Component {
       params: data
     }
     axios.get(url, payload).then(resp=>{
+      console.log(resp.data);
       let tempHeadingsInfo = {};
       let tempAssignmentsInfo = {};
       let tempUrlsInfo = {};
       Object.keys(resp.data).map(itemId => {
-        if (resp.data[itemId]["type"] == "header") {
+        if (resp.data[itemId]["type"] == "folder") {
           tempHeadingsInfo[itemId] = resp.data[itemId];
           tempHeadingsInfo[itemId]["type"] = "folder";
           // process children
           for (let i in resp.data[itemId]["childrenId"]) {
             let childId = resp.data[itemId]["childrenId"][i];
             if (childId == "") continue;
-            if (resp.data[childId]["type"] == "folder" || resp.data[childId]["type"] == "header") {
+            if (resp.data[childId]["type"] == "folder") {
               tempHeadingsInfo[itemId]["childFolders"].push(childId);
-            } else if (resp.data[childId]["type"] == "content" || resp.data[childId]["type"] == "assignment") {
+            } else if (resp.data[childId]["type"] == "content") {
               tempHeadingsInfo[itemId]["childContent"].push(childId);
             } else {
               tempHeadingsInfo[itemId]["childUrls"].push(childId);
             }
           }
-        } else if (resp.data[itemId]["type"] == "assignment"){
+        } else if (resp.data[itemId]["type"] == "content"){
           tempAssignmentsInfo[itemId] = resp.data[itemId];
           tempAssignmentsInfo[itemId]["type"] = "content";
         }
@@ -1114,10 +1115,10 @@ class DoenetChooser extends Component {
   updateHeadingsAndAssignments(headingsInfo, assignmentsInfo) {
     this.headingsInfo = headingsInfo;
     this.assignmentsInfo = assignmentsInfo;
-    this.saveTree(this.headingsInfo, this.assignmentsInfo);
+    this.saveCourseTree(this.headingsInfo, this.assignmentsInfo);
   }
 
-  saveTree(headingsInfo, assignmentsInfo){
+  saveCourseTree(headingsInfo, assignmentsInfo){
     let assignmentId_parentID_array = [];
     let assignmentId_array = Object.keys(assignmentsInfo)
     assignmentId_array.forEach(id=>{
@@ -1174,7 +1175,7 @@ class DoenetChooser extends Component {
         iterator+=1
       }
     })
-    const urlGetCode = '/api/saveTree.php';
+    const urlGetCode = '/api/saveCourseTree.php';
     const data = {
       assignmentId_array: assignmentId_array,
       assignmentId_parentID_array: assignmentId_parentID_array,
@@ -1533,21 +1534,7 @@ class DoenetChooser extends Component {
     
     // return <DoenetAssignmentTree treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
       // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
-      const CourseOutlineFrame = styled('div')`
-      display: flex;
-      flex-direction: row;
-      justify-content: left;
-      align-items: left;
-      text-align: left;
-      padding: 2em;
-      overflow-y: scroll;
-      overflow-x: hidden;
-      grid-row: 2 / 3;
-      grid-column: 3 / 4;
-      transform: scale(1.2);
-      transform-origin: top left;
-      margin-top: 15px;
-      `
+
     let assignmentsTree = <div className="tree" style={{padding: "5em 2em"}}>
       <TreeView
         containerId={"aI8sK4vmEhC5sdeSP3vNW"}
@@ -1729,7 +1716,10 @@ class DoenetChooser extends Component {
     return (<React.Fragment>
       <ToastProvider>
         <this.ToastWrapper/>
-        <ToolLayout toolName="Chooser">
+        <ToolLayout 
+          toolName="Chooser"
+          leftPanelWidth="235"
+          rightPanelWidth="365">
           <ToolLayoutPanel 
             panelName="Navigation Panel"
             menuControls={navigationPanelMenuControls}
