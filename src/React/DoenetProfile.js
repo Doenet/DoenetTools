@@ -227,7 +227,7 @@ export default function DoenetProfile(props) {
         )
         .then(resp => {
           // console.log(`updated profile with ${f}: ${v}`);
-          // console.dir(resp.data);
+          // console.dir(resp.data)
           setMyProfile(resp.data); // because the states of all the inputs are controlled by themselves (the value/children prop is only used to initialize the element, not for updates), this will not cause a malignant race condition. This is at the loss of recieving updates when the profile is changed externally.
         })
         .catch(err => console.error(err.response.toString()));

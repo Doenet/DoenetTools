@@ -7,9 +7,9 @@ const alphabet =
 export default function DoenetExampleTool(props) {
 
   let [x, setX] = useState(0);
-  const menuControls = [<button>Search</button>];
-  const menuControlsEditor = [<button>Edit</button>]
-  const menuControlsViewer = [<button>Update</button>];
+  const panelHeaderControls = [<button>Search</button>];
+  const panelHeaderControlsEditor = [<button>Edit</button>]
+  const panelHeaderControlsViewer = [<button>Update</button>];
 
   return (
     <>
@@ -19,16 +19,18 @@ export default function DoenetExampleTool(props) {
          leftPanelWidth - can add width of first child of ToolLayout
          rightPanelWidth - can add width of third child if available in ToolLayout
       ) */}
-      <ToolLayout toolName="Example" headingTitle="Example Heading" 
+      <ToolLayout toolName="Example" headingTitle="Example Heading" leftPanelClose={true} rightPanelClose={false}
       //  leftPanelWidth= '100' // !> 300
       //  rightPanelWidth= '200' // !> 500
+      // leftPanelClose 
+      // rightPanelClose 
       >
         {/* ToolLayoutPanel 
-              menuControls - menu controls can be defined & send as prop
+              panelHeaderControls - menu controls can be defined & send as prop
               panelName - In phone the button container button's name label
         */}
 
-        <ToolLayoutPanel key="one" menuControls={menuControls} panelName="Context Panel">
+        <ToolLayoutPanel key="one" panelHeaderControls={panelHeaderControls} panelName="Context Panel" >
           <div>
             {alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}
             <button onClick={() => setX(x + 1)}> Count</button>{x}
@@ -36,13 +38,13 @@ export default function DoenetExampleTool(props) {
           </div>
         </ToolLayoutPanel>
 
-        <ToolLayoutPanel key="two" menuControls={menuControlsEditor} panelName="Editor">
+        <ToolLayoutPanel key="two" panelHeaderControls={panelHeaderControlsEditor} panelName="Editor">
           <div>
             {alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}
           </div>
         </ToolLayoutPanel>
 
-        <ToolLayoutPanel key="three" menuControls={menuControlsViewer} panelName="Viewer">
+        <ToolLayoutPanel key="three" panelHeaderControls={panelHeaderControlsViewer} panelName="Viewer">
           <div>
             {alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}{alphabet} {alphabet} {alphabet}
 

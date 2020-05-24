@@ -4,6 +4,9 @@ body{
   margin: 0;
   overflow: hidden;
 }
+button{
+  outline:none;
+}
 
 .leftpanel{
   position: relative;
@@ -11,9 +14,6 @@ body{
   flex-direction: column;
   min-height: 1vh;
   overflow: hidden;
-  /* background-color: #e3d2d2; */
-
-  /* background-color: #6de5ff; */
 }
 
 .middlepanel{
@@ -38,6 +38,7 @@ body{
 
 .left-resizer{
   cursor: e-resize;
+
 }
 
 .right-resizer{
@@ -45,14 +46,13 @@ body{
 }
 
 .resizer{
-  width: 6px;
-  /* border-left:1px solid #E3E2E2; */
-  background-color: #E3E2E2;
+  width: 3px;
+  border-right:1px solid #E3E2E2;
+  background-color: white;
   position:relative;
   flex-shrink: 0;
 }
-
-.menucontent{
+.panels-header-content{
   /* display:flex; */
   min-height: 40px;
   margin:0px;
@@ -64,8 +64,8 @@ body{
   align-content: space-between;
     align-items: center;
 }
-.menuControls{
-  margin: 10px 0;
+.panels-header-controls{
+  margin: 10px 10px;
   display: inline-block;
 }
 
@@ -93,8 +93,21 @@ body{
 } 
 .virtual-footer{
   height:60px;
-  background-color:#E3E2E2;
   ;
+}
+.middleLeftButton{
+display: none;
+
+}
+.middleRightButton{
+  display: none;
+
+}
+.leftCloseButton{
+  display:none;
+}
+.rightCloseButton{
+  display: none;
 }
 }
  

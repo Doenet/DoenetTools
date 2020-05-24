@@ -222,6 +222,7 @@
 
 @media only screen and (max-width: 767px) {
 
+
   .menu-slider{
     display: block;
     width: 100%;
@@ -363,6 +364,7 @@
     height: 50px;
     padding: 0px;
     line-height: 0;
+    border-bottom: 0px;
   }
   .select {
     background-color: white;

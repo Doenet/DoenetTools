@@ -2,6 +2,7 @@ body {
     font-size: 14px;
     background-color: rgb(246, 248, 255);
     font-family: "Lato", "Open Sans", sans-serif;
+    font-weight: normal;
     line-height: 1.6em;
     overflow: hidden;
 }
