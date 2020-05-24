@@ -652,10 +652,9 @@ class DoenetChooser extends Component {
     }
 
     this.saveFolder(folderId, title, [], [], "insert", false, isPublic, () => {
-      // if not in base dir, add folder to current folder
-      if (this.state.directoryStack.length !== 0) {
-        let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
-        this.addContentToFolder([folderId], ["folder"], currentFolderId, () => {
+      let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
+      this.saveUserContent([folderId], ["folder"], "insert", () => {  // add to user root
+        this.addContentToFolder([folderId], ["folder"], currentFolderId, () => {  // add to folder
           this.loadUserFoldersAndRepo(() => {
             this.setState({
               selectedItems: [folderId],
@@ -666,21 +665,8 @@ class DoenetChooser extends Component {
               this.updateNumber++;
             });
           });
-        });        
-      } else {
-        this.saveUserContent([folderId], ["folder"], "insert", () => {  // add to user root
-          this.loadUserFoldersAndRepo(() => {
-            this.setState({
-              selectedItems: [folderId],
-              selectedItemsType: ["folder"],
-              activeSection: "chooser",
-              selectedDrive: "Content"
-            }, () => { 
-              this.updateNumber++;
-            });
-          });
-        });  
-      }
+        });   
+      });  
     });
   }
 
@@ -748,9 +734,6 @@ class DoenetChooser extends Component {
       // moving into folder
       //    from another root ~ set childItem.rootId = folderId.rootId
       //    from same root ~ set childItem.rootId = folderId.rootId
-      if (this.folderInfo[folderId].parentId == "root") { 
-        this.saveUserContent(childIds, childType, "remove");
-      }
       let itemIds = [];
       childIds.forEach(childId => {
           itemIds = itemIds.concat(this.flattenFolder(childId).itemIds);
@@ -784,13 +767,10 @@ class DoenetChooser extends Component {
       // within same root ~ set childItem.rootId = folderId.rootId (unchanged)
       // to diff root ~ set childItem.rootId = folderId.rootId (changed)
       // to root ~ set childItem.rootId = childItem.id
-      if (this.folderInfo[folderId].parentId == "root") {
-        this.saveUserContent(childIds, childType, "insert");
-        childIds.forEach(folderAtRoot => {
-          this.modifyFolderChildrenRoot(folderAtRoot, [].concat(this.flattenFolder(folderAtRoot).itemIds), () => {
-          });
+      childIds.forEach(folderAtRoot => {
+        this.modifyFolderChildrenRoot(folderAtRoot, [].concat(this.flattenFolder(folderAtRoot).itemIds), () => {
         });
-      }
+      });
       this.loadUserContentBranches();
       this.loadUserFoldersAndRepo();
       this.loadUserUrls();
