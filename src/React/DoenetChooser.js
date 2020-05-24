@@ -767,10 +767,15 @@ class DoenetChooser extends Component {
       // within same root ~ set childItem.rootId = folderId.rootId (unchanged)
       // to diff root ~ set childItem.rootId = folderId.rootId (changed)
       // to root ~ set childItem.rootId = childItem.id
-      childIds.forEach(folderAtRoot => {
-        this.modifyFolderChildrenRoot(folderAtRoot, [].concat(this.flattenFolder(folderAtRoot).itemIds), () => {
-        });
-      });
+      if (this.folderInfo[folderId].parentId == "root") {
+        for (let i = 0; i < childIds.length; i++) {
+          if (childType[i] == "folder") {
+            this.modifyFolderChildrenRoot(childIds[i], [].concat(this.flattenFolder(childIds[i]).itemIds));
+          } else {
+            this.modifyFolderChildrenRoot("root", [childIds[i]]);
+          }
+        }
+      }
       this.loadUserContentBranches();
       this.loadUserFoldersAndRepo();
       this.loadUserUrls();
