@@ -7,7 +7,7 @@ const alphabet =
 export default function DoenetExampleTool(props) {
 
   let [x, setX] = useState(0);
-  const menuControls = [<button >Search</button>];
+  const menuControls = [<button>Search</button>];
   const menuControlsEditor = [<button>Edit</button>]
   const menuControlsViewer = [<button>Update</button>];
 
@@ -19,7 +19,7 @@ export default function DoenetExampleTool(props) {
          leftPanelWidth - can add width of first child of ToolLayout
          rightPanelWidth - can add width of third child if available in ToolLayout
       ) */}
-      <ToolLayout toolName="Example" headingTitle="Example Heading"
+      <ToolLayout toolName="Example" headingTitle="Example Heading" 
       //  leftPanelWidth= '100' // !> 300
       //  rightPanelWidth= '200' // !> 500
       >
