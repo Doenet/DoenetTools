@@ -168,7 +168,6 @@ const DoenetAssignmentTree = React.memo(({ loading, containerId, treeHeadingsInf
     updateHeadingsAndAssignments(treeHeadings, treeAssignments);
   }
 
-
   return (
     <CourseOutlineFrame>
         <TreeView 

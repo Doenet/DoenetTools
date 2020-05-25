@@ -866,6 +866,7 @@ class DoenetCourse extends Component {
           showText:this.courseInfo[id]['courseName'],
           callBackFunction:(e)=>{ // changing
 
+        this.assignments_and_headings_loaded = false;
           this.updateNumber+=1
         this.alreadyHasCourseInfo=false
         this.alreadyLoadAssignment=[]
@@ -892,6 +893,7 @@ class DoenetCourse extends Component {
         }
         this.usingDefaultCourseId = false
         this.alreadyLoadAllCourses = false
+        this.assignments_and_headings_loaded = false;
 
   
           } 
@@ -2834,6 +2836,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     } 
     else if (this.activeSection==="assignments") {
       this.editCategoryButton=null
+      this.assignments_and_headings_loaded = false;
       console.log("loading assignment")
       
       this.assignmentIsClicked=true;
@@ -2887,8 +2890,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       })
       this.headingsInfo = Object.assign({}, this.headingsInfo, {[courseId]: tempHeadingsInfo});
       this.assignmentsInfo = Object.assign({}, this.assignmentsInfo, {[courseId]: tempAssignmentsInfo});
-      console.log(this.headingsInfo);
-      console.log(this.assignmentsInfo);
       this.assignments_and_headings_loaded = true;
       this.forceUpdate();
     }).catch(error =>{
@@ -3399,8 +3400,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 { this.assignments_and_headings_loaded && <DoenetAssignmentTree 
                       loading={!this.assignments_and_headings_loaded}
                       containerId={this.currentCourseId}
-                      treeHeadingsInfo={this.headingsInfo[this.currentCourseId]} 
-                      treeAssignmentsInfo={this.assignmentsInfo[this.currentCourseId]} 
+                      treeHeadingsInfo={this.headingsInfo[this.currentCourseId] ? this.headingsInfo[this.currentCourseId] : {}} 
+                      treeAssignmentsInfo={this.assignmentsInfo[this.currentCourseId] ? this.assignmentsInfo[this.currentCourseId] : {}} 
                       // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}
                       /> }
                 </Route>
