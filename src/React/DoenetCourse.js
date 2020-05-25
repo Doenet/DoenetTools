@@ -11,6 +11,7 @@ import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import Menu from './menu.js'
 import SelectionSet from "./Selector/SelectionSet";
+import DoenetAssignmentTree from "./DoenetAssignmentTree"
 
 import {
   HashRouter as Router, 
@@ -731,6 +732,7 @@ class DoenetCourse extends Component {
 
     this.assignmentsData = null;
     this.DoneLoading=false;
+    this.assignments_and_headings_loaded = false;
     /**
          * to construct a tree:
          * construct an array that contains objects 
@@ -791,7 +793,7 @@ class DoenetCourse extends Component {
       this.enableAssignment=false
 
 
-      this.loadAllCourses()
+    this.loadAllCourses()
 
         
     this.courseInfo = {};
@@ -829,7 +831,7 @@ class DoenetCourse extends Component {
     this.addAssignmentIdsUnderHeader = this.addAssignmentIdsUnderHeader.bind(this)
     this.axiosDeleteAssignmentFromDB = this.axiosDeleteAssignmentFromDB.bind(this)
     this.ToggleList = this.ToggleList.bind(this);
-   
+    this.loadCourseHeadingsAndAssignments = this.loadCourseHeadingsAndAssignments.bind(this);
   }
 
   loadAllCourses() {
@@ -2847,83 +2849,135 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
 
 
   }
-  makeTreeVisible({loadSpecificId}) {
-    const url_header_assignment = "/api/getHeaderAndAssignmentInfo.php";
-    this.assignment_obj = {}
-    this.heading_obj = {}
-    const data={        
-      courseId:this.currentCourseId
+
+  loadCourseHeadingsAndAssignments(courseId) {
+    this.assignments_and_headings_loaded = false;
+    const url = "/api/getHeaderAndAssignmentInfo.php";
+    const data = {
+      courseId: courseId
     }
     const payload = {
       params: data
     }
-      axios.get(url_header_assignment,payload)
-    .then (resp=>{
-      this.obj_return = resp.data;
-
-      this.alreadyMadeTree=true;
-      let iterator=0;      
-      let keys = (Object.keys(this.obj_return));
-      let length = keys.length;
-      while (iterator<length){
-        let currentId = keys[iterator];
-        let title = this.obj_return[currentId]['title'];
-        let parentId = this.obj_return[currentId]['parentId']
-        if (parentId==null || parentId=="null" || parentId==""){
-          parentId=null;
+    axios.get(url, payload).then(resp=>{
+      console.log(resp.data);
+      let tempHeadingsInfo = {};
+      let tempAssignmentsInfo = {};
+      let tempUrlsInfo = {};
+      Object.keys(resp.data).map(itemId => {
+        if (resp.data[itemId]["type"] == "folder") {
+          tempHeadingsInfo[itemId] = resp.data[itemId];
+          tempHeadingsInfo[itemId]["type"] = "folder";
+          // process children
+          for (let i in resp.data[itemId]["childrenId"]) {
+            let childId = resp.data[itemId]["childrenId"][i];
+            if (childId == "") continue;
+            if (resp.data[childId]["type"] == "folder") {
+              tempHeadingsInfo[itemId]["childFolders"].push(childId);
+            } else if (resp.data[childId]["type"] == "content") {
+              tempHeadingsInfo[itemId]["childContent"].push(childId);
+            } else {
+              tempHeadingsInfo[itemId]["childUrls"].push(childId);
+            }
+          }
+        } else if (resp.data[itemId]["type"] == "content"){
+          tempAssignmentsInfo[itemId] = resp.data[itemId];
+          tempAssignmentsInfo[itemId]["type"] = "content";
         }
-        let currentIdAttribute = this.obj_return[currentId]['type']
-        if (currentIdAttribute==='header'){
-          let childAssignments = this.obj_return[currentId]['childAssignments']
-          let childHeadings = this.obj_return[currentId]['childHeadings']
-          let childrenArray = this.obj_return[currentId]['childrenId'];
-          
-            childrenArray.forEach(element=>{
-              if (element!=null && element!=""){
-                let childAttribute = this.obj_return[element]['type']
-                if (childAttribute==="header"){
-                  childHeadings.push(element)
-                } else {
-                  childAssignments.push(element)
-                }
-              }               
-            })
-                                 
-          this.heading_obj [currentId]={title:title,type:"header",parentId:parentId,childHeadings:childHeadings,childAssignments:childAssignments}
-        } else {
-          let contentId = this.obj_return[currentId]['contentId']
-          let branchId = this.obj_return[currentId]['branchId']
-          let assignedDate = this.obj_return[currentId]['assignedDate']
-          let dueDate = this.obj_return[currentId]['dueDate']
-          let numberOfAttemptsAllowed = this.obj_return[currentId]['numberOfAttemptsAllowed']
-          this.assignment_obj [currentId]={title:title,type:"assignment",
-          parentId:parentId,branchId:branchId,contentId:contentId,
-          assignedDate:assignedDate,dueDate:dueDate,numberOfAttemptsAllowed:numberOfAttemptsAllowed
-        }
-        }
-        iterator++;
-      }
-        this.buildTreeArray()
-        this.buildTree()
-        this.alreadyHadAssignmentsIndexAndDoenetML = true
-        this.assignmentTree = (<div 
-          // className="homeActiveSectionMainTree"
-        >{this.tree}</div>);
-
-        if (this.LoadAssignmentFromTheBeginningFlag) {
-        this.loadAssignmentContent({contentId:null,branchId:null,assignmentId:loadSpecificId})
-        this.LoadAssignmentFromTheBeginningFlag=false
-        }
-        if (this.loadAssignmentFromGrade){
-        this.loadAssignmentContent({contentId:null,branchId:null,assignmentId:loadSpecificId})
-        this.loadAssignmentFromGrade=false
-        }
+      })
+      this.headingsInfo = Object.assign({}, this.headingsInfo, {[courseId]: tempHeadingsInfo});
+      this.assignmentsInfo = Object.assign({}, this.assignmentsInfo, {[courseId]: tempAssignmentsInfo});
+      console.log(this.headingsInfo);
+      console.log(this.assignmentsInfo);
+      this.assignments_and_headings_loaded = true;
       this.forceUpdate();
-      
-    }).catch(error=>{this.setState({error:error})});
-    
-    
+    }).catch(error =>{
+      this.setState({error:error})
+    }); 
   }
+
+  makeTreeVisible({loadSpecificId}) {
+    this.loadCourseHeadingsAndAssignments(this.currentCourseId);
+  }
+
+  // makeTreeVisible({loadSpecificId}) {
+  //   const url_header_assignment = "/api/getHeaderAndAssignmentInfo.php";
+  //   this.assignment_obj = {}
+  //   this.heading_obj = {}
+  //   const data={        
+  //     courseId:this.currentCourseId
+  //   }
+  //   const payload = {
+  //     params: data
+  //   }
+  //     axios.get(url_header_assignment,payload)
+  //   .then (resp=>{
+  //     this.obj_return = resp.data;
+
+  //     this.alreadyMadeTree=true;
+  //     let iterator=0;      
+  //     let keys = (Object.keys(this.obj_return));
+  //     let length = keys.length;
+  //     while (iterator<length){
+  //       let currentId = keys[iterator];
+  //       let title = this.obj_return[currentId]['title'];
+  //       let parentId = this.obj_return[currentId]['parentId']
+  //       if (parentId==null || parentId=="null" || parentId==""){
+  //         parentId=null;
+  //       }
+  //       let currentIdAttribute = this.obj_return[currentId]['type']
+  //       if (currentIdAttribute==='header'){
+  //         let childAssignments = this.obj_return[currentId]['childAssignments']
+  //         let childHeadings = this.obj_return[currentId]['childHeadings']
+  //         let childrenArray = this.obj_return[currentId]['childrenId'];
+          
+  //           childrenArray.forEach(element=>{
+  //             if (element!=null && element!=""){
+  //               let childAttribute = this.obj_return[element]['type']
+  //               if (childAttribute==="header"){
+  //                 childHeadings.push(element)
+  //               } else {
+  //                 childAssignments.push(element)
+  //               }
+  //             }               
+  //           })
+                                 
+  //         this.heading_obj [currentId]={title:title,type:"header",parentId:parentId,childHeadings:childHeadings,childAssignments:childAssignments}
+  //       } else {
+  //         let contentId = this.obj_return[currentId]['contentId']
+  //         let branchId = this.obj_return[currentId]['branchId']
+  //         let assignedDate = this.obj_return[currentId]['assignedDate']
+  //         let dueDate = this.obj_return[currentId]['dueDate']
+  //         let numberOfAttemptsAllowed = this.obj_return[currentId]['numberOfAttemptsAllowed']
+  //         this.assignment_obj [currentId]={title:title,type:"assignment",
+  //         parentId:parentId,branchId:branchId,contentId:contentId,
+  //         assignedDate:assignedDate,dueDate:dueDate,numberOfAttemptsAllowed:numberOfAttemptsAllowed
+  //       }
+  //       }
+  //       iterator++;
+  //     }
+  //       this.buildTreeArray()
+  //       this.buildTree()
+  //       this.alreadyHadAssignmentsIndexAndDoenetML = true
+  //       this.assignmentTree = (<div 
+  //         // className="homeActiveSectionMainTree"
+  //       >{this.tree}</div>);
+
+  //       if (this.LoadAssignmentFromTheBeginningFlag) {
+  //       this.loadAssignmentContent({contentId:null,branchId:null,assignmentId:loadSpecificId})
+  //       this.LoadAssignmentFromTheBeginningFlag=false
+  //       }
+  //       if (this.loadAssignmentFromGrade){
+  //       this.loadAssignmentContent({contentId:null,branchId:null,assignmentId:loadSpecificId})
+  //       this.loadAssignmentFromGrade=false
+  //       }
+  //     this.forceUpdate();
+      
+  //   }).catch(error=>{this.setState({error:error})});
+    
+    
+  // }
+
   updateLocationBar(assignmentId=this.assignmentId, activeSection=this.activeSection){
     window.location.href="/course/#/"+this.activeSection
 
@@ -3342,8 +3396,15 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 {this.loadFirstTrue}
                 </Route>
                 <Route key ="assignments" exact path='/Assignments'>
+                { this.assignments_and_headings_loaded && <DoenetAssignmentTree 
+                      loading={!this.assignments_and_headings_loaded}
+                      containerId={this.currentCourseId}
+                      treeHeadingsInfo={this.headingsInfo[this.currentCourseId]} 
+                      treeAssignmentsInfo={this.assignmentsInfo[this.currentCourseId]} 
+                      // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}
+                      /> }
                 </Route>
-                {this.tree_route}
+                {/* {this.tree_route} */}
               </Switch>
               </>
             </Router>

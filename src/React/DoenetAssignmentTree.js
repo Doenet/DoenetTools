@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { TreeView } from './TreeView/TreeView'
 
 
-const DoenetAssignmentTree = React.memo(({ containerId, treeHeadingsInfo, treeAssignmentsInfo, updateHeadingsAndAssignments }) => {
+const DoenetAssignmentTree = React.memo(({ loading, containerId, treeHeadingsInfo, treeAssignmentsInfo, updateHeadingsAndAssignments }) => {
   const [currentDraggedObject, setCurrentDraggedObject] = useState({
     id: null, 
     type: null,
@@ -27,9 +27,9 @@ const DoenetAssignmentTree = React.memo(({ containerId, treeHeadingsInfo, treeAs
   }, [treeHeadingsInfo, treeAssignmentsInfo])
 
   const onDragStart = (draggedId, draggedType, sourceContainerId) => {
-    const dataObjectSource = draggedType == "leaf" ? treeAssignments : treeHeadings;
+    const dataObjectSource = draggedType == "content" ? treeAssignments : treeHeadings;
     const dataObject = dataObjectSource[draggedId];
-    const sourceParentId = dataObjectSource[draggedId].parent;
+    const sourceParentId = dataObjectSource[draggedId].parentId;
     setValidDrop(() => false);
     setOriginalTreeHeadingsAndAssignments({
       headings: JSON.parse(JSON.stringify(treeHeadings)),
@@ -42,15 +42,15 @@ const DoenetAssignmentTree = React.memo(({ containerId, treeHeadingsInfo, treeAs
     // draggedType must be equal to dragOver type
     if (type != currentDraggedObject.type || id == "root") return;
 
-    const draggedOverItemInfo = type == "leaf" ? treeAssignments : treeHeadings;
-    const headingsChildrenListKey = type == "leaf" ? "assignmentId" : "headingId";
-    const currentDraggedObjectInfo = currentDraggedObject.type == "leaf" ? treeAssignments : treeHeadings;
+    const draggedOverItemInfo = type == "content" ? treeAssignments : treeHeadings;
+    const headingsChildrenListKey = type == "content" ? "childContent" : "childFolders";
+    const currentDraggedObjectInfo = currentDraggedObject.type == "content" ? treeAssignments : treeHeadings;
 
-    const draggedOverItemParentListId = draggedOverItemInfo[id]["parent"];
+    const draggedOverItemParentListId = draggedOverItemInfo[id]["parentId"];
     const draggedOverItemIndex = treeHeadings[draggedOverItemParentListId][headingsChildrenListKey]
       .findIndex(itemId => itemId == id);
 
-    const draggedItemParentListId = currentDraggedObjectInfo[currentDraggedObject.id]["parent"];
+    const draggedItemParentListId = currentDraggedObjectInfo[currentDraggedObject.id]["parentId"];
 
     // if the item is dragged over itself, ignore
     if (currentDraggedObject.id == id || draggedItemParentListId != draggedOverItemParentListId) {
@@ -74,12 +74,12 @@ const DoenetAssignmentTree = React.memo(({ containerId, treeHeadingsInfo, treeAs
   const onDropEnter = (listId) => {
 
     const currentDraggedObjectInfo = currentDraggedObject.dataObject;
-    const previousParentId = currentDraggedObjectInfo.parent;
+    const previousParentId = currentDraggedObjectInfo.parentId;
 
     if (previousParentId == listId || listId == currentDraggedObject.id) // prevent heading from becoming a child of itself 
       return;
     
-    const headingsChildrenListKey = currentDraggedObject.type == "leaf" ? "assignmentId" : "headingId";
+    const headingsChildrenListKey = currentDraggedObject.type == "content" ? "childContent" : "childFolders";
     const previousList = treeHeadings[previousParentId][headingsChildrenListKey];
     const currentList = treeHeadings[listId][headingsChildrenListKey];
     // remove from previous list
@@ -95,7 +95,7 @@ const DoenetAssignmentTree = React.memo(({ containerId, treeHeadingsInfo, treeAs
     }
 
     setCurrentDraggedObject((prevCurrentDraggedObject) => {
-      prevCurrentDraggedObject.dataObject.parent = listId;
+      prevCurrentDraggedObject.dataObject.parentId = listId;
       return {
         ...prevCurrentDraggedObject
       }
@@ -108,7 +108,7 @@ const DoenetAssignmentTree = React.memo(({ containerId, treeHeadingsInfo, treeAs
         ...prevHeadings
       })
     })
-    if (currentDraggedObject.type == "leaf") {
+    if (currentDraggedObject.type == "content") {
       setTreeAssignments((prevAssignments) => {
         return({
           ...prevAssignments
@@ -137,7 +137,7 @@ const DoenetAssignmentTree = React.memo(({ containerId, treeHeadingsInfo, treeAs
   const onDrop = () => {
     // update treeHeadings/treeAssignments currentDraggedObject parentId
     // remove currentDraggedObject from sourceParentId children list
-    if (currentDraggedObject.type == "leaf") {
+    if (currentDraggedObject.type == "content") {
       setTreeAssignments((prevAssignments) => {
         prevAssignments[currentDraggedObject.id] = currentDraggedObject.dataObject;
         return({
@@ -145,10 +145,10 @@ const DoenetAssignmentTree = React.memo(({ containerId, treeHeadingsInfo, treeAs
         })
       })
     }
-    const headingsChildrenListKey = currentDraggedObject.type == "leaf" ? "assignmentId" : "headingId";
+    const headingsChildrenListKey = currentDraggedObject.type == "content" ? "childContent" : "childFolders";
     const sourceParentChildrenList = treeHeadings[currentDraggedObject.sourceParentId][headingsChildrenListKey];
     
-    if (currentDraggedObject.dataObject.parent !== currentDraggedObject.sourceParentId) {
+    if (currentDraggedObject.dataObject.parentId !== currentDraggedObject.sourceParentId) {
       const indexInSourceParentChildrenList = sourceParentChildrenList.findIndex(itemId => itemId == currentDraggedObject.id);
       if (indexInSourceParentChildrenList > -1) {
         sourceParentChildrenList.splice(indexInSourceParentChildrenList, 1);
@@ -156,7 +156,7 @@ const DoenetAssignmentTree = React.memo(({ containerId, treeHeadingsInfo, treeAs
     }
     setTreeHeadings((prevHeadings) => {
       prevHeadings[currentDraggedObject.sourceParentId][headingsChildrenListKey] = sourceParentChildrenList;
-      if (currentDraggedObject.type == "parent") prevHeadings[currentDraggedObject.id] = currentDraggedObject.dataObject;
+      if (currentDraggedObject.type == "parentId") prevHeadings[currentDraggedObject.id] = currentDraggedObject.dataObject;
       return({
         ...prevHeadings
       })
@@ -168,12 +168,14 @@ const DoenetAssignmentTree = React.memo(({ containerId, treeHeadingsInfo, treeAs
     updateHeadingsAndAssignments(treeHeadings, treeAssignments);
   }
 
+
   return (
     <CourseOutlineFrame>
         <TreeView 
+          loading={loading}
           containerId={containerId}
-          headingsInfo={treeHeadings} 
-          assignmentsInfo={treeAssignments} 
+          parentsInfo={treeHeadings} 
+          childrenInfo={treeAssignments} 
           currentDraggedObject={currentDraggedObject}
           onDragStart={onDragStart}
           onDragEnd={onDragEnd}
@@ -192,17 +194,6 @@ const CourseOutlineFrame = styled('div')`
   text-align: left;
   padding: 2em;
   overflow-y: scroll;
-`
-
-const TempChooser = styled('div')`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 1px dotted #b3b3b3;
-  color: #b3b3b3;
-  background: #fff;
-  width: 25em;
-  height: 15em;
 `
 
 export default DoenetAssignmentTree;
