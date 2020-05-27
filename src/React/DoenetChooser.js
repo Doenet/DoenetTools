@@ -101,7 +101,7 @@ class DoenetChooser extends Component {
     this.saveUrl = this.saveUrl.bind(this);
     this.handleNewUrlCreated = this.handleNewUrlCreated.bind(this);
     this.updateHeadingsAndAssignments = this.updateHeadingsAndAssignments.bind(this);
-    this.saveCourseTree = this.saveCourseTree.bind(this);
+    this.saveAssignmentsTree = this.saveAssignmentsTree.bind(this);
     this.ToastWrapper = this.ToastWrapper.bind(this);
     this.displayToast = this.displayToast.bind(this);
     this.onTreeDragStart = this.onTreeDragStart.bind(this);
@@ -621,6 +621,21 @@ class DoenetChooser extends Component {
     })
   }
 
+  saveContentTree = ({folderInfo, callback=(()=>{})}) => {
+    const url='/api/saveContentTree.php';
+    const data={
+      folderInfo: folderInfo
+    }
+    axios.post(url, data)
+    .then((resp) => {
+      console.log(resp);
+      callback();
+    })
+    .catch(function (error) {
+      this.setState({error:error});
+    });
+  }
+
   loadUserFoldersAndRepo(callback=(()=>{})) {
     this.folders_loaded = false;
 
@@ -1100,10 +1115,10 @@ class DoenetChooser extends Component {
   updateHeadingsAndAssignments(headingsInfo, assignmentsInfo) {
     this.headingsInfo = headingsInfo;
     this.assignmentsInfo = assignmentsInfo;
-    this.saveCourseTree(this.headingsInfo, this.assignmentsInfo);
+    this.saveAssignmentsTree(this.headingsInfo, this.assignmentsInfo);
   }
 
-  saveCourseTree(headingsInfo, assignmentsInfo){
+  saveAssignmentsTree = ({courseId, headingsInfo, assignmentsInfo, callback=(()=>{})}) => {
     let assignmentId_parentID_array = [];
     let assignmentId_array = Object.keys(assignmentsInfo)
     assignmentId_array.forEach(id=>{
@@ -1160,7 +1175,7 @@ class DoenetChooser extends Component {
         iterator+=1
       }
     })
-    const urlGetCode = '/api/saveCourseTree.php';
+    const urlGetCode = '/api/saveTree.php';
     const data = {
       assignmentId_array: assignmentId_array,
       assignmentId_parentID_array: assignmentId_parentID_array,
@@ -1168,10 +1183,11 @@ class DoenetChooser extends Component {
       headerID_name:headerID_name,
       headerID_parentId_array_to_payload:headerID_parentId_array_to_payload,
       headerID_childrenId_array_to_payload:headerID_childrenId_array_to_payload,
-      courseId:"aI8sK4vmEhC5sdeSP3vNW"
+      courseId:courseId
     }
     axios.post(urlGetCode,data)
     .then(resp=>{
+      callback();
     })
     .catch(error=>{this.setState({error:error})});
   }
@@ -1418,7 +1434,13 @@ class DoenetChooser extends Component {
       }
     }
     
-    // updateHeadingsAndAssignments(courseHeadingsInfo, courseAssignmentsInfo);
+    this.updateTree({
+      containerType: containerType, 
+      folderInfo: data["folder"],
+      contentInfo: data["content"],
+      urlInfo: data["url"],
+      courseId: containerId
+    })
     
     // update headings
     parentDataSource[this.state.currentDraggedObject.sourceParentId][childrenListKey] = sourceParentChildrenList;
@@ -1428,6 +1450,29 @@ class DoenetChooser extends Component {
     })
     this.validDrop = true;
     this.lastDroppedContainerId = containerId;
+  }
+
+  updateTree = ({containerType, folderInfo={}, contentInfo={}, urlInfo={}, courseId=""}) => {
+    switch(containerType) {
+      case ChooserConstants.COURSE_ASSIGNMENTS_TYPE:
+        const params =
+        this.saveAssignmentsTree({courseId:courseId, headingsInfo:folderInfo, assignmentsInfo:contentInfo, callback:() => {
+          this.loadUserFoldersAndRepo();
+          this.loadUserContentBranches();
+          this.loadUserUrls();
+        }});
+        break;
+      case ChooserConstants.USER_CONTENT_TYPE:
+        this.saveContentTree({folderInfo, callback: () => {
+          this.loadUserFoldersAndRepo();
+          this.loadUserContentBranches();
+          this.loadUserUrls();
+        }} );
+        break;
+      case ChooserConstants.COURSE_CONTENT_TYPE:
+        console.log("TODO")
+        break;
+    }
   }
 
   onBrowserDragStart({draggedId, draggedType, sourceContainerId, parentsInfo, leavesInfo}) {
@@ -1694,6 +1739,10 @@ class DoenetChooser extends Component {
     const switchPanelButton = <button style={{background: "none", border: "none", cursor: "pointer", outline: "none"}}>
         <FontAwesomeIcon onClick={() => this.switchPanelContainer("first")} icon={faRedoAlt} style={{fontSize:"17px"}}/>
       </button>;
+
+    const testSaveContentTreeButton = <button style={{background: "none", border: "none", cursor: "pointer", outline: "none"}}>
+      <FontAwesomeIcon onClick={() => this.saveContentTree({folderInfo: this.userFolderInfo})} icon={faEdit} style={{fontSize:"17px"}}/>
+    </button>;
 
     const navigationPanelMenuControls = [newItemButton];
     const mainPanelMenuControls = [switchPanelButton];
