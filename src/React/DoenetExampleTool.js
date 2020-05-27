@@ -17,17 +17,21 @@ export default function DoenetExampleTool(props) {
          toolName - same tool title in DoenetHeader(can send as props in anytool )
          headingTitle - Header text in middle of Header
          leftPanelWidth - can add width of first child of ToolLayout
-         rightPanelWidth - can add width of third child if available in ToolLayout
+            leftPanelWidth= '100' && ! <= 0 && !> 300
+            
+            rightPanelWidth - can add width of third child if available in ToolLayout
+            rightPanelWidth= '200' && ! <= 0 &&  !> 500
+              
+            leftPanelClose - can be true or false or none - open or close left panel on load
+             rightPanelClose  - can be true or false or none - open or close right panel on load
       ) */}
+      
       <ToolLayout toolName="Example" headingTitle="Example Heading" leftPanelClose={true} rightPanelClose={false}
-      //  leftPanelWidth= '100' // !> 300
-      //  rightPanelWidth= '200' // !> 500
-      // leftPanelClose 
-      // rightPanelClose 
+   
       >
         {/* ToolLayoutPanel 
-              panelHeaderControls - menu controls can be defined & send as prop
-              panelName - In phone the button container button's name label
+              panelHeaderControls ( before was menuControls ) - menu controls can be defined & send as prop
+              panelName - In small screen panel button's name label
         */}
 
         <ToolLayoutPanel key="one" panelHeaderControls={panelHeaderControls} panelName="Context Panel" >
