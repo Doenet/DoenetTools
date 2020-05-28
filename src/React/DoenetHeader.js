@@ -152,9 +152,10 @@ class DoenetHeader extends Component {
       this.setState({
         myProfile: props.headerConfig
       });
-    } else {
-      this.loadMyProfile();
-    }
+    } 
+    // else {
+    //   this.loadMyProfile();
+    // }
 
   }
 
@@ -274,13 +275,7 @@ class DoenetHeader extends Component {
     }
     const extendedMarginOffTop = (this.headerSectionCount + 1) * 50;
     let toolBox = {};
-    this.toolUrl = {
-      "Chooser": "/chooser/",
-      "Course": "/course/",
-      "Documentation": "/docs/",
-      "Gradebook": "/gradebook/",
-      "Profile": "/profile",
-    }
+
 
     toolBox = this.toolTitleToLinkMap &&
 
@@ -295,15 +290,17 @@ class DoenetHeader extends Component {
                   let currentUrl = window.location.href;
                   const navLinkClassName = currentUrl.includes(this.toolTitleToLinkMap[toolName]) ?
                     "selectedToolboxNavLink" : "toolboxNavLink";
+                  const toolBoxItemsHidden = this.state.myProfile.toolAccess.indexOf(toolName) < 0;
                   return (
-                    <div className={navLinkClassName} key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolName}>
+                    !toolBoxItemsHidden && <div className={navLinkClassName} key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolName}>
                       <a href={this.toolTitleToLinkMap[toolName]}>{toolName}</a>
                     </div>
                   )
                 }
                 )}
               </div>
-              : <p>Loading</p>}
+              : ''}
+              {!this.state.myProfile.toolAccess.length && <p>Loading..!</p>}
           </Toolbox>}
       </div>
     return (

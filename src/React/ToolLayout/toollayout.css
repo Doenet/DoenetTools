@@ -4,6 +4,9 @@ body{
   margin: 0;
   overflow: hidden;
 }
+button{
+  outline:none;
+}
 
 .leftpanel{
   position: relative;
@@ -38,6 +41,7 @@ body{
 
 .left-resizer{
   cursor: e-resize;
+
 }
 
 .right-resizer{
@@ -45,16 +49,35 @@ body{
 }
 
 .resizer{
-  width: 6px;
-  /* border-left:1px solid #E3E2E2; */
-  background-color: #E3E2E2;
+  width: 3px;
+  padding-left: 1px;
+  padding-right: 1px;
   position:relative;
   flex-shrink: 0;
-}
+  background-color: white;
 
-.menucontent{
+}
+.horizontal-seperator {
+  width: 5px;
+  height: 1px;
+  background-color: #e3e2e2;
+  position: absolute;
+  top: 40px;
+  left: 0px;
+}
+.vertical-seperator {
+  height: 100%;
+  width: 1px;
+  background: #e3e2e2;
+  margin: 0 auto;
+}
+.resizer:hover{
+  background-color: #E3E2E2;
+
+}
+.panels-header-content{
   /* display:flex; */
-  min-height: 40px;
+  max-height: 40px;
   margin:0px;
   /* padding:10px 0px 10px 0px; */
   /* background-color:rgba(232,236,238,.5); */
@@ -64,9 +87,43 @@ body{
   align-content: space-between;
     align-items: center;
 }
-.menuControls{
-  margin: 10px 0;
+.panels-header-controls{
+  margin: 10px 10px;
   display: inline-block;
+}
+
+.leftCloseButton{
+  width: 25px;
+  height:25px;
+  background-color: #E3E2E2;
+  border-radius: 20px 0 0 20px;
+  margin: 8px 0 10px 0;
+  float: right;
+}
+.rightCloseButton{
+  width: 25px;
+  height:25px;
+  background-color: #E3E2E2;
+  border-radius: 0 20px 20px 0;
+  margin: 8px 0 10px 0;
+
+}
+.middleLeftButton{
+  width: 25px;
+  height:25px;
+  background-color: #E3E2E2;
+  border-radius: 0 20px 20px 0;
+  margin: 10px 0 10px 0;
+
+}
+.middleRightButton{
+  width: 25px;
+  height:25px;
+  background-color: #E3E2E2;
+  border-radius: 20px 0 0 20px;
+  margin: 10px 0 10px 0;
+  float: right;
+
 }
 
 
@@ -83,7 +140,6 @@ body{
   position: fixed;
   z-index:5;
   text-align: center;
-  background-color: darkorange;
 }
 
 .phonebutton{
@@ -91,10 +147,25 @@ body{
     background-color: black;
     width: 100%;
 } 
-.virtual-footer{
+.tool-footer{
   height:60px;
-  background-color:#E3E2E2;
   ;
 }
+
+.leftCloseButton{
+  display:none;
+}
+.rightCloseButton{
+  display: none;
+}
+.middleLeftButton{
+display: none;
+
+}
+.middleRightButton{
+  display: none;
+
+}
+
 }
  

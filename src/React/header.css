@@ -1,5 +1,3 @@
-
-
 .headingContainer{
   display: flex;
   /* position: fixed; */
@@ -50,10 +48,17 @@
   display: block;
   font-size: 20px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-y: auto;
+  /* text-overflow: ellipsis; */
   /* color: #6d4445; */
   color: #333333;
+  scrollbar-width: none; /*Firefox;*/
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  
+}
+.headingTitle span::-webkit-scrollbar{
+  display: none;
+
 }
 
 .headingToolbar {
@@ -222,6 +227,7 @@
 
 @media only screen and (max-width: 767px) {
 
+
   .menu-slider{
     display: block;
     width: 100%;
@@ -289,10 +295,16 @@
     display: block;
     font-size: 18px;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-y: auto;
     /* color: #6d4445; */
     color: #333333;
+    scrollbar-width: none; /*Firefox;*/
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    
+  }
+  .headingTitlePhone span::-webkit-scrollbar{
+    display: none;
+
   }
 
   #doenetLogo {
@@ -363,6 +375,7 @@
     height: 50px;
     padding: 0px;
     line-height: 0;
+    border-bottom: 0px;
   }
   .select {
     background-color: white;

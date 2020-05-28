@@ -1756,13 +1756,13 @@ class DoenetChooser extends Component {
           rightPanelWidth="365">
           <ToolLayoutPanel 
             panelName="Navigation Panel"
-            menuControls={navigationPanelMenuControls}
+            panelHeaderControls={navigationPanelMenuControls}
           >
             { this.leftNavPanel }  
           </ToolLayoutPanel>
           <ToolLayoutPanel 
             panelName="Main Panel"
-            menuControls={mainPanelMenuControls}
+            panelHeaderControls={mainPanelMenuControls}
           >
             <MainPanel 
               panelId="first"
