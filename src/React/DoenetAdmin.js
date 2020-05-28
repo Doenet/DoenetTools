@@ -166,33 +166,33 @@ class DoenetAdmin extends Component {
         let length = keys.length;
         while (iterator<length){
           let currentId = keys[iterator];
-          let name = this.obj_return[currentId]['name'];
-          let parent = this.obj_return[currentId]['parent']
+          let title = this.obj_return[currentId]['title'];
+          let parent = this.obj_return[currentId]['parentId']
           if (parent==null || parent=="null" || parent==""){
             parent=null;
           }
           console.log("checking..")
-          let currentIdAttribute = this.obj_return[currentId]['attribute']
+          let currentIdAttribute = this.obj_return[currentId]['type']
           console.log(currentIdAttribute)
           if (currentIdAttribute==='header'){
-            let assignmentId = this.obj_return[currentId]['headingId']
-            let headingId = this.obj_return[currentId]['assignmentId']
+            let childAssignments = this.obj_return[currentId]['childAssignments']
+            let childHeadings = this.obj_return[currentId]['childHeadings']
             let childrenArray = this.obj_return[currentId]['childrenId'];
             
               childrenArray.forEach(element=>{
                 if (element!=null && element!=""){
-                  let childAttribute = this.obj_return[element]['attribute']
+                  let childAttribute = this.obj_return[element]['type']
                   console.log("still checking..")
                   console.log(childAttribute)
                   if (childAttribute==="header"){
-                    headingId.push(element)
+                    childHeadings.push(element)
                   } else {
-                    assignmentId.push(element)
+                    childAssignments.push(element)
                   }
                 }               
               })
                                    
-            this.heading_obj [currentId]={name:name,attribute:"header",parent:parent,headingId:headingId,assignmentId:assignmentId}
+            this.heading_obj [currentId]={title:title,type:"header",parentId:parent,childHeadings:childHeadings,childAssignments:childAssignments}
           } 
           else {
             let contentId = this.obj_return[currentId]['contentId']
@@ -200,7 +200,7 @@ class DoenetAdmin extends Component {
             // let assignedDate = this.obj_return[currentId]['assignedDate']
             // let dueDate = this.obj_return[currentId]['dueDate']
             // let numberOfAttemptsAllowed = this.obj_return[currentId]['numberOfAttemptsAllowed']
-            this.assignment_obj [currentId]={name:name,attribute:"assignment",
+            this.assignment_obj [currentId]={title:title,type:"assignment",
             parent:parent,branchId:branchId,contentId:contentId,
             // assignedDate:assignedDate,dueDate:dueDate,numberOfAttemptsAllowed:numberOfAttemptsAllowed
           }
@@ -354,12 +354,12 @@ class DoenetAdmin extends Component {
 
     iterator = 0;
     // establish level 0
-    this.heading_obj["UltimateHeader"]["headingId"].forEach(element=>{
+    this.heading_obj["root"]["childHeadings"].forEach(element=>{
       element= element.toString()
       console.log("loop 1")
       console.log(this.heading_obj[element])
-      let name = this.heading_obj[element]["name"]
-      let object = {id:element,name:name,attribute:"header",level:0}
+      let title = this.heading_obj[element]["title"]
+      let object = {id:element,title:title,type:"header",level:0}
       this.makeTreeArray.unshift(object)
     })
 
@@ -373,15 +373,15 @@ class DoenetAdmin extends Component {
       let currentHeaderObject = 
       this.heading_obj[this.makeTreeArray[iterator]["id"]];
 
-      if (currentHeaderObject["headingId"]!=undefined){
-        (currentHeaderObject["headingId"]).forEach(header=>{
+      if (currentHeaderObject["childHeadings"]!=undefined){
+        (currentHeaderObject["childHeadings"]).forEach(header=>{
           header = header.toString();
           console.log("loop 2")
           console.log(this.heading_obj[header])
-            let name = this.heading_obj[header]["name"];
-            let attribute = "header"
+            let title = this.heading_obj[header]["title"];
+            let type = "header"
             let newLevel = this.makeTreeArray[iterator]["level"]+1;
-            let object = {id:header,name:name,attribute:attribute,level:newLevel}
+            let object = {id:header,title:title,type:type,level:newLevel}
             this.makeTreeArray.splice(iterator+1,0,object)
             already_built_header_id[header]=true;
           //}
@@ -394,11 +394,11 @@ class DoenetAdmin extends Component {
    // add arrow when this.enableMode==='assignment'
     iterator = 0;
     while (iterator < this.makeTreeArray.length){
-      if (this.makeTreeArray[iterator]["attribute"]==="header"){
+      if (this.makeTreeArray[iterator]["type"]==="header"){
         let indexOfHeader = this.headerId_arr.indexOf(this.makeTreeArray[iterator]["id"])
         let currentHeaderObject = 
         this.heading_obj[this.makeTreeArray[iterator]["id"]];
-      let assignment_list = currentHeaderObject["assignmentId"]
+      let assignment_list = currentHeaderObject["childAssignments"]
       console.log("assignment list..")
       console.log(assignment_list)
       if (assignment_list!=[]) {
@@ -407,10 +407,10 @@ class DoenetAdmin extends Component {
         console.log("loop 3")
         console.log(e)
         console.log(this.assignment_obj[e.toString()])
-          let name = this.assignment_obj[e.toString()]["name"];
+          let title = this.assignment_obj[e.toString()]["title"];
           let newLevel = this.makeTreeArray[iterator]["level"]+1;
-          let attribute = "assignment"
-          let object1 = {id:e.toString(),name:name,attribute:attribute,level:newLevel}
+          let type = "assignment"
+          let object1 = {id:e.toString(),title:title,type:type,level:newLevel}
           this.makeTreeArray.splice(iterator+1,0,object1)
       })
     }
@@ -446,19 +446,19 @@ buildTree(){
   let lengthChildrenOfUltimate=0
   // making space
   this.tree = [];
-  let addHeaderToTheEndOfUltimateHeader=(<span className="Section-Icon-Box">         
+  let addHeaderToTheEndOfRoot=(<span className="Section-Icon-Box">         
       <FontAwesomeIcon className="Section-Icon" 
-       onClick ={()=>{this.addNewHeaderAtTheEndUltimateHeader()}} icon={faPlus}/></span>);
+       onClick ={()=>{this.addNewHeaderAtTheEndRoot()}} icon={faPlus}/></span>);
   let addingAssignmentArray = this.AddedAssignmentObjArray 
   if (this.makeTreeArray.length>0) {
     this.makeTreeArray.forEach((element,index)=>{
-      let name = element["name"]
+      let title = element["title"]
       let level = element["level"];
       let id = element["id"]; // id of either header or assignment
-      let type = element ["attribute"]
+      let type = element ["type"]
       let headerParentId=null;
       if (type==='header'){
-        headerParentId=this.heading_obj[id]['parent']
+        headerParentId=this.heading_obj[id]['parentId']
       }
       let leftMargin = `${level*20}px`;
       let leftArrow = null;
@@ -472,20 +472,20 @@ buildTree(){
       let addingArrowUnderHeader=null;
       let contentID=null;
       let branchID=null;
-      let addHeaderPlusUnderUltimateHeader=null;
+      let addHeaderPlusUnderRoot=null;
       if (level==0) { // only header can have level 0
         if (this.enableMode==='header'){
-          addHeaderPlusUnderUltimateHeader=(<span className="Section-Icon-Box">         
+          addHeaderPlusUnderRoot=(<span className="Section-Icon-Box">         
         <FontAwesomeIcon className="Section-Icon" data-cy ="plus"
-         onClick ={()=>{this.addNewHeaderUnderUltimateHeader({headerObj:element})}} icon={faPlus}/></span>)
+         onClick ={()=>{this.addNewHeaderUnderRoot({headerObj:element})}} icon={faPlus}/></span>)
       }}
       // making up, down Arrow
       if (type==='header'){
         let id1 = element["id"];
         //console.log("id1 is "+id1)
         if (this.enableMode==='position'){
-          let myParent = this.heading_obj[id1]['parent']
-        let myParentHeadingIdArray = this.heading_obj[myParent]['headingId']
+          let myParent = this.heading_obj[id1]['parentId']
+        let myParentHeadingIdArray = this.heading_obj[myParent]['childHeadings']
         if (myParentHeadingIdArray.indexOf(id1)!=(myParentHeadingIdArray.length-1)){
           upArrow=(<span className="Section-Icon-Box">         
         <FontAwesomeIcon className="Section-Icon" data-cy={"arrowUp"+index}
@@ -503,7 +503,7 @@ buildTree(){
          onClick ={()=>{this.moveHeaderRight({headerObj:element})}} icon={faArrowRight}/></span>)
           }
           console.log(this.heading_obj[id])
-        if (this.heading_obj[id]['parent']!="UltimateHeader"){
+        if (this.heading_obj[id]['parentId']!="root"){
             leftArrow = (<span className="Section-Icon-Box">         
             <FontAwesomeIcon className="Section-Icon" data-cy={"arrowLeft"+index}
              onClick ={()=>{this.moveHeaderLeft({headerObj:element})}} icon={faArrowLeft}/></span>)
@@ -521,7 +521,7 @@ buildTree(){
         } 
         else if (this.enableMode==='assignment'){
           id = element["id"];
-          let parentId = this.heading_obj[id]['parent']
+          let parentId = this.heading_obj[id]['parentId']
           addingArrowUnderHeader=(<div style={{marginLeft:leftMargin}}><span className="Section-Icon-Box">         
           <FontAwesomeIcon className="Section-Icon" data-cy={"arrowLeft"+index}
            onClick ={
@@ -529,12 +529,12 @@ buildTree(){
            icon={faArrowLeft}/></span></div>)
         }
       }else {
-        let myParent = this.assignment_obj[id]['parent']
+        let myParent = this.assignment_obj[id]['parentId']
         ClassName = "AssignmentSelection"
         contentID = this.assignment_obj[id]['contentId']
         branchID = this.assignment_obj[id]['branchId']
         // branchID = this.assignment_obj[id]['branchId']
-        let myParentHeadingIdArray = this.heading_obj[myParent]['assignmentId']
+        let myParentHeadingIdArray = this.heading_obj[myParent]['childAssignments']
         if (this.enableMode==='position'){
           if (myParentHeadingIdArray.indexOf(id)!=((myParentHeadingIdArray.length)-1)){
             upArrow=(<span className="Section-Icon-Box">         
@@ -572,7 +572,7 @@ buildTree(){
         onClick={()=>{this.thisAssignmentInfo = id;this.loadThisAssignmentInfo()}}
         
         >
-            {name}
+            {title}
             </span>
             {leftArrow}
             {rightArrow}
@@ -583,8 +583,8 @@ buildTree(){
              </div>
       
       )
-      if (addHeaderPlusUnderUltimateHeader!=null && type==='header'){
-        this.tree.push(addHeaderPlusUnderUltimateHeader)
+      if (addHeaderPlusUnderRoot!=null && type==='header'){
+        this.tree.push(addHeaderPlusUnderRoot)
       }
       this.tree.push(tree_branch)
       if (addingArrowAfterAssignment!=null && type==='assignment'){
@@ -604,7 +604,7 @@ buildTree(){
     console.log("EMPTY TREE")
   }
   if (this.enableMode==='header'){
-    this.tree.push(addHeaderToTheEndOfUltimateHeader)
+    this.tree.push(addHeaderToTheEndOfRoot)
   }
 }
 
@@ -636,7 +636,7 @@ buildTree(){
     let assignmentId_parentID_array = [];
     let assignmentId_array = Object.keys(this.assignment_obj)
     assignmentId_array.forEach(id=>{
-      assignmentId_parentID_array.push(this.assignment_obj[id]['parent']);
+      assignmentId_parentID_array.push(this.assignment_obj[id]['parentId']);
     })
     let headerID_array = Object.keys(this.heading_obj);
     let headerID_array_to_payload = []
@@ -645,14 +645,14 @@ buildTree(){
     let headerID_name = []
     headerID_array.forEach(currentHeaderId=>{
       let currentHeaderObj=this.heading_obj[currentHeaderId]
-      let name = currentHeaderObj['name']
-      if (name==null){
-        name="NULL"
+      let title = currentHeaderObj['title']
+      if (title==null){
+        title="NULL"
       }
-      let currentHeaderObjHeadingIdArray = currentHeaderObj['headingId']
+      let currentHeaderObjHeadingIdArray = currentHeaderObj['childHeadings']
       let lengthOfHeadingId = currentHeaderObjHeadingIdArray.length
-      let currentHeaderObjAssignmentIdArray = currentHeaderObj['assignmentId']
-      let currentHeaderObjParentId = currentHeaderObj['parent']
+      let currentHeaderObjAssignmentIdArray = currentHeaderObj['childAssignments']
+      let currentHeaderObjParentId = currentHeaderObj['parentId']
       let lengthOfAssigmentId = currentHeaderObjAssignmentIdArray.length
       let iterator = 0
       if (lengthOfHeadingId==0 && lengthOfAssigmentId==0){
@@ -663,12 +663,12 @@ buildTree(){
         headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
         }
         headerID_childrenId_array_to_payload.push("NULL")
-        headerID_name.push(name);
+        headerID_name.push(title);
       }
       while (iterator < lengthOfHeadingId){
         headerID_array_to_payload.push(currentHeaderId)
         headerID_childrenId_array_to_payload.push(currentHeaderObjHeadingIdArray[iterator])
-        headerID_name.push(name);
+        headerID_name.push(title);
         if (currentHeaderObjParentId==null){
           headerID_parentId_array_to_payload.push("NULL")
         } else {
@@ -680,7 +680,7 @@ buildTree(){
       while (iterator < lengthOfAssigmentId){
         headerID_array_to_payload.push(currentHeaderId)
         headerID_childrenId_array_to_payload.push(currentHeaderObjAssignmentIdArray[iterator])
-        headerID_name.push(name);
+        headerID_name.push(title);
         if (currentHeaderObjParentId==null){
           headerID_parentId_array_to_payload.push("NULL")
         } else {
@@ -731,17 +731,17 @@ moveHeaderUp({headerObj}){
 
 let currentHeaderId = headerObj["id"]
 
-let myParentId = this.heading_obj[currentHeaderId]["parent"]
+let myParentId = this.heading_obj[currentHeaderId]["parentId"]
 let parentObj = this.heading_obj[myParentId];
 
-let currentHeaderIndexInParentHeaderIdArray = parentObj["headingId"].indexOf(currentHeaderId)
+let currentHeaderIndexInParentHeaderIdArray = parentObj["childHeadings"].indexOf(currentHeaderId)
 let previousIndex = currentHeaderIndexInParentHeaderIdArray+1;
 
-let previousId = parentObj["headingId"][previousIndex]
+let previousId = parentObj["childHeadings"][previousIndex]
 let temp = previousId;
 // swapping
-parentObj["headingId"][previousIndex]=currentHeaderId;
-parentObj["headingId"][currentHeaderIndexInParentHeaderIdArray] = temp;
+parentObj["childHeadings"][previousIndex]=currentHeaderId;
+parentObj["childHeadings"][currentHeaderIndexInParentHeaderIdArray] = temp;
 
 this.buildTreeArray();
 this.buildTree();
@@ -758,15 +758,15 @@ moveAssignmentUp({assignmentObj}){
  * swap it with the element whose index before
  */
 let currentAssignmentId = assignmentObj["id"]
-let myParentId = this.assignment_obj[currentAssignmentId]["parent"]
+let myParentId = this.assignment_obj[currentAssignmentId]["parentId"]
 let parentObj = this.heading_obj[myParentId];
-let currentHeaderIndexInParentHeaderIdArray = parentObj["assignmentId"].indexOf(currentAssignmentId)
+let currentHeaderIndexInParentHeaderIdArray = parentObj["childAssignments"].indexOf(currentAssignmentId)
 let previousIndex = currentHeaderIndexInParentHeaderIdArray+1;
-let previousId = parentObj["assignmentId"][previousIndex]
+let previousId = parentObj["childAssignments"][previousIndex]
 let temp = previousId;
 // swapping
-parentObj["assignmentId"][previousIndex]=currentAssignmentId;
-parentObj["assignmentId"][currentHeaderIndexInParentHeaderIdArray] = temp;
+parentObj["childAssignments"][previousIndex]=currentAssignmentId;
+parentObj["childAssignments"][currentHeaderIndexInParentHeaderIdArray] = temp;
 this.buildTreeArray();
 this.buildTree();
 this.forceUpdate();
@@ -782,15 +782,15 @@ moveHeaderDown({headerObj}){
    * swap it with the element whose index after
    */
 let currentHeaderId = headerObj["id"]
-let myParentId = this.heading_obj[currentHeaderId]["parent"]
+let myParentId = this.heading_obj[currentHeaderId]["parentId"]
 let parentObj = this.heading_obj[myParentId];
-let currentHeaderIndexInParentHeaderIdArray = parentObj["headingId"].indexOf(currentHeaderId)
+let currentHeaderIndexInParentHeaderIdArray = parentObj["childHeadings"].indexOf(currentHeaderId)
 let previousIndex = currentHeaderIndexInParentHeaderIdArray-1;
-let previousId = parentObj["headingId"][previousIndex]
+let previousId = parentObj["childHeadings"][previousIndex]
 let temp = previousId;
 // swapping
-parentObj["headingId"][previousIndex]=currentHeaderId;
-parentObj["headingId"][currentHeaderIndexInParentHeaderIdArray] = temp;
+parentObj["childHeadings"][previousIndex]=currentHeaderId;
+parentObj["childHeadings"][currentHeaderIndexInParentHeaderIdArray] = temp;
 this.buildTreeArray();
 this.buildTree();
 this.forceUpdate();
@@ -806,15 +806,15 @@ moveAssignmentDown({assignmentObj}){
    * swap it with the element whose index after
    */
   let currentAssignmentId = assignmentObj["id"]
-  let myParentId = this.assignment_obj[currentAssignmentId]["parent"]
+  let myParentId = this.assignment_obj[currentAssignmentId]["parentId"]
   let parentObj = this.heading_obj[myParentId];
-  let currentHeaderIndexInParentHeaderIdArray = parentObj["assignmentId"].indexOf(currentAssignmentId)
+  let currentHeaderIndexInParentHeaderIdArray = parentObj["childAssignments"].indexOf(currentAssignmentId)
   let previousIndex = currentHeaderIndexInParentHeaderIdArray-1;
-  let previousId = parentObj["assignmentId"][previousIndex]
+  let previousId = parentObj["childAssignments"][previousIndex]
   let temp = previousId;
   // swapping
-  parentObj["assignmentId"][previousIndex]=currentAssignmentId;
-  parentObj["assignmentId"][currentHeaderIndexInParentHeaderIdArray] = temp;
+  parentObj["childAssignments"][previousIndex]=currentAssignmentId;
+  parentObj["childAssignments"][currentHeaderIndexInParentHeaderIdArray] = temp;
   this.buildTreeArray();
   this.buildTree();
   this.forceUpdate();
@@ -823,24 +823,24 @@ moveAssignmentDown({assignmentObj}){
 }
 moveHeaderLeft({headerObj}){
   /**
-   * possess a left arrow when exists parent that not "UltimateHeader"
+   * possess a left arrow when exists parent that not "root"
    * get the id of the current header as currentHeaderId
    * find currentHeaderId's parentId in this.header_obj
-   * splice currentHeaderId out of currentHeaderId's parentId headingId array
+   * splice currentHeaderId out of currentHeaderId's parentId childHeadings array
    * store parentId of currentHeaderId's parentId as newParentId
-   * change currentHeaderId's parentId attribute value to newParentId
+   * change currentHeaderId's parentId type value to newParentId
    */
   let currentHeaderId = headerObj["id"]
-  let myparentId = this.heading_obj[currentHeaderId]["parent"]
-  let myNewParentId = this.heading_obj[myparentId]["parent"]
-  let myParentHeaderIdArray = this.heading_obj[myparentId]["headingId"]
+  let myparentId = this.heading_obj[currentHeaderId]["parentId"]
+  let myNewParentId = this.heading_obj[myparentId]["parentId"]
+  let myParentHeaderIdArray = this.heading_obj[myparentId]["childHeadings"]
   let currentHeaderIdIndexInsidemyParentHeaderIdArray = myParentHeaderIdArray.indexOf(currentHeaderId)
-  this.heading_obj[myparentId]["headingId"].splice(currentHeaderIdIndexInsidemyParentHeaderIdArray,1)
-  this.heading_obj[currentHeaderId]["parent"] = myNewParentId;
+  this.heading_obj[myparentId]["childHeadings"].splice(currentHeaderIdIndexInsidemyParentHeaderIdArray,1)
+  this.heading_obj[currentHeaderId]["parentId"] = myNewParentId;
   if (currentHeaderIdIndexInsidemyParentHeaderIdArray===(myParentHeaderIdArray-1)){
-    this.heading_obj[myNewParentId]["headingId"].push(currentHeaderId)   // when u last
+    this.heading_obj[myNewParentId]["childHeadings"].push(currentHeaderId)   // when u last
   }else {
-    this.heading_obj[myNewParentId]["headingId"].unshift(currentHeaderId)
+    this.heading_obj[myNewParentId]["childHeadings"].unshift(currentHeaderId)
   }
   console.log("moveHeaderLeft")
   console.log(this.heading_obj)
@@ -854,7 +854,7 @@ moveHeaderRight({headerObj}){
   /**
    * possess right arrow when my id not the only in my parentID's headerId
    * get the id of the current header as id
-   * find the next header inside the current header's parent headingId
+   * find the next header inside the current header's parent childHeadings
    * find the index of the previous header inside headerId_arr
    * continue to seek previous header by decreasing the index
    * when found a header where its level is at least current header
@@ -863,22 +863,22 @@ moveHeaderRight({headerObj}){
    * change id's parent to newParentID
    */
   let currentHeaderId = headerObj['id']
-  let myParentId = this.heading_obj[currentHeaderId]['parent']
-  let myParentHeadingIdArray = this.heading_obj[myParentId]["headingId"]
+  let myParentId = this.heading_obj[currentHeaderId]['parentId']
+  let myParentHeadingIdArray = this.heading_obj[myParentId]["childHeadings"]
   let prevHeaderIndexInsidemyParentHeadingIdArray = myParentHeadingIdArray.indexOf(currentHeaderId)+1
   if (prevHeaderIndexInsidemyParentHeadingIdArray===myParentHeadingIdArray.length){
     prevHeaderIndexInsidemyParentHeadingIdArray=myParentHeadingIdArray.indexOf(currentHeaderId)-1
   }
   let prevHeaderId = myParentHeadingIdArray[prevHeaderIndexInsidemyParentHeadingIdArray]
   let prevHeaderObj = this.heading_obj[prevHeaderId]
-  let currentHeaderIdIndexInsideParentObjHeadingIdArray = this.heading_obj[myParentId]['headingId'].indexOf(currentHeaderId)
-  if (currentHeaderIdIndexInsideParentObjHeadingIdArray==this.heading_obj[myParentId]['headingId'].length-1){
-  prevHeaderObj['headingId'].push(currentHeaderId)  // when u last
+  let currentHeaderIdIndexInsideParentObjHeadingIdArray = this.heading_obj[myParentId]['childHeadings'].indexOf(currentHeaderId)
+  if (currentHeaderIdIndexInsideParentObjHeadingIdArray==this.heading_obj[myParentId]['childHeadings'].length-1){
+  prevHeaderObj['childHeadings'].push(currentHeaderId)  // when u last
   } else {
-    prevHeaderObj['headingId'].unshift(currentHeaderId)  // when u not last
+    prevHeaderObj['childHeadings'].unshift(currentHeaderId)  // when u not last
   }
-  this.heading_obj[currentHeaderId]['parent']=prevHeaderId
-  this.heading_obj[myParentId]['headingId'].splice(currentHeaderIdIndexInsideParentObjHeadingIdArray,1)
+  this.heading_obj[currentHeaderId]['parentId']=prevHeaderId
+  this.heading_obj[myParentId]['childHeadings'].splice(currentHeaderIdIndexInsideParentObjHeadingIdArray,1)
   this.buildTreeArray();
   this.buildTree();
   this.forceUpdate();
@@ -894,21 +894,21 @@ addAssignmentIdsAfterAnAssignment({currentAssignmentId,arrayOfIncomingAssignment
    */
 
 let arr = arrayOfIncomingAssignments
-let myParentID = this.assignment_obj[currentAssignmentId]['parent'];
+let myParentID = this.assignment_obj[currentAssignmentId]['parentId'];
 let myParentObj = this.heading_obj[myParentID];
-let assignmentIdArray = myParentObj['assignmentId']
+let assignmentIdArray = myParentObj['childAssignments']
 let length = arr.length;
 let currentAssignmentIdIndexInsideParentAssignmentIdArray = 
-            myParentObj['assignmentId'].indexOf(currentAssignmentId)
+            myParentObj['childAssignments'].indexOf(currentAssignmentId)
 let addAtIndex=currentAssignmentIdIndexInsideParentAssignmentIdArray
 let iterator =0;
 while (iterator<length){
   let addedAssignmentId = arr[iterator];
   let ID = nanoid();
-  this.heading_obj[myParentID]['assignmentId'].splice(addAtIndex,0,ID)
+  this.heading_obj[myParentID]['childAssignments'].splice(addAtIndex,0,ID)
   console.log("NEW ID is.."+ID)
-  let name = "untitle assignment "+iterator;
-  this.assignment_obj [ID]={name:name,parent:myParentID,contentId:addedAssignmentId}
+  let title = "untitle assignment "+iterator;
+  this.assignment_obj [ID]={title:title,parent:myParentID,contentId:addedAssignmentId}
 iterator+=1;
 }
 // change enableMode to "position" .Adding duplicate assignmentId will break the rule of adding arrow
@@ -933,10 +933,10 @@ let iterator=arr.length-1; // last index of Adding AssignmentID
 while (iterator>=0){
   let ID = nanoid();
   console.log("NEW ID is.."+ID)
-  let name = "untitle assignment "+iterator;
-  this.assignment_obj [ID]={name:name,parent:currentHeaderId,contentId:arr[iterator]}
+  let title = "untitle assignment "+iterator;
+  this.assignment_obj [ID]={title:title,parent:currentHeaderId,contentId:arr[iterator]}
   // adding ID to currentHeaderId's assignmentId array
-  this.heading_obj[currentHeaderId]['assignmentId'].push(ID);
+  this.heading_obj[currentHeaderId]['childAssignments'].push(ID);
   iterator--;
 }
 this.buildTreeArray();
@@ -945,26 +945,26 @@ this.forceUpdate();
 this.saveTree();
 
 }
-addNewHeaderUnderUltimateHeader ({headerObj}){
+addNewHeaderUnderRoot ({headerObj}){
 let currentHeaderId = headerObj['id']
-let myParentObj = this.heading_obj["UltimateHeader"];
-let length = myParentObj['headingId'].length
+let myParentObj = this.heading_obj["root"];
+let length = myParentObj['childHeadings'].length
 let currentHeaderIdIndexInsideParentHeadingIdArray = 
-            myParentObj['headingId'].indexOf(currentHeaderId)
+            myParentObj['childHeadings'].indexOf(currentHeaderId)
 let addAtIndex=currentHeaderIdIndexInsideParentHeadingIdArray
 let ID = nanoid();
 
   if (addAtIndex===0){
     console.log("case 1")
-    this.heading_obj["UltimateHeader"]['headingId'].unshift(ID)
+    this.heading_obj["root"]['childHeadings'].unshift(ID)
   } else if (addAtIndex===(length-1)){
     console.log("case 2")
-    this.heading_obj["UltimateHeader"]['headingId'].push(ID)
+    this.heading_obj["root"]['childHeadings'].push(ID)
   } else {
     console.log("case 3")
-    this.heading_obj["UltimateHeader"]['headingId'].splice(addAtIndex+1,0,ID)
+    this.heading_obj["root"]['childHeadings'].splice(addAtIndex+1,0,ID)
   }
-  this.heading_obj [ID]={name:"untitled header",parent:"UltimateHeader",assignmentId:[],headingId:[]}
+  this.heading_obj [ID]={title:"untitled header",parentId:"root",childAssignments:[],childHeadings:[]}
 
 // change enableMode to "position" .Adding duplicate assignmentId will break the rule of adding arrow
 // as one ID can both a middle and first element at the same time
@@ -974,10 +974,10 @@ this.forceUpdate();
 this.saveTree();
 
 }
-addNewHeaderAtTheEndUltimateHeader(){
+addNewHeaderAtTheEndRoot(){
 let ID = nanoid();
-  this.heading_obj["UltimateHeader"]['headingId'].unshift(ID)
-  this.heading_obj [ID]={name:"untitled header",parent:"UltimateHeader",assignmentId:[],headingId:[]}
+  this.heading_obj["root"]['childHeadings'].unshift(ID)
+  this.heading_obj [ID]={title:"untitled header",parentId:"root",childAssignments:[],childHeadings:[]}
   this.buildTreeArray();
 this.buildTree();
 this.forceUpdate();
@@ -993,13 +993,13 @@ addNewHeaderToHeader({headerObj}){
    */
   /*Assume addedHeader is fully filled and 
   stores only {IdOfAssignment:<someID>,name:<someName>} */
-  // TODO: header can't be added under UltimateHeader
+  // TODO: header can't be added under Root
   console.log("running addNewHeaderToHeader")
   let currentHeaderId = headerObj['id']
   let newHeaderId = nanoid();
   let newHeaderName = "untitled header";
-  this.heading_obj [newHeaderId] = {name:newHeaderName,assignmentId:[],headingId:[],parent:currentHeaderId}
-  this.heading_obj[currentHeaderId]['headingId'].unshift(newHeaderId)
+  this.heading_obj [newHeaderId] = {title:newHeaderName,childAssignments:[],childHeadings:[],parentId:currentHeaderId}
+  this.heading_obj[currentHeaderId]['childHeadings'].unshift(newHeaderId)
   this.buildTreeArray();
   this.buildTree();
   this.forceUpdate();
@@ -1018,11 +1018,11 @@ let id = headerObj['id']
 let currentHeaderObject = 
       this.heading_obj[id];
 let parentId;
-//if (currentHeaderObject["parent"]!="UltimateHeader"){
-parentId = currentHeaderObject["parent"]
+//if (currentHeaderObject["parentId"]!="root"){
+parentId = currentHeaderObject["parentId"]
   
 //}
-let listOfMyAssignment = currentHeaderObject["assignmentId"]
+let listOfMyAssignment = currentHeaderObject["childAssignments"]
 let listOfDeletingAssignment = []
 listOfMyAssignment.forEach (element=>{
   listOfDeletingAssignment.push(element.toString())
@@ -1030,33 +1030,33 @@ listOfMyAssignment.forEach (element=>{
 // before deleting myself, delete all my assignment object
 this.deleteChildrenAssignment({list:listOfDeletingAssignment})
 // before deleting myself, delete all my header object
-let listOfMyHeaders = currentHeaderObject["headingId"]
+let listOfMyHeaders = currentHeaderObject["childHeadings"]
 console.log("listOfMyHeaders")
 console.log(listOfMyHeaders)
 let listOfDeletingHeader = []
 listOfMyHeaders.forEach (element=>{
   let currentChildHeaderObjID = element
-  let name = this.heading_obj[element]['name']
-  let attribute = "header"
-  let parent = this.heading_obj[element]['parent']
-  let currentChildHeaderObjHeadingId = this.heading_obj[element]["headingId"]
-  let currentChildHeaderObjAssignmentId = this.heading_obj[element]["assignmentId"]
+  let title = this.heading_obj[element]['title']
+  let type = "header"
+  let parent = this.heading_obj[element]['parentId']
+  let currentChildHeaderObjHeadingId = this.heading_obj[element]["childHeadings"]
+  let currentChildHeaderObjAssignmentId = this.heading_obj[element]["childAssignments"]
 
-  let currentChildHeaderObj = {id:currentChildHeaderObjID,name:name,attribute:attribute,parent:parent,headingId:currentChildHeaderObjHeadingId,assignmentId:currentChildHeaderObjAssignmentId}
+  let currentChildHeaderObj = {id:currentChildHeaderObjID,title:title,type:type,parent:parent,childHeadings:currentChildHeaderObjHeadingId,assignmentId:currentChildHeaderObjAssignmentId}
   this.deleteHeader({headerObj:currentChildHeaderObj})
 })
 //delete myself
 //this.heading_obj.splice(indexOfHeader,1)
 delete this.heading_obj[id]
-//if (currentHeaderObject["parent"]!="UltimateHeader"){
+//if (currentHeaderObject["parentId"]!="root"){
 // let indexOfHeaderParent = this.headerId_arr.indexOf(parentId)  
 let currentHeaderObjectParentHeadingId = 
-      this.heading_obj[parentId]["headingId"];
+      this.heading_obj[parentId]["childHeadings"];
 let indexOfCurrentHeaderInsideItsParentHeadingId = currentHeaderObjectParentHeadingId.indexOf(id)
-  this.heading_obj[parentId]["headingId"].splice(indexOfCurrentHeaderInsideItsParentHeadingId,1)
+  this.heading_obj[parentId]["childHeadings"].splice(indexOfCurrentHeaderInsideItsParentHeadingId,1)
 
 //}
-// deleting it inside the parent headingId
+// deleting it inside the parent childHeadings
 
 console.log("delete header")
 console.log(this.heading_obj)
@@ -1079,15 +1079,15 @@ list.forEach(element=>{
 deleteAssignment ({assignmentObj}){
   let id = assignmentObj['id']
   let indexOfAssignment = this.assignmentId_arr.indexOf(id)
-  let myParentId = this.assignment_obj[id]["parent"]
+  let myParentId = this.assignment_obj[id]["parentId"]
   //delete me from parent
   let indexOfHeaderParent = this.headerId_arr.indexOf(myParentId)
   let currentHeaderObjectParentAssignmentId = 
-  this.heading_obj[myParentId]["assignmentId"]
+  this.heading_obj[myParentId]["childAssignments"]
   delete this.assignment_obj[id]
   //this.assignment_obj.splice(indexOfAssignment,1)
 
-  this.heading_obj[myParentId]["assignmentId"].splice(currentHeaderObjectParentAssignmentId.indexOf(id),1)
+  this.heading_obj[myParentId]["childAssignments"].splice(currentHeaderObjectParentAssignmentId.indexOf(id),1)
   this.listOfAssignmentIdNeedDeletingFromDB = [id]
   this.axiosDeleteAssignmentFromDB({listOfAssignment:this.listOfAssignmentIdNeedDeletingFromDB})
   // here write axios called to delete one selected assignment
@@ -1165,7 +1165,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   // given contentId, get me doenetML
   if (contentId!=null && branchId!=null){
     this.selectedAssignmentId = assignmentId
-    this.assignmentName = this.assignment_obj[assignmentId]['name']
+    this.assignmentName = this.assignment_obj[assignmentId]['title']
     this.assignment_branchId = this.assignment_obj[assignmentId]['branchId']
     this.dueDate = this.assignment_obj[assignmentId]['dueDate']
     this.assignedDate = this.assignment_obj[assignmentId]['assignedDate']
@@ -1281,7 +1281,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     console.log("inside updateLocationBar")
     history.replaceState({},"title","?active="+activeSection);
     if (assignmentId!=undefined && assignmentId!=null){
-      assignmentId=assignmentId['assignmentId']
+      assignmentId=assignmentId['childAssignments']
     }
     console.log(this.activeSection)
     if (this.activeSection === "assignment") {
@@ -2098,7 +2098,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     </span>
       <SettingContainer>
         
-      <DoenetBox key={"name"+(this.updateNumber++)} 
+      <DoenetBox key={"title"+(this.updateNumber++)} 
       evenOrOdd = {evenOrOdd+=1}
       parentFunction={(e)=>{
         this.updateNumber+=1
@@ -2591,7 +2591,5 @@ this.forceUpdate()
   );
 };
  */
-
-
 
 export default DoenetAdmin;

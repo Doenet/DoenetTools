@@ -7,47 +7,10 @@ import { faFileAlt, faFolder, faArrowUp,
 import "./branchBrowser.css";
 import SpinningLoader from './SpinningLoader';
 import styled from 'styled-components';
+import DropItem from "./TreeView/components/drop-item";
+import DragItem from "./TreeView/components/drag-item";
+import { formatTimestamp } from './chooser/utility';
 
-function formatTimestamp(date) {  
-  let delta = Math.round((new Date - new Date(date)) / 1000);
-
-  let minute = 60;
-  let hour = minute * 60;
-  let day = hour * 24;
-  let week = day * 7;
-  let month = 30 * day;
-  let year = 52 * week;
-
-  let result = "";
-
-  if (delta < minute) {
-    result = 'Just now';
-  } else if (delta < hour) {
-    result = Math.floor(delta / minute) + ' minute(s) ago';
-  } else if (delta < day) {
-    result = Math.floor(delta / hour) + ' hour(s) ago';
-  } else if (delta < day * 2) {
-    result = 'Yesterday';
-  } else if (delta < week) {
-    result = Math.floor(delta / day) + ' day(s) ago';
-  } else if (delta < month) {
-    let weekNumber = Math.floor(delta / week);
-    let dayNumber = Math.floor((delta - (weekNumber * week)) / day);
-    if (dayNumber !== 0) result = `${weekNumber} week(s) and ${dayNumber} day(s) ago`;
-    else result = `${weekNumber} week(s) ago`;
-  } else if (delta < year) {
-    let monthNumber = Math.floor(delta / month);
-    let dayNumber = Math.floor((delta - (monthNumber * month)) / day);
-    if (dayNumber !== 0) result = `${monthNumber} month(s) and ${dayNumber} day(s) ago`;
-    else result = `${monthNumber} month(s) ago`;
-  } else {  // years
-    let yearNumber = Math.floor(delta / year);
-    let monthNumber = Math.floor((delta - (yearNumber * year)) / month);
-    if (monthNumber !== 0) result = `${yearNumber} year(s) and ${monthNumber} month(s) ago`;
-    else result = `${yearNumber} year(s) ago`;
-  }
-  return result;
-}
 
 class DoenetBranchBrowser extends Component {
   static defaultProps = {
@@ -68,7 +31,7 @@ class DoenetBranchBrowser extends Component {
       selectedItems: props.selectedItems,
       selectedItemsType: props.selectedItemsType,
       sortBy: "title",
-      sortOrderAsc: "ASC"
+      sortOrderAsc: "ASC",
     }
 
     // handle null props
@@ -95,6 +58,8 @@ class DoenetBranchBrowser extends Component {
     this.sortFolders = this.sortFolders.bind(this);
     this.sortUrls = this.sortUrls.bind(this);
     this.openEditUrlForm = this.openEditUrlForm.bind(this);
+    this.onDragStartCb = this.onDragStartCb.bind(this);
+    this.onDragEndCb = this.onDragEndCb.bind(this);
   }
 
   getAllSelectedItems() {
@@ -331,7 +296,10 @@ class DoenetBranchBrowser extends Component {
         showRemoveItemIcon={showRemoveItemIcon}
         handleRemoveContent={this.props.selectedDrive === "Content" ? 
                             this.handleRemoveContentFromCurrentFolder :
-                            this.handleRemoveContentFromCourse}/>);
+                            this.handleRemoveContentFromCourse}
+        onDragStart={this.onDragStartCb}
+        onDragEnd={this.onDragEndCb}
+        onDragOver={this.props.onDraggableDragOver}/>);
         
     }
   }
@@ -554,7 +522,8 @@ class DoenetBranchBrowser extends Component {
   }
 
   openEditUrlForm() {
-    this.props.updateSelectedItems([this.state.selectedItems[this.state.selectedItems.length - 1]],
+    this.props.updateSelectedItems(
+      [this.state.selectedItems[this.state.selectedItems.length - 1]],
       [this.state.selectedItemsType[this.state.selectedItemsType.length - 1]]);
     this.props.openEditUrlForm();
   }
@@ -679,6 +648,24 @@ class DoenetBranchBrowser extends Component {
     }
   }
 
+  onDragStartCb(draggedId, draggedType) {
+    this.props.onDragStart && 
+      this.props.onDragStart({
+        draggedId: draggedId, 
+        draggedType: draggedType, 
+        sourceContainerId: this.props.containerId, 
+        parentsInfo: this.props.allFolderInfo, 
+        leavesInfo: this.props.allContentInfo });
+  }
+
+  onDragEndCb() {
+    this.props.onDragEnd && 
+      this.props.onDragEnd({
+        containerId: this.props.containerId, 
+        parentsInfo: this.props.allFolderInfo, 
+        leavesInfo: this.props.allContentInfo });
+  }
+
   render() {
 
     if (this.props.loading){
@@ -742,62 +729,56 @@ class DoenetBranchBrowser extends Component {
                 </tbody>
               </table>
           </div>
-          <InfoPanel
-            selectedItems={this.state.selectedItems}
-            selectedItemsType={this.state.selectedItemsType}
-            selectedDrive={this.props.selectedDrive}
-            selectedCourse={this.props.selectedCourse}
-            allFolderInfo={this.props.allFolderInfo}
-            allContentInfo={this.props.allContentInfo}
-            allUrlInfo={this.props.allUrlInfo}
-            allCourseInfo={this.props.allCourseInfo}
-            disableEditing={this.disableEditing}
-            openEditCourseForm={this.props.openEditCourseForm}
-            publicizeRepo={this.props.publicizeRepo}
-            openEditUrlForm={this.openEditUrlForm}
-          />
         </div>
       </React.Fragment>
     );
   }
 }
 
-class File extends React.Component {
-  constructor(props) {
-    super(props);
+const File = ({ branchId, classes, onClick, onDoubleClick, title, publishDate,
+  draftDate, isShared, isPublic, tableIndex, showRemoveItemIcon, handleRemoveContent,
+  onDragStart, onDragOver, onDragEnd }) => {
+
+  const onDraggableDragOverCb = (listId) => {
+    onDragOver(listId, "content")
   }
 
-  render() {
+  const onDragStartCb = (draggedId) => {
+    onDragStart(draggedId, "content");
+  }
 
-    return(
+  return(
+    <DragItem id={branchId} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
+      <>
       <tr
-      className={this.props.classes}
-      onClick={() => this.props.onClick(this.props.branchId, "content", this.props.tableIndex)}
-      onDoubleClick={() => this.props.onDoubleClick(this.props.branchId)}
-      data-cy={this.props.branchId}>
+      className={classes}
+      onClick={() => onClick(branchId, "content", tableIndex)}
+      onDoubleClick={() => onDoubleClick(branchId)}
+      data-cy={branchId}>
         <td className="browserItemName">
-          {this.props.isShared && this.props.isPublic ? 
+          {isShared && isPublic ? 
             <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/> :
             <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3D6EC9", "margin": "0px 15px"}}/>}
-          <span>{this.props.title}</span>
+          <span>{title}</span>
         </td>
         <td className="draftDate">
-          <span>{this.props.draftDate}</span>
+          <span>{draftDate}</span>
         </td>
         <td className="publishDate">
           <div style={{"position":"relative"}}>
-            {this.props.showRemoveItemIcon && 
+            {showRemoveItemIcon && 
             <div className="removeContentButtonWrapper">
               <FontAwesomeIcon icon={faArrowRight} className="removeContentButton" 
-              onClick={() => this.props.handleRemoveContent(this.props.branchId)}/>
+              onClick={() => handleRemoveContent(branchId)}/>
               <div className="removeContentButtonInfo"><span>Move out folder</span></div>
             </div>}
-            <span>{this.props.publishDate}</span>
+            <span>{publishDate}</span>
           </div>          
         </td>
       </tr>
-    );
-  }
+      </>
+    </DragItem>
+  );
 }
 
 class Url extends React.Component {
@@ -922,373 +903,6 @@ class Folder extends React.Component {
   }
 }
 
-class InfoPanel extends Component {
-  constructor(props) {
-    super(props);
-    this.addUsername = {};
-
-    this.buildInfoPanelItemDetails = this.buildInfoPanelItemDetails.bind(this);
-  }
-
-  buildInfoPanel() {
-    let selectedItemId = null;
-    let selectedItemType = null;
-    let itemTitle = "";
-    let itemIcon = <FontAwesomeIcon icon={faDotCircle} style={{"fontSize":"18px", "color":"#737373"}}/>;
-
-    if (this.props.selectedItems.length === 0) {
-      // handle when no file selected, show folder/drive info
-      selectedItemType = "Drive";
-      if (this.props.selectedDrive === "Courses") {
-        itemTitle = this.props.allCourseInfo[this.props.selectedCourse].courseName;
-      } else {
-        itemTitle = "Content";
-      }
-
-      this.buildInfoPanelDriveDetails();
-    } else {
-      // if file selected, show selectedFile/Folder info
-      selectedItemId = this.props.selectedItems[this.props.selectedItems.length - 1];
-      selectedItemType = this.props.selectedItemsType[this.props.selectedItemsType.length - 1];
-
-      // get title
-      if (selectedItemType === "folder") {
-        itemTitle = this.props.allFolderInfo[selectedItemId].title;
-        itemIcon = this.props.allFolderInfo[selectedItemId].isRepo ?
-          <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#3aac90"}}/> :
-          <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373"}}/>;
-      } else if (selectedItemType === "url") {
-        itemTitle = this.props.allUrlInfo[selectedItemId].title;
-      } else {
-        itemTitle = this.props.allContentInfo[selectedItemId].title;
-        itemIcon = <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"18px", "color":"#3D6EC9"}}/>;
-      }
-
-      this.buildInfoPanelItemDetails(selectedItemId, selectedItemType);  
-    }
-    
-    this.infoPanel = <React.Fragment>
-      <div className="infoPanel">
-        <div className="infoPanelTitle">
-          <div className="infoPanelItemIcon">{itemIcon}</div>
-          <span>{ itemTitle }</span>
-        </div>
-        <div className="infoPanelPreview">
-          <span>Preview</span>
-          <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"100px", "color":"#bfbfbf"}}/>
-        </div>
-        <div className="infoPanelDetails">
-          {this.infoPanelDetails}
-        </div>
-      </div>
-    </React.Fragment>
-  }
-
-  buildInfoPanelDriveDetails() {
-    
-    let itemDetails = {};
-    this.infoPanelDetails = [];
-    // handle when no file selected, show folder/drive info
-    if (this.props.selectedDrive === "Courses") {
-      let courseId = this.props.selectedCourse;
-      let courseCode = this.props.allCourseInfo[courseId].courseCode;
-      let term = this.props.allCourseInfo[courseId].term;
-      let description = this.props.allCourseInfo[courseId].description;
-      let department = this.props.allCourseInfo[courseId].department;
-      let section = this.props.allCourseInfo[courseId].section;
-      
-      itemDetails = {
-        "Owner" : "Me",
-        "Course Code" : courseCode,
-        "Term": term,
-        "Department": department,
-        "Section": section,
-        "Description": description, 
-      }; 
-    } else {
-      itemDetails = {
-        "Owner" : "Me",
-        "Modified" : "Today",
-        "Published" : "Today",
-      };
-    }
-
-    Object.keys(itemDetails).map(itemDetailsKey => {
-      let itemDetailsValue = itemDetails[itemDetailsKey];
-      this.infoPanelDetails.push(
-      <tr key={"contentDetailsItem" + itemDetailsKey}>
-        <td className="itemDetailsKey">{ itemDetailsKey }</td>
-        <td className="itemDetailsValue">{ itemDetailsValue }</td>
-      </tr>);
-    })
-
-    this.infoPanelDetails = <React.Fragment>
-      <table id="infoPanelDetailsTable">
-        <tbody>
-          {this.infoPanelDetails}
-        </tbody>
-      </table>
-      {this.props.selectedDrive === "Courses" &&
-      <div id="editContentButtonContainer">
-        <div id="editContentButton" data-cy="editContentButton"
-        onClick={this.props.openEditCourseForm}>
-          <FontAwesomeIcon icon={faEdit} style={{"fontSize":"20px", "color":"#43aa90"}}/>
-          <span>Edit</span>
-        </div>
-      </div> 
-      }
-    </React.Fragment>
-  }
-
-  buildInfoPanelItemDetails(selectedItemId, selectedItemType) {
-    
-    this.infoPanelDetails = [];
-    let itemDetails = {};
-    if (selectedItemType === "folder") {
-
-      itemDetails = {
-        "Location"  : "Content",
-        "Published" : formatTimestamp(this.props.allFolderInfo[selectedItemId].publishDate),
-      };
-
-      let isShared = this.props.allFolderInfo[this.props.allFolderInfo[selectedItemId].rootId].isRepo;
-      if (this.props.allFolderInfo[selectedItemId].isRepo || isShared) {
-        itemDetails = Object.assign(itemDetails, {"Public": this.props.allFolderInfo[selectedItemId].isPublic ? "Yes" : "No"});
-      }
-      // show change to public button if private repo
-      if (this.props.allFolderInfo[selectedItemId].isRepo && !this.props.allFolderInfo[selectedItemId].isPublic) {
-        itemDetails["Public"] = <React.Fragment>
-            <span>No</span><button id="publicizeRepoButton" onClick={() => this.props.publicizeRepo(selectedItemId)}>Make Public</button>
-        </React.Fragment>
-      }
-      //Display controls for who it's shared with
-      let sharedJSX = null;
-      if (this.props.allFolderInfo[selectedItemId].isRepo){
-        const SharedUsersContainer = styled.div`
-        display: flex;
-        flex-direction: column;
-        `;
-        const UserPanel = styled.div`
-        width: 320px;
-        padding: 10px;
-        border-bottom: 1px solid grey; 
-        `;
-     
-
-        let users = [];
-        for (let userInfo of this.props.allFolderInfo[selectedItemId].user_access_info){
-          let removeAccess = <span>Owner</span>;
-          if (userInfo.owner === "0"){
-            removeAccess = <button onClick={()=>{
-              const loadCoursesUrl='/api/removeRepoUser.php';
-              const data={
-                repoId: selectedItemId,
-                username: userInfo.username,
-              }
-              const payload = {
-                params: data
-              }
-      
-              axios.get(loadCoursesUrl,payload)
-              .then(resp=>{
-                if (resp.data.success === "1"){
-                  this.props.allFolderInfo[selectedItemId].user_access_info = resp.data.users;
-                }
-                this.forceUpdate();
-              });
-            
-            }}>X</button>
-          }
-          users.push(<UserPanel key={`userpanel${userInfo.username}`}>
-            {userInfo.firstName} {userInfo.lastName} - {userInfo.email} - {removeAccess}
-            </UserPanel>)
-        }
-
-        const AddWrapper = styled.div`
-        margin-top: 10px;
-        `;
-
-        sharedJSX = <>
-        <p className="itemDetailsKey">Sharing Settings</p>
-        <SharedUsersContainer>{users}</SharedUsersContainer>
-        <AddWrapper>Add Username 
-          <input type="text" value={this.addUsername[selectedItemId]} onChange={(e)=>{
-            e.preventDefault();
-            
-            this.addUsername[selectedItemId] = e.target.value;
-            // console.log(e.target.value);
-            // console.log(this.addUsername);
-
-          }}></input>
-        <button onClick={()=>{
-          const loadCoursesUrl='/api/addRepoUser.php';
-        const data={
-          repoId: selectedItemId,
-          username: this.addUsername[selectedItemId],
-        }
-        const payload = {
-          params: data
-        }
-
-        axios.get(loadCoursesUrl,payload)
-        .then(resp=>{
-          if (resp.data.success === "1"){
-            this.props.allFolderInfo[selectedItemId].user_access_info = resp.data.users;
-          }
-          this.addUsername = {};
-          this.forceUpdate();
-        });
-          
-        }}>Add</button>
-        </AddWrapper>
-        </>
-      }
- 
-      Object.keys(itemDetails).map(itemDetailsKey => {
-        let itemDetailsValue = itemDetails[itemDetailsKey];
-        // add only if content not empty
-        this.infoPanelDetails.push(
-        <tr key={"contentDetailsItem" + itemDetailsKey}>
-          <td className="itemDetailsKey">{ itemDetailsKey }</td>
-          <td className="itemDetailsValue">{ itemDetailsValue }</td>
-        </tr>);
-      })
-
-
-      this.infoPanelDetails = <React.Fragment>
-        <table id="infoPanelDetailsTable">
-          <tbody>
-            {this.infoPanelDetails}
-          </tbody>
-        </table>
-        {sharedJSX}
-      </React.Fragment>
-
-    } else if (selectedItemType === "content") {
-      // populate table with selected item info / drive info  
-      let itemRelatedContent = [];
-      // build related content
-      let relatedContent = [];
-      // flatten out and format related content
-      itemRelatedContent.forEach(relatedItemBranchID => {
-        let relatedItemTitle = this.props.allContentInfo[relatedItemBranchID].title;
-        relatedContent.push(
-          <div style={{"display":"block"}} key={"relatedItem" + relatedItemBranchID}>
-            <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"14px", "color":"#3D6EC9", "marginRight": "10px"}}/>
-            <a href={`/editor?branchId=${relatedItemBranchID}`}>{ relatedItemTitle }</a>
-          </div>                      
-        ); 
-      });
-
-      // build content versions
-      let versions = [];
-      let versionNumber = 1;
-      // get and format versions
-      this.props.allContentInfo[selectedItemId].contentIds.reverse().forEach(contentIdObj => {
-        if (contentIdObj.draft !== "1") {
-          let versionTitle = "Version " + versionNumber++;
-          versions.push(
-            <div style={{"display":"block"}} key={"version" + versionNumber}>
-              <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"14px", "color":"#3D6EC9", "marginRight": "10px"}}/>
-              <a href={`/editor?branchId=${selectedItemId}&contentId=${contentIdObj.contentId}`}>{ versionTitle }</a>
-            </div>
-          ); 
-        } 
-      });
-
-      itemDetails = {
-        "Location" : "Content",
-        "Published" : formatTimestamp(this.props.allContentInfo[selectedItemId].publishDate),
-        "Versions" : versions,
-        // "Related content" : relatedContent,
-      };
-
-      let isShared = this.props.allContentInfo[selectedItemId].rootId == "root" ? false :
-        this.props.allFolderInfo[this.props.allContentInfo[selectedItemId].rootId].isRepo;
-
-      if (isShared) {
-        itemDetails = Object.assign(itemDetails, {"Public": this.props.allContentInfo[selectedItemId].isPublic ? "Yes" : "No"});
-      }
-
-      Object.keys(itemDetails).map(itemDetailsKey => {
-        let itemDetailsValue = itemDetails[itemDetailsKey];
-        this.infoPanelDetails.push(
-        <tr key={"contentDetailsItem" + itemDetailsKey}>
-          <td className="itemDetailsKey">{ itemDetailsKey }</td>
-          <td className="itemDetailsValue">{ itemDetailsValue }</td>
-        </tr>);
-      })
-
-      this.infoPanelDetails = <React.Fragment>
-        <table id="infoPanelDetailsTable">
-          <tbody>
-            {this.infoPanelDetails}
-          </tbody>
-        </table>
-        {!this.props.disableEditing &&
-        <div id="editContentButtonContainer">
-          <div id="editContentButton" data-cy="editContentButton"
-          onClick={()=> {window.location.href=`/editor?branchId=${selectedItemId}`}}>
-            <FontAwesomeIcon icon={faEdit} style={{"fontSize":"20px", "color":"#43aa90"}}/>
-            <span>Edit Draft</span>
-          </div>
-        </div> 
-        }
-      </React.Fragment>
-    } else {
-      itemDetails = {
-        "Location" : "Content",
-        "Published" : formatTimestamp(this.props.allUrlInfo[selectedItemId].publishDate),
-        "Description" : this.props.allUrlInfo[selectedItemId].description,
-        "Uses DoenetAPI" : this.props.allUrlInfo[selectedItemId].usesDoenetAPI == true ? "Yes" : "No",
-      };
-
-      let isShared = this.props.allUrlInfo[selectedItemId].rootId == "root" ? false :
-        this.props.allFolderInfo[this.props.allUrlInfo[selectedItemId].rootId].isRepo;
-
-      if (isShared) {
-        itemDetails = Object.assign(itemDetails, {"Public": this.props.allUrlInfo[selectedItemId].isPublic ? "Yes" : "No"});
-      }
-
-      Object.keys(itemDetails).map(itemDetailsKey => {
-        let itemDetailsValue = itemDetails[itemDetailsKey];
-        this.infoPanelDetails.push(
-        <tr key={"contentDetailsItem" + itemDetailsKey}>
-          <td className="itemDetailsKey">{ itemDetailsKey }</td>
-          <td className="itemDetailsValue">{ itemDetailsValue }</td>
-        </tr>);
-      })
-
-      this.infoPanelDetails = <React.Fragment>
-        <table id="infoPanelDetailsTable">
-          <tbody>
-            {this.infoPanelDetails}
-            <tr key={"contentDetailsItemUrl"}>
-              <td className="itemDetailsKey">URL</td>
-              <td className="itemDetailsValue"><a href={this.props.allUrlInfo[selectedItemId].url}>{this.props.allUrlInfo[selectedItemId].url}</a></td>
-            </tr>
-          </tbody>
-        </table>
-        {!this.props.disableEditing &&
-        <div id="editContentButtonContainer">
-          <div id="editContentButton" data-cy="editContentButton"
-          onClick={this.props.openEditUrlForm}>
-            <FontAwesomeIcon icon={faEdit} style={{"fontSize":"20px", "color":"#43aa90"}}/>
-            <span>Edit Link</span>
-          </div>
-        </div> 
-        }
-      </React.Fragment>
-    }
-  }
-
-  render() {
-    this.buildInfoPanel();
-    return(<React.Fragment>
-      {this.infoPanel}
-    </React.Fragment>);
-  };
-}
 
 const BreadcrumbItem = ({ children, ...props }) => (
   <li className='breadcrumbItem' {...props}>

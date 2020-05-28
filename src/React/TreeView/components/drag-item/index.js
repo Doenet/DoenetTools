@@ -11,7 +11,7 @@ export default ({ children, dragEffect, id, onDragStart, onDragOver, onDragEnd }
     effect: dragEffect,
     ref: dragRef,
     onDragStart: (ev) => {
-      onDragStart(id, ev);
+      onDragStart(id);
       let dragImage = document.createElement("img");
       dragImage.style.visibility = "hidden";
       event.dataTransfer.setDragImage(dragImage, 0, 0);

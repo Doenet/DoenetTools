@@ -12,11 +12,11 @@ $_POST = json_decode(file_get_contents('php://input'),true);
 $sql="DELETE FROM course_heading WHERE courseid='aI8sK4vmEhC5sdeSP3vNW'";
 $conn->query($sql);
 
-$sql="INSERT INTO course_heading (courseHeadingId,headingText,parentId,childrenId,courseId) VALUES ('UltimateHeader','','','W0wTw4cG2klV1nS51BPSm','aI8sK4vmEhC5sdeSP3vNW'),
-('UltimateHeader','','','3oSXu2L31eZBlZKKc4F7X','aI8sK4vmEhC5sdeSP3vNW'),
-('UltimateHeader','','','kwpKwEwW144tqROdo9dl5','aI8sK4vmEhC5sdeSP3vNW'),
-('3oSXu2L31eZBlZKKc4F7X','header3','UltimateHeader','iaROshxrgaz63vZ5xFdxE','aI8sK4vmEhC5sdeSP3vNW'),('qAgAnGbEblNmlebe3sJOh','header4','kwpKwEwW144tqROdo9dl5','mBUlzP63SK38l7XrWpyC','aI8sK4vmEhC5sdeSP3vNW'),
-('5RdWCHX3Z-zHGi3-rupzq','header5','Sj7wQR-L2xFIxmS6QFMKn','fm3-3BxtVsMA0vqCyAOMA','aI8sK4vmEhC5sdeSP3vNW'),('W0wTw4cG2klV1nS51BPSm','header6','UltimateHeader','','aI8sK4vmEhC5sdeSP3vNW'),('kwpKwEwW144tqROdo9dl5','header1','UltimateHeader','qAgAnGbEblNmlebe3sJOh','aI8sK4vmEhC5sdeSP3vNW'),('kwpKwEwW144tqROdo9dl5','header1','UltimateHeader','Sj7wQR-L2xFIxmS6QFMKn','aI8sK4vmEhC5sdeSP3vNW'),('kwpKwEwW144tqROdo9dl5','header1','UltimateHeader','4P7WK6V4HvxS9fIT8IY4i','aI8sK4vmEhC5sdeSP3vNW'),('kwpKwEwW144tqROdo9dl5','header1','UltimateHeader','yfP_Pslr-WC1D8g2rEqhF','aI8sK4vmEhC5sdeSP3vNW'),
+$sql="INSERT INTO course_heading (courseHeadingId,headingText,parentId,childrenId,courseId) VALUES ('root','','','W0wTw4cG2klV1nS51BPSm','aI8sK4vmEhC5sdeSP3vNW'),
+('root','','','3oSXu2L31eZBlZKKc4F7X','aI8sK4vmEhC5sdeSP3vNW'),
+('root','','','kwpKwEwW144tqROdo9dl5','aI8sK4vmEhC5sdeSP3vNW'),
+('3oSXu2L31eZBlZKKc4F7X','header3','root','iaROshxrgaz63vZ5xFdxE','aI8sK4vmEhC5sdeSP3vNW'),('qAgAnGbEblNmlebe3sJOh','header4','kwpKwEwW144tqROdo9dl5','mBUlzP63SK38l7XrWpyC','aI8sK4vmEhC5sdeSP3vNW'),
+('5RdWCHX3Z-zHGi3-rupzq','header5','Sj7wQR-L2xFIxmS6QFMKn','fm3-3BxtVsMA0vqCyAOMA','aI8sK4vmEhC5sdeSP3vNW'),('W0wTw4cG2klV1nS51BPSm','header6','root','','aI8sK4vmEhC5sdeSP3vNW'),('kwpKwEwW144tqROdo9dl5','header1','root','qAgAnGbEblNmlebe3sJOh','aI8sK4vmEhC5sdeSP3vNW'),('kwpKwEwW144tqROdo9dl5','header1','root','Sj7wQR-L2xFIxmS6QFMKn','aI8sK4vmEhC5sdeSP3vNW'),('kwpKwEwW144tqROdo9dl5','header1','root','4P7WK6V4HvxS9fIT8IY4i','aI8sK4vmEhC5sdeSP3vNW'),('kwpKwEwW144tqROdo9dl5','header1','root','yfP_Pslr-WC1D8g2rEqhF','aI8sK4vmEhC5sdeSP3vNW'),
 ('Sj7wQR-L2xFIxmS6QFMKn','header2','kwpKwEwW144tqROdo9dl5','5RdWCHX3Z-zHGi3-rupzq','aI8sK4vmEhC5sdeSP3vNW'),
 ('Sj7wQR-L2xFIxmS6QFMKn','header2','kwpKwEwW144tqROdo9dl5','VffOCH1I0h_ymB9KQHR24','aI8sK4vmEhC5sdeSP3vNW'),
 ('Sj7wQR-L2xFIxmS6QFMKn','header2','kwpKwEwW144tqROdo9dl5','zxVi-pXiUtf3PodIXm45n','aI8sK4vmEhC5sdeSP3vNW')";

@@ -3,14 +3,14 @@ import View from "./view";
 
 import useDrop from "../../hooks/useDrop";
 
-export default ({ children, heading, id, onDrop, onDragOver, onDropEnter, onDropExit, className }) => {
+export default ({ children, heading, id, onDrop, onDropLeave, onDropEnter, onDropExit, className }) => {
   const dropRef = useRef();
   const { dropState, droppedItem } = useDrop({
     ref: dropRef,
     onDropEnter: () => onDropEnter(id),
     onDrop: onDrop,
-    onDragOver: () => {  
-      onDragOver(id)
+    onDropLeave: () => {  
+      onDropLeave(id)
     },
     onDropExit: onDropExit
   });

@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 $assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
-$sql="SELECT proctorMakesAvailable,assignmentName,individualize,multipleAttempts,
+$sql="SELECT proctorMakesAvailable,title,individualize,multipleAttempts,
 showSolution,showFeedback,showHints,showCorrectness,gradeCategory,
 totalPointsOrPercent,
 assignedDate,dueDate,timeLimit,numberOfAttemptsAllowed
@@ -15,7 +15,7 @@ FROM assignment where assignmentId='$assignmentId'";
 $result = $conn->query($sql); 
 $row = $result->fetch_assoc();
 $response_arr = array(
-  "assignmentName" => $row['assignmentName'],
+  "title" => $row['title'],
   "assignedDate" => $row['assignedDate'],
   "dueDate" => $row['dueDate'],
   "timeLimit" => $row['timeLimit'],

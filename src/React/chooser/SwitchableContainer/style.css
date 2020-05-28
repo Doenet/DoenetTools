@@ -1,0 +1,29 @@
+.switchable-containers {
+  display: flex;
+  flex-direction: column;
+}
+
+.switchable-container-list {
+  display: flex;
+}
+
+.switchable-container {
+  cursor: pointer;
+  padding: 10px;
+}
+
+.container-divider {
+  height: 3px;
+  min-width: 100%;
+  width: 80px;
+  background-color: #999;
+  transition: 0.2s ease-in;
+}
+
+.switchable-container:not(.active):hover .switchable-container-divider {
+  background-color: #777;
+}
+
+.switchable-container.active .switchable-container-divider {
+  background-color: #333;
+}
