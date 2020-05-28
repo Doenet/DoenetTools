@@ -65,6 +65,8 @@ class DoenetHeader extends Component {
       myProfile: {}
     }
 
+
+
     this.select = null
     this.updateNumber = 0;
     this.roles = [];
@@ -143,7 +145,9 @@ class DoenetHeader extends Component {
   }
 
   componentDidMount() {
+    if (!this.props.guestUser){
     this.loadMyProfile();
+    }
   }
 
   componentWillReceiveProps(props) {
@@ -274,8 +278,35 @@ class DoenetHeader extends Component {
       this.headerSectionCount = this.refs.extendedHeader.children.length;
     }
     const extendedMarginOffTop = (this.headerSectionCount + 1) * 50;
-    let toolBox = {};
 
+    if (this.props.guestUser){
+      //GUEST USER
+      return <>
+        <div className="headingContainer">
+        <div className="headerPlayBtn" onClick={this.toggleSlider}>
+            <FontAwesomeIcon id='headerPlayBtn-icon' fontSize='16px' icon={this.state.sliderVisible ? faCaretDown : faCaretRight} />
+          </div>
+          <div className="toolName">
+            <img id="doenetLogo" onClick={() => { location.href = "/"; }} src={doenetImage} height='40px' />
+            <span>{this.props.toolName}</span>
+          </div>
+          {this.props.headingTitle && <div className="headingTitle">
+            <span>{this.props.headingTitle}</span>
+            {/* <span>{ this.select }</span> */}
+          </div>}
+        </div>
+        <ExtendedHeader className={sliderClass} ref='extendedHeader' extendedMarginOffTop={extendedMarginOffTop}>
+          {this.props.headingTitle && <div className="extended-header">
+            <div className="headingTitlePhone">
+              <span>{this.props.headingTitle}</span>
+            </div>
+          </div>}
+
+        </ExtendedHeader>
+      </>
+    }
+
+    let toolBox = {};
 
     toolBox = this.toolTitleToLinkMap &&
 
@@ -303,6 +334,8 @@ class DoenetHeader extends Component {
               {!this.state.myProfile.toolAccess.length && <p>Loading..!</p>}
           </Toolbox>}
       </div>
+    
+
     return (
       <React.Fragment>
         <div className="headingContainer">
@@ -318,6 +351,7 @@ class DoenetHeader extends Component {
             <span>{this.props.headingTitle}</span>
             {/* <span>{ this.select }</span> */}
           </div>}
+          
           <div className="headingToolbar">
             {this.props.rights && this.props.rights.defaultRole && <Menu activeRole={this.props.rights.defaultRole} roles={this.roles} permissionCallback={this.props.rights ? this.props.rights.permissionCallBack : null} />}
             {/* {this.selectPermission}     */}

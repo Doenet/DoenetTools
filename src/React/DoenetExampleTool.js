@@ -26,9 +26,7 @@ export default function DoenetExampleTool(props) {
              rightPanelClose  - can be true or false or none - open or close right panel on load
       ) */}
       
-      <ToolLayout toolName="Example" headingTitle="Example Heading" leftPanelClose={true} rightPanelClose={false}
-   
-      >
+      <ToolLayout guestUser={true} toolName="Example" headingTitle="Example Heading" leftPanelClose={true} rightPanelClose={false}>
         {/* ToolLayoutPanel 
               panelHeaderControls ( before was menuControls ) - menu controls can be defined & send as prop
               panelName - In small screen panel button's name label
