@@ -14,6 +14,9 @@ button{
   flex-direction: column;
   min-height: 1vh;
   overflow: hidden;
+  /* background-color: #e3d2d2; */
+
+  /* background-color: #6de5ff; */
 }
 
 .middlepanel{
@@ -122,6 +125,7 @@ button{
   float: right;
 
 }
+
 
 @media only screen and (max-width: 767px) {
   .footer-on {

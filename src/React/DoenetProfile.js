@@ -179,7 +179,7 @@ export default function DoenetProfile(props) {
   let changeModalVisibility = (e, vis) => {
     if (e.target == e.currentTarget) setModal(vis);
   };
-  const toolLayoutRef = useRef();
+  // const toolLayoutRef = useRef();
 
   const [myProfile, setMyProfile] = useState(undefined); // initialize to a value that indicates that `myProfile` is not yet loaded, this prevents phoning home for profile info every re-render
 
@@ -332,7 +332,9 @@ export default function DoenetProfile(props) {
 
   return (
     <>
-      <ToolLayout toolName="Profile" headerChangesFromLayout={myProfile} ref={toolLayoutRef}>
+      <ToolLayout toolName="Profile" headerChangesFromLayout={myProfile} 
+      // ref={toolLayoutRef}
+      >
         <ToolLayoutPanel>
           <ProfileContainer id="content">
             <PageHeader>{myProfile.username}'s Profile</PageHeader>

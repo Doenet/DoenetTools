@@ -11,6 +11,7 @@ import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import Menu from './menu.js'
 import SelectionSet from "./Selector/SelectionSet";
+import DoenetAssignmentTree from "./DoenetAssignmentTree"
 
 import {
   HashRouter as Router,
@@ -728,13 +729,14 @@ class DoenetCourse extends Component {
       headerConfig: {
         permissionRoles: {},
         currentRole: 'N/A',
-      
+
       }
     };
 
 
     this.assignmentsData = null;
     this.DoneLoading = false;
+    this.assignments_and_headings_loaded = false;
     /**
          * to construct a tree:
          * construct an array that contains objects 
@@ -797,7 +799,6 @@ class DoenetCourse extends Component {
 
     this.loadAllCourses()
 
-
     this.courseInfo = {};
     this.alreadyHasCourseInfo = false
     this.finishedContructor = false;
@@ -843,6 +844,7 @@ class DoenetCourse extends Component {
     } else {
       return 'N/A';
     }
+    this.loadCourseHeadingsAndAssignments = this.loadCourseHeadingsAndAssignments.bind(this);
   }
 
   loadAllCourses() {
@@ -1236,7 +1238,7 @@ class DoenetCourse extends Component {
         </span>
         {/* <SettingContainer> */}
 
-        <DoenetBox key={"name" + (this.updateNumber++)}
+        <DoenetBox key={"title" + (this.updateNumber++)}
           readPriviledge={this.rightToView}
           writePriviledge={this.rightToEdit}
           evenOrOdd={evenOrOdd += 1}
@@ -1571,10 +1573,10 @@ class DoenetCourse extends Component {
 
       iterator = 0;
       // establish level 0
-      this.heading_obj["UltimateHeader"]["headingId"].forEach(element => {
+      this.heading_obj["root"]["childHeadings"].forEach(element => {
         element = element.toString()
-        let name = this.heading_obj[element]["name"]
-        let object = { id: element, name: name, attribute: "header", level: 0 }
+        let title = this.heading_obj[element]["title"]
+        let object = { id: element, title: title, type: "header", level: 0 }
         this.makeTreeArray.unshift(object)
       })
       // console.log("this.makeTreeArray1")
@@ -1585,13 +1587,13 @@ class DoenetCourse extends Component {
         let currentHeaderObject =
           this.heading_obj[this.makeTreeArray[iterator]["id"]];
 
-        if (currentHeaderObject["headingId"] != undefined) {
-          (currentHeaderObject["headingId"]).forEach(header => {
+        if (currentHeaderObject["childHeadings"] != undefined) {
+          (currentHeaderObject["childHeadings"]).forEach(header => {
             header = header.toString();
-            let name = this.heading_obj[header]["name"];
-            let attribute = "header"
+            let title = this.heading_obj[header]["title"];
+            let type = "header"
             let newLevel = this.makeTreeArray[iterator]["level"] + 1;
-            let object = { id: header, name: name, attribute: attribute, level: newLevel }
+            let object = { id: header, title: title, type: type, level: newLevel }
             this.makeTreeArray.splice(iterator + 1, 0, object)
             already_built_header_id[header] = true;
             //}
@@ -1605,1731 +1607,1810 @@ class DoenetCourse extends Component {
       // add arrow when this.enableMode==='assignment'
       iterator = 0;
       while (iterator < this.makeTreeArray.length) {
-        if (this.makeTreeArray[iterator]["attribute"] === "header") {
+        if (this.makeTreeArray[iterator]["type"] === "header") {
           let indexOfHeader = this.headerId_arr.indexOf(this.makeTreeArray[iterator]["id"])
           let currentHeaderObject =
             this.heading_obj[this.makeTreeArray[iterator]["id"]];
-          let assignment_list = currentHeaderObject["assignmentId"]
+          let assignment_list = currentHeaderObject["childAssignments"]
           if (assignment_list != []) {
             (assignment_list).forEach(e => {
-              let name = this.assignment_obj[e.toString()]["name"];
+              // assume unique assignment has unique headers
+              let title = this.assignment_obj[e.toString()]["title"];
               let newLevel = this.makeTreeArray[iterator]["level"] + 1;
-              let attribute = "assignment"
-              let object1 = { id: e.toString(), name: name, attribute: attribute, level: newLevel }
+              let type = "assignment"
+              let object1 = { id: e.toString(), title: title, type: type, level: newLevel }
               this.makeTreeArray.splice(iterator + 1, 0, object1)
             })
           }
         }
-        iterator++;
       }
-    }
 
-  }
-  buildTree() {
-    let ClassName = "headerSelection"
-    // making space
-    this.tree = [];
-    let addHeaderToTheEndOfUltimateHeader = (<span className="Section-Icon-Box">
-      <FontAwesomeIcon className="Section-Icon"
-        onClick={() => { this.addNewHeaderAtTheEndUltimateHeader() }} icon={faPlus} /></span>);
-    let addingAssignmentArray = this.AddedAssignmentObjArray
+    }}
+    buildTree(){
+      let ClassName = "headerSelection"
+      // making space
+      this.tree = [];
+      let addHeaderToTheEndOfUltimateHeader = (<span className="Section-Icon-Box">
+        <FontAwesomeIcon className="Section-Icon"
+          onClick={() => { this.addNewHeaderAtTheEndUltimateHeader() }} icon={faPlus} /></span>);
+      let addingAssignmentArray = this.AddedAssignmentObjArray
 
-    if (this.makeTreeArray.length > 0) {
+      if (this.makeTreeArray.length > 0) {
 
-      let leftArrow = null;
-      let rightArrow = null;
-      let upArrow = null;
-      let downArrow = null;
-      let addHeaderPlus = null;
-      let addAssignmentPlus = null;
-      let remove = null;
-      let addingArrowAfterAssignment = null;
-      let addingArrowUnderHeader = null;
+        let leftArrow = null;
+        let rightArrow = null;
+        let upArrow = null;
+        let downArrow = null;
+        let addHeaderPlus = null;
+        let addAssignmentPlus = null;
+        let remove = null;
+        let addingArrowAfterAssignment = null;
+        let addingArrowUnderHeader = null;
 
-      let addHeaderPlusUnderUltimateHeader = null;
+        let addHeaderPlusUnderRoot = null;
 
-      this.makeTreeArray.forEach((element, index) => {
-        let name = element["name"]
-        let level = element["level"];
-        let id = element["id"]; // id of either header or assignment
+        this.makeTreeArray.forEach((element, index) => {
+          let title = element["title"]
+          let level = element["level"];
+          let id = element["id"]; // id of either header or assignment
 
-        let type = element["attribute"]
-        let headerParentId = null;
-        if (type === 'header') {
-          headerParentId = this.heading_obj[id]['parent']
+          let type = element["type"]
+          let headerParentId = null;
+          if (type === 'header') {
+            headerParentId = this.heading_obj[id]['parentId']
 
-          let id1 = element["id"];
+            let id1 = element["id"];
 
-          if (this.enableMode === 'remove') {
-            remove = (<span className="Section-Icon-Box">
-              <FontAwesomeIcon className="Section-Icon" data-cy={"close" + index}
-                onClick={() => {
-                  this.deleteHeader({ headerObj: element }); this.buildTreeArray();
-                  this.buildTree();
-                  this.makeTreeVisible({ loadSpecificId: "" });
-                }} icon={faWindowClose} /></span>)
-          } else if (this.enableMode === 'header') {
-            addHeaderPlus = (<span className="Section-Icon-Box">
-              <FontAwesomeIcon className="Section-Icon" data-cy={"plus" + index}
-                onClick={() => { this.addNewHeaderToHeader({ headerObj: element }); this.makeTreeVisible({ loadSpecificId: "" }) }} icon={faPlus} /></span>)
+            if (this.enableMode === 'remove') {
+              remove = (<span className="Section-Icon-Box">
+                <FontAwesomeIcon className="Section-Icon" data-cy={"close" + index}
+                  onClick={() => {
+                    this.deleteHeader({ headerObj: element }); this.buildTreeArray();
+                    this.buildTree();
+                    this.makeTreeVisible({ loadSpecificId: "" });
+                  }} icon={faWindowClose} /></span>)
+            } else if (this.enableMode === 'header') {
+              addHeaderPlus = (<span className="Section-Icon-Box">
+                <FontAwesomeIcon className="Section-Icon" data-cy={"plus" + index}
+                  onClick={() => { this.addNewHeaderToHeader({ headerObj: element }); this.makeTreeVisible({ loadSpecificId: "" }) }} icon={faPlus} /></span>)
+            }
+            else if (this.enableMode === 'assignments') {
+              id = element["id"];
+              let parentId = this.heading_obj[id]['parentId']
+              addingArrowUnderHeader = (<div style={{ marginLeft: leftMargin }}><span className="Section-Icon-Box">
+                <FontAwesomeIcon className="Section-Icon" data-cy={"arrowLeft" + index}
+                  onClick={
+                    () => {
+                      this.addAssignmentIdsUnderHeader({ currentHeaderId: id, arrayOfIncomingAssignments: this.AddedAssignmentObjArray });
+                      this.makeTreeVisible({ loadSpecificId: "" })
+                    }}
+                  icon={faArrowLeft} /></span></div>)
+            }
+
+
           }
-          else if (this.enableMode === 'assignments') {
-            id = element["id"];
-            let parentId = this.heading_obj[id]['parent']
-            addingArrowUnderHeader = (<div style={{ marginLeft: leftMargin }}><span className="Section-Icon-Box">
-              <FontAwesomeIcon className="Section-Icon" data-cy={"arrowLeft" + index}
-                onClick={
-                  () => {
-                    this.addAssignmentIdsUnderHeader({ currentHeaderId: id, arrayOfIncomingAssignments: this.AddedAssignmentObjArray });
+          let leftMargin = `${level * 20}px`;
+          let contentID = null;
+          let branchID = null;
+          // making up, down Arrow
+          if (type == "assignment") {
+            let myParent = this.assignment_obj[id]['parentId']
+            ClassName = "AssignmentSelection"
+            contentID = this.assignment_obj[id]['contentId']
+            branchID = this.assignment_obj[id]['branchId']
+            let myParentHeadingIdArray = this.heading_obj[myParent]['childAssignments']
+            if (this.enableMode === 'position') {
+              // if (myParentHeadingIdArray.indexOf(id)!=((myParentHeadingIdArray.length)-1)){
+              //   upArrow=(<span className="Section-Icon-Box">         
+              //   <FontAwesomeIcon className="Section-Icon" data-cy={"arrowUp"+index}
+              //    onClick ={()=>{this.moveAssignmentUp({assignmentObj:element})}} icon={faArrowUp}/></span>)
+              // }
+              // if (myParentHeadingIdArray.indexOf(id)!=0){
+              //   downArrow=(<span className="Section-Icon-Box">         
+              // <FontAwesomeIcon className="Section-Icon" data-cy={"arrowDown"+index}
+              //  onClick ={()=>{this.moveAssignmentDown({assignmentObj:element})}} icon={faArrowDown}/></span>)
+              // }
+            } else if (this.enableMode === 'remove') {
+              remove = (<span className="Section-Icon-Box">
+                <FontAwesomeIcon className="Section-Icon" data-cy={"close" + index}
+                  onClick={() => { this.deleteAssignment({ assignmentObj: element }); this.makeTreeVisible({ loadSpecificId: "" }) }} icon={faWindowClose} /></span>)
+            } else if (this.enableMode === 'assignments') {
+              id = element["id"];
+              addingArrowAfterAssignment = (<div style={{ marginLeft: leftMargin }}><span className="Section-Icon-Box">
+                <FontAwesomeIcon className="Section-Icon" data-cy={"arrowLeft" + index}
+                  onClick=
+                  {() => {
+                    this.addAssignmentIdsAfterAnAssignment({ currentAssignmentId: id, arrayOfIncomingAssignments: this.AddedAssignmentObjArray });
                     this.makeTreeVisible({ loadSpecificId: "" })
                   }}
-                icon={faArrowLeft} /></span></div>)
+                  icon={faArrowLeft} /></span></div>)
+            }
+          }
+          let data_cy = type + index
+          let styleAssignment = { marginLeft: leftMargin, display: "flex" }
+          if (this.selectedAssignmentId === id) {
+            styleAssignment = { marginLeft: leftMargin, display: "flex", backgroundColor: "#979B97" }
+          }
+          let link = "/assignments/" + id
+          if (!this.alreadyHadAssignmentsIndexAndDoenetML) {
+            this.assignmentsIndexAndDoenetML[id] = { doenetML: "", indexInRouterArray: -1 }
           }
 
-
-        }
-        let leftMargin = `${level * 20}px`;
-        let contentID = null;
-        let branchID = null;
-        // making up, down Arrow
-        if (type == "assignment") {
-          let myParent = this.assignment_obj[id]['parent']
-          ClassName = "AssignmentSelection"
-          contentID = this.assignment_obj[id]['contentId']
-          branchID = this.assignment_obj[id]['branchId']
-          let myParentHeadingIdArray = this.heading_obj[myParent]['assignmentId']
-          if (this.enableMode === 'position') {
-            // if (myParentHeadingIdArray.indexOf(id)!=((myParentHeadingIdArray.length)-1)){
-            //   upArrow=(<span className="Section-Icon-Box">         
-            //   <FontAwesomeIcon className="Section-Icon" data-cy={"arrowUp"+index}
-            //    onClick ={()=>{this.moveAssignmentUp({assignmentObj:element})}} icon={faArrowUp}/></span>)
-            // }
-            // if (myParentHeadingIdArray.indexOf(id)!=0){
-            //   downArrow=(<span className="Section-Icon-Box">         
-            // <FontAwesomeIcon className="Section-Icon" data-cy={"arrowDown"+index}
-            //  onClick ={()=>{this.moveAssignmentDown({assignmentObj:element})}} icon={faArrowDown}/></span>)
-            // }
-          } else if (this.enableMode === 'remove') {
-            remove = (<span className="Section-Icon-Box">
-              <FontAwesomeIcon className="Section-Icon" data-cy={"close" + index}
-                onClick={() => { this.deleteAssignment({ assignmentObj: element }); this.makeTreeVisible({ loadSpecificId: "" }) }} icon={faWindowClose} /></span>)
-          } else if (this.enableMode === 'assignments') {
-            id = element["id"];
-            addingArrowAfterAssignment = (<div style={{ marginLeft: leftMargin }}><span className="Section-Icon-Box">
-              <FontAwesomeIcon className="Section-Icon" data-cy={"arrowLeft" + index}
-                onClick=
-                {() => {
-                  this.addAssignmentIdsAfterAnAssignment({ currentAssignmentId: id, arrayOfIncomingAssignments: this.AddedAssignmentObjArray });
-                  this.makeTreeVisible({ loadSpecificId: "" })
-                }}
-                icon={faArrowLeft} /></span></div>)
+          // console.log("link is "+link)
+          if (level == 0) { // only header can have level 0
+            if (this.enableMode === 'header') {
+              addHeaderPlusUnderRoot = (<span className="Section-Icon-Box">
+                <FontAwesomeIcon className="Section-Icon" data-cy="plus"
+                  onClick={() => {
+                    this.addNewHeaderUnderRoot({ headerObj: element });
+                    this.makeTreeVisible({ loadSpecificId: "" })
+                  }} icon={faPlus} /></span>)
+            }
           }
-        }
-        let data_cy = type + index
-        let styleAssignment = { marginLeft: leftMargin, display: "flex" }
-        if (this.selectedAssignmentId === id) {
-          styleAssignment = { marginLeft: leftMargin, display: "flex", backgroundColor: "#979B97" }
-        }
-        let link = "/assignments/" + id
-        if (!this.alreadyHadAssignmentsIndexAndDoenetML) {
-          this.assignmentsIndexAndDoenetML[id] = { doenetML: "", indexInRouterArray: -1 }
-        }
-
-        // console.log("link is "+link)
-        if (level == 0) { // only header can have level 0
-          if (this.enableMode === 'header') {
-            addHeaderPlusUnderUltimateHeader = (<span className="Section-Icon-Box">
-              <FontAwesomeIcon className="Section-Icon" data-cy="plus"
-                onClick={() => {
-                  this.addNewHeaderUnderUltimateHeader({ headerObj: element });
-                  this.makeTreeVisible({ loadSpecificId: "" })
-                }} icon={faPlus} /></span>)
+          let tree_branch = null;
+          if (!this.rightToEdit) {
+            leftArrow = null;
+            rightArrow = null;
+            upArrow = null;
+            downArrow = null;
+            addHeaderPlus = null;
+            addAssignmentPlus = null;
+            remove = null;
+            addingArrowAfterAssignment = null;
+            addingArrowUnderHeader = null;
           }
-        }
-        let tree_branch = null;
-        if (!this.rightToEdit) {
-          leftArrow = null;
-          rightArrow = null;
-          upArrow = null;
-          downArrow = null;
-          addHeaderPlus = null;
-          addAssignmentPlus = null;
-          remove = null;
-          addingArrowAfterAssignment = null;
-          addingArrowUnderHeader = null;
-        }
-        if (type === "assignment") {
-          tree_branch =
-            (
-              <Link to={link} key={"tree_branch" + index}
-                data-cy={data_cy} className={ClassName} style={styleAssignment}
-                onClick={() => {
+          if (type === "assignment") {
+            tree_branch =
+              (
+                <Link to={link} key={"tree_branch" + index}
+                  data-cy={data_cy} className={ClassName} style={styleAssignment}
+                  onClick={() => {
                   this.thisAssignmentInfo = id;
-                  // console.log("clicking link")
-                  this.loadAssignmentContent({ contentId: contentID, branchId: branchID, assignmentId: id });
-                }}
-              >
-                <span className="Section-Text" >
-                  {name}
-                </span>
-                {leftArrow}
-                {rightArrow}
-                {upArrow}
-                {downArrow}
-                {remove}
-              </Link>
-            )
-        }
+                    // console.log("clicking link")
+                    this.loadAssignmentContent({ contentId: contentID, branchId: branchID, assignmentId: id });
+                  }}
+                >
+                  <span className="Section-Text" >
+                    {title}
+                  </span>
+                  {leftArrow}
+                  {rightArrow}
+                  {upArrow}
+                  {downArrow}
+                  {remove}
+                </Link>
+              )
+          }
 
 
-        if (type === "header") {
-          tree_branch = (<div to={link} key={"tree_branch" + index}
-            data-cy={data_cy} className={ClassName} style={styleAssignment}
-          >
-            <span className="Section-Text" >
-              {name}
-            </span>
-            {leftArrow}
-            {rightArrow}
-            {upArrow}
-            {downArrow}
-            {addHeaderPlus}
-            {remove}
-          </div>)
-        }
-        // this.tree.push(tree_branch)
-        if (addHeaderPlusUnderUltimateHeader != null && type === 'header') {
-          this.tree.push(addHeaderPlusUnderUltimateHeader)
-        }
-        this.tree.push(tree_branch)
-        if (addingArrowAfterAssignment != null && type === 'assignment') {
-          this.tree.push(addingArrowAfterAssignment)
-        }
+          if (type === "header") {
+            tree_branch = (<div to={link} key={"tree_branch" + index}
+              data-cy={data_cy} className={ClassName} style={styleAssignment}
+            >
+              <span className="Section-Text" >
+                {title}
+              </span>
+              {leftArrow}
+              {rightArrow}
+              {upArrow}
+              {downArrow}
+              {addHeaderPlus}
+              {remove}
+            </div>)
+          }
+          // this.tree.push(tree_branch)
+          if (addHeaderPlusUnderRoot != null && type === 'header') {
+            this.tree.push(addHeaderPlusUnderRoot)
+          }
+          this.tree.push(tree_branch)
+          if (addingArrowAfterAssignment != null && type === 'assignment') {
+            this.tree.push(addingArrowAfterAssignment)
+          }
 
-        if (addingArrowUnderHeader != null && type === 'header'
-          && headerParentId != null) {
-          this.tree.push(addingArrowUnderHeader);
-        }
+          if (addingArrowUnderHeader != null && type === 'header'
+            && headerParentId != null) {
+            this.tree.push(addingArrowUnderHeader);
+          }
 
+        })
+      } else {
+        console.log("EMPTY TREE")
+        //  this.tree.push(<p>Empty Tree</p>)
+      }
+      if (this.enableMode === 'header') {
+        this.tree.push(addHeaderToTheEndOfRoot)
+      }
+
+    }
+
+    saveTree(){
+      // console.log("saving the tree")
+      /**
+       * here passing in a payload of
+       * for UPDATE:
+       *  a assignment set where all row in assignment match the id will be updated in parentId
+       * for DELETE:
+       *  a header set where all row in course's heading match the id will be deleted
+       * for INSERT:
+       *  for inserting into assignment
+       *   a set of assignment id
+       *   a list of parent id as 1 header Id can have multiple assignment id
+       *   index of children id associated with index of assignment id
+       *  for inserting into heading
+       *    a list of header id where duplicate may occur as a header may contain several different children id
+       *    a set of children id as no children Id can be owned by 2 different parents
+       * 
+       * delete multiple rows: DELETE FROM table WHERE col1 IN (1,2,3,4,5)
+          insert multiple rows:
+          INSERT INTO 
+                projects(name, start_date, end_date)
+          VALUES
+                ('AI for Marketing','2019-08-01','2019-12-31'),
+                ('ML for Sales','2019-05-15','2019-11-20');
+       */
+      let assignmentId_parentID_array = [];
+      let assignmentId_array = Object.keys(this.assignment_obj)
+      assignmentId_array.forEach(id => {
+        assignmentId_parentID_array.push(this.assignment_obj[id]['parentId']);
       })
-    } else {
-      console.log("EMPTY TREE")
-      //  this.tree.push(<p>Empty Tree</p>)
-    }
-    if (this.enableMode === 'header') {
-      this.tree.push(addHeaderToTheEndOfUltimateHeader)
-    }
-
-  }
-
-  saveTree() {
-    // console.log("saving the tree")
-    /**
-     * here passing in a payload of
-     * for UPDATE:
-     *  a assignment set where all row in assignment match the id will be updated in parent
-     * for DELETE:
-     *  a header set where all row in course's heading match the id will be deleted
-     * for INSERT:
-     *  for inserting into assignment
-     *   a set of assignment id
-     *   a list of parent id as 1 header Id can have multiple assignment id
-     *   index of children id associated with index of assignment id
-     *  for inserting into heading
-     *    a list of header id where duplicate may occur as a header may contain several different children id
-     *    a set of children id as no children Id can be owned by 2 different parents
-     * 
-     * delete multiple rows: DELETE FROM table WHERE col1 IN (1,2,3,4,5)
-        insert multiple rows:
-        INSERT INTO 
-              projects(name, start_date, end_date)
-        VALUES
-              ('AI for Marketing','2019-08-01','2019-12-31'),
-              ('ML for Sales','2019-05-15','2019-11-20');
-     */
-    let assignmentId_parentID_array = [];
-    let assignmentId_array = Object.keys(this.assignment_obj)
-    assignmentId_array.forEach(id => {
-      assignmentId_parentID_array.push(this.assignment_obj[id]['parent']);
-    })
-    let headerID_array = Object.keys(this.heading_obj);
-    let headerID_array_to_payload = []
-    let headerID_childrenId_array_to_payload = []
-    let headerID_parentId_array_to_payload = []
-    let headerID_name = []
-    headerID_array.forEach(currentHeaderId => {
-      let currentHeaderObj = this.heading_obj[currentHeaderId]
-      let name = currentHeaderObj['name']
-      if (name == null) {
-        name = "NULL"
-      }
-      let currentHeaderObjHeadingIdArray = currentHeaderObj['headingId']
-      let lengthOfHeadingId = currentHeaderObjHeadingIdArray.length
-      let currentHeaderObjAssignmentIdArray = currentHeaderObj['assignmentId']
-      let currentHeaderObjParentId = currentHeaderObj['parent']
-      let lengthOfAssigmentId = currentHeaderObjAssignmentIdArray.length
-      let iterator = 0
-      if (lengthOfHeadingId == 0 && lengthOfAssigmentId == 0) {
-        headerID_array_to_payload.push(currentHeaderId)
-        if (currentHeaderObjParentId == null) {
-          headerID_parentId_array_to_payload.push("NULL")
-        } else {
-          headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+      let headerID_array = Object.keys(this.heading_obj);
+      let headerID_array_to_payload = []
+      let headerID_childrenId_array_to_payload = []
+      let headerID_parentId_array_to_payload = []
+      let headerID_title = []
+      headerID_array.forEach(currentHeaderId => {
+        let currentHeaderObj = this.heading_obj[currentHeaderId]
+        let title = currentHeaderObj['title']
+        if (title == null) {
+          title = "NULL"
         }
-        headerID_childrenId_array_to_payload.push("NULL")
-        headerID_name.push(name);
-      }
-      while (iterator < lengthOfHeadingId) {
-        headerID_array_to_payload.push(currentHeaderId)
-        headerID_childrenId_array_to_payload.push(currentHeaderObjHeadingIdArray[iterator])
-        headerID_name.push(name);
-        if (currentHeaderObjParentId == null) {
-          headerID_parentId_array_to_payload.push("NULL")
-        } else {
-          headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+        let currentHeaderObjHeadingIdArray = currentHeaderObj['childHeadings']
+        let lengthOfHeadingId = currentHeaderObjHeadingIdArray.length
+        let currentHeaderObjAssignmentIdArray = currentHeaderObj['childAssignments']
+        let currentHeaderObjParentId = currentHeaderObj['parentId']
+        let lengthOfAssigmentId = currentHeaderObjAssignmentIdArray.length
+        let iterator = 0
+        if (lengthOfHeadingId == 0 && lengthOfAssigmentId == 0) {
+          headerID_array_to_payload.push(currentHeaderId)
+          if (currentHeaderObjParentId == null) {
+            headerID_parentId_array_to_payload.push("NULL")
+          } else {
+            headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+          }
+          headerID_childrenId_array_to_payload.push("NULL")
+          headerID_title.push(title);
         }
-        iterator += 1
-      }
-      iterator = 0
-      while (iterator < lengthOfAssigmentId) {
-        headerID_array_to_payload.push(currentHeaderId)
-        headerID_childrenId_array_to_payload.push(currentHeaderObjAssignmentIdArray[iterator])
-        headerID_name.push(name);
-        if (currentHeaderObjParentId == null) {
-          headerID_parentId_array_to_payload.push("NULL")
-        } else {
-          headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+        while (iterator < lengthOfHeadingId) {
+          headerID_array_to_payload.push(currentHeaderId)
+          headerID_childrenId_array_to_payload.push(currentHeaderObjHeadingIdArray[iterator])
+          headerID_title.push(title);
+          if (currentHeaderObjParentId == null) {
+            headerID_parentId_array_to_payload.push("NULL")
+          } else {
+            headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+          }
+          iterator += 1
         }
-        iterator += 1
-      }
-    })
-
-    const urlGetCode = '/api/saveTree.php';
-    const data = {
-      assignmentId_array: assignmentId_array,
-      assignmentId_parentID_array: assignmentId_parentID_array,
-      headerID_array_to_payload: headerID_array_to_payload,
-      headerID_name: headerID_name,
-      headerID_parentId_array_to_payload: headerID_parentId_array_to_payload,
-      headerID_childrenId_array_to_payload: headerID_childrenId_array_to_payload,
-      courseId: "aI8sK4vmEhC5sdeSP3vNW"
-    }
-
-    axios.post(urlGetCode, data)
-      .then(resp => {
-        // console.log(resp.data)
+        iterator = 0
+        while (iterator < lengthOfAssigmentId) {
+          headerID_array_to_payload.push(currentHeaderId)
+          headerID_childrenId_array_to_payload.push(currentHeaderObjAssignmentIdArray[iterator])
+          headerID_title.push(title);
+          if (currentHeaderObjParentId == null) {
+            headerID_parentId_array_to_payload.push("NULL")
+          } else {
+            headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+          }
+          iterator += 1
+        }
       })
-      .catch(error => { this.setState({ error: error }) });
+      const urlGetCode = '/api/saveTree.php';
+      const data = {
+        assignmentId_array: assignmentId_array,
+        assignmentId_parentID_array: assignmentId_parentID_array,
+        headerID_array_to_payload: headerID_array_to_payload,
+        headerID_title: headerID_title,
+        headerID_parentId_array_to_payload: headerID_parentId_array_to_payload,
+        headerID_childrenId_array_to_payload: headerID_childrenId_array_to_payload,
+        courseId: "aI8sK4vmEhC5sdeSP3vNW"
+      }
 
-  }
-  moveHeaderUp({ headerObj }) {
-    /**
-    * posses up arrow iff your id not first appear inside your parentId's headerId array
-    * get the id of the current header
-    * find current header parentId in this.header_obj
-    * find current header parent obj in this.header_obj base on parentId
-    * get current header index inside current header parent obj headerId
-    * swap it with the element whose index before
-    */
+      axios.post(urlGetCode, data)
+        .then(resp => {
+          // console.log(resp.data)
+        })
+        .catch(error => { this.setState({ error: error }) });
 
-    let currentHeaderId = headerObj["id"]
+    }
+    moveHeaderUp({ headerObj }){
+      /**
+      * posses up arrow iff your id not first appear inside your parentId's headerId array
+      * get the id of the current header
+      * find current header parentId in this.header_obj
+      * find current header parent obj in this.header_obj base on parentId
+      * get current header index inside current header parent obj headerId
+      * swap it with the element whose index before
+      */
 
-    let myParentId = this.heading_obj[currentHeaderId]["parent"]
-    let parentObj = this.heading_obj[myParentId];
+      let currentHeaderId = headerObj["id"]
 
-    let currentHeaderIndexInParentHeaderIdArray = parentObj["headingId"].indexOf(currentHeaderId)
-    let previousIndex = currentHeaderIndexInParentHeaderIdArray + 1;
+      let myParentId = this.heading_obj[currentHeaderId]["parentId"]
+      let parentObj = this.heading_obj[myParentId];
 
-    let previousId = parentObj["headingId"][previousIndex]
-    let temp = previousId;
-    // swapping
-    parentObj["headingId"][previousIndex] = currentHeaderId;
-    parentObj["headingId"][currentHeaderIndexInParentHeaderIdArray] = temp;
+      let currentHeaderIndexInParentHeaderIdArray = parentObj["childHeadings"].indexOf(currentHeaderId)
+      let previousIndex = currentHeaderIndexInParentHeaderIdArray + 1;
 
-    this.buildTreeArray();
-    this.buildTree();
-    this.forceUpdate();
-    this.saveTree();
-  }
-  moveAssignmentUp({ assignmentObj }) {
-    /**
-    * posses up arrow iff your id not first appear inside your parentId's assignment array
-    * get the id of the current assignment
-    * find current assignment parentId in this.header_obj
-    * find current assignment's parent obj in this.header_obj base on parentId
-    * get current assignment index inside current header's parent obj assignmentId
-    * swap it with the element whose index before
-    */
-    let currentAssignmentId = assignmentObj["id"]
-    let myParentId = this.assignment_obj[currentAssignmentId]["parent"]
-    let parentObj = this.heading_obj[myParentId];
-    let currentHeaderIndexInParentHeaderIdArray = parentObj["assignmentId"].indexOf(currentAssignmentId)
-    let previousIndex = currentHeaderIndexInParentHeaderIdArray + 1;
-    let previousId = parentObj["assignmentId"][previousIndex]
-    let temp = previousId;
-    // swapping
-    parentObj["assignmentId"][previousIndex] = currentAssignmentId;
-    parentObj["assignmentId"][currentHeaderIndexInParentHeaderIdArray] = temp;
-    this.buildTreeArray();
-    this.buildTree();
-    this.forceUpdate();
-    this.saveTree();
-  }
-  moveHeaderDown({ headerObj }) {
-    /**
-     * posses down arrow iff your id not last appear inside your parentId's headerId array
-     * get the id of the current header
-     * find current header parentId in this.header_obj
-     * find current header parent obj in this.header_obj base on parentId
-     * get current header index inside current header parent obj headerId
+      let previousId = parentObj["childHeadings"][previousIndex]
+      let temp = previousId;
+      // swapping
+      parentObj["childHeadings"][previousIndex] = currentHeaderId;
+      parentObj["childHeadings"][currentHeaderIndexInParentHeaderIdArray] = temp;
+
+      this.buildTreeArray();
+      this.buildTree();
+      this.forceUpdate();
+      this.saveTree();
+    }
+    moveAssignmentUp({ assignmentObj }){
+      /**
+      * posses up arrow iff your id not first appear inside your parentId's assignment array
+      * get the id of the current assignment
+      * find current assignment parentId in this.header_obj
+      * find current assignment's parent obj in this.header_obj base on parentId
+      * get current assignment index inside current header's parent obj assignmentId
+      * swap it with the element whose index before
+      */
+      let currentAssignmentId = assignmentObj["id"]
+      let myParentId = this.assignment_obj[currentAssignmentId]["parentId"]
+      let parentObj = this.heading_obj[myParentId];
+      let currentHeaderIndexInParentHeaderIdArray = parentObj["childAssignments"].indexOf(currentAssignmentId)
+      let previousIndex = currentHeaderIndexInParentHeaderIdArray + 1;
+      let previousId = parentObj["childAssignments"][previousIndex]
+      let temp = previousId;
+      // swapping
+      parentObj["childAssignments"][previousIndex] = currentAssignmentId;
+      parentObj["childAssignments"][currentHeaderIndexInParentHeaderIdArray] = temp;
+      this.buildTreeArray();
+      this.buildTree();
+      this.forceUpdate();
+      this.saveTree();
+    }
+    moveHeaderDown({ headerObj }){
+      /**
+       * posses down arrow iff your id not last appear inside your parentId's headerId array
+       * get the id of the current header
+       * find current header parentId in this.header_obj
+       * find current header parent obj in this.header_obj base on parentId
+       * get current header index inside current header parent obj headerId
+       * swap it with the element whose index after
+       */
+      let currentHeaderId = headerObj["id"]
+      let myParentId = this.heading_obj[currentHeaderId]["parentId"]
+      let parentObj = this.heading_obj[myParentId];
+      let currentHeaderIndexInParentHeaderIdArray = parentObj["childHeadings"].indexOf(currentHeaderId)
+      let previousIndex = currentHeaderIndexInParentHeaderIdArray - 1;
+      let previousId = parentObj["childHeadings"][previousIndex]
+      let temp = previousId;
+      // swapping
+      parentObj["childHeadings"][previousIndex] = currentHeaderId;
+      parentObj["childHeadings"][currentHeaderIndexInParentHeaderIdArray] = temp;
+      this.buildTreeArray();
+      this.buildTree();
+      this.forceUpdate();
+      this.saveTree();
+    }
+    moveAssignmentDown({ assignmentObj }){
+      /**
+     * posses down arrow iff your id not lasr appear inside your parentId's assignment array
+     * get the id of the current assignment
+     * find current assignment parentId in this.header_obj
+     * find current assignment's parent obj in this.header_obj base on parentId
+     * get current assignment index inside current header's parent obj assignmentId
      * swap it with the element whose index after
      */
-    let currentHeaderId = headerObj["id"]
-    let myParentId = this.heading_obj[currentHeaderId]["parent"]
-    let parentObj = this.heading_obj[myParentId];
-    let currentHeaderIndexInParentHeaderIdArray = parentObj["headingId"].indexOf(currentHeaderId)
-    let previousIndex = currentHeaderIndexInParentHeaderIdArray - 1;
-    let previousId = parentObj["headingId"][previousIndex]
-    let temp = previousId;
-    // swapping
-    parentObj["headingId"][previousIndex] = currentHeaderId;
-    parentObj["headingId"][currentHeaderIndexInParentHeaderIdArray] = temp;
-    this.buildTreeArray();
-    this.buildTree();
-    this.forceUpdate();
-    this.saveTree();
-  }
-  moveAssignmentDown({ assignmentObj }) {
-    /**
-   * posses down arrow iff your id not lasr appear inside your parentId's assignment array
-   * get the id of the current assignment
-   * find current assignment parentId in this.header_obj
-   * find current assignment's parent obj in this.header_obj base on parentId
-   * get current assignment index inside current header's parent obj assignmentId
-   * swap it with the element whose index after
-   */
-    let currentAssignmentId = assignmentObj["id"]
-    let myParentId = this.assignment_obj[currentAssignmentId]["parent"]
-    let parentObj = this.heading_obj[myParentId];
-    let currentHeaderIndexInParentHeaderIdArray = parentObj["assignmentId"].indexOf(currentAssignmentId)
-    let previousIndex = currentHeaderIndexInParentHeaderIdArray - 1;
-    let previousId = parentObj["assignmentId"][previousIndex]
-    let temp = previousId;
-    // swapping
-    parentObj["assignmentId"][previousIndex] = currentAssignmentId;
-    parentObj["assignmentId"][currentHeaderIndexInParentHeaderIdArray] = temp;
-    this.buildTreeArray();
-    this.buildTree();
-    this.forceUpdate();
-    this.saveTree();
+      let currentAssignmentId = assignmentObj["id"]
+      let myParentId = this.assignment_obj[currentAssignmentId]["parentId"]
+      let parentObj = this.heading_obj[myParentId];
+      let currentHeaderIndexInParentHeaderIdArray = parentObj["childAssignments"].indexOf(currentAssignmentId)
+      let previousIndex = currentHeaderIndexInParentHeaderIdArray - 1;
+      let previousId = parentObj["childAssignments"][previousIndex]
+      let temp = previousId;
+      // swapping
+      parentObj["childAssignments"][previousIndex] = currentAssignmentId;
+      parentObj["childAssignments"][currentHeaderIndexInParentHeaderIdArray] = temp;
+      this.buildTreeArray();
+      this.buildTree();
+      this.forceUpdate();
+      this.saveTree();
 
-  }
-  moveHeaderLeft({ headerObj }) {
-    /**
-     * possess a left arrow when exists parent that not "UltimateHeader"
-     * get the id of the current header as currentHeaderId
-     * find currentHeaderId's parentId in this.header_obj
-     * splice currentHeaderId out of currentHeaderId's parentId headingId array
-     * store parentId of currentHeaderId's parentId as newParentId
-     * change currentHeaderId's parentId attribute value to newParentId
-     */
-    let currentHeaderId = headerObj["id"]
-    let myparentId = this.heading_obj[currentHeaderId]["parent"]
-    let myNewParentId = this.heading_obj[myparentId]["parent"]
-    let myParentHeaderIdArray = this.heading_obj[myparentId]["headingId"]
-    let currentHeaderIdIndexInsidemyParentHeaderIdArray = myParentHeaderIdArray.indexOf(currentHeaderId)
-    this.heading_obj[myparentId]["headingId"].splice(currentHeaderIdIndexInsidemyParentHeaderIdArray, 1)
-    this.heading_obj[currentHeaderId]["parent"] = myNewParentId;
-    if (currentHeaderIdIndexInsidemyParentHeaderIdArray === (myParentHeaderIdArray - 1)) {
-      this.heading_obj[myNewParentId]["headingId"].push(currentHeaderId)   // when u last
-    } else {
-      this.heading_obj[myNewParentId]["headingId"].unshift(currentHeaderId)
     }
-    // console.log("moveHeaderLeft")
-    // console.log(this.heading_obj)
-    this.buildTreeArray();
-    this.buildTree();
-    this.forceUpdate();
-    this.saveTree();
+    moveHeaderLeft({ headerObj }){
+      /**
+       * possess a left arrow when exists parent that not "root"
+       * get the id of the current header as currentHeaderId
+       * find currentHeaderId's parentId in this.header_obj
+       * splice currentHeaderId out of currentHeaderId's parentId headingId array
+       * store parentId of currentHeaderId's parentId as newParentId
+       * change currentHeaderId's parentId type value to newParentId
+       */
+      let currentHeaderId = headerObj["id"]
+      let myparentId = this.heading_obj[currentHeaderId]["parentId"]
+      let myNewParentId = this.heading_obj[myparentId]["parentId"]
+      let myParentHeaderIdArray = this.heading_obj[myparentId]["childHeadings"]
+      let currentHeaderIdIndexInsidemyParentHeaderIdArray = myParentHeaderIdArray.indexOf(currentHeaderId)
+      this.heading_obj[myparentId]["childHeadings"].splice(currentHeaderIdIndexInsidemyParentHeaderIdArray, 1)
+      this.heading_obj[currentHeaderId]["parentId"] = myNewParentId;
+      if (currentHeaderIdIndexInsidemyParentHeaderIdArray === (myParentHeaderIdArray - 1)) {
+        this.heading_obj[myNewParentId]["childHeadings"].push(currentHeaderId)   // when u last
+      } else {
+        this.heading_obj[myNewParentId]["childHeadings"].unshift(currentHeaderId)
+      }
+      // console.log("moveHeaderLeft")
+      // console.log(this.heading_obj)
+      this.buildTreeArray();
+      this.buildTree();
+      this.forceUpdate();
+      this.saveTree();
 
-  }
-  moveHeaderRight({ headerObj }) {
-    /**
-     * possess right arrow when my id not the only in my parentID's headerId
-     * get the id of the current header as id
-     * find the next header inside the current header's parent headingId
-     * find the index of the previous header inside headerId_arr
-     * continue to seek previous header by decreasing the index
-     * when found a header where its level is at least current header
-     *    then store the header Id as newParentID. Then look parentID up in header_obj
-     *    then access its headerId array and append id to the array
-     * change id's parent to newParentID
-     */
-    let currentHeaderId = headerObj['id']
-    let myParentId = this.heading_obj[currentHeaderId]['parent']
-    let myParentHeadingIdArray = this.heading_obj[myParentId]["headingId"]
-    let prevHeaderIndexInsidemyParentHeadingIdArray = myParentHeadingIdArray.indexOf(currentHeaderId) + 1
-    if (prevHeaderIndexInsidemyParentHeadingIdArray === myParentHeadingIdArray.length) {
-      prevHeaderIndexInsidemyParentHeadingIdArray = myParentHeadingIdArray.indexOf(currentHeaderId) - 1
     }
-    let prevHeaderId = myParentHeadingIdArray[prevHeaderIndexInsidemyParentHeadingIdArray]
-    let prevHeaderObj = this.heading_obj[prevHeaderId]
-    let currentHeaderIdIndexInsideParentObjHeadingIdArray = this.heading_obj[myParentId]['headingId'].indexOf(currentHeaderId)
-    if (currentHeaderIdIndexInsideParentObjHeadingIdArray == this.heading_obj[myParentId]['headingId'].length - 1) {
-      prevHeaderObj['headingId'].push(currentHeaderId)  // when u last
-    } else {
-      prevHeaderObj['headingId'].unshift(currentHeaderId)  // when u not last
+    moveHeaderRight({ headerObj }){
+      /**
+       * possess right arrow when my id not the only in my parentID's headerId
+       * get the id of the current header as id
+       * find the next header inside the current header's parent headingId
+       * find the index of the previous header inside headerId_arr
+       * continue to seek previous header by decreasing the index
+       * when found a header where its level is at least current header
+       *    then store the header Id as newParentID. Then look parentID up in header_obj
+       *    then access its headerId array and append id to the array
+       * change id's parent to newParentID
+       */
+      let currentHeaderId = headerObj['id']
+      let myParentId = this.heading_obj[currentHeaderId]['parentId']
+      let myParentHeadingIdArray = this.heading_obj[myParentId]["childHeadings"]
+      let prevHeaderIndexInsidemyParentHeadingIdArray = myParentHeadingIdArray.indexOf(currentHeaderId) + 1
+      if (prevHeaderIndexInsidemyParentHeadingIdArray === myParentHeadingIdArray.length) {
+        prevHeaderIndexInsidemyParentHeadingIdArray = myParentHeadingIdArray.indexOf(currentHeaderId) - 1
+      }
+      let prevHeaderId = myParentHeadingIdArray[prevHeaderIndexInsidemyParentHeadingIdArray]
+      let prevHeaderObj = this.heading_obj[prevHeaderId]
+      let currentHeaderIdIndexInsideParentObjHeadingIdArray = this.heading_obj[myParentId]['childHeadings'].indexOf(currentHeaderId)
+      if (currentHeaderIdIndexInsideParentObjHeadingIdArray == this.heading_obj[myParentId]['childHeadings'].length - 1) {
+        prevHeaderObj['childHeadings'].push(currentHeaderId)  // when u last
+      } else {
+        prevHeaderObj['childHeadings'].unshift(currentHeaderId)  // when u not last
+      }
+      this.heading_obj[currentHeaderId]['parentId'] = prevHeaderId
+      this.heading_obj[myParentId]['childHeadings'].splice(currentHeaderIdIndexInsideParentObjHeadingIdArray, 1)
+      this.buildTreeArray();
+      this.buildTree();
+      this.forceUpdate();
+      this.saveTree();
+
     }
-    this.heading_obj[currentHeaderId]['parent'] = prevHeaderId
-    this.heading_obj[myParentId]['headingId'].splice(currentHeaderIdIndexInsideParentObjHeadingIdArray, 1)
-    this.buildTreeArray();
-    this.buildTree();
-    this.forceUpdate();
-    this.saveTree();
+    addAssignmentIdsAfterAnAssignment({ currentAssignmentId, arrayOfIncomingAssignments }){
+      /**
+       * create a fake assignment array of assignment obj
+       * get the parentId of the current assignment
+       * look up parentId obj in header_obj
+       * iterate thru the each element and add the key id to parentId obj's assignmentId array
+       */
 
-  }
-  addAssignmentIdsAfterAnAssignment({ currentAssignmentId, arrayOfIncomingAssignments }) {
-    /**
-     * create a fake assignment array of assignment obj
-     * get the parentId of the current assignment
-     * look up parentId obj in header_obj
-     * iterate thru the each element and add the key id to parentId obj's assignmentId array
-     */
+      let arr = arrayOfIncomingAssignments
+      let myParentID = this.assignment_obj[currentAssignmentId]['parentId'];
+      let myParentObj = this.heading_obj[myParentID];
+      let assignmentIdArray = myParentObj['childAssignments']
+      let length = arr.length;
+      let currentAssignmentIdIndexInsideParentAssignmentIdArray =
+        myParentObj['childAssignments'].indexOf(currentAssignmentId)
+      let addAtIndex = currentAssignmentIdIndexInsideParentAssignmentIdArray
+      let iterator = 0;
+      while (iterator < length) {
+        let addedAssignmentId = arr[iterator];
+        let ID = nanoid();
+        this.heading_obj[myParentID]['childAssignments'].splice(addAtIndex, 0, ID)
+        // console.log("NEW ID is.."+ID)
+        let title = "untitle assignment " + iterator;
+        this.assignment_obj[ID] = { title: title, parentId: myParentID, contentId: addedAssignmentId }
+        iterator += 1;
+      }
+      // change enableMode to "position" .Adding duplicate assignmentId will break the rule of adding arrow
+      // as one ID can both a middle and first element at the same time
+      this.buildTreeArray();
+      this.buildTree();
+      this.forceUpdate();
+      this.saveTree();
 
-    let arr = arrayOfIncomingAssignments
-    let myParentID = this.assignment_obj[currentAssignmentId]['parent'];
-    let myParentObj = this.heading_obj[myParentID];
-    let assignmentIdArray = myParentObj['assignmentId']
-    let length = arr.length;
-    let currentAssignmentIdIndexInsideParentAssignmentIdArray =
-      myParentObj['assignmentId'].indexOf(currentAssignmentId)
-    let addAtIndex = currentAssignmentIdIndexInsideParentAssignmentIdArray
-    let iterator = 0;
-    while (iterator < length) {
-      let addedAssignmentId = arr[iterator];
+    }
+    addAssignmentIdsUnderHeader({ currentHeaderId, arrayOfIncomingAssignments }){
+      /**
+      * get headerId as id
+      * look up id to get the id obj in header_obj
+      * iterate thru the each element and add the key id to id obj's assignmentId array
+      */
+      /*Assume AddedAssignmentIdsArray is fully filled and 
+      stores only {IdOfAssignment:<someID>,name:<someName>} */
+      let arr = arrayOfIncomingAssignments
+      let currentHeaderObj = this.heading_obj[currentHeaderId];
+      let iterator = arr.length - 1; // last index of Adding AssignmentID
+      while (iterator >= 0) {
+        let ID = nanoid();
+        // console.log("NEW ID is.."+ID)
+        let title = "untitle assignment " + iterator;
+        this.assignment_obj[ID] = { title: title, parentId: currentHeaderId, contentId: arr[iterator] }
+        // adding ID to currentHeaderId's assignmentId array
+        this.heading_obj[currentHeaderId]['childAssignments'].push(ID);
+        iterator--;
+      }
+      this.buildTreeArray();
+      this.buildTree();
+      this.forceUpdate();
+      this.saveTree();
+
+    }
+    addNewHeaderUnderRoot({ headerObj }){
+      let currentHeaderId = headerObj['id']
+      let myParentObj = this.heading_obj["root"];
+      let length = myParentObj['childHeadings'].length
+      let currentHeaderIdIndexInsideParentHeadingIdArray =
+        myParentObj['childHeadings'].indexOf(currentHeaderId)
+      let addAtIndex = currentHeaderIdIndexInsideParentHeadingIdArray
       let ID = nanoid();
-      this.heading_obj[myParentID]['assignmentId'].splice(addAtIndex, 0, ID)
-      // console.log("NEW ID is.."+ID)
-      let name = "untitle assignment " + iterator;
-      this.assignment_obj[ID] = { name: name, parent: myParentID, contentId: addedAssignmentId }
-      iterator += 1;
-    }
-    // change enableMode to "position" .Adding duplicate assignmentId will break the rule of adding arrow
-    // as one ID can both a middle and first element at the same time
-    this.buildTreeArray();
-    this.buildTree();
-    this.forceUpdate();
-    this.saveTree();
 
-  }
-  addAssignmentIdsUnderHeader({ currentHeaderId, arrayOfIncomingAssignments }) {
-    /**
-    * get headerId as id
-    * look up id to get the id obj in header_obj
-    * iterate thru the each element and add the key id to id obj's assignmentId array
-    */
-    /*Assume AddedAssignmentIdsArray is fully filled and 
-    stores only {IdOfAssignment:<someID>,name:<someName>} */
-    let arr = arrayOfIncomingAssignments
-    let currentHeaderObj = this.heading_obj[currentHeaderId];
-    let iterator = arr.length - 1; // last index of Adding AssignmentID
-    while (iterator >= 0) {
+      if (addAtIndex === 0) {
+        // console.log("case 1")
+        this.heading_obj["root"]['childHeadings'].unshift(ID)
+      } else if (addAtIndex === (length - 1)) {
+        // console.log("case 2")
+        this.heading_obj["root"]['childHeadings'].push(ID)
+      } else {
+        // console.log("case 3")
+        this.heading_obj["root"]['childHeadings'].splice(addAtIndex + 1, 0, ID)
+      }
+      this.heading_obj[ID] = { title: "untitled header", parentId: "root", childAssignments: [], childHeadings: [] }
+
+    }
+    addNewHeaderAtTheEndUltimateHeader() {
       let ID = nanoid();
-      // console.log("NEW ID is.."+ID)
-      let name = "untitle assignment " + iterator;
-      this.assignment_obj[ID] = { name: name, parent: currentHeaderId, contentId: arr[iterator] }
-      // adding ID to currentHeaderId's assignmentId array
-      this.heading_obj[currentHeaderId]['assignmentId'].push(ID);
-      iterator--;
-    }
-    this.buildTreeArray();
-    this.buildTree();
-    this.forceUpdate();
-    this.saveTree();
-
-  }
-  addNewHeaderUnderUltimateHeader({ headerObj }) {
-    let currentHeaderId = headerObj['id']
-    let myParentObj = this.heading_obj["UltimateHeader"];
-    let length = myParentObj['headingId'].length
-    let currentHeaderIdIndexInsideParentHeadingIdArray =
-      myParentObj['headingId'].indexOf(currentHeaderId)
-    let addAtIndex = currentHeaderIdIndexInsideParentHeadingIdArray
-    let ID = nanoid();
-
-    if (addAtIndex === 0) {
-      // console.log("case 1")
       this.heading_obj["UltimateHeader"]['headingId'].unshift(ID)
-    } else if (addAtIndex === (length - 1)) {
-      // console.log("case 2")
-      this.heading_obj["UltimateHeader"]['headingId'].push(ID)
-    } else {
-      // console.log("case 3")
-      this.heading_obj["UltimateHeader"]['headingId'].splice(addAtIndex + 1, 0, ID)
+      this.heading_obj[ID] = { name: "untitled header", parent: "UltimateHeader", assignmentId: [], headingId: [] }
+      this.buildTreeArray();
+      this.buildTree();
+      this.forceUpdate();
+      this.saveTree();
+
     }
-    this.heading_obj[ID] = { name: "untitled header", parent: "UltimateHeader", assignmentId: [], headingId: [] }
+    addNewHeaderAtTheEndRoot(){
+      let ID = nanoid();
+      this.heading_obj["root"]['childHeadings'].unshift(ID)
+      this.heading_obj[ID] = { title: "untitled header", parentId: "root", childAssignments: [], childHeadings: [] }
+      this.buildTreeArray();
+      this.buildTree();
+      this.forceUpdate();
+      this.saveTree();
 
-    // change enableMode to "position" .Adding duplicate assignmentId will break the rule of adding arrow
-    // as one ID can both a middle and first element at the same time
-    this.buildTreeArray();
-    this.buildTree();
-    this.forceUpdate();
-    this.saveTree();
-
-  }
-  addNewHeaderAtTheEndUltimateHeader() {
-    let ID = nanoid();
-    this.heading_obj["UltimateHeader"]['headingId'].unshift(ID)
-    this.heading_obj[ID] = { name: "untitled header", parent: "UltimateHeader", assignmentId: [], headingId: [] }
-    this.buildTreeArray();
-    this.buildTree();
-    this.forceUpdate();
-    this.saveTree();
-
-  }
-  addNewHeaderToHeader({ headerObj }) {
-    /**
-     * create a new id from nanoid as newId
-     * add a new header object to header_obj with newId empty headerId and assignmentId
-     * get the current header id as id
-     * add newId to id's headerId array
-     */
-    /*Assume addedHeader is fully filled and 
-    stores only {IdOfAssignment:<someID>,name:<someName>} */
-    // TODO: header can't be added under UltimateHeader
-    // console.log("running addNewHeaderToHeader")
-    let currentHeaderId = headerObj['id']
-    let newHeaderId = nanoid();
-    let newHeaderName = "untitled header";
-    this.heading_obj[newHeaderId] = { name: newHeaderName, assignmentId: [], headingId: [], parent: currentHeaderId }
-    this.heading_obj[currentHeaderId]['headingId'].unshift(newHeaderId)
-    this.buildTreeArray();
-    this.buildTree();
-    this.forceUpdate();
-    this.saveTree();
-
-  }
-  deleteHeader({ headerObj }) {
-    /**
-     * delete header will delete its children including header and assignment
-     */
-    // console.log("deleting obj")
-    // console.log(headerObj)
-    let id = headerObj['id']
-    // delete it as heading, get parent
-    // let indexOfHeader = this.headerId_arr.indexOf(id)
-    let currentHeaderObject =
-      this.heading_obj[id];
-    let parentId;
-    //if (currentHeaderObject["parent"]!="UltimateHeader"){
-    parentId = currentHeaderObject["parent"]
-
-    //}
-    let listOfMyAssignment = currentHeaderObject["assignmentId"]
-    let listOfDeletingAssignment = []
-    listOfMyAssignment.forEach(element => {
-      listOfDeletingAssignment.push(element.toString())
-    })
-    // before deleting myself, delete all my assignment object
-    this.deleteChildrenAssignment({ list: listOfDeletingAssignment })
-    // before deleting myself, delete all my header object
-    let listOfMyHeaders = currentHeaderObject["headingId"]
-    // console.log("listOfMyHeaders")
-    // console.log(listOfMyHeaders)
-    let listOfDeletingHeader = []
-    listOfMyHeaders.forEach(element => {
-      let currentChildHeaderObjID = element
-      let name = this.heading_obj[element]['name']
-      let attribute = "header"
-      let parent = this.heading_obj[element]['parent']
-      let currentChildHeaderObjHeadingId = this.heading_obj[element]["headingId"]
-      let currentChildHeaderObjAssignmentId = this.heading_obj[element]["assignmentId"]
-
-      let currentChildHeaderObj = { id: currentChildHeaderObjID, name: name, attribute: attribute, parent: parent, headingId: currentChildHeaderObjHeadingId, assignmentId: currentChildHeaderObjAssignmentId }
-      this.deleteHeader({ headerObj: currentChildHeaderObj })
-    })
-
-    delete this.heading_obj[id]
-
-    let currentHeaderObjectParentHeadingId =
-      this.heading_obj[parentId]["headingId"];
-    let indexOfCurrentHeaderInsideItsParentHeadingId = currentHeaderObjectParentHeadingId.indexOf(id)
-    this.heading_obj[parentId]["headingId"].splice(indexOfCurrentHeaderInsideItsParentHeadingId, 1)
-
-
-    this.axiosDeleteAssignmentFromDB({ listOfAssignment: this.listOfAssignmentIdNeedDeletingFromDB })
-
-
-
-  }
-  deleteChildrenAssignment({ list }) {
-    list.forEach(element => {
-      this.listOfAssignmentIdNeedDeletingFromDB.push(element);
-      delete this.assignment_obj[element]
-    })
-  }
-  deleteAssignment({ assignmentObj }) {
-    let id = assignmentObj['id']
-    let indexOfAssignment = this.assignmentId_arr.indexOf(id)
-    let myParentId = this.assignment_obj[id]["parent"]
-    //delete me from parent
-    let indexOfHeaderParent = this.headerId_arr.indexOf(myParentId)
-    let currentHeaderObjectParentAssignmentId =
-      this.heading_obj[myParentId]["assignmentId"]
-    delete this.assignment_obj[id]
-    //this.assignment_obj.splice(indexOfAssignment,1)
-
-    this.heading_obj[myParentId]["assignmentId"].splice(currentHeaderObjectParentAssignmentId.indexOf(id), 1)
-    this.listOfAssignmentIdNeedDeletingFromDB = [id]
-    this.axiosDeleteAssignmentFromDB({ listOfAssignment: this.listOfAssignmentIdNeedDeletingFromDB })
-
-
-
-
-  }
-  axiosDeleteAssignmentFromDB({ listOfAssignment }) {
-
-    let list = listOfAssignment
-    const urlGetCode1 = '/api/deleteAssignment.php';
-    const data = {
-      list: list
     }
+    addNewHeaderToHeader({ headerObj }){
+      /**
+       * create a new id from nanoid as newId
+       * add a new header object to header_obj with newId empty headerId and assignmentId
+       * get the current header id as id
+       * add newId to id's headerId array
+       */
+      /*Assume addedHeader is fully filled and 
+      stores only {IdOfAssignment:<someID>,title:<someName>} */
+      // TODO: header can't be added under Root
+      // console.log("running addNewHeaderToHeader")
+      let currentHeaderId = headerObj['id']
+      let newHeaderId = nanoid();
+      let newHeaderName = "untitled header";
+      this.heading_obj[newHeaderId] = { title: newHeaderName, childAssignments: [], childHeadings: [], parentId: currentHeaderId }
+      this.heading_obj[currentHeaderId]['childHeadings'].unshift(newHeaderId)
+      this.buildTreeArray();
+      this.buildTree();
+      this.forceUpdate();
+      this.saveTree();
 
-    axios.post(urlGetCode1, data)
-      .then(resp => {
-        // console.log(resp.data)
-        this.buildTreeArray();
-        this.buildTree();
-        this.forceUpdate();
-        this.saveTree();
+    }
+    deleteHeader({ headerObj }){
+      /**
+       * delete header will delete its children including header and assignment
+       */
+      // console.log("deleting obj")
+      // console.log(headerObj)
+      let id = headerObj['id']
+      // delete it as heading, get parent
+      // let indexOfHeader = this.headerId_arr.indexOf(id)
+      let currentHeaderObject =
+        this.heading_obj[id];
+      let parentId;
+      //if (currentHeaderObject["parentId"]!="root"){
+      parentId = currentHeaderObject["parentId"]
+
+      //}
+      let listOfMyAssignment = currentHeaderObject["childAssignments"]
+      let listOfDeletingAssignment = []
+      listOfMyAssignment.forEach(element => {
+        listOfDeletingAssignment.push(element.toString())
       })
-      .catch(error => { this.setState({ error: error }) });
-  }
+      // before deleting myself, delete all my assignment object
+      this.deleteChildrenAssignment({ list: listOfDeletingAssignment })
+      // before deleting myself, delete all my header object
+      let listOfMyHeaders = currentHeaderObject["childHeadings"]
+      // console.log("listOfMyHeaders")
+      // console.log(listOfMyHeaders)
+      let listOfDeletingHeader = []
+      listOfMyHeaders.forEach(element => {
+        let currentChildHeaderObjID = element
+        let title = this.heading_obj[element]['title']
+        let type = "header"
+        let parentId = this.heading_obj[element]['parentId']
+        let currentChildHeaderObjHeadingId = this.heading_obj[element]["childHeadings"]
+        let currentChildHeaderObjAssignmentId = this.heading_obj[element]["childAssignments"]
 
-  makeTreeRoute({ link, assignmentId }) {
+        let currentChildHeaderObj = { id: currentChildHeaderObjID, title: title, type: type, parentId: parentId, childHeadings: currentChildHeaderObjHeadingId, childAssignments: currentChildHeaderObjAssignmentId }
+        this.deleteHeader({ headerObj: currentChildHeaderObj })
+      })
 
-    this.assignmentsIndexAndDoenetML[assignmentId]['doenetML'] = this.assignmentDoenetML
-    if (!(this.alreadyMadeLink.includes(link)) && link) {
-      console.log("===Making route====")
-      let tree_route_right_column_branch =
-        (
-          <Route key={link} exact path={link}>
-            <>
+      delete this.heading_obj[id]
+      // let currentHeaderObjectParentHeadingId =
+      //   this.heading_obj[parentId]["childHeadings"];
+      // let indexOfCurrentHeaderInsideItsParentHeadingId = currentHeaderObjectParentHeadingId.indexOf(id)
+      // this.heading_obj[parentId]["childHeadings"].splice(indexOfCurrentHeaderInsideItsParentHeadingId, 1)
 
-              {this.rightSideInfoColumn}
-            </>
 
-          </Route>
+      this.axiosDeleteAssignmentFromDB({ listOfAssignment: this.listOfAssignmentIdNeedDeletingFromDB })
 
-        )
-      this.tree_route_right_column.push(tree_route_right_column_branch);
+      let currentHeaderObjectParentHeadingId =
+        this.heading_obj[parentId]["headingId"];
+      let indexOfCurrentHeaderInsideItsParentHeadingId = currentHeaderObjectParentHeadingId.indexOf(id)
+      this.heading_obj[parentId]["headingId"].splice(indexOfCurrentHeaderInsideItsParentHeadingId, 1)
 
-      let tree_route_branch =
-        (
-          <Route key={link} exact path={link}>
-            <>
-              <Assignments assignmentDoenetML={this.assignmentDoenetML} />
 
-            </>
-          </Route>
-        )
-      this.tree_route.push(tree_route_branch);
-      this.alreadyMadeLink.push(link)
-      this.assignmentsIndexAndDoenetML[assignmentId]['indexInRouterArray'] = this.tree_route.length - 1
+    }
+    deleteChildrenAssignment({ list }){
+      list.forEach(element => {
+        this.listOfAssignmentIdNeedDeletingFromDB.push(element);
+        delete this.assignment_obj[element]
+      })
+    }
+    deleteAssignment({ assignmentObj }){
+      let id = assignmentObj['id']
+      let indexOfAssignment = this.assignmentId_arr.indexOf(id)
+      let myParentId = this.assignment_obj[id]["parentId"]
+      //delete me from parent
+      let indexOfHeaderParent = this.headerId_arr.indexOf(myParentId)
+      let currentHeaderObjectParentAssignmentId =
+        this.heading_obj[myParentId]["childAssignments"]
+      delete this.assignment_obj[id]
+      //this.assignment_obj.splice(indexOfAssignment,1)
+
+      this.heading_obj[myParentId]["childAssignments"].splice(currentHeaderObjectParentAssignmentId.indexOf(id), 1)
+      this.listOfAssignmentIdNeedDeletingFromDB = [id]
+      this.axiosDeleteAssignmentFromDB({ listOfAssignment: this.listOfAssignmentIdNeedDeletingFromDB })
+
+
+    }
+    deleteChildrenAssignment({ list }) {
+      list.forEach(element => {
+        this.listOfAssignmentIdNeedDeletingFromDB.push(element);
+        delete this.assignment_obj[element]
+      })
+    }
+    deleteAssignment({ assignmentObj }) {
+      let id = assignmentObj['id']
+      let indexOfAssignment = this.assignmentId_arr.indexOf(id)
+      let myParentId = this.assignment_obj[id]["parent"]
+      //delete me from parent
+      let indexOfHeaderParent = this.headerId_arr.indexOf(myParentId)
+      let currentHeaderObjectParentAssignmentId =
+        this.heading_obj[myParentId]["assignmentId"]
+      delete this.assignment_obj[id]
+      //this.assignment_obj.splice(indexOfAssignment,1)
+
+      this.heading_obj[myParentId]["assignmentId"].splice(currentHeaderObjectParentAssignmentId.indexOf(id), 1)
+      this.listOfAssignmentIdNeedDeletingFromDB = [id]
+      this.axiosDeleteAssignmentFromDB({ listOfAssignment: this.listOfAssignmentIdNeedDeletingFromDB })
+
+
+
+
+    }
+    axiosDeleteAssignmentFromDB({ listOfAssignment }) {
+
+      let list = listOfAssignment
+      const urlGetCode1 = '/api/deleteAssignment.php';
+      const data = {
+        list: list
+      }
+
+      axios.post(urlGetCode1, data)
+        .then(resp => {
+          // console.log(resp.data)
+          this.buildTreeArray();
+          this.buildTree();
+          this.forceUpdate();
+          this.saveTree();
+        })
+        .catch(error => { this.setState({ error: error }) });
+    }
+
+    makeTreeRoute({ link, assignmentId }) {
+
+      this.assignmentsIndexAndDoenetML[assignmentId]['doenetML'] = this.assignmentDoenetML
+      if (!(this.alreadyMadeLink.includes(link)) && link) {
+        console.log("===Making route====")
+        let tree_route_right_column_branch =
+          (
+            <Route key={link} exact path={link}>
+              <>
+
+                {this.rightSideInfoColumn}
+              </>
+
+            </Route>
+
+          )
+        this.tree_route_right_column.push(tree_route_right_column_branch);
+
+        let tree_route_branch =
+          (
+            <Route key={link} exact path={link}>
+              <>
+                <Assignments assignmentDoenetML={this.assignmentDoenetML} />
+
+              </>
+            </Route>
+          )
+        this.tree_route.push(tree_route_branch);
+        this.alreadyMadeLink.push(link)
+        this.assignmentsIndexAndDoenetML[assignmentId]['indexInRouterArray'] = this.tree_route.length - 1
+
+      }
+
+
+    }
+
+    loadAssignmentContent({ contentId, branchId, assignmentId }) {
+      this.thisAssignmentInfo = assignmentId;
+      this.assignmentDoenetML = ""
+      this.assignmentOnScreen = true
+      this.treeOnScreen = false;
+      this.componentLoadedFromNavigationBar = null
+
+      console.log("=======DOWNLOADING ASSIGNMENTS========")
+      this.selectedAssignmentId = assignmentId
+      this.assignmentName = this.assignment_obj[assignmentId]['title']
+      this.assignment_branchId = this.assignment_obj[assignmentId]['branchId']
+      this.dueDate = this.assignment_obj[assignmentId]['dueDate']
+      this.assignedDate = this.assignment_obj[assignmentId]['assignedDate']
+      this.numberOfAttemptsAllowed = this.assignment_obj[assignmentId]['numberOfAttemptsAllowed']
+      contentId = this.assignment_obj[assignmentId]['contentId']
+      branchId = this.assignment_obj[assignmentId]['branchId']
+      const urlGetCode = '/api/getDoenetML.php';
+      console.log(contentId)
+      const data = {
+        branchId: branchId,
+        contentId: contentId
+
+      }
+      const payload = {
+        params: data
+      }
+      let link = null;
+      if (!(this.alreadyLoadAssignment.includes(assignmentId))) {
+        this.alreadyLoadAssignment.push(assignmentId)
+        axios.get(urlGetCode, payload)
+          .then(resp => {
+            let doenetML = resp.data.doenetML;
+
+            this.updateNumber++;
+            this.assignmentDoenetML = doenetML;
+            this.ListOfAlreadyDownLoadDoenetML[assignmentId] = this.assignmentDoenetML
+            console.log("DOENET ML !!")
+            console.log(resp.data)
+            link = "/assignments/" + assignmentId
+            this.loadThisAssignmentInfo({ link: link })
+            if (this.LoadAssignmentFromTheBeginningFlag) {
+              console.log("===LOADING ASSIGNMENT FROM URL===")
+              this.componentLoadedFromNavigationBar = (<Assignments assignmentDoenetML={this.assignmentDoenetML} />)
+              this.LoadAssignmentFromTheBeginningFlag = false
+            }
+          })
+          .catch(error => { this.setState({ error: error }) });
+      }
+      else {
+        this.thisAssignmentInfo = assignmentId
+        this.loadThisAssignmentInfo({ link: link })
+        console.log("==ALREADY DOWNLOAD THAT ASSIGNMENT===")
+      }
 
     }
 
 
-  }
 
-  loadAssignmentContent({ contentId, branchId, assignmentId }) {
-    this.thisAssignmentInfo = assignmentId;
-    this.assignmentDoenetML = ""
-    this.assignmentOnScreen = true
-    this.treeOnScreen = false;
-    this.componentLoadedFromNavigationBar = null
 
-    console.log("=======DOWNLOADING ASSIGNMENTS========")
-    this.selectedAssignmentId = assignmentId
-    this.assignmentName = this.assignment_obj[assignmentId]['name']
-    this.assignment_branchId = this.assignment_obj[assignmentId]['branchId']
-    this.dueDate = this.assignment_obj[assignmentId]['dueDate']
-    this.assignedDate = this.assignment_obj[assignmentId]['assignedDate']
-    this.numberOfAttemptsAllowed = this.assignment_obj[assignmentId]['numberOfAttemptsAllowed']
-    contentId = this.assignment_obj[assignmentId]['contentId']
-    branchId = this.assignment_obj[assignmentId]['branchId']
-    const urlGetCode = '/api/getDoenetML.php';
-    console.log(contentId)
-    const data = {
-      branchId: branchId,
-      contentId: contentId
+    loadOverview() {
+
+      this.doenetML = "";
+      const phpUrl = '/api/getDoenetML.php';
+      const data = {
+        branchId: this.overview_branchId,
+        contentId: "",
+        ListOfContentId: "", //this is to store all contentID of one branchID for publish indication 
+        List_Of_Recent_doenetML: [], // this is to store list of (date:doenetML) 
+      }
+      const payload = {
+        params: data
+      }
+
+      axios.get(phpUrl, payload)
+        .then(resp => {
+          let doenetML = resp.data.doenetML;
+          this.updateNumber++;
+          this.doenetML = doenetML;
+          this.Overview_doenetML = this.doenetML;
+          this.alreadyLoadOverview = true
+          this.loadFirstTrue = (this.Overview_doenetML != "" ? <Overview doenetML={this.Overview_doenetML} /> : null)
+          console.log("from loadOverview line 2606")
+          this.forceUpdate();
+        })
+        .catch(error => { this.setState({ error: error }) });
+
 
     }
-    const payload = {
-      params: data
+
+    buildOverview() {
+      this.mainSection = this.loadingScreen;
+      //talk to database to load fresh info
+      this.overview = (<div className="assignmentContent">
+        {this.doenetML != "" ?
+
+          <DoenetViewer
+            key={"doenetviewer" + this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
+            doenetML={this.Overview_doenetML}
+            mode={{
+              solutionType: this.state.solutionType,
+              allowViewSolutionWithoutRoundTrip: this.state.allowViewSolutionWithoutRoundTrip,
+              showHints: this.state.showHints,
+              showFeedback: this.state.showFeedback,
+              showCorrectness: this.state.showCorrectness,
+            }}
+          /> : null}
+      </div>)
+
+      this.mainSection = this.overview;
     }
-    let link = null;
-    if (!(this.alreadyLoadAssignment.includes(assignmentId))) {
-      this.alreadyLoadAssignment.push(assignmentId)
-      axios.get(urlGetCode, payload)
+
+    loadSyllabus() {
+      console.log("loading SYLLABUS")
+      this.doenetML = "";
+
+      const phpUrl = '/api/getDoenetML.php';
+      const data = {
+        branchId: this.syllabus_branchId,
+        contentId: "",
+        ListOfContentId: "", //this is to store all contentID of one branchID for publish indication 
+        List_Of_Recent_doenetML: [], // this is to store list of (date:doenetML) 
+      }
+      const payload = {
+        params: data
+      }
+
+      axios.get(phpUrl, payload)
         .then(resp => {
           let doenetML = resp.data.doenetML;
 
           this.updateNumber++;
-          this.assignmentDoenetML = doenetML;
-          this.ListOfAlreadyDownLoadDoenetML[assignmentId] = this.assignmentDoenetML
-          console.log("DOENET ML !!")
-          console.log(resp.data)
-          link = "/assignments/" + assignmentId
-          this.loadThisAssignmentInfo({ link: link })
-          if (this.LoadAssignmentFromTheBeginningFlag) {
-            console.log("===LOADING ASSIGNMENT FROM URL===")
-            this.componentLoadedFromNavigationBar = (<Assignments assignmentDoenetML={this.assignmentDoenetML} />)
-            this.LoadAssignmentFromTheBeginningFlag = false
-          }
+          this.doenetML = doenetML;
+
+
+          this.Syllabus_doenetML = this.doenetML;
+          this.alreadyLoadSyllabus = true
+          this.loadFirstTrue = (<Syllabus doenetML={this.Syllabus_doenetML} />)
+
+          console.log("from loadSyllabus line 2666")
+          this.forceUpdate();
+        })
+        .catch(error => { this.setState({ error: error }) });
+
+
+    }
+
+    buildSyllabus() {
+      this.mainSection = this.loadingScreen;
+
+      //talk to database to load fresh info
+      this.overview = (<React.Fragment>
+        {this.doenetML != "" ?
+          <div><DoenetViewer
+            key={"doenetviewer" + this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
+            doenetML={this.Syllabus_doenetML}
+
+            mode={{
+              solutionType: this.state.solutionType,
+              allowViewSolutionWithoutRoundTrip: this.state.allowViewSolutionWithoutRoundTrip,
+              showHints: this.state.showHints,
+              showFeedback: this.state.showFeedback,
+              showCorrectness: this.state.showCorrectness,
+            }}
+          /></div> : null}
+      </React.Fragment>)
+
+      this.mainSection = this.overview;
+    }
+
+
+    loadGrades() {
+      this.scores = {};
+      this.subTotals = {};
+
+      const loadGradsUrl = '/api/loadGradsLearner.php';
+
+      // this.courseId
+      const data = {
+        courseId: this.courseId,
+      }
+      const payload = {
+        params: data
+      }
+
+
+      axios.get(loadGradsUrl, payload)
+        .then(resp => {
+          this.assignmentsData = resp.data.grades;
+          this.student = resp.data.student;
+          this.course = resp.data.course;
+          this.section = resp.data.section;
+          this.group = resp.data.group;
+          console.log("from loadGrades line 2722")
+          this.forceUpdate();
+
         })
         .catch(error => { this.setState({ error: error }) });
     }
-    else {
-      this.thisAssignmentInfo = assignmentId
-      this.loadThisAssignmentInfo({ link: link })
-      console.log("==ALREADY DOWNLOAD THAT ASSIGNMENT===")
-    }
-
-  }
 
 
 
+    buildGradesHelper() {
 
-  loadOverview() {
+      this.total = { possible: 0, score: 0, percentage: '0%' }
 
-    this.doenetML = "";
-    const phpUrl = '/api/getDoenetML.php';
-    const data = {
-      branchId: this.overview_branchId,
-      contentId: "",
-      ListOfContentId: "", //this is to store all contentID of one branchID for publish indication 
-      List_Of_Recent_doenetML: [], // this is to store list of (date:doenetML) 
-    }
-    const payload = {
-      params: data
-    }
+      for (let gcat of this.gradeCategories) {
+        this.scores[gcat] = [];
+        this.subTotals[gcat] = { possible: 0, score: 0, percentage: '0%' };
 
-    axios.get(phpUrl, payload)
-      .then(resp => {
-        let doenetML = resp.data.doenetML;
-        this.updateNumber++;
-        this.doenetML = doenetML;
-        this.Overview_doenetML = this.doenetML;
-        this.alreadyLoadOverview = true
-        this.loadFirstTrue = (this.Overview_doenetML != "" ? <Overview doenetML={this.Overview_doenetML} /> : null)
-        console.log("from loadOverview line 2606")
-        this.forceUpdate();
-      })
-      .catch(error => { this.setState({ error: error }) });
-
-
-  }
-
-  buildOverview() {
-    this.mainSection = this.loadingScreen;
-    //talk to database to load fresh info
-    this.overview = (<div className="assignmentContent">
-      {this.doenetML != "" ?
-
-        <DoenetViewer
-          key={"doenetviewer" + this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
-          doenetML={this.Overview_doenetML}
-          mode={{
-            solutionType: this.state.solutionType,
-            allowViewSolutionWithoutRoundTrip: this.state.allowViewSolutionWithoutRoundTrip,
-            showHints: this.state.showHints,
-            showFeedback: this.state.showFeedback,
-            showCorrectness: this.state.showCorrectness,
-          }}
-        /> : null}
-    </div>)
-
-    this.mainSection = this.overview;
-  }
-
-  loadSyllabus() {
-    console.log("loading SYLLABUS")
-    this.doenetML = "";
-
-    const phpUrl = '/api/getDoenetML.php';
-    const data = {
-      branchId: this.syllabus_branchId,
-      contentId: "",
-      ListOfContentId: "", //this is to store all contentID of one branchID for publish indication 
-      List_Of_Recent_doenetML: [], // this is to store list of (date:doenetML) 
-    }
-    const payload = {
-      params: data
-    }
-
-    axios.get(phpUrl, payload)
-      .then(resp => {
-        let doenetML = resp.data.doenetML;
-
-        this.updateNumber++;
-        this.doenetML = doenetML;
-
-
-        this.Syllabus_doenetML = this.doenetML;
-        this.alreadyLoadSyllabus = true
-        this.loadFirstTrue = (<Syllabus doenetML={this.Syllabus_doenetML} />)
-
-        console.log("from loadSyllabus line 2666")
-        this.forceUpdate();
-      })
-      .catch(error => { this.setState({ error: error }) });
-
-
-  }
-
-  buildSyllabus() {
-    this.mainSection = this.loadingScreen;
-
-    //talk to database to load fresh info
-    this.overview = (<React.Fragment>
-      {this.doenetML != "" ?
-        <div><DoenetViewer
-          key={"doenetviewer" + this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
-          doenetML={this.Syllabus_doenetML}
-
-          mode={{
-            solutionType: this.state.solutionType,
-            allowViewSolutionWithoutRoundTrip: this.state.allowViewSolutionWithoutRoundTrip,
-            showHints: this.state.showHints,
-            showFeedback: this.state.showFeedback,
-            showCorrectness: this.state.showCorrectness,
-          }}
-        /></div> : null}
-    </React.Fragment>)
-
-    this.mainSection = this.overview;
-  }
-
-
-  loadGrades() {
-    this.scores = {};
-    this.subTotals = {};
-
-    const loadGradsUrl = '/api/loadGradsLearner.php';
-
-    // this.courseId
-    const data = {
-      courseId: this.courseId,
-    }
-    const payload = {
-      params: data
-    }
-
-
-    axios.get(loadGradsUrl, payload)
-      .then(resp => {
-        this.assignmentsData = resp.data.grades;
-        this.student = resp.data.student;
-        this.course = resp.data.course;
-        this.section = resp.data.section;
-        this.group = resp.data.group;
-        console.log("from loadGrades line 2722")
-        this.forceUpdate();
-
-      })
-      .catch(error => { this.setState({ error: error }) });
-  }
-
-
-
-  buildGradesHelper() {
-
-    this.total = { possible: 0, score: 0, percentage: '0%' }
-
-    for (let gcat of this.gradeCategories) {
-      this.scores[gcat] = [];
-      this.subTotals[gcat] = { possible: 0, score: 0, percentage: '0%' };
-
-      for (let dObj of this.assignmentsData) {
-        if (dObj.gradeCategory === gcat) {
-          let possible = dObj.totalPointsOrPercent;
-          let percentFLAG = false;
-          if (possible === null) {
-            possible = '--';
-            percentFLAG = true;
-          } else {
-            possible = Number(possible);
-            this.subTotals[gcat].possible += possible;
-          }
-          let score = dObj.credit;
-          if (score === null || possible === null) {
-            score = '--';
-            percentFLAG = true;
-          } else {
-            score = Number(score) * possible;
-            if (!isNaN(score)) {
-              this.subTotals[gcat].score += score;
+        for (let dObj of this.assignmentsData) {
+          if (dObj.gradeCategory === gcat) {
+            let possible = dObj.totalPointsOrPercent;
+            let percentFLAG = false;
+            if (possible === null) {
+              possible = '--';
+              percentFLAG = true;
+            } else {
+              possible = Number(possible);
+              this.subTotals[gcat].possible += possible;
             }
-          }
-          let percentage;
-          if (percentFLAG) {
-            percentage = '--';
-          } else {
-            percentage = Math.round(score / possible * 1000) / 10 + '%';
-          }
+            let score = dObj.credit;
+            if (score === null || possible === null) {
+              score = '--';
+              percentFLAG = true;
+            } else {
+              score = Number(score) * possible;
+              if (!isNaN(score)) {
+                this.subTotals[gcat].score += score;
+              }
+            }
+            let percentage;
+            if (percentFLAG) {
+              percentage = '--';
+            } else {
+              percentage = Math.round(score / possible * 1000) / 10 + '%';
+            }
 
-          if (isNaN(score)) {
-            score = "--";
-          }
+            if (isNaN(score)) {
+              score = "--";
+            }
 
-          this.scores[gcat].push({
-            gradeItem: dObj.assignmentName,
-            assignmentId: dObj.assignmentId,
-            possible: possible,
-            score: score,
-            percentage: percentage
-          });
+            this.scores[gcat].push({
+              gradeItem: dObj.assignmentName,
+              assignmentId: dObj.assignmentId,
+              possible: possible,
+              score: score,
+              percentage: percentage
+            });
+          }
         }
+
+        if (this.subTotals[gcat].score > 0 && this.subTotals[gcat].possible > 0) {
+          this.subTotals[gcat].percentage = Math.round(this.subTotals[gcat].score / this.subTotals[gcat].possible * 1000) / 10 + '%';
+          this.total.score += Number(this.subTotals[gcat].score);
+          this.total.possible += Number(this.subTotals[gcat].possible);
+        }
+
+      }
+      this.total.percentage = '0%';
+      if (!isNaN(this.total.score / this.total.possible * 1000) / 10) {
+        this.total.percentage = Math.round(this.total.score / this.total.possible * 1000) / 10 + '%';
       }
 
-      if (this.subTotals[gcat].score > 0 && this.subTotals[gcat].possible > 0) {
-        this.subTotals[gcat].percentage = Math.round(this.subTotals[gcat].score / this.subTotals[gcat].possible * 1000) / 10 + '%';
-        this.total.score += Number(this.subTotals[gcat].score);
-        this.total.possible += Number(this.subTotals[gcat].possible);
-      }
-
-    }
-    this.total.percentage = '0%';
-    if (!isNaN(this.total.score / this.total.possible * 1000) / 10) {
-      this.total.percentage = Math.round(this.total.score / this.total.possible * 1000) / 10 + '%';
-    }
-
-    //talk to database to load fresh info
-    this.overview = (<React.Fragment>
-      <h2 data-cy="sectionTitle">Grades</h2>
-      <div style={{ marginLeft: "10px" }}>
-        <div>Student: {this.student}</div>
-        {/* <div>Course: {this.course}</div> */}
-        <div>Section: {this.section}</div>
-        {this.group !== '' ? <div>Group: {this.group}</div> : null}
-      </div>
+      //talk to database to load fresh info
+      this.overview = (<React.Fragment>
+        <h2 data-cy="sectionTitle">Grades</h2>
+        <div style={{ marginLeft: "10px" }}>
+          <div>Student: {this.student}</div>
+          {/* <div>Course: {this.course}</div> */}
+          <div>Section: {this.section}</div>
+          {this.group !== '' ? <div>Group: {this.group}</div> : null}
+        </div>
 
 
 
-      <table id="grades">
-        <tbody>
-          <tr className="colHeadingsRow">
-            <th width="581">Grade item</th>
-            <th width="75">Possible points</th>
-            <th width="56">Score</th>
-            <th width="95">Percentage</th>
-          </tr>
-
-          {this.gradeCategories.map(cat => <React.Fragment key={'option' + cat}>
-
-            <tr>
-              <td className="typeHeadingRow" colSpan="4">{cat}</td>
+        <table id="grades">
+          <tbody>
+            <tr className="colHeadingsRow">
+              <th width="581">Grade item</th>
+              <th width="75">Possible points</th>
+              <th width="56">Score</th>
+              <th width="95">Percentage</th>
             </tr>
 
+            {this.gradeCategories.map(cat => <React.Fragment key={'option' + cat}>
 
-            {this.scores[cat].map(
-              (score) => <React.Fragment key={'score_row' + score.assignmentId}>
+              <tr>
+                <td className="typeHeadingRow" colSpan="4">{cat}</td>
+              </tr>
+
+
+              {this.scores[cat].map(
+                (score) => <React.Fragment key={'score_row' + score.assignmentId}>
+                  <tr className="typeDataRow">
+                    <td><span className="assignmentLink" onClick={() => {
+                      this.buildAssignmentGrades({ assignment: score });
+
+                    }}>{score.gradeItem}</span></td>
+                    <td>{score.possible}</td>
+                    <td>{score.score}</td>
+                    <td>{score.percentage}</td>
+                  </tr>
+                </React.Fragment>
+              )}
+
+              <tr className="typeSubTotalDataRow">
+                <td><span>Subtotal for {cat}</span></td>
+                <td>{this.subTotals[cat].possible}</td>
+                <td>{this.subTotals[cat].score}</td>
+                <td>{this.subTotals[cat].percentage}</td>
+              </tr>
+
+
+            </React.Fragment>)}
+
+
+            <tr className="colTotalRow">
+              <td>Total</td>
+              <td>{this.total.possible}</td>
+              <td>{this.total.score}</td>
+              <td>{this.total.percentage}</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </React.Fragment>)
+      this.mainSection = this.overview;
+    }
+
+    buildAssignmentGrades({ assignment }) {
+      this.mainSection = this.loadingScreen;
+      this.assignment = assignment;
+      this.assignmentId = assignment.assignmentId;
+
+      const url = '/api/loadItemGrades.php';
+
+      const data = {
+        courseId: this.courseId,
+        assignmentId: assignment.assignmentId,
+      }
+      const payload = {
+        params: data
+      }
+
+
+      axios.get(url, payload)
+        .then(resp => {
+          this.assignmentItems = resp.data.assignmentItems;
+
+          this.latestAttemptNumber = resp.data.attemptNumber;
+          this.latestAttemptCredit = resp.data.attemptCredit;
+
+          this.buildAssignmentGradesHelper();
+        })
+        .catch(error => { this.setState({ error: error }) });
+    }
+
+    buildAssignmentGradesHelper() {
+      let latestAttemptPercentage = Math.round(Number(this.latestAttemptCredit) * 10000, 2) / 100;
+      latestAttemptPercentage = `${latestAttemptPercentage}%`;
+      for (var item of this.assignmentItems) {
+        let percentage = Math.round(Number(item.credit) * 10000, 2) / 100;
+        item.percentage = `${percentage}%`;
+
+      }
+
+
+      this.mainSection = (<React.Fragment>
+        <button onClick={() => {
+          this.buildGradesHelper({ data: this.assignmentsData });
+        }}>Back to grades</button>
+        <h2 style={{ marginLeft: "10px" }}>{this.assignment.gradeItem}</h2>
+        {this.latestAttemptNumber > 1 ? <p style={{ marginLeft: "10px", fontSize: "16px" }}>Attempt Number: {this.latestAttemptNumber} </p> : null}
+
+        <table id="grades" style={{ width: "400px" }}>
+          <tbody>
+            <tr className="colHeadingsRow">
+              <th width="581">Grade item</th>
+              <th width="95">Percentage</th>
+            </tr>
+
+            {this.assignmentItems.map(
+              (item) => <React.Fragment key={'assignmentItem' + item.title}>
                 <tr className="typeDataRow">
                   <td><span className="assignmentLink" onClick={() => {
-                    this.buildAssignmentGrades({ assignment: score });
+                    // this.buildAssignmentGrades({assignment:score});
+                    this.buildItemGrade({ item });
 
-                  }}>{score.gradeItem}</span></td>
-                  <td>{score.possible}</td>
-                  <td>{score.score}</td>
-                  <td>{score.percentage}</td>
+                  }}>{item.title}</span></td>
+                  <td>{item.percentage}</td>
                 </tr>
               </React.Fragment>
             )}
 
-            <tr className="typeSubTotalDataRow">
-              <td><span>Subtotal for {cat}</span></td>
-              <td>{this.subTotals[cat].possible}</td>
-              <td>{this.subTotals[cat].score}</td>
-              <td>{this.subTotals[cat].percentage}</td>
-            </tr>
 
-
-          </React.Fragment>)}
-
-
-          <tr className="colTotalRow">
-            <td>Total</td>
-            <td>{this.total.possible}</td>
-            <td>{this.total.score}</td>
-            <td>{this.total.percentage}</td>
-          </tr>
-
-        </tbody>
-      </table>
-    </React.Fragment>)
-    this.mainSection = this.overview;
-  }
-
-  buildAssignmentGrades({ assignment }) {
-    this.mainSection = this.loadingScreen;
-    this.assignment = assignment;
-    this.assignmentId = assignment.assignmentId;
-
-    const url = '/api/loadItemGrades.php';
-
-    const data = {
-      courseId: this.courseId,
-      assignmentId: assignment.assignmentId,
-    }
-    const payload = {
-      params: data
-    }
-
-
-    axios.get(url, payload)
-      .then(resp => {
-        this.assignmentItems = resp.data.assignmentItems;
-
-        this.latestAttemptNumber = resp.data.attemptNumber;
-        this.latestAttemptCredit = resp.data.attemptCredit;
-
-        this.buildAssignmentGradesHelper();
-      })
-      .catch(error => { this.setState({ error: error }) });
-  }
-
-  buildAssignmentGradesHelper() {
-    let latestAttemptPercentage = Math.round(Number(this.latestAttemptCredit) * 10000, 2) / 100;
-    latestAttemptPercentage = `${latestAttemptPercentage}%`;
-    for (var item of this.assignmentItems) {
-      let percentage = Math.round(Number(item.credit) * 10000, 2) / 100;
-      item.percentage = `${percentage}%`;
-
-    }
-
-
-    this.mainSection = (<React.Fragment>
-      <button onClick={() => {
-        this.buildGradesHelper({ data: this.assignmentsData });
-      }}>Back to grades</button>
-      <h2 style={{ marginLeft: "10px" }}>{this.assignment.gradeItem}</h2>
-      {this.latestAttemptNumber > 1 ? <p style={{ marginLeft: "10px", fontSize: "16px" }}>Attempt Number: {this.latestAttemptNumber} </p> : null}
-
-      <table id="grades" style={{ width: "400px" }}>
-        <tbody>
-          <tr className="colHeadingsRow">
-            <th width="581">Grade item</th>
-            <th width="95">Percentage</th>
-          </tr>
-
-          {this.assignmentItems.map(
-            (item) => <React.Fragment key={'assignmentItem' + item.title}>
-              <tr className="typeDataRow">
-                <td><span className="assignmentLink" onClick={() => {
-                  // this.buildAssignmentGrades({assignment:score});
-                  this.buildItemGrade({ item });
-
-                }}>{item.title}</span></td>
-                <td>{item.percentage}</td>
+            {this.latestAttemptNumber > 1 ?
+              <tr className="colTotalRow">
+                <td>Total for attempt {this.latestAttemptNumber}</td>
+                <td>{latestAttemptPercentage}</td>
               </tr>
-            </React.Fragment>
-          )}
+              : null}
 
-
-          {this.latestAttemptNumber > 1 ?
             <tr className="colTotalRow">
-              <td>Total for attempt {this.latestAttemptNumber}</td>
-              <td>{latestAttemptPercentage}</td>
+              <td>Total</td>
+              <td>{this.assignment.percentage}</td>
             </tr>
-            : null}
+          </tbody>
+        </table>
+      </React.Fragment>);
 
-          <tr className="colTotalRow">
-            <td>Total</td>
-            <td>{this.assignment.percentage}</td>
-          </tr>
-        </tbody>
-      </table>
-    </React.Fragment>);
+      this.forceUpdate();
 
-    this.forceUpdate();
-
-  }
-
-  buildItemGrade({ item }) {
-
-
-    const url = '/api/loadItemAttemptGrades.php';
-
-    // this.courseId
-    const data = {
-      assignmentId: this.assignmentId,
-      itemNumber: item.itemNumber,
-      attemptNumber: this.latestAttemptNumber,
-    }
-    const payload = {
-      params: data
     }
 
-
-    axios.get(url, payload)
-      .then(resp => {
-
-        this.buildAttemptItemGradesHelper({
-          itemTitle: item.title,
-          itemState: resp.data.itemState,
-          submissionNumber: resp.data.submissionNumber,
-          submittedDate: resp.data.submittedDate,
-          valid: resp.data.valid,
-        });
-      })
-      .catch(error => { this.setState({ error: error }) });
-
-  }
-
-  buildAttemptItemGradesHelper({ itemTitle, itemState, submissionNumber, submittedDate, valid, }) {
+    buildItemGrade({ item }) {
 
 
-    this.mainSection = (<React.Fragment>
-      <button onClick={() => {
-        this.buildGradesHelper({ data: this.assignmentsData });
-      }}>Back to grades</button>
-      <button onClick={() => {
-        this.buildAssignmentGradesHelper();
-      }}>Back to {this.assignment.gradeItem}</button>
-      <h2 style={{ marginLeft: "10px" }}>{this.assignment.gradeItem}: {itemTitle}</h2>
-      {this.latestAttemptNumber > 1 ? <p style={{ marginLeft: "10px", fontSize: "16px" }}>Attempt Number: {this.latestAttemptNumber} </p> : null}
+      const url = '/api/loadItemAttemptGrades.php';
 
-      <DoenetViewer
-        key={"doenetviewer"}
-        //   free={{
-        //   doenetState: itemState,
-        // }} 
-        course={true}
-        attemptNumber={this.latestAttemptNumber}
-        mode={{
-          solutionType: "displayed",
-          allowViewSolutionWithoutRoundTrip: false,
-          showHints: false,
-          showFeedback: true,
-          showCorrectness: true,
-          interactive: false,
-        }}
-      />
-
-    </React.Fragment>);
-    this.forceUpdate();
-  }
-
-
-  componentDidCatch(error, info) {
-    this.setState({ error: error, errorInfo: info });
-  }
-
-
-  loadingGrade() {
-    const loadGradsUrl = '/api/loadGradsLearner.php';
-    const data = {
-      courseId: this.courseId,
-    }
-    const payload = {
-      params: data
-    }
-
-    axios.get(loadGradsUrl, payload)
-      .then(resp => {
-        this.assignmentsData = resp.data.grades;
-        this.student = resp.data.student;
-        this.course = resp.data.course;
-        this.section = resp.data.section;
-        this.group = resp.data.group;
-
-        this.buildGrades();
-        this.loadFirstTrue = (<Grades parentFunction={(e) => {
-          this.activeSection = "assignments";
-          this.loadAssignmentFromGrade = true;
-          this.makeTreeVisible({ loadSpecificId: e })
-        }} />)
-
-
-        this.forceUpdate()
-      })
-      .catch(error => { this.setState({ error: error }) });
-  }
-  loadSection() {
-
-    this.loadFirstTrue = null
-    console.log("loading section !")
-    if (this.activeSection === "overview") {
-
-
-      if (!this.alreadyLoadOverview) {
-        this.loadOverview();
+      // this.courseId
+      const data = {
+        assignmentId: this.assignmentId,
+        itemNumber: item.itemNumber,
+        attemptNumber: this.latestAttemptNumber,
       }
-    } else if (this.activeSection === "syllabus") {
-
-
-      if (!this.alreadyLoadSyllabus) {
-        this.loadSyllabus();
+      const payload = {
+        params: data
       }
-    } else if (this.activeSection === "grades") {
-      this.editCategoryButton = null
 
 
-      this.loadingGrade();
+      axios.get(url, payload)
+        .then(resp => {
+
+          this.buildAttemptItemGradesHelper({
+            itemTitle: item.title,
+            itemState: resp.data.itemState,
+            submissionNumber: resp.data.submissionNumber,
+            submittedDate: resp.data.submittedDate,
+            valid: resp.data.valid,
+          });
+        })
+        .catch(error => { this.setState({ error: error }) });
+
     }
-    else if (this.activeSection === "assignments") {
-      this.editCategoryButton = null
-      console.log("loading assignment")
 
-      this.assignmentIsClicked = true;
-      this.showsAllAssignment = !this.showsAllAssignment;
-      this.assignmentOnScreen = false;
-      this.treeOnScreen = true;
-      this.thisAssignmentInfo = ""
-      this.componentLoadedFromNavigationBar = null;
-      if (this.enableAssignment) {
-        this.makeTreeVisible({ loadSpecificId: "" })
+    buildAttemptItemGradesHelper({ itemTitle, itemState, submissionNumber, submittedDate, valid, }) {
+
+
+      this.mainSection = (<React.Fragment>
+        <button onClick={() => {
+          this.buildGradesHelper({ data: this.assignmentsData });
+        }}>Back to grades</button>
+        <button onClick={() => {
+          this.buildAssignmentGradesHelper();
+        }}>Back to {this.assignment.gradeItem}</button>
+        <h2 style={{ marginLeft: "10px" }}>{this.assignment.gradeItem}: {itemTitle}</h2>
+        {this.latestAttemptNumber > 1 ? <p style={{ marginLeft: "10px", fontSize: "16px" }}>Attempt Number: {this.latestAttemptNumber} </p> : null}
+
+        <DoenetViewer
+          key={"doenetviewer"}
+          //   free={{
+          //   doenetState: itemState,
+          // }} 
+          course={true}
+          attemptNumber={this.latestAttemptNumber}
+          mode={{
+            solutionType: "displayed",
+            allowViewSolutionWithoutRoundTrip: false,
+            showHints: false,
+            showFeedback: true,
+            showCorrectness: true,
+            interactive: false,
+          }}
+        />
+
+      </React.Fragment>);
+      this.forceUpdate();
+    }
+
+
+    componentDidCatch(error, info) {
+      this.setState({ error: error, errorInfo: info });
+    }
+
+
+    loadingGrade() {
+      const loadGradsUrl = '/api/loadGradsLearner.php';
+      const data = {
+        courseId: this.courseId,
       }
+      const payload = {
+        params: data
+      }
+
+      axios.get(loadGradsUrl, payload)
+        .then(resp => {
+          this.assignmentsData = resp.data.grades;
+          this.student = resp.data.student;
+          this.course = resp.data.course;
+          this.section = resp.data.section;
+          this.group = resp.data.group;
+
+          this.buildGrades();
+          this.loadFirstTrue = (<Grades parentFunction={(e) => {
+            this.activeSection = "assignments";
+            this.loadAssignmentFromGrade = true;
+            this.makeTreeVisible({ loadSpecificId: e })
+          }} />)
+
+
+          this.forceUpdate()
+        })
+        .catch(error => { this.setState({ error: error }) });
     }
+    loadSection() {
 
-
-  }
-  makeTreeVisible({ loadSpecificId }) {
-    const url_header_assignment = "/api/getHeaderAndAssignmentInfo.php";
-    this.assignment_obj = {}
-    this.heading_obj = {}
-    const data = {
-      courseId: this.currentCourseId
-    }
-    const payload = {
-      params: data
-    }
-    axios.get(url_header_assignment, payload)
-      .then(resp => {
-        this.obj_return = resp.data;
-
-        this.alreadyMadeTree = true;
-        let iterator = 0;
-        let keys = (Object.keys(this.obj_return));
-        let length = keys.length;
-        while (iterator < length) {
-          let currentId = keys[iterator];
-          let name = this.obj_return[currentId]['name'];
-          let parent = this.obj_return[currentId]['parent']
-          if (parent == null || parent == "null" || parent == "") {
-            parent = null;
-          }
-          let currentIdAttribute = this.obj_return[currentId]['attribute']
-          if (currentIdAttribute === 'header') {
-            let assignmentId = this.obj_return[currentId]['headingId']
-            let headingId = this.obj_return[currentId]['assignmentId']
-            let childrenArray = this.obj_return[currentId]['childrenId'];
-
-            childrenArray.forEach(element => {
-              if (element != null && element != "") {
-                let childAttribute = this.obj_return[element]['attribute']
-                if (childAttribute === "header") {
-                  headingId.push(element)
-                } else {
-                  assignmentId.push(element)
-                }
-              }
-            })
-
-            this.heading_obj[currentId] = { name: name, attribute: "header", parent: parent, headingId: headingId, assignmentId: assignmentId }
-          } else {
-            let contentId = this.obj_return[currentId]['contentId']
-            let branchId = this.obj_return[currentId]['branchId']
-            let assignedDate = this.obj_return[currentId]['assignedDate']
-            let dueDate = this.obj_return[currentId]['dueDate']
-            let numberOfAttemptsAllowed = this.obj_return[currentId]['numberOfAttemptsAllowed']
-            this.assignment_obj[currentId] = {
-              name: name, attribute: "assignment",
-              parent: parent, branchId: branchId, contentId: contentId,
-              assignedDate: assignedDate, dueDate: dueDate, numberOfAttemptsAllowed: numberOfAttemptsAllowed
-            }
-          }
-          iterator++;
-        }
-        this.buildTreeArray()
-        this.buildTree()
-        this.alreadyHadAssignmentsIndexAndDoenetML = true
-        this.assignmentTree = (<div
-        // className="homeActiveSectionMainTree"
-        >{this.tree}</div>);
-
-        if (this.LoadAssignmentFromTheBeginningFlag) {
-          this.loadAssignmentContent({ contentId: null, branchId: null, assignmentId: loadSpecificId })
-          this.LoadAssignmentFromTheBeginningFlag = false
-        }
-        if (this.loadAssignmentFromGrade) {
-          this.loadAssignmentContent({ contentId: null, branchId: null, assignmentId: loadSpecificId })
-          this.loadAssignmentFromGrade = false
-        }
-        this.forceUpdate();
-
-      }).catch(error => { this.setState({ error: error }) });
-
-
-  }
-  updateLocationBar(assignmentId = this.assignmentId, activeSection = this.activeSection) {
-    window.location.href = "/course/#/" + this.activeSection
-
-  }
-  makingSwitchAndEditButton() {
-    this.editCategoryButton = null
-    this.switchCategoryButton = null
-    if (this.rightToEdit) {
+      this.loadFirstTrue = null
+      console.log("loading section !")
       if (this.activeSection === "overview") {
-        this.editCategoryButton = (
-          <button
-            style={{
-              backgroundColor: "#4CAF50",
-              border: "none",
-              color: "white",
-              padding: "8px 15px",
-              textAlign: "center",
-              textDecoration: "none",
-              display: "inline-block",
-              fontSize: "16px",
-              margin: "4px 2px",
-              cursor: "pointer"
-            }}
-            onClick={() => window.location.href = "/editor/?branchId=" + this.overview_branchId}
-          >
-            <FontAwesomeIcon className="Section-Icon" icon={faEdit} />
-          </button>
-        )
-        this.switchCategoryButton = (
-          <div style={{ padding: "2px 2px 2px 2px", margin: "5px 2px 2px 2px" }}>
-            <label className="switch">
-              <input
-                type="checkbox"
-                checked={this.enableOverview}
-                onChange={(e) => {
-                  this.enableOverview = !this.enableOverview;
-                  this.newChange = true;
-                  this.findEnabledCategory();
-                }} />
-              <span className="slider round"></span>
-            </label>
-          </div>
-        )
-      }
-      else if (this.activeSection === "syllabus") {
 
-        this.editCategoryButton = (
-          <button
-            style={{
-              backgroundColor: "#4CAF50",
-              border: "none",
-              color: "white",
-              padding: "8px 15px",
-              textAlign: "center",
-              textDecoration: "none",
-              display: "inline-block",
-              fontSize: "16px",
-              margin: "4px 2px",
-              cursor: "pointer"
-            }}
-            onClick={() => window.location.href = "/editor/?branchId=" + this.syllabus_branchId}
-          >
-            <FontAwesomeIcon className="Section-Icon" icon={faEdit} />
-          </button>
-        )
-        this.switchCategoryButton = (
-          <div style={{ padding: "2px 2px 2px 2px", margin: "5px 2px 2px 2px" }}>
-            <label className="switch">
-              <input
-                type="checkbox"
-                checked={this.enableSyllabus}
-                onChange={(e) => {
-                  this.enableSyllabus = !this.enableSyllabus;
-                  this.newChange = true;
-                  this.findEnabledCategory();
-                }} />
-              <span className="slider round"></span>
-            </label>
-          </div>
-        )
-      }
-      else if (this.activeSection === "grades") {
+
+        if (!this.alreadyLoadOverview) {
+          this.loadOverview();
+        }
+      } else if (this.activeSection === "syllabus") {
+
+
+        if (!this.alreadyLoadSyllabus) {
+          this.loadSyllabus();
+        }
+      } else if (this.activeSection === "grades") {
         this.editCategoryButton = null
-        this.switchCategoryButton = (
-          <div style={{ padding: "2px 2px 2px 2px", margin: "5px 2px 2px 2px" }}>
-            <label className="switch">
-              <input
-                type="checkbox"
-                checked={this.enableGrade}
-                onChange={(e) => {
-                  this.enableGrade = !this.enableGrade;
-                  this.newChange = true;
-                  this.findEnabledCategory();
-                }} />
-              <span className="slider round"></span>
-            </label>
-          </div>
-        )
+
+
+        this.loadingGrade();
       }
       else if (this.activeSection === "assignments") {
         this.editCategoryButton = null
-        this.switchCategoryButton = (
-          <div style={{ padding: "2px 2px 2px 2px", margin: "5px 2px 2px 2px" }}>
-            <label className="switch">
-              <input
-                type="checkbox"
-                checked={this.enableAssignment}
-                onChange={(e) => {
-                  this.enableAssignment = !this.enableAssignment;
-                  this.newChange = true;
-                  this.findEnabledCategory();
-                }} />
-              <span className="slider round"></span>
-            </label>
-          </div>
-        )
-      }
-    }
-  }
-  render() {
-    console.log("====RENDER====");
+        this.assignments_and_headings_loaded = false;
+        console.log("loading assignment")
 
-    this.makingSwitchAndEditButton()
-    this.overview_link = null
-    this.syllabus_link = null
-    this.grade_link = null
-    this.assignment_link = null
-
-    if (!this.alreadyLoadAllCourses) {
-      this.loadAllCourses()
-    }
-    if (this.courseIdsArray == []) {
-      console.log(" from line 3240, this.courseIdsArray==[]")
-      this.forceUpdate()
-    }
-    let found = false
-    this.trueList.forEach(e => {
-      if (e === this.activeSection && found === false) {
-        found = true
-      }
-    });
-    if (this.DoneLoading === true && found === false && this.activeSection != null) {
-      this.activeSection = this.trueList[0]
-      this.updateLocationBar() // this make sure it has the correct URL
-    }
-
-
-    if (this.newChange === true) {
-      this.ToggleList();
-    }
-    let overview_class = "SectionContainer";
-    let syllabus_class = "SectionContainer";
-    let grade_class = "SectionContainer";
-    let assignment_class = "SectionContainer";
-
-    let overview_class_text = "Section-Text";
-    let syllabus_class_text = "Section-Text";
-    let grade_class_text = "Section-Text";
-    let assignment_class_text = "Section-Text";
-    if (!this.enableOverview) {
-      overview_class_text += " disabled"
-    }
-    if (!this.enableSyllabus) {
-      syllabus_class_text += " disabled"
-    }
-    if (!this.enableGrade) {
-      grade_class_text += " disabled"
-    }
-    if (!this.enableAssignment) {
-      assignment_class_text += " disabled"
-    }
-    if (this.activeSection === "overview") {
-      overview_class = "SectionContainer-Active";
-    } else if (this.activeSection === "syllabus") {
-      syllabus_class = "SectionContainer-Active";
-    } else if (this.activeSection === "grades") {
-      grade_class = "SectionContainer-Active";
-    } else if (this.activeSection === "assignments") {
-      assignment_class = "SectionContainer-Active";
-    }
-    if (this.rightToEdit || (this.rightToView && this.enableOverview)) {
-      this.allElementsCopy['element01'] = {
-        type: "IndependentItem",
-        thisElementLabel: "overview",
-        grayOut: !this.enableOverview,
-        callBack: (() => {
-          this.activeSection = "overview";
-          this.thisAssignmentInfo = "";
-          this.loadSection();
-          this.componentLoadedFromNavigationBar = null;
-          console.log("clicking overview_link")
-          this.forceUpdate()
+        this.assignmentIsClicked = true;
+        this.showsAllAssignment = !this.showsAllAssignment;
+        this.assignmentOnScreen = false;
+        this.treeOnScreen = true;
+        this.thisAssignmentInfo = ""
+        this.componentLoadedFromNavigationBar = null;
+        if (this.enableAssignment) {
+          this.makeTreeVisible({ loadSpecificId: "" })
         }
-        ),
-      }
-
-    }
-    if (this.rightToEdit || (this.rightToView && this.enableSyllabus)) {
-      this.allElementsCopy['element02'] = {
-        type: "IndependentItem",
-        thisElementLabel: "syllabus",
-        grayOut: !this.enableSyllabus,
-        callBack: (() => {
-          this.activeSection = "syllabus";
-          this.thisAssignmentInfo = "";
-          this.loadSection();
-          this.componentLoadedFromNavigationBar = null;
-          console.log("clicking syllabus_link")
-          this.forceUpdate()
-        }
-        ),
-      }
-
-
-    }
-    if (this.rightToEdit || (this.rightToView && this.enableGrade)) {
-      this.allElementsCopy['element03'] = {
-        type: "IndependentItem",
-        thisElementLabel: "grades",
-        grayOut: !this.enableGrade,
-        callBack: (() => {
-          this.activeSection = "grades";
-          this.thisAssignmentInfo = "";
-          this.loadSection();
-          this.componentLoadedFromNavigationBar = null;
-          this.editCategoryButton = null
-          console.log("clicking grade_link")
-          this.forceUpdate()
-        }
-        ),
-      }
-
-      this.grade_route = (
-        <Route key="grades" exact path="/grades">
-          <Grades parentFunction={(e) => { this.activeSection = "assignments"; this.loadAssignmentFromGrade = true; this.makeTreeVisible({ loadSpecificId: e }) }} />
-          {/* //this.props.student, this.props.sections, this.props.group,
-                  // this.props.gradeCategories, this.props.score, this.props.subtotal
-                  // this.props.total */}
-          {/* {this.gradeComponent} */}
-        </Route>
-      )
-    }
-    if (this.rightToEdit || (this.rightToView && this.enableAssignment)) {
-      this.allElementsCopy['element04'] = {
-        type: "IndependentItem",
-        thisElementLabel: "assignments",
-        grayOut: !this.enableAssignment,
-        callBack: (() => {
-          this.activeSection = "assignments";
-          this.thisAssignmentInfo = "";
-          this.loadSection();
-          this.componentLoadedFromNavigationBar = null;
-          this.editCategoryButton = null
-          console.log("clicking assignment_link")
-          this.forceUpdate()
-        }
-        ),
       }
 
 
     }
 
-    if (this.AssignmentInfoChanged) {
-      this.AssignmentInfoChanged = false;
-      this.saveAssignmentInfo()
-    }
-    // making courses to choose
-    if (this.courseIdsArray != []) {
-      this.coursesToChoose = {}
-      this.courseIdsArray.map((id) => {
-        this.coursesToChoose[id] = {
-          showText: this.courseInfo[id]['courseName'],
-          callBackFunction: (e) => { // changing
-
-            this.updateNumber += 1
-            this.alreadyHasCourseInfo = false
-            this.alreadyLoadAssignment = []
-            this.alreadyMadeLink = []
-            this.tree_route = []
-            this.tree_route_right_column = []
-
-
-            this.overview_branchId = ""
-            this.syllabus_branchId = ""
-
-            this.overview_link = null
-            this.syllabus_link = null
-            this.grade_link = null
-            this.assignment_link = null
-
-            this.currentCourseId = e;
-            this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
-            this.adminAccess = this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
-            this.rightToView = false
-            this.rightToEdit = false
-            this.instructorRights = false
-            if (this.accessAllowed === "1") {
-              this.rightToView = true
-              if (this.adminAccess === "1") {
-                this.rightToEdit = true
-                this.instructorRights = true
+    loadCourseHeadingsAndAssignments(courseId) {
+      this.assignments_and_headings_loaded = false;
+      const url = "/api/getHeaderAndAssignmentInfo.php";
+      const data = {
+        courseId: courseId
+      }
+      const payload = {
+        params: data
+      }
+      axios.get(url, payload).then(resp => {
+        console.log(resp.data);
+        let tempHeadingsInfo = {};
+        let tempAssignmentsInfo = {};
+        let tempUrlsInfo = {};
+        Object.keys(resp.data).map(itemId => {
+          if (resp.data[itemId]["type"] == "folder") {
+            tempHeadingsInfo[itemId] = resp.data[itemId];
+            tempHeadingsInfo[itemId]["type"] = "folder";
+            // process children
+            for (let i in resp.data[itemId]["childrenId"]) {
+              let childId = resp.data[itemId]["childrenId"][i];
+              if (childId == "") continue;
+              if (resp.data[childId]["type"] == "folder") {
+                tempHeadingsInfo[itemId]["childFolders"].push(childId);
+              } else if (resp.data[childId]["type"] == "content") {
+                tempHeadingsInfo[itemId]["childContent"].push(childId);
+              } else {
+                tempHeadingsInfo[itemId]["childUrls"].push(childId);
               }
             }
-            this.usingDefaultCourseId = false
-            this.alreadyLoadAllCourses = false
-
-            this.forceUpdate()
-            // this.courseChosenCallBack({e:e})
+          } else if (resp.data[itemId]["type"] == "content") {
+            tempAssignmentsInfo[itemId] = resp.data[itemId];
+            tempAssignmentsInfo[itemId]["type"] = "content";
           }
-        }
-      })
+        })
+        this.headingsInfo = Object.assign({}, this.headingsInfo, { [courseId]: tempHeadingsInfo });
+        this.assignmentsInfo = Object.assign({}, this.assignmentsInfo, { [courseId]: tempAssignmentsInfo });
+        this.assignments_and_headings_loaded = true;
+        this.forceUpdate();
+      }).catch(error => {
+        this.setState({ error: error })
+      });
     }
 
-    return (
-      <React.Fragment>
-        {/* <div className="courseContainer"> */}
+    makeTreeVisible({ loadSpecificId }) {
+      this.loadCourseHeadingsAndAssignments(this.currentCourseId);
+    }
 
-        <ToolLayout headerConfig={this.state.headerConfig} toolName="Course">
-          <ToolLayoutPanel
-            key={"TLP01" + this.updateNumber++}
-            panelName="context"
-            panelHeaderControls={[
-              (this.coursesToChoose ?
-                <Menu
-                  currentTool={"something"}
-                  width={"200px"}
-                  key={"menu00" + (this.updateNumber++)}
-                  //showThisRole={"N/A"}
+    // makeTreeVisible({loadSpecificId}) {
+    //   const url_header_assignment = "/api/getHeaderAndAssignmentInfo.php";
+    //   this.assignment_obj = {}
+    //   this.heading_obj = {}
+    //   const data={        
+    //     courseId:this.currentCourseId
+    //   }
+    //   const payload = {
+    //     params: data
+    //   }
+    //     axios.get(url_header_assignment,payload)
+    //   .then (resp=>{
+    //     this.obj_return = resp.data;
 
-                  showThisRole={this.currentCourseId && this.courseInfo ? (this.courseInfo[this.currentCourseId]['courseName'] + "  ") : "NONE"}
-                  itemsToShow={this.coursesToChoose}
-                  offsetPos={-55}
-                  menuWidth={"200px"}
-                />
-                : null)
-            ]}
-          >
-            <Router>
-              <>
+    //     this.alreadyMadeTree=true;
+    //     let iterator=0;      
+    //     let keys = (Object.keys(this.obj_return));
+    //     let length = keys.length;
+    //     while (iterator<length){
+    //       let currentId = keys[iterator];
+    //       let title = this.obj_return[currentId]['title'];
+    //       let parentId = this.obj_return[currentId]['parentId']
+    //       if (parentId==null || parentId=="null" || parentId==""){
+    //         parentId=null;
+    //       }
+    //       let currentIdAttribute = this.obj_return[currentId]['type']
+    //       if (currentIdAttribute==='header'){
+    //         let childAssignments = this.obj_return[currentId]['childAssignments']
+    //         let childHeadings = this.obj_return[currentId]['childHeadings']
+    //         let childrenArray = this.obj_return[currentId]['childrenId'];
+
+    //           childrenArray.forEach(element=>{
+    //             if (element!=null && element!=""){
+    //               let childAttribute = this.obj_return[element]['type']
+    //               if (childAttribute==="header"){
+    //                 childHeadings.push(element)
+    //               } else {
+    //                 childAssignments.push(element)
+    //               }
+    //             }               
+    //           })
+
+    //         this.heading_obj [currentId]={title:title,type:"header",parentId:parentId,childHeadings:childHeadings,childAssignments:childAssignments}
+    //       } else {
+    //         let contentId = this.obj_return[currentId]['contentId']
+    //         let branchId = this.obj_return[currentId]['branchId']
+    //         let assignedDate = this.obj_return[currentId]['assignedDate']
+    //         let dueDate = this.obj_return[currentId]['dueDate']
+    //         let numberOfAttemptsAllowed = this.obj_return[currentId]['numberOfAttemptsAllowed']
+    //         this.assignment_obj [currentId]={title:title,type:"assignment",
+    //         parentId:parentId,branchId:branchId,contentId:contentId,
+    //         assignedDate:assignedDate,dueDate:dueDate,numberOfAttemptsAllowed:numberOfAttemptsAllowed
+    //       }
+    //       }
+    //       iterator++;
+    //     }
+    //       this.buildTreeArray()
+    //       this.buildTree()
+    //       this.alreadyHadAssignmentsIndexAndDoenetML = true
+    //       this.assignmentTree = (<div 
+    //         // className="homeActiveSectionMainTree"
+    //       >{this.tree}</div>);
+
+    //       if (this.LoadAssignmentFromTheBeginningFlag) {
+    //       this.loadAssignmentContent({contentId:null,branchId:null,assignmentId:loadSpecificId})
+    //       this.LoadAssignmentFromTheBeginningFlag=false
+    //       }
+    //       if (this.loadAssignmentFromGrade){
+    //       this.loadAssignmentContent({contentId:null,branchId:null,assignmentId:loadSpecificId})
+    //       this.loadAssignmentFromGrade=false
+    //       }
+    //     this.forceUpdate();
+
+    //   }).catch(error=>{this.setState({error:error})});
+
+
+    // }
+
+    updateLocationBar(assignmentId = this.assignmentId, activeSection = this.activeSection){
+      window.location.href = "/course/#/" + this.activeSection
+
+    }
+    makingSwitchAndEditButton() {
+      this.editCategoryButton = null
+      this.switchCategoryButton = null
+      if (this.rightToEdit) {
+        if (this.activeSection === "overview") {
+          this.editCategoryButton = (
+            <button
+              style={{
+                backgroundColor: "#4CAF50",
+                border: "none",
+                color: "white",
+                padding: "8px 15px",
+                textAlign: "center",
+                textDecoration: "none",
+                display: "inline-block",
+                fontSize: "16px",
+                margin: "4px 2px",
+                cursor: "pointer"
+              }}
+              onClick={() => window.location.href = "/editor/?branchId=" + this.overview_branchId}
+            >
+              <FontAwesomeIcon className="Section-Icon" icon={faEdit} />
+            </button>
+          )
+          this.switchCategoryButton = (
+            <div style={{ padding: "2px 2px 2px 2px", margin: "5px 2px 2px 2px" }}>
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={this.enableOverview}
+                  onChange={(e) => {
+                    this.enableOverview = !this.enableOverview;
+                    this.newChange = true;
+                    this.findEnabledCategory();
+                  }} />
+                <span className="slider round"></span>
+              </label>
+            </div>
+          )
+        }
+        else if (this.activeSection === "syllabus") {
+
+          this.editCategoryButton = (
+            <button
+              style={{
+                backgroundColor: "#4CAF50",
+                border: "none",
+                color: "white",
+                padding: "8px 15px",
+                textAlign: "center",
+                textDecoration: "none",
+                display: "inline-block",
+                fontSize: "16px",
+                margin: "4px 2px",
+                cursor: "pointer"
+              }}
+              onClick={() => window.location.href = "/editor/?branchId=" + this.syllabus_branchId}
+            >
+              <FontAwesomeIcon className="Section-Icon" icon={faEdit} />
+            </button>
+          )
+          this.switchCategoryButton = (
+            <div style={{ padding: "2px 2px 2px 2px", margin: "5px 2px 2px 2px" }}>
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={this.enableSyllabus}
+                  onChange={(e) => {
+                    this.enableSyllabus = !this.enableSyllabus;
+                    this.newChange = true;
+                    this.findEnabledCategory();
+                  }} />
+                <span className="slider round"></span>
+              </label>
+            </div>
+          )
+        }
+        else if (this.activeSection === "grades") {
+          this.editCategoryButton = null
+          this.switchCategoryButton = (
+            <div style={{ padding: "2px 2px 2px 2px", margin: "5px 2px 2px 2px" }}>
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={this.enableGrade}
+                  onChange={(e) => {
+                    this.enableGrade = !this.enableGrade;
+                    this.newChange = true;
+                    this.findEnabledCategory();
+                  }} />
+                <span className="slider round"></span>
+              </label>
+            </div>
+          )
+        }
+        else if (this.activeSection === "assignments") {
+          this.editCategoryButton = null
+          this.switchCategoryButton = (
+            <div style={{ padding: "2px 2px 2px 2px", margin: "5px 2px 2px 2px" }}>
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={this.enableAssignment}
+                  onChange={(e) => {
+                    this.enableAssignment = !this.enableAssignment;
+                    this.newChange = true;
+                    this.findEnabledCategory();
+                  }} />
+                <span className="slider round"></span>
+              </label>
+            </div>
+          )
+        }
+      }
+    }
+    render() {
+      console.log("====RENDER====");
+
+      this.makingSwitchAndEditButton()
+      this.overview_link = null
+      this.syllabus_link = null
+      this.grade_link = null
+      this.assignment_link = null
+
+      if (!this.alreadyLoadAllCourses) {
+        this.loadAllCourses()
+      }
+      if (this.courseIdsArray == []) {
+        console.log(" from line 3240, this.courseIdsArray==[]")
+        this.forceUpdate()
+      }
+      let found = false
+      this.trueList.forEach(e => {
+        if (e === this.activeSection && found === false) {
+          found = true
+        }
+      });
+      if (this.DoneLoading === true && found === false && this.activeSection != null) {
+        this.activeSection = this.trueList[0]
+        this.updateLocationBar() // this make sure it has the correct URL
+      }
+
+
+      if (this.newChange === true) {
+        this.ToggleList();
+      }
+      let overview_class = "SectionContainer";
+      let syllabus_class = "SectionContainer";
+      let grade_class = "SectionContainer";
+      let assignment_class = "SectionContainer";
+
+      let overview_class_text = "Section-Text";
+      let syllabus_class_text = "Section-Text";
+      let grade_class_text = "Section-Text";
+      let assignment_class_text = "Section-Text";
+      if (!this.enableOverview) {
+        overview_class_text += " disabled"
+      }
+      if (!this.enableSyllabus) {
+        syllabus_class_text += " disabled"
+      }
+      if (!this.enableGrade) {
+        grade_class_text += " disabled"
+      }
+      if (!this.enableAssignment) {
+        assignment_class_text += " disabled"
+      }
+      if (this.activeSection === "overview") {
+        overview_class = "SectionContainer-Active";
+      } else if (this.activeSection === "syllabus") {
+        syllabus_class = "SectionContainer-Active";
+      } else if (this.activeSection === "grades") {
+        grade_class = "SectionContainer-Active";
+      } else if (this.activeSection === "assignments") {
+        assignment_class = "SectionContainer-Active";
+      }
+      if (this.rightToEdit || (this.rightToView && this.enableOverview)) {
+        this.allElementsCopy['element01'] = {
+          type: "IndependentItem",
+          thisElementLabel: "overview",
+          grayOut: !this.enableOverview,
+          callBack: (() => {
+            this.activeSection = "overview";
+            this.thisAssignmentInfo = "";
+            this.loadSection();
+            this.componentLoadedFromNavigationBar = null;
+            console.log("clicking overview_link")
+            this.forceUpdate()
+          }
+          ),
+        }
+
+      }
+      if (this.rightToEdit || (this.rightToView && this.enableSyllabus)) {
+        this.allElementsCopy['element02'] = {
+          type: "IndependentItem",
+          thisElementLabel: "syllabus",
+          grayOut: !this.enableSyllabus,
+          callBack: (() => {
+            this.activeSection = "syllabus";
+            this.thisAssignmentInfo = "";
+            this.loadSection();
+            this.componentLoadedFromNavigationBar = null;
+            console.log("clicking syllabus_link")
+            this.forceUpdate()
+          }
+          ),
+        }
+
+
+      }
+      console.log(this.assignment_obj);
+      console.log(this.heading_obj);
+      if (this.rightToEdit || (this.rightToView && this.enableGrade)) {
+        this.allElementsCopy['element03'] = {
+          type: "IndependentItem",
+          thisElementLabel: "grades",
+          grayOut: !this.enableGrade,
+          callBack: (() => {
+            this.activeSection = "grades";
+            this.thisAssignmentInfo = "";
+            this.loadSection();
+            this.componentLoadedFromNavigationBar = null;
+            this.editCategoryButton = null
+            console.log("clicking grade_link")
+            this.forceUpdate()
+          }
+          ),
+        }
+
+        this.grade_route = (
+          <Route key="grades" exact path="/grades">
+            <Grades parentFunction={(e) => { this.activeSection = "assignments"; this.loadAssignmentFromGrade = true; this.makeTreeVisible({ loadSpecificId: e }) }} />
+            {/* //this.props.student, this.props.sections, this.props.group,
+                  // this.props.gradeCategories, this.props.score, this.props.subtotal
+                  // this.props.total */}
+            {/* {this.gradeComponent} */}
+          </Route>
+        )
+      }
+      if (this.rightToEdit || (this.rightToView && this.enableAssignment)) {
+        this.allElementsCopy['element04'] = {
+          type: "IndependentItem",
+          thisElementLabel: "assignments",
+          grayOut: !this.enableAssignment,
+          callBack: (() => {
+            this.activeSection = "assignments";
+            this.thisAssignmentInfo = "";
+            this.loadSection();
+            this.componentLoadedFromNavigationBar = null;
+            this.editCategoryButton = null
+            console.log("clicking assignment_link")
+            this.forceUpdate()
+          }
+          ),
+        }
+
+
+      }
+
+      if (this.AssignmentInfoChanged) {
+        this.AssignmentInfoChanged = false;
+        this.saveAssignmentInfo()
+      }
+      // making courses to choose
+      if (this.courseIdsArray != []) {
+        this.coursesToChoose = {}
+        this.courseIdsArray.map((id) => {
+          this.coursesToChoose[id] = {
+            showText: this.courseInfo[id]['courseName'],
+            callBackFunction: (e) => { // changing
+
+              this.updateNumber += 1
+              this.alreadyHasCourseInfo = false
+              this.alreadyLoadAssignment = []
+              this.alreadyMadeLink = []
+              this.tree_route = []
+              this.tree_route_right_column = []
+
+
+              this.overview_branchId = ""
+              this.syllabus_branchId = ""
+
+              this.overview_link = null
+              this.syllabus_link = null
+              this.grade_link = null
+              this.assignment_link = null
+
+              this.currentCourseId = e;
+              this.accessAllowed = this.coursesPermissions['courseInfo'][this.currentCourseId]['accessAllowed'];
+              this.adminAccess = this.coursesPermissions['courseInfo'][this.currentCourseId]['adminAccess'];
+              this.rightToView = false
+              this.rightToEdit = false
+              this.instructorRights = false
+              if (this.accessAllowed === "1") {
+                this.rightToView = true
+                if (this.adminAccess === "1") {
+                  this.rightToEdit = true
+                  this.instructorRights = true
+                }
+              }
+              this.usingDefaultCourseId = false
+              this.alreadyLoadAllCourses = false
+
+              this.forceUpdate()
+              // this.courseChosenCallBack({e:e})
+            }
+          }
+        })
+      }
+
+      return (
+        <React.Fragment>
+          {/* <div className="courseContainer"> */}
+
+          <ToolLayout headerConfig={this.state.headerConfig} toolName="Course">
+            <ToolLayoutPanel
+              key={"TLP01" + this.updateNumber++}
+              panelName="context"
+              panelHeaderControls={[
+                (this.coursesToChoose ?
+                  <Menu
+                    currentTool={"something"}
+                    width={"200px"}
+                    key={"menu00" + (this.updateNumber++)}
+                    //showThisRole={"N/A"}
+
+                    showThisRole={this.currentCourseId && this.courseInfo ? (this.courseInfo[this.currentCourseId]['courseName'] + "  ") : "NONE"}
+                    itemsToShow={this.coursesToChoose}
+                    offsetPos={-55}
+                    menuWidth={"200px"}
+                  />
+                  : null)
+              ]}
+            >
+              <Router>
+                <>
 
 
 
-                {/* {this.activeSection==="assignments"?this.assignmentTree:null}  */}
+                  {/* {this.activeSection==="assignments"?this.assignmentTree:null}  */}
 
 
-              </>
-            </Router>
-            <SelectionSet
-              key={"SelectSet1" + (this.updateNumber++)}
-              // CommonCallBack={(e)=>{console.log(e)}}
-              allElements={this.allElementsCopy}
-              type={"Link"}
-              forceSelected={this.activeSection}
-              gradeOut={[this.listGrayOut]}
-            />
-            {/* {this.activeSection==="assignments"?this.assignmentTree:null} */}
-            {/* <SelectionSet 
+                </>
+              </Router>
+              <SelectionSet
+                key={"SelectSet1" + (this.updateNumber++)}
+                // CommonCallBack={(e)=>{console.log(e)}}
+                allElements={this.allElementsCopy}
+                type={"Link"}
+                forceSelected={this.activeSection}
+                gradeOut={[this.listGrayOut]}
+              />
+              {/* {this.activeSection==="assignments"?this.assignmentTree:null} */}
+              {/* <SelectionSet 
             key={"SelectSet1"+(this.updateNumber++)}
             CommonCallBack={(e)=>{console.log("common callback: "+e)}} //default callBack for every choices
             allElements={
@@ -3359,64 +3440,71 @@ class DoenetCourse extends Component {
             }
             /> */}
 
-          </ToolLayoutPanel>
+            </ToolLayoutPanel>
 
-          <ToolLayoutPanel
-            key={"TLP02" + this.updateNumber++}
-            panelName="Editor"
-            panelHeaderControls={[
-              (this.activeSection === "grades" || this.activeSection === "assignments" ? null :
-                this.editCategoryButton),
-              this.switchCategoryButton
+            <ToolLayoutPanel
+              key={"TLP02" + this.updateNumber++}
+              panelName="Editor"
+              panelHeaderControls={[
+                (this.activeSection === "grades" || this.activeSection === "assignments" ? null :
+                  this.editCategoryButton),
+                this.switchCategoryButton
 
-            ]}
-          >
-            <Router>
-              <>
-                <Switch>
-                  <Route key="overview" exact path="/overview">
-                    {this.Overview_doenetML != "" && this.Overview_doenetML != undefined ?
-                      <Overview doenetML={this.Overview_doenetML}
+              ]}
+            >
+              <Router>
+                <>
+                  <Switch>
+                    <Route key="overview" exact path="/overview">
+                      {this.Overview_doenetML != "" && this.Overview_doenetML != undefined ?
+                        <Overview doenetML={this.Overview_doenetML}
 
-                      />
-                      : null}
-                  </Route>
-                  <Route key="syllabus" exact path="/syllabus">
-                    {this.Syllabus_doenetML != "" && this.Syllabus_doenetML != undefined ? <Syllabus doenetML={this.Syllabus_doenetML} /> : null}
-                  </Route>
-                  {this.grade_route}
-                  <Route key="/" exact path="/">
-                    {this.loadFirstTrue}
-                  </Route>
-                  <Route key="assignments" exact path='/Assignments'>
-                  </Route>
-                  {this.tree_route}
-                </Switch>
-              </>
-            </Router>
-          </ToolLayoutPanel>
+                        />
+                        : null}
+                    </Route>
+                    <Route key="syllabus" exact path="/syllabus">
+                      {this.Syllabus_doenetML != "" && this.Syllabus_doenetML != undefined ? <Syllabus doenetML={this.Syllabus_doenetML} /> : null}
+                    </Route>
+                    {this.grade_route}
+                    <Route key="/" exact path="/">
+                      {this.loadFirstTrue}
+                    </Route>
+                    <Route key="assignments" exact path='/Assignments'>
+                      {this.assignments_and_headings_loaded && <DoenetAssignmentTree
+                        loading={!this.assignments_and_headings_loaded}
+                        containerId={this.currentCourseId}
+                        treeHeadingsInfo={this.headingsInfo[this.currentCourseId] ? this.headingsInfo[this.currentCourseId] : {}}
+                        treeAssignmentsInfo={this.assignmentsInfo[this.currentCourseId] ? this.assignmentsInfo[this.currentCourseId] : {}}
+                      // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}
+                      />}
+                    </Route>
+                    {/* {this.tree_route} */}
+                  </Switch>
+                </>
+              </Router>
+            </ToolLayoutPanel>
 
-          <ToolLayoutPanel
-            key={"TLP03" + this.updateNumber++}>
-            <Router>
-              <>
-                <Switch>
-                  {this.tree_route_right_column}
-                </Switch>
-              </>
-            </Router>
-          </ToolLayoutPanel>
-        </ToolLayout>
+            <ToolLayoutPanel
+              key={"TLP03" + this.updateNumber++}>
+              <Router>
+                <>
+                  <Switch>
+                    {this.tree_route_right_column}
+                  </Switch>
+                </>
+              </Router>
+            </ToolLayoutPanel>
+          </ToolLayout>
 
-        {/* </div> */}
+          {/* </div> */}
 
 
 
-      </React.Fragment>)
+        </React.Fragment>)
 
+    }
   }
-}
 
 
 
-export default DoenetCourse;
+  export default DoenetCourse;

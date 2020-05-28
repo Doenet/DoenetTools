@@ -23,7 +23,7 @@ if (!isset($_REQUEST["courseId"])) {
 
     if ($result->num_rows == 1) {
         $sql = "
-            SELECT a.assignmentId, a.assignmentName, ua.credit, ua.username
+            SELECT a.assignmentId, a.title, ua.credit, ua.username
             FROM assignment AS a
             RIGHT JOIN user_assignment AS ua
             ON a.assignmentId = ua.assignmentId
@@ -38,7 +38,7 @@ if (!isset($_REQUEST["courseId"])) {
             array_push($response_arr,
                 array(
                     $row['assignmentId'],
-                    $row['assignmentName'],
+                    $row['title'],
                     $row['credit'],
                     $row['username']
                 )

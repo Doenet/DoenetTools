@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 
-const useDrop = ({ ref, onDrop, onDragOver, onDropEnter }) => {
+const useDrop = ({ ref, onDrop, onDropLeave, onDropEnter }) => {
   const [dropState, updateDropState] = useState("droppable");
 
-  const dropOverCb = ev => {
+  const dropLeaveCb = ev => {
     ev.preventDefault();
-    onDragOver && onDragOver();
-    updateDropState("dragging over");
+    onDropLeave && onDropLeave();
+    updateDropState("drop leave");
   };
 
   const dropCb = ev => {
@@ -27,15 +27,15 @@ const useDrop = ({ ref, onDrop, onDragOver, onDropEnter }) => {
     const elem = ref.current;
     if (elem) {
       elem.addEventListener("dragenter", dropEnterCb);
-      // elem.addEventListener("dragover", dropOverCb);
+      elem.addEventListener("dragleave", dropLeaveCb);
       elem.addEventListener("drop", dropCb);
       return () => {
         elem.removeEventListener("dragenter", dropEnterCb);
-        // elem.removeEventListener("dragover", dropOverCb);
+        elem.removeEventListener("dragLeave", dropLeaveCb);
         elem.removeEventListener("drop", dropCb);
       };
     }
-  }, [dropOverCb, dropCb]);
+  }, [dropLeaveCb, dropEnterCb, dropCb]);
   return {
     dropState
   };
