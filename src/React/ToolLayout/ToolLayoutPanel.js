@@ -7,23 +7,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import './toollayout.css';
 import styled from 'styled-components';
-import useResize from '../ToolLayout/Hooks/useResize';
-
-// import { useState, useRef, useEffect } from 'react'
-// import ResizeObserver from 'resize-observer-polyfill'
-
-// export default function useMeasure() {
-//   const ref = useRef()
-//   const [bounds, set] = useState({ left: 0, top: 0, width: 0, height: 0 })
-//   const [ro] = useState(() => new ResizeObserver(([entry]) => set(entry.contentRect)))
-//   useEffect(() => {
-//     if (ref.current) ro.observe(ref.current)
-//     return () => ro.disconnect()
-//   }, [])
-//   return [{ ref }, bounds]
-// }
-
-
 const MainContent = styled.div`
   width: 100%;
   overflow:auto;
@@ -48,7 +31,7 @@ export default class ToolLayoutPanel extends Component {
       return (
         <>
           {this.context.leftCloseBtn && (
-            <button onClick={this.context.leftPanelHideable} className="leftCloseButton" style={{width:'25px',height:'25px', backgroundColor: '#E3E2E2', borderRadius:'20px 0 0 20px', margin:'9px 0 10px 0', float:'right'}}>
+            <button onClick={this.context.leftPanelHideable} className="leftCloseButton">
               <FontAwesomeIcon
               style={{
                 // position: "absolute",
@@ -70,7 +53,7 @@ export default class ToolLayoutPanel extends Component {
       return (
         <>
           {this.context.rightCloseBtn && (
-            <button   onClick={this.context.rightPanelHideable} className="rightCloseButton" style={{width:'25px',height:'25px', backgroundColor: '#E3E2E2', borderRadius:'0 20px 20px 0'}}>
+            <button   onClick={this.context.rightPanelHideable} className="rightCloseButton" >
               <FontAwesomeIcon
               style={{
                 // position: "absolute",
@@ -91,9 +74,8 @@ export default class ToolLayoutPanel extends Component {
         <>
 
           {(this.context.leftOpenBtn) && (
-          //  {/* {(this.context.leftOpenBtn||this.context.leftWidth) && ( */}
 
-            <button onClick={this.context.leftPanelVisible} className="middleLeftButton" style={{width:'25px',height:'25px', backgroundColor: '#E3E2E2', borderRadius:'0 20px 20px 0',margin:'10px 0 10px 0'}}
+            <button onClick={this.context.leftPanelVisible} className="middleLeftButton" 
             >
               <FontAwesomeIcon
               icon={faChevronRight}
@@ -109,7 +91,7 @@ export default class ToolLayoutPanel extends Component {
               </button>
           )}
           {this.context.rightOpenBtn && (
-            <button  onClick={this.context.rightPanelVisible} className="middleRightButton" style={{width:'25px',height:'25px', backgroundColor: '#E3E2E2', borderRadius:'20px 0 0 20px', margin:'10px 0 10px 0 ',float:'right'}}>
+            <button  onClick={this.context.rightPanelVisible} className="middleRightButton" >
               <FontAwesomeIcon
               icon={faChevronLeft}
               style={{
@@ -144,7 +126,7 @@ export default class ToolLayoutPanel extends Component {
 
         <MainContent height={mainHeight} isResizing={this.context.isResizing}>
           {this.props.children}
-          {this.context.panelHeadersControlVisible.showFooter && <div className='virtual-footer'></div>}
+          {this.context.panelHeadersControlVisible.showFooter && <div className='tool-footer'></div>}
         </MainContent>
 
       </>

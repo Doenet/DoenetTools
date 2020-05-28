@@ -42,7 +42,7 @@ export default function ToolLayout(props) {
   } else {
     rightW = 300;
   }
-  const resizerW = 4;
+  const resizerW = 5;
 
 
   //Assume 3 if 1 child then we don't worry about middleW
@@ -85,7 +85,9 @@ export default function ToolLayout(props) {
       };
     }
   });
-
+// const updateProfilePic = () => {
+//   debugger;
+// }
   const windowResizeHandler = () => {
     let deviceWidth = widthToDevice();
     if (deviceType !== deviceWidth) {
@@ -153,6 +155,7 @@ export default function ToolLayout(props) {
         if (props.children.length === 2) {
           middleW = w - leftW - resizerW;
         }
+        // console.log(leftW);
         setLeftWidth(leftW);
         setMiddleWidth(middleW);
         // setRightWidth(rightW);
@@ -198,9 +201,9 @@ export default function ToolLayout(props) {
   };
 
   const leftPanelVisible = () => {
-    if(middleWidth ===100){
-      return;
-    }
+    // if (middleWidth === 100) {
+    //   return;
+    // }
     setLeftCloseBtn(true);
     setLeftOpenBtn(false);
     let middleW = w - resizerW - resizerW - (!!leftCloseBtn ? 0 : leftWidth) - (!!rightCloseBtn ? rightWidth : 0);
@@ -242,7 +245,7 @@ export default function ToolLayout(props) {
     headerSectionCount
   };
 
-  panelHeadersControlVisible.hideMenu = !Array.isArray(props.children) && !leftNavContent.props.menuControls;
+  panelHeadersControlVisible.hideMenu = !Array.isArray(props.children) && !leftNavContent.props.panelHeaderControls;
   panelHeadersControlVisible.showFooter = deviceType === "phone" && !!Array.isArray(props.children) && props.children.length > 1;
   panelHeadersControlVisible.hideFooter = deviceType === "phone" && !Array.isArray(props.children);
   panelHeadersControlVisible.sliderVisible = deviceType === "phone" && sliderVisible;
@@ -252,7 +255,14 @@ export default function ToolLayout(props) {
   allParts.push(<div key="part1" id="leftpanel" className="leftpanel" style={{ width: `${leftWidth}px`, marginLeft: `${leftOpenBtn ? `-${leftWidth}px` : '0px'} ` }} >{leftNav}</div>);
 
   //Resizer
-  if (props.children.length === 2 || props.children.length === 3) { allParts.push(<div key="resizer1" id="first" className="resizer column-resizer"></div>); }
+  if (props.children.length === 2 || props.children.length === 3) {
+    allParts.push(
+      <div key="resizer1" id="first" className="resizer column-resizer">
+        <div className="horizontal-seperator" />
+        <div className="vertical-seperator" />
+      </div>
+    );
+  }
 
   //Props children[1]
   let middleNav
@@ -262,7 +272,14 @@ export default function ToolLayout(props) {
   }
 
   //Resizer2
-  if (props.children.length >= 3) { allParts.push(<div key="resizer2" id="second" className="resizer column-resizer"></div>); }
+  if (props.children.length >= 3) {
+    allParts.push(
+      <div key="resizer2" id="second" className="resizer column-resizer">
+        <div className="horizontal-seperator" />
+        <div className="vertical-seperator" />
+      </div>
+    );
+  }
 
   //Props children[2]
   let rightNav
@@ -274,7 +291,7 @@ export default function ToolLayout(props) {
   const footerClass = props.children.length > 1 ? 'footer-on' : 'footer-off';
   return (
     <>
-      <DoenetHeader toolName={props.toolName} headingTitle={props.headingTitle} headerConfig={props.headerConfig} onChange={showCollapseMenu} />
+      <DoenetHeader toolName={props.toolName} headingTitle={props.headingTitle} headerRoleFromLayout={props.headerRoleFromLayout} headerChangesFromLayout={props.headerChangesFromLayout} onChange={showCollapseMenu} />
       {deviceType === "phone" ? <div ref={container}>
         <div className={footerClass}>
           {(phoneVisiblePanel === "left" || allParts.length === 1) &&
