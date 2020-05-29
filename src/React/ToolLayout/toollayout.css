@@ -72,10 +72,7 @@ button{
   background: #e3e2e2;
   margin: 0 auto;
 } */
-.resizer:hover{
-  background-color: #E3E2E2;
 
-}
 .panels-header-content{
   /* display:flex; */
   max-height: 40px;
