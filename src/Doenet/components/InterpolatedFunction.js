@@ -1177,7 +1177,7 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
           }
         } else {
           // if previous point slope is null
-          // set previouse point slope according to monotonic formula
+          // set previous point slope according to monotonic formula
           if (prevPoint.slope === null) {
             prevPoint.slope = monotonicSlope({
               point: prevPoint,

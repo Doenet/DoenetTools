@@ -19,7 +19,9 @@ export default class Vector extends DoenetRenderer {
 
   createGraphicalObject() {
 
-    if(this.doenetSvData.numericalEndpoints.length !== 2) {
+    if (this.doenetSvData.numericalEndpoints.length !== 2 ||
+      this.doenetSvData.numericalEndpoints.some(x => x.length !== 2)
+    ) {
       return;
     }
 
@@ -98,14 +100,15 @@ export default class Vector extends DoenetRenderer {
       return;
     }
 
-    // even vectors that are hidden have renderers
-    // (or this could be called before createGraphicalObject
-    // for dynamically added components)
-    // so this could be called even for vectors that don't have a JXG vector created
     if (this.vectorJXG === undefined) {
-      return;
+      return this.createGraphicalObject();
     }
 
+    if (this.doenetSvData.numericalEndpoints.length !== 2 ||
+      this.doenetSvData.numericalEndpoints.some(x => x.length !== 2)
+    ) {
+      return this.deleteGraphicalObject();
+    }
 
     let validPoints = true;
 

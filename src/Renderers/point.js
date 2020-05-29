@@ -129,9 +129,7 @@ export default class Point extends DoenetRenderer {
     }
 
 
-    // TODO: determine if change initiated with point
-
-    if (sourceOfUpdate.originalComponents.includes(this.componentName)) {
+    if (this.componentName in sourceOfUpdate.sourceInformation) {
       this.props.board.updateInfobox(this.pointJXG);
     }
 

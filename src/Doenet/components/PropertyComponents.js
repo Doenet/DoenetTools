@@ -334,21 +334,18 @@ export class SplineForm extends TextComponent {
   static rendererType = "text";
 }
 
-export class ControlPoints extends PointListComponent {
-  static componentType = "controlpoints";
-}
-
-export class ControlVectors extends VectorListComponent {
-  static componentType = "controlvectors";
-}
-
-export class DefaultControls extends TextComponent {
-  static componentType = "defaultcontrols";
-  static rendererType = "text";
-}
-
 export class Angles extends AngleListComponent {
   static componentType = "angles";
+}
+
+export class PointNumber extends NumberComponent {
+  static componentType = "pointnumber";
+  static rendererType = "number";
+}
+
+export class Direction extends TextComponent {
+  static componentType = "direction";
+  static rendererType = "text";
 }
 
 export class Location extends MathComponent {

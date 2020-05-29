@@ -5,22 +5,34 @@ export default class BezierCurve extends Curve {
   constructor(args) {
     super(args);
 
-    this.moveControlvector = this.moveControlvector.bind(
+    this.moveControlVector = this.moveControlVector.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     );
-    this.moveThroughpoint = this.moveThroughpoint.bind(
+    this.moveThroughPoint = this.moveThroughPoint.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     );
-    this.togglePointControl = this.togglePointControl.bind(
+    this.changeVectorControlDirection = this.changeVectorControlDirection.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     );
+
+    this.actions = {
+      moveControlVector: this.moveControlVector,
+      moveThroughPoint: this.moveThroughPoint,
+      changeVectorControlDirection: this.changeVectorControlDirection,
+    };
+
   }
   static componentType = "beziercurve";
+  static rendererType = "beziercurve";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
+    properties.draggable = { default: true, forRenderer: true };
 
-    properties.splineTension = { default: 0.8 };
+    properties.splineTension = {
+      default: 0.8,
+      clamp: [0, 1]
+    };
     properties.extrapolateBackward = { default: false };
     properties.extrapolateForward = { default: false };
     properties.splineForm = {
@@ -82,25 +94,26 @@ export default class BezierCurve extends Curve {
       number: 1
     });
 
-    let atMostOneConstrainToAngles = childLogic.newLeaf({
-      name: "atMostOneConstrainToAngles",
-      componentType: 'constraintoangles',
-      comparison: 'atMost',
-      number: 1
-    });
+    // let atMostOneConstrainToAngles = childLogic.newLeaf({
+    //   name: "atMostOneConstrainToAngles",
+    //   componentType: 'constraintoangles',
+    //   comparison: 'atMost',
+    //   number: 1
+    // });
 
-    let atMostOneAttractToAngles = childLogic.newLeaf({
-      name: "atMostOneAttractToAngles",
-      componentType: 'attracttoangles',
-      comparison: 'atMost',
-      number: 1
-    });
+    // let atMostOneAttractToAngles = childLogic.newLeaf({
+    //   name: "atMostOneAttractToAngles",
+    //   componentType: 'attracttoangles',
+    //   comparison: 'atMost',
+    //   number: 1
+    // });
 
     childLogic.newOperator({
       name: "curveAndControls",
       operator: 'and',
       propositions: [throughXorSugar, atMostOneBezierControls,
-        atMostOneConstrainToAngles, atMostOneAttractToAngles],
+        // atMostOneConstrainToAngles, atMostOneAttractToAngles
+      ],
       setAsBase: true,
     });
 
@@ -108,7 +121,7 @@ export default class BezierCurve extends Curve {
   }
 
 
-  static returnStateVariableDefinitions() {
+  static returnStateVariableDefinitions({ numerics }) {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
@@ -164,7 +177,7 @@ export default class BezierCurve extends Curve {
           if (changes.throughChild.componentIdentitiesChanged) {
 
             // if throughChild changed
-            // then the entire points array of line is also changed
+            // then the entire points array is also changed
             for (let key in freshByKeyPoints) {
               delete freshByKeyPoints[key];
             }
@@ -211,14 +224,14 @@ export default class BezierCurve extends Curve {
             fresh.throughPoints = false;
           } else {
             // asked for entire array, but it has some fresh elements
-            partiallyFresh.throughPoints = false;
+            partiallyFresh.throughPoints = true;
           }
           if (Object.keys(freshByKeyNumeric).length === 0) {
             // asked for entire array and it is all stale
             fresh.throughPointsAreNumeric = false;
           } else {
             // asked for entire array, but it has some fresh elements
-            partiallyFresh.throughPointsAreNumeric = false;
+            partiallyFresh.throughPointsAreNumeric = true;
           }
 
           return { fresh, partiallyFresh }
@@ -240,6 +253,8 @@ export default class BezierCurve extends Curve {
 
         // console.log(`definition of throughPoints`)
         // console.log(changes);
+        // console.log(dependencyValues)
+        // console.log(arrayKeys)
 
         let arrayKey;
         if (arrayKeys) {
@@ -306,8 +321,13 @@ export default class BezierCurve extends Curve {
             if (!freshByKeyPoints[arrayKey]) {
               freshByKeyPoints[arrayKey] = true;
               freshByKeyNumeric[arrayKey] = true;
-              let { coordsNumeric, numericEntries } = getNumericalCoords(dependencyValues.throughChild[0].stateValues["point" + (arrayKey + 1)])
-
+              let coords = dependencyValues.throughChild[0].stateValues["point" + (arrayKey + 1)];
+              let coordsNumeric, numericEntries;
+              if (coords) {
+                let result = getNumericalCoords(coords);
+                coordsNumeric = result.coordsNumeric;
+                numericEntries = result.numericEntries;
+              }
               return {
                 newValues: {
                   throughPoints: {
@@ -344,58 +364,1932 @@ export default class BezierCurve extends Curve {
           return { success: false }
         }
 
-        if ("throughChild" in dependencyValues) {
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
 
-          let arrayKey;
-          if (arrayKeys) {
-            arrayKey = Number(arrayKeys[0]);
+        if (arrayKey === undefined) {
+          // working with entire array
+
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "throughChild",
+              desiredValue: desiredStateVariableValues.throughPoints,
+              childIndex: 0,
+              variableIndex: 0
+            }]
+          }
+        } else {
+
+          // just have one arrayKey
+          // so child variable of throughChild is an array entry (rather than array)
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "throughChild",
+              desiredValue: desiredStateVariableValues.throughPoints[arrayKey],
+              childIndex: 0,
+              variableIndex: 0,
+            }]
           }
 
-          if (arrayKey === undefined) {
-            // working with entire array
+        }
 
+      }
+    }
+
+    stateVariableDefinitions.nThroughPoints = {
+      returnDependencies: () => ({
+        throughChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneThrough",
+          variableNames: ["nPoints"]
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.throughChild.length === 0) {
+          return {
+            newValues: { nThroughPoints: 0 }
+          }
+        } else {
+          return {
+            newValues: {
+              nThroughPoints: dependencyValues.throughChild[0].stateValues.nPoints
+            }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.vectorControlDirections = {
+      isArray: true,
+      entryPrefixes: ["vectorControlDirection"],
+      defaultEntryValue: "none",
+      forRenderer: true,
+      returnDependencies: function ({ arrayKeys }) {
+        if (arrayKeys === undefined) {
+          return {
+            controlChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "atMostOneBezierControls",
+              variableNames: ["directions"],
+            },
+            nThroughPoints: {
+              dependencyType: "stateVariable",
+              variableName: "nThroughPoints"
+            }
+          }
+        } else {
+          return {
+            controlChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "atMostOneBezierControls",
+              variableNames: ["direction" + (Number(arrayKeys[0]) + 1)],
+            },
+            nThroughPoints: {
+              dependencyType: "stateVariable",
+              variableName: "nThroughPoints"
+            }
+          }
+        }
+
+      },
+      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
+
+        let freshByKey = freshnessInfo.vectorControlDirections.freshByKey;
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0])
+        }
+
+        if (changes.nThroughPoints) {
+          // if number of through points changed, mark all as stale
+          for (let key in freshByKey) {
+            delete freshByKey[key];
+          }
+        } else if (changes.controlChild) {
+
+          if (changes.controlChild.componentIdentitiesChanged) {
+
+            // if controlChild changed
+            // then the entire points array is also changed
+            for (let key in freshByKey) {
+              delete freshByKey[key];
+            }
+          } else {
+
+            let valuesChanged = changes.controlChild.valuesChanged[0];
+
+            if (arrayKey === undefined) {
+              if (valuesChanged.directions) {
+                // if have the same controls from controlChild
+                // then just check if any of those direction values
+                // are no longer fresh
+                let newFreshByKey = valuesChanged.directions.freshnessInfo.freshByKey;
+                for (let key in freshByKey) {
+                  if (!newFreshByKey[key]) {
+                    delete freshByKey[key];
+                  }
+                }
+              }
+            } else {
+              if (valuesChanged["direction" + (arrayKey + 1)]) {
+                delete freshByKey[arrayKey];
+              }
+            }
+
+          }
+        }
+
+
+        if (arrayKey === undefined) {
+          if (Object.keys(freshByKey).length === 0) {
+            // asked for entire array and it is all stale
+            return { fresh: { vectorControlDirections: false } }
+          } else {
+            // asked for entire array, but it has some fresh elements
+            return { partiallyFresh: { vectorControlDirections: true } }
+          }
+        } else {
+          // asked for just one component
+          return {
+            fresh: {
+              vectorControlDirections: freshByKey[arrayKey] === true,
+            }
+          }
+        }
+
+      },
+      freshenOnNoChanges: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
+        let freshByKey = freshnessInfo.vectorControlDirections.freshByKey;
+
+        if (arrayKeys === undefined) {
+
+          for (let ind = 0; ind < dependencyValues.nThroughPoints; ind++) {
+            freshByKey[ind] = true;
+          }
+        } else {
+          freshByKey[arrayKeys[0]] = true;
+        }
+
+      },
+      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
+
+        let freshByKey = freshnessInfo.vectorControlDirections.freshByKey;
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+
+        if (dependencyValues.controlChild.length !== 1) {
+
+          // TODO: test that if a controlChild is deleted, then we do get the change
+          // that the componentIdentitiesChanged
+
+          let overwriteArray = changes.controlChild.componentIdentitiesChanged;
+
+          if (changes.nThroughPoints) {
+            overwriteArray = true;
+          }
+
+          let result = {}
+          if (overwriteArray) {
+            // if overwrite array, return array of undefineds
+            // in order to change size
+            let vectorControlDirections = Array(dependencyValues.nThroughPoints).fill(undefined);
+            result.newValues = { vectorControlDirections };
+          }
+
+          let essentialDirections = {};
+
+          for (let ind = 0; ind < dependencyValues.nThroughPoints; ind++) {
+
+            if (!freshByKey[ind]) {
+
+              freshByKey[ind] = true;
+
+              essentialDirections[ind] = {
+                variablesToCheck: ["vectorControlDirections" + (ind + 1)]
+              }
+            }
+
+          }
+          result.useEssentialOrDefaultValue = {
+            vectorControlDirections: essentialDirections,
+          }
+
+          return result;
+
+        }
+
+        if (arrayKey === undefined) {
+          let directions = dependencyValues.controlChild[0].stateValues.directions;
+
+          let overwriteArray = changes.controlChild.componentIdentitiesChanged;
+
+          if (changes.controlChild.valuesChanged[0].directions.changed.changedEntireArray) {
+            overwriteArray = true;
+          }
+
+          if (changes.nThroughPoints) {
+            overwriteArray = true;
+          }
+
+          if (overwriteArray) {
+
+            let vectorControlDirections = [];
+            let essentialDirections = {};
+
+            for (let ind = 0; ind < dependencyValues.nThroughPoints; ind++) {
+              freshByKey[ind] = true;
+
+              let direction = directions[ind];
+
+              if (direction) {
+                vectorControlDirections.push(direction);
+              } else {
+                vectorControlDirections.push(undefined);
+                essentialDirections[ind] = {
+                  variablesToCheck: ["vectorControlDirections" + (ind + 1)]
+                }
+              }
+            }
+
+            return {
+              newValues: {
+                vectorControlDirections
+              },
+              useEssentialOrDefaultValue: {
+                vectorControlDirections: essentialDirections,
+              }
+            }
+
+          }
+
+          let newDirections = {};
+          let essentialDirections = {};
+
+
+          for (let ind = 0; ind < dependencyValues.nThroughPoints; ind++) {
+
+            if (!freshByKey[ind]) {
+
+              freshByKey[ind] = true;
+
+              let direction = directions[ind];
+
+              if (direction) {
+                newDirections[ind] = direction;
+              } else {
+                essentialDirections[ind] = {
+                  variablesToCheck: ["vectorControlDirections" + (ind + 1)]
+                }
+              }
+            }
+
+          }
+          return {
+            newValues: {
+              vectorControlDirections: newDirections,
+            },
+            useEssentialOrDefaultValue: {
+              vectorControlDirections: essentialDirections,
+            }
+          }
+
+        } else {
+          // have arrayKey
+
+          if (!freshByKey[arrayKey]) {
+            freshByKey[arrayKey] = true;
+
+            if (arrayKey < dependencyValues.nThroughPoints) {
+              return {
+                newValues: {
+                  vectorControlDirections: {
+                    [arrayKey]: dependencyValues.controlChild[0].stateValues["direction" + (arrayKey + 1)]
+                  }
+                }
+              }
+            } else {
+
+              return {
+                newValues: {
+                  vectorControlDirections: {
+                    [arrayKey]: undefined
+                  }
+                }
+              }
+
+            }
+          } else {
+            // arrayKey asked for didn't change
+            // don't need to report noChanges for array state variable
+            return {};
+          }
+
+
+
+
+        }
+
+
+      },
+      inverseDefinition: function ({ desiredStateVariableValues, arrayKeys, dependencyValues }) {
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+
+        // haven't implemented setting entire array at once
+        if (arrayKey === undefined) {
+          return { success: false }
+        }
+
+        if (arrayKey < dependencyValues.nThroughPoints) {
+
+          if (dependencyValues.controlChild.length === 1) {
             return {
               success: true,
               instructions: [{
-                setDependency: "throughChild",
-                desiredValue: desiredStateVariableValues.throughPoints,
+                setDependency: "controlChild",
+                desiredValue: desiredStateVariableValues.vectorControlDirections[arrayKey],
                 childIndex: 0,
                 variableIndex: 0
               }]
             }
           } else {
 
-            // just have one arrayKey
-            // so child variable of throughChild is an array entry (rather than array)
             return {
               success: true,
               instructions: [{
-                setDependency: "throughChild",
-                desiredValue: desiredStateVariableValues.throughPoints[arrayKey],
-                childIndex: 0,
-                variableIndex: 0,
+                setStateVariable: "vectorControlDirections",
+                value: desiredStateVariableValues.vectorControlDirections[arrayKey],
+                arrayKey: arrayKey,
               }]
+            };
+          }
+        } else {
+          // won't set vector control direction beyond through points
+          return { success: false }
+        }
+      }
+    }
+
+    stateVariableDefinitions.controlVectors = {
+      isArray: true,
+      nDimensions: 2,
+      public: true,
+      componentType: "vector",
+      entryPrefixes: ["controlVector"],
+      defaultEntryValue: me.fromAst(["vector", 0, 0]),
+      additionalStateVariablesDefined: [{
+        variableName: "controlVectorsAreNumeric",
+        entryPrefixes: ["controlVectorIsNumeric"],
+        nDimensions: 2,
+        defaultEntryValue: true,
+      }],
+      stateVariablesDeterminingDependencies: ["vectorControlDirections", "nThroughPoints"],
+      returnDependencies: function ({ arrayKeys, stateValues }) {
+
+        let dependencies = {
+          nThroughPoints: {
+            dependencyType: "stateVariable",
+            variableName: "nThroughPoints"
+          }
+        }
+        if (arrayKeys === undefined) {
+          dependencies.controlChild = {
+            dependencyType: "childStateVariables",
+            childLogicName: "atMostOneBezierControls",
+            variableNames: ["controls"],
+          };
+          dependencies.vectorControlDirections = {
+            dependencyType: "stateVariable",
+            variableName: "vectorControlDirections"
+          };
+
+          let pointsNeeded = [];
+          for (let pointInd = 0; pointInd < stateValues.nThroughPoints; pointInd++) {
+            let direction = stateValues.vectorControlDirections[pointInd];
+            let indsToCheck = []
+            if (direction === "none") {
+              indsToCheck.push(...[pointInd - 1, pointInd, pointInd + 1])
+            } else if (direction === "previous") {
+              indsToCheck.push(...[pointInd, pointInd + 1])
+            } else if (direction === "next") {
+              indsToCheck.push(...[pointInd - 1, pointInd])
+            }
+            for (let ind of indsToCheck) {
+              if (ind >= 0 && ind < stateValues.nThroughPoints && !pointsNeeded.includes(ind)) {
+                pointsNeeded.push(ind);
+              }
+            }
+          }
+
+          for (let pointInd of pointsNeeded) {
+            dependencies["throughPoint" + (pointInd + 1)] = {
+              dependencyType: "stateVariable",
+              variableName: "throughPoint" + (pointInd + 1)
+            }
+          }
+
+          if (pointsNeeded.length > 0) {
+            dependencies.splineTension = {
+              dependencyType: "stateVariable",
+              variableName: "splineTension"
+            };
+            dependencies.splineForm = {
+              dependencyType: "stateVariable",
+              variableName: "splineForm"
+            };
+          }
+
+        } else {
+
+          let controlVariables = []
+
+          for (let arrayKey of arrayKeys) {
+            let varEndings = arrayKey.split(',').map(x => Number(x) + 1);
+            let jointVarEnding = varEndings.join('_');
+
+            controlVariables.push("control" + jointVarEnding)
+
+            dependencies["vectorControlDirection" + varEndings[0]] = {
+              dependencyType: "stateVariable",
+              variableName: "vectorControlDirection" + varEndings[0]
             }
 
+            let pointInd = varEndings[0] - 1;
+            let direction = stateValues.vectorControlDirections[pointInd];
+            let indsToCheck = []
+            if (direction === "none") {
+              indsToCheck.push(...[pointInd - 1, pointInd, pointInd + 1])
+            } else if (direction === "previous") {
+              indsToCheck.push(...[pointInd, pointInd + 1])
+            } else if (direction === "next") {
+              indsToCheck.push(...[pointInd - 1, pointInd])
+            }
+
+            let haveUncontrolledVector = false;
+            for (let ind of indsToCheck) {
+              if (ind >= 0 && ind < stateValues.nThroughPoints) {
+                haveUncontrolledVector = true;
+                dependencies["throughPoint" + (ind + 1)] = {
+                  dependencyType: "stateVariable",
+                  variableName: "throughPoint" + (ind + 1)
+                }
+              }
+            }
+
+            if (haveUncontrolledVector) {
+              dependencies.splineTension = {
+                dependencyType: "stateVariable",
+                variableName: "splineTension"
+              };
+              dependencies.splineForm = {
+                dependencyType: "stateVariable",
+                variableName: "splineForm"
+              };
+            }
+          }
+
+          dependencies['controlChild'] = {
+            dependencyType: "childStateVariables",
+            childLogicName: "atMostOneBezierControls",
+            variableNames: controlVariables,
+          }
+        }
+        return dependencies;
+
+      },
+      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
+        // console.log('mark stale for bezier curve controlVectors')
+        // console.log(JSON.parse(JSON.stringify(changes)));
+        // console.log(arrayKeys);
+
+        let freshByKeyVectors = freshnessInfo.controlVectors.freshByKey;
+        let freshByKeyNumeric = freshnessInfo.controlVectorsAreNumeric.freshByKey;
+
+        if (arrayKeys === undefined) {
+
+          let allStale = false;
+
+          if (changes.nThroughPoints || changes.splineForm || changes.splineTension) {
+            // if number of through points changed, mark everything as stale
+            // also, since can't tell here which are determined by spline
+            // mark all stale if spline parameters change
+
+            allStale = true;
+          } else {
+
+
+            let changesUnaddressed = Object.assign({}, changes);
+            if (changes.controlChild) {
+              if (changes.controlChild.componentIdentitiesChanged) {
+                allStale = true;
+              } else {
+                let valuesChanged = changes.controlChild.valuesChanged[0];
+                if (valuesChanged.controls) {
+                  // if have the same controls from controlChild
+                  // then just check if any of those controls
+                  // are no longer fresh
+
+                  let newFreshByKey = valuesChanged.controls.freshnessInfo.freshByKey;
+
+                  for (let key in freshByKeyVectors) {
+                    if (!newFreshByKey[key]) {
+                      delete freshByKeyVectors[key];
+                      delete freshByKeyNumeric[key];
+                    }
+                  }
+
+                  delete changesUnaddressed.controlChild;
+                }
+              }
+            }
+
+            if (!allStale) {
+
+              if (changes.vectorControlDirections) {
+                let valuesChanged = changes.vectorControlDirections.valuesChanged;
+                if (valuesChanged.vectorControlDirections) {
+                  let newFreshByPointKey = valuesChanged.vectorControlDirections.freshnessInfo.freshByKey;
+                  for (let key in freshByKeyVectors) {
+                    let key0 = key.split(',')[0]
+                    if (!newFreshByPointKey[key0]) {
+                      delete freshByKeyVectors[key];
+                      delete freshByKeyNumeric[key];
+                    }
+                  }
+                }
+                delete changesUnaddressed.vectorControlDirections;
+              }
+
+              // since haven't requested previous values of dependencyValues
+              // (maybe more efficient if we did)
+              // we mark stale any vector that could depend on a changed
+              // through point if it were interpolated using a spline
+              for (let varName in changesUnaddressed) {
+                if (varName.slice(0, 12) === "throughPoint") {
+                  let pointInd = Number(varName.slice(12)) - 1;
+                  let keysToMarkStale = [
+                    (pointInd - 1) + ",0",
+                    (pointInd - 1) + ",1",
+                    pointInd + ",0",
+                    pointInd + ",1",
+                    (pointInd + 1) + ",0",
+                    (pointInd + 1) + ",1"
+                  ]
+                  for (let key in freshByKeyVectors) {
+                    if (keysToMarkStale.includes(key)) {
+                      delete freshByKeyVectors[key];
+                      delete freshByKeyNumeric[key];
+                    }
+                  }
+
+                }
+              }
+
+            }
+          }
+
+          if (allStale) {
+            for (let key in freshByKeyVectors) {
+              delete freshByKeyVectors[key];
+            }
+            for (let key in freshByKeyNumeric) {
+              delete freshByKeyNumeric[key];
+            }
+          }
+
+
+          let fresh = {};
+          let partiallyFresh = {}
+          if (Object.keys(freshByKeyVectors).length === 0) {
+            // asked for entire array and it is all stale
+            fresh.controlVectors = false;
+          } else {
+            // asked for entire array, but it has some fresh elements
+            partiallyFresh.controlVectors = true;
+          }
+          if (Object.keys(freshByKeyNumeric).length === 0) {
+            // asked for entire array and it is all stale
+            fresh.controlVectorsAreNumeric = false;
+          } else {
+            // asked for entire array, but it has some fresh elements
+            partiallyFresh.controlVectorsAreNumeric = true;
+          }
+
+          return { fresh, partiallyFresh }
+
+        } else {
+
+          // have arrayKeys
+
+          let allFresh = true;
+          let allStale = true;
+
+          if (changes.nThroughPoints || changes.splineForm || changes.splineTension) {
+            allFresh = false;
+            for (let arrayKey of arrayKeys) {
+              delete freshByKeyVectors[arrayKey];
+              delete freshByKeyNumeric[arrayKey];
+            }
+          } else {
+
+            let controlChildChanges = {}
+            if (changes.controlChild) {
+              if (changes.controlChild.componentIdentitiesChanged) {
+                allFresh = false;
+                for (let arrayKey of arrayKeys) {
+                  delete freshByKeyVectors[arrayKey];
+                  delete freshByKeyNumeric[arrayKey];
+                }
+              } else {
+                controlChildChanges = changes.controlChild.valuesChanged[0];
+              }
+            }
+
+            for (let arrayKey of arrayKeys) {
+              let varEndings = arrayKey.split(',').map(x => Number(x) + 1);
+              let jointVarEnding = varEndings.join('_')
+              // mark stale if
+              //  - vector's specified direction from control child changed,
+              //  - vector's control direction changed, or 
+              //  - vector is specified by spline interpolation
+              //    through a point and that point changed
+
+              if (controlChildChanges['control' + jointVarEnding]
+                || changes["vectorControlDirections" + varEndings[0]]
+                || changes["throughPoint" + (varEndings[0] - 1)]
+                || changes["throughPoint" + varEndings[0]]
+                || changes["throughPoint" + (varEndings[0] + 1)]
+              ) {
+                delete freshByKeyVectors[arrayKey]
+                delete freshByKeyNumeric[arrayKey]
+                allFresh = false;
+              } else if (freshByKeyVectors[arrayKey]) {
+                allStale = false;
+              }
+            }
+          }
+          if (allStale) {
+            return {
+              fresh: {
+                controlVectors: false,
+                controlVectorsAreNumeric: false
+              }
+            }
+          }
+          if (allFresh) {
+            return {
+              fresh: {
+                controlVectors: true,
+                controlVectorsAreNumeric: true
+              }
+            }
+          }
+          return {
+            partiallyFresh: {
+              controlVectors: true,
+              controlVectorsAreNumeric: true
+            }
+          }
+
+        }
+      },
+      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
+
+        let freshByKeyVectors = freshnessInfo.controlVectors.freshByKey;
+        let freshByKeyNumeric = freshnessInfo.controlVectorsAreNumeric.freshByKey;
+
+        // console.log(`definition of controlVectors`)
+        // console.log(dependencyValues);
+        // console.log(changes);
+        // console.log(JSON.parse(JSON.stringify(freshByKeyVectors)));
+        // console.log(arrayKeys)
+
+        if (arrayKeys === undefined) {
+
+          let overwriteArray = false;
+          if (changes.nThroughPoints) {
+            overwriteArray = true;
+          } else if (changes.controlChild) {
+            if (changes.controlChild.componentIdentitiesChanged) {
+              overwriteArray = true;
+            } else if (changes.controlChild.valuesChanged[0] &&
+              changes.controlChild.valuesChanged[0].controls.changed.changedEntireArray
+            ) {
+              overwriteArray = true;
+            }
+          }
+
+          let newControlVectors = {};
+          let newControlsAreNumeric = {};
+          let essentialControlVectors = {};
+          let essentialControlsAreNumeric = {};
+
+          if (overwriteArray) {
+            newControlVectors = [];
+            newControlsAreNumeric = [];
+            // mark everyone as stale so that everything is recalculated
+            for (let key in freshByKeyVectors) {
+              delete freshByKeyVectors[key];
+            }
+            for (let key in freshByKeyNumeric) {
+              delete freshByKeyNumeric[key];
+            }
+          }
+
+          let specifiedControlVectors = [];
+          if (dependencyValues.controlChild.length === 1) {
+            specifiedControlVectors = dependencyValues.controlChild[0].stateValues.controls;
+          }
+
+
+          for (let pointInd = 0; pointInd < dependencyValues.nThroughPoints; pointInd++) {
+
+            let key1 = pointInd + ",0";
+            let key2 = pointInd + ",1";
+
+            let direction = dependencyValues.vectorControlDirections[pointInd];
+            if (!direction) {
+              direction = "none";
+            }
+
+            if (direction === "none") {
+
+              // if direction is none, then determine both first and second control vector
+              // via spline
+
+              if (!freshByKeyVectors[key1] || freshByKeyVectors[key2]) {
+                // since calculate both vectors together as symmetric
+                // do calculation if either is stale
+                freshByKeyVectors[key1] = true;
+                freshByKeyNumeric[key1] = true;
+                freshByKeyVectors[key2] = true;
+                freshByKeyNumeric[key2] = true;
+
+                let point2 = dependencyValues["throughPoint" + (pointInd + 1)]
+
+                let point1, point3;
+                if (pointInd > 0) {
+                  point1 = dependencyValues["throughPoint" + pointInd]
+                }
+                if (pointInd < dependencyValues.nThroughPoints) {
+                  point3 = dependencyValues["throughPoint" + (pointInd + 2)]
+                }
+
+                let { coordsNumeric, numericEntries } = calculateControlVectorFromSpline({
+                  tau: dependencyValues.splineTension,
+                  eps: numerics.eps,
+                  splineForm: dependencyValues.splineForm,
+                  point1,
+                  point2,
+                  point3,
+                });
+                let coordsNumericFlip = flipVector(coordsNumeric);
+
+                if (overwriteArray) {
+                  newControlVectors.push([coordsNumeric, coordsNumericFlip])
+                  newControlsAreNumeric.push([numericEntries, numericEntries])
+                } else {
+                  newControlVectors[key1] = coordsNumeric;
+                  newControlsAreNumeric[key1] = numericEntries;
+                  newControlVectors[key2] = coordsNumericFlip;
+                  newControlsAreNumeric[key2] = numericEntries;
+                }
+
+              }
+
+              continue;
+
+            }
+
+            let specifiedForPoint = specifiedControlVectors[pointInd];
+            if (!specifiedForPoint) {
+              specifiedForPoint = [];
+            }
+
+            // used for case when overwriting array;
+            let controlVectorPair = [];
+            let controlsAreNumericPair = []
+
+            if (!freshByKeyVectors[key1]) {
+              freshByKeyVectors[key1] = true;
+              freshByKeyNumeric[key1] = true;
+
+              if (direction !== "next") {
+
+                if (specifiedForPoint[0]) {
+                  let { coordsNumeric, numericEntries } = getNumericalCoords(specifiedForPoint[0]);
+                  if (overwriteArray) {
+                    controlVectorPair.push(coordsNumeric)
+                    controlsAreNumericPair.push(numericEntries)
+                  } else {
+                    newControlVectors[key1] = coordsNumeric;
+                    newControlsAreNumeric[key1] = numericEntries;
+                  }
+
+                } else {
+                  if (overwriteArray) {
+                    controlVectorPair.push(undefined);
+                  }
+                  let variableEnding1 = (pointInd + 1) + '_1';
+                  essentialControlVectors[key1] = {
+                    // TODO: need a way to get value from array itself
+                    variablesToCheck: ["controlVector" + variableEnding1]
+                  }
+                  essentialControlsAreNumeric[key1] = {
+                    variablesToCheck: ["controlVectorIsNumeric" + variableEnding1]
+                  }
+                }
+
+              } else {
+
+                // if direction is next, determine first control vector via spline
+                // based on previous two points
+
+                if (pointInd === 0) {
+                  // exception: if have first point, don't have previous through point,
+                  // so don't create control vector
+
+                  if (overwriteArray) {
+                    controlVectorPair.push(null)
+                    controlsAreNumericPair.push(true)
+                  } else {
+                    newControlVectors[key1] = null;
+                    newControlsAreNumeric[key1] = true;
+                  }
+
+                } else {
+
+                  let point1 = dependencyValues["throughPoint" + pointInd]
+                  let point2 = dependencyValues["throughPoint" + (pointInd + 1)]
+
+                  let { coordsNumeric, numericEntries } = calculateControlVectorFromSpline({
+                    tau: dependencyValues.splineTension,
+                    eps: numerics.eps,
+                    splineForm: dependencyValues.splineForm,
+                    point1,
+                    point2,
+                    point3: undefined,
+                  });
+
+                  if (overwriteArray) {
+                    controlVectorPair.push(coordsNumeric)
+                    controlsAreNumericPair.push(numericEntries)
+                  } else {
+                    newControlVectors[key1] = coordsNumeric;
+                    newControlsAreNumeric[key1] = numericEntries;
+                  }
+
+                }
+              }
+
+            }
+
+            if (!freshByKeyVectors[key2]) {
+              freshByKeyVectors[key2] = true;
+              freshByKeyNumeric[key2] = true;
+
+              if (direction !== "previous") {
+
+                if (specifiedForPoint[1]) {
+                  let { coordsNumeric, numericEntries } = getNumericalCoords(specifiedForPoint[1]);
+                  if (overwriteArray) {
+                    controlVectorPair.push(coordsNumeric)
+                    controlsAreNumericPair.push(numericEntries)
+                  } else {
+                    newControlVectors[key2] = coordsNumeric;
+                    newControlsAreNumeric[key2] = numericEntries;
+                  }
+
+                } else {
+                  if (overwriteArray) {
+                    controlVectorPair.push(undefined);
+                  }
+                  let variableEnding2 = (pointInd + 1) + '_2';
+                  essentialControlVectors[key2] = {
+                    // TODO: need a way to get value from array itself
+                    variablesToCheck: ["controlVector" + variableEnding2]
+                  }
+                  essentialControlsAreNumeric[key2] = {
+                    variablesToCheck: ["controlVectorIsNumeric" + variableEnding2]
+                  }
+                }
+
+              } else {
+
+                // if direction is previous, determine second control vector via spline
+                // based on next two points
+
+                if (pointInd === dependencyValues.nThroughPoints - 1) {
+                  // exception: if have last point, don't have next through point,
+                  // so don't create control vector
+
+                  if (overwriteArray) {
+                    controlVectorPair.push(null)
+                    controlsAreNumericPair.push(true)
+                  } else {
+                    newControlVectors[key2] = null;
+                    newControlsAreNumeric[key2] = true;
+                  }
+
+                } else {
+
+
+                  let point2 = dependencyValues["throughPoint" + (pointInd + 1)]
+                  let point3 = dependencyValues["throughPoint" + (pointInd + 2)]
+
+                  let { coordsNumeric, numericEntries } = calculateControlVectorFromSpline({
+                    tau: dependencyValues.splineTension,
+                    eps: numerics.eps,
+                    splineForm: dependencyValues.splineForm,
+                    point1: point3,  // switch point1 and point3 to flip vector
+                    point2,
+                    point3: undefined,
+                  });
+
+                  if (overwriteArray) {
+                    controlVectorPair.push(coordsNumeric)
+                    controlsAreNumericPair.push(numericEntries)
+                  } else {
+                    newControlVectors[key2] = coordsNumeric;
+                    newControlsAreNumeric[key2] = numericEntries;
+                  }
+
+                }
+              }
+
+            }
+
+            if (overwriteArray) {
+              newControlVectors.push(controlVectorPair);
+              newControlsAreNumeric.push(controlsAreNumericPair);
+            }
+          }
+
+          return {
+            newValues: {
+              controlVectors: newControlVectors,
+              controlVectorsAreNumeric: newControlsAreNumeric
+            },
+            useEssentialOrDefaultValue: {
+              controlVectors: essentialControlVectors,
+              controlVectorsAreNumeric: essentialControlsAreNumeric
+            }
+          }
+
+
+        } else {
+          // arrayKeys defined
+
+          let newControlVectors = {};
+          let newControlsAreNumeric = {};
+          let essentialControlVectors = {};
+          let essentialControlsAreNumeric = {};
+
+          let controlChildStateValues = {};
+          if (dependencyValues.controlChild.length === 1) {
+            controlChildStateValues = dependencyValues.controlChild[0].stateValues;
+          }
+
+
+          for (let arrayKey of arrayKeys) {
+
+            if (!freshByKeyVectors[arrayKey]) {
+              freshByKeyVectors[arrayKey] = true;
+              freshByKeyNumeric[arrayKey] = true;
+
+              let keyPieces = arrayKey.split(',').map(x => Number(x));
+              let varEndings = keyPieces.map(x => x + 1);
+              let jointVarEnding = varEndings.join('_');
+
+              let pointInd = keyPieces[0];
+
+              let direction = dependencyValues["vectorControlDirection" + varEndings[0]];
+
+              if (!direction) {
+                direction = "none";
+              }
+
+              if (direction === "none") {
+                // if direction is none, then determine both first and second control vector
+                // via spline
+
+                let flippedArrayKey = keyPieces[0] + "," + (1 - keyPieces[1]);
+
+                // mark flipped arrayKey as fresh, as calculate pair of control vectors together
+                freshByKeyVectors[flippedArrayKey] = true;
+                freshByKeyNumeric[flippedArrayKey] = true;
+
+                let point2 = dependencyValues["throughPoint" + (pointInd + 1)]
+
+                let point1, point3;
+                if (pointInd > 0) {
+                  point1 = dependencyValues["throughPoint" + pointInd]
+                }
+                if (pointInd < dependencyValues.nThroughPoints) {
+                  point3 = dependencyValues["throughPoint" + (pointInd + 2)]
+                }
+
+                let { coordsNumeric, numericEntries } = calculateControlVectorFromSpline({
+                  tau: dependencyValues.splineTension,
+                  eps: numerics.eps,
+                  splineForm: dependencyValues.splineForm,
+                  point1,
+                  point2,
+                  point3,
+                });
+
+                let coordsNumericFlip = flipVector(coordsNumeric);
+
+                if (keyPieces[1] === 0) {
+                  // arrayKey corresponds to first vector
+                  newControlVectors[arrayKey] = coordsNumeric;
+                  newControlVectors[flippedArrayKey] = coordsNumericFlip;
+                } else {
+                  // arrayKey corresponds to second vector
+                  newControlVectors[arrayKey] = coordsNumericFlip;
+                  newControlVectors[flippedArrayKey] = coordsNumeric;
+
+                }
+
+                newControlsAreNumeric[arrayKey] = numericEntries;
+                newControlsAreNumeric[flippedArrayKey] = numericEntries;
+
+                continue;
+
+              }
+
+              if (keyPieces[1] === 0) {
+
+                if (direction !== "next") {
+
+                  let specifiedControl = controlChildStateValues["control" + jointVarEnding];
+
+                  if (specifiedControl) {
+                    let { coordsNumeric, numericEntries } = getNumericalCoords(specifiedControl);
+                    newControlVectors[arrayKey] = coordsNumeric;
+                    newControlsAreNumeric[arrayKey] = numericEntries;
+                  } else {
+
+                    let variableEnding1 = (pointInd + 1) + '_1';
+                    essentialControlVectors[arrayKey] = {
+                      // TODO: need a way to get value from array itself
+                      variablesToCheck: ["controlVector" + variableEnding1]
+                    }
+                    essentialControlsAreNumeric[arrayKey] = {
+                      variablesToCheck: ["controlVectorIsNumeric" + variableEnding1]
+                    }
+                  }
+
+                } else {
+
+                  // if direction is next, determine first control vector via spline
+                  // based on previous two points
+
+                  if (pointInd === 0) {
+                    // exception: if have first point, don't have previous through point,
+                    // so don't create control vector
+                    newControlVectors[arrayKey] = null;
+                    newControlsAreNumeric[arrayKey] = true;
+
+                  } else {
+
+                    let point1 = dependencyValues["throughPoint" + pointInd]
+                    let point2 = dependencyValues["throughPoint" + (pointInd + 1)]
+
+                    let { coordsNumeric, numericEntries } = calculateControlVectorFromSpline({
+                      tau: dependencyValues.splineTension,
+                      eps: numerics.eps,
+                      splineForm: dependencyValues.splineForm,
+                      point1,
+                      point2,
+                      point3: undefined,
+                    });
+
+                    newControlVectors[arrayKey] = coordsNumeric;
+                    newControlsAreNumeric[arrayKey] = numericEntries;
+
+                  }
+                }
+              } else {
+
+                if (direction !== "previous") {
+
+                  let specifiedControl = controlChildStateValues["control" + jointVarEnding];
+
+                  if (specifiedControl) {
+                    let { coordsNumeric, numericEntries } = getNumericalCoords(specifiedControl);
+                    newControlVectors[arrayKey] = coordsNumeric;
+                    newControlsAreNumeric[arrayKey] = numericEntries;
+                  } else {
+                    let variableEnding2 = (pointInd + 1) + '_2';
+                    essentialControlVectors[arrayKey] = {
+                      // TODO: need a way to get value from array itself
+                      variablesToCheck: ["controlVector" + variableEnding2]
+                    };
+                    essentialControlsAreNumeric[arrayKey] = {
+                      variablesToCheck: ["controlVectorIsNumeric" + variableEnding2]
+                    };
+                  }
+
+                } else {
+
+                  // if direction is previous, determine second control vector via spline
+                  // based on next two points
+
+                  if (pointInd === dependencyValues.nThroughPoints - 1) {
+                    // exception: if have last point, don't have next through point,
+                    // so don't create control vector
+                    newControlVectors[arrayKey] = null;
+                    newControlsAreNumeric[arrayKey] = true;
+
+                  } else {
+
+                    let point2 = dependencyValues["throughPoint" + (pointInd + 1)]
+                    let point3 = dependencyValues["throughPoint" + (pointInd + 2)]
+
+                    let { coordsNumeric, numericEntries } = calculateControlVectorFromSpline({
+                      tau: dependencyValues.splineTension,
+                      eps: numerics.eps,
+                      splineForm: dependencyValues.splineForm,
+                      point1: point3,  // switch point1 and point3 to flip vector
+                      point2,
+                      point3: undefined,
+                    });
+
+                    newControlVectors[arrayKey] = coordsNumeric;
+                    newControlsAreNumeric[arrayKey] = numericEntries;
+
+                  }
+                }
+
+              }
+
+            }
+          }
+
+          return {
+            newValues: {
+              controlVectors: newControlVectors,
+              controlVectorsAreNumeric: newControlsAreNumeric
+            },
+            useEssentialOrDefaultValue: {
+              controlVectors: essentialControlVectors,
+              controlVectorsAreNumeric: essentialControlsAreNumeric
+            }
+          }
+        }
+
+      },
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues,
+        stateValues, initialChange, arrayKeys
+      }) {
+
+        // console.log(`inverse definition of controlVectors`);
+        // console.log(desiredStateVariableValues)
+        // console.log(arrayKeys)
+
+        // if not draggable, then disallow initial change 
+        if (initialChange && !stateValues.draggable) {
+          return { success: false };
+        }
+
+        if ("controlVectorsAreNumeric" in desiredStateVariableValues) {
+          return { success: false }
+        }
+
+        if (arrayKeys === undefined) {
+          // working with entire array
+
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "controlChild",
+              desiredValue: desiredStateVariableValues.controlVectors,
+              childIndex: 0,
+              variableIndex: 0
+            }]
+          }
+        } else {
+
+          // have arrayKeys
+
+          let instructions = [];
+
+          for (let [ind, arrayKey] of arrayKeys.entries()) {
+            instructions.push({
+              setDependency: "controlChild",
+              desiredValue: desiredStateVariableValues.controlVectors[arrayKey],
+              childIndex: 0,
+              variableIndex: ind
+            })
+
+          }
+
+          return {
+            success: true,
+            instructions
           }
         }
 
       }
     }
 
-
-
     stateVariableDefinitions.numericalEntries = {
       returnDependencies: () => ({
         throughPointsAreNumeric: {
           dependencyType: "stateVariable",
           variableName: "throughPointsAreNumeric"
-        }
+        },
+        controlVectorsAreNumeric: {
+          dependencyType: "stateVariable",
+          variableName: "controlVectorsAreNumeric"
+        },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { numericalEntries: dependencyValues.throughPointsAreNumeric.every(x => x) },
-        checkForActualChange: ["numericalEntries"]
+        newValues: {
+          numericalEntries: dependencyValues.throughPointsAreNumeric.every(x => x)
+            && [].concat(...dependencyValues.controlVectorsAreNumeric).every(x => x)  // flatten
+        },
+        checkForActualChange: { numericalEntries: true }
       })
+    }
+
+    stateVariableDefinitions.throughPointsNumeric = {
+      isArray: true,
+      forRenderer: true,
+      returnDependencies: () => ({
+        throughPoints: {
+          dependencyType: "stateVariable",
+          variableName: "throughPoints"
+        },
+        numericalEntries: {
+          dependencyType: "stateVariable",
+          variableName: "numericalEntries"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        if (!dependencyValues.numericalEntries) {
+          return { newValues: { throughPointsNumeric: [] } }
+        } else {
+          return {
+            newValues: {
+              throughPointsNumeric: dependencyValues.throughPoints.map(x => x.tree.slice(1))
+            }
+          }
+        }
+      },
+    }
+
+    stateVariableDefinitions.controlVectorsNumeric = {
+      isArray: true,
+      forRenderer: true,
+      nDimensions: 2,
+      returnDependencies: () => ({
+        controlVectors: {
+          dependencyType: "stateVariable",
+          variableName: "controlVectors"
+        },
+        numericalEntries: {
+          dependencyType: "stateVariable",
+          variableName: "numericalEntries"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        if (!dependencyValues.numericalEntries) {
+          return { newValues: { controlVectorsNumeric: [] } }
+        } else {
+          return {
+            newValues: {
+              controlVectorsNumeric: dependencyValues.controlVectors.map(x => x.map(y => y ? y.tree.slice(1) : [NaN, NaN]))
+            }
+          }
+        }
+      },
+    }
+
+    stateVariableDefinitions.splineCoeffs = {
+      isArray: true,
+      returnDependencies: () => ({
+        throughPoints: {
+          dependencyType: "stateVariable",
+          variableName: "throughPoints"
+        },
+        throughPointsNumeric: {
+          dependencyType: "stateVariable",
+          variableName: "throughPointsNumeric"
+        },
+        controlVectors: {
+          dependencyType: "stateVariable",
+          variableName: "controlVectors"
+        },
+        controlVectorsNumeric: {
+          dependencyType: "stateVariable",
+          variableName: "controlVectorsNumeric"
+        },
+        nThroughPoints: {
+          dependencyType: "stateVariable",
+          variableName: "nThroughPoints"
+        },
+      }),
+      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
+
+        let freshByKey = freshnessInfo.splineCoeffs.freshByKey;
+
+        // console.log(`markStale for splineCoeffs of bezier curve`)
+        // console.log(changes);
+        // console.log(arrayKeys);
+        // console.log(JSON.parse(JSON.stringify(freshByKey)))
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+
+        // if ((changes.throughPoints && changes.throughPoints.valuesChanged.throughPoints.changed.changedEntireArray)
+        //   || (changes.controlVectors && changes.controlVectors.valuesChanged.controlVectors.changed.changedEntireArray)
+        // ) {
+        //   for (let key in freshByKey) {
+        //     delete freshByKey[key];
+        //   }
+        // } else {
+
+        if (changes.throughPoints) {
+          let newFreshByPointKey = changes.throughPoints.valuesChanged.throughPoints.freshnessInfo.freshByKey;
+
+          for (let key in freshByKey) {
+            // each spline coeff depends on corresponding point and the next point
+            let key2 = Number(key) + 1;
+            if (!(newFreshByPointKey[key] && newFreshByPointKey[key2])) {
+              delete freshByKey[key];
+            }
+          }
+        }
+
+        if (changes.controlVectors) {
+          let newFreshByVectorKey = changes.controlVectors.valuesChanged.controlVectors.freshnessInfo.freshByKey;
+
+          for (let key in freshByKey) {
+            // each spline coeff depends on corresponding pair of vectors and the next pair of vectors
+            let vkey11 = key + ",0", vkey12 = key + ",1";
+            let key2 = Number(key) + 1;
+            let vkey21 = key2 + ",0", vkey22 = key2 + ",1";
+
+            if (!(newFreshByVectorKey[vkey11] && newFreshByVectorKey[vkey12]
+              && newFreshByVectorKey[vkey21] && newFreshByVectorKey[vkey22]
+            )) {
+              delete freshByKey[key];
+            }
+          }
+          // }
+
+        }
+
+        if (arrayKey === undefined) {
+          if (Object.keys(freshByKey).length === 0) {
+            // asked for entire array and it is all stale
+            return { fresh: { splineCoeffs: false } }
+          } else {
+            // asked for entire array, but it has some fresh elements
+            return { partiallyFresh: { splineCoeffs: true } }
+          }
+        } else {
+          // asked for just one component
+          return {
+            fresh: {
+              splineCoeffs: freshByKey[arrayKey] === true,
+            }
+          }
+        }
+
+      },
+      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
+
+        let freshByKey = freshnessInfo.splineCoeffs.freshByKey;
+
+        // console.log(`definition of splineCoeffs`)
+        // console.log(changes);
+        // console.log(dependencyValues)
+        // console.log(arrayKeys)
+
+        let arrayKey;
+        if (arrayKeys) {
+          arrayKey = Number(arrayKeys[0]);
+        }
+
+        let tpNumeric = dependencyValues.throughPointsNumeric;
+        let cvNumeric = dependencyValues.controlVectorsNumeric;
+
+        // Note we used throughPoints and controlVectors (as well as numerical versions)
+        // as dependencies, as these state variables track changes at array level
+
+        if ((changes.throughPoints && changes.throughPoints.valuesChanged.throughPoints.changed.changedEntireArray)
+          || (changes.controlVectors && changes.controlVectors.valuesChanged.controlVectors.changed.changedEntireArray)
+        ) {
+
+          // send array to indicate that should overwrite entire array
+          let splineCoeffs = [];
+
+          for (let i = 0; i < tpNumeric.length - 1; i++) {
+            freshByKey[i] = true;
+
+            let p1 = tpNumeric[i];
+            let p2 = tpNumeric[i + 1];
+            let cv1 = cvNumeric[i][1];
+            let cv2 = cvNumeric[i + 1][0];
+
+            let c = [];
+            for (let dim = 0; dim < 2; dim++) {
+              c.push(initCubicPoly(
+                p1[dim],
+                p2[dim],
+                3 * cv1[dim],
+                -3 * cv2[dim]
+              ));
+            }
+            splineCoeffs.push(c);
+          }
+
+          return {
+            newValues: { splineCoeffs }
+          }
+        }
+
+        let newSpineCoeffs = {};
+
+
+        for (let i = 0; i < tpNumeric.length - 1; i++) {
+
+          if (!freshByKey[i]) {
+            freshByKey[i] = true;
+
+            let p1 = tpNumeric[i];
+            let p2 = tpNumeric[i + 1];
+            let cv1 = cvNumeric[i][1];
+            let cv2 = cvNumeric[i + 1][0];
+            let c = [];
+
+            for (let dim = 0; dim < 2; dim++) {
+              c.push(initCubicPoly(
+                p1[dim],
+                p2[dim],
+                3 * cv1[dim],
+                -3 * cv2[dim]
+              ));
+            }
+
+            newSpineCoeffs[i] = c;
+          }
+        }
+        return {
+          newValues: {
+            splineCoeffs: newSpineCoeffs,
+          }
+        }
+
+      },
+    }
+
+    stateVariableDefinitions.f = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        throughPoints: {
+          dependencyType: "stateVariable",
+          variableName: "throughPoints"
+        },
+        splineCoeffs: {
+          dependencyType: "stateVariable",
+          variableName: "splineCoeffs"
+        },
+        numericalEntries: {
+          dependencyType: "stateVariable",
+          variableName: "numericalEntries"
+        },
+        nThroughPoints: {
+          dependencyType: "stateVariable",
+          variableName: "nThroughPoints"
+        },
+        extrapolateBackward: {
+          dependencyType: "stateVariable",
+          variableName: "extrapolateBackward"
+        },
+        extrapolateForward: {
+          dependencyType: "stateVariable",
+          variableName: "extrapolateForward"
+        }
+      }),
+      defaultValue: () => 0,
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          f: function (t, dim) {
+
+            if (isNaN(t)) {
+              return NaN;
+            }
+
+            if (!dependencyValues.numericalEntries) {
+              return NaN;
+            }
+
+            let len = dependencyValues.nThroughPoints - 1;
+
+            if (len < 0) {
+              return NaN;
+            }
+
+            let z = Math.floor(t);
+
+            let extrapolate = false;
+            if (t < 0) {
+              if (dependencyValues.extrapolateBackward) {
+                z = 0;
+                extrapolate = true;
+              } else {
+                if (dim !== undefined) {
+                  return dependencyValues.throughPoints[0].tree[dim + 1];
+                } else {
+                  return dependencyValues.throughPoints[0].tree.slice(1);
+                }
+              }
+            }
+
+            if (t >= len) {
+              if (dependencyValues.extrapolateForward) {
+                z = len - 1;
+                extrapolate = true;
+              } else {
+                if (dim !== undefined) {
+                  return dependencyValues.throughPoints[len].tree[dim + 1];
+                } else {
+                  return dependencyValues.throughPoints[len].tree.slice(1);
+                }
+              }
+            }
+
+            t -= z;
+
+            if (extrapolate) {
+              if (z > 0) {
+                z = 1;
+                t -= 1;
+              }
+              let c = this.state.extracoeffs[z];
+              if (c === undefined) {
+                return NaN;
+              }
+
+              if (dim !== undefined) {
+                let cd = c[dim]
+                return (cd[2] * t + cd[1]) * t + cd[0];
+              } else {
+                let r = [];
+                for (let dim = 0; dim < 2; dim++) {
+                  let cd = c[dim]
+                  r.push((cd[2] * t + cd[1]) * t + cd[0]);
+                }
+                return r;
+              }
+            }
+
+            let c = dependencyValues.splineCoeffs[z];
+            if (c === undefined) {
+              return NaN;
+            }
+
+            if (dim !== undefined) {
+              let cd = c[dim]
+              return (((cd[3] * t + cd[2]) * t + cd[1]) * t + cd[0]);
+            } else {
+              let r = [];
+              for (let dim = 0; dim < 2; dim++) {
+                let cd = c[dim]
+                r.push((((cd[3] * t + cd[2]) * t + cd[1]) * t + cd[0]));
+              }
+              return r;
+            }
+          }
+
+        }
+      })
+
+    }
+
+    stateVariableDefinitions.parameterizationMin = {
+      forRenderer: true,
+      additionalStateVariablesDefined: [{
+        variableName: "parameterizationMax",
+        forRenderer: true
+      }],
+      returnDependencies: () => ({
+        nThroughPoints: {
+          dependencyType: "stateVariable",
+          variableName: "nThroughPoints",
+        },
+        extrapolateBackward: {
+          dependencyType: "stateVariable",
+          variableName: "extrapolateBackward"
+        },
+        extrapolateForward: {
+          dependencyType: "stateVariable",
+          variableName: "extrapolateForward"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let parameterizationMin = 0;
+        let parameterizationMax = dependencyValues.nThroughPoints - 1;
+
+        if (dependencyValues.extrapolateBackward) {
+          parameterizationMin = -parameterizationMax;
+        }
+        if (dependencyValues.extrapolateForward) {
+          parameterizationMax *= 2;
+        }
+
+        return {
+          newValues: {
+            parameterizationMin, parameterizationMax
+          }
+        }
+
+      }
+    }
+
+    stateVariableDefinitions.controlPoints = {
+      isArray: true,
+      public: true,
+      componentType: "point",
+      entryPrefixes: "controlPoint",
+      nDimensions: 2,
+      returnDependencies: function ({ arrayKeys }) {
+
+        if (arrayKeys === undefined) {
+          return {
+            throughPoints: {
+              dependencyType: "stateVariable",
+              variableName: "throughPoints",
+            },
+            controlVectors: {
+              dependencyType: "stateVariable",
+              variableName: "controlVectors"
+            }
+          }
+        } else {
+          let dependencies = {};
+
+          for (let arrayKey of arrayKeys) {
+            let varEndings = arrayKey.split(',').map(x => Number(x) + 1);
+            let jointVarEnding = varEndings.join('_');
+
+            dependencies["throughPoint" + varEndings[0]] = {
+              dependencyType: "stateVariable",
+              variableName: "throughPoint" + varEndings[0],
+            }
+
+            dependencies["controlVector" + jointVarEnding] = {
+              dependencyType: "stateVariable",
+              variableName: "controlVector" + jointVarEnding,
+            }
+          }
+
+          return dependencies;
+        }
+      },
+      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
+        let freshByKey = freshnessInfo.controlPoints.freshByKey;
+
+        // console.log('mark stale for bezier curve controlPoints')
+        // console.log(JSON.parse(JSON.stringify(changes)));
+        // console.log(arrayKeys);
+        // console.log(JSON.parse(JSON.stringify(freshByKey)));
+
+
+        // if ((changes.throughPoints && changes.throughPoints.valuesChanged.throughPoints.changed.changedEntireArray)
+        //   || (changes.controlVectors && changes.controlVectors.valuesChanged.controlVectors.changed.changedEntireArray)
+        // ) {
+        //   for (let key in freshByKey) {
+        //     delete freshByKey[key];
+        //   }
+        // } else {
+
+        if (changes.throughPoints) {
+          let newFreshByPointKey = changes.throughPoints.valuesChanged.throughPoints.freshnessInfo.freshByKey;
+
+          for (let key in freshByKey) {
+            let key0 = key.split(',')[0]
+            if (!newFreshByPointKey[key0]) {
+              delete freshByKey[key];
+            }
+          }
+        }
+
+        if (changes.controlVectors) {
+          let newFreshByVectorKey = changes.controlVectors.valuesChanged.controlVectors.freshnessInfo.freshByKey;
+
+          for (let key in freshByKey) {
+            if (!newFreshByVectorKey[key]) {
+              delete freshByKey[key];
+            }
+          }
+        }
+
+        // }
+
+        if (arrayKeys === undefined) {
+          if (Object.keys(freshByKey).length === 0) {
+            // asked for entire array and it is all stale
+            return { fresh: { controlPoints: false } }
+          } else {
+            // asked for entire array, but it has some fresh elements
+            return { partiallyFresh: { controlPoints: true } }
+          }
+        } else {
+          // asked for just one component
+          return {
+            fresh: {
+              controlPoints: freshByKey[arrayKeys[0]] === true,
+            }
+          }
+        }
+      },
+      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
+
+        let freshByKey = freshnessInfo.controlPoints.freshByKey;
+
+        // console.log(`definition of controlPoints`)
+        // console.log(dependencyValues);
+        // console.log(changes);
+        // console.log(JSON.parse(JSON.stringify(freshByKey)));
+        // console.log(arrayKeys)
+
+        if (arrayKeys === undefined) {
+
+          if ((changes.throughPoints && changes.throughPoints.valuesChanged.throughPoints.changed.changedEntireArray)
+            || (changes.controlVectors && changes.controlVectors.valuesChanged.controlVectors.changed.changedEntireArray)
+          ) {
+
+            let controlPoints = [];
+
+            for (let [pointInd, throughPoint] of dependencyValues.throughPoints.entries()) {
+
+              freshByKey[pointInd + ",0"] = true;
+              freshByKey[pointInd + ",1"] = true;
+
+              let csForPoint = [];
+
+              let cv1 = dependencyValues.controlVectors[pointInd][0];
+              if (cv1) {
+                // we're assuming points and vectors have numerical entries
+                let cp = me.fromAst(["tuple",
+                  throughPoint.tree[1] + cv1.tree[1],
+                  throughPoint.tree[2] + cv1.tree[2],
+                ])
+                csForPoint.push(cp);
+              } else {
+                csForPoint.push(null);
+              }
+
+              let cv2 = dependencyValues.controlVectors[pointInd][1];
+              if (cv2) {
+                // we're assuming points and vectors have numerical entries
+                let cp = me.fromAst(["tuple",
+                  throughPoint.tree[1] + cv2.tree[1],
+                  throughPoint.tree[2] + cv2.tree[2],
+                ])
+                csForPoint.push(cp);
+              } else {
+                csForPoint.push(null);
+              }
+
+              controlPoints.push(csForPoint);
+
+            }
+
+            return { newValues: { controlPoints } }
+
+          }
+
+          let newControlPoints = {};
+
+          for (let [pointInd, throughPoint] of dependencyValues.throughPoints.entries()) {
+
+            let key1 = pointInd + ",0";
+
+            if (!freshByKey[key1]) {
+              freshByKey[key1] = true
+
+              let cv1 = dependencyValues.controlVectors[pointInd][0];
+              if (cv1) {
+                // we're assuming points and vectors have numerical entries
+                let cp = me.fromAst(["tuple",
+                  throughPoint.tree[1] + cv1.tree[1],
+                  throughPoint.tree[2] + cv1.tree[2],
+                ])
+                newControlPoints[key1] = cp;
+              } else {
+                newControlPoints[key1] = null;
+              }
+            }
+
+
+            let key2 = pointInd + ",1";
+
+            if (!freshByKey[key2]) {
+              freshByKey[key2] = true
+
+              let cv2 = dependencyValues.controlVectors[pointInd][1];
+              if (cv2) {
+                // we're assuming points and vectors have numerical entries
+                let cp = me.fromAst(["tuple",
+                  throughPoint.tree[1] + cv2.tree[1],
+                  throughPoint.tree[2] + cv2.tree[2],
+                ])
+                newControlPoints[key2] = cp;
+              } else {
+                newControlPoints[key2] = null;
+              }
+            }
+
+          }
+
+          return { newValues: { controlPoints: newControlPoints } }
+
+        } else {
+          // arrayKeys defined
+
+          let newControlPoints = {};
+
+
+          for (let arrayKey of arrayKeys) {
+
+            if (!freshByKey[arrayKey]) {
+              freshByKey[arrayKey] = true;
+
+              let varEndings = arrayKey.split(',').map(x => Number(x) + 1);
+              let jointVarEnding = varEndings.join('_');
+
+              let throughPoint = dependencyValues["throughPoint" + varEndings[0]];
+              let controlVector = dependencyValues["controlVector" + jointVarEnding];
+
+              if (controlVector) {
+                // we're assuming points and vectors have numerical entries
+                let cp = me.fromAst(["tuple",
+                  throughPoint.tree[1] + controlVector.tree[1],
+                  throughPoint.tree[2] + controlVector.tree[2],
+                ])
+                newControlPoints[arrayKey] = cp;
+              } else {
+                newControlPoints[arrayKey] = null;
+              }
+
+            }
+
+          }
+
+          return { newValues: { newControlPoints } }
+        }
+
+      },
+    }
+
+
+    stateVariableDefinitions.controlPointsNumeric = {
+      isArray: true,
+      forRenderer: true,
+      nDimensions: 2,
+      returnDependencies: () => ({
+        controlPoints: {
+          dependencyType: "stateVariable",
+          variableName: "controlPoints"
+        },
+        numericalEntries: {
+          dependencyType: "stateVariable",
+          variableName: "numericalEntries"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        if (!dependencyValues.numericalEntries) {
+          return { newValues: { controlPointsNumeric: [] } }
+        } else {
+          return {
+            newValues: {
+              controlPointsNumeric: dependencyValues.controlPoints.map(x => x.map(y => y ? y.tree.slice(1) : [NaN, NaN]))
+            }
+          }
+        }
+      },
     }
 
     stateVariableDefinitions.nearestPoint = {
@@ -419,8 +2313,6 @@ export default class BezierCurve extends Curve {
       })
     }
 
-
-
     return stateVariableDefinitions;
   }
 
@@ -436,29 +2328,6 @@ export default class BezierCurve extends Curve {
 
       // skip setting up variables if child logic overwritten
       if (!this.curveChildLogicOverwritten) {
-
-        this.makePublicStateVariableArray({
-          variableName: "controlpoints",
-          componentType: "point",
-          stateVariableForRef: "coords",
-        });
-        this.makePublicStateVariableArrayEntry({
-          entryName: "controlpoint",
-          arrayVariableName: "controlpoints",
-        });
-        this.makePublicStateVariableArray({
-          variableName: "controlvectors",
-          componentType: "vector",
-          stateVariableForRef: "displacement",
-        });
-        this.makePublicStateVariableArrayEntry({
-          entryName: "controlvector",
-          arrayVariableName: "controlvectors",
-        });
-        this.makeArrayVariable({
-          variableName: "pointCurrentlyControlled",
-          trackChanges: true,
-        });
 
         // if not already defined, set up essential state variables
         // for bezier controls
@@ -479,39 +2348,30 @@ export default class BezierCurve extends Curve {
 
     this.calculateBezierParameters();
 
-    this.state.parameterizationMax = this.state.throughpoints.length - 1;
-    if (this.state.extrapolateBackward) {
-      this.state.parameterizationMin = -this.state.parameterizationMax;
-    } else {
-      this.state.parameterizationMin = 0;
-    }
-    if (this.state.extrapolateForward) {
-      this.state.parameterizationMax *= 2;
-    }
 
 
   }
 
   calculateBezierParameters() {
 
-    if (this._state.throughpoints === undefined ||
-      this._state.throughpoints.essential !== true) {
-      this.state.throughpoints = [];
+    if (this._state.throughPoints === undefined ||
+      this._state.throughPoints.essential !== true) {
+      this.state.throughPoints = [];
     }
-    if (this._state.controlvectors === undefined ||
-      this._state.controlvectors.essential !== true) {
-      this.state.controlvectors = [];
+    if (this._state.controlVectors === undefined ||
+      this._state.controlVectors.essential !== true) {
+      this.state.controlVectors = [];
     }
     if (this._state.symmetriccontrols === undefined ||
       this._state.symmetriccontrols.essential !== true) {
       this.state.symmetriccontrols = [];
     }
 
-    // if controlvectors is a readyonly proxy
+    // if controlVectors is a readyonly proxy
     // (which can happen with a ref)
     // make shallow copy
-    if (this.state.controlvectors.__isReadOnlyProxy) {
-      this.state.controlvectors = [...this.state.controlvectors];
+    if (this.state.controlVectors.__isReadOnlyProxy) {
+      this.state.controlVectors = [...this.state.controlVectors];
     }
 
     this.state.numericEntries = true;
@@ -522,17 +2382,17 @@ export default class BezierCurve extends Curve {
     let points = this.state.throughChild.state.points;
     let nPoints = this.state.throughChild.state.nPoints;
 
-    this.state.nPoints = this.state.throughpoints.length;
+    this.state.nPoints = this.state.throughPoints.length;
 
     // Step 2: if controls were explicitly specified via children
-    // set the controlvectors as prescribed
+    // set the controlVectors as prescribed
     // and mark the corresponding points as being currently controlled
     if (this.state.controlsChild) {
 
       let controls = this.state.controlsChild.state.controls;
       let nControls = Math.min(controls.length, this.state.nPoints);
 
-      // Note: don't reset controlvectors to zero length even with control children
+      // Note: don't reset controlVectors to zero length even with control children
       // as control children could be combined with essential controls
       // if additional controls beyond prescribed were created
 
@@ -548,7 +2408,7 @@ export default class BezierCurve extends Curve {
         }
 
         // simplest case is when controls were specified as vectors
-        // set controlvector component directly from child
+        // set controlVector component directly from child
         // create a symmetric control vector if only on vector
         // specified for an interior point
         if (ct.controlType === "vector") {
@@ -574,7 +2434,7 @@ export default class BezierCurve extends Curve {
               }
             }
           }
-          this.state.controlvectors[controlInd] = me.fromAst(cvector);
+          this.state.controlVectors[controlInd] = me.fromAst(cvector);
 
           // check for second vector everywhere except first through point
           if (i > 0) {
@@ -599,7 +2459,7 @@ export default class BezierCurve extends Curve {
                 }
               }
             }
-            this.state.controlvectors[controlInd + 1] = me.fromAst(cvector);
+            this.state.controlVectors[controlInd + 1] = me.fromAst(cvector);
           }
 
         } else {
@@ -625,7 +2485,7 @@ export default class BezierCurve extends Curve {
           // In this way, bottom-up changes from through points
           // (which won't alter sources of control points) maintain the vectors
           // B. when through points are explicitly changed top-down
-          // the corresponding controlvector values are preserved
+          // the corresponding controlVector values are preserved
 
           let symmetric = ct.points.length === 1;
           this.state.symmetriccontrols[i] = symmetric;
@@ -662,7 +2522,7 @@ export default class BezierCurve extends Curve {
             // the control point was explicitly changed
             // reset all variables related to preserving the control vector
             this.state.lastControlChildValue[controlInd] = me.fromAst(["tuple", ...pointValues])
-            this.state.throughForControlChild[controlInd] = this.state.throughpoints[i].copy();
+            this.state.throughForControlChild[controlInd] = this.state.throughPoints[i].copy();
           }
 
           // calculate control vector as difference between value of control point
@@ -679,7 +2539,7 @@ export default class BezierCurve extends Curve {
               this.numericEntries = false;
             }
           }
-          this.state.controlvectors[controlInd] = me.fromAst(cvector);
+          this.state.controlVectors[controlInd] = me.fromAst(cvector);
 
           // check for second control point everywhere except first through point
           if (i > 0) {
@@ -688,9 +2548,9 @@ export default class BezierCurve extends Curve {
               // be a reflection of the first
               let cvector = ["tuple"];
               for (let j = 0; j < 2; j++) {
-                cvector.push(-this.state.controlvectors[controlInd].tree[j + 1]);
+                cvector.push(-this.state.controlVectors[controlInd].tree[j + 1]);
               }
-              this.state.controlvectors[controlInd + 1] = me.fromAst(cvector);
+              this.state.controlVectors[controlInd + 1] = me.fromAst(cvector);
             } else {
 
               // for non-symmetric case, redo above calculation for the second point
@@ -723,7 +2583,7 @@ export default class BezierCurve extends Curve {
               }
               if (pointChanged) {
                 this.state.lastControlChildValue[controlInd + 1] = me.fromAst(["tuple", ...pointValues])
-                this.state.throughForControlChild[controlInd + 1] = this.state.throughpoints[i].copy();
+                this.state.throughForControlChild[controlInd + 1] = this.state.throughPoints[i].copy();
               }
 
               let cvector = ["tuple"];
@@ -736,7 +2596,7 @@ export default class BezierCurve extends Curve {
                   this.numericEntries = false;
                 }
               }
-              this.state.controlvectors[controlInd + 1] = me.fromAst(cvector);
+              this.state.controlVectors[controlInd + 1] = me.fromAst(cvector);
             }
           }
         }
@@ -772,34 +2632,34 @@ export default class BezierCurve extends Curve {
         continue;
       }
 
-      this._state.controlvectors.essential = true;
+      this._state.controlVectors.essential = true;
 
       if (this.state.numericEntries !== true) {
-        this.state.controlvectors[2 * i] = me.fromAst(["tuple", NaN, NaN]);
+        this.state.controlVectors[2 * i] = me.fromAst(["tuple", NaN, NaN]);
         if (i > 0) {
-          this.state.controlvectors[2 * i - 1] = me.fromAst(["tuple", NaN, NaN]);
+          this.state.controlVectors[2 * i - 1] = me.fromAst(["tuple", NaN, NaN]);
         }
         continue;
       }
 
       let p1, p2, p3;
 
-      p2 = this.state.throughpoints[i].tree.slice(1);
+      p2 = this.state.throughPoints[i].tree.slice(1);
 
       if (i === 0) {
         if (this.state.nPoints === 1) {
-          this.state.controlvectors[0] = me.fromAst(["tuple", NaN, NaN]);
+          this.state.controlVectors[0] = me.fromAst(["tuple", NaN, NaN]);
           continue;
         }
-        p3 = this.state.throughpoints[i + 1].tree.slice(1);
+        p3 = this.state.throughPoints[i + 1].tree.slice(1);
         p1 = [
           2 * p2[0] - p3[0],
           2 * p2[1] - p3[1]
         ]
       } else {
-        p1 = this.state.throughpoints[i - 1].tree.slice(1);
+        p1 = this.state.throughPoints[i - 1].tree.slice(1);
         if (i < this.state.nPoints - 1) {
-          p3 = this.state.throughpoints[i + 1].tree.slice(1);
+          p3 = this.state.throughPoints[i + 1].tree.slice(1);
         } else {
           p3 = [
             2 * p2[0] - p1[0],
@@ -855,21 +2715,21 @@ export default class BezierCurve extends Curve {
       this.state.symmetriccontrols[i] = true;
 
       if (i === 0) {
-        this.state.controlvectors[0] = me.fromAst(["tuple", ...cv]);
+        this.state.controlVectors[0] = me.fromAst(["tuple", ...cv]);
       } else {
-        this.state.controlvectors[2 * i - 1] = me.fromAst(["tuple", ...cv]);
-        this.state.controlvectors[2 * i] = me.fromAst(["tuple", -cv[0], -cv[1]]);
+        this.state.controlVectors[2 * i - 1] = me.fromAst(["tuple", ...cv]);
+        this.state.controlVectors[2 * i] = me.fromAst(["tuple", -cv[0], -cv[1]]);
       }
 
     }
 
     // if have extra control vectors (which would happen if just deleted some points)
     // then remove the extras
-    if (this.state.controlvectors.length > 2 * this.state.throughpoints.length - 1) {
-      this.state.controlvectors = this.state.controlvectors.slice(0, 2 * this.state.throughpoints.length - 1);
+    if (this.state.controlVectors.length > 2 * this.state.throughPoints.length - 1) {
+      this.state.controlVectors = this.state.controlVectors.slice(0, 2 * this.state.throughPoints.length - 1);
     }
 
-    // constrain/attract controlvectors to angles, if have such a child
+    // constrain/attract controlVectors to angles, if have such a child
     let constrainInds = this.childLogic.returnMatches("atMostOneConstrainToAngles");
     let constraintChild;
     if (constrainInds.length === 1) {
@@ -883,44 +2743,44 @@ export default class BezierCurve extends Curve {
     }
 
     if (constraintChild !== undefined) {
-      for (let ind = 0; ind < this.state.throughpoints.length; ind++) {
+      for (let ind = 0; ind < this.state.throughPoints.length; ind++) {
         if (ind == 0) {
           this.applyAngleConstraint(0, constraintChild)
         } else {
 
           this.applyAngleConstraint(2 * ind - 1, constraintChild)
 
-          if (ind < this.state.throughpoints.length - 1) {
+          if (ind < this.state.throughPoints.length - 1) {
             if (this.state.symmetriccontrols[ind] === false) {
               this.applyAngleConstraint(2 * ind, constraintChild)
             } else {
               // make symmetric reflection
               let cvec = ["tuple"];
               for (let j = 0; j < 2; j++) {
-                cvec.push(-this.state.controlvectors[2 * ind - 1].tree[j + 1]);
+                cvec.push(-this.state.controlVectors[2 * ind - 1].tree[j + 1]);
               }
-              this.state.controlvectors[2 * ind] = me.fromAst(cvec);
+              this.state.controlVectors[2 * ind] = me.fromAst(cvec);
             }
           }
         }
       }
     }
 
-    // create controlpoints as controlvectors + corresponding throughpoints
-    this.state.controlpoints = [];
-    for (let i = 1; i < this.state.throughpoints.length; i++) {
+    // create controlPoints as controlVectors + corresponding throughPoints
+    this.state.controlPoints = [];
+    for (let i = 1; i < this.state.throughPoints.length; i++) {
       let cp1 = ["tuple"];
       let cp2 = ["tuple"];
       for (let j = 1; j < 3; j++) {
-        cp1.push(this.state.throughpoints[i - 1].tree[j] + this.state.controlvectors[2 * i - 2].tree[j]);
-        cp2.push(this.state.throughpoints[i].tree[j] + this.state.controlvectors[2 * i - 1].tree[j]);
+        cp1.push(this.state.throughPoints[i - 1].tree[j] + this.state.controlVectors[2 * i - 2].tree[j]);
+        cp2.push(this.state.throughPoints[i].tree[j] + this.state.controlVectors[2 * i - 1].tree[j]);
       }
-      this.state.controlpoints.push(me.fromAst(cp1));
-      this.state.controlpoints.push(me.fromAst(cp2));
+      this.state.controlPoints.push(me.fromAst(cp1));
+      this.state.controlPoints.push(me.fromAst(cp2));
     }
 
-    let tpNumeric = this.state.throughpoints.map(x => x.tree.slice(1));
-    let cvNumeric = this.state.controlvectors.map(x => x.tree.slice(1));
+    let tpNumeric = this.state.throughPoints.map(x => x.tree.slice(1));
+    let cvNumeric = this.state.controlVectors.map(x => x.tree.slice(1));
 
 
     // Compute coefficients for a cubic polynomial
@@ -1046,136 +2906,17 @@ export default class BezierCurve extends Curve {
   }
 
   applyAngleConstraint(ind, constraintChild) {
-    let vec = this.state.controlvectors[ind].tree.slice(1);
+    let vec = this.state.controlVectors[ind].tree.slice(1);
     let result = constraintChild.applyTheConstraint({
       x1: vec[0],
       x2: vec[1],
     })
     if (result.constrained) {
-      this.state.controlvectors[ind] =
+      this.state.controlVectors[ind] =
         me.fromAst(["tuple", result.variables.x1, result.variables.x2]);
     }
   }
 
-  parameterization(t, dim) {
-
-    if (isNaN(t)) {
-      return NaN;
-    }
-
-    if (this.state.curveType === "parameterization") {
-      if (dim !== undefined) {
-        return this.state.fs[dim](t);
-      } else {
-        return this.state.fs.map(x => x(t));
-      }
-    } else if (this.state.curveType === "function") {
-      let x = -10 * Math.log(1 / t - 1);
-      if (dim !== undefined) {
-        if (this.state.flipFunction === true) {
-          if (dim === 0) {
-            return this.state.f(x)
-          } else {
-            return x;
-          }
-        }
-        else {
-          if (dim === 0) {
-            return x;
-          } else {
-            return this.state.f(x);
-          }
-        }
-      } else {
-        if (this.state.flipFunction === true) {
-          return [this.state.f(x), x];
-        } else {
-          return [x, this.state.f(x)];
-        }
-      }
-    }
-
-    if (this.state.numericEntries !== true) {
-      return NaN;
-    }
-
-    let len = this.state.nPoints - 1;
-
-    if (len < 0) {
-      return NaN;
-    }
-
-    let z = Math.floor(t);
-
-    let extrapolate = false;
-    if (t < 0) {
-      if (this.state.extrapolateBackward) {
-        z = 0;
-        extrapolate = true;
-      } else {
-        if (dim !== undefined) {
-          return this.state.throughpoints[0].tree[dim + 1];
-        } else {
-          return this.state.throughpoints[0].tree.slice(1);
-        }
-      }
-    }
-
-    if (t >= len) {
-      if (this.state.extrapolateForward) {
-        z = len - 1;
-        extrapolate = true;
-      } else {
-        if (dim !== undefined) {
-          return this.state.throughpoints[len].tree[dim + 1];
-        } else {
-          return this.state.throughpoints[len].tree.slice(1);
-        }
-      }
-    }
-
-    t -= z;
-
-    if (extrapolate) {
-      if (z > 0) {
-        z = 1;
-        t -= 1;
-      }
-      let c = this.state.extracoeffs[z];
-      if (c === undefined) {
-        return NaN;
-      }
-
-      if (dim !== undefined) {
-        let cd = c[dim]
-        return (cd[2] * t + cd[1]) * t + cd[0];
-      } else {
-        let r = [];
-        for (let dim = 0; dim < 2; dim++) {
-          let cd = c[dim]
-          r.push((cd[2] * t + cd[1]) * t + cd[0]);
-        }
-        return r;
-      }
-    }
-
-    let c = this.state.splinecoeffs[z];
-    if (c === undefined) {
-      return NaN;
-    }
-
-    if (dim !== undefined) {
-      let cd = c[dim]
-      return (((cd[3] * t + cd[2]) * t + cd[1]) * t + cd[0]);
-    } else {
-      let r = [];
-      for (let dim = 0; dim < 2; dim++) {
-        let cd = c[dim]
-        r.push((((cd[3] * t + cd[2]) * t + cd[1]) * t + cd[0]));
-      }
-      return r;
-    }
-  }
 
   nearestPoint({ x1, x2, x3 }) {
 
@@ -1367,56 +3108,44 @@ export default class BezierCurve extends Curve {
     } else if (this.stateValues.curveType === "spline") {
       params.fx = t => this.parameterization(t, 0);
       params.fy = t => this.parameterization(t, 1);
-      params.throughpoints = this.stateValues.throughpoints.map(x => x.tree.slice(1));
-      params.controlpoints = this.stateValues.controlpoints.map(x => x.tree.slice(1));
+      params.throughPoints = this.stateValues.throughPoints.map(x => x.tree.slice(1));
+      params.controlPoints = this.stateValues.controlPoints.map(x => x.tree.slice(1));
       params.pointCurrentlyControlled = [...this.stateValues.pointCurrentlyControlled];
     }
     return params;
   }
 
-  moveControlvector({ controlvector, controlvectorInd }) {
+  moveControlVector({ controlVector, controlVectorInds }) {
     this.requestUpdate({
-      updateType: "updateValue",
       updateInstructions: [{
+        updateType: "updateValue",
         componentName: this.componentName,
-        variableUpdates: {
-          controlvectors: {
-            isArray: true,
-            changes: { arrayComponents: { [controlvectorInd]: me.fromAst(["tuple", ...controlvector]) } }
-          }
-        },
-        controlvectorMoved: controlvectorInd,
+        stateVariable: "controlVectors",
+        value: { [controlVectorInds]: me.fromAst(["vector", ...controlVector]) },
+        sourceInformation: { controlVectorMoved: controlVectorInds }
+      }]
+    })
+  }
+
+  moveThroughPoint({ throughPoint, throughPointInd }) {
+    this.requestUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "throughPoints",
+        value: { [throughPointInd]: me.fromAst(["tuple", ...throughPoint]) },
+        sourceInformation: { throughPointMoved: throughPointInd }
       }]
     });
   }
 
-  moveThroughpoint({ throughpoint, throughpointInd }) {
+  changeVectorControlDirection({ direction, throughPointInd }) {
     this.requestUpdate({
-      updateType: "updateValue",
       updateInstructions: [{
+        updateType: "updateValue",
         componentName: this.componentName,
-        variableUpdates: {
-          throughpoints: {
-            isArray: true,
-            changes: { arrayComponents: { [throughpointInd]: me.fromAst(["tuple", ...throughpoint]) } }
-          }
-        },
-        throughpointMoved: throughpointInd,
-      }]
-    });
-  }
-
-  togglePointControl(throughpointInd) {
-    this.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
-        componentName: this.componentName,
-        variableUpdates: {
-          pointCurrentlyControlled: {
-            isArray: true,
-            changes: { arrayComponents: { [throughpointInd]: this.state.pointCurrentlyControlled[throughpointInd] !== true } }
-          }
-        },
+        stateVariable: "vectorControlDirection",
+        value: { [throughPointInd]: direction },
       }]
     });
   }
@@ -1428,9 +3157,9 @@ export default class BezierCurve extends Curve {
     }
 
     const actions = {
-      moveControlvector: this.moveControlvector,
-      moveThroughpoint: this.moveThroughpoint,
-      togglePointControl: this.togglePointControl,
+      moveControlVector: this.moveControlVector,
+      moveThroughPoint: this.moveThroughPoint,
+      changeVectorControlDirection: this.changeVectorControlDirection,
     }
 
     let params = this.calculateCurveRenderParams();
@@ -1453,8 +3182,8 @@ export default class BezierCurve extends Curve {
     if (sourceOfUpdate && sourceOfUpdate.instructionsByComponent) {
       let instructions = sourceOfUpdate.instructionsByComponent[this.componentName];
       if (instructions !== undefined) {
-        params.changeInitiatedWith.throughpointInd = instructions.throughpointMoved;
-        params.changeInitiatedWith.controlvectorInd = instructions.controlvectorMoved;
+        params.changeInitiatedWith.throughPointInd = instructions.throughPointMoved;
+        params.changeInitiatedWith.controlVectorInd = instructions.controlVectorMoved;
       }
     }
     this.renderer.updateCurve(params);
@@ -1476,7 +3205,7 @@ export default class BezierCurve extends Curve {
   }
 
   get variablesUpdatableDownstream() {
-    return ["throughpoints", "controlvectors", "controlpoints", "pointCurrentlyControlled"];
+    return ["throughPoints", "controlVectors", "controlPoints", "pointCurrentlyControlled"];
   }
 
   calculateDownstreamChanges({ stateVariablesToUpdate, stateVariableChangesToSave,
@@ -1488,15 +3217,15 @@ export default class BezierCurve extends Curve {
     // console.log(stateVariablesToUpdate);
 
     // these will be overwritten if find values from stateVariableToUpdate
-    let newThroughpoints = [...this.state.throughpoints];
-    let newControlvectors = [...this.state.controlvectors];
+    let newThroughPoints = [...this.state.throughPoints];
+    let newControlVectors = [...this.state.controlVectors];
     let newpointCurrentlyControlled = [...this.state.pointCurrentlyControlled];
 
     let controlsChanged = new Set([]);
     let controlsChangedViaThrough = new Set([]);
 
     for (let varName in stateVariablesToUpdate) {
-      if (varName === "throughpoints") {
+      if (varName === "throughPoints") {
         if (newStateVariables[varName] === undefined) {
           newStateVariables[varName] = {
             isArray: true,
@@ -1508,13 +3237,13 @@ export default class BezierCurve extends Curve {
           if (indNum > 0) {
             controlsChangedViaThrough.add(2 * indNum - 1);
           }
-          if (indNum < newThroughpoints.length - 1) {
+          if (indNum < newThroughPoints.length - 1) {
             controlsChangedViaThrough.add(2 * indNum);
           }
-          newThroughpoints[ind] = newStateVariables[varName].changes.arrayComponents[ind] =
+          newThroughPoints[ind] = newStateVariables[varName].changes.arrayComponents[ind] =
             stateVariablesToUpdate[varName].changes.arrayComponents[ind];
         }
-      } else if (varName === "controlvectors") {
+      } else if (varName === "controlVectors") {
         if (newStateVariables[varName] === undefined) {
           newStateVariables[varName] = {
             isArray: true,
@@ -1525,7 +3254,7 @@ export default class BezierCurve extends Curve {
           let indNum = Number(ind)
           controlsChanged.add(indNum);
 
-          newControlvectors[ind] = newStateVariables[varName].changes.arrayComponents[ind] =
+          newControlVectors[ind] = newStateVariables[varName].changes.arrayComponents[ind] =
             stateVariablesToUpdate[varName].changes.arrayComponents[ind];
         }
       } else if (varName === "pointCurrentlyControlled") {
@@ -1542,16 +3271,16 @@ export default class BezierCurve extends Curve {
       }
     }
 
-    // check if controlpoints (rather than controlvectors) were changed
+    // check if controlPoints (rather than controlVectors) were changed
     // and fill in any unused control vector slots
-    if (stateVariablesToUpdate.controlpoints !== undefined) {
-      if (newStateVariables.controlvectors === undefined) {
-        newStateVariables.controlvectors = {
+    if (stateVariablesToUpdate.controlPoints !== undefined) {
+      if (newStateVariables.controlVectors === undefined) {
+        newStateVariables.controlVectors = {
           isArray: true,
           changes: { arrayComponents: {} }
         }
       }
-      for (let ind in stateVariablesToUpdate.controlpoints.changes.arrayComponents) {
+      for (let ind in stateVariablesToUpdate.controlPoints.changes.arrayComponents) {
         let indNum = Number(ind)
         if (!controlsChanged.has(indNum)) {
           controlsChanged.add(indNum);
@@ -1559,44 +3288,44 @@ export default class BezierCurve extends Curve {
           // check if through point changed
           let tp;
           if (controlsChangedViaThrough.has(indNum)) {
-            tp = newThroughpoints[Math.ceil(ind / 2)].tree;
+            tp = newThroughPoints[Math.ceil(ind / 2)].tree;
           } else {
-            tp = this.state.throughpoints[Math.ceil(ind / 2)].tree;
+            tp = this.state.throughPoints[Math.ceil(ind / 2)].tree;
           }
 
-          let cp = stateVariablesToUpdate.controlpoints.changes.arrayComponents[ind].tree;
+          let cp = stateVariablesToUpdate.controlPoints.changes.arrayComponents[ind].tree;
 
           let newCVast = ["tuple"];
           for (let j = 0; j < 2; j++) {
             newCVast.push(cp[j + 1] - tp[j + 1]);
           }
 
-          newControlvectors[ind] = newStateVariables.controlvectors.changes.arrayComponents[ind] =
+          newControlVectors[ind] = newStateVariables.controlVectors.changes.arrayComponents[ind] =
             me.fromAst(newCVast);
         }
       }
     }
 
-    // after have determined all new values for throughpoints
+    // after have determined all new values for throughPoints
     // check if have to specify the symmetric control point
-    for (let i = 1; i < newThroughpoints.length - 1; i++) {
+    for (let i = 1; i < newThroughPoints.length - 1; i++) {
       if (this.state.symmetriccontrols[i] !== false) {
         if (controlsChanged.has(2 * i - 1)) {
           controlsChanged.add(2 * i);
           // make control vector 2*i be symmetric reflection of 2*i-1
           let c = ["tuple"];
           for (let j = 0; j < 2; j++) {
-            c.push(-newControlvectors[2 * i - 1].tree[j + 1]);
+            c.push(-newControlVectors[2 * i - 1].tree[j + 1]);
           }
-          newStateVariables.controlvectors.changes.arrayComponents[2 * i] = newControlvectors[2 * i] = me.fromAst(c);
+          newStateVariables.controlVectors.changes.arrayComponents[2 * i] = newControlVectors[2 * i] = me.fromAst(c);
         } else if (controlsChanged.has(2 * i)) {
           controlsChanged.add(2 * i - 1);
           // make control point 2*i-1 be symmetric reflection of 2*i
           let c = ["tuple"];
           for (let j = 0; j < 2; j++) {
-            c.push(-newControlvectors[2 * i].tree[j + 1]);
+            c.push(-newControlVectors[2 * i].tree[j + 1]);
           }
-          newStateVariables.controlvectors.changes.arrayComponents[2 * i - 1] = newControlvectors[2 * i - 1] = me.fromAst(c);
+          newStateVariables.controlVectors.changes.arrayComponents[2 * i - 1] = newControlVectors[2 * i - 1] = me.fromAst(c);
         }
       }
     }
@@ -1611,13 +3340,13 @@ export default class BezierCurve extends Curve {
     }
 
     // check if based on through child
-    if (this.state.throughChild !== undefined && "throughpoints" in newStateVariables) {
+    if (this.state.throughChild !== undefined && "throughPoints" in newStateVariables) {
 
       let throughPoints = this.state.throughChild.state.points;
 
-      for (let ind in newStateVariables.throughpoints.changes.arrayComponents) {
+      for (let ind in newStateVariables.throughPoints.changes.arrayComponents) {
         let pointName = throughPoints[ind].componentName;
-        dependenciesToUpdate[pointName] = { coords: { changes: newThroughpoints[ind] } };
+        dependenciesToUpdate[pointName] = { coords: { changes: newThroughPoints[ind] } };
       }
     }
 
@@ -1655,13 +3384,13 @@ export default class BezierCurve extends Curve {
           controlInstructions[controlNumber] =
             controlInds.map(function (ind) {
               if (controlsChangedViaThrough.has(ind) ||
-                ind in newStateVariables.controlvectors.changes.arrayComponents) {
+                ind in newStateVariables.controlVectors.changes.arrayComponents) {
                 // if controls changed via through then change all control inds
                 // else only change those that directly
                 let newPoint = ["tuple"];
                 for (let j = 0; j < 2; j++) {
-                  newPoint.push(newControlvectors[ind].tree[j + 1]
-                    + newThroughpoints[controlNumber].tree[j + 1]);
+                  newPoint.push(newControlVectors[ind].tree[j + 1]
+                    + newThroughPoints[controlNumber].tree[j + 1]);
                 }
                 return me.fromAst(newPoint);
               }
@@ -1671,10 +3400,10 @@ export default class BezierCurve extends Curve {
           controlInstructions[controlNumber] =
             controlInds.map(function (ind) {
               if (controlsChangedViaThrough.has(ind) ||
-                ind in newStateVariables.controlvectors.changes.arrayComponents) {
+                ind in newStateVariables.controlVectors.changes.arrayComponents) {
                 // if controls changed via through then change all control inds
                 // else only change those that directly
-                return newControlvectors[ind];
+                return newControlVectors[ind];
               }
             })
         }
@@ -1719,7 +3448,7 @@ export default class BezierCurve extends Curve {
 
 
 function getNumericalCoords(coords) {
-  if (coords.tree.length !== 3) {
+  if (!coords || coords.tree.length !== 3) {
     return {
       numericEntries: false,
       coordsNumeric: me.fromAst(["vector", NaN, NaN])
@@ -1745,4 +3474,129 @@ function getNumericalCoords(coords) {
     coordsNumeric,
   }
 
+}
+
+
+function calculateControlVectorFromSpline({ tau, eps, point1, point2, point3, splineForm }) {
+
+  let dist = function (p1, p2) {
+    let dx = p1[0] - p2[0];
+    let dy = p1[1] - p2[1];
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  let p1, p2, p3;
+
+  if (point2) {
+    p2 = point2.tree.slice(1);
+  } else {
+    return {
+      coordsNumeric: me.fromAst(["vector", NaN, NaN]),
+      numericEntries: false
+    }
+  }
+
+  if (point3) {
+    p3 = point3.tree.slice(1);
+
+    if (point1) {
+      p1 = point1.tree.slice(1);
+    } else {
+      p1 = [
+        2 * p2[0] - p3[0],
+        2 * p2[1] - p3[1]
+      ];
+    }
+  } else {
+    if (point1) {
+      p1 = point1.tree.slice(1);
+      p3 = [
+        2 * p2[0] - p1[0],
+        2 * p2[1] - p1[1]
+      ];
+    } else {
+      return {
+        coordsNumeric: me.fromAst(["vector", NaN, NaN]),
+        numericEntries: false
+      }
+    }
+  }
+
+  let cv = [];
+
+  if (splineForm === 'centripetal') {
+    let dt0 = dist(p1, p2);
+    let dt1 = dist(p2, p3);
+
+    dt0 = Math.sqrt(dt0);
+    dt1 = Math.sqrt(dt1);
+
+    if (dt1 < eps) { dt1 = 1.0; }
+    if (dt0 < eps) { dt0 = dt1; }
+
+    for (let dim = 0; dim < 2; dim++) {
+
+      let t1 = (p2[dim] - p1[dim]) / dt0 -
+        (p3[dim] - p1[dim]) / (dt1 + dt0) +
+        (p3[dim] - p2[dim]) / dt1;
+
+      // original algorithm would multiply by different dt's on each side
+      // of the point
+      // Took geometric mean so that control vectors are symmetric
+      t1 *= tau * Math.sqrt(dt0 * dt1);
+
+      // Bezier control vector component lengths
+      // are one third the respective derivative of the cubic
+      // if (i === 0) {
+      //   cv.push(t1 / 3);
+      // } else {
+      cv.push(-t1 / 3);
+      // }
+    }
+  } else {
+    // uniform spline case
+    for (let dim = 0; dim < 2; dim++) {
+      // Bezier control vector component lengths
+      // are one third the respective derivative of the cubic
+      // if (i === 0) {
+      //   cv.push(tau * (p3[dim] - p1[dim]) / 3);
+      // } else {
+      cv.push(-tau * (p3[dim] - p1[dim]) / 3);
+      // }
+    }
+  }
+  let coordsNumeric = me.fromAst(["vector", ...cv]);
+  let numericEntries = Number.isFinite(cv[0]) && Number.isFinite(cv[1])
+
+  return { coordsNumeric, numericEntries };
+
+}
+
+function flipVector(vector) {
+  if (!vector) {
+    return
+  }
+
+  // note: assumes that components of vector are numeric
+  let vectorTree = vector.tree;
+  if (Array.isArray(vectorTree)) {
+    return me.fromAst([vectorTree[0], ...vectorTree.slice(1).map(x => -x)])
+  } else {
+    return me.fromAst(-vectorTree)
+  }
+}
+
+// Compute coefficients for a cubic polynomial
+//   p(s) = c0 + c1*s + c2*s^2 + c3*s^3
+// such that
+//   p(0) = x1, p(1) = x2
+// and
+//   p'(0) = t1, p'(1) = t2
+function initCubicPoly(x1, x2, t1, t2) {
+  return [
+    x1,
+    t1,
+    -3 * x1 + 3 * x2 - 2 * t1 - t2,
+    2 * x1 - 2 * x2 + t1 + t2
+  ];
 }

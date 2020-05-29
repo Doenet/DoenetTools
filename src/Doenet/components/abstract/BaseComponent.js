@@ -33,8 +33,6 @@ export default class BaseComponent {
     this.componentName = componentName;
     this.ancestors = ancestors;
 
-    this.componentType = this.constructor.componentType;
-    this.rendererType = this.constructor.rendererType;
     this.standardComponentClasses = standardComponentClasses;
     this.allComponentClasses = allComponentClasses;
     this.isInheritedComponentType = isInheritedComponentType;
@@ -87,6 +85,14 @@ export default class BaseComponent {
 
   static get rendererType() {
     return this.componentType;
+  }
+
+  get componentType() {
+    return this.constructor.componentType;
+  }
+
+  get rendererType() {
+    return this.constructor.rendererType;
   }
 
   get allPotentialRendererTypes() {

@@ -3520,6 +3520,9 @@ export default class Core {
         let index = stateVarObj.keyToIndex(arrayKey);
         let aVals = stateVarObj.arrayValues;
         for (let indComponent of index.slice(0, index.length - 1)) {
+          if (!aVals[indComponent]) {
+            aVals[indComponent] = [];
+          }
           aVals = aVals[indComponent];
         }
 
@@ -3556,6 +3559,9 @@ export default class Core {
         let aVals = arrayValues;
         for (let indComponent of index.slice(0, index.length - 1)) {
           aVals = aVals[indComponent];
+          if (!aVals) {
+            return undefined;
+          }
         }
         return aVals[index[index.length - 1]];
       };
@@ -3995,9 +4001,10 @@ export default class Core {
       // (not actual index in activeChildren)
       // so filter uses the i argument, not the x argument
       if (dependencyDefinition.childIndices !== undefined) {
+        let childIndices = dependencyDefinition.childIndices.map(x => Number(x))
         activeChildrenIndices = activeChildrenIndices
-          .filter((x, i) => dependencyDefinition.childIndices.includes(i));
-        newDep.childIndices = dependencyDefinition.childIndices;
+          .filter((x, i) => childIndices.includes(i));
+        newDep.childIndices = childIndices;
       }
 
 
@@ -4842,6 +4849,10 @@ export default class Core {
       // console.log(`no changes for ${stateVariable} of ${component.componentName}`);
       // console.log(noChanges)
       result = { noChanges };
+
+      if (stateVarObj.freshenOnNoChanges) {
+        stateVarObj.freshenOnNoChanges(definitionArgs);
+      }
     } else {
       result = stateVarObj.definition(definitionArgs);
     }
@@ -5172,7 +5183,8 @@ export default class Core {
         // delete before assigning value to remove any getter for the property
         delete component.state[varName].value;
         component.state[varName].value = component.state[varName].arrayValues;
-
+        // _previousArrayValues is just temporarily used if setting entire array
+        delete component.state[varName]._previousArrayValues;
       } else if (component.state[varName].isArrayEntry) {
         delete component.state[varName].value;
         component.state[varName].value = component.state[varName].getValueFromArrayValues();
@@ -5245,13 +5257,17 @@ export default class Core {
     if (component.potentialEssentialState) {
       if (byArrayEntries) {
         for (let arrayKey in useEssentialInfo) {
-          if (component.state[varName].essentialByArrayKey[arrayKey]) {
+          if (component.state[varName].essentialByArrayKey[arrayKey] || component.state[varName].essential) {
             // if already essential, no need to do more
             // unless new value is undefined
-            haveEssentialValue[arrayKey] = true;
-            valueUnchanged[arrayKey] = true;
-            this.restorePreviousArrayEntryValueIfUndefined({ component, varName, arrayKey });
-          } else {
+            let result = this.restorePreviousArrayEntryValue({ component, varName, arrayKey });
+            if (result.restoredValue) {
+              component.state[varName].essentialByArrayKey[arrayKey] = true;
+              haveEssentialValue[arrayKey] = true;
+              valueUnchanged[arrayKey] = true;
+            }
+          }
+          if (!haveEssentialValue[arrayKey]) {
             let variablesToCheck = useEssentialInfo[arrayKey].variablesToCheck;
             if (!Array.isArray(variablesToCheck)) {
               variablesToCheck = [variablesToCheck];
@@ -5300,36 +5316,51 @@ export default class Core {
       // if don't have potential essential state,
       // still check if arrayKeys are already essential
       for (let arrayKey in useEssentialInfo) {
-        if (component.state[varName].essentialByArrayKey[arrayKey]) {
+        if (component.state[varName].essentialByArrayKey[arrayKey] || component.state[varName].essential) {
           // if already essential, no need to do more
           // unless new value is undefined
-          haveEssentialValue[arrayKey] = true;
-          valueUnchanged[arrayKey] = true;
-          this.restorePreviousArrayEntryValueIfUndefined({ component, varName, arrayKey });
+          let result = this.restorePreviousArrayEntryValue({ component, varName, arrayKey });
+          if (result.restoredValue) {
+            component.state[varName].essentialByArrayKey[arrayKey] = true;
+            haveEssentialValue[arrayKey] = true;
+            valueUnchanged[arrayKey] = true;
+          }
         }
       }
     }
     return { haveEssentialValue, valueUnchanged, byArrayEntries };
   }
 
-  restorePreviousArrayEntryValueIfUndefined({ component, varName, arrayKey }) {
+  restorePreviousArrayEntryValue({ component, varName, arrayKey }) {
     // if current value of array entry is undefined
     // and a previous value from _previousArrayValue exists
     // then restore that previous value
 
+    // returns restoredValue = true if succeeded or if current value existed
+    // returns restoredValue if value is still undefined
+
     let currentValue = component.state[varName].getArrayValue({ arrayKey });
-    if (currentValue === undefined && component.state[varName]._previousArrayValues) {
-      let previousValue = component.state[varName].getArrayValue({
-        arrayKey,
-        arrayValues: component.state[varName]._previousArrayValues
-      });
-      if (previousValue !== undefined) {
-        // revert to previous value
-        component.state[varName].setArrayValue({
-          value: previousValue,
+    if (currentValue === undefined) {
+      if (component.state[varName]._previousArrayValues) {
+        let previousValue = component.state[varName].getArrayValue({
           arrayKey,
+          arrayValues: component.state[varName]._previousArrayValues
         });
+        if (previousValue !== undefined) {
+          // revert to previous value
+          component.state[varName].setArrayValue({
+            value: previousValue,
+            arrayKey,
+          });
+          return { restoredValue: true }
+        }
+      } else {
+        return { restoredValue: false }
       }
+    } else {
+      // if have current value, then nothing to do
+      return { restoredValue: true }
+
     }
   }
 
@@ -8185,6 +8216,9 @@ export default class Core {
     if (updatesNeeded.componentsToUpdateDependencies.length > 0) {
       console.log(`updating dependencies`)
       console.log(updatesNeeded.componentsToUpdateDependencies)
+
+      let determineDependenciesStateVariablesToFreshen = [];
+
       for (let updateObj of updatesNeeded.componentsToUpdateDependencies) {
 
         let component = this._components[updateObj.componentName];
@@ -8197,13 +8231,16 @@ export default class Core {
         let additionalStateVariablesThatWillBeUpdated = [];
         for (let stateVariable of updateObj.stateVariables) {
           if (!additionalStateVariablesThatWillBeUpdated.includes(stateVariable)) {
-            // TODO: if do indeed keep aliases deleted from state, then don't need second check
             stateVariablesToUpdate.push(stateVariable);
             if (component.state[stateVariable].additionalStateVariablesDefined) {
               additionalStateVariablesThatWillBeUpdated.push(
                 ...component.state[stateVariable].additionalStateVariablesDefined
               )
             }
+            let determineDependenciesStateVariable = component.state[stateVariable].determineDependenciesStateVariable;
+            determineDependenciesStateVariablesToFreshen.push(
+              component.state[determineDependenciesStateVariable]
+            )
           }
         }
 
@@ -8227,77 +8264,10 @@ export default class Core {
             sharedParameters: component.sharedParameters,
           });
 
-          // Note: currentDeps object is downstream dependencies
-          // of allStateVariablesAffected
-          let currentDeps = this.downstreamDependencies[component.componentName][stateVariable]
 
-          let changedDependency = false;
-
-          for (let dependencyName in currentDeps) {
-            if (!(dependencyName in newDependencies)) {
-
-              changedDependency = true;
-              this.deleteDownstreamDependency({
-                downDeps: currentDeps,
-                downDepName: dependencyName
-              });
-
-            }
-          }
-
-
-          for (let dependencyName in newDependencies) {
-            if (dependencyName in currentDeps) {
-
-              let dependencyDefinition = newDependencies[dependencyName];
-              let currentDep = currentDeps[dependencyName];
-
-              if (!deepCompare(dependencyDefinition, currentDep.definition)) {
-                changedDependency = true;
-
-                this.deleteDownstreamDependency({
-                  downDeps: currentDeps,
-                  downDepName: dependencyName
-                });
-
-                let dependencyDefinition = newDependencies[dependencyName];
-                let newStateVariableDependencies = this.createNewStateVariableDependency({
-                  component,
-                  stateVariable,
-                  dependencyName, dependencyDefinition,
-                  allStateVariablesAffected,
-                });
-                Object.assign(currentDeps, newStateVariableDependencies);
-
-              }
-
-            } else {
-
-              changedDependency = true;
-
-              let dependencyDefinition = newDependencies[dependencyName];
-              let newStateVariableDependencies = this.createNewStateVariableDependency({
-                component,
-                stateVariable,
-                dependencyName, dependencyDefinition,
-                allStateVariablesAffected,
-              });
-              Object.assign(currentDeps, newStateVariableDependencies);
-            }
-
-          }
-
-          // TODO: test that this works
-          if (stateVarObj.isArray && stateVarObj.arrayEntryNames) {
-
-            // TODO: determine whether or not actually made a change in array entry
-            changedDependency = true;
-
-            for (let arrayEntryStateVariable of stateVarObj.arrayEntryNames) {
-              // TODO: check if this works correctly with multiple state variables defined
-              stateVarObj.setUpArrayEntryDependencies(arrayEntryStateVariable);
-            }
-          }
+          let changedDependency = this.replaceDependenciesIfChanged({
+            component, stateVariable, newDependencies, allStateVariablesAffected
+          });
 
           if (changedDependency) {
             dependencyChanges.push({
@@ -8305,6 +8275,40 @@ export default class Core {
               stateVariable,
               allStateVariablesAffected,
             })
+          }
+
+          // TODO: test that this works
+          if (stateVarObj.isArray && stateVarObj.arrayEntryNames) {
+
+            for (let arrayEntryStateVariable of stateVarObj.arrayEntryNames) {
+
+              let newDependencies = stateVarObj.returnDependencies({
+                stateValues: definitionArgs.dependencyValues,
+                componentInfoObjects: this.componentInfoObjects,
+                sharedParameters: component.sharedParameters,
+                arrayKeys: component.state[arrayEntryStateVariable].arrayKeys
+              });
+
+              let allArrayEntryStateVariablesAffected = [arrayEntryStateVariable];
+              if (component.state[arrayEntryStateVariable].additionalStateVariablesDefined) {
+                allArrayEntryStateVariablesAffected.push(...component.state[arrayEntryStateVariable].additionalStateVariablesDefined)
+              }
+
+              let changedEntryDependency = this.replaceDependenciesIfChanged({
+                component,
+                stateVariable: arrayEntryStateVariable,
+                newDependencies,
+                allStateVariablesAffected: allArrayEntryStateVariablesAffected
+              });
+
+              if (changedEntryDependency) {
+                dependencyChanges.push({
+                  componentName: component.componentName,
+                  stateVariable: arrayEntryStateVariable,
+                  allStateVariablesAffected: allArrayEntryStateVariablesAffected
+                })
+              }
+            }
           }
 
         }
@@ -8367,6 +8371,14 @@ export default class Core {
       if (haveUnresolved) {
         this.resolveAllDependencies(updatesNeeded);
       }
+
+      // look up value of all determine dependencies state variables
+      // in order to freshen them
+      // (needed so that mark stale will be triggered next time they change)
+      for (let stateVarObj of determineDependenciesStateVariablesToFreshen) {
+        stateVarObj.value;
+      }
+
     }
 
     this.replacementChangesFromCompositesToUpdate({ updatesNeeded })
@@ -8374,9 +8386,65 @@ export default class Core {
     if (updatesNeeded.componentsToUpdateDependencies.length > 0) {
       // TODO: address case where have continued dependencies to update
       // How do we make sure don't have infinite loop?
-      throw Error("Need to address further updates to dependencies caused by composite changes")
+      console.log(`since found more components to updated dependencies, will try to recurse`)
+      console.log(updatesNeeded.componentsToUpdateDependencies)
+      this.updateDependencies(updatesNeeded);
+      // throw Error("Need to address further updates to dependencies caused by composite changes")
     }
 
+  }
+
+  replaceDependenciesIfChanged({ component, stateVariable, newDependencies, allStateVariablesAffected }) {
+
+    // Note: currentDeps object is downstream dependencies
+    // of allStateVariablesAffected
+    let currentDeps = this.downstreamDependencies[component.componentName][stateVariable];
+
+    let changedDependency = false;
+
+    for (let dependencyName in currentDeps) {
+      if (!(dependencyName in newDependencies)) {
+        changedDependency = true;
+        this.deleteDownstreamDependency({
+          downDeps: currentDeps,
+          downDepName: dependencyName
+        });
+      }
+    }
+
+    for (let dependencyName in newDependencies) {
+      if (dependencyName in currentDeps) {
+        let dependencyDefinition = newDependencies[dependencyName];
+        let currentDep = currentDeps[dependencyName];
+        if (!deepCompare(dependencyDefinition, currentDep.definition)) {
+          changedDependency = true;
+          this.deleteDownstreamDependency({
+            downDeps: currentDeps,
+            downDepName: dependencyName
+          });
+          let dependencyDefinition = newDependencies[dependencyName];
+          let newStateVariableDependencies = this.createNewStateVariableDependency({
+            component,
+            stateVariable,
+            dependencyName, dependencyDefinition,
+            allStateVariablesAffected,
+          });
+          Object.assign(currentDeps, newStateVariableDependencies);
+        }
+      }
+      else {
+        changedDependency = true;
+        let dependencyDefinition = newDependencies[dependencyName];
+        let newStateVariableDependencies = this.createNewStateVariableDependency({
+          component,
+          stateVariable,
+          dependencyName, dependencyDefinition,
+          allStateVariablesAffected,
+        });
+        Object.assign(currentDeps, newStateVariableDependencies);
+      }
+    }
+    return changedDependency;
   }
 
   evaluatedDeferredChildStateVariables(component) {
@@ -9492,11 +9560,19 @@ export default class Core {
     }
 
     let newStateVariableValues = {};
-    let originalComponents = [];
+    let sourceInformation = {};
     let workspace = {};
 
     for (let instruction of updateInstructions) {
-      originalComponents.push(instruction.componentName);
+
+      let componentSourceInformation = sourceInformation[instruction.componentName];
+      if (!componentSourceInformation) {
+        componentSourceInformation = sourceInformation[instruction.componentName] = {};
+      }
+
+      if (instruction.sourceInformation) {
+        Object.assign(componentSourceInformation, instruction.sourceInformation);
+      }
 
       if (instruction.updateType === "updateValue") {
 
@@ -9528,7 +9604,7 @@ export default class Core {
         newStateVariableValues,
         contentId: this.contentId,
         sourceOfUpdate: {
-          originalComponents
+          sourceInformation
         }
       });
     }
@@ -9540,7 +9616,7 @@ export default class Core {
       updatesNeeded,
       saveSerializedState,
       sourceOfUpdate: {
-        originalComponents,
+        sourceInformation,
         local: true,
       }
     });
@@ -10229,6 +10305,14 @@ function validatePropertyValue({ value, propertySpecification, property }) {
       let firstValue = propertySpecification.validValues[0]
       console.warn(`Invalid value ${value} for property ${property}, using value ${firstValue}`);
       value = firstValue;
+    }
+  } else if (propertySpecification.clamp) {
+    if (value < propertySpecification.clamp[0]) {
+      value = propertySpecification.clamp[0];
+    } else if (value > propertySpecification.clamp[1]) {
+      value = propertySpecification.clamp[1];
+    } else if (!Number.isFinite(value)) {
+      value = property.default;
     }
   }
 

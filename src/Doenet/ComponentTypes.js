@@ -48,6 +48,7 @@ import FunctionCurve from './components/FunctionCurve';
 import ParametrizedCurve from './components/ParametrizedCurve';
 import BezierCurve from './components/BezierCurve';
 import BezierControls from './components/BezierControls';
+import ControlVectors from './components/ControlVectors';
 import PointListComponent from './components/abstract/PointListComponent';
 import VectorListComponent from './components/abstract/VectorListComponent';
 import AngleListComponent from './components/abstract/AngleListComponent';
@@ -196,7 +197,7 @@ const componentTypeArray = [
   Circle,
   Parabola,
   Curve, FunctionCurve, ParametrizedCurve, BezierCurve,
-  BezierControls,
+  BezierControls, ControlVectors,
   Vector,
   Angle,
   Equation,
