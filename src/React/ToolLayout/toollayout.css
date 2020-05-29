@@ -50,14 +50,15 @@ button{
 
 .resizer{
   width: 3px;
-  padding-left: 1px;
-  padding-right: 1px;
+  /* padding-left: 1px;
+  padding-right: 1px; */
   position:relative;
   flex-shrink: 0;
-  background-color: white;
+  background-color: #E3E3E3;
+  opacity:0.2;
 
 }
-.horizontal-seperator {
+/* .horizontal-seperator {
   width: 5px;
   height: 1px;
   background-color: #e3e2e2;
@@ -70,7 +71,7 @@ button{
   width: 1px;
   background: #e3e2e2;
   margin: 0 auto;
-}
+} */
 .resizer:hover{
   background-color: #E3E2E2;
 

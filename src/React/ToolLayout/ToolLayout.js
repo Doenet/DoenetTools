@@ -29,7 +29,6 @@ export default function ToolLayout(props) {
   let leftW;
   let rightW;
 
-
   if (props.children && Array.isArray(props.children)) {
     if (props.leftPanelWidth) {
       leftW = parseInt(props.leftPanelWidth, 10) > 300 ? 300 : props.leftPanelWidth;
@@ -42,7 +41,7 @@ export default function ToolLayout(props) {
   } else {
     rightW = 300;
   }
-  const resizerW = 5;
+  const resizerW = 3;
 
 
   //Assume 3 if 1 child then we don't worry about middleW
@@ -258,8 +257,8 @@ export default function ToolLayout(props) {
   if (props.children.length === 2 || props.children.length === 3) {
     allParts.push(
       <div key="resizer1" id="first" className="resizer column-resizer">
-        <div className="horizontal-seperator" />
-        <div className="vertical-seperator" />
+        {/* <div className="horizontal-seperator" />
+        <div className="vertical-seperator" /> */}
       </div>
     );
   }
@@ -275,8 +274,8 @@ export default function ToolLayout(props) {
   if (props.children.length >= 3) {
     allParts.push(
       <div key="resizer2" id="second" className="resizer column-resizer">
-        <div className="horizontal-seperator" />
-        <div className="vertical-seperator" />
+        {/* <div className="horizontal-seperator" />
+        <div className="vertical-seperator" /> */}
       </div>
     );
   }
