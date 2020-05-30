@@ -2666,7 +2666,7 @@ export default class Core {
     let refTargetComponent = this._components[redefineDependencies.refTargetName];
 
     // properties depend first on refComponent (if exists in refComponent),
-    // then on refTarget (if exist in refTarget)
+    // then on refTarget (if not reffing a prop and property exists in refTarget)
     for (let property in childLogic.properties) {
       let propertySpecification = childLogic.properties[property];
       let componentType = propertySpecification.componentType ? propertySpecification.componentType : property;
@@ -2683,7 +2683,7 @@ export default class Core {
           variableName: property,
         }
       }
-      if (property in refTargetComponent.state) {
+      if (!redefineDependencies.propVariable && (property in refTargetComponent.state)) {
         thisDependencies.refTargetVariable = {
           dependencyType: "componentStateVariable",
           componentIdentity: {

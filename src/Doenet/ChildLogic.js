@@ -47,6 +47,7 @@ export default class childLogic {
         comparison: 'atMost',
         number: 1,
         allowSpillover: false,
+        excludeCompositeReplacements: true,
         parentComponentType: this.parentComponentType,
         allComponentClasses: this.allComponentClasses,
         standardComponentClasses: this.standardComponentClasses,
@@ -108,7 +109,7 @@ export default class childLogic {
 
   newLeaf({ name, componentType, getComponentType, comparison, number, requireConsecutive,
     condition, isSugar, repeatSugar, replacementFunction, returnSugarDependencies, logicToWaitOnSugar,
-    allowSpillover, excludeComponentTypes,
+    allowSpillover, excludeComponentTypes, excludeCompositeReplacements,
     setAsBase = false, ...invalidArguments
   }) {
 
@@ -132,6 +133,7 @@ export default class childLogic {
     let leaf = new ChildLogicLeaf({
       name,
       componentType, getComponentType, excludeComponentTypes,
+      excludeCompositeReplacements,
       comparison, number,
       requireConsecutive, condition,
       isSugar, repeatSugar, returnSugarDependencies, logicToWaitOnSugar,
@@ -251,12 +253,12 @@ export default class childLogic {
   returnMatches(name) {
 
 
-    if(this.propertyAndBaseLogic === undefined) {
+    if (this.propertyAndBaseLogic === undefined) {
       return;
     }
 
     if (this.logicResult.success !== true) {
-      if(name in this.logicComponents) {
+      if (name in this.logicComponents) {
         return [];
       } else {
         return;
@@ -870,6 +872,7 @@ class ChildLogicBase {
 
 class ChildLogicLeaf extends ChildLogicBase {
   constructor({ name, componentType, getComponentType, excludeComponentTypes,
+    excludeCompositeReplacements = false,
     comparison = "exactly", number = 1,
     requireConsecutive = false, condition, isSugar = false, repeatSugar = false,
     replacementFunction, returnSugarDependencies, logicToWaitOnSugar,
@@ -894,6 +897,7 @@ class ChildLogicLeaf extends ChildLogicBase {
       this.componentType = componentType.toLowerCase();
     }
     this.excludeComponentTypes = excludeComponentTypes;
+    this.excludeCompositeReplacements = excludeCompositeReplacements;
 
     this.comparison = comparison;
     this.number = number;
@@ -987,7 +991,11 @@ class ChildLogicLeaf extends ChildLogicBase {
               }
             }
           }
+          if (matched && this.excludeCompositeReplacements && child.replacementOf) {
+            matched = false;
+          }
         }
+
         if (matched) {
           childMatches.push(childNum)
         }
@@ -1260,7 +1268,7 @@ class ChildLogicOperator extends ChildLogicBase {
 
         // chose just the sugar from the proposition chosen
         let nameofMinIndex = allResults[propositionOfMinIndex].name;
-        if(sugarsMatchedByPropositionName[nameofMinIndex]) {
+        if (sugarsMatchedByPropositionName[nameofMinIndex]) {
           foundSugarResults = true;
           sugarResults = sugarsMatchedByPropositionName[nameofMinIndex];
         } else {
