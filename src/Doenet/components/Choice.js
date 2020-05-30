@@ -2,6 +2,7 @@ import InlineComponent from './abstract/InlineComponent';
 
 export default class Choice extends InlineComponent {
   static componentType = "choice";
+  static rendererType = "container";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -170,14 +171,6 @@ export default class Choice extends InlineComponent {
     return stateVariableDefinitions;
   }
 
-
-  initializeRenderer() {
-    if (this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.choice({
-        key: this.componentName,
-      });
-    }
-  }
 
   static includeBlankStringChildren = true;
 

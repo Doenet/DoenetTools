@@ -9,7 +9,24 @@ export default class Choiceinput extends Input {
       new Proxy(this, this.readOnlyProxyHandler)
     );
 
-    this.returnChoiceRenderers = this.returnChoiceRenderers.bind(this);
+    this.actions = {
+      updateSelectedIndices: this.updateSelectedIndices,
+    }
+
+    //Complex because the stateValues isn't defined until later
+    Object.defineProperty(this.actions, 'submitAnswer', {
+      get: function () {
+        if (this.stateValues.answerAncestor !== null) {
+          return () => this.requestAction({
+            componentName: this.stateValues.answerAncestor.componentName,
+            actionName: "submitAnswer"
+          })
+        } else {
+          return () => null
+        }
+      }.bind(this)
+    });
+
   }
 
   static componentType = "choiceinput";
@@ -21,7 +38,7 @@ export default class Choiceinput extends Input {
     let properties = super.createPropertiesObject(args);
     properties.selectMultiple = { default: false };
     properties.assignPartialCredit = { default: false };
-    properties.inline = { default: false };
+    properties.inline = { default: false, forRenderer: true };
     properties.fixedOrder = { default: false };
     properties.feedbackDefinitions = { propagateToDescendants: true, mergeArrays: true }
     return properties;
@@ -116,6 +133,7 @@ export default class Choiceinput extends Input {
       componentType: "text",
       isArray: true,
       entryPrefixes: ["choiceText"],
+      forRenderer: true,
       returnDependencies: () => ({
         choiceOrder: {
           dependencyType: "stateVariable",
@@ -150,6 +168,7 @@ export default class Choiceinput extends Input {
       componentType: "number",
       isArray: true,
       entryPrefixes: ["selectedIndex"],
+      forRenderer: true,
       returnDependencies: () => ({
         choiceOrder: {
           dependencyType: "stateVariable",
@@ -424,13 +443,23 @@ export default class Choiceinput extends Input {
         choiceChildrenOrdered: {
           dependencyType: "stateVariable",
           variableName: "choiceChildrenOrdered"
+        },
+        inline: {
+          dependencyType: "stateVariable",
+          variableName: "inline"
         }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          childrenToRender: dependencyValues.choiceChildrenOrdered.map(x => x.componentName)
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.inline) {
+          return { newValues: { childrenToRender: [] } }
+        } else {
+          return {
+            newValues: {
+              childrenToRender: dependencyValues.choiceChildrenOrdered.map(x => x.componentName)
+            }
+          }
         }
-      })
+      }
     }
 
 
@@ -451,62 +480,4 @@ export default class Choiceinput extends Input {
     }
   }
 
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    this.actions = {
-      updateSelectedIndices: this.updateSelectedIndices,
-    }
-
-    if (this.stateValues.answerAncestor !== undefined) {
-      this.actions.submitAnswer = () => this.requestAction({
-        componentName: this.stateValues.answerAncestor.componentName,
-        actionName: "submitAnswer"
-      })
-    }
-
-    this.renderer = new this.availableRenderers.choiceinput({
-      actions: this.actions,
-      choiceTexts: this.stateValues.choiceTexts,
-      selectedIndices: this.stateValues.selectedIndices,
-      selectMultiple: this.stateValues.selectMultiple,
-      inline: this.stateValues.inline,
-      key: this.componentName,
-      includeCheckWork: this.stateValues.includeCheckWork,
-      creditAchieved: this.stateValues.creditAchieved,
-      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      returnChoiceRenderers: this.returnChoiceRenderers,
-      showCorrectness: this.flags.showCorrectness,
-      disabled: this.stateValues.disabled,
-    });
-  }
-
-  updateRenderer() {
-    this.renderer.updateChoiceinputRenderer({
-      choiceTexts: this.stateValues.choiceTexts,
-      selectedIndices: this.stateValues.selectedIndices,
-      creditAchieved: this.stateValues.creditAchieved,
-      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      inline: this.stateValues.inline,
-      disabled: this.stateValues.disabled,
-    });
-
-  }
-
-
-  returnChoiceRenderers() {
-    let choiceRenderers = [];
-    for (let [index, child] of this.stateValues.choiceChildrenOrdered.entries()) {
-      let componentRenderer = this.allRenderComponents[child.componentName];
-      if (componentRenderer !== undefined) {
-        componentRenderer.keyFromInput = this.componentName + "_choice" + index
-        choiceRenderers.push(componentRenderer);
-      }
-    }
-    return choiceRenderers;
-  }
 }

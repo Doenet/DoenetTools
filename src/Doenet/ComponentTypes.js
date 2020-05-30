@@ -57,7 +57,7 @@ import Angle from './components/Angle';
 import Equation from './components/Equation';
 import Answer from './components/Answer';
 import Award from './components/Award';
-import IfComponent from './components/If';
+import When from './components/When';
 import Mathinput from './components/Mathinput';
 import Textinput from './components/Textinput';
 import Booleaninput from './components/Booleaninput';
@@ -201,7 +201,7 @@ const componentTypeArray = [
   Vector,
   Angle,
   Equation,
-  Answer, Award, IfComponent,
+  Answer, Award, When,
   Mathinput, Textinput, Booleaninput, Choiceinput,
   Choice,
   NumberComponent, Integer,

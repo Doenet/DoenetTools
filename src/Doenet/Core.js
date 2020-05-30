@@ -4336,6 +4336,12 @@ export default class Core {
         depUp[newDep.mappedDownstreamVariableName] = [];
       }
       depUp[newDep.mappedDownstreamVariableName].push(newDep);
+
+      // for parent state variable
+      // always make variable optional so that don't get error
+      // depending on parent (which a component can't control)
+      newDep.variableOptional = true;
+
     }
     else if (dependencyDefinition.dependencyType === "ancestorStateVariables" || dependencyDefinition.dependencyType === "ancestorIdentity") {
 
@@ -6090,6 +6096,10 @@ export default class Core {
 
     let foundArrayEntry = false;
 
+    if (!component.arrayEntryPrefixes) {
+      throw Error(`Unknown state variable ${stateVariable} of ${component.componentName}`);
+    }
+
     let arrayEntryPrefixesLongestToShortest = Object.keys(component.arrayEntryPrefixes).sort((a, b) => b.length - a.length)
 
     // check if stateVariable begins when an arrayEntry
@@ -7092,7 +7102,7 @@ export default class Core {
         }
 
         let foundCurrentDep = false;
-        for (let u of depUp) {
+        for (let u of depUp[currentDep.mappedDownstreamVariableName]) {
           if (u === currentDep) {
             foundCurrentDep = true;
             break;

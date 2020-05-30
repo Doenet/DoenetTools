@@ -4,7 +4,7 @@ describe('Answer Tag Tests', function () {
     cy.visit('/test')
   })
 
-  it.only('answer sugar from one string', () => {
+  it('answer sugar from one string', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1609,8 +1609,8 @@ describe('Answer Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p><answer>Enter values that sum to <m>3x</m>: <mathinput/> <mathinput/>
-  <award><if><math><ref prop="value">_mathinput1</ref>+<ref prop="value">_mathinput2</ref></math> = <math>3x</math></if></award>
-  <award credit="0.5"><if><math><ref prop="value">_mathinput1</ref>+<ref prop="value">_mathinput2</ref></math> = <math>3</math></if></award>
+  <award><when><math><ref prop="value">_mathinput1</ref>+<ref prop="value">_mathinput2</ref></math> = <math>3x</math></when></award>
+  <award credit="0.5"><when><math><ref prop="value">_mathinput1</ref>+<ref prop="value">_mathinput2</ref></math> = <math>3</math></when></award>
   </answer></p>
   <p>First current response: <ref name="cr" prop="currentResponse">_answer1</ref></p>
   <p>First current response again: <ref name="cr1" prop="currentResponse1">_answer1</ref></p>
@@ -1639,12 +1639,17 @@ describe('Answer Tag Tests', function () {
       let crsb = components['/crs'].replacements[1];
       let crsbAnchor = '#' + crsb.componentName;
       let sr = components['/sr'].replacements[0];
+      console.log(sr);
       let srAnchor = '#' + sr.componentName;
       let sr1 = components['/sr1'].replacements[0];
+      console.log(sr1);
       let sr1Anchor = '#' + sr1.componentName;
       let sr2 = components['/sr2'].replacements[0];
+      console.log(components["/sr2"])
+      console.log(sr2);
       let sr2Anchor = '#' + sr2.componentName;
       let srsa = components['/srs'].replacements[0];
+      console.log(srsa);
       let srsaAnchor = '#' + srsa.componentName;
       let srsb = components['/srs'].replacements[1];
       let srsbAnchor = '#' + srsb.componentName;
@@ -2120,8 +2125,8 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <answer>
     <p>Enter values that sum to <m>3x</m>: <mathinput/> <mathinput/></p>
-    <award><if><math><ref prop="value">_mathinput1</ref>+<ref prop="value">_mathinput2</ref></math> = <math>3x</math></if></award>
-    <award credit="0.5"><if><math><ref prop="value">_mathinput1</ref>+<ref prop="value">_mathinput2</ref></math> = <math>3</math></if></award>
+    <award><when><math><ref prop="value">_mathinput1</ref>+<ref prop="value">_mathinput2</ref></math> = <math>3x</math></when></award>
+    <award credit="0.5"><when><math><ref prop="value">_mathinput1</ref>+<ref prop="value">_mathinput2</ref></math> = <math>3</math></when></award>
     <p>First current response: <ref name="cr" prop="currentResponse">_answer1</ref></p>
     <p>First current response again: <ref name="cr1" prop="currentResponse1">_answer1</ref></p>
     <p>Second current response: <ref name="cr2" prop="currentResponse2">_answer1</ref></p>
@@ -2629,12 +2634,12 @@ describe('Answer Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p><answer>Enter rain and snow in either order: <textinput/> <textinput/>
-  <award><if><text><ref prop="value">_textinput1</ref> <ref prop="value">_textinput2</ref></text> = <text>rain snow</text></if></award>
-  <award><if><text><ref prop="value">_textinput1</ref> <ref prop="value">_textinput2</ref></text> = <text>snow rain</text></if></award>
-  <award credit="0.5"><if><ref prop="value">_textinput1</ref> = rain</if></award>
-  <award credit="0.5"><if><ref prop="value">_textinput1</ref> = snow</if></award>
-  <award credit="0.5"><if><ref prop="value">_textinput2</ref> = rain</if></award>
-  <award credit="0.5"><if><ref prop="value">_textinput2</ref> = snow</if></award>
+  <award><when><text><ref prop="value">_textinput1</ref> <ref prop="value">_textinput2</ref></text> = <text>rain snow</text></when></award>
+  <award><when><text><ref prop="value">_textinput1</ref> <ref prop="value">_textinput2</ref></text> = <text>snow rain</text></when></award>
+  <award credit="0.5"><when><ref prop="value">_textinput1</ref> = rain</when></award>
+  <award credit="0.5"><when><ref prop="value">_textinput1</ref> = snow</when></award>
+  <award credit="0.5"><when><ref prop="value">_textinput2</ref> = rain</when></award>
+  <award credit="0.5"><when><ref prop="value">_textinput2</ref> = snow</when></award>
   </answer></p>
   <p>First current response: <ref name="cr" prop="currentResponse">_answer1</ref></p>
   <p>First current response again: <ref name="cr1" prop="currentResponse1">_answer1</ref></p>
@@ -3182,8 +3187,8 @@ describe('Answer Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <answer>Enter enter number larger than 5 or less than 2: <mathinput/>
-  <award><if><ref prop="value">_mathinput1</ref> > 5</if></award>
-  <award><if><ref prop="value">_mathinput1</ref> < <math>2</math></if></award>
+  <award><when><ref prop="value">_mathinput1</ref> > 5</when></award>
+  <award><when><ref prop="value">_mathinput1</ref> < <math>2</math></when></award>
   </answer>
   `}, "*");
 
@@ -3249,7 +3254,7 @@ describe('Answer Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <answer><mathinput/>
-  <award><if>-1 <= <ref prop="value">_mathinput1</ref> <= 1</if></award>
+  <award><when>-1 <= <ref prop="value">_mathinput1</ref> <= 1</when></award>
   </answer>
   `}, "*");
     });
@@ -3272,7 +3277,7 @@ describe('Answer Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <answer><mathinput/>
-  <award><if>-1 < <ref prop="value">_mathinput1</ref> < 1</if></award>
+  <award><when>-1 < <ref prop="value">_mathinput1</ref> < 1</when></award>
   </answer>
   `}, "*");
     });
@@ -3294,7 +3299,7 @@ describe('Answer Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <answer><mathinput/>
-  <award><if>1 > <ref prop="value">_mathinput1</ref> >= -1</if></award>
+  <award><when>1 > <ref prop="value">_mathinput1</ref> >= -1</when></award>
   </answer>
   `}, "*");
     });
@@ -3319,7 +3324,7 @@ describe('Answer Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <answer><mathinput/> <mathinput/> <mathinput/>
-    <award><if>
+    <award><when>
       ((<ref prop="value">_mathinput1</ref> = x
       and <ref prop="value">_mathinput2</ref> != <ref prop="value">_mathinput1</ref>)
       or
@@ -3327,7 +3332,7 @@ describe('Answer Tag Tests', function () {
       and <ref prop="value">_mathinput2</ref> != z
       and <ref prop="value">_mathinput2</ref> != q))
       and <ref prop="value">_mathinput3</ref> > 5
-   </if></award>
+   </when></award>
   </answer>
   `}, "*");
     });
@@ -4077,8 +4082,8 @@ describe('Answer Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p><answer>Enter values that sum to <m>3x</m>: <mathinput/> <mathinput/>
-  <award><if><math><ref prop="value">_mathinput1</ref>+<ref prop="value">_mathinput2</ref></math> = <math>3x</math></if></award>
-  <award credit="0.5"><if><math><ref prop="value">_mathinput1</ref>+<ref prop="value">_mathinput2</ref></math> = <math>3</math></if></award>
+  <award><when><math><ref prop="value">_mathinput1</ref>+<ref prop="value">_mathinput2</ref></math> = <math>3x</math></when></award>
+  <award credit="0.5"><when><math><ref prop="value">_mathinput1</ref>+<ref prop="value">_mathinput2</ref></math> = <math>3</math></when></award>
   </answer></p>
   `}, "*");
     });
@@ -4371,12 +4376,12 @@ describe('Answer Tag Tests', function () {
         doenetML: `
         <text>a</text>
         <p><answer>Enter rain and snow in either order: <textinput/> <textinput/>
-        <award><if><text><ref prop="value">_textinput1</ref> <ref prop="value">_textinput2</ref></text> = <text>rain snow</text></if></award>
-        <award><if><text><ref prop="value">_textinput1</ref> <ref prop="value">_textinput2</ref></text> = <text>snow rain</text></if></award>
-        <award credit="0.5"><if><ref prop="value">_textinput1</ref> = rain</if></award>
-        <award credit="0.5"><if><ref prop="value">_textinput1</ref> = snow</if></award>
-        <award credit="0.5"><if><ref prop="value">_textinput2</ref> = rain</if></award>
-        <award credit="0.5"><if><ref prop="value">_textinput2</ref> = snow</if></award>
+        <award><when><text><ref prop="value">_textinput1</ref> <ref prop="value">_textinput2</ref></text> = <text>rain snow</text></when></award>
+        <award><when><text><ref prop="value">_textinput1</ref> <ref prop="value">_textinput2</ref></text> = <text>snow rain</text></when></award>
+        <award credit="0.5"><when><ref prop="value">_textinput1</ref> = rain</when></award>
+        <award credit="0.5"><when><ref prop="value">_textinput1</ref> = snow</when></award>
+        <award credit="0.5"><when><ref prop="value">_textinput2</ref> = rain</when></award>
+        <award credit="0.5"><when><ref prop="value">_textinput2</ref> = snow</when></award>
         </answer></p>
   `}, "*");
     });
@@ -4618,8 +4623,8 @@ describe('Answer Tag Tests', function () {
     <p>Enter variable:
     <answer>
       <mathinput name="ans"/>
-      <award><if><ref prop="value">ans</ref> = <ref prop="value">var</ref></if></award>
-      <award credit="0.5"><if><ref prop="value">ans</ref> = <ref prop="value">var2</ref></if></award>
+      <award><when><ref prop="value">ans</ref> = <ref prop="value">var</ref></when></award>
+      <award credit="0.5"><when><ref prop="value">ans</ref> = <ref prop="value">var2</ref></when></award>
     </answer>
     </p>
   `}, "*");
@@ -6578,9 +6583,9 @@ describe('Answer Tag Tests', function () {
   <p>Enter any letter:
   <answer size='3' name='userx'>
   <mathinput name="userx_input"/>
-  <award><if>
+  <award><when>
     <ref prop="value">userx_input</ref> elementof {a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}
-    </if>
+    </when>
   </award>
   </answer>
   </p>
@@ -6618,7 +6623,7 @@ describe('Answer Tag Tests', function () {
   <answer>
   <mathinput name="element" />
   <award>
-    <if><ref prop="value">element</ref> elementof <ref prop="value">set</ref></if>
+    <when><ref prop="value">element</ref> elementof <ref prop="value">set</ref></when>
   </award>
   </answer>
   </p>
