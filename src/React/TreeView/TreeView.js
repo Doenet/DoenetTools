@@ -75,37 +75,49 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
   onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
    currentDraggedOverContainerId}) {
      
-  const getItemStyle = (currentDraggedObject, parentNodeHeadingId, currentItemId) => {
+  const getItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
     let itemDragged = currentDraggedObject.id == currentItemId;
     let isShadow = itemDragged && 
       currentDraggedObject.dataObject.parentId == parentNodeHeadingId &&
       currentDraggedObject.sourceParentId != currentDraggedObject.dataObject.parentId;
-
+    
     if (!itemDragged) {  // item not dragged
       return ({
-        border: "0px",
-        background: "none",
-        padding: "0px"
+        style: {
+          border: "0px",
+          background: "none",
+          padding: "0px"
+        },
+        icon: Icons(itemType)
       })
     } else if (itemDragged && isShadow) {  // copy of item
       return ({
-        width: "100%",
-        border: "0px",
-        background: "#fdfdfd",
-        padding: "0px 5px",
-        color: "#fdfdfd",
-        boxShadow: "0 0 3px rgba(0, 0, 0, .2)"
+        style: {
+          width: "100%",
+          border: "0px",
+          background: "#fdfdfd",
+          padding: "0px 5px",
+          color: "#fdfdfd",
+          boxShadow: "0 0 3px rgba(0, 0, 0, .2)"
+        },
+        icon: <span></span>
       })
     } else {  // item itself
       return ({
-        border: "2px dotted #37ceff",
-        background: "#fff",
-        padding: "0px 5px"
+        style: {
+          border: "2px dotted #37ceff",
+          background: "#fff",
+          padding: "0px 5px"
+        },
+        icon: Icons(itemType)
       })
     }
   }
+
   const itemType = parentsInfo[parentHeadingId]["type"];
   const childrenList = [...parentsInfo[parentHeadingId]["childContent"], ...parentsInfo[parentHeadingId]["childUrls"]];
+  const itemStyleAndIcon = getItemStyleAndIcon(currentDraggedObject, itemType, parentNodeHeadingId, parentHeadingId);
+  
 
   let subTree = <ParentNode 
     id={parentHeadingId}
@@ -113,7 +125,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
     title={parentHeadingId == "root" ? "Tree" : parentsInfo[parentHeadingId]["title"]}
     type={itemType}
     defaultOpen={parentHeadingId == "root"}
-    itemIcon = {Icons(itemType)}
+    itemIcon = {itemStyleAndIcon.icon}
     onDrop={onDrop} 
     onDropEnter={onDropEnter}
     onDropLeave={onDropLeave}
@@ -124,7 +136,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
     currentDraggedId={currentDraggedObject.id}
     currentDraggedType={currentDraggedObject.type}
     style={ Object.assign({marginLeft: '5px'}, 
-      getItemStyle(currentDraggedObject, parentNodeHeadingId, parentHeadingId)) }> 
+      itemStyleAndIcon.style) }> 
       { // iterate through children headings to generate tree recursively
       parentsInfo[parentHeadingId]["childFolders"].map(parentId => {
         return buildTreeStructure({ 
@@ -144,6 +156,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
       { // iterate through children assigments to generate tree recursively
       childrenList.map((childId, index) => {
         const itemType = childrenInfo[childId]["type"];
+        const itemStyleAndIcon = getItemStyleAndIcon(currentDraggedObject, itemType, parentNodeHeadingId, parentHeadingId);
         
         return <LeafNode 
           index={index}
@@ -151,9 +164,9 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           key={childId} 
           title={childrenInfo[childId]["title"]}
           type={itemType}
-          itemIcon = {Icons(itemType)}
+          itemIcon = {itemStyleAndIcon.icon}
           styles={ Object.assign({color: '#0083e3', marginLeft: '5px'}, 
-            getItemStyle(currentDraggedObject, parentHeadingId, childId))
+            itemStyleAndIcon.style)
           }
           onDragStart={onDragStart} 
           onDragEnd={onDragEnd} 
