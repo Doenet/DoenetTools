@@ -2110,7 +2110,7 @@ describe('Function Tag Tests', function () {
 
   });
 
-  it.only('extrema of quartic, reffed multipled times', () => {
+  it('extrema of quartic, reffed multipled times', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2209,7 +2209,6 @@ describe('Function Tag Tests', function () {
 
     });
   });
-
 
 
 });

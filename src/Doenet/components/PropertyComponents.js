@@ -517,6 +517,11 @@ export class Numeric extends BooleanComponent {
   static rendererType = "boolean";
 }
 
+export class Symbolic extends BooleanComponent {
+  static componentType = "symbolic";
+  static rendererType = "boolean";
+}
+
 export class X extends MathComponent {
   static componentType = "x";
   static rendererType = "math";
