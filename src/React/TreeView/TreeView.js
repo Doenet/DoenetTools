@@ -80,7 +80,6 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
     let isShadow = itemDragged && 
       currentDraggedObject.dataObject.parentId == parentNodeHeadingId &&
       currentDraggedObject.sourceParentId != currentDraggedObject.dataObject.parentId;
-    
     if (!itemDragged) {  // item not dragged
       return ({
         style: {
@@ -90,7 +89,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
         },
         icon: Icons(itemType)
       })
-    } else if (itemDragged && isShadow) {  // copy of item
+    } else if (isShadow) {  // copy of item
       return ({
         style: {
           width: "100%",
@@ -124,6 +123,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
     key={parentHeadingId} 
     title={parentHeadingId == "root" ? "Tree" : parentsInfo[parentHeadingId]["title"]}
     type={itemType}
+    hide={parentHeadingId == "root"}
     defaultOpen={parentHeadingId == "root"}
     itemIcon = {itemStyleAndIcon.icon}
     onDrop={onDrop} 
@@ -156,8 +156,8 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
       { // iterate through children assigments to generate tree recursively
       childrenList.map((childId, index) => {
         const itemType = childrenInfo[childId]["type"];
-        const itemStyleAndIcon = getItemStyleAndIcon(currentDraggedObject, itemType, parentNodeHeadingId, parentHeadingId);
-        
+        const itemStyleAndIcon = getItemStyleAndIcon(currentDraggedObject, itemType, parentHeadingId, childId);
+
         return <LeafNode 
           index={index}
           id={childId} 
@@ -166,7 +166,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           type={itemType}
           itemIcon = {itemStyleAndIcon.icon}
           styles={ Object.assign({color: '#0083e3', marginLeft: '5px'}, 
-            itemStyleAndIcon.style)
+          itemStyleAndIcon.style)
           }
           onDragStart={onDragStart} 
           onDragEnd={onDragEnd} 
