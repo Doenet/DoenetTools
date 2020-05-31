@@ -6,9 +6,78 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faFolder, faLink} from '@fortawesome/free-solid-svg-icons';
 import ChooserConstants from "../chooser/ChooserConstants";
 
+/*
+  mandatory fields:
+    - loading       (set to false if loaders not async)
+    - parentsInfo   (must include "root")
+      - example:
+        {
+          "root": {
+            title: "rootTitle",
+            type: "folder",
+            parentId: "rootParentId"
+            childFolders: [ids...],
+            childContent: [ids...]
+          }
+        }
+    - childrenInfo
+      - example:
+        {
+          "childId": {
+            title: "childTitle",
+            type: "content",
+            parentId: "root"
+          }
+        }
 
-export const TreeView = ({containerId, containerType, loading, parentsInfo, childrenInfo, currentDraggedObject, 
-  onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave}) => {
+  optional fields:
+    - hideRoot    (set to true to hide root node of tree)
+    - treeNodeIcons
+      - example: 
+        const Icons = (iconName) => { 
+          map = { folder: <FontAwesomeIcon icon={faFolder}/>,
+            content: <FontAwesomeIcon icon={faFileAlt}/> }
+          return map[iconName]
+        }
+    - treeStyles
+      - example: 
+        { 
+          parentNode: {},
+          childNode: {},
+          expanderIcon:          
+        }
+    - parentNodeOnClick
+    - childNodeOnClickCallback
+
+  required for Drag and Drop, leave empty if DnD is not needed:
+    - containerId
+    - containerType
+    - currentDraggedObject
+    - onDragStart
+    - onDragEnd
+    - onDraggableDragOver
+    - onDrop
+    - onDropEnter
+    - onDropLeave
+*/
+
+export const TreeView = ({
+  loading, 
+  parentsInfo={}, 
+  childrenInfo={}, 
+  hideRoot=false,
+  treeNodeIcons={},
+  treeStyles={},
+  containerId, 
+  containerType, 
+  currentDraggedObject, 
+  onDragStart, 
+  onDragEnd, 
+  onDraggableDragOver, 
+  onDrop, 
+  onDropEnter, 
+  onDropLeave
+}) => {
   const [currentDraggedOverContainerId, setCurrentDraggedOverContainerId] = useState(null);
 
   // handle dragEnd
@@ -56,8 +125,11 @@ export const TreeView = ({containerId, containerType, loading, parentsInfo, chil
     { buildTreeStructure({ 
         parentHeadingId: "root", 
         parentNodeHeadingId: "root",
-        parentsInfo: parentsInfo, 
+        parentsInfo: parentsInfo,
         childrenInfo: childrenInfo, 
+        hideRoot: hideRoot, 
+        treeNodeIcons: treeNodeIcons, 
+        treeStyles: treeStyles,
         onDragStart: onDragStartCb, 
         onDragEnd: onDragEndCb, 
         onDraggableDragOver: onDraggableDragOverCb, 
@@ -71,7 +143,7 @@ export const TreeView = ({containerId, containerType, loading, parentsInfo, chil
   );
 }
 
-function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, 
+function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, hideRoot, treeNodeIcons, treeStyles,
   onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
    currentDraggedOverContainerId}) {
      
@@ -87,7 +159,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           background: "none",
           padding: "0px"
         },
-        icon: Icons(itemType)
+        icon: treeNodeIcons(itemType)
       })
     } else if (isShadow) {  // copy of item
       return ({
@@ -106,9 +178,10 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
         style: {
           border: "2px dotted #37ceff",
           background: "#fff",
-          padding: "0px 5px"
+          padding: "0px 5px",
+          color: '#0083e3'
         },
-        icon: Icons(itemType)
+        icon: treeNodeIcons(itemType)
       })
     }
   }
@@ -121,11 +194,12 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
   let subTree = <ParentNode 
     id={parentHeadingId}
     key={parentHeadingId} 
-    title={parentHeadingId == "root" ? "Tree" : parentsInfo[parentHeadingId]["title"]}
+    title={parentsInfo[parentHeadingId]["title"]}
     type={itemType}
-    hide={parentHeadingId == "root"}
+    hide={hideRoot && parentHeadingId == "root"}
     defaultOpen={parentHeadingId == "root"}
-    itemIcon = {itemStyleAndIcon.icon}
+    itemIcon={itemStyleAndIcon.icon}
+    expanderIcon={treeStyles["expanderIcon"]}
     onDrop={onDrop} 
     onDropEnter={onDropEnter}
     onDropLeave={onDropLeave}
@@ -135,7 +209,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
     onDraggableDragOver={onDraggableDragOver}
     currentDraggedId={currentDraggedObject.id}
     currentDraggedType={currentDraggedObject.type}
-    style={ Object.assign({marginLeft: '5px'}, 
+    style={ treeStyles["parentNode"] || Object.assign({marginLeft: '5px', color: "rgba(0,0,0,0.8)"}, 
       itemStyleAndIcon.style) }> 
       { // iterate through children headings to generate tree recursively
       parentsInfo[parentHeadingId]["childFolders"].map(parentId => {
@@ -144,6 +218,9 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           parentNodeHeadingId: parentHeadingId,
           parentsInfo: parentsInfo, 
           childrenInfo: childrenInfo, 
+          hideRoot: hideRoot,
+          treeNodeIcons: treeNodeIcons,
+          treeStyles: treeStyles,
           onDragStart: onDragStart, 
           onDragEnd: onDragEnd, 
           onDraggableDragOver: onDraggableDragOver, 
@@ -165,8 +242,8 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           title={childrenInfo[childId]["title"]}
           type={itemType}
           itemIcon = {itemStyleAndIcon.icon}
-          styles={ Object.assign({color: '#0083e3', marginLeft: '5px'}, 
-          itemStyleAndIcon.style)
+          styles={ treeStyles["childNode"] || 
+            Object.assign({color: "rgba(0,0,0,0.8)", marginLeft: '5px'}, itemStyleAndIcon.style)
           }
           onDragStart={onDragStart} 
           onDragEnd={onDragEnd} 
@@ -176,59 +253,3 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
 
   return subTree;
 }
-
-const Icons = (iconName) => {
-  const FolderIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
-    style={{
-      fontSize: "16px", 
-      color: "#737373", 
-    }}
-  />;
-  const RepoIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
-    style={{
-      fontSize: "16px", 
-      color: "#3aac90", 
-    }}
-  />;
-  const ContentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt}
-    style={{
-      fontSize: "16px", 
-      color: "#3D6EC9", 
-    }}
-  />;
-  const UrlIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faLink}
-    style={{
-      fontSize: "16px", 
-      color: "#a7a7a7", 
-    }}
-  />;
-  const HeadingIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
-    style={{
-      fontSize: "16px", 
-      color: "#a7a7a7", 
-    }}
-  />;
-  const AssignmentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt} 
-    style={{
-      fontSize: "16px", 
-      color: "#a7a7a7", 
-    }}
-  />;
-
-  switch(iconName){
-    case "folder":
-      return FolderIcon;
-    case "repo":
-      return RepoIcon;
-    case "content":
-      return ContentIcon;
-    case "url":
-      return UrlIcon;
-    case "header":
-      return HeadingIcon;
-    case "assignment":
-      return AssignmentIcon;
-    default:
-      return <span></span>;
-  } 
-};

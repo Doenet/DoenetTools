@@ -1584,6 +1584,7 @@ class DoenetChooser extends Component {
     if (this.folders_loaded && this.branches_loaded && this.urls_loaded && this.userContentReloaded) {
       this.userContentReloaded = false;
       this.userFolderInfo["root"] = {};
+      this.userFolderInfo["root"]["title"] = "User Content Tree"
       this.userFolderInfo["root"]["childContent"] = [];
       this.userFolderInfo["root"]["childFolders"] = [];
       this.userFolderInfo["root"]["childUrls"] = [];
@@ -1656,7 +1657,12 @@ class DoenetChooser extends Component {
           containerType={treeContainerType}
           loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
           parentsInfo={treeParentsInfo} 
-          childrenInfo={treeChildrenInfo} 
+          childrenInfo={treeChildrenInfo}
+          treeNodeIcons={TreeIcons} 
+          treeStyles={{
+            parentNode: {color: "rgba(0,0,0,1.6)", marginLeft: '24px'},
+            childNode: {color: "rgba(0,0,0,1.6)", marginLeft: '24px'}
+          }}
           currentDraggedObject={this.state.currentDraggedObject}
           onDragStart={this.onTreeDragStart}
           onDragEnd={this.onTreeDragEnd}
@@ -1807,6 +1813,62 @@ const MainPanel = ({panelId, initialContainer, activeContainer, containersData})
     </SwitchableContainers>
   </div>;
 }
+
+const TreeIcons = (iconName) => {
+  const FolderIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
+    style={{
+      fontSize: "16px", 
+      color: "#737373", 
+    }}
+  />;
+  const RepoIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
+    style={{
+      fontSize: "16px", 
+      color: "#3aac90", 
+    }}
+  />;
+  const ContentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt}
+    style={{
+      fontSize: "16px", 
+      color: "#3D6EC9", 
+    }}
+  />;
+  const UrlIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faLink}
+    style={{
+      fontSize: "16px", 
+      color: "#a7a7a7", 
+    }}
+  />;
+  const HeadingIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
+    style={{
+      fontSize: "16px", 
+      color: "#a7a7a7", 
+    }}
+  />;
+  const AssignmentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt} 
+    style={{
+      fontSize: "16px", 
+      color: "#a7a7a7", 
+    }}
+  />;
+
+  switch(iconName){
+    case "folder":
+      return FolderIcon;
+    case "repo":
+      return RepoIcon;
+    case "content":
+      return ContentIcon;
+    case "url":
+      return UrlIcon;
+    case "header":
+      return HeadingIcon;
+    case "assignment":
+      return AssignmentIcon;
+    default:
+      return <span></span>;
+  } 
+};
 
 class CourseForm extends React.Component {
   static defaultProps = {

@@ -27,7 +27,8 @@ const TreeNode = memo(({ children, title, style, defaultOpen = false }) => {
   )
 })
 
-export const ParentNode = memo(({ hide = false, children, title, type, itemIcon, style, defaultOpen = false, id, onDrop, onDraggableDragOver, onDragStart, onDragEnd, onDropEnter, onDropLeave, draggedOver, currentDraggedId, currentDraggedType}) => {
+export const ParentNode = memo(({ hide = false, children, title, type, itemIcon, expanderIcon, style, defaultOpen = false, id, 
+  onDrop, onDraggableDragOver, onDragStart, onDragEnd, onDropEnter, onDropLeave, draggedOver, currentDraggedId, currentDraggedType}) => {
   const [isOpen, setOpen] = useState(defaultOpen)
   const previous = usePrevious(isOpen)
   const [bind, { height: viewHeight }] = useMeasure()
@@ -62,7 +63,7 @@ export const ParentNode = memo(({ hide = false, children, title, type, itemIcon,
   return(<DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
     <Frame>
       <ListItem onClick={() => setOpen(!isOpen)}>
-        <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }} />
+        {expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }} />}
         { itemIcon }
         <Title style={style}>{title}</Title>
       </ListItem>
