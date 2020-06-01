@@ -7,58 +7,69 @@ import { faFileAlt, faFolder, faLink} from '@fortawesome/free-solid-svg-icons';
 import ChooserConstants from "../chooser/ChooserConstants";
 
 /*
-  mandatory fields:
-    - loading       (set to false if loaders not async)
-    - parentsInfo   (must include "root")
-      - example:
-        {
-          "root": {
-            title: "rootTitle",
-            type: "folder",
-            parentId: "rootParentId"
-            childFolders: [ids...],
-            childContent: [ids...]
+  Data and fields:
+    mandatory fields:
+      - loading       (set to false if loaders not async)
+      - parentsInfo   (must include "root")
+        - example:
+          {
+            "root": {
+              title: "rootTitle",
+              type: "folder",
+              parentId: "rootParentId"
+              childFolders: [ids...],
+              childContent: [ids...]
+            }
           }
-        }
-    - childrenInfo
-      - example:
-        {
-          "childId": {
-            title: "childTitle",
-            type: "content",
-            parentId: "root"
+      - childrenInfo
+        - example:
+          {
+            "childId": {
+              title: "childTitle",
+              type: "content",
+              parentId: "root"
+            }
           }
+
+    optional fields:
+      - hideRoot    (set to true to hide root node of tree)
+      - treeNodeIcons
+        - example: 
+          const Icons = (iconName) => { 
+            map = { folder: <FontAwesomeIcon icon={faFolder}/>,
+              content: <FontAwesomeIcon icon={faFileAlt}/> }
+            return map[iconName]
+          }
+      - treeStyles
+        - example: 
+          { 
+            parentNode: {},
+            childNode: {},
+            expanderIcon:          
+          }
+      - parentNodeOnClick
+			- childNodeOnClickCallback
+
+  Callbacks and functions:
+		**Only enable one of onClick or Drag-and-Drop feature to avoid conflicts** 
+
+    onClick callback for leaf nodes, leave empty if onclick actions not needed
+    - onLeafNodeClick
+      - example:
+        const onLeafNodeClick = (leafNodeId) => {
+          console.log(`leaf node ${leafNodeId} clicked`);
         }
 
-  optional fields:
-    - hideRoot    (set to true to hide root node of tree)
-    - treeNodeIcons
-      - example: 
-        const Icons = (iconName) => { 
-          map = { folder: <FontAwesomeIcon icon={faFolder}/>,
-            content: <FontAwesomeIcon icon={faFileAlt}/> }
-          return map[iconName]
-        }
-    - treeStyles
-      - example: 
-        { 
-          parentNode: {},
-          childNode: {},
-          expanderIcon:          
-        }
-    - parentNodeOnClick
-    - childNodeOnClickCallback
-
-  required for Drag and Drop, leave empty if DnD is not needed:
-    - containerId
-    - containerType
-    - currentDraggedObject
-    - onDragStart
-    - onDragEnd
-    - onDraggableDragOver
-    - onDrop
-    - onDropEnter
-    - onDropLeave
+    Drag and Drop functions, leave empty if DnD is not needed:
+      - containerId
+      - containerType
+      - currentDraggedObject
+      - onDragStart
+      - onDragEnd
+      - onDraggableDragOver
+      - onDrop
+      - onDropEnter
+      - onDropLeave
 */
 
 export const TreeView = ({
@@ -67,10 +78,11 @@ export const TreeView = ({
   childrenInfo={}, 
   hideRoot=false,
   treeNodeIcons={},
-  treeStyles={},
+	treeStyles={},
+	onLeafNodeClick,
   containerId, 
   containerType, 
-  currentDraggedObject, 
+  currentDraggedObject={}, 
   onDragStart, 
   onDragEnd, 
   onDraggableDragOver, 
@@ -82,7 +94,7 @@ export const TreeView = ({
 
   // handle dragEnd
   useEffect(() => {
-    if (currentDraggedObject.id == null) setCurrentDraggedOverContainerId(null);
+		if (currentDraggedObject.id == null) setCurrentDraggedOverContainerId(null);
   }, [currentDraggedObject])
 
   const onDragStartCb = (draggedId, type) => {
@@ -112,7 +124,11 @@ export const TreeView = ({
     if (id === "root" && currentDraggedObject.dataObject.parent === "root") {
       // onDropLeave && onDropLeave(id, containerId, containerType);
     }
-  }
+	}
+	
+	const onLeafNodeClickCb = (nodeId) => {
+		onLeafNodeClick && onLeafNodeClick(nodeId);
+	}
   
   if (loading){
     return <div style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
@@ -129,7 +145,8 @@ export const TreeView = ({
         childrenInfo: childrenInfo, 
         hideRoot: hideRoot, 
         treeNodeIcons: treeNodeIcons, 
-        treeStyles: treeStyles,
+				treeStyles: treeStyles,
+				onLeafNodeClick: onLeafNodeClickCb,
         onDragStart: onDragStartCb, 
         onDragEnd: onDragEndCb, 
         onDraggableDragOver: onDraggableDragOverCb, 
@@ -145,7 +162,7 @@ export const TreeView = ({
 
 function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, hideRoot, treeNodeIcons, treeStyles,
   onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
-   currentDraggedOverContainerId}) {
+   currentDraggedOverContainerId, onLeafNodeClick }) {
      
   const getItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
     let itemDragged = currentDraggedObject.id == currentItemId;
@@ -220,7 +237,8 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           childrenInfo: childrenInfo, 
           hideRoot: hideRoot,
           treeNodeIcons: treeNodeIcons,
-          treeStyles: treeStyles,
+					treeStyles: treeStyles,
+					onLeafNodeClick: onLeafNodeClick,
           onDragStart: onDragStart, 
           onDragEnd: onDragEnd, 
           onDraggableDragOver: onDraggableDragOver, 
@@ -241,10 +259,11 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           key={childId} 
           title={childrenInfo[childId]["title"]}
           type={itemType}
-          itemIcon = {itemStyleAndIcon.icon}
+					itemIcon = {itemStyleAndIcon.icon}
           styles={ treeStyles["childNode"] || 
             Object.assign({color: "rgba(0,0,0,0.8)", marginLeft: '5px'}, itemStyleAndIcon.style)
-          }
+					}
+					onClick={onLeafNodeClick}
           onDragStart={onDragStart} 
           onDragEnd={onDragEnd} 
           onDragOver={onDraggableDragOver} />

@@ -1659,10 +1659,6 @@ class DoenetChooser extends Component {
           parentsInfo={treeParentsInfo} 
           childrenInfo={treeChildrenInfo}
           treeNodeIcons={TreeIcons} 
-          treeStyles={{
-            parentNode: {color: "rgba(0,0,0,1.6)", marginLeft: '24px'},
-            childNode: {color: "rgba(0,0,0,1.6)", marginLeft: '24px'}
-          }}
           currentDraggedObject={this.state.currentDraggedObject}
           onDragStart={this.onTreeDragStart}
           onDragEnd={this.onTreeDragEnd}
@@ -1670,6 +1666,31 @@ class DoenetChooser extends Component {
           onDropEnter={this.onTreeDropEnter}
           onDrop={this.onTreeDrop} />
         </div>
+
+      this.customizedTree = <div className="tree" style={{ paddingLeft: "1em", marginLeft: "4em" }}>
+        <TreeView
+        containerId={treeContainerId}
+        containerType={treeContainerType}
+        loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
+        parentsInfo={treeParentsInfo} 
+        childrenInfo={treeChildrenInfo}
+        treeNodeIcons={(itemType) => { 
+            let map = { 
+              folder: <FontAwesomeIcon icon={faDotCircle}
+                      style={{ fontSize: "16px",  color: "#737373" }}/>,
+              content: <FontAwesomeIcon icon={faTimesCircle}/> 
+            }
+            return map[itemType]
+        }} 
+        hideRoot={true}
+        treeStyles={{
+          parentNode: {color: "rgba(58,172,144)", margin: '5px'},
+          childNode: {color: "rgba(33,11,124)", margin: '5px'},
+          expanderIcon: <FontAwesomeIcon icon={faPlus} style={{paddingRight: "8px"}}/>
+        }}
+        onLeafNodeClick={(nodeId) => {console.log(nodeId)}}
+        />
+      </div>
 
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
@@ -1776,7 +1797,7 @@ class DoenetChooser extends Component {
               activeContainer={this.state.panelsCollection["first"].activeContainer}
               containersData={[
                 { name: "browser", container: this.mainSection },
-                { name: "tree", container: this.tree },
+              { name: "tree", container: <div style={{display: "flex", flexDirection: "row"}}>{this.tree}{this.customizedTree}</div> },
               ]}
             />
           </ToolLayoutPanel>

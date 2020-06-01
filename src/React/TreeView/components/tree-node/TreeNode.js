@@ -78,7 +78,7 @@ export const ParentNode = memo(({ hide = false, children, title, type, itemIcon,
 
 })
 
-export const LeafNode = memo(({ id, title, type, itemIcon, styles, onDragStart, onDragOver, onDragEnd }) => {
+export const LeafNode = memo(({ id, title, type, itemIcon, styles, onDragStart, onDragOver, onDragEnd, onClick }) => {
 
   const onDraggableDragOverCb = (listId) => {
     onDragOver(listId, type)
@@ -91,7 +91,7 @@ export const LeafNode = memo(({ id, title, type, itemIcon, styles, onDragStart, 
   return (
     <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
       <Frame>
-        <ListItem>
+        <ListItem onClick={() => onClick(id)}>
         { itemIcon }
         <Title style={styles}>{title}</Title>
         </ListItem>
