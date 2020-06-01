@@ -84,9 +84,6 @@ export default function ToolLayout(props) {
       };
     }
   });
-// const updateProfilePic = () => {
-//   debugger;
-// }
   const windowResizeHandler = () => {
     let deviceWidth = widthToDevice();
     if (deviceType !== deviceWidth) {
@@ -154,32 +151,33 @@ export default function ToolLayout(props) {
         if (props.children.length === 2) {
           middleW = w - leftW - resizerW;
         }
-        // console.log(leftW);
         setLeftWidth(leftW);
         setMiddleWidth(middleW);
-        // setRightWidth(rightW);
       } else if (currentResizer === "second") {
         const secondResizer = document.querySelector('#second.resizer');
         const leftW = (!!leftCloseBtn ? leftWidth : 0);
-        let middleW = event.clientX - leftW - resizerW;
-        let rightW = w - leftW - resizerW - middleW - resizerW;
+        let rightW = w - event.clientX - resizerW - resizerW;
         if (rightW < 40) {
           rightW = 0;
           setRightOpenBtn(true);
-          middleW = w - leftW - resizerW - resizerW - rightW;
           secondResizer.className = 'resizer right-resizer';
         } else if (rightW < 100) {
           rightW = 100;
+          setRightCloseBtn(true);
           setRightOpenBtn(false);
-          middleW = w - leftW - resizerW - resizerW - rightW;
           secondResizer.className = 'resizer column-resizer';
         } else if (middleW <= 100) {
           middleW = 100;
           secondResizer.className = 'resizer left-resizer';
           rightW = w - leftW - resizerW - resizerW - middleW;
+          setRightCloseBtn(true);
+          setRightOpenBtn(false);
         } else {
+          setRightCloseBtn(true);
+          setRightOpenBtn(false);
           secondResizer.className = 'resizer column-resizer';
         }
+        middleW = w - leftW - resizerW - resizerW - rightW;
         setRightWidth(rightW);
         setMiddleWidth(middleW);
       }
@@ -203,12 +201,37 @@ export default function ToolLayout(props) {
     // if (middleWidth === 100) {
     //   return;
     // }
+    let leftW = 0;
+    if (!leftCloseBtn) {
+      leftW = leftWidth;
+    }
+    if (leftWidth === 0) {
+      leftW = 200;
+    }
     setLeftCloseBtn(true);
     setLeftOpenBtn(false);
-    let middleW = w - resizerW - resizerW - (!!leftCloseBtn ? 0 : leftWidth) - (!!rightCloseBtn ? rightWidth : 0);
+    let middleW = w - resizerW - resizerW - leftW - (!!rightCloseBtn ? rightWidth : 0);
+    if (props.children.length === 2) {
+      middleW = w - leftW - resizerW;
+    }
+    setLeftWidth(leftW);
+    setMiddleWidth(middleW);
+  };
+  const rightPanelVisible = () => {
+    let rightW = 0;
+    if (!rightCloseBtn) {
+      rightW = rightWidth;
+    }
+    if (rightWidth === 0) {
+      rightW = 300;
+    }
+    setRightCloseBtn(true);
+    setRightOpenBtn(false);
+    let middleW = w - resizerW - resizerW - rightW - (!!leftCloseBtn ? leftWidth : 0);
     if (props.children.length === 2) {
       middleW = w - (!!leftCloseBtn ? 0 : leftWidth) - resizerW;
     }
+    setRightWidth(rightW);
     setMiddleWidth(middleW);
   };
 
@@ -219,15 +242,6 @@ export default function ToolLayout(props) {
     setMiddleWidth(middleW);
   };
 
-  const rightPanelVisible = () => {
-    setRightCloseBtn(true);
-    setRightOpenBtn(false);
-    let middleW = w - resizerW - resizerW - (!!rightCloseBtn ? 0 : rightWidth) - (!!leftCloseBtn ? leftWidth : 0);
-    if (props.children.length === 2) {
-      middleW = w - (!!leftCloseBtn ? 0 : leftWidth) - resizerW;
-    }
-    setMiddleWidth(middleW);
-  };
 
   const showCollapseMenu = (flag, count) => {
     setSliderVisible(flag);
