@@ -53,6 +53,7 @@ export default class Ref extends CompositeComponent {
     // delete text so contentId won't get matched
     delete properties.text;
 
+    properties.includeUndefinedArrayEntries = { default: false }
 
     return properties;
 
@@ -269,6 +270,10 @@ export default class Ref extends CompositeComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
+        if (dependencyValues.refTarget === null) {
+          console.warn(`No ref target`);
+          return { newValues: { refTargetName: "" } }
+        }
         return { newValues: { refTargetName: dependencyValues.refTarget.componentName } }
       },
     };
@@ -307,6 +312,15 @@ export default class Ref extends CompositeComponent {
         // is determined by this replacement class.
         // Otherwise, the effective target class is just the class of the refTarget
 
+        if (stateValues.refTarget === null) {
+          return {
+            refTarget: {
+              dependencyType: "stateVariable",
+              variableName: "refTarget"
+            }
+          }
+        }
+
         let compositeClass = componentInfoObjects.allComponentClasses._composite;
         let refTargetClass = componentInfoObjects.allComponentClasses[stateValues.refTarget.componentType];
 
@@ -336,6 +350,8 @@ export default class Ref extends CompositeComponent {
         let effectiveTargetClasses;
         if (dependencyValues.refTarget) {
           effectiveTargetClasses = [componentInfoObjects.allComponentClasses[dependencyValues.refTarget.componentType]]
+        } else if (dependencyValues.refTarget === null) {
+          effectiveTargetClasses = [];
         } else {
           effectiveTargetClasses = dependencyValues.refTargetReplacementClassesForProp;
         }
@@ -405,6 +421,10 @@ export default class Ref extends CompositeComponent {
             dependencyType: "stateVariable",
             variableName: "propVariableObjs",
           },
+          includeUndefinedArrayEntries: {
+            dependencyType: "stateVariable",
+            variableName: "includeUndefinedArrayEntries"
+          }
         };
 
         // if have a prop variable where couldn't determine componentType
@@ -492,7 +512,11 @@ export default class Ref extends CompositeComponent {
             if (Array.isArray(targetArrayEntry)) {
               arrayLength = targetArrayEntry.length;
             } else if (targetArrayEntry === undefined) {
-              arrayLength = 0;
+              if(dependencyValues.includeUndefinedArrayEntries) {
+                arrayLength = 1;
+              } else {
+                arrayLength = 0;
+              }
             }
             let componentClass = componentInfoObjects.allComponentClasses[componentType];
             replacementClasses.push(...Array(arrayLength).fill(componentClass));
@@ -527,6 +551,15 @@ export default class Ref extends CompositeComponent {
     stateVariableDefinitions.replacementClassesForProp = {
       stateVariablesDeterminingDependencies: ["refTarget", "useProp"],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
+
+        if (stateValues.refTarget === null) {
+          return {
+            replacementClasses: {
+              dependencyType: "stateVariable",
+              variableName: "replacementClasses"
+            }
+          }
+        }
 
         // If reffed a composite without using a prop
         // the replacement will be the composite itself
@@ -653,6 +686,15 @@ export default class Ref extends CompositeComponent {
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
 
+        if (stateValues.refTarget === null) {
+          return {
+            refTarget: {
+              dependencyType: "stateVariable",
+              variableName: "refTarget"
+            }
+          }
+        }
+
         let dependencies = {
           validPropertiesSpecified: {
             dependencyType: "stateVariable",
@@ -691,7 +733,10 @@ export default class Ref extends CompositeComponent {
         return dependencies;
 
       },
-      definition: function () {
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.refTarget === null) {
+          return { newValues: { readyToExpand: false } }
+        }
         return { newValues: { readyToExpand: true } };
       },
     };
@@ -702,6 +747,10 @@ export default class Ref extends CompositeComponent {
         "refTargetName", "propVariableObjs", "componentIdentitiesForProp"
       ],
       returnDependencies: function ({ stateValues }) {
+        if (!stateValues.refTargetName) {
+          return {};
+        }
+
         let dependencies = {}
 
         if (stateValues.propVariableObjs === null) {
@@ -735,7 +784,7 @@ export default class Ref extends CompositeComponent {
     stateVariableDefinitions.componentIdentitiesForProp = {
       stateVariablesDeterminingDependencies: ["useProp", "refTarget"],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
-        if (!stateValues.useProp) {
+        if (!stateValues.useProp || stateValues.refTarget === null) {
           return {}
         }
         let compositeClass = componentInfoObjects.allComponentClasses._composite;

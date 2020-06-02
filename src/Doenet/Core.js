@@ -2557,7 +2557,7 @@ export default class Core {
         stateVariableDefinitions[property][attribute]
           = propertyClass.attributesForPropertyValue[attribute];
       }
-      for (let attribute of ["forRenderer", "entryPrefixes", "requireChildLogicInitiallySatisfied"]) {
+      for (let attribute of ["forRenderer", "entryPrefixes", "requireChildLogicInitiallySatisfied", "useDefaultForShadows"]) {
         if (attribute in propertySpecification) {
           stateVariableDefinitions[property][attribute]
             = propertySpecification[attribute];
@@ -2709,12 +2709,18 @@ export default class Core {
         returnDependencies: () => thisDependencies,
         definition: function ({ dependencyValues, usedDefault }) {
 
-          if (dependencyValues.refComponentVariable !== undefined && !usedDefault.refComponentVariable) {
+          if (dependencyValues.refComponentVariable !== undefined && (
+            !usedDefault.refComponentVariable
+            || refComponent.state[property].useDefaultForShadows
+          )) {
             // if value of property was specified on ref component itself
             // then use that property value
             return { newValues: { [property]: dependencyValues.refComponentVariable } };
 
-          } else if (dependencyValues.refTargetVariable !== undefined && !usedDefault.refTargetVariable) {
+          } else if (dependencyValues.refTargetVariable !== undefined && (
+            !usedDefault.refTargetVariable
+            || refTargetComponent.state[property].useDefaultForShadows
+          )) {
             // else if ref target has property, use that value
             return { newValues: { [property]: dependencyValues.refTargetVariable } };
 
@@ -3137,6 +3143,13 @@ export default class Core {
       // add action state variable that will apply sugar once child logic
       // is satisfied
 
+
+      // if already hvae apply sugar state variable,
+      // there is nothing more to do
+      if (component.state.__apply_sugar) {
+        return {};
+      }
+
       let core = this;
 
       component.state.__apply_sugar = {
@@ -3202,6 +3215,11 @@ export default class Core {
         // the name of the action state variable that to be created
         let applySugarStateVariable = `__childLogic_${childLogicName}`;
 
+        // if already created this apply sugar state variable,
+        // there is nothing more to do
+        if (component[applySugarStateVariable]) {
+          continue;
+        }
 
         let childLogicAffected = [];
         let childLogicWaiting = {};
@@ -6335,9 +6353,20 @@ export default class Core {
 
                   this.processNewDefiningChildren({
                     parent: this._components[depComponent.parentName],
-                    applySugar: true,
                     updatesNeeded
                   });
+
+                  let sugarResult = this.applySugarOrAddSugarCreationStateVariables({
+                    component: this._components[depComponent.parentName],
+                    updatesNeeded
+                  });
+
+                  for (let cName in sugarResult.componentVarsDeleted) {
+                    if (!componentVarsDeleted[cName]) {
+                      componentVarsDeleted[cName] = [];
+                    }
+                    componentVarsDeleted[cName].push(...sugarResult.componentVarsDeleted[cName])
+                  }
 
                   // check to see if we can update replacements of any composites
                   if (updatesNeeded.compositesToUpdateReplacements.length > 0) {
@@ -6381,9 +6410,20 @@ export default class Core {
 
         this.processNewDefiningChildren({
           parent: this._components[this._components[compositeName].parentName],
-          applySugar: true,
           updatesNeeded
         });
+
+        let sugarResult = this.applySugarOrAddSugarCreationStateVariables({
+          component: this._components[this._components[compositeName].parentName],
+          updatesNeeded
+        });
+
+        for (let cName in sugarResult.componentVarsDeleted) {
+          if (!componentVarsDeleted[cName]) {
+            componentVarsDeleted[cName] = [];
+          }
+          componentVarsDeleted[cName].push(...sugarResult.componentVarsDeleted[cName])
+        }
 
         if (updatesNeeded.compositesToExpand.size < nUnexpanded) {
           resolvedAnotherDependency = true;
@@ -8540,6 +8580,22 @@ export default class Core {
 
     let newChildrenResult = this.processNewDefiningChildren({ parent, updatesNeeded });
 
+    let sugarResult = this.applySugarOrAddSugarCreationStateVariables({
+      component: parent,
+      updatesNeeded
+    });
+
+    if (sugarResult.varsUnresolved) {
+      throw Error(`need to implement resolving additional state variables in addChildren`)
+    }
+    // for (let cName in sugarResult.componentVarsDeleted) {
+    //   if (!componentVarsDeleted[cName]) {
+    //     componentVarsDeleted[cName] = [];
+    //   }
+    //   componentVarsDeleted[cName].push(...sugarResult.componentVarsDeleted[cName])
+    // }
+
+
     let addedComponents = {};
     let deletedComponents = {};
 
@@ -9075,12 +9131,17 @@ export default class Core {
 
             this.processNewDefiningChildren({
               parent,
-              applySugar: true,
               updatesNeeded
             });
 
             updatesNeeded.componentsTouched.push(...this.componentAndRenderedDescendants(parent));
 
+            this.applySugarOrAddSugarCreationStateVariables({
+              component: parent,
+              updatesNeeded
+            });
+
+            // TODO: do we need to do anything if applyGuar returns varsUnresolved?
 
           } else {
             // if not top level replacements
@@ -9096,6 +9157,13 @@ export default class Core {
             newReplacements.forEach(x => addedComponents[x.componentName] = x);
 
             updatesNeeded.componentsTouched.push(...this.componentAndRenderedDescendants(parent));
+
+            this.applySugarOrAddSugarCreationStateVariables({
+              component: parent,
+              updatesNeeded
+            });
+
+            // TODO: do we need to do anything if applyGuar returns varsUnresolved?
 
             let newChange = {
               changeType: "addedReplacements",

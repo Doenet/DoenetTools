@@ -30,8 +30,8 @@ export default class Line extends DoenetRenderer {
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 7,
-      strokeColor: this.doenetSvData.selectedStyle.markerColor,
-      highlightStrokeColor: this.doenetSvData.selectedStyle.markerColor,
+      strokeColor: this.doenetSvData.selectedStyle.lineColor,
+      highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
       dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle),
     };

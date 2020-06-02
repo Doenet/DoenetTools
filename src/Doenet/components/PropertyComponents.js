@@ -48,6 +48,11 @@ export class ChildNumber extends Integer {
   static rendererType = "number";
 }
 
+export class IncludeUndefinedArrayEntries extends BooleanComponent {
+  static componentType = "includeUndefinedArrayEntries";
+  static rendererType = "boolean";
+}
+
 export class Prefill extends TextComponent {
   static componentType = "prefill";
   static rendererType = "text";
