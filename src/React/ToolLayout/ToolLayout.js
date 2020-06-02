@@ -144,12 +144,12 @@ export default function ToolLayout(props) {
           setFirstPanelHidden(false);
         }
         let middleW = w - leftW - rightW - resizerW - resizerW;
+        if (props.children.length === 2) {
+          middleW = w - leftW - resizerW;
+        }
         if (middleW < 100) {
           middleW = 100;
           leftW = w - rightW - resizerW - resizerW - middleW;
-        }
-        if (props.children.length === 2) {
-          middleW = w - leftW - resizerW;
         }
         setLeftWidth(leftW);
         setMiddleWidth(middleW);
@@ -166,18 +166,19 @@ export default function ToolLayout(props) {
           setRightCloseBtn(true);
           setRightOpenBtn(false);
           secondResizer.className = 'resizer column-resizer';
-        } else if (middleW <= 100) {
-          middleW = 100;
-          secondResizer.className = 'resizer left-resizer';
-          rightW = w - leftW - resizerW - resizerW - middleW;
-          setRightCloseBtn(true);
-          setRightOpenBtn(false);
-        } else {
+        }  else {
           setRightCloseBtn(true);
           setRightOpenBtn(false);
           secondResizer.className = 'resizer column-resizer';
         }
         middleW = w - leftW - resizerW - resizerW - rightW;
+        if (middleW <= 100) {
+          middleW = 100;
+          secondResizer.className = 'resizer left-resizer';
+          rightW = w - leftW - resizerW - resizerW - middleW;
+          setRightCloseBtn(true);
+          setRightOpenBtn(false);
+        }
         setRightWidth(rightW);
         setMiddleWidth(middleW);
       }
