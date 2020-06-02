@@ -2,14 +2,13 @@ import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 
 export default class Line extends GraphicalComponent {
-  constructor(args) {
-    super(args);
-    this.moveLine = this.moveLine.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    );
-    this.actions = { moveLine: this.moveLine };
-  }
   static componentType = "line";
+
+  actions = {
+    moveLine: this.moveLine.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    )
+  };
 
   // used when referencing this component without prop
   static useChildrenForReference = false;

@@ -9957,22 +9957,36 @@ export default class Core {
 
           compStateObj._previousValue = compStateObj.value;
 
-          // delete value before assigning new value to remove any getter
           if (compStateObj.isArray) {
-            if (compStateObj.set) {
-              compStateObj.value = compStateObj.arrayValues = compStateObj.set(newComponentStateVariables[vName]);
+            if (Array.isArray(newComponentStateVariables[vName])) {
+              if (compStateObj.set) {
+                compStateObj.value = compStateObj.arrayValues = compStateObj.set(newComponentStateVariables[vName]);
+              } else {
+                compStateObj.value = compStateObj.arrayValues = newComponentStateVariables[vName];
+              }
             } else {
-              compStateObj.value = compStateObj.arrayValues = newComponentStateVariables[vName];
+              // since were not given array, instead just set the components
+              if (compStateObj.set) {
+                // TODO: use a different .set function here?
+                compStateObj.arrayValues[key] = compStateObj.set(newComponentStateVariables[vName][key]);
+              } else {
+                for (let key in newComponentStateVariables[vName]) {
+                  compStateObj.arrayValues[key] = newComponentStateVariables[vName][key]
+                }
+              }
             }
-            for (let arrayEntryName of compStateObj.arrayEntryNames) {
-              this.markStateVariableAndUpstreamDependentsStale({
-                component: comp, varName: arrayEntryName, updatesNeeded
-              });
-              this.recordActualChangeInUpstreamDependencies({
-                component: comp, varName: arrayEntryName,
-              })
+            if (compStateObj.arrayEntryNames) {
+              for (let arrayEntryName of compStateObj.arrayEntryNames) {
+                this.markStateVariableAndUpstreamDependentsStale({
+                  component: comp, varName: arrayEntryName, updatesNeeded
+                });
+                this.recordActualChangeInUpstreamDependencies({
+                  component: comp, varName: arrayEntryName,
+                })
+              }
             }
           } else {
+            // delete value before assigning new value to remove any getter
             delete compStateObj.value;
             if (compStateObj.set) {
               compStateObj.value = compStateObj.set(newComponentStateVariables[vName]);
