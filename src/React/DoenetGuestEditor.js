@@ -6,10 +6,9 @@ import DoenetViewer from './DoenetViewer';
 import "./editor.css";
 import allComponents from '../../docs/complete-docs.json';
 import ErrorBoundary from './ErrorBoundary';
-import EditorLayout from './ToolLayout/EditorLayout';
-import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel';
 import MonacoEditor from 'react-monaco-editor';
-import PlacementContext from "./ToolLayout/PlacementContext";
+import EditorLayout from "./ToolLayout/EditorLayout";
+import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 
 
 
@@ -99,10 +98,7 @@ class DoenetGuestEditor extends Component {
     this.editorDOM = null;
     this.monacoDOM = null;
 
-    this.saveDoenetMLChanges = this.saveDoenetMLChanges.bind(this);
-    this.handleViewerUpdate = this.handleViewerUpdate.bind(this);
-    this.publish = this.publish.bind(this);
-    this.should_publish_button_be_enabled = this.should_publish_button_be_enabled.bind(this);
+    // this.handleViewerUpdate = this.handleViewerUpdate.bind(this);
     this.describe_version = this.describe_version.bind(this);
     // this.handleDoenetMLChange = this.handleDoenetMLChange.bind(this);
     // this.editorDidMount = this.editorDidMount.bind(this);
@@ -110,8 +106,6 @@ class DoenetGuestEditor extends Component {
 
     this.viewerWindow = null;
   }
-
-  static contextType = PlacementContext;
 
 
   describe_version({publish_button_enabled,doenetML}){
@@ -179,41 +173,6 @@ class DoenetGuestEditor extends Component {
     }
   }
 
-  saveDoenetMLChanges({ blur=false, publish=false }) {
-
-    if (blur) {
-      clearTimeout(this.saveTimer);
-    }
-    this.saveTimer = null;
-  
-    let contentIdForSaving = this.getContentId({ doenetML: this.state.editorDoenetML });
-
-    const url = '/api/saveContent.php';
-    const data = {
-      title: this.state.documentTitle,
-      doenetML: this.state.editorDoenetML,
-      branchId: this.branchId,
-      contentId: contentIdForSaving,
-      publish: publish,
-    }
-
-
-      axios.post(url, data)
-        .then(resp=>{
-          
-          
-          if (resp.data.access === false){
-            this.setState({loading:false,accessAllowed:false});
-          }
-
-          //Add contentId and timestamp here from server
-        })
-      .catch(function (error) {
-      this.setState({errorMsg:error}); 
-      }) 
-
-    return contentIdForSaving;
-  }
 
   getContentId ({doenetML}){
     const hash = crypto.createHash('sha256');
@@ -226,15 +185,13 @@ class DoenetGuestEditor extends Component {
     return contentId;
   }
 
-  publish() {
-    let contentIdForPublishing = this.saveDoenetMLChanges({publish:true});
-    this.contentIds_array.push(contentIdForPublishing);
-    this.setState({ publish_button_enabled: false });
 
-  }
-
-  handleViewerUpdate(){
+  handleViewerUpdate = ()=>{
     this.updateNumber++;
+    console.log('UPDATE');
+    console.log(this.state.editorDoenetML);
+    
+    
     this.setState({viewerDoenetML:this.state.editorDoenetML});
   }
 
@@ -256,32 +213,6 @@ class DoenetGuestEditor extends Component {
   //   this.editorDOM.focus();
   // }
 
-  onChange = (newValue) => {
-
-        if (this.saveTimer === null) {
-      this.saveTimer = setTimeout(
-        () => { this.saveDoenetMLChanges({ blur: false }); }
-        , 3000);
-    }
-
-        if (this.contentIdInURL){
-          history.replaceState({},"title","?branchId="+this.branchId);
-          this.contentIdInURL = false;
-        }
-
-    let publish_button_enabled = this.should_publish_button_be_enabled({newValue});
-    console.log("publish_button_enabled",publish_button_enabled)
-    let documentTitle = this.calculate_documentTitle({doenetML:newValue,currentTitle:this.state.documentTitle});
-    let version = this.describe_version({publish_button_enabled:publish_button_enabled,doenetML:newValue})
-  
-
-        this.setState({ 
-      editorDoenetML: newValue, 
-      publish_button_enabled:publish_button_enabled,
-      documentTitle: documentTitle,
-      version: version,
-     });
-  };
 
   editorDidMount = (editor,monaco) => {
     // eslint-disable-next-line no-console
@@ -297,20 +228,23 @@ class DoenetGuestEditor extends Component {
     // let tokens = this.editorDOM.tokenize(editor.getValue(),'xml')
     // console.log(tokens)
 
-    this.editorDOM.onDidChangeCursorSelection(e =>{
-      this.onSelectionsChange(e.selection, ...e.secondarySelections)
-    })
+    // this.editorDOM.onDidChangeCursorSelection(e =>{
+    //   this.onSelectionsChange(e.selection, ...e.secondarySelections)
+    // })
   };
-  onSelectionsChange = (selection,secondarySelections) => {
-    if (secondarySelections){
-      console.log('secondary!')
-      return;
-    }
-    console.log('selection',selection)
-    // let model = this.editorDOM.getModel();
-    console.log('model',this.model)
-    // console.log(model._tokenization)
+  // onSelectionsChange = (selection,secondarySelections) => {
+  //   if (secondarySelections){
+  //     console.log('secondary!')
+  //     return;
+  //   }
+  //   console.log('selection',selection)
+  //   // let model = this.editorDOM.getModel();
+  //   console.log('model',this.model)
+  //   // console.log(model._tokenization)
 
+  // }
+  onChange = (editorDoenetML)=>{
+    this.setState({editorDoenetML})
   }
 
   render() {
@@ -319,15 +253,11 @@ class DoenetGuestEditor extends Component {
       return (<p>Loading...</p>)
     }
 
-    if (!this.state.accessAllowed){
-      return (<p>You don't have Admin access.</p>)
-    }
 
     const { editorDoenetML } = this.state;
 
     
     let textEditorMenu = <React.Fragment>
-    <button disabled={!this.state.publish_button_enabled} onClick={this.publish}>Publish</button>
     <select onChange={(e)=>this.setState({fontSize:e.target.value})} value={this.state.fontSize}>
       <option>8</option>
       <option>10</option>
@@ -342,8 +272,7 @@ class DoenetGuestEditor extends Component {
     </select>
     </React.Fragment>
 
-    let contextPanel = <p>Context Panel is Coming Soon!</p>
-    let contextPanelMenu = null;
+    
 
 
     // console.log(this.state.viewerDoenetML)
@@ -366,19 +295,19 @@ class DoenetGuestEditor extends Component {
           </ErrorBoundary>)
 
    
-        let title_text = `${this.state.documentTitle} (version ${this.state.version})`;
+        let title_text = `${this.state.documentTitle}`;
+
+
     
-        console.log('RENDER REFRESH')
       return (
-      <EditorLayout toolName="Guest Editor" headingTitle={title_text} leftPanelWidth="100" rightPanelWidth="500">
-        <ToolLayoutPanel panelHeaderControls={[contextPanelMenu]} panelName="left nav">
-        <div >Left Nav</div>
-        </ToolLayoutPanel>
-        <ToolLayoutPanel panelHeaderControls={[doenetViewerMenu]} panelName="Viewer">
+
+
+      <EditorLayout toolName="Guest Editor" headingTitle={title_text} rightPanelWidth="500">
+        <ToolLayoutPanel panelHeaderControls={[doenetViewerMenu]} panelName="Doenet Interactive">
           {doenetViewer}
         </ToolLayoutPanel>
-        <ToolLayoutPanel panelHeaderControls={[textEditorMenu]} panelName="DoenetML">
-        <div style={{width:"100%",height:"calc(100vh - 42px)",backgroundColor:"blue"}} >
+        <ToolLayoutPanel panelHeaderControls={[textEditorMenu]} panelName="DoenetML Code">
+        <div style={{width:"100%",height:"calc(100vh - 42px)"}} >
          <MonacoEditor
           width="100vw"
           height="calc(100vh - 40px)"
@@ -403,7 +332,9 @@ class DoenetGuestEditor extends Component {
 
             </ToolLayoutPanel>
         
-         </EditorLayout>);
+         </EditorLayout>
+         
+         );
     
      
   }
