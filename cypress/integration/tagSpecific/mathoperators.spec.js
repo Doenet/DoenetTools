@@ -823,4 +823,48 @@ describe('Math Operator Tag Tests', function () {
     })
   })
 
+  it('derivative', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <function name="f1">sin(x)</function>
+      <function name="f2" variable="y">e^(2y)</function>
+      <function name="f3">xyz</function>
+      <function name="f4" variable="z">xyz</function>
+      <derivative name="d1">x^2</derivative>
+      <derivative name="d2"><math>x^2</math></derivative>
+      <derivative name="d3">x^2sin(z)</derivative>
+      <derivative variable="z" name="d4">x^2sin(z)</derivative>
+      <derivative name="d5"><ref>f1</ref></derivative>
+      <derivative name="d6"><ref>f2</ref></derivative>
+      <derivative name="d7"><ref>f3</ref></derivative>
+      <derivative name="d8"><ref>f4</ref></derivative>
+      <derivative variable="q" name="d9"><ref>f1</ref></derivative>
+      <derivative variable="q" name="d10"><ref>f2</ref></derivative>
+      <derivative variable="q" name="d11"><ref>f3</ref></derivative>
+      <derivative variable="q" name="d12"><ref>f4</ref></derivative>
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/d1'].stateValues.value.equals(me.fromText("2x"))).eq(true);
+      expect(components['/d2'].stateValues.value.equals(me.fromText("2x"))).eq(true);
+      expect(components['/d3'].stateValues.value.equals(me.fromText("2x sin(z)"))).eq(true);
+      expect(components['/d4'].stateValues.value.equals(me.fromText("x^2cos(z)"))).eq(true);
+      expect(components['/d5'].stateValues.value.equals(me.fromText("cos(x)"))).eq(true);
+      expect(components['/d6'].stateValues.value.equals(me.fromText("2e^(2y)"))).eq(true);
+      expect(components['/d7'].stateValues.value.equals(me.fromText("yz"))).eq(true);
+      expect(components['/d8'].stateValues.value.equals(me.fromText("xy"))).eq(true);
+      expect(components['/d9'].stateValues.value.equals(me.fromText("cos(x)"))).eq(true);
+      expect(components['/d10'].stateValues.value.equals(me.fromText("2e^(2y)"))).eq(true);
+      expect(components['/d11'].stateValues.value.equals(me.fromText("yz"))).eq(true);
+      expect(components['/d12'].stateValues.value.equals(me.fromText("xy"))).eq(true);
+    })
+  })
+
 })

@@ -3,7 +3,7 @@ import me from 'math-expressions';
 
 export default class Function extends InlineComponent {
   static componentType = "function";
-  static rendererType = undefined;
+  static rendererType = "math";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -278,7 +278,6 @@ export default class Function extends InlineComponent {
       }
     }
 
-
     stateVariableDefinitions.numericalf = {
       returnDependencies: () => ({
         formula: {
@@ -318,6 +317,21 @@ export default class Function extends InlineComponent {
           }
 
         }
+      }
+    }
+
+    stateVariableDefinitions.latex = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      returnDependencies: () => ({
+        formula: {
+          dependencyType: "stateVariable",
+          variableName: "formula"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { latex: dependencyValues.formula.toLatex() } };
       }
     }
 
@@ -1987,6 +2001,10 @@ export default class Function extends InlineComponent {
   adapters = [{
     stateVariable: "numericalf",
     componentType: "functioncurve"
+  },
+  {
+    stateVariable: "formula",
+    componentType: "math"
   }];
 
 }

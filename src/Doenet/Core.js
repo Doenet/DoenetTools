@@ -4276,6 +4276,9 @@ export default class Core {
         thisUpstream[newDep.mappedDownstreamVariableName] = [];
       }
       thisUpstream[newDep.mappedDownstreamVariableName].push(newDep);
+      if (dependencyDefinition.variableOptional) {
+        newDep.variableOptional = true;
+      }
     }
     else if (dependencyDefinition.dependencyType === "recursiveDependencyValues") {
       newDep.downstreamComponentName = component.componentName;

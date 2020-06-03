@@ -3,6 +3,7 @@ import me from 'math-expressions';
 
 export default class MathOperator extends MathComponent {
   static componentType = "_mathoperator";
+  static rendererType = "math";
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
