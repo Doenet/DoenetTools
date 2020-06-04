@@ -26,7 +26,8 @@ export default function DoenetExampleTool(props) {
              rightPanelClose  - can be true or false or none - open or close right panel on load
       ) */}
       
-      <ToolLayout toolName="Example" headingTitle="Example Heading" leftPanelClose={true} rightPanelClose={false}
+      <ToolLayout toolName="Example" headingTitle="Example Heading" leftPanelClose={true} rightPanelClose={false} 
+      guestUser = {true}
    
       >
         {/* ToolLayoutPanel 
