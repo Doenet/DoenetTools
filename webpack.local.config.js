@@ -17,6 +17,7 @@ module.exports = {
     "editor/index.js": "./src/editor/index.js",
     "exam/index.js": "./src/exam/index.js",
     "gradebook/index.js": "./src/gradebook/index.js",
+    "guesteditor/index.js": "./src/guesteditor/index.js",
     "page/index.js": "./src/page/index.js",
     "profile/index.js": "./src/profile/index.js",
     "test/index.js": "./src/test/index.js",
@@ -126,6 +127,13 @@ module.exports = {
       filename: "./gradebook/index.html",
       // favicon: "",
     }),
+       // Guest Editor
+       new HtmlWebPackPlugin({
+        chunks: ['guesteditor/index.js'],
+        template: "./src/guesteditor/index.html",
+        filename: "./guesteditor/index.html",
+        // favicon: "",
+      }),
     new HtmlWebPackPlugin({
       chunks: ['gradebook/index.js'],
       template: "./src/gradebook/assignment/index.html",
