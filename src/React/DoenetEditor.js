@@ -3,21 +3,13 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 import crypto from 'crypto';
 import DoenetViewer from './DoenetViewer';
-import DoenetHeader from './DoenetHeader';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExternalLinkAlt as externalLink } from '@fortawesome/free-solid-svg-icons';
-import { faWindowClose as closeExternalLink } from '@fortawesome/free-solid-svg-icons';
-import { faChevronLeft as openPanel } from '@fortawesome/free-solid-svg-icons';
-import { faChevronRight as closePanel } from '@fortawesome/free-solid-svg-icons';
 import "./editor.css";
-// import * as ComponentTypes from '../Doenet/ComponentTypes';
 import allComponents from '../../docs/complete-docs.json';
-import AceEditor from 'react-ace';
-import brace from 'brace';
-import 'brace/mode/xml';
-import 'brace/theme/textmate';
 import ErrorBoundary from './ErrorBoundary';
-
+import ToolLayout from './ToolLayout/ToolLayout';
+import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel';
+import MonacoEditor from 'react-monaco-editor';
+import PlacementContext from "./ToolLayout/PlacementContext";
 
 
 
@@ -92,46 +84,35 @@ class DoenetEditor extends Component {
       window.location.href = "/chooser";
     }
 
-    let deviceGivenWidth = this.widthToDevice();
-
-
     this.state = {
       editorDoenetML: "",
       viewerDoenetML: "",
       fontSize: 12,
-      search: "",
       documentTitle: "",
       errorMsg: errorMsg,
-      show_context_panel: false,
-      phone_panel_active: "Editor",
-      allowViewSolutionWithoutRoundTrip: true,
-      solutionType: "button",
-      showHints: true,
-      showFeedback: true,
-      showCorrectness: true,
       loading: loading,
       publish_button_enabled:false,
-      external_viewer_window:false,
-      deviceGivenWidth:deviceGivenWidth,
       version:"",
       accessAllowed:true,
     }
 
-    this.handleDoenetMLChange = this.handleDoenetMLChange.bind(this);
+    this.editorDOM = null;
+    this.monacoDOM = null;
+
     this.saveDoenetMLChanges = this.saveDoenetMLChanges.bind(this);
     this.handleViewerUpdate = this.handleViewerUpdate.bind(this);
-    // this.onCursorChange = this.onCursorChange.bind(this);
     this.publish = this.publish.bind(this);
     this.should_publish_button_be_enabled = this.should_publish_button_be_enabled.bind(this);
-    this.openExternalViewerWindow = this.openExternalViewerWindow.bind(this);
-    this.external_viewer_window_incoming_messages = this.external_viewer_window_incoming_messages.bind(this);
-    this.handleViewerClose = this.handleViewerClose.bind(this);
-    this.windowResizeHandler = this.windowResizeHandler.bind(this);
     this.describe_version = this.describe_version.bind(this);
+    // this.handleDoenetMLChange = this.handleDoenetMLChange.bind(this);
+    // this.editorDidMount = this.editorDidMount.bind(this);
+    // this.updateEditor = this.updateEditor.bind(this);
 
-    window.onmessage = this.external_viewer_window_incoming_messages;
     this.viewerWindow = null;
   }
+
+  static contextType = PlacementContext;
+
 
   describe_version({publish_button_enabled,doenetML}){
     if (publish_button_enabled){
@@ -144,37 +125,6 @@ class DoenetEditor extends Component {
       return `${index}`;
 
     }
-  }
-
-  windowResizeHandler(){
-    let deviceGivenWidth = this.widthToDevice();
-    if (this.state.deviceGivenWidth !== deviceGivenWidth){
-      this.setState({deviceGivenWidth: deviceGivenWidth});
-    }
-  }
-
-  widthToDevice(){
-    let w = document.documentElement.clientWidth;
-    if (w >= 1024){ return "computer"; }
-    if (w < 1024 && w >= 768){ return "tablet"; }
-    return "phone";
-  }
-  
-  componentDidMount(){
-    window.addEventListener("resize",this.windowResizeHandler);
-  }
-
-  componentWillUnmount(){
-    window.removeEventListener("resize",this.windowResizeHandler);
-  }
-
-  external_viewer_window_incoming_messages(e){
-    
-    if (e.data.request === "doenetML update"){
-      this.viewerWindow.postMessage({doenetML: this.state.editorDoenetML},"*");
-      this.setState({viewerDoenetML:this.state.editorDoenetML});
-    }
-    
   }
 
   should_publish_button_be_enabled({editorDoenetML}){
@@ -227,38 +177,6 @@ class DoenetEditor extends Component {
       console.log(this.assignmentId);
       history.replaceState({},"title","?active="+activeSection+"&assignmentId="+assignmentId);
     }
-  }
-
-  handleDoenetMLChange(editorDoenetML, e) {
-    if (this.saveTimer === null) {
-      this.saveTimer = setTimeout(
-        () => { this.saveDoenetMLChanges({ blur: false }); }
-        , 3000);
-    }
-    if (this.contentIdInURL){
-      history.replaceState({},"title","?branchId="+this.branchId);
-      this.contentIdInURL = false;
-    }
-
-    let publish_button_enabled = this.should_publish_button_be_enabled({editorDoenetML:editorDoenetML});
-    let version = this.describe_version({publish_button_enabled:publish_button_enabled,doenetML:editorDoenetML})
-
-    
-    let documentTitle = this.calculate_documentTitle({doenetML:editorDoenetML,currentTitle:this.state.documentTitle});
-    // if (e.action === 'remove') {
-    //   let cursor = this.refs.aceEditor.editor.selection.getCursor();
-    //   const row = cursor.row;
-    //   const column = cursor.column;
-      //this.exceptionForRemoveCode = editorDoenetML;
-      // this.updateContextPanel(row, column);
-    // }
-
-    this.setState({ 
-      editorDoenetML: editorDoenetML, 
-      publish_button_enabled:publish_button_enabled,
-      documentTitle: documentTitle,
-      version: version,
-     });
   }
 
   saveDoenetMLChanges({ blur=false, publish=false }) {
@@ -320,25 +238,80 @@ class DoenetEditor extends Component {
     this.setState({viewerDoenetML:this.state.editorDoenetML});
   }
 
-  handleViewerClose(){
-    this.updateNumber++;
-    this.setState({external_viewer_window:false});
-  }
+  // updateEditor(editorDoenetML, e){
+  //   console.log('updateEditor',editorDoenetML);
+  //   console.log('state viewerDoenetML',this.state.viewerDoenetML);
+    
+  //   if (editorDoenetML !== this.state.editorDoenetML){
+  //   // this.editorDOM.setValue(editorDoenetML)
+  //   // this.setState({editorDoenetML})
+  //   this.setState({viewerDoenetML:editorDoenetML})
+  //   }
+  // }
 
-  openExternalViewerWindow(){
+    // editorDidMount(editor, monaco){
+  //   this.editorDOM = editor;
+  //   this.monacoDOM = monaco;
+  //   // this.updateEditor();
+  //   this.editorDOM.focus();
+  // }
 
-    this.viewerWindow = window.open(`/viewer`,'Doenet Viewer',`width=${window.innerWidth},height=${window.innerHeight},left=1700,top=0,titlebar=no`);
-    this.viewerWindow.onbeforeunload = this.handleViewerClose;
-    this.viewerWindow.onload = function(){ 
-        this.viewerWindow.postMessage({doenetML: this.state.viewerDoenetML},"*");
-        }.bind(this);
+  onChange = (newValue) => {
 
-    if(this.state.phone_panel_active === "Viewer"){
-      this.setState({phone_panel_active:"Editor"});
+        if (this.saveTimer === null) {
+      this.saveTimer = setTimeout(
+        () => { this.saveDoenetMLChanges({ blur: false }); }
+        , 3000);
     }
-    this.setState({external_viewer_window:true});
-  }
 
+        if (this.contentIdInURL){
+          history.replaceState({},"title","?branchId="+this.branchId);
+          this.contentIdInURL = false;
+        }
+
+    let publish_button_enabled = this.should_publish_button_be_enabled({newValue});
+    console.log("publish_button_enabled",publish_button_enabled)
+    let documentTitle = this.calculate_documentTitle({doenetML:newValue,currentTitle:this.state.documentTitle});
+    let version = this.describe_version({publish_button_enabled:publish_button_enabled,doenetML:newValue})
+  
+
+        this.setState({ 
+      editorDoenetML: newValue, 
+      publish_button_enabled:publish_button_enabled,
+      documentTitle: documentTitle,
+      version: version,
+     });
+  };
+
+  editorDidMount = (editor,monaco) => {
+    // eslint-disable-next-line no-console
+    // console.log("editorDidMount", editor, editor.getValue(), editor.getModel());
+    this.editorDOM = editor;
+    this.monacoDOM = monaco;
+    // console.log("editorDOM",editor)
+    this.model = this.editorDOM.getModel();
+    // console.log(model._tokenization)
+    // console.log('tokens')
+    // console.log(model.getLineContent(2));
+    // console.log(model._tokens)
+    // let tokens = this.editorDOM.tokenize(editor.getValue(),'xml')
+    // console.log(tokens)
+
+    this.editorDOM.onDidChangeCursorSelection(e =>{
+      this.onSelectionsChange(e.selection, ...e.secondarySelections)
+    })
+  };
+  onSelectionsChange = (selection,secondarySelections) => {
+    if (secondarySelections){
+      console.log('secondary!')
+      return;
+    }
+    console.log('selection',selection)
+    // let model = this.editorDOM.getModel();
+    console.log('model',this.model)
+    // console.log(model._tokenization)
+
+  }
 
   render() {
 
@@ -350,148 +323,10 @@ class DoenetEditor extends Component {
       return (<p>You don't have Admin access.</p>)
     }
 
-    let aceprops = {
-      mode: "xml",
-      "data-cy": "editorTextEntry",
-      name: "editorTextEntry",
-      theme: "textmate",
-      height: "100%",
-      width: "100%",
-      fontSize: this.state.fontSize+"pt",
-      tabSize: 2,
+    const { editorDoenetML } = this.state;
 
-      onChange: this.handleDoenetMLChange,
-      //onCursorChange:this.onCursorChange,
-      //onSelectionChange:this.onSelectionChange,
-      editorProps: { $blockScrolling: true },
-      //onBlur:()=>{this.saveDoenetMLChanges({blur:true})},
-      // marker:markers,
-      ref: "aceEditor",
-
-      // ref=this.aceref,
-      // enableSnippets:true,
-    }
     
-
-    let context_panel_menu_style = {};
-    let context_panel_style = {};
-    let doenet_editor_menu_style = {};
-    let doenet_editor_style = {};
-    let viewer_panel_menu_style = {};
-    let viewer_panel_style = {};
-
-    let viewer_panel_button_style = {};
-    let show_hide_context_panel_button_style = {}
-    
-
-
-    if (!this.state.show_context_panel && !this.state.external_viewer_window){
-      //Context Panel Closed 
-      //Viewer Panel NOT External
-      if (this.state.deviceGivenWidth !== "phone"){
-        doenet_editor_style = {
-          gridColumn: "1 / 3"
-        }
-        doenet_editor_menu_style = {
-          gridColumn: "1 / 3"
-        }
-        context_panel_style = { display: "none"}
-        context_panel_menu_style = { display: "none"}
-      }
-    }else if (!this.state.show_context_panel && this.state.external_viewer_window){
-      //Context Panel Closed 
-      //Viewer Panel External
-      
-
-      if (this.state.deviceGivenWidth !== "phone"){
-
-        doenet_editor_style = {
-          gridColumn: "1 / 4"
-        }
-        doenet_editor_menu_style = {
-          gridColumn: "1 / 4"
-        }
-        context_panel_style = { display: "none"}
-        context_panel_menu_style = { display: "none"}
-        viewer_panel_style = { display: "none"}
-        viewer_panel_menu_style = { display: "none"}
-      }
-      if (this.state.deviceGivenWidth === "tablet"){
-        doenet_editor_style["gridRow"] = "2 / 5";
-      }
-      
-
-    }else if (this.state.show_context_panel && this.state.external_viewer_window){
-      //Context Panel Open 
-      //Viewer Panel External
-      if (this.state.deviceGivenWidth === "computer"){
-
-        doenet_editor_style = {
-          gridColumn: "2 / 4"
-        }
-        doenet_editor_menu_style = {
-          gridColumn: "2 / 4"
-        }
-        viewer_panel_style = { display: "none"}
-        viewer_panel_menu_style = { display: "none"}
-      }else if (this.state.deviceGivenWidth === "tablet"){
-        doenet_editor_menu_style = {
-          gridColumn: "2 / 3",
-          gridRow: "1 / 2"
-        }
-        doenet_editor_style = {
-          gridColumn: "2 / 4",
-          gridRow: "2 / 5"
-        }
-       
-        viewer_panel_style = { display: "none"}
-        viewer_panel_menu_style = { display: "none"}
-      }
-    }
-
-    if (this.state.deviceGivenWidth === "phone"){
-      //PHONE
-      show_hide_context_panel_button_style = { display: "none"}
-
-      if (this.state.external_viewer_window){
-        viewer_panel_button_style = { display: "none"}
-      }
-
-      
-      if(this.state.phone_panel_active === "Editor"){
-        context_panel_menu_style = { display: "none"}
-        context_panel_style = { display: "none"}
-        viewer_panel_menu_style = { display: "none"}
-        viewer_panel_style = { display: "none"}
-        
-      }else if(this.state.phone_panel_active === "Viewer"){
-        context_panel_menu_style = { display: "none"}
-        context_panel_style = { display: "none"}
-        doenet_editor_menu_style = { display: "none"}
-        doenet_editor_style = { display: "none"}
-        
-      }else if(this.state.phone_panel_active === "Context Panel"){
-        doenet_editor_menu_style = { display: "none"}
-        doenet_editor_style = { display: "none"}
-        viewer_panel_menu_style = { display: "none"}
-        viewer_panel_style = { display: "none"}
-        
-      }
-    }
-
-    let show_hide_context_panel_icon = <FontAwesomeIcon icon={closePanel}/>
-    if (this.state.show_context_panel){
-      show_hide_context_panel_icon = <FontAwesomeIcon icon={openPanel}/>
-    }
-
-    let show_hide_context_panel_button = <button 
-    style={show_hide_context_panel_button_style}
-    onClick={()=>this.setState({show_context_panel:!this.state.show_context_panel})}
-    >{show_hide_context_panel_icon}</button>
-                    
-    let textEditor = <AceEditor {...aceprops} value={this.state.editorDoenetML}/>
     let textEditorMenu = <React.Fragment>
-    {show_hide_context_panel_button}
     <button disabled={!this.state.publish_button_enabled} onClick={this.publish}>Publish</button>
     <select onChange={(e)=>this.setState({fontSize:e.target.value})} value={this.state.fontSize}>
       <option>8</option>
@@ -506,21 +341,20 @@ class DoenetEditor extends Component {
       <option>30</option>
     </select>
     </React.Fragment>
+
     let contextPanel = <p>Context Panel is Coming Soon!</p>
-    let contextPanelMenu = <p>Coming Soon!</p>
+    let contextPanelMenu = null;
 
-    let open_external_window_button = null;
-    if (!this.state.external_viewer_window){
-      open_external_window_button = <button onClick={this.openExternalViewerWindow}><FontAwesomeIcon icon={externalLink}/></button>
-    }
 
+    // console.log(this.state.viewerDoenetML)
     let doenetViewerMenu = <React.Fragment>
       <button onClick={this.handleViewerUpdate}>Update</button>
-      {open_external_window_button}
       </React.Fragment>
-    let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"+this.updateNumber}><DoenetViewer 
+    let doenetViewer = (<ErrorBoundary key={"doenetErrorBoundry"+this.updateNumber}>
+      <DoenetViewer 
               key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
-              free={{doenetCode: this.state.viewerDoenetML}} 
+              // free={{doenetCode: this.state.viewerDoenetML}} 
+              doenetML={this.state.viewerDoenetML} 
               mode={{
               solutionType:this.state.solutionType,
               allowViewSolutionWithoutRoundTrip:this.state.allowViewSolutionWithoutRoundTrip,
@@ -534,48 +368,44 @@ class DoenetEditor extends Component {
    
         let title_text = `${this.state.documentTitle} (version ${this.state.version})`;
     
+        console.log('RENDER REFRESH')
       return (
-      <React.Fragment>
-         <DoenetHeader toolTitle="Editor" headingTitle={title_text} />   
-       
-       <div id="editorContainer">
+      <ToolLayout toolName="Editor" headingTitle={title_text} leftPanelWidth="100" rightPanelWidth="500">
+        <ToolLayoutPanel panelHeaderControls={[contextPanelMenu]} panelName="left nav">
+        <div >Left Nav</div>
+        </ToolLayoutPanel>
+        <ToolLayoutPanel panelHeaderControls={[doenetViewerMenu]} panelName="Viewer">
+          {doenetViewer}
+        </ToolLayoutPanel>
+        <ToolLayoutPanel panelHeaderControls={[textEditorMenu]} panelName="DoenetML">
+        <div style={{width:"100%",height:"calc(100vh - 42px)",backgroundColor:"blue"}} >
+         <MonacoEditor
+          width="100vw"
+          height="calc(100vh - 40px)"
+          language="xml"
+          value={editorDoenetML}
+          options={{
+            selectOnLineNumbers: false,
+            minimap: {enabled:false},
+            fontSize: this.state.fontSize,
+            automaticLayout: true,
+            scrollBeyondLastLine: false,
+            showFoldingControls: "always",
+            features:["folding","caretOperations","scrollBeyondLastLine"]
+          }}
+          onChange={this.onChange}
+          editorDidMount={this.editorDidMount}
+          theme="vs-light"
 
-            <div style={context_panel_menu_style} id="contextPanelMenu">
-              {contextPanelMenu}
-            </div>
-            <div style={context_panel_style} id="contextPanel">
-              {contextPanel}
-            </div>
-
-            <div style={doenet_editor_menu_style} id="textEditMenu">
-              {textEditorMenu}
-            </div>
-            <div style={doenet_editor_style} id="textEdit">
-              {textEditor}
-            </div>
-
-            <div style={viewer_panel_menu_style} id="editViewMenu">
-            {doenetViewerMenu}
-            </div>
-            <div style={viewer_panel_style} id="editView">
-            {doenetViewer}
-            </div>
-            
-              
-      </div>
-
-        <div id="pageNavPhone">
-          <div className="pageNav">
-            <button className="selected" onClick={()=>this.setState({phone_panel_active:"Context Panel"})} ><span>Context Panel</span></button>
-            <button  className="selected" onClick={()=>this.setState({phone_panel_active:"Editor"})}><span>Editor</span></button>
-            <button style={viewer_panel_button_style} className="selected" onClick={()=>this.setState({phone_panel_active:"Viewer"})} ><span>Viewer</span></button>
-          </div>
+        />
         </div>
+       
 
-           
-            {/* <AceEditor {...aceprops} value={this.state.doenetML}/> */}
+            </ToolLayoutPanel>
+        
+         </ToolLayout>);
     
-      </React.Fragment>);
+     
   }
 
 }

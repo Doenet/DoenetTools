@@ -141,6 +141,7 @@ export default class Core {
 
     this.downstreamDependencies = {};
     this.upstreamDependencies = {};
+    this.deletedStateVariables = {};
 
     this._renderComponents = [];
     this._renderComponentsByName = {};
@@ -1999,6 +2000,97 @@ export default class Core {
 
     return { createResult: childrenResult, componentsShadowingDeleted }
 
+      // Go through serialized children to find shadowedComponentName
+      // and replace it with a createdComponent referring to shadowingChild
+      let shadowedChild = this.findShadowedChildInSerializedComponents({
+        serializedComponents: serializedChildren,
+        shadowedComponentName
+      })
+
+      if (shadowedChild) {
+        for (let key in shadowedChild) {
+          delete shadowedChild[key];
+        }
+        shadowedChild.createdComponent = true;
+        shadowedChild.componentName = shadowingChild.componentName;
+      } else {
+
+        shadowChanges.childrenToDelete.push(shadowingChild.componentName)
+
+      }
+
+    }
+
+    shadowChanges.newChildren = serializedChildren;
+
+    let result = this.replaceDefiningChildrenBySugar({
+      component: shadowingComponent,
+      sugarResults: shadowChanges,
+      shadow: true,
+    });
+
+    // recurse if shadowingComponent is shadowed
+    if (shadowingComponent.shadowedBy) {
+      for (let shadowingComponent2 of shadowingComponent.shadowedBy) {
+        this.applySugarToShadows(({
+          originalComponent: shadowingComponent,
+          shadowingComponent: shadowingComponent2,
+          changes: shadowChanges,
+          componentsShadowingDeleted: result.componentsShadowingDeleted
+        }))
+      }
+    }
+
+    this.deriveChildResultsFromDefiningChildren(shadowingComponent);
+
+    if (!shadowingComponent.childLogicSatisfied) {
+      // TODO: handle case where child logic is no longer satisfied
+      console.error(`Child logic of ${shadowingComponent.componentName} is not satisfied after applying sugar`)
+    }
+
+    this.markChildAndDescendantDependenciesChanged(shadowingComponent);
+
+
+    // Because we are changing the children of shadowingComponent
+    // out of the normal sequence
+    // we need to set up the component dependencies and resolve them,
+    // as it is possible they weren't set up do to child logic
+    // previously not being satisfied
+
+    this.setUpComponentDependencies({ component: shadowingComponent });
+
+    result = this.resolveStateVariables({ component: shadowingComponent });
+
+    if (Object.keys(result.varsUnresolved).length === 0) {
+      delete this.unresolvedDependencies[shadowingComponent.componentName];
+    }
+    else {
+      this.unresolvedDependencies[shadowingComponent.componentName] = {};
+      this.addUnresolvedDependencies({
+        varsUnresolved: result.varsUnresolved,
+        component: shadowingComponent
+      });
+    }
+
+  }
+
+  findShadowedChildInSerializedComponents({ serializedComponents, shadowedComponentName }) {
+    for (let serializedComponent of serializedComponents) {
+      if (serializedComponent.preserializedName === shadowedComponentName) {
+        return serializedComponent;
+      }
+      if (serializedComponent.children) {
+        let result = this.findShadowedChildInSerializedComponents({
+          serializedComponents: serializedComponent.children,
+          shadowedComponentName
+        });
+        if (result) {
+          return result;
+        }
+      }
+    }
+
+    return;
   }
 
   applySugarToShadows({ originalComponent, shadowingComponent, changes, componentsShadowingDeleted, updatesNeeded }) {
@@ -3775,6 +3867,17 @@ export default class Core {
         allStateVariablesAffected
       });
     }
+
+    if (component.aliasesToCopyDependencies) {
+      for (let stateVariable in component.aliasesToCopyDependencies) {
+        this.downstreamDependencies[component.componentName][stateVariable]
+          = this.downstreamDependencies[component.componentName][component.aliasesToCopyDependencies[stateVariable]];
+        this.upstreamDependencies[component.componentName][stateVariable]
+          = this.upstreamDependencies[component.componentName][component.aliasesToCopyDependencies[stateVariable]];
+      }
+      delete component.aliasesToCopyDependencies;
+    }
+
   }
 
   setUpDependenciesOfArrayEntries({ component, dependencyOverride, stateVariable,
@@ -4699,6 +4802,9 @@ export default class Core {
             break;
           }
         }
+      } else {
+        receivedValue[varName] = true;
+        valuesChanged[varName] = true;
       }
       if (foundAllVarNames) {
         return {
@@ -4894,8 +5000,8 @@ export default class Core {
       for (let otherVar of additionalStateVariablesDefined) {
         receivedValue[otherVar] = false;
       }
-    }
 
+    }
 
     // console.log(`result for ${stateVariable} of ${component.componentName}`)
     // console.log(result);
@@ -5235,6 +5341,17 @@ export default class Core {
           for (let arrayKeyChanged in valuesChanged[varName].arrayKeysChanged) {
             arrayVarNamesChanged.push(...component.state[varName].allVarNamesThatIncludeArrayKey(arrayKeyChanged))
           }
+          else {
+            value = value[arrayIndex];
+          }
+        }
+        else if (mathComponentIndex !== undefined && value instanceof me.class) {
+          value = value.get_component(mathComponentIndex);
+        }
+
+        return {
+          foundEssential: true,
+          value
         }
         for (let arrayVarName of arrayVarNamesChanged) {
           this.recordActualChangeInUpstreamDependencies({
@@ -7615,7 +7732,7 @@ export default class Core {
                 } else {
                   this.componentIdentityDependencies.replacementDependenciesByComposite[currentCompositeName].splice(ind, 1)
                 }
-
+                componentVarsDeleted[cName].push(...resolveResult.componentVarsDeleted[cName])
               }
             }
 
@@ -7696,6 +7813,15 @@ export default class Core {
           }
         }
       }
+
+      // We finished 
+      // - looping through all componentName/varNames of this.unresolvedByDependent
+      // - finding those varNames that were resolved, and
+      // - attempting to resolve those variables that depend on it
+
+      // We'll repeat this process as long as we're making progress
+      // and there are still unresolved variables left
+
     }
   }
 
@@ -7764,6 +7890,15 @@ export default class Core {
             continue;
           }
         }
+      }
+      if (childLogicMessage) {
+        this.unresolvedMessage = childLogicMessage;
+      }
+      else {
+        this.unresolvedMessage = unresolvedVarMessage;
+      }
+    }
+  }
 
         for (let [ind, cname] of downstreamComponentNames.entries()) {
           let varNames = mappedDownstreamVariableNames;
@@ -7777,6 +7912,7 @@ export default class Core {
             });
           }
         }
+        this.unresolvedByDependent[cName2][varName2].splice(indexOfDep, 1);
       }
     }
   }
@@ -8240,7 +8376,6 @@ export default class Core {
               delete stateVarObj.value;
               Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component: upDepComponent, stateVariable: vName }), configurable: true });
             }
-
           }
 
           for (let vName in varsChanged) {
@@ -8982,6 +9117,7 @@ export default class Core {
       componentChanges,
       components: this.components,
       workspace: component.replacementsWorkspace,
+      getComponentNamesForProp: this.getComponentNamesForProp,
     });
 
     // console.log("replacement changes for " + component.componentName);
@@ -10033,6 +10169,7 @@ export default class Core {
     inverseDefinitionArgs.overrideFixed = instruction.overrideFixed;
 
     let stateVarObj = component.state[stateVariable];
+    let inverseDefinitionFunction = stateVarObj.inverseDefinition;
 
     let stateVariableForWorkspace = stateVariable;
 

@@ -11,6 +11,8 @@ $overview =  mysqli_real_escape_string($conn,$_POST["overview"]);
 $grade =  mysqli_real_escape_string($conn,$_POST["grade"]);
 $syllabus =  mysqli_real_escape_string($conn,$_POST["syllabus"]);
 $assignment =  mysqli_real_escape_string($conn,$_POST["assignment"]);
+$courseId =  mysqli_real_escape_string($conn,$_POST["courseId"]);
+
 // echo $overview;
 // echo $grade;
 // echo $syllabus;
@@ -21,6 +23,7 @@ $sql = "
   gradeEnabled = '$grade',
   syllabusEnabled = '$syllabus',
   assignmentEnabled = '$assignment'
+  WHERE courseId = '$courseId'
 ";
 $result = $conn->query($sql);
 

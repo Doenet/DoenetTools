@@ -16,8 +16,12 @@ module.exports = {
     "editor/index.js": "./src/editor/index.js",
     "exam/index.js": "./src/exam/index.js",
     "gradebook/index.js": "./src/gradebook/index.js",
+    "guesteditor/index.js": "./src/guesteditor/index.js",
     "page/index.js": "./src/page/index.js",
+    "profile/index.js": "./src/profile/index.js",
     "viewer/index.js": "./src/viewer/index.js",
+    "exampletool/index.js": "./src/exampletool/index.js",
+
   },
 
   output: {
@@ -70,72 +74,91 @@ module.exports = {
       filename: "./index.html",
       // favicon: "",
     }),
-    // new HtmlWebPackPlugin({
-    //   chunks: ['admin/index.js'],
-    //   template: "./src/admin/index.html",
-    //   filename: "./admin/index.html",
-    //   // favicon: "",
-    // }),
-    // new HtmlWebPackPlugin({
-    //   chunks: ["chooser/index.js"],
-    //   template: "./src/chooser/index.html",
-    //   filename: "./chooser/index.html"
-    //   // favicon: "",
-    // }),
-    // new HtmlWebPackPlugin({
-    //   chunks: ["course/index.js"],
-    //   template: "./src/course/index.html",
-    //   filename: "./course/index.html"
-    //   // favicon: "",
-    // }),
-    // new HtmlWebPackPlugin({
-    //   chunks: ['docs/index.js'],
-    //   template: "./src/docs/index.html",
-    //   filename: "./docs/index.html",
-    //   // favicon: "",
-    // }),
-    // new HtmlWebPackPlugin({
-    //   chunks: ['editor/index.js'],
-    //   template: "./src/editor/index.html",
-    //   filename: "./editor/index.html",
-    //   // favicon: "",
-    // }),
+    new HtmlWebPackPlugin({
+      chunks: ['admin/index.js'],
+      template: "./src/admin/index.html",
+      filename: "./admin/index.html",
+      // favicon: "",
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ["chooser/index.js"],
+      template: "./src/chooser/index.html",
+      filename: "./chooser/index.html"
+      // favicon: "",
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ["course/index.js"],
+      template: "./src/course/index.html",
+      filename: "./course/index.html"
+      // favicon: "",
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ['docs/index.js'],
+      template: "./src/docs/index.html",
+      filename: "./docs/index.html",
+      // favicon: "",
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ['editor/index.js'],
+      template: "./src/editor/index.html",
+      filename: "./editor/index.html",
+      // favicon: "",
+    }),
 
-    // new HtmlWebPackPlugin({
-    //   chunks: ["exam/index.js"],
-    //   template: "./src/exam/index.html",
-    //   filename: "./exam/index.html"
-    //   // favicon: "",
-    // }),
-    // // Gradebook
-    // new HtmlWebPackPlugin({
-    //   chunks: ['gradebook/index.js'],
-    //   template: "./src/gradebook/index.html",
-    //   filename: "./gradebook/index.html",
-    //   // favicon: "",
-    // }),
-    // new HtmlWebPackPlugin({
-    //   template: "./src/gradebook/assignment/index.html",
-    //   filename: "./gradebook/assignment/index.html"
-    // }),
-    // new HtmlWebPackPlugin({
-    //   chunks: ['gradebook/index.js'],
-    //   template: "./src/gradebook/attempt/index.html",
-    //   filename: "./gradebook/attempt/index.html"
-    // }),
-    // // /Gradebook
-    // new HtmlWebPackPlugin({
-    //   chunks: ["page/index.js"],
-    //   template: "./src/page/index.html",
-    //   filename: "./page/index.html"
-    //   // favicon: "",
-    // }),
-    // new HtmlWebPackPlugin({
-    //   chunks: ["viewer/index.js"],
-    //   template: "./src/viewer/index.html",
-    //   filename: "./viewer/index.html"
-    //   // favicon: "",
-    // }),
+    new HtmlWebPackPlugin({
+      chunks: ["exam/index.js"],
+      template: "./src/exam/index.html",
+      filename: "./exam/index.html"
+      // favicon: "",
+    }),
+    // Gradebook
+    new HtmlWebPackPlugin({
+      chunks: ['gradebook/index.js'],
+      template: "./src/gradebook/index.html",
+      filename: "./gradebook/index.html",
+      // favicon: "",
+    }),
+    // /Gradebook
+    new HtmlWebPackPlugin({
+      chunks: ["page/index.js"],
+      template: "./src/page/index.html",
+      filename: "./page/index.html"
+      // favicon: "",
+    }),
+      // /GuestEditor
+      new HtmlWebPackPlugin({
+        chunks: ["guesteditor/index.js"],
+        template: "./src/guesteditor/index.html",
+        filename: "./guesteditor/index.html"
+        // favicon: "",
+      }),
+    new HtmlWebPackPlugin({
+      template: "./src/gradebook/assignment/index.html",
+      filename: "./gradebook/assignment/index.html"
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ['gradebook/index.js'],
+      template: "./src/gradebook/attempt/index.html",
+      filename: "./gradebook/attempt/index.html"
+    }),
+    // /Gradebook
+    new HtmlWebPackPlugin({
+      chunks: ["page/index.js"],
+      template: "./src/page/index.html",
+      filename: "./page/index.html"
+      // favicon: "",
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ["profile/index.js"],
+      template: "./src/profile/index.html",
+      filename: "./profile/index.html"
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ["viewer/index.js"],
+      template: "./src/viewer/index.html",
+      filename: "./viewer/index.html"
+      // favicon: "",
+    }),
     new MiniCssExtractPlugin({
       filename: "[name].css",
       // filename: "main.css",
@@ -150,4 +173,3 @@ module.exports = {
     // openPage: "protected",
   }
 };
-

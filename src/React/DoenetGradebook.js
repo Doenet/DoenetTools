@@ -1,20 +1,19 @@
 import React, { Component } from 'react'
 import axios from 'axios';
 axios.defaults.withCredentials = true;
-import DoenetHeader from './DoenetHeader';
 import {
     BrowserRouter as Router,
     Switch,
     Route,
     Link,
-    // Redirect,
 } from "react-router-dom";
 import query from '../queryParamFuncs';
 import DoenetViewer from "./DoenetViewer";
 
-import "./gradebook.css";
 import "../imports/table.css";
 import "../imports/doenet.css";
+import ToolLayout from "./ToolLayout/ToolLayout";
+import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 
 function sortArraysByElementI(arrarr, i) {
     // TODO: finish
@@ -582,10 +581,7 @@ export default class DoenetGradebook extends Component {
         this.courseId = "aI8sK4vmEhC5sdeSP3vNW"; // FIXME: value used for testing, this needs to be read from the url query
 
         this.assignments = null;
-        this._navItems = null;
-    }
 
-    componentDidMount() {
         axios.get(`/api/loadAssignments.php?courseId=${this.courseId}`).then(resp => {
             let data = resp.data;
             // From API:
@@ -606,16 +602,17 @@ export default class DoenetGradebook extends Component {
         }).catch(err => console.log((err.response).toString()));
     }
 
+
     componentDidCatch(error, info) {
         this.setState({ error, errorInfo: info });
     }
 
     get navItems() {
-        this._navItems = [];
+        let navItems = [];
         for (let assignmentId in this.assignments) {
             let assignmentName = this.assignments[assignmentId];
-            this._navItems.push(
-                <div className="gradebookNavItem" key={`navItem_${assignmentId}`}>
+            navItems.push(
+                <div style={{width:"100%", borderBottom: "solid #6e6e6e 1px",marginBottom: ".5em"}} key={`navItem_${assignmentId}`}>
                     <Link to={`/assignment/?assignmentId=${assignmentId}`} className="gradebookNavLink">{assignmentName}</Link>
                 </div>
             );
@@ -623,7 +620,7 @@ export default class DoenetGradebook extends Component {
 
         // TODO: sort navItems, didn't have internet when I wrote this method
 
-        return this._navItems;
+        return navItems;
     }
 
     render() {
@@ -641,28 +638,35 @@ export default class DoenetGradebook extends Component {
             </div>)
         }
 
+
+
+
         return (
-            <>
-                <DoenetHeader toolTitle="Gradebook" headingTitle="TODO: courseName" />
-                <Router basename="/gradebook">
-                    <div id="gradebookContainer">
-                        <div id="leftNav">
-                            <h2>Assignments</h2>
-                            {this.navItems}
-                            <div className="spacer"></div>
-                            <div className="spacer"></div>
-                            <Link to="/" className="gradebookNavItem">See All Assignments</Link>
-                        </div>
-                        <div id="content">
-                            <Switch>
-                                <Route sensitive exact path="/" component={GradebookOverview} />
-                                <Route sensitive exact path="/assignment/" component={GradebookAssignmentView} />
-                                <Route sensitive exact path="/attempt/" component={GradebookAttemptView} />
-                            </Switch>
-                        </div>
+        <Router basename="/gradebook">
+            <ToolLayout toolName="Gradebook" headingTitle="TODO: courseName" >
+                <ToolLayoutPanel key="one" panelName="Left Nav">
+                <div style={{padding: "5px"}}>
+
+                    <Link to="/" className="gradebookNavItem">See All Assignments</Link>
+                    <h2>Assignments</h2>
+                    {this.navItems}
                     </div>
-                </Router>
-            </>
+                </ToolLayoutPanel>
+                <ToolLayoutPanel key="two" panelName="Grades Panel">
+                    <div style={{padding: "5px"}}>
+                        <Switch>
+                            <Route sensitive exact path="/" component={GradebookOverview} />
+                            <Route sensitive exact path="/assignment/" component={GradebookAssignmentView} />
+                            <Route sensitive exact path="/attempt/" component={GradebookAttemptView} />
+                        </Switch>
+
+                    </div>
+
+                </ToolLayoutPanel>
+
+            </ToolLayout>
+        </Router>
+
         );
     }
 }

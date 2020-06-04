@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
-$sql = "SELECT username,adminAccessAllowed FROM user WHERE username='$remoteuser' AND accessAllowed='1';";
+$sql = "SELECT username,accessAllowed,adminAccessAllowed FROM user WHERE username='$remoteuser' AND accessAllowed='1';";
 
 $result = $conn->query($sql); 
 $row = $result->fetch_assoc();
@@ -16,6 +16,7 @@ $access = $result->num_rows;
 $response_arr = array(
     "user" => $remoteuser,
     "access" => $access,
+    "accessAllowed"=>$row["accessAllowed"],
     "adminAccess"=>$row["adminAccessAllowed"]
 );
 

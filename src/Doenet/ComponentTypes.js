@@ -131,6 +131,8 @@ import Container from './components/Container';
 import CollaborateGroups from './components/CollaborateGroups';
 import CollaborateGroupSetup from './components/CollaborateGroupSetup';
 import Div from './components/Div';
+import IntervalInput from './components/IntervalInput';
+import Interval from './components/Interval';
 
 
 //Extended
@@ -260,6 +262,8 @@ const componentTypeArray = [
   CollaborateGroups,
   CollaborateGroupSetup,
   Div,
+  IntervalInput, 
+  Interval, 
 ];
 
 const componentTypeArrayExtended = [

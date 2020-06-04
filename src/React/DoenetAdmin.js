@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import DoenetViewer from '../React/DoenetViewer';
+import DoenetBox from '../React/DoenetBox';
 import axios from 'axios';
 import MersenneTwister from 'mersenne-twister';
 import './admin.css';
@@ -7,6 +8,8 @@ import nanoid from 'nanoid';
 import DoenetHeader from './DoenetHeader';
 import { faWindowClose, faEdit, faArrowUp,faArrowDown,faArrowLeft,faArrowRight,faPlus,faFolderPlus} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {DatePicker} from 'react';
+import styled from 'styled-components';
 
 function hashStringToInteger(s) {
   var hash = 0, i, chr;
@@ -27,15 +30,14 @@ class DoenetAdmin extends Component {
      console.log("===RESTART===")
     this.assignmentIndex = 0;
     this.loadingScreen = (<React.Fragment><p>Loading...</p></React.Fragment>);
-
+    this.doenetML="";
+    this.listOfOptions=["None","Gateway","Problem Sets","Projects","Exams","Participation"]
       const envurl='/api/env.php';
       axios.get(envurl)
         .then(resp=>{
             this.username = resp.data.user;
             this.access = resp.data.access;
-            console.log("FROM ENV.PHP")
-            console.log(this.username)
-            console.log(resp.data)
+            this.adminAccess=resp.data.adminAccess;
             this.forceUpdate();
         });
      
@@ -50,10 +52,25 @@ class DoenetAdmin extends Component {
     this.assignmentId = url.searchParams.get("assignmentId");
     this.activeSection = url.searchParams.get("active");
     this.assignment_state_1 = url.searchParams.get("assignment"); // get false
-    // if (this.activeSection==='grade'){
-    //   this.loadGrades()
-    // } 
+    this.months = {
+    "Jan":"01",
+    "Feb":"02",
+    "Mar":"03",
+    "Apr":"04",
+    "May":"05",
+    "June":"06",
+    "Jul":"07",
+    "Aug":"08",
+    "Sep":"09",
+    "Oct":"10",
+    "Nov":"11",
+    "Dec":"12"
+  }
     this.enableThese=[]
+    // this.calendar=null
+    this.rightSideInfoColumn = null
+    this.AssignmentInfoPackageReady = false
+    this.AssignmentInfoChanged=false;
     this.overview_branchId=""
     this.syllabus_branchId=""
     this.selectedAssignmentId=""
@@ -101,11 +118,22 @@ class DoenetAdmin extends Component {
     const url_header_assignment = "/api/getHeaderAndAssignmentInfo.php";
      this.arr_return=[];
      this.id_arr=[];
-     this.assignmentName="";
+     this.thisAssignmentInfo=""
+     this.assignmentName=null;
+     this.individualize=false;
+     this.multipleAttempts=false;
+     this.showSolution=false;
+     this.showFeedback=false;
+     this.showHints=false;
+     this.showCorrectness=false;
+     this.proctorMakesAvailable=false;
      this.assignment_branchId = null;
-     this.dueDate=null;
-     this.assignedDate=null;
-     this.numberOfAttemptsAllowed=null;
+     this.dueDate="";
+     this.gradeCategory=""
+     this.totalPointsOrPercent=""
+     this.assignedDate="";
+     this.timeLimit=null;
+     this.numberOfAttemptsAllowed=0;
 
      this.AddedAssignmentObjArray = [ 
        // this contains contentIds NOT assignmentId,
@@ -138,42 +166,43 @@ class DoenetAdmin extends Component {
         let length = keys.length;
         while (iterator<length){
           let currentId = keys[iterator];
-          let name = this.obj_return[currentId]['name'];
-          let parent = this.obj_return[currentId]['parent']
+          let title = this.obj_return[currentId]['title'];
+          let parent = this.obj_return[currentId]['parentId']
           if (parent==null || parent=="null" || parent==""){
             parent=null;
           }
           console.log("checking..")
-          let currentIdAttribute = this.obj_return[currentId]['attribute']
+          let currentIdAttribute = this.obj_return[currentId]['type']
           console.log(currentIdAttribute)
           if (currentIdAttribute==='header'){
-            let assignmentId = this.obj_return[currentId]['headingId']
-            let headingId = this.obj_return[currentId]['assignmentId']
+            let childAssignments = this.obj_return[currentId]['childAssignments']
+            let childHeadings = this.obj_return[currentId]['childHeadings']
             let childrenArray = this.obj_return[currentId]['childrenId'];
             
               childrenArray.forEach(element=>{
                 if (element!=null && element!=""){
-                  let childAttribute = this.obj_return[element]['attribute']
+                  let childAttribute = this.obj_return[element]['type']
                   console.log("still checking..")
                   console.log(childAttribute)
                   if (childAttribute==="header"){
-                    headingId.push(element)
+                    childHeadings.push(element)
                   } else {
-                    assignmentId.push(element)
+                    childAssignments.push(element)
                   }
                 }               
               })
                                    
-            this.heading_obj [currentId]={name:name,attribute:"header",parent:parent,headingId:headingId,assignmentId:assignmentId}
-          } else {
+            this.heading_obj [currentId]={title:title,type:"header",parentId:parent,childHeadings:childHeadings,childAssignments:childAssignments}
+          } 
+          else {
             let contentId = this.obj_return[currentId]['contentId']
             let branchId = this.obj_return[currentId]['branchId']
-            let assignedDate = this.obj_return[currentId]['assignedDate']
-            let dueDate = this.obj_return[currentId]['dueDate']
-            let numberOfAttemptsAllowed = this.obj_return[currentId]['numberOfAttemptsAllowed']
-            this.assignment_obj [currentId]={name:name,attribute:"assignment",
+            // let assignedDate = this.obj_return[currentId]['assignedDate']
+            // let dueDate = this.obj_return[currentId]['dueDate']
+            // let numberOfAttemptsAllowed = this.obj_return[currentId]['numberOfAttemptsAllowed']
+            this.assignment_obj [currentId]={title:title,type:"assignment",
             parent:parent,branchId:branchId,contentId:contentId,
-            assignedDate:assignedDate,dueDate:dueDate,numberOfAttemptsAllowed:numberOfAttemptsAllowed
+            // assignedDate:assignedDate,dueDate:dueDate,numberOfAttemptsAllowed:numberOfAttemptsAllowed
           }
           }
           iterator++;
@@ -325,12 +354,12 @@ class DoenetAdmin extends Component {
 
     iterator = 0;
     // establish level 0
-    this.heading_obj["UltimateHeader"]["headingId"].forEach(element=>{
+    this.heading_obj["root"]["childHeadings"].forEach(element=>{
       element= element.toString()
       console.log("loop 1")
       console.log(this.heading_obj[element])
-      let name = this.heading_obj[element]["name"]
-      let object = {id:element,name:name,attribute:"header",level:0}
+      let title = this.heading_obj[element]["title"]
+      let object = {id:element,title:title,type:"header",level:0}
       this.makeTreeArray.unshift(object)
     })
 
@@ -344,15 +373,15 @@ class DoenetAdmin extends Component {
       let currentHeaderObject = 
       this.heading_obj[this.makeTreeArray[iterator]["id"]];
 
-      if (currentHeaderObject["headingId"]!=undefined){
-        (currentHeaderObject["headingId"]).forEach(header=>{
+      if (currentHeaderObject["childHeadings"]!=undefined){
+        (currentHeaderObject["childHeadings"]).forEach(header=>{
           header = header.toString();
           console.log("loop 2")
           console.log(this.heading_obj[header])
-            let name = this.heading_obj[header]["name"];
-            let attribute = "header"
+            let title = this.heading_obj[header]["title"];
+            let type = "header"
             let newLevel = this.makeTreeArray[iterator]["level"]+1;
-            let object = {id:header,name:name,attribute:attribute,level:newLevel}
+            let object = {id:header,title:title,type:type,level:newLevel}
             this.makeTreeArray.splice(iterator+1,0,object)
             already_built_header_id[header]=true;
           //}
@@ -365,11 +394,11 @@ class DoenetAdmin extends Component {
    // add arrow when this.enableMode==='assignment'
     iterator = 0;
     while (iterator < this.makeTreeArray.length){
-      if (this.makeTreeArray[iterator]["attribute"]==="header"){
+      if (this.makeTreeArray[iterator]["type"]==="header"){
         let indexOfHeader = this.headerId_arr.indexOf(this.makeTreeArray[iterator]["id"])
         let currentHeaderObject = 
         this.heading_obj[this.makeTreeArray[iterator]["id"]];
-      let assignment_list = currentHeaderObject["assignmentId"]
+      let assignment_list = currentHeaderObject["childAssignments"]
       console.log("assignment list..")
       console.log(assignment_list)
       if (assignment_list!=[]) {
@@ -378,10 +407,10 @@ class DoenetAdmin extends Component {
         console.log("loop 3")
         console.log(e)
         console.log(this.assignment_obj[e.toString()])
-          let name = this.assignment_obj[e.toString()]["name"];
+          let title = this.assignment_obj[e.toString()]["title"];
           let newLevel = this.makeTreeArray[iterator]["level"]+1;
-          let attribute = "assignment"
-          let object1 = {id:e.toString(),name:name,attribute:attribute,level:newLevel}
+          let type = "assignment"
+          let object1 = {id:e.toString(),title:title,type:type,level:newLevel}
           this.makeTreeArray.splice(iterator+1,0,object1)
       })
     }
@@ -412,28 +441,24 @@ class DoenetAdmin extends Component {
     // }
   }
 buildTree(){
-  console.log("inside build tree")
-  console.log(this.assignment_obj)
-  console.log(this.heading_obj)
-  console.log(this.makeTreeArray)
   let ClassName = "headerSelection"
   let countChildrenOfUltimate=0
   let lengthChildrenOfUltimate=0
   // making space
   this.tree = [];
-  let addHeaderToTheEndOfUltimateHeader=(<span className="Section-Icon-Box">         
+  let addHeaderToTheEndOfRoot=(<span className="Section-Icon-Box">         
       <FontAwesomeIcon className="Section-Icon" 
-       onClick ={()=>{this.addNewHeaderAtTheEndUltimateHeader()}} icon={faPlus}/></span>);
+       onClick ={()=>{this.addNewHeaderAtTheEndRoot()}} icon={faPlus}/></span>);
   let addingAssignmentArray = this.AddedAssignmentObjArray 
   if (this.makeTreeArray.length>0) {
     this.makeTreeArray.forEach((element,index)=>{
-      let name = element["name"]
+      let title = element["title"]
       let level = element["level"];
       let id = element["id"]; // id of either header or assignment
-      let type = element ["attribute"]
+      let type = element ["type"]
       let headerParentId=null;
       if (type==='header'){
-        headerParentId=this.heading_obj[id]['parent']
+        headerParentId=this.heading_obj[id]['parentId']
       }
       let leftMargin = `${level*20}px`;
       let leftArrow = null;
@@ -447,20 +472,20 @@ buildTree(){
       let addingArrowUnderHeader=null;
       let contentID=null;
       let branchID=null;
-      let addHeaderPlusUnderUltimateHeader=null;
+      let addHeaderPlusUnderRoot=null;
       if (level==0) { // only header can have level 0
         if (this.enableMode==='header'){
-          addHeaderPlusUnderUltimateHeader=(<span className="Section-Icon-Box">         
+          addHeaderPlusUnderRoot=(<span className="Section-Icon-Box">         
         <FontAwesomeIcon className="Section-Icon" data-cy ="plus"
-         onClick ={()=>{this.addNewHeaderUnderUltimateHeader({headerObj:element})}} icon={faPlus}/></span>)
+         onClick ={()=>{this.addNewHeaderUnderRoot({headerObj:element})}} icon={faPlus}/></span>)
       }}
       // making up, down Arrow
       if (type==='header'){
         let id1 = element["id"];
         //console.log("id1 is "+id1)
         if (this.enableMode==='position'){
-          let myParent = this.heading_obj[id1]['parent']
-        let myParentHeadingIdArray = this.heading_obj[myParent]['headingId']
+          let myParent = this.heading_obj[id1]['parentId']
+        let myParentHeadingIdArray = this.heading_obj[myParent]['childHeadings']
         if (myParentHeadingIdArray.indexOf(id1)!=(myParentHeadingIdArray.length-1)){
           upArrow=(<span className="Section-Icon-Box">         
         <FontAwesomeIcon className="Section-Icon" data-cy={"arrowUp"+index}
@@ -478,7 +503,7 @@ buildTree(){
          onClick ={()=>{this.moveHeaderRight({headerObj:element})}} icon={faArrowRight}/></span>)
           }
           console.log(this.heading_obj[id])
-        if (this.heading_obj[id]['parent']!="UltimateHeader"){
+        if (this.heading_obj[id]['parentId']!="root"){
             leftArrow = (<span className="Section-Icon-Box">         
             <FontAwesomeIcon className="Section-Icon" data-cy={"arrowLeft"+index}
              onClick ={()=>{this.moveHeaderLeft({headerObj:element})}} icon={faArrowLeft}/></span>)
@@ -496,7 +521,7 @@ buildTree(){
         } 
         else if (this.enableMode==='assignment'){
           id = element["id"];
-          let parentId = this.heading_obj[id]['parent']
+          let parentId = this.heading_obj[id]['parentId']
           addingArrowUnderHeader=(<div style={{marginLeft:leftMargin}}><span className="Section-Icon-Box">         
           <FontAwesomeIcon className="Section-Icon" data-cy={"arrowLeft"+index}
            onClick ={
@@ -504,12 +529,12 @@ buildTree(){
            icon={faArrowLeft}/></span></div>)
         }
       }else {
-        let myParent = this.assignment_obj[id]['parent']
+        let myParent = this.assignment_obj[id]['parentId']
         ClassName = "AssignmentSelection"
         contentID = this.assignment_obj[id]['contentId']
         branchID = this.assignment_obj[id]['branchId']
         // branchID = this.assignment_obj[id]['branchId']
-        let myParentHeadingIdArray = this.heading_obj[myParent]['assignmentId']
+        let myParentHeadingIdArray = this.heading_obj[myParent]['childAssignments']
         if (this.enableMode==='position'){
           if (myParentHeadingIdArray.indexOf(id)!=((myParentHeadingIdArray.length)-1)){
             upArrow=(<span className="Section-Icon-Box">         
@@ -542,8 +567,12 @@ buildTree(){
       let tree_branch = 
       (
         <div key={"tree_branch"+index} data-cy={data_cy} className={ClassName} style={styleAssignment}>
-        <span className="Section-Text" onClick={()=>{this.loadAssignmentContent({contentId:contentID,branchId:branchID,assignmentId:id})}}>
-            {name}
+        <span className="Section-Text" 
+        // onClick={()=>{this.loadAssignmentContent({contentId:contentID,branchId:branchID,assignmentId:id})}}
+        onClick={()=>{this.thisAssignmentInfo = id;this.loadThisAssignmentInfo()}}
+        
+        >
+            {title}
             </span>
             {leftArrow}
             {rightArrow}
@@ -554,8 +583,8 @@ buildTree(){
              </div>
       
       )
-      if (addHeaderPlusUnderUltimateHeader!=null && type==='header'){
-        this.tree.push(addHeaderPlusUnderUltimateHeader)
+      if (addHeaderPlusUnderRoot!=null && type==='header'){
+        this.tree.push(addHeaderPlusUnderRoot)
       }
       this.tree.push(tree_branch)
       if (addingArrowAfterAssignment!=null && type==='assignment'){
@@ -575,11 +604,10 @@ buildTree(){
     console.log("EMPTY TREE")
   }
   if (this.enableMode==='header'){
-    console.log("yes plzzz")
-    this.tree.push(addHeaderToTheEndOfUltimateHeader)
+    this.tree.push(addHeaderToTheEndOfRoot)
   }
-  console.log("finish building tree")
 }
+
   saveTree(){
     console.log("saving the tree")
     /**
@@ -608,7 +636,7 @@ buildTree(){
     let assignmentId_parentID_array = [];
     let assignmentId_array = Object.keys(this.assignment_obj)
     assignmentId_array.forEach(id=>{
-      assignmentId_parentID_array.push(this.assignment_obj[id]['parent']);
+      assignmentId_parentID_array.push(this.assignment_obj[id]['parentId']);
     })
     let headerID_array = Object.keys(this.heading_obj);
     let headerID_array_to_payload = []
@@ -617,14 +645,14 @@ buildTree(){
     let headerID_name = []
     headerID_array.forEach(currentHeaderId=>{
       let currentHeaderObj=this.heading_obj[currentHeaderId]
-      let name = currentHeaderObj['name']
-      if (name==null){
-        name="NULL"
+      let title = currentHeaderObj['title']
+      if (title==null){
+        title="NULL"
       }
-      let currentHeaderObjHeadingIdArray = currentHeaderObj['headingId']
+      let currentHeaderObjHeadingIdArray = currentHeaderObj['childHeadings']
       let lengthOfHeadingId = currentHeaderObjHeadingIdArray.length
-      let currentHeaderObjAssignmentIdArray = currentHeaderObj['assignmentId']
-      let currentHeaderObjParentId = currentHeaderObj['parent']
+      let currentHeaderObjAssignmentIdArray = currentHeaderObj['childAssignments']
+      let currentHeaderObjParentId = currentHeaderObj['parentId']
       let lengthOfAssigmentId = currentHeaderObjAssignmentIdArray.length
       let iterator = 0
       if (lengthOfHeadingId==0 && lengthOfAssigmentId==0){
@@ -635,12 +663,12 @@ buildTree(){
         headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
         }
         headerID_childrenId_array_to_payload.push("NULL")
-        headerID_name.push(name);
+        headerID_name.push(title);
       }
       while (iterator < lengthOfHeadingId){
         headerID_array_to_payload.push(currentHeaderId)
         headerID_childrenId_array_to_payload.push(currentHeaderObjHeadingIdArray[iterator])
-        headerID_name.push(name);
+        headerID_name.push(title);
         if (currentHeaderObjParentId==null){
           headerID_parentId_array_to_payload.push("NULL")
         } else {
@@ -652,7 +680,7 @@ buildTree(){
       while (iterator < lengthOfAssigmentId){
         headerID_array_to_payload.push(currentHeaderId)
         headerID_childrenId_array_to_payload.push(currentHeaderObjAssignmentIdArray[iterator])
-        headerID_name.push(name);
+        headerID_name.push(title);
         if (currentHeaderObjParentId==null){
           headerID_parentId_array_to_payload.push("NULL")
         } else {
@@ -703,17 +731,17 @@ moveHeaderUp({headerObj}){
 
 let currentHeaderId = headerObj["id"]
 
-let myParentId = this.heading_obj[currentHeaderId]["parent"]
+let myParentId = this.heading_obj[currentHeaderId]["parentId"]
 let parentObj = this.heading_obj[myParentId];
 
-let currentHeaderIndexInParentHeaderIdArray = parentObj["headingId"].indexOf(currentHeaderId)
+let currentHeaderIndexInParentHeaderIdArray = parentObj["childHeadings"].indexOf(currentHeaderId)
 let previousIndex = currentHeaderIndexInParentHeaderIdArray+1;
 
-let previousId = parentObj["headingId"][previousIndex]
+let previousId = parentObj["childHeadings"][previousIndex]
 let temp = previousId;
 // swapping
-parentObj["headingId"][previousIndex]=currentHeaderId;
-parentObj["headingId"][currentHeaderIndexInParentHeaderIdArray] = temp;
+parentObj["childHeadings"][previousIndex]=currentHeaderId;
+parentObj["childHeadings"][currentHeaderIndexInParentHeaderIdArray] = temp;
 
 this.buildTreeArray();
 this.buildTree();
@@ -730,15 +758,15 @@ moveAssignmentUp({assignmentObj}){
  * swap it with the element whose index before
  */
 let currentAssignmentId = assignmentObj["id"]
-let myParentId = this.assignment_obj[currentAssignmentId]["parent"]
+let myParentId = this.assignment_obj[currentAssignmentId]["parentId"]
 let parentObj = this.heading_obj[myParentId];
-let currentHeaderIndexInParentHeaderIdArray = parentObj["assignmentId"].indexOf(currentAssignmentId)
+let currentHeaderIndexInParentHeaderIdArray = parentObj["childAssignments"].indexOf(currentAssignmentId)
 let previousIndex = currentHeaderIndexInParentHeaderIdArray+1;
-let previousId = parentObj["assignmentId"][previousIndex]
+let previousId = parentObj["childAssignments"][previousIndex]
 let temp = previousId;
 // swapping
-parentObj["assignmentId"][previousIndex]=currentAssignmentId;
-parentObj["assignmentId"][currentHeaderIndexInParentHeaderIdArray] = temp;
+parentObj["childAssignments"][previousIndex]=currentAssignmentId;
+parentObj["childAssignments"][currentHeaderIndexInParentHeaderIdArray] = temp;
 this.buildTreeArray();
 this.buildTree();
 this.forceUpdate();
@@ -754,15 +782,15 @@ moveHeaderDown({headerObj}){
    * swap it with the element whose index after
    */
 let currentHeaderId = headerObj["id"]
-let myParentId = this.heading_obj[currentHeaderId]["parent"]
+let myParentId = this.heading_obj[currentHeaderId]["parentId"]
 let parentObj = this.heading_obj[myParentId];
-let currentHeaderIndexInParentHeaderIdArray = parentObj["headingId"].indexOf(currentHeaderId)
+let currentHeaderIndexInParentHeaderIdArray = parentObj["childHeadings"].indexOf(currentHeaderId)
 let previousIndex = currentHeaderIndexInParentHeaderIdArray-1;
-let previousId = parentObj["headingId"][previousIndex]
+let previousId = parentObj["childHeadings"][previousIndex]
 let temp = previousId;
 // swapping
-parentObj["headingId"][previousIndex]=currentHeaderId;
-parentObj["headingId"][currentHeaderIndexInParentHeaderIdArray] = temp;
+parentObj["childHeadings"][previousIndex]=currentHeaderId;
+parentObj["childHeadings"][currentHeaderIndexInParentHeaderIdArray] = temp;
 this.buildTreeArray();
 this.buildTree();
 this.forceUpdate();
@@ -778,15 +806,15 @@ moveAssignmentDown({assignmentObj}){
    * swap it with the element whose index after
    */
   let currentAssignmentId = assignmentObj["id"]
-  let myParentId = this.assignment_obj[currentAssignmentId]["parent"]
+  let myParentId = this.assignment_obj[currentAssignmentId]["parentId"]
   let parentObj = this.heading_obj[myParentId];
-  let currentHeaderIndexInParentHeaderIdArray = parentObj["assignmentId"].indexOf(currentAssignmentId)
+  let currentHeaderIndexInParentHeaderIdArray = parentObj["childAssignments"].indexOf(currentAssignmentId)
   let previousIndex = currentHeaderIndexInParentHeaderIdArray-1;
-  let previousId = parentObj["assignmentId"][previousIndex]
+  let previousId = parentObj["childAssignments"][previousIndex]
   let temp = previousId;
   // swapping
-  parentObj["assignmentId"][previousIndex]=currentAssignmentId;
-  parentObj["assignmentId"][currentHeaderIndexInParentHeaderIdArray] = temp;
+  parentObj["childAssignments"][previousIndex]=currentAssignmentId;
+  parentObj["childAssignments"][currentHeaderIndexInParentHeaderIdArray] = temp;
   this.buildTreeArray();
   this.buildTree();
   this.forceUpdate();
@@ -795,24 +823,24 @@ moveAssignmentDown({assignmentObj}){
 }
 moveHeaderLeft({headerObj}){
   /**
-   * possess a left arrow when exists parent that not "UltimateHeader"
+   * possess a left arrow when exists parent that not "root"
    * get the id of the current header as currentHeaderId
    * find currentHeaderId's parentId in this.header_obj
-   * splice currentHeaderId out of currentHeaderId's parentId headingId array
+   * splice currentHeaderId out of currentHeaderId's parentId childHeadings array
    * store parentId of currentHeaderId's parentId as newParentId
-   * change currentHeaderId's parentId attribute value to newParentId
+   * change currentHeaderId's parentId type value to newParentId
    */
   let currentHeaderId = headerObj["id"]
-  let myparentId = this.heading_obj[currentHeaderId]["parent"]
-  let myNewParentId = this.heading_obj[myparentId]["parent"]
-  let myParentHeaderIdArray = this.heading_obj[myparentId]["headingId"]
+  let myparentId = this.heading_obj[currentHeaderId]["parentId"]
+  let myNewParentId = this.heading_obj[myparentId]["parentId"]
+  let myParentHeaderIdArray = this.heading_obj[myparentId]["childHeadings"]
   let currentHeaderIdIndexInsidemyParentHeaderIdArray = myParentHeaderIdArray.indexOf(currentHeaderId)
-  this.heading_obj[myparentId]["headingId"].splice(currentHeaderIdIndexInsidemyParentHeaderIdArray,1)
-  this.heading_obj[currentHeaderId]["parent"] = myNewParentId;
+  this.heading_obj[myparentId]["childHeadings"].splice(currentHeaderIdIndexInsidemyParentHeaderIdArray,1)
+  this.heading_obj[currentHeaderId]["parentId"] = myNewParentId;
   if (currentHeaderIdIndexInsidemyParentHeaderIdArray===(myParentHeaderIdArray-1)){
-    this.heading_obj[myNewParentId]["headingId"].push(currentHeaderId)   // when u last
+    this.heading_obj[myNewParentId]["childHeadings"].push(currentHeaderId)   // when u last
   }else {
-    this.heading_obj[myNewParentId]["headingId"].unshift(currentHeaderId)
+    this.heading_obj[myNewParentId]["childHeadings"].unshift(currentHeaderId)
   }
   console.log("moveHeaderLeft")
   console.log(this.heading_obj)
@@ -826,7 +854,7 @@ moveHeaderRight({headerObj}){
   /**
    * possess right arrow when my id not the only in my parentID's headerId
    * get the id of the current header as id
-   * find the next header inside the current header's parent headingId
+   * find the next header inside the current header's parent childHeadings
    * find the index of the previous header inside headerId_arr
    * continue to seek previous header by decreasing the index
    * when found a header where its level is at least current header
@@ -835,22 +863,22 @@ moveHeaderRight({headerObj}){
    * change id's parent to newParentID
    */
   let currentHeaderId = headerObj['id']
-  let myParentId = this.heading_obj[currentHeaderId]['parent']
-  let myParentHeadingIdArray = this.heading_obj[myParentId]["headingId"]
+  let myParentId = this.heading_obj[currentHeaderId]['parentId']
+  let myParentHeadingIdArray = this.heading_obj[myParentId]["childHeadings"]
   let prevHeaderIndexInsidemyParentHeadingIdArray = myParentHeadingIdArray.indexOf(currentHeaderId)+1
   if (prevHeaderIndexInsidemyParentHeadingIdArray===myParentHeadingIdArray.length){
     prevHeaderIndexInsidemyParentHeadingIdArray=myParentHeadingIdArray.indexOf(currentHeaderId)-1
   }
   let prevHeaderId = myParentHeadingIdArray[prevHeaderIndexInsidemyParentHeadingIdArray]
   let prevHeaderObj = this.heading_obj[prevHeaderId]
-  let currentHeaderIdIndexInsideParentObjHeadingIdArray = this.heading_obj[myParentId]['headingId'].indexOf(currentHeaderId)
-  if (currentHeaderIdIndexInsideParentObjHeadingIdArray==this.heading_obj[myParentId]['headingId'].length-1){
-  prevHeaderObj['headingId'].push(currentHeaderId)  // when u last
+  let currentHeaderIdIndexInsideParentObjHeadingIdArray = this.heading_obj[myParentId]['childHeadings'].indexOf(currentHeaderId)
+  if (currentHeaderIdIndexInsideParentObjHeadingIdArray==this.heading_obj[myParentId]['childHeadings'].length-1){
+  prevHeaderObj['childHeadings'].push(currentHeaderId)  // when u last
   } else {
-    prevHeaderObj['headingId'].unshift(currentHeaderId)  // when u not last
+    prevHeaderObj['childHeadings'].unshift(currentHeaderId)  // when u not last
   }
-  this.heading_obj[currentHeaderId]['parent']=prevHeaderId
-  this.heading_obj[myParentId]['headingId'].splice(currentHeaderIdIndexInsideParentObjHeadingIdArray,1)
+  this.heading_obj[currentHeaderId]['parentId']=prevHeaderId
+  this.heading_obj[myParentId]['childHeadings'].splice(currentHeaderIdIndexInsideParentObjHeadingIdArray,1)
   this.buildTreeArray();
   this.buildTree();
   this.forceUpdate();
@@ -866,21 +894,21 @@ addAssignmentIdsAfterAnAssignment({currentAssignmentId,arrayOfIncomingAssignment
    */
 
 let arr = arrayOfIncomingAssignments
-let myParentID = this.assignment_obj[currentAssignmentId]['parent'];
+let myParentID = this.assignment_obj[currentAssignmentId]['parentId'];
 let myParentObj = this.heading_obj[myParentID];
-let assignmentIdArray = myParentObj['assignmentId']
+let assignmentIdArray = myParentObj['childAssignments']
 let length = arr.length;
 let currentAssignmentIdIndexInsideParentAssignmentIdArray = 
-            myParentObj['assignmentId'].indexOf(currentAssignmentId)
+            myParentObj['childAssignments'].indexOf(currentAssignmentId)
 let addAtIndex=currentAssignmentIdIndexInsideParentAssignmentIdArray
 let iterator =0;
 while (iterator<length){
   let addedAssignmentId = arr[iterator];
   let ID = nanoid();
-  this.heading_obj[myParentID]['assignmentId'].splice(addAtIndex,0,ID)
+  this.heading_obj[myParentID]['childAssignments'].splice(addAtIndex,0,ID)
   console.log("NEW ID is.."+ID)
-  let name = "untitle assignment "+iterator;
-  this.assignment_obj [ID]={name:name,parent:myParentID,contentId:addedAssignmentId}
+  let title = "untitle assignment "+iterator;
+  this.assignment_obj [ID]={title:title,parent:myParentID,contentId:addedAssignmentId}
 iterator+=1;
 }
 // change enableMode to "position" .Adding duplicate assignmentId will break the rule of adding arrow
@@ -905,10 +933,10 @@ let iterator=arr.length-1; // last index of Adding AssignmentID
 while (iterator>=0){
   let ID = nanoid();
   console.log("NEW ID is.."+ID)
-  let name = "untitle assignment "+iterator;
-  this.assignment_obj [ID]={name:name,parent:currentHeaderId,contentId:arr[iterator]}
+  let title = "untitle assignment "+iterator;
+  this.assignment_obj [ID]={title:title,parent:currentHeaderId,contentId:arr[iterator]}
   // adding ID to currentHeaderId's assignmentId array
-  this.heading_obj[currentHeaderId]['assignmentId'].push(ID);
+  this.heading_obj[currentHeaderId]['childAssignments'].push(ID);
   iterator--;
 }
 this.buildTreeArray();
@@ -917,26 +945,26 @@ this.forceUpdate();
 this.saveTree();
 
 }
-addNewHeaderUnderUltimateHeader ({headerObj}){
+addNewHeaderUnderRoot ({headerObj}){
 let currentHeaderId = headerObj['id']
-let myParentObj = this.heading_obj["UltimateHeader"];
-let length = myParentObj['headingId'].length
+let myParentObj = this.heading_obj["root"];
+let length = myParentObj['childHeadings'].length
 let currentHeaderIdIndexInsideParentHeadingIdArray = 
-            myParentObj['headingId'].indexOf(currentHeaderId)
+            myParentObj['childHeadings'].indexOf(currentHeaderId)
 let addAtIndex=currentHeaderIdIndexInsideParentHeadingIdArray
 let ID = nanoid();
 
   if (addAtIndex===0){
     console.log("case 1")
-    this.heading_obj["UltimateHeader"]['headingId'].unshift(ID)
+    this.heading_obj["root"]['childHeadings'].unshift(ID)
   } else if (addAtIndex===(length-1)){
     console.log("case 2")
-    this.heading_obj["UltimateHeader"]['headingId'].push(ID)
+    this.heading_obj["root"]['childHeadings'].push(ID)
   } else {
     console.log("case 3")
-    this.heading_obj["UltimateHeader"]['headingId'].splice(addAtIndex+1,0,ID)
+    this.heading_obj["root"]['childHeadings'].splice(addAtIndex+1,0,ID)
   }
-  this.heading_obj [ID]={name:"untitled header",parent:"UltimateHeader",assignmentId:[],headingId:[]}
+  this.heading_obj [ID]={title:"untitled header",parentId:"root",childAssignments:[],childHeadings:[]}
 
 // change enableMode to "position" .Adding duplicate assignmentId will break the rule of adding arrow
 // as one ID can both a middle and first element at the same time
@@ -946,10 +974,10 @@ this.forceUpdate();
 this.saveTree();
 
 }
-addNewHeaderAtTheEndUltimateHeader(){
+addNewHeaderAtTheEndRoot(){
 let ID = nanoid();
-  this.heading_obj["UltimateHeader"]['headingId'].unshift(ID)
-  this.heading_obj [ID]={name:"untitled header",parent:"UltimateHeader",assignmentId:[],headingId:[]}
+  this.heading_obj["root"]['childHeadings'].unshift(ID)
+  this.heading_obj [ID]={title:"untitled header",parentId:"root",childAssignments:[],childHeadings:[]}
   this.buildTreeArray();
 this.buildTree();
 this.forceUpdate();
@@ -965,13 +993,13 @@ addNewHeaderToHeader({headerObj}){
    */
   /*Assume addedHeader is fully filled and 
   stores only {IdOfAssignment:<someID>,name:<someName>} */
-  // TODO: header can't be added under UltimateHeader
+  // TODO: header can't be added under Root
   console.log("running addNewHeaderToHeader")
   let currentHeaderId = headerObj['id']
   let newHeaderId = nanoid();
   let newHeaderName = "untitled header";
-  this.heading_obj [newHeaderId] = {name:newHeaderName,assignmentId:[],headingId:[],parent:currentHeaderId}
-  this.heading_obj[currentHeaderId]['headingId'].unshift(newHeaderId)
+  this.heading_obj [newHeaderId] = {title:newHeaderName,childAssignments:[],childHeadings:[],parentId:currentHeaderId}
+  this.heading_obj[currentHeaderId]['childHeadings'].unshift(newHeaderId)
   this.buildTreeArray();
   this.buildTree();
   this.forceUpdate();
@@ -990,11 +1018,11 @@ let id = headerObj['id']
 let currentHeaderObject = 
       this.heading_obj[id];
 let parentId;
-//if (currentHeaderObject["parent"]!="UltimateHeader"){
-parentId = currentHeaderObject["parent"]
+//if (currentHeaderObject["parentId"]!="root"){
+parentId = currentHeaderObject["parentId"]
   
 //}
-let listOfMyAssignment = currentHeaderObject["assignmentId"]
+let listOfMyAssignment = currentHeaderObject["childAssignments"]
 let listOfDeletingAssignment = []
 listOfMyAssignment.forEach (element=>{
   listOfDeletingAssignment.push(element.toString())
@@ -1002,33 +1030,33 @@ listOfMyAssignment.forEach (element=>{
 // before deleting myself, delete all my assignment object
 this.deleteChildrenAssignment({list:listOfDeletingAssignment})
 // before deleting myself, delete all my header object
-let listOfMyHeaders = currentHeaderObject["headingId"]
+let listOfMyHeaders = currentHeaderObject["childHeadings"]
 console.log("listOfMyHeaders")
 console.log(listOfMyHeaders)
 let listOfDeletingHeader = []
 listOfMyHeaders.forEach (element=>{
   let currentChildHeaderObjID = element
-  let name = this.heading_obj[element]['name']
-  let attribute = "header"
-  let parent = this.heading_obj[element]['parent']
-  let currentChildHeaderObjHeadingId = this.heading_obj[element]["headingId"]
-  let currentChildHeaderObjAssignmentId = this.heading_obj[element]["assignmentId"]
+  let title = this.heading_obj[element]['title']
+  let type = "header"
+  let parent = this.heading_obj[element]['parentId']
+  let currentChildHeaderObjHeadingId = this.heading_obj[element]["childHeadings"]
+  let currentChildHeaderObjAssignmentId = this.heading_obj[element]["childAssignments"]
 
-  let currentChildHeaderObj = {id:currentChildHeaderObjID,name:name,attribute:attribute,parent:parent,headingId:currentChildHeaderObjHeadingId,assignmentId:currentChildHeaderObjAssignmentId}
+  let currentChildHeaderObj = {id:currentChildHeaderObjID,title:title,type:type,parent:parent,childHeadings:currentChildHeaderObjHeadingId,assignmentId:currentChildHeaderObjAssignmentId}
   this.deleteHeader({headerObj:currentChildHeaderObj})
 })
 //delete myself
 //this.heading_obj.splice(indexOfHeader,1)
 delete this.heading_obj[id]
-//if (currentHeaderObject["parent"]!="UltimateHeader"){
+//if (currentHeaderObject["parentId"]!="root"){
 // let indexOfHeaderParent = this.headerId_arr.indexOf(parentId)  
 let currentHeaderObjectParentHeadingId = 
-      this.heading_obj[parentId]["headingId"];
+      this.heading_obj[parentId]["childHeadings"];
 let indexOfCurrentHeaderInsideItsParentHeadingId = currentHeaderObjectParentHeadingId.indexOf(id)
-  this.heading_obj[parentId]["headingId"].splice(indexOfCurrentHeaderInsideItsParentHeadingId,1)
+  this.heading_obj[parentId]["childHeadings"].splice(indexOfCurrentHeaderInsideItsParentHeadingId,1)
 
 //}
-// deleting it inside the parent headingId
+// deleting it inside the parent childHeadings
 
 console.log("delete header")
 console.log(this.heading_obj)
@@ -1051,15 +1079,15 @@ list.forEach(element=>{
 deleteAssignment ({assignmentObj}){
   let id = assignmentObj['id']
   let indexOfAssignment = this.assignmentId_arr.indexOf(id)
-  let myParentId = this.assignment_obj[id]["parent"]
+  let myParentId = this.assignment_obj[id]["parentId"]
   //delete me from parent
   let indexOfHeaderParent = this.headerId_arr.indexOf(myParentId)
   let currentHeaderObjectParentAssignmentId = 
-  this.heading_obj[myParentId]["assignmentId"]
+  this.heading_obj[myParentId]["childAssignments"]
   delete this.assignment_obj[id]
   //this.assignment_obj.splice(indexOfAssignment,1)
 
-  this.heading_obj[myParentId]["assignmentId"].splice(currentHeaderObjectParentAssignmentId.indexOf(id),1)
+  this.heading_obj[myParentId]["childAssignments"].splice(currentHeaderObjectParentAssignmentId.indexOf(id),1)
   this.listOfAssignmentIdNeedDeletingFromDB = [id]
   this.axiosDeleteAssignmentFromDB({listOfAssignment:this.listOfAssignmentIdNeedDeletingFromDB})
   // here write axios called to delete one selected assignment
@@ -1137,7 +1165,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   // given contentId, get me doenetML
   if (contentId!=null && branchId!=null){
     this.selectedAssignmentId = assignmentId
-    this.assignmentName = this.assignment_obj[assignmentId]['name']
+    this.assignmentName = this.assignment_obj[assignmentId]['title']
     this.assignment_branchId = this.assignment_obj[assignmentId]['branchId']
     this.dueDate = this.assignment_obj[assignmentId]['dueDate']
     this.assignedDate = this.assignment_obj[assignmentId]['assignedDate']
@@ -1163,7 +1191,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       //this.doenetML=doenetML
       this.doenetML=(doenetML?doenetML:"<p>Empty</p>");
       this.mainSection=(<DoenetViewer 
-              key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
+              key={"loadAssignment"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
+              // key={"doenetviewer"}              
               free={{doenetCode: this.doenetML}} 
               mode={{
                 solutionType:this.state.solutionType,
@@ -1181,7 +1210,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     .catch(error=>{this.setState({error:error})});
   } else {
     this.mainSection=(<DoenetViewer 
-      key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
+      // key={"doenetviewer"}      
+      key={"loadassignmentContent"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
       free={{doenetCode: "<p>Empty</p>"}} 
       mode={{
         solutionType:this.state.solutionType,
@@ -1195,18 +1225,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
   
 }
   ToggleList(){
-    console.log("=====TOGGLE=====")
-    // this.enabledDisabledArray[this.activeSection]=!this.enabledDisabledArray[this.activeSection];
-    // //console.log("active section is..."+this.activeSection)
-    // if (this.activeSection==="overview"){
-    //   this.setState({overview:this.enabledDisabledArray[this.activeSection]})
-    // }else if (this.activeSection==="grade"){
-    //   this.setState({grade:this.enabledDisabledArray[this.activeSection]})
-    // }else if (this.activeSection==="assignment"){
-    //   this.setState({assignment:this.enabledDisabledArray[this.activeSection]})
-    // }else if (this.activeSection==="syllabus"){
-    //   this.setState({syllabus:this.enabledDisabledArray[this.activeSection]})
-    // }
     const url = '/api/save_enable_disable_category.php'
     console.log(this.state.overview)
     console.log(this.state.grade)
@@ -1238,7 +1256,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     if (data[this.activeSection]===0){
       if (data.overview===1){
         this.loadOverview();
-        this.buildOverview();
+        this.buildOverview()
+        // (!this.overview?this.buildOverview():null);
         this.updateLocationBar({});
       }else if (data.syllabus===1){
         this.loadSyllabus();
@@ -1262,7 +1281,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     console.log("inside updateLocationBar")
     history.replaceState({},"title","?active="+activeSection);
     if (assignmentId!=undefined && assignmentId!=null){
-      assignmentId=assignmentId['assignmentId']
+      assignmentId=assignmentId['childAssignments']
     }
     console.log(this.activeSection)
     if (this.activeSection === "assignment") {
@@ -1303,7 +1322,8 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       {this.doenetML!=""?
       
       <DoenetViewer 
-              key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
+        // key={"doenetviewer"}              
+              key={"buildOverview"+(this.updateNumber+=1)} //each component has their own key, change the key will trick Reach to look for new component
               free={{doenetCode: this.doenetML}} 
               mode={{
                 solutionType:this.state.solutionType,
@@ -1314,7 +1334,6 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
               }}           
             />:null}
     </div>)
-
     this.mainSection = this.overview;
   }
 
@@ -1349,11 +1368,12 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.mainSection = this.loadingScreen;
 
     //talk to database to load fresh info
-    this.overview = (<React.Fragment>
+    this.syllabus = (<React.Fragment>
       {/* <h2 data-cy="sectionTitle">Syllabus</h2>  */}
       {this.doenetML!=""?
       <div><DoenetViewer 
-              key={"doenetviewer"+this.updateNumber} //each component has their own key, change the key will trick Reach to look for new component
+              // key={"doenetviewer"}
+              //key={"buildSyllabus"+(this.updateNumber+=1)} //each component has their own key, change the key will trick Reach to look for new component
               free={{doenetCode: this.doenetML}} 
               mode={{
                 solutionType:this.state.solutionType,
@@ -1365,7 +1385,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
             /></div>:null}   
     </React.Fragment>)
 
-    this.mainSection = this.overview;
+    this.mainSection = this.syllabus;
   }
 
   buildAssignment() {
@@ -1405,8 +1425,10 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.assignmentFragment = <React.Fragment>
       <div className="assignmentContainer">     
         <div className="assignmentActivity">
-              {this.assignmentObj.assignmentId?<DoenetViewer 
-              key={"doenetviewer"+this.updateNumber} 
+              {this.assignmentObj.assignmentId?
+              <DoenetViewer 
+              // key={"doenetviewer"}
+              key={"buildAssignment"+this.updateNumber} 
               free={{
                 doenetCode: this.assignmentObj.code,
                 doenetState: this.assignmentObj.latestDocumentState,
@@ -1535,7 +1557,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     }
  
     //talk to database to load fresh info
-    this.overview = (<React.Fragment>
+    this.Grade = (<React.Fragment>
       <h2 data-cy="sectionTitle">Grades</h2>
       <div style={{marginLeft:"10px"}}>
         <div>Student: {this.student}</div>
@@ -1597,7 +1619,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
         </tbody>
       </table>
     </React.Fragment>)
-    this.mainSection = this.overview;
+    this.mainSection = this.Grade;
   }
 
   buildAssignmentGrades({assignment}){
@@ -1730,8 +1752,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     <h2 style={{marginLeft:"10px"}}>{this.assignment.gradeItem}: {itemTitle}</h2>
       {this.latestAttemptNumber > 1 ? <p style={{marginLeft:"10px",fontSize:"16px"}}>Attempt Number: {this.latestAttemptNumber} </p>: null }
 
-            <DoenetViewer 
-            key={"doenetviewer"} 
+            {/* <DoenetViewer 
+              // key={"doenetviewer"}
+              key={"buildGrade"+this.updateNumber}             
             free={{
             doenetState: itemState,
           }} 
@@ -1745,7 +1768,7 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
                 showCorrectness:true,
                 interactive:false,
               }}
-            />
+            /> */}
 
     </React.Fragment>);
     this.forceUpdate();
@@ -2024,9 +2047,304 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     this.forceUpdate();
   }
 
-  render() {
+  loadThisAssignmentInfo(){
+    this.rightSideInfoColumn=null
+    const urlDownload="/api/loadAssignmentInfo.php";
+    const data={assignmentId:this.thisAssignmentInfo}
+    const payload = {
+      params: data
+    }
+    console.log("this.thisAssignmentInfo: "+this.thisAssignmentInfo)
+    this.assignment_branchId = this.assignment_obj[this.thisAssignmentInfo]['branchId']
+    axios.get(urlDownload,payload)
+        .then(resp=>{
+            console.log("FROM loadAssignmentInfo.php")
+            console.log(resp.data)
+            this.assignmentName=resp.data['assignmentName']
+            this.assignedDate=resp.data['assignedDate']
+            this.dueDate=resp.data['dueDate']
+            this.numberOfAttemptsAllowed=resp.data['numberOfAttemptsAllowed']
+            this.timeLimit=resp.data['timeLimit']
+            this.gradeCategory=resp.data['gradeCategory']
+            this.totalPointsOrPercent=resp.data['totalPointsOrPercent']
 
+            this.individualize=resp.data['individualize']==="1"?true:false
+            this.multipleAttempts=resp.data['multipleAttempts']==="1"?true:false
+            this.showSolution=resp.data['showSolution']==="1"?true:false
+            this.showFeedback=resp.data['showFeedback']==="1"?true:false
+            this.showHints=resp.data['showHints']==="1"?true:false
+            this.showCorrectness=resp.data['showCorrectness']==="1"?true:false
+            this.proctorMakesAvailable=resp.data['proctorMakesAvailable']==="1"?true:false
+            // this.buildRightSideInfoColumn()
+            this.AssignmentInfoPackageReady=true
+            this.forceUpdate();
+        });
+  }
+  buildRightSideInfoColumn(){
+
+    console.log("BUILDING ightSideInfoColumn")
+    console.log(this.assignmentName)
+    let evenOrOdd = 0
+    const SettingContainer = styled.button`
+    display:flex;
+    justify-content:space-between;
+    flex-direction: column;
+    `
+    this.rightSideInfoColumn = (          
+    <div className="info">
+
+    <span className="Section-Icon-Box">         
+    <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.assignment_branchId} icon={faEdit}/>
+    </span>
+      <SettingContainer>
+        
+      <DoenetBox key={"title"+(this.updateNumber++)} 
+      evenOrOdd = {evenOrOdd+=1}
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.assignmentName = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="text" 
+         title="Assignment Name: "
+         value={this.assignmentName?this.assignmentName:""}/>
+
+         <DoenetBox key={"duedate"+(this.updateNumber++)}
+         evenOrOdd = {evenOrOdd+=1}
+         parentFunction={(e)=>{
+          this.updateNumber+=1
+            let date = e.split(" ")
+            let result = date[3]+"-"+this.months[date[1]]+"-"+date[2]+" "+date[4]
+            this.dueDate = result;
+            this.AssignmentInfoChanged=true;
+             this.forceUpdate()}} 
+        type="Calendar" 
+        title="Due Date: "
+        value={this.dueDate?this.dueDate:""}
+        />
+
+    <DoenetBox key={"assignedDate"+(this.updateNumber++)} 
+      evenOrOdd = {evenOrOdd+=1}    
+    parentFunction={(e)=>{
+      this.updateNumber+=1
+        let date = e.split(" ")
+        let result = date[3]+"-"+this.months[date[1]]+"-"+date[2]+" "+date[4]
+        this.assignedDate = result;
+
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="Calendar" 
+         title="Assigned Date: " 
+         value={this.assignedDate?this.assignedDate:""}/>
+
+      <DoenetBox key={"TimeLimit"+(this.updateNumber++)} 
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.timeLimit = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="text" 
+         title="Time Limit: " 
+         value={this.timeLimit?this.timeLimit:""}/>
+
+    <DoenetBox key={"attempts"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}    
+    parentFunction={(e)=>{
+      this.updateNumber+=1
+        this.numberOfAttemptsAllowed = e;
+        if (!this.multipleAttempts){
+          this.numberOfAttemptsAllowed = 0
+        }
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="number" 
+         title="Number Of Attempts: " 
+         value={this.numberOfAttemptsAllowed?this.numberOfAttemptsAllowed:""}/>
+
+      {/* <p>number Of Attempts Allowed: <input onChange={(e)=>{this.numberOfAttemptsAllowed=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="number" value={this.numberOfAttemptsAllowed?this.numberOfAttemptsAllowed:""}></input></p> */}
+      <DoenetBox key={"points"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.totalPointsOrPercent = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="number" 
+         title="Total Points Or Percent: " 
+         value={this.totalPointsOrPercent?this.totalPointsOrPercent:""}/>
+      {/* <p>total Points Or Percent: <input onChange={(e)=>{this.totalPointsOrPercent=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="number" value={this.totalPointsOrPercent===null?"":this.totalPointsOrPercent}></input></p> */}
+
+      <DoenetBox key={"category"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.gradeCategory = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="select" 
+         options={this.listOfOptions}
+         title="Grade Category: " 
+         value={this.gradeCategory}/>
+      {/* <p>grade Category: 
+        <select onChange={(e)=>{this.gradeCategory=e.target.value
+        this.AssignmentInfoChanged=true;this.forceUpdate()}}>
+          <option value="None" selected={this.gradeCategory==="None"?true:false}>None</option>
+          <option value="Gateway" selected={this.gradeCategory==="Gateway"?true:false}>Gateway</option>
+          <option value="Problem Sets" selected={this.gradeCategory==="Problem Sets"?true:false}>Problem Sets</option>
+          <option value="Projects" selected={this.gradeCategory==="Projects"?true:false}>Projects</option>
+          <option value="Exams" selected={this.gradeCategory==="Exams"?true:false}>Exams</option>
+          <option value="Participation" selected={this.gradeCategory==="Participation"?true:false}>Participation</option>
+        </select>
+        </p>  */}
+      {/*IMPLEMENTED <p>Due Date:  <input onChange={(e)=>{this.dueDate=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.dueDate?this.dueDate:""}></input></p> */}
+      {/*IMPLEMENTED <p>assigned Date: <input onChange={(e)=>{this.assignedDate=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.assignedDate?this.assignedDate:""}></input></p>
+                 
+         NOT YET <p>Time Limit: <input onChange={(e)=>{this.timeLimit=e.target.value;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="text" value={this.timeLimit===null?"":this.timeLimit}></input></p>
+       */}
+      <DoenetBox key={"indiv"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.individualize = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="checkbox" 
+         title="Individualize: " 
+         value={this.individualize}/>
+      {/* <p>Individualize: <input onChange={()=>{this.individualize= !this.individualize;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.individualize}></input></p> */}
+      <DoenetBox key={"multiple att"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.multipleAttempts = e;
+        if (!this.multipleAttempts){
+          this.numberOfAttemptsAllowed = 0
+        }
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="checkbox" 
+         title="Multiple Attempts: " 
+         value={this.multipleAttempts}/>
+      {/* <p>multiple Attempts: <input onChange={()=>{this.multipleAttempts= !this.multipleAttempts;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.multipleAttempts}></input></p> */}
+      <DoenetBox key={"show sol"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.showSolution = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="checkbox" 
+         title="Show solution: " 
+         value={this.showSolution}/>
+      {/* <p>show solution: <input onChange={()=>{this.showSolution= !this.showSolution;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showSolution}></input></p> */}
+      <DoenetBox key={"show fback"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.showFeedback = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="checkbox" 
+         title="Show feedback: " 
+         value={this.showFeedback}/>
+      {/* <p>show feedback: <input onChange={()=>{this.showFeedback= !this.showFeedback;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showFeedback}></input></p> */}
+      <DoenetBox key={"show hints"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.showHints = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="checkbox" 
+         title="Show hints: " 
+         value={this.showHints}/>
+      {/* <p>show hints: <input onChange={()=>{this.showHints= !this.showHints;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showHints}></input></p> */}
+      <DoenetBox key={"show corr"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}      
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.showCorrectness = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="checkbox" 
+         title="Show correctness: " 
+         value={this.showCorrectness}/>
+      {/* <p>Show correctness: <input onChange={()=>{this.showCorrectness= !this.showCorrectness;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.showCorrectness}></input></p> */}
+      <DoenetBox key={"proctor"+(this.updateNumber++)}
+      evenOrOdd = {evenOrOdd+=1}
+      lastComponet = {true}     
+      parentFunction={(e)=>{
+        this.updateNumber+=1
+        this.proctorMakesAvailable = e;
+        this.AssignmentInfoChanged=true;
+         this.forceUpdate()}} 
+         type="checkbox" 
+         title="Proctor make available: " 
+         value={this.proctorMakesAvailable}/>
+      {/* <p>Proctor make available: <input onChange={()=>{this.proctorMakesAvailable= !this.proctorMakesAvailable;this.AssignmentInfoChanged=true;this.forceUpdate()}} type="checkbox" checked={this.proctorMakesAvailable}></input></p> */}
+      </SettingContainer>
+</div>)
+this.AssignmentInfoPackageReady = false
+this.forceUpdate()
+  }
+  saveAssignmentInfo(){
+    const urlDownload="/api/saveAssignmentInfo.php";
+    console.log("saveAssignmentInfo")
+    console.log(this.totalPointsOrPercent)
+    const data={
+      assignmentId:this.thisAssignmentInfo,
+      assignmentName:this.assignmentName,
+      assignedDate:this.assignedDate,
+
+      gradeCategory:this.gradeCategory,
+      totalPointsOrPercent:(this.totalPointsOrPercent===null?0:this.totalPointsOrPercent),
+      individualize:(this.individualize===true?1:0),
+      multipleAttempts:(this.multipleAttempts===true?1:0),
+      showSolution:(this.showSolution===true?1:0),
+      showFeedback:(this.showFeedback===true?1:0),
+      showHints:(this.showHints===true?1:0),
+      showCorrectness:(this.showCorrectness===true?1:0),
+      proctorMakesAvailable:(this.proctorMakesAvailable===true?1:0),
+
+      dueDate:this.dueDate,
+      numberOfAttemptsAllowed:(this.numberOfAttemptsAllowed===""?0:this.numberOfAttemptsAllowed),
+      timeLimit:(this.timeLimit===""?"00:00:00":this.timeLimit)
+    }
+    console.log("DATA IS")
+    console.log(data)
+
+    axios.post(urlDownload,data)
+      .then(resp=>{
+        console.log(resp.data)
+      })
+      .catch(error=>{this.setState({error:error})});
+  }
+  // openCalendar(){
+  // //  const [startDate, setStartDate] = useState(new Date());
+  //   this.calendar=(<DatePicker
+  //     selected={new Date()}
+  //     onChange={date => {new Date()}}
+  //     showTimeSelect
+  //     timeFormat="HH:mm:00"
+  //     timeIntervals={15}
+  //     timeCaption="time"
+  //     dateFormat="yyyy-MM-d HH:mm:00"
+  //   />)
+  // }
+  // componentWillUnmount(){
+  //   <DoenetViewer componentWillUnmount />
+  // }
+  render() {
     console.log("====RENDER====");
+    console.log(this.dueDate)
+    if (this.AssignmentInfoPackageReady){
+      this.buildRightSideInfoColumn()
+    }
+    if (this.AssignmentInfoChanged){
+      this.AssignmentInfoChanged=false;
+      this.saveAssignmentInfo()
+    }
     if (this.state.newChange===true){
     this.ToggleList();
     }
@@ -2076,14 +2394,32 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     } else if (this.activeSection === "grade"){
       this.buildGrades();
     }
-    let overview_component=null;
-    let syllabus_component=null;
-    let grade_component=null;
-    let assignment_component=null;
+    // let overview_component=null;
+    // let syllabus_component=null;
+    // let grade_component=null;
+    // let assignment_component=null;
     let overview_class = "SectionContainer";
     let syllabus_class = "SectionContainer";
     let grade_class = "SectionContainer";
     let assignment_class = "SectionContainer";
+    if (!this.state.overview){
+      overview_class+=" disabled"
+    }
+    if (!this.state.syllabus){
+      syllabus_class+=" disabled"
+    }
+    if (!this.state.grade){
+      grade_class+=" disabled"
+    }
+    if (!this.state.assignment){
+      assignment_class+=" disabled"
+    }
+    // let assignment03=(<div onClick={()=>{this.thisAssignmentInfo="VffOCH1I0h_ymB9KQHR24";
+    // this.loadThisAssignmentInfo()}}>
+    //   <span>Assignment03</span></div>)
+    //   let assignment04=(<div onClick={()=>{this.thisAssignmentInfo="zxVi-pXiUtf3PodIXm45n";
+    //   this.loadThisAssignmentInfo()}}>
+    //     <span>Assignment04</span></div>)
     /**
      * how can we tell that the current tree is saved ?
      * answer: maybe we need a flag to indicate you have saved the current tree
@@ -2100,8 +2436,9 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     }
     let ModifyTreeInsertAssignmentHeadingModeComponent=
     (<div>
-      <div className={assignment_class} onClick={()=>{
+      <div className={assignment_class} data-cy="assignmentsNavItem" onClick={()=>{
       this.activeSection = "assignment";
+      this.thisAssignmentInfo=""
       this.updateLocationBar({});
       this.forceUpdate()
       this.mainSection=(<div><h4>Assignments</h4><p>Select an assignment</p></div>);
@@ -2109,59 +2446,70 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       <span className="Section-Text">Assignments</span>
       <span className="Section-Icon-Box">         
         <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.overview_branchId} icon={faEdit}/></span>
-      <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({assignment:false,newChange:true});}} icon={faWindowClose}/></span>
+        <label className="switch">
+          <input checked={this.state.assignment} onChange={(e)=>{this.setState({assignment:e.target.checked,newChange:true})}} type="checkbox"/>
+        <span className="slider round"></span>
+      </label>
         </div>
 
       <button className={this.enableMode==="position"?"selectedEnableButton":"button"} data-cy="modifyTree"
-      onClick={()=>{this.enableMode='position';this.buildTree();this.forceUpdate()}}>Modify position</button>
+      onClick={()=>{this.enableMode='position';this.activeSection="assignment";this.buildTree();this.forceUpdate()}}>Modify position</button>
 
       <button className={this.enableMode==="remove"?"selectedEnableButton":"button"} data-cy="removeTree"
-      onClick={()=>{this.enableMode='remove';this.buildTree();this.forceUpdate()}}>Remove tree</button>
+      onClick={()=>{this.enableMode='remove';this.activeSection="assignment";this.buildTree();this.forceUpdate()}}>Remove tree</button>
 
       <button className={this.enableMode==='header'?"selectedEnableButton":"button"} data-cy="addHeader"
-      onClick={()=>{this.enableMode='header';this.buildTree();this.forceUpdate()}}>Add Header</button>
+      onClick={()=>{this.enableMode='header';this.activeSection="assignment";this.buildTree();this.forceUpdate()}}>Add Header</button>
 
       <button className={this.enableMode==='assignment'?"selectedEnableButton":"button"} data-cy="addAssignment"
-      onClick={()=>{this.enableMode='assignment';this.buildTree();this.forceUpdate()}}>Add Assignment</button>
+      onClick={()=>{this.enableMode='assignment';this.activeSection="assignment";this.buildTree();this.forceUpdate()}}>Add Assignment</button>
 
     </div>);
       let tree_component = (<div >{this.tree}</div>)
 
-    if (this.state.overview){
-       overview_component = (<div className={overview_class} data-cy="overviewNavItem" onClick={() => {
+    // if (this.state.overview){
+       let overview_component = (<div className={overview_class} data-cy="overviewNavItem" 
+       onClick={() => {
         this.activeSection = "overview";
-        this.selectedAssignmentId=""
+        this.thisAssignmentInfo=""
         this.loadOverview();
         this.updateLocationBar({});
         this.forceUpdate();
       }}><span className="Section-Text">Overview</span>
       <span className="Section-Icon-Box">         
         <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.overview_branchId} icon={faEdit}/></span>
-      <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({overview:false,newChange:true});}} icon={faWindowClose}/></span>
+        <label class="switch">
+          <input checked={this.state.overview} onChange={(e)=>{this.setState({overview:e.target.checked,newChange:true})}} type="checkbox"/>
+        <span class="slider round"></span>
+      </label>
+
       </div>)
-    }
-    if (this.state.syllabus){
-       syllabus_component =(
+    // }
+    // if (this.state.syllabus){
+       let syllabus_component =(
         <div className={syllabus_class} data-cy="syllabusNavItem" onClick={() => {
           this.activeSection = "syllabus";
           this.loadSyllabus();
           this.updateLocationBar({});
-          this.selectedAssignmentId=""
+          this.thisAssignmentInfo=""
           this.buildTree()
           this.forceUpdate();
         }}><span className="Section-Text">Syllabus</span>
           <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.syllabus_branchId} icon={faEdit}/></span>
-      <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({syllabus:false,newChange:true});}} icon={faWindowClose}/></span>
+        <FontAwesomeIcon className="Section-Icon"
+         onClick={()=>window.location.href="/editor/?branchId="+this.syllabus_branchId} 
+         icon={faEdit}/></span>
+      
+        <label className="switch">
+          <input checked={this.state.syllabus} onChange={(e)=>{this.setState({syllabus:e.target.checked,newChange:true})}} type="checkbox"/>
+        <span className="slider round"></span>
+      </label>
         </div>)
-    }
-    if (this.state.grade){
-       grade_component = (<div className={grade_class} data-cy="gradesNavItem" onClick={() => {
+    // }
+    // if (this.state.grade){
+       let grade_component = (<div className={grade_class} data-cy="gradesNavItem" onClick={() => {
         this.activeSection="grade";
-        this.selectedAssignmentId=""
+        this.thisAssignmentInfo=""
         this.loadGrades();
         this.updateLocationBar({});
          this.forceUpdate();
@@ -2169,44 +2517,57 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
       }}><span className="Section-Text">Grade</span>
       <span className="Section-Icon-Box">         
     <FontAwesomeIcon className="Section-Icon" icon={faEdit}/></span>
-  <span className="Section-Icon-Box">
-    <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({grade:false,newChange:true});}} icon={faWindowClose}/></span>
+  {/* <span className="Section-Icon-Box"> */}
+    {/* <FontAwesomeIcon className="Section-Icon" onClick={()=>{this.setState({grade:false,newChange:true});}} icon={faWindowClose}/></span> */}
+    <label className="switch">
+          <input checked={this.state.grade} onChange={(e)=>{this.setState({grade:e.target.checked,newChange:true})}} type="checkbox"/>
+        <span className="slider round"></span>
+      </label>
       </div>)
-    }
-
-  
-    return (<React.Fragment>
-      <div className="courseContainer">
-        
-        <DoenetHeader toolTitle="Admin" headingTitle={this.courseName} />
-        <div className="homeLeftNav">
-          {overview_component}
-          {syllabus_component}
-          {grade_component}
-          {/* {assignment_component} */}
-          {this.state.assignment?ModifyTreeInsertAssignmentHeadingModeComponent:null}
-          {this.state.assignment?tree_component:null}
+    // }
+    if (this.adminAccess!=0){
+      return (<React.Fragment>
+        <div className="courseContainer">
           
-        <select style={{marginTop:"10px"}} onChange={this.EnableThese}>
-          <option>Enable Section</option>
-          {this.enableThese }
-        </select>
-        </div>
-        <div className="homeActiveSection">
-          {this.mainSection}
-          {/* {this.state.loading ? (<div>Loading...</div>): this.mainSection} */}
-        </div>
-        <div className="info">
-        <span className="Section-Icon-Box">         
-        <FontAwesomeIcon className="Section-Icon" onClick={()=>window.location.href="/editor/?branchId="+this.assignment_branchId} icon={faEdit}/></span>
-          <p>Assignment Name: {this.assignmentName?this.assignmentName:"not yet assigned"}</p>
-          <p>Due Date: {this.dueDate?this.dueDate:"not yet assigned"}</p>
-          <p>assigned Date: {this.assignedDate?this.assignedDate:"not yet assigned"}</p>
-          <p>number Of Attempts Allowed: {this.numberOfAttemptsAllowed?this.numberOfAttemptsAllowed:"not yet assigned"}</p>
-        </div>
-      </div>
-      
-    </React.Fragment>);
+          <DoenetHeader toolName="Admin" headingTitle={this.courseName} />
+          <div className="homeLeftNav">
+            {overview_component}
+            {syllabus_component}
+            {grade_component}
+            
+            {/* {assignment_component} */}
+            {/* {assignment03} */}
+            {/* {assignment04} */}
+            {ModifyTreeInsertAssignmentHeadingModeComponent}
+            {/* {this.state.assignment?tree_component:null} */}
+            
+          {/* <select style={{marginTop:"10px"}} onChange={this.EnableThese}>
+            <option>Enable Section</option>
+            {this.enableThese }
+          </select> */}
+          </div>
+          <div className="homeActiveSection">
+            {this.activeSection==="assignment"?tree_component:null}
+            {this.activeSection!="assignment"?this.mainSection:null}
+            {/* {this.state.loading ? (<div>Loading...</div>): this.mainSection} */}
+          </div>
+          {this.thisAssignmentInfo!=""?
+
+  this.rightSideInfoColumn:null}
+          
+            
+
+          </div>
+
+        
+      </React.Fragment>);
+    } else {
+      return (<React.Fragment>
+        <DoenetHeader toolName="Admin" headingTitle={this.courseName} />
+        <div>PERMISSION DENIED</div>
+      </React.Fragment>)
+    }
+    
 
     let disablePrev = false;
     if (this.assignmentIndex === 0){disablePrev = true;}
@@ -2214,10 +2575,21 @@ loadAssignmentContent({contentId,branchId,assignmentId}) {
     if (this.assignmentIndex === (this.assignmentIdList.length - 1)){disableNext = true;}
   }
 }
-
-
-
-
-
+/**
+ * () => {
+  const [startDate, setStartDate] = useState(new Date());
+  return (
+    <DatePicker
+      selected={startDate}
+      onChange={date => setStartDate(date)}
+      showTimeSelect
+      timeFormat="HH:mm:00"
+      timeIntervals={15}
+      timeCaption="time"
+      dateFormat="yyyy-MM-d HH:mm:00"
+    />
+  );
+};
+ */
 
 export default DoenetAdmin;

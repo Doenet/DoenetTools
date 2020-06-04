@@ -1,0 +1,153 @@
+body{
+  background-color: rgb(246, 248, 255);
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+button{
+  outline:none;
+}
+
+.leftpanel{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 1vh;
+  overflow: hidden;
+
+}
+
+.middlepanel{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 1vh;
+  overflow: hidden;
+}
+
+.rightpanel{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 1vh; 
+  overflow: hidden;
+}
+
+.column-resizer{
+  cursor: col-resize;
+}
+
+.left-resizer{
+  cursor: e-resize;
+
+}
+
+.right-resizer{
+  cursor: w-resize;
+}
+
+.resizer{
+  width: 3px;
+  /* padding-left: 1px;
+  padding-right: 1px; */
+  position:relative;
+  flex-shrink: 0;
+  background-color: #E3E3E3;
+  opacity:0.2;
+
+}
+
+
+.panels-header-content{
+  min-height: 60px;
+  max-height: 60px;
+  margin:0px;
+
+  z-index: 3;
+  background-color: white;
+  border-bottom: 1px solid #E3E2E2;
+  align-content: space-between;
+    align-items: center;
+}
+.panels-header-controls{
+  margin: 10px 10px;
+  display: inline-block;
+}
+
+.leftCloseButton{
+  width: 25px;
+  height:25px;
+  background-color: #E3E2E2;
+  border-radius: 20px 0 0 20px;
+  margin: 8px 0 10px 0;
+  float: right;
+}
+.rightCloseButton{
+  width: 25px;
+  height:25px;
+  background-color: #E3E2E2;
+  border-radius: 0 20px 20px 0;
+  margin: 8px 0 10px 0;
+
+}
+.middleLeftButton{
+  width: 25px;
+  height:25px;
+  background-color: #E3E2E2;
+  border-radius: 0 20px 20px 0;
+  margin: 10px 0 10px 0;
+
+}
+.middleRightButton{
+  width: 25px;
+  height:25px;
+  background-color: #E3E2E2;
+  border-radius: 20px 0 0 20px;
+  margin: 10px 0 10px 0;
+  float: right;
+
+}
+
+
+@media only screen and (max-width: 767px) {
+  .footer-on {
+    margin-bottom: 30px;
+  }
+
+ .phonebuttoncontainer{
+  display : flex;
+  width: 100%;
+  bottom: 0.1px;
+  left: 0px;
+  position: fixed;
+  z-index:5;
+  text-align: center;
+}
+
+.phonebutton{
+    color: white;
+    background-color: black;
+    width: 100%;
+} 
+.tool-footer{
+  height:60px;
+  ;
+}
+
+.leftCloseButton{
+  display:none;
+}
+.rightCloseButton{
+  display: none;
+}
+.middleLeftButton{
+display: none;
+
+}
+.middleRightButton{
+  display: none;
+
+}
+
+}
+ 

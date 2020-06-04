@@ -71,7 +71,7 @@ describe('Admin Navigation Tests', function () {
     
     cy.visit('/admin');
     cy.wait(1000);
-    cy.get('.SectionContainer > :nth-child(3)').click();
+    cy.get('[data-cy=assignmentsNavItem] > .switch > .slider').click();
     
     cy.visit('/course');
     cy.wait(1000);

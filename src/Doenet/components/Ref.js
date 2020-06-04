@@ -1311,7 +1311,7 @@ export default class Ref extends CompositeComponent {
   // }
 
 
-  static calculateReplacementChanges({ component, componentChanges, components }) {
+  static calculateReplacementChanges({ component, componentChanges, components, getComponentNamesForProp }) {
 
     // console.log("Calculating replacement changes for " + component.componentName);
 
