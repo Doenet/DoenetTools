@@ -309,7 +309,6 @@ class DoenetHeader extends Component {
               {!this.state.myProfile.toolAccess.length && <p>Loading..!</p>}
           </Toolbox>}
       </div>
-    // console.log('***** roles:', this.state.myRoles.permissionRoles);
     const isMultipleRoles = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? Object.keys(this.state.myRoles.permissionRoles).length > 1 : false;
     const isSingleRole = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? Object.keys(this.state.myRoles.permissionRoles).length === 1 : false;
     return (
