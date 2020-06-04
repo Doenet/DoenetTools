@@ -7,7 +7,8 @@ import "./editor.css";
 import allComponents from '../../docs/complete-docs.json';
 import ErrorBoundary from './ErrorBoundary';
 import MonacoEditor from 'react-monaco-editor';
-import EditorLayout from "./ToolLayout/EditorLayout";
+// import EditorLayout from "./ToolLayout/EditorLayout";
+import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 
 
@@ -30,19 +31,12 @@ class DoenetGuestEditor extends Component {
     var errorMsg = null;
     var loading = true;
 
-    this.contentIds_array = [];
-    this.contentIdInURL = false;
+    if (this.contentId !== null) {
+    
+      console.log("Load!")
 
-    if (this.contentId !== null && this.branchId === null) {
-      //Can't get branchId from contentId.  No way to tell which branch.
-      errorMsg = "ERROR: Need a branch id in order to know which branch to save the updates.";
-      loading = false;
-    }
-    else if (this.contentId !== null || this.branchId !== null) {
       //Load most recent content from the branch or
       //Load specific branch's content id if it is given      
-
-      if (this.contentId !== null ){ this.contentIdInURL = true; }
 
       const phpUrl = '/api/getDoenetML.php';
       const data = {
@@ -55,22 +49,22 @@ class DoenetGuestEditor extends Component {
 
       axios.get(phpUrl, payload)
         .then(resp => {
-          
+          console.log("resp",resp)
           if (resp.data.access === false){
             this.setState({loading:false,accessAllowed:false});
           }else{
             this.updateNumber++;
-            this.contentIds_array = resp.data.contentIds;
-            let publish_button_enabled = this.should_publish_button_be_enabled({editorDoenetML:resp.data.doenetML});
-            let version = this.describe_version({publish_button_enabled:publish_button_enabled,doenetML:resp.data.doenetML})
+            let doenetML = resp.data.doenetML;
+            let title = resp.data.title;
+            if (!doenetML){ doenetML = "";}
+            if (!title){ title = "";}
+            console.log('doenetML',doenetML)
   
             this.setState({
-              documentTitle:resp.data.title,
+              documentTitle:title,
               loading:false,
-              publish_button_enabled:publish_button_enabled,
-              editorDoenetML:resp.data.doenetML,
-              viewerDoenetML:resp.data.doenetML,
-              version:version,
+              editorDoenetML:doenetML,
+              viewerDoenetML:doenetML,
             }) ;
           }
           
@@ -78,10 +72,7 @@ class DoenetGuestEditor extends Component {
         .catch((error) => {
           this.setState({ error: error })
         })
-    } else {
-      //Redirect to chooser if no branch id
-      window.location.href = "/chooser";
-    }
+    } 
 
     this.state = {
       editorDoenetML: "",
@@ -90,43 +81,16 @@ class DoenetGuestEditor extends Component {
       documentTitle: "",
       errorMsg: errorMsg,
       loading: loading,
-      publish_button_enabled:false,
-      version:"",
       accessAllowed:true,
     }
 
     this.editorDOM = null;
     this.monacoDOM = null;
 
-    // this.handleViewerUpdate = this.handleViewerUpdate.bind(this);
-    this.describe_version = this.describe_version.bind(this);
-    // this.handleDoenetMLChange = this.handleDoenetMLChange.bind(this);
-    // this.editorDidMount = this.editorDidMount.bind(this);
-    // this.updateEditor = this.updateEditor.bind(this);
-
     this.viewerWindow = null;
   }
 
 
-  describe_version({publish_button_enabled,doenetML}){
-    if (publish_button_enabled){
-      return "draft";
-    }else{
-      //figure out version
-      let current_contentId = this.getContentId({doenetML:doenetML});
-      let index = this.contentIds_array.indexOf(current_contentId) + 1;
-      
-      return `${index}`;
-
-    }
-  }
-
-  should_publish_button_be_enabled({editorDoenetML}){
-    let publish_button_enabled = true;
-    let current_contentId = this.getContentId({doenetML:editorDoenetML});
-    if (this.contentIds_array.includes(current_contentId)){publish_button_enabled = false;}
-    return publish_button_enabled;
-  }
 
   calculate_documentTitle({doenetML,currentTitle}){
     let newTitle = currentTitle;
@@ -165,33 +129,29 @@ class DoenetGuestEditor extends Component {
     return newTitle;
   }
 
-  updateLocationBar(assignmentId=this.assignmentId, activeSection=this.activeSection){
-    history.replaceState({},"title","?active="+activeSection);
-    if (this.activeSection === "assignments") {
-      console.log(this.assignmentId);
-      history.replaceState({},"title","?active="+activeSection+"&assignmentId="+assignmentId);
-    }
-  }
+  // updateLocationBar(assignmentId=this.assignmentId, activeSection=this.activeSection){
+  //   history.replaceState({},"title","?active="+activeSection);
+  //   if (this.activeSection === "assignments") {
+  //     console.log(this.assignmentId);
+  //     history.replaceState({},"title","?active="+activeSection+"&assignmentId="+assignmentId);
+  //   }
+  // }
 
 
-  getContentId ({doenetML}){
-    const hash = crypto.createHash('sha256');
-    if (doenetML === undefined){
-      return;
-    }
+  // getContentId ({doenetML}){
+  //   const hash = crypto.createHash('sha256');
+  //   if (doenetML === undefined){
+  //     return;
+  //   }
     
-    hash.update(doenetML);
-    let contentId = hash.digest('hex');
-    return contentId;
-  }
+  //   hash.update(doenetML);
+  //   let contentId = hash.digest('hex');
+  //   return contentId;
+  // }
 
 
   handleViewerUpdate = ()=>{
     this.updateNumber++;
-    console.log('UPDATE');
-    console.log(this.state.editorDoenetML);
-    
-    
     this.setState({viewerDoenetML:this.state.editorDoenetML});
   }
 
@@ -244,7 +204,8 @@ class DoenetGuestEditor extends Component {
 
   // }
   onChange = (editorDoenetML)=>{
-    this.setState({editorDoenetML})
+    let title = this.calculate_documentTitle({doenetML:editorDoenetML,currentTitle:this.state.documentTitle});
+    this.setState({editorDoenetML,documentTitle:title})
   }
 
   render() {
@@ -297,12 +258,12 @@ class DoenetGuestEditor extends Component {
    
         let title_text = `${this.state.documentTitle}`;
 
-
     
       return (
-
-
-      <EditorLayout toolName="Guest Editor" headingTitle={title_text} rightPanelWidth="500">
+      <ToolLayout guestUser={true} toolName="Guest Editor" headingTitle={title_text} leftPanelClose={true} rightPanelWidth="500">
+        <ToolLayoutPanel >
+          Ignored
+        </ToolLayoutPanel>
         <ToolLayoutPanel panelHeaderControls={[doenetViewerMenu]} panelName="Doenet Interactive">
           {doenetViewer}
         </ToolLayoutPanel>
@@ -332,7 +293,7 @@ class DoenetGuestEditor extends Component {
 
             </ToolLayoutPanel>
         
-         </EditorLayout>
+         </ToolLayout>
          
          );
     
