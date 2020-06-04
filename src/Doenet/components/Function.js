@@ -1306,14 +1306,6 @@ export default class Function extends InlineComponent {
             return { partiallyFresh: { maximaValues: true } }
           }
 
-        if (arrayKey === undefined) {
-          if (Object.keys(freshByKey).length === 0) {
-            // asked for entire array and it is all stale
-            return { fresh: false }
-          } else {
-            // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
-          }
         } else {
 
           if (changes["maximum" + (arrayKey + 1)]) {
@@ -1425,6 +1417,8 @@ export default class Function extends InlineComponent {
         } else {
           return { newValues: { functionChild: null } }
         }
+      }
+    }
 
 
     stateVariableDefinitions.extrema = {
