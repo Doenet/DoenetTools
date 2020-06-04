@@ -10,7 +10,7 @@ describe('Slider Tag Tests', function () {
   it('move default two number slider', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <slider>
     <number>1</number>

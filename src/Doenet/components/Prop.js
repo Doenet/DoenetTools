@@ -2,6 +2,7 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class Prop extends BaseComponent {
   static componentType = "prop";
+  static rendererType = undefined;
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -125,6 +126,8 @@ export default class Prop extends BaseComponent {
             }
           }
 
+          let arrayEntryPrefixesLongestToShortest = Object.keys(publicStateVariablesInfo.arrayEntryPrefixes).sort((a, b) => b.length - a.length)
+
           if (matchedObj === null) {
 
             // try to match to alias
@@ -149,7 +152,8 @@ export default class Prop extends BaseComponent {
             if (matchedObj === null) {
 
               // try to match to arrayEntryPrefix
-              for (let prefix in publicStateVariablesInfo.arrayEntryPrefixes) {
+              // match with longest first, so get maximal match
+              for (let prefix of arrayEntryPrefixesLongestToShortest) {
                 if (propToMatch.substring(0, prefix.length) === prefix.toLowerCase()) {
                   let arrayVarName = publicStateVariablesInfo.arrayEntryPrefixes[prefix].arrayVariableName;
                   let varEnding = propToMatch.substring(prefix.length);

@@ -2,6 +2,7 @@ import InlineComponent from './abstract/InlineComponent';
 
 export default class BooleanList extends InlineComponent {
   static componentType = "booleanlist";
+  static rendererType = "aslist";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -27,8 +28,8 @@ export default class BooleanList extends InlineComponent {
       number: 0
     });
 
-    let breakStringIntoBooleansByCommas = function ({ activeChildrenMatched }) {
-      let stringChild = activeChildrenMatched[0];
+    let breakStringIntoBooleansByCommas = function ({ dependencyValues }) {
+      let stringChild = dependencyValues.stringChildren[0];
       let newChildren = stringChild.stateValues.value.split(",").map(x => ({
         componentType: "boolean",
         state: { value: ["true", "t"].includes(x.trim().toLowerCase()) }
@@ -45,7 +46,14 @@ export default class BooleanList extends InlineComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["atLeastZeroBooleans"],
+      returnSugarDependencies: () => ({
+        stringChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneString",
+          variableNames: ["value"]
+        }
+      }),
+      logicToWaitOnSugar: ["atLeastZeroBooleans"],
       replacementFunction: breakStringIntoBooleansByCommas,
     });
 
@@ -70,23 +78,6 @@ export default class BooleanList extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.booleanAndBooleanlistChildren = {
-      returnDependencies: () => ({
-        booleanAndBooleanlistChildren: {
-          dependencyType: "childIdentity",
-          childLogicName: "booleanAndBooleanLists",
-          variableNames: ["value"],
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            booleanAndBooleanlistChildren: dependencyValues.booleanAndBooleanlistChildren
-          }
-        }
-      }
-    }
-
     stateVariableDefinitions.booleans = {
       public: true,
       componentType: "boolean",
@@ -94,43 +85,30 @@ export default class BooleanList extends InlineComponent {
       entryPrefixes: ["boolean"],
       returnDependencies: () => ({
         booleanAndBooleanlistChildren: {
-          dependencyType: "stateVariable",
-          variableName: "booleanAndBooleanlistChildren",
-        },
-        booleanChildren: {
           dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroBooleans",
-          variableNames: ["value"],
-        },
-        booleanlistChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroBooleanlists",
-          variableNames: ["booleans"],
+          childLogicName: "booleanAndBooleanLists",
+          variableNames: ["value", "booleans"],
+          variablesOptional: true,
         },
         maximumNumber: {
           dependencyType: "stateVariable",
           variableName: "maximumNumber",
         }
       }),
-      definition: function ({ dependencyValues, componentInfoObjects }) {
-        let booleanNumber = 0;
-        let booleanlistNumber = 0;
+      definition: function ({ dependencyValues }) {
+
         let booleans = [];
 
         for (let child of dependencyValues.booleanAndBooleanlistChildren) {
-          if (componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: child.componentType,
-            baseComponentType: "boolean"
-          })) {
-            booleans.push(dependencyValues.booleanChildren[booleanNumber].stateValues.value);
-            booleanNumber++;
+          if (child.stateValues.booleans) {
+            booleans.push(...child.stateValues.booleans);
           } else {
-            booleans.push(...dependencyValues.booleanlistChildren[booleanlistNumber].stateValues.booleans);
+            booleans.push(child.stateValues.value);
           }
         }
 
         let maxNum = dependencyValues.maximumNumber;
-        if (maxNum !== undefined && booleans.length > maxNum) {
+        if (maxNum !== null && booleans.length > maxNum) {
           maxNum = Math.max(0, Math.floor(maxNum));
           booleans = booleans.slice(0, maxNum)
         }
@@ -158,17 +136,10 @@ export default class BooleanList extends InlineComponent {
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         booleanAndBooleanlistChildren: {
-          dependencyType: "stateVariable",
-          variableName: "booleanAndBooleanlistChildren",
-        },
-        booleanChildren: {
-          dependencyType: "childIdentity",
-          childLogicName: "atLeastZeroBooleans",
-        },
-        booleanlistChildren: {
           dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroBooleanlists",
+          childLogicName: "booleanAndBooleanLists",
           variableNames: ["childrenToRender"],
+          variablesOptional: true,
         },
         maximumNumber: {
           dependencyType: "stateVariable",
@@ -176,26 +147,22 @@ export default class BooleanList extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
-        let booleanNumber = 0;
-        let booleanlistNumber = 0;
+
         let childrenToRender = [];
 
         for (let child of dependencyValues.booleanAndBooleanlistChildren) {
-
           if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
-            baseComponentType: "boolean"
+            baseComponentType: "booleanlist"
           })) {
-            childrenToRender.push(dependencyValues.booleanChildren[booleanNumber].componentName);
-            booleanNumber++;
+            childrenToRender.push(...child.stateValues.childrenToRender);
           } else {
-            childrenToRender.push(...dependencyValues.booleanlistChildren[booleanlistNumber].stateValues.childrenToRender);
-            booleanlistNumber++;
+            childrenToRender.push(child.componentName);
           }
         }
 
         let maxNum = dependencyValues.maximumNumber;
-        if (maxNum !== undefined && booleans.length > maxNum) {
+        if (maxNum !== null && childrenToRender.length > maxNum) {
           maxNum = Math.max(0, Math.floor(maxNum));
           childrenToRender = childrenToRender.slice(0, maxNum)
         }
@@ -206,16 +173,6 @@ export default class BooleanList extends InlineComponent {
     }
 
     return stateVariableDefinitions;
-  }
-
-
-
-  initializeRenderer() {
-    if (this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.aslist({
-        key: this.componentName,
-      });
-    }
   }
 
 }

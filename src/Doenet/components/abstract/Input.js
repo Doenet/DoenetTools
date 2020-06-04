@@ -119,6 +119,13 @@ export default class Input extends InlineComponent {
       }
     }
 
+    // placeholder until we determine how to send flags to renderer
+    stateVariableDefinitions.showCorrectness = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { showCorrectness: true } })
+    }
+
     return stateVariableDefinitions;
   }
 }

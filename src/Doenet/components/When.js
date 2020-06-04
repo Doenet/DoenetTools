@@ -4,8 +4,8 @@ import checkEquality from '../utils/checkEquality';
 
 var textToAstUnsplit = new me.converters.textToAstObj({ splitSymbols: false });
 
-export default class IfComponent extends BaseComponent {
-  static componentType = "if";
+export default class When extends BaseComponent {
+  static componentType = "when";
 
   static alwaysContinueUpstreamUpdates = true;
 
@@ -391,7 +391,7 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
     // if don't have an array, then the only valid option is that the tree
     // is a single boolean component
 
-    // TODO: should have a flag where one can set <if> to substitute math children at the beginning?
+    // TODO: should have a flag where one can set <when> to substitute math children at the beginning?
     // this would allow one to specify logic operators in the math
     // but it would prevent one from comparing expressions involving those operators
 
@@ -406,7 +406,7 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
       }
     }
 
-    console.warn("Invalid format for <if>");
+    console.warn("Invalid format for <when>");
     return 0;
   }
 
@@ -415,7 +415,7 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
 
   if (operator === "not") {
     if (operands.length !== 1) {
-      console.warn("Invalid format for <if>");
+      console.warn("Invalid format for <when>");
       return 0;
     }
     return evaluateSub(operands[0]) === 0 ? 1 : 0;
@@ -438,7 +438,7 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
   // TODO: other set operations
 
   if (!(["=", "ne", "<", ">", "le", "ge", "lts", "gts", "in"].includes(operator))) {
-    console.warn("Invalid format for <if>");
+    console.warn("Invalid format for <when>");
     return 0;
   }
 
@@ -462,11 +462,11 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
 
   if (foundBoolean) {
     if (foundMath || foundText) {
-      console.warn("Invalid format for <if>");
+      console.warn("Invalid format for <when>");
       return 0;
     }
 
-    let foundInvalidIf = false;
+    let foundInvalidWhen = false;
     // every operand must be a boolean, booleanstring, or a string that is true or false
     operands = operands.map(function (x) {
       if (typeof x === "string") {
@@ -485,16 +485,16 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
         if (x === "false" || x === 'f') {
           return false;
         }
-        console.warn("Invalid format for <if>");
-        foundInvalidIf = true;
+        console.warn("Invalid format for <when>");
+        foundInvalidWhen = true;
         return 0;
       }
-      console.warn("Invalid format for <if>");
-      foundInvalidIf = true;
+      console.warn("Invalid format for <when>");
+      foundInvalidWhen = true;
       return 0;
     }.bind(this));
 
-    if (foundInvalidIf) {
+    if (foundInvalidWhen) {
       return 0;
     }
 
@@ -523,7 +523,7 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
       }
     } else if (operator === "ne") {
       if (operands.length !== 2) {
-        console.warn("Invalid format for <if>");
+        console.warn("Invalid format for <when>");
         return 0;
       }
       let fraction_equal = checkEquality(
@@ -538,17 +538,17 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
       return fraction_equal === 0 ? 1 : 0;
 
     } else {
-      console.warn("Invalid format for <if>");
+      console.warn("Invalid format for <when>");
       return 0;
     }
 
   } else if (foundText) {
     if (foundMath) {
-      console.warn("Invalid format for <if>");
+      console.warn("Invalid format for <when>");
       return 0;
     }
 
-    let foundInvalidIf = false;
+    let foundInvalidWhen = false;
 
     let extractText = function (tree, recurse = false) {
       if (typeof tree === "string") {
@@ -565,8 +565,8 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
 
       // multiple words would become multiplication
       if (!(recurse && Array.isArray(tree) && tree[0] === "*")) {
-        console.warn("Invalid format for <if>");
-        foundInvalidIf = true;
+        console.warn("Invalid format for <when>");
+        foundInvalidWhen = true;
         return '';
       }
 
@@ -577,7 +577,7 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
     operands = operands.map(x => extractText(x, true));
 
 
-    if (foundInvalidIf) {
+    if (foundInvalidWhen) {
       return 0;
     }
 
@@ -606,7 +606,7 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
       }
     } else if (operator === "ne") {
       if (operands.length !== 2) {
-        console.warn("Invalid format for <if>");
+        console.warn("Invalid format for <when>");
         return 0;
       }
 
@@ -622,7 +622,7 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
       return fraction_equal === 0 ? 1 : 0;
 
     } else {
-      console.warn("Invalid format for <if>");
+      console.warn("Invalid format for <when>");
       return 0;
     }
   }
@@ -638,7 +638,7 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
   // // all operands should be numbers or strings
   // if (!operands.every(x => typeof x === "number" || typeof x === "string" ||
   //   (Array.isArray(x) && x[0] === "-" && typeof x[1] === "number"))) {
-  //   throw Error("Invalid format for <if>");
+  //   throw Error("Invalid format for <when>");
   // }
 
 
@@ -731,7 +731,7 @@ function evaluateLogicSub({ logicTree, unorderedCompare, simplifyOnCompare, expa
     let set = operands[1];
     let set_tree = set.tree;
     if (!(Array.isArray(set_tree) && set_tree[0] === "set")) {
-      console.warn("Invalid format for <if>");
+      console.warn("Invalid format for <when>");
       return 0;
     }
 

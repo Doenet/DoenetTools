@@ -105,7 +105,7 @@ export default class Sequence extends CompositeComponent {
           variableNames: ["value"]
         }
       }),
-      affectedBySugar: ["atMostOneFrom", "atMostOneTo"],
+      logicToWaitOnSugar: ["atMostOneFrom", "atMostOneTo"],
       replacementFunction: fromToAsString,
     });
 
@@ -178,6 +178,7 @@ export default class Sequence extends CompositeComponent {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneFrom",
           variableNames: ["value", "selectedType"],
+          requireChildLogicInitiallySatisfied: true
         },
       }),
       defaultValue: null,
@@ -189,6 +190,16 @@ export default class Sequence extends CompositeComponent {
             },
             newValues: { typeOfFrom: null }
           }
+        }
+        if(dependencyValues.fromChild[0].stateValues.value === null) {
+          // if have a from child, but its value is null,
+          // it means we have an invalid from
+          // Can't return null, as that indicates value wasn't specified
+          // so return NaN
+          return {newValues: {
+            specifiedFrom: NaN,
+            typeOfFrom: null
+          }}
         }
         return {
           newValues: {
@@ -207,6 +218,7 @@ export default class Sequence extends CompositeComponent {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneTo",
           variableNames: ["value", "selectedType"],
+          requireChildLogicInitiallySatisfied: true
         },
       }),
       defaultValue: null,
@@ -218,6 +230,16 @@ export default class Sequence extends CompositeComponent {
             },
             newValues: { typeOfTo: null }
           }
+        }
+        if(dependencyValues.toChild[0].stateValues.value === null) {
+          // if have a to child, but its value is null,
+          // it means we have an invalid to
+          // Can't return null, as that indicates value wasn't specified
+          // so return NaN
+          return {newValues: {
+            specifiedTo: NaN,
+            typeOfTo: null
+          }}
         }
         return {
           newValues: {
@@ -266,6 +288,7 @@ export default class Sequence extends CompositeComponent {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneCount",
           variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true
         },
       }),
       defaultValue: null,
@@ -276,6 +299,15 @@ export default class Sequence extends CompositeComponent {
               specifiedCount: { variablesToCheck: ["count", "specifiedCount"] }
             }
           }
+        }
+        if(dependencyValues.countChild[0].stateValues.value === null) {
+          // if have a count child, but its value is null,
+          // it means we have an invalid count
+          // Can't return null, as that indicates value wasn't specified
+          // so return NaN
+          return {newValues: {
+            specifiedCount: NaN,
+          }}
         }
         return { newValues: { specifiedCount: dependencyValues.countChild[0].stateValues.value } }
       },
@@ -288,6 +320,7 @@ export default class Sequence extends CompositeComponent {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneStep",
           variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true
         },
         selectedType: {
           dependencyType: "stateVariable",
@@ -305,7 +338,15 @@ export default class Sequence extends CompositeComponent {
         }
 
         let step = dependencyValues.stepChild[0].stateValues.value;
-
+        if(step === null) {
+          // if have a step child, but its value is null,
+          // it means we have an invalid step
+          // Can't return null, as that indicates value wasn't specified
+          // so return NaN
+          return {newValues: {
+            specifiedStep: NaN,
+          }}
+        }
         return { newValues: { specifiedStep: step } };
       },
     };
@@ -317,6 +358,7 @@ export default class Sequence extends CompositeComponent {
           dependencyType: "childStateVariables",
           childLogicName: "atLeastZeroExcludes",
           variableNames: ["values"],
+          requireChildLogicInitiallySatisfied: true
         },
       }),
       defaultValue: [],
@@ -411,7 +453,7 @@ export default class Sequence extends CompositeComponent {
           // step must be number if not math
           if (dependencyValues.selectedType !== "math") {
             let numericalStep = findFiniteNumericalValue(dependencyValues.specifiedStep);
-            if(!Number.isFinite(numericalStep)) {
+            if (!Number.isFinite(numericalStep)) {
               console.log("Invalid step of sequence.  Must be a number for sequence of type " + dependencyValues.selectedType + ".")
               validSequence = false;
             }
@@ -421,20 +463,27 @@ export default class Sequence extends CompositeComponent {
         if (dependencyValues.specifiedFrom !== null) {
           if (dependencyValues.selectedType === "number") {
             let numericalFrom = findFiniteNumericalValue(dependencyValues.specifiedFrom);
-            if(!Number.isFinite(numericalFrom)) {
+            if (!Number.isFinite(numericalFrom)) {
               console.log("Invalid from of number sequence.  Must be a number")
               validSequence = false;
             }
+          } else if(Number.isNaN(dependencyValues.specifiedFrom)) {
+            console.log("Invalid from of sequence")
+            validSequence = false;
           }
+
         }
 
         if (dependencyValues.specifiedTo !== null) {
           if (dependencyValues.selectedType === "number") {
             let numericalTo = findFiniteNumericalValue(dependencyValues.specifiedTo);
-            if(!Number.isFinite(numericalTo)) {
+            if (!Number.isFinite(numericalTo)) {
               console.log("Invalid from of number sequence.  Must be a number")
               validSequence = false;
             }
+          } else if(Number.isNaN(dependencyValues.specifiedTo)) {
+            console.log("Invalid to of sequence")
+            validSequence = false;
           }
         }
 
@@ -572,7 +621,7 @@ export default class Sequence extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+    stateVariableDefinitions.readyToExpand = {
 
       returnDependencies: () => ({
         from: {
@@ -596,10 +645,15 @@ export default class Sequence extends CompositeComponent {
           variableName: "exclude",
         },
       }),
+      // when this state variable is marked stale
+      // it indicates we should update replacement
+      // For this to work, must get value in replacement functions
+      // so that the variable is marked fresh
+      markStale: () => ({ updateReplacements: true }),
       definition: function () {
         // even with invalid sequence, still ready to expand
         // (it will just expand with zero replacements)
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { newValues: { readyToExpand: true } };
       },
     };
 
@@ -730,6 +784,12 @@ export default class Sequence extends CompositeComponent {
 
   static createSerializedReplacements({ component, workspace }) {
 
+    // console.log(`create serialized replacements for ${component.componentName}`)
+
+    // evaluate readyToExpand so that it is marked fresh,
+    // as it being marked stale triggers replacement update
+    component.stateValues.readyToExpand;
+
     if (!component.stateValues.validSequence) {
       workspace.lastReplacementParameters = {
         from: null,
@@ -784,11 +844,19 @@ export default class Sequence extends CompositeComponent {
       replacements.push(serializedComponent);
     }
 
+    // console.log(`replacements for ${component.componentName}`)
+    // console.log(replacements)
+
     return { replacements };
   }
 
   static calculateReplacementChanges({ component, workspace }) {
     // console.log(`calculate replacement changes for ${component.componentName}`);
+
+
+    // evaluate readyToExpand so that it is marked fresh,
+    // as it being marked stale triggers replacement update
+    component.stateValues.readyToExpand;
 
     let lrp = workspace.lastReplacementParameters;
 

@@ -1,8 +1,6 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import { replaceIncompleteProp } from './commonsugar/createprop';
 import * as serializeFunctions from '../utils/serializedStateProcessing';
-import { deepClone } from '../utils/deepFunctions';
-
+import { postProcessRef } from '../utils/refs';
 
 
 export default class Ref extends CompositeComponent {
@@ -55,6 +53,7 @@ export default class Ref extends CompositeComponent {
     // delete text so contentId won't get matched
     delete properties.text;
 
+    properties.includeUndefinedArrayEntries = { default: false }
 
     return properties;
 
@@ -81,7 +80,7 @@ export default class Ref extends CompositeComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["exactlyOneRefTarget"],
+      logicToWaitOnSugar: ["exactlyOneRefTarget"],
       replacementFunction: addRefTarget,
     });
 
@@ -271,9 +270,14 @@ export default class Ref extends CompositeComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
+        if (dependencyValues.refTarget === null) {
+          console.warn(`No ref target`);
+          return { newValues: { refTargetName: "" } }
+        }
         return { newValues: { refTargetName: dependencyValues.refTarget.componentName } }
       },
     };
+
 
     stateVariableDefinitions.useProp = {
       returnDependencies: () => ({
@@ -285,11 +289,15 @@ export default class Ref extends CompositeComponent {
       definition: function ({ dependencyValues }) {
         if (dependencyValues.propChild.length === 0) {
           return {
-            newValues: { useProp: false }
+            newValues: {
+              useProp: false,
+            }
           };
         } else {
           return {
-            newValues: { useProp: true }
+            newValues: {
+              useProp: true,
+            }
           };
         }
       }
@@ -304,6 +312,15 @@ export default class Ref extends CompositeComponent {
         // is determined by this replacement class.
         // Otherwise, the effective target class is just the class of the refTarget
 
+        if (stateValues.refTarget === null) {
+          return {
+            refTarget: {
+              dependencyType: "stateVariable",
+              variableName: "refTarget"
+            }
+          }
+        }
+
         let compositeClass = componentInfoObjects.allComponentClasses._composite;
         let refTargetClass = componentInfoObjects.allComponentClasses[stateValues.refTarget.componentType];
 
@@ -317,7 +334,7 @@ export default class Ref extends CompositeComponent {
         ) {
           dependencies.refTargetReplacementClassesForProp = {
             dependencyType: "componentStateVariable",
-            componentName: stateValues.refTarget.componentName,
+            componentIdentity: stateValues.refTarget,
             variableName: "replacementClassesForProp"
           }
         } else {
@@ -333,6 +350,8 @@ export default class Ref extends CompositeComponent {
         let effectiveTargetClasses;
         if (dependencyValues.refTarget) {
           effectiveTargetClasses = [componentInfoObjects.allComponentClasses[dependencyValues.refTarget.componentType]]
+        } else if (dependencyValues.refTarget === null) {
+          effectiveTargetClasses = [];
         } else {
           effectiveTargetClasses = dependencyValues.refTargetReplacementClassesForProp;
         }
@@ -373,13 +392,15 @@ export default class Ref extends CompositeComponent {
     // If there is a prop, replacement classes are determined by componentType
     // of propVariableObjs
     // Except that, if propVariableObjs doesn't have componentType specified,
-    // then the componentType is determined by 
+    // then the componentType is determined by refTarget state variable
     stateVariableDefinitions.replacementClasses = {
       additionalStateVariablesDefined: [
-        "stateVariablesRequested", "validProp", "componentTypeByTarget"
+        "stateVariablesRequested", "validProp",
+        "componentTypeByTarget", "potentialReplacementClasses",
       ],
       stateVariablesDeterminingDependencies: [
-        "propVariableObjs", "refTargetName",
+        "propVariableObjs", "refTarget",
+        "componentIdentitiesForProp"
       ],
       returnDependencies: function ({ stateValues }) {
 
@@ -400,6 +421,10 @@ export default class Ref extends CompositeComponent {
             dependencyType: "stateVariable",
             variableName: "propVariableObjs",
           },
+          includeUndefinedArrayEntries: {
+            dependencyType: "stateVariable",
+            variableName: "includeUndefinedArrayEntries"
+          }
         };
 
         // if have a prop variable where couldn't determine componentType
@@ -412,15 +437,15 @@ export default class Ref extends CompositeComponent {
             if (!propVariableObj.componentType) {
               dependencies[`replacementComponentType${ind}`] = {
                 dependencyType: "componentStateVariableComponentType",
-                componentName: stateValues.refTargetName,
+                componentIdentity: stateValues.componentIdentitiesForProp[ind],
                 variableName: propVariableObj.varName,
               }
             }
-            if (propVariableObj.isArray) {
+            if (propVariableObj.isArray || propVariableObj.isArrayEntry) {
               dependencies[`targetArray${ind}`] = {
                 dependencyType: "componentStateVariable",
-                componentName: stateValues.refTargetName,
                 variableName: propVariableObj.varName,
+                componentIdentity: stateValues.componentIdentitiesForProp[ind],
               }
             }
           }
@@ -436,6 +461,7 @@ export default class Ref extends CompositeComponent {
               stateVariablesRequested: null,
               validProp: null,
               componentTypeByTarget: null,
+              potentialReplacementClasses: dependencyValues.effectiveTargetClasses,
             }
           };
         }
@@ -448,6 +474,7 @@ export default class Ref extends CompositeComponent {
               stateVariablesRequested: null,
               validProp: false,
               componentTypeByTarget: null,
+              potentialReplacementClasses: null,
             }
           };
         }
@@ -455,6 +482,7 @@ export default class Ref extends CompositeComponent {
         let replacementClasses = [];
         let stateVariablesRequested = [];
         let componentTypeByTarget = [];
+        let potentialReplacementClasses = [];
 
         for (let [ind, propVariableObj] of dependencyValues.propVariableObjs.entries()) {
           let componentType = propVariableObj.componentType;
@@ -466,14 +494,37 @@ export default class Ref extends CompositeComponent {
             replacementClasses.push(...componentType.map(x =>
               componentInfoObjects.allComponentClasses[x])
             );
+            potentialReplacementClasses.push(...componentType.map(x =>
+              componentInfoObjects.allComponentClasses[x])
+            )
           } else if (propVariableObj.isArray) {
             // TODO: what about multi-dimensional arrays?
             let arrayLength = dependencyValues[`targetArray${ind}`].length;
             let componentClass = componentInfoObjects.allComponentClasses[componentType];
             replacementClasses.push(...Array(arrayLength).fill(componentClass));
             componentType = Array(arrayLength).fill(componentType);
+            potentialReplacementClasses.push(componentClass)
+          } else if (propVariableObj.isArrayEntry) {
+            // TODO: what about multi-dimensional arrays?
+            let arrayLength = 1;
+
+            let targetArrayEntry = dependencyValues[`targetArray${ind}`];
+            if (Array.isArray(targetArrayEntry)) {
+              arrayLength = targetArrayEntry.length;
+            } else if (targetArrayEntry === undefined) {
+              if(dependencyValues.includeUndefinedArrayEntries) {
+                arrayLength = 1;
+              } else {
+                arrayLength = 0;
+              }
+            }
+            let componentClass = componentInfoObjects.allComponentClasses[componentType];
+            replacementClasses.push(...Array(arrayLength).fill(componentClass));
+            componentType = Array(arrayLength).fill(componentType);
+            potentialReplacementClasses.push(componentClass)
           } else {
             replacementClasses.push(componentInfoObjects.allComponentClasses[componentType]);
+            potentialReplacementClasses.push(componentInfoObjects.allComponentClasses[componentType]);
           }
 
           componentTypeByTarget.push(componentType);
@@ -490,16 +541,25 @@ export default class Ref extends CompositeComponent {
             stateVariablesRequested,
             validProp: true,
             componentTypeByTarget,
+            potentialReplacementClasses,
           }
         };
 
       }
     }
 
-
     stateVariableDefinitions.replacementClassesForProp = {
       stateVariablesDeterminingDependencies: ["refTarget", "useProp"],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
+
+        if (stateValues.refTarget === null) {
+          return {
+            replacementClasses: {
+              dependencyType: "stateVariable",
+              variableName: "replacementClasses"
+            }
+          }
+        }
 
         // If reffed a composite without using a prop
         // the replacement will be the composite itself
@@ -517,7 +577,7 @@ export default class Ref extends CompositeComponent {
         ) {
           dependencies.refTargetReplacementClassesForProp = {
             dependencyType: "componentStateVariable",
-            componentName: stateValues.refTarget.componentName,
+            componentIdentity: stateValues.refTarget,
             variableName: "replacementClassesForProp"
           }
         } else {
@@ -600,43 +660,172 @@ export default class Ref extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+
+    // stateVariableDefinitions.refTargetReadyToExpand = {
+    //   stateVariablesDeterminingDependencies: ["refTarget"],
+    //   returnDependencies: ({ stateValues }) => ({
+    //     refTargetReadyToExpand: {
+    //       dependencyType: "componentStateVariable",
+    //       componentName: stateValues.refTarget,
+    //       variableName: "readyToExpand",
+    //       variableOptional: true,
+    //     }
+    //   }),
+    //   definition: function ({ dependencyValues }) {
+    //     return {
+    //       newValues: {
+    //         refTargetReadyToExpand: dependencyValues.refTargetReadyToExpand
+    //       }
+    //     }
+    //   }
+    // }
+
+    stateVariableDefinitions.readyToExpand = {
       stateVariablesDeterminingDependencies: [
         "refTarget", "useProp"
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
+
+        if (stateValues.refTarget === null) {
+          return {
+            refTarget: {
+              dependencyType: "stateVariable",
+              variableName: "refTarget"
+            }
+          }
+        }
 
         let dependencies = {
           validPropertiesSpecified: {
             dependencyType: "stateVariable",
             variableName: "validPropertiesSpecified"
           },
+          // refTargetReadyToExpand: {
+          //   dependencyType: "stateVariable",
+          //   variableName: "refTargetReadyToExpand",
+          // },
+          needsReplacementsUpdatedWhenStale: {
+            dependencyType: "stateVariable",
+            variableName: "needsReplacementsUpdatedWhenStale",
+          },
+          componentIdentitiesForProp: {
+            dependencyType: "stateVariable",
+            variableName: "componentIdentitiesForProp"
+          }
+
         }
 
         let compositeClass = componentInfoObjects.allComponentClasses._composite;
         let refTargetClass = componentInfoObjects.allComponentClasses[stateValues.refTarget.componentType];
 
-        // if reffing a composite, not ready to expand unless composite is ready to expand
-        // Exception: if reffing a prop of a composite and that composite doesn't use
-        // replacements for props, then don't need to check if that composite is ready to expand
+        // if reffing a prop of a composite the uses replacements for props,
+        // not ready to expand unless composite is ready to expand
         if (compositeClass.isPrototypeOf(refTargetClass) &&
-          (!stateValues.useProp || refTargetClass.refPropOfReplacements)
+          stateValues.useProp && refTargetClass.refPropOfReplacements
         ) {
           dependencies.refTargetReady = {
             dependencyType: "componentStateVariable",
-            componentName: stateValues.refTarget.componentName,
-            variableName: "readyToExpandWhenResolved"
+            componentIdentity: stateValues.refTarget,
+            variableName: "readyToExpand"
           }
         }
 
         return dependencies;
 
       },
-      definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.refTarget === null) {
+          return { newValues: { readyToExpand: false } }
+        }
+        return { newValues: { readyToExpand: true } };
       },
     };
 
+
+    stateVariableDefinitions.needsReplacementsUpdatedWhenStale = {
+      stateVariablesDeterminingDependencies: [
+        "refTargetName", "propVariableObjs", "componentIdentitiesForProp"
+      ],
+      returnDependencies: function ({ stateValues }) {
+        if (!stateValues.refTargetName) {
+          return {};
+        }
+
+        let dependencies = {}
+
+        if (stateValues.propVariableObjs === null) {
+          dependencies.refTargetDescendentIdentity = {
+            dependencyType: "componentDescendantIdentity",
+            ancestorName: stateValues.refTargetName,
+            componentTypes: ["_base"],
+            useReplacementsForComposites: false,
+            includeNonActiveChildren: false,
+            recurseToMatchedChildren: true,
+          }
+        } else {
+          for (let [ind, cIdentity] of stateValues.componentIdentitiesForProp.entries()) {
+            dependencies["targetWithProp" + ind] = {
+              dependencyType: "componentStateVariable",
+              variableName: stateValues.propVariableObjs[ind].varName,
+              componentIdentity: cIdentity,
+            }
+          }
+        }
+
+        return dependencies;
+      },
+      // the whole point of this state variable is to return updateReplacements
+      // on mark stale
+      markStale: () => ({ updateReplacements: true }),
+      definition: () => ({ newValues: { needsReplacementsUpdatedWhenStale: true } })
+    }
+
+
+    stateVariableDefinitions.componentIdentitiesForProp = {
+      stateVariablesDeterminingDependencies: ["useProp", "refTarget"],
+      returnDependencies: function ({ stateValues, componentInfoObjects }) {
+        if (!stateValues.useProp || stateValues.refTarget === null) {
+          return {}
+        }
+        let compositeClass = componentInfoObjects.allComponentClasses._composite;
+        let refTargetClass = componentInfoObjects.allComponentClasses[stateValues.refTarget.componentType];
+
+        if (compositeClass.isPrototypeOf(refTargetClass) && refTargetClass.refPropOfReplacements) {
+          return {
+            targetRecursiveReplacementsForProp: {
+              dependencyType: "componentStateVariable",
+              componentIdentity: stateValues.refTarget,
+              variableName: "recursiveReplacementsForProp"
+            }
+          }
+        } else {
+          return {
+            refTarget: {
+              dependencyType: "stateVariable",
+              variableName: "refTarget"
+            }
+          }
+        }
+      },
+      definition: function ({ dependencyValues }) {
+
+        if (dependencyValues.targetRecursiveReplacementsForProp) {
+          return {
+            newValues: {
+              componentIdentitiesForProp: dependencyValues.targetRecursiveReplacementsForProp
+            }
+          }
+        } else if (dependencyValues.refTarget) {
+          return {
+            newValues: {
+              componentIdentitiesForProp: [dependencyValues.refTarget]
+            }
+          }
+        } else {
+          return { newValues: { componentIdentitiesForProp: null } }
+        }
+      }
+    }
 
     return stateVariableDefinitions;
 
@@ -646,7 +835,13 @@ export default class Ref extends CompositeComponent {
 
     let allPotentialRendererTypes = [];
 
-    for (let replacementClass of this.stateValues.replacementClassesForProp) {
+    let allReplacementClasses = [
+      ...this.stateValues.replacementClasses,
+      ...this.stateValues.replacementClassesForProp,
+      ...this.stateValues.potentialReplacementClasses,
+    ]
+
+    for (let replacementClass of allReplacementClasses) {
       let rendererType = replacementClass.rendererType;
       if (rendererType && !allPotentialRendererTypes.includes(rendererType)) {
         allPotentialRendererTypes.push(rendererType);
@@ -1016,13 +1211,16 @@ export default class Ref extends CompositeComponent {
     }
   }
 
-  static createSerializedReplacements({ component, components, getComponentNamesForProp }) {
+  static createSerializedReplacements({ component, components, componentInfoObjects }) {
 
     // if (component.state.contentIDChild !== undefined) {
     //   if (!component.state.serializedStateForContentId) {
     //     return { replacements: [] };
     //   }
     // }
+
+    // evaluate needsReplacementsUpdatedWhenStale to make it fresh
+    component.stateValues.needsReplacementsUpdatedWhenStale;
 
     let serializedCopy;
 
@@ -1050,7 +1248,7 @@ export default class Ref extends CompositeComponent {
     // if creating reference from a prop
     // manually create the serialized state
     if (component.stateValues.useProp) {
-      let componentOrReplacementNames = getComponentNamesForProp(component.stateValues.refTargetName);
+      let componentOrReplacementNames = component.stateValues.componentIdentitiesForProp.map(x => x.componentName);
 
       return {
         replacements: refReplacementFromProp({
@@ -1113,9 +1311,12 @@ export default class Ref extends CompositeComponent {
   // }
 
 
-  static calculateReplacementChanges({ component, componentChanges, components, getComponentNamesForProp }) {
+  static calculateReplacementChanges({ component, componentChanges, components }) {
 
     // console.log("Calculating replacement changes for " + component.componentName);
+
+    // evaluate needsReplacementsUpdatedWhenStale to make it fresh
+    component.stateValues.needsReplacementsUpdatedWhenStale;
 
     let replacementChanges = [];
 
@@ -1222,7 +1423,7 @@ export default class Ref extends CompositeComponent {
       // the number of components or their component types changed
       let testReplacementChanges = [];
 
-      this.recreateReplacements({ component, replacementChanges: testReplacementChanges, components, getComponentNamesForProp });
+      this.recreateReplacements({ component, replacementChanges: testReplacementChanges, components });
 
       let newSerializedReplacements = [];
       let redoReplacements = false;
@@ -1322,7 +1523,7 @@ export default class Ref extends CompositeComponent {
     return replacementChanges;
   }
 
-  static recreateReplacements({ component, replacementChanges, components, getComponentNamesForProp }) {
+  static recreateReplacements({ component, replacementChanges, components }) {
     // // give instructions to move dependency to component.state.refTarget
     // if (component.state.previousRefTarget !== undefined &&
     //   component.state.previousRefTarget.componentName in component.downstreamDependencies) {
@@ -1362,7 +1563,7 @@ export default class Ref extends CompositeComponent {
 
     let newSerializedChildren;
     if (component.stateValues.useProp) {
-      let componentOrReplacementNames = getComponentNamesForProp(component.stateValues.refTargetName);
+      let componentOrReplacementNames = component.stateValues.componentIdentitiesForProp.map(x => x.componentName);
 
       newSerializedChildren = refReplacementFromProp({ component, components, componentOrReplacementNames });
     } else {
@@ -1491,183 +1692,6 @@ export function refReplacementFromProp({ component, components, componentOrRepla
 
 }
 
-
-export function postProcessRef({ serializedComponents, componentName, addShadowDependencies = true }) {
-  // add downstream dependencies to original component
-  // put internal and external references in right form
-
-  let preserializedNamesFound = {};
-  let refTargetNamesFound = {};
-
-  postProcessRefSub({
-    serializedComponents,
-    preserializedNamesFound, refTargetNamesFound,
-    componentName, addShadowDependencies,
-  });
-
-  for (let refTargetName in refTargetNamesFound) {
-
-    for (let refComponent of refTargetNamesFound[refTargetName]) {
-      // change state variable refTargetName to the componentName
-      // in case below doesn't work (i.e., have more than 1 replacement)
-      for (let child of refComponent.children) {
-        if (child.componentType === "reftarget") {
-          child.state.refTargetName = refTargetName;
-          break;
-        }
-      }
-
-    }
-
-  }
-
-  return serializedComponents;
-
-}
-
-
-function postProcessRefSub({ serializedComponents, preserializedNamesFound,
-  refTargetNamesFound, componentName, addShadowDependencies = true }) {
-  // recurse through serializedComponents
-  //   - to add downstream dependencies to original component
-  //   - collect names and reference targets
-
-  for (let ind in serializedComponents) {
-    let component = serializedComponents[ind];
-
-    if (component.preserializedName) {
-
-      preserializedNamesFound[component.preserializedName] = component;
-
-      if (addShadowDependencies) {
-        let downDep = {
-          [component.preserializedName]: [{
-            dependencyType: "referenceShadow",
-            refComponentName: componentName,
-          }]
-        };
-        if (component.state) {
-          let stateVariables = Object.keys(component.state);
-          downDep[component.preserializedName].downstreamStateVariables = stateVariables;
-          downDep[component.preserializedName].upstreamStateVariables = stateVariables;
-        }
-        if (component.includeAnyDefiningChildren) {
-          downDep[component.preserializedName].includeAnyDefiningChildren =
-            component.includeAnyDefiningChildren;
-        }
-        if (component.includePropertyChildren) {
-          downDep[component.preserializedName].includePropertyChildren =
-            component.includePropertyChildren;
-        }
-
-        // create downstream dependency
-        component.downstreamDependencies = downDep;
-      }
-
-    }
-
-    if (component.componentType === "ref") {
-      let refTargetName = component.refTargetComponentName;
-      if (!refTargetName) {
-        // if refTargetComponentName is undefined,
-        // then the ref wasn't serialized via ref's serialize function
-        // e.g., directly have a serialized ref from a select
-        // in this case, just find ref target by looking at component
-        // (and normalizing the form to have a reftarget child at same time)
-        refTargetName = normalizeSerializedRef(component);
-
-      }
-      if (refTargetName) {
-        if (!refTargetNamesFound[refTargetName]) {
-          refTargetNamesFound[refTargetName] = [];
-        }
-        refTargetNamesFound[refTargetName].push(component);
-      }
-    }
-
-    // recursion
-    postProcessRefSub({
-      serializedComponents: component.children,
-      preserializedNamesFound,
-      refTargetNamesFound,
-      componentName,
-      addShadowDependencies,
-    });
-
-    if (component.replacements) {
-      postProcessRefSub({
-        serializedComponents: component.replacements,
-        preserializedNamesFound,
-        refTargetNamesFound,
-        componentName,
-        addShadowDependencies,
-      });
-    }
-
-  }
-}
-
-
-export function normalizeSerializedRef(serializedRef) {
-
-  let refTargetName;
-
-  // find the refTarget child
-  let refTargetChild;
-  for (let child of serializedRef.children) {
-    if (child.componentType === "reftarget") {
-      refTargetChild = child;
-      break;
-    }
-  }
-  // if no refTargetChild, then check for string child
-  // which we have to do since sugar may not have been applied
-  if (!refTargetChild) {
-    for (let childInd = 0; childInd < serializedRef.children.length; childInd++) {
-      let child = serializedRef.children[childInd];
-      if (child.componentType === "string") {
-        refTargetName = child.state.value;
-
-        // delete the string child and create a refTarget child
-        serializedRef.children[childInd] = {
-          componentType: "reftarget",
-          state: { refTargetName: refTargetName }
-        }
-      }
-    }
-  } else {
-    // found a refTargetChild
-
-    // first look to see if refTargetName is defined in state
-    if (refTargetChild.state) {
-      refTargetName = refTargetChild.state.refTargetName;
-    }
-
-    // if not, look for first string child
-    if (!refTargetName && refTargetChild.children) {
-      for (let childInd = 0; childInd < refTargetChild.children.length; childInd++) {
-        let child = refTargetChild.children[childInd];
-        if (child.componentType === "string") {
-          refTargetName = child.state.value;
-
-          // for consistency, we'll change the form of the reftarget
-          // so that the refTargetName is stored in state
-          // rather than child.
-          // That way, we don't have to deal with cases
-          // when processing the refs
-          refTargetChild.children.splice(childInd, 1); // delete child
-          childInd--;
-          if (!refTargetChild.state) {
-            refTargetChild.state = {};
-          }
-          refTargetChild.state.refTargetName = refTargetName; // store in state
-        }
-      }
-    }
-  }
-
-  return refTargetName;
-}
 
 
 export function processChangesForReplacements({ componentChanges, componentName,

@@ -64,6 +64,28 @@ export default class MathComponent extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+
+    // valueShadow will be long underscore unless math was created
+    // from serialized state with value
+    stateVariableDefinitions.valueShadow = {
+      defaultValue: me.fromAst('\uff3f'),  // long underscore
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          valueShadow: { variablesToCheck: ["value", "valueShadow"] }
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "valueShadow",
+            value: desiredStateVariableValues.valueShadow
+          }]
+        };
+      }
+    }
+
     stateVariableDefinitions.codePre = {
       // deferCalculation: false,
       returnDependencies: () => ({
@@ -71,6 +93,7 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "childStateVariables",
           childLogicName: "atLeastZeroStrings",
           variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
         },
       }),
       definition: calculateCodePre,
@@ -84,6 +107,7 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "childStateVariables",
           childLogicName: "stringsAndMaths",
           variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
         },
         format: {
           dependencyType: "stateVariable",
@@ -92,7 +116,15 @@ export default class MathComponent extends InlineComponent {
         codePre: {
           dependencyType: "stateVariable",
           variableName: "codePre"
-        }
+        },
+        createVectors: {
+          dependencyType: "stateVariable",
+          variableName: "createVectors"
+        },
+        createIntervals: {
+          dependencyType: "stateVariable",
+          variableName: "createIntervals"
+        },
       }),
       definition: calculateExpressionWithCodes,
 
@@ -104,11 +136,13 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "childStateVariables",
           childLogicName: "atLeastZeroMaths",
           variableNames: ["value", "canBeModified"],
+          requireChildLogicInitiallySatisfied: true,
         },
         stringChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "atLeastZeroStrings",
           variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
         },
         expressionWithCodes: {
           dependencyType: "stateVariable",
@@ -117,6 +151,10 @@ export default class MathComponent extends InlineComponent {
         codePre: {
           dependencyType: "stateVariable",
           variableName: "codePre"
+        },
+        valueShadow: {
+          dependencyType: "stateVariable",
+          variableName: "valueShadow"
         },
       }),
       set: convertValueToMathExpression, // TODO: implement
@@ -301,7 +339,8 @@ export default class MathComponent extends InlineComponent {
         mathChildrenModifiable: {
           dependencyType: "childStateVariables",
           childLogicName: "atLeastZeroMaths",
-          variableNames: ["canBeModified"]
+          variableNames: ["canBeModified"],
+          requireChildLogicInitiallySatisfied: true,
         },
         expressionWithCodes: {
           dependencyType: "stateVariable",
@@ -455,7 +494,7 @@ function calculateCodePre({ dependencyValues }) {
 function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   if (!(("stringMathChildren" in changes && changes.stringMathChildren.componentIdentitiesChanged)
-    || "format" in changes)) {
+    || "format" in changes || "createIntervals" in changes || "createVectors" in changes)) {
     // if component identities of stringMathChildren didn't change
     // and format didn't change
     // then expressionWithCodes remains unchanged.
@@ -517,6 +556,12 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
         console.log("Invalid value for a math of latex format: " + inputString);
       }
     }
+    if (dependencyValues.createVectors) {
+      expressionWithCodes = expressionWithCodes.tuples_to_vectors();
+    }
+    if (dependencyValues.createIntervals) {
+      expressionWithCodes = expressionWithCodes.to_intervals();
+    }
   }
 
   return {
@@ -531,9 +576,8 @@ function calculateMathValue({ dependencyValues } = {}) {
   // if expressionWithCodes is null, there were no string or math children
   if (dependencyValues.expressionWithCodes === null) {
     return {
-      useEssentialOrDefaultValue: {
-        unnormalizedValue: { variablesToCheck: ["value", "unnormalizedValue"] }
-      }
+      newValues: { unnormalizedValue: dependencyValues.valueShadow },
+      makeEssential: ["unnormalizedValue"]  // make essential since inverseDef sets it
     }
   }
 
@@ -913,10 +957,18 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
       })
     }
 
+    let simplifiedExpression = desiredExpression.simplify();
     instructions.push({
       setStateVariable: "unnormalizedValue",
-      value: desiredExpression.simplify(),
+      value: simplifiedExpression,
     });
+
+    if (stringChildren.length === 0) {
+      instructions.push({
+        setDependency: "valueShadow",
+        desiredValue: simplifiedExpression,
+      });
+    }
     return {
       success: true,
       instructions
@@ -1112,9 +1164,21 @@ function finishInvertMathForStringChildren({ dependencyValues, stateValues }) {
 function getExpressionPieces({ expression, stateValues }) {
 
   let matching = me.utils.match(expression.tree, stateValues.template);
+
+  // if doesn't match, trying matching, by converting vectors, intervals, or both
   if (!matching) {
-    return false;
+    matching = me.utils.match(expression.tuples_to_vectors().tree, me.fromAst(stateValues.template).tuples_to_vectors().tree);
+    if (!matching) {
+      matching = me.utils.match(expression.to_intervals().tree, me.fromAst(stateValues.template).to_intervals().tree);
+      if (!matching) {
+        matching = me.utils.match(expression.tuples_to_vectors().to_intervals().tree, me.fromAst(stateValues.template).tuples_to_vectors().to_intervals().tree);
+        if (!matching) {
+          return false;
+        }
+      }
+    }
   }
+
   let pieces = {};
   for (let x in matching) {
     let subMap = {};

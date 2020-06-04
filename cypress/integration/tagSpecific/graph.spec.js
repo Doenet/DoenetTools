@@ -8,7 +8,7 @@ describe('Graph Tag Tests', function () {
   it('function sugared in graph', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>x^2</graph>
     `}, "*");
@@ -31,7 +31,7 @@ describe('Graph Tag Tests', function () {
   it('y = function sugared in graph', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>y=x^2</graph>
     `}, "*");
@@ -54,7 +54,7 @@ describe('Graph Tag Tests', function () {
   it('inverse function sugared in graph', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>y^2=x</graph>
     `}, "*");

@@ -8,7 +8,7 @@ describe('Choiceinput Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <choiceinput>
       <choice>cat</choice>
       <choice>dog</choice>
@@ -79,7 +79,7 @@ describe('Choiceinput Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <choiceinput inline>
       <choice>cat</choice>
       <choice>dog</choice>
@@ -151,7 +151,7 @@ describe('Choiceinput Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <choiceinput fixedorder>
       <choice>cat</choice>
       <choice>dog</choice>
@@ -213,7 +213,7 @@ describe('Choiceinput Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <choiceinput inline>
         <choice>a</choice>
         <choice>b</choice>
@@ -454,7 +454,7 @@ describe('Choiceinput Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <choiceinput>
       <choice>The function is <m>f(\\xi)=\\sin(\\xi)</m>.</choice>
       <choice>The sum of <math name="lambda2">lambda^2</math> and <math name="twice">2 lambda^2</math> is <math simplify><ref>lambda2</ref>+<ref>twice</ref></math>.</choice>

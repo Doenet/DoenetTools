@@ -9,7 +9,7 @@ describe('Conditional Content Tag Tests', function () {
   it('inline content containing sign of number', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <mathinput />
 
@@ -69,7 +69,7 @@ describe('Conditional Content Tag Tests', function () {
   it('block content containing sign of number', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <mathinput />
 
@@ -142,7 +142,7 @@ describe('Conditional Content Tag Tests', function () {
   it('conditional text used as correct answer', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p>Enter a slope: <mathinput /></p>
 
@@ -223,7 +223,7 @@ describe('Conditional Content Tag Tests', function () {
   it('conditional math used as correct answer', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <p>Require <choiceinput inline="true"><choice>positive</choice><choice>negative</choice></choiceinput>.</p>
 
