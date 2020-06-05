@@ -217,7 +217,6 @@ export default class Select extends CompositeComponent {
     }
 
     stateVariableDefinitions.selectedIndices = {
-      immutable: true,
       returnDependencies: ({ sharedParameters }) => ({
         essentialSelectedIndices: {
           dependencyType: "potentialEssentialVariable",
@@ -258,13 +257,16 @@ export default class Select extends CompositeComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
+        console.log(`definition of selected Indices`)
+        console.log(dependencyValues);
 
         if (dependencyValues.essentialSelectedIndices !== null) {
           return {
             makeEssential: ["selectedIndices"],
             newValues: {
               selectedIndices: dependencyValues.essentialSelectedIndices
-            }
+            },
+            makeImmutable: ["selectedIndices"]
           }
         }
 
@@ -273,8 +275,13 @@ export default class Select extends CompositeComponent {
             makeEssential: ["selectedIndices"],
             newValues: {
               selectedIndices: [],
-            }
+            },
+            makeImmutable: ["selectedIndices"]
           }
+        }
+
+        if (Number.isNaN(dependencyValues.numberToSelect)) {
+          return { newValues: { selectedIndices: null } }
         }
 
 
@@ -296,7 +303,8 @@ export default class Select extends CompositeComponent {
               makeEssential: ["selectedIndices"],
               newValues: {
                 selectedIndices: desiredIndices,
-              }
+              },
+              makeImmutable: ["selectedIndices"]
             }
           }
         }
@@ -323,7 +331,8 @@ export default class Select extends CompositeComponent {
             makeEssential: ["selectedIndices"],
             newValues: {
               selectedIndices: variantOptions,
-            }
+            },
+            makeImmutable: ["selectedIndices"]
           }
 
         }
@@ -386,21 +395,27 @@ export default class Select extends CompositeComponent {
           makeEssential: ["selectedIndices"],
           newValues: {
             selectedIndices,
-          }
+          },
+          makeImmutable: ["selectedIndices"]
         }
       }
     }
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+    stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({
         selectedIndices: {
           dependencyType: "stateVariable",
           variableName: "selectedIndices"
         }
       }),
-      definition: () => ({
-        newValues: { readyToExpandWhenResolved: true }
-      })
+      definition: function ({ dependencyValues }) {
+
+        let readyToExpand = dependencyValues.selectedIndices !== null;
+
+        return {
+          newValues: { readyToExpand }
+        }
+      }
     }
 
     return stateVariableDefinitions;

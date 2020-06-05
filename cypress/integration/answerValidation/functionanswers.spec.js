@@ -7,7 +7,7 @@ describe('Function answer validation tests', function () {
   it('simple function of input', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <function name="f">cos(2*pi*x)</function>
   
   <p>Enter a number close to an integer:
@@ -134,7 +134,7 @@ describe('Function answer validation tests', function () {
   it('function with parameters', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
 
   <p>Offset: <mathinput name="offset" prefill="0"/></p>
   <p>Period: <mathinput name="period" prefill="1"/></p>

@@ -11,7 +11,7 @@ module.exports = {
   entry: {
     "index.js": "./src/index.js",
     "admin/index.js": "./src/admin/index.js",
-    "chooser/index.js": "./src/chooser/index.js",
+    "chooser/index.js":"./src/chooser/index.js",
     "course/index.js": "./src/course/index.js",
     "docs/index.js": "./src/docs/index.js",
     "editor/index.js": "./src/editor/index.js",
@@ -61,10 +61,10 @@ module.exports = {
         use: [
           {
             loader: 'url-loader',
-            options: {
+            options: { 
               limit: 10000, // Convert images < 10kb to base64 strings
               name: 'media/[hash]-[name].[ext]'
-            }
+            } 
           },
         ],
       },
@@ -100,7 +100,7 @@ module.exports = {
       filename: "./course/index.html"
       // favicon: "",
     }),
-
+    
     new HtmlWebPackPlugin({
       chunks: ['docs/index.js'],
       template: "./src/docs/index.html",
@@ -127,13 +127,13 @@ module.exports = {
       filename: "./gradebook/index.html",
       // favicon: "",
     }),
-    // Guest Editor
-    new HtmlWebPackPlugin({
-      chunks: ['guesteditor/index.js'],
-      template: "./src/guesteditor/index.html",
-      filename: "./guesteditor/index.html",
-      // favicon: "",
-    }),
+       // Guest Editor
+       new HtmlWebPackPlugin({
+        chunks: ['guesteditor/index.js'],
+        template: "./src/guesteditor/index.html",
+        filename: "./guesteditor/index.html",
+        // favicon: "",
+      }),
     new HtmlWebPackPlugin({
       chunks: ['gradebook/index.js'],
       template: "./src/gradebook/assignment/index.html",
@@ -175,7 +175,7 @@ module.exports = {
       filename: "./exampletool/index.html"
       // favicon: "",
     }),
-
+    
     new MiniCssExtractPlugin({
       filename: "[name].css",
       // filename: "main.css",

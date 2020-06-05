@@ -39,6 +39,11 @@ export class ClampNumber extends MathBaseOperatorOneInput {
         dependencyType: "stateVariable",
         variableName: "unnormalizedValuePreOperator"
       },
+      functionChild: {
+        dependencyType: "childStateVariables",
+        childLogicName: "exactlyOneFunction",
+        variableNames: ["formula", "variable"]
+      },
       lowerValue: {
         dependencyType: "stateVariable",
         variableName: "lowerValue"
@@ -95,6 +100,11 @@ export class WrapNumberPeriodic extends MathBaseOperatorOneInput {
       value: {
         dependencyType: "stateVariable",
         variableName: "unnormalizedValuePreOperator"
+      },
+      functionChild: {
+        dependencyType: "childStateVariables",
+        childLogicName: "exactlyOneFunction",
+        variableNames: ["formula", "variable"]
       },
       lowerValue: {
         dependencyType: "stateVariable",
@@ -157,7 +167,7 @@ export class Round extends MathBaseOperatorOneInput {
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.numberDecimals = { default: 0 };
-    properties.numberDigits = { default: undefined };
+    properties.numberDigits = { default: null };
     return properties;
   }
 
@@ -170,6 +180,11 @@ export class Round extends MathBaseOperatorOneInput {
       value: {
         dependencyType: "stateVariable",
         variableName: "unnormalizedValuePreOperator"
+      },
+      functionChild: {
+        dependencyType: "childStateVariables",
+        childLogicName: "exactlyOneFunction",
+        variableNames: ["formula", "variable"]
       },
       numberDecimals: {
         dependencyType: "stateVariable",
@@ -195,7 +210,7 @@ export class Round extends MathBaseOperatorOneInput {
     //   return dependencyValues.value;
     // }
 
-    if (dependencyValues.numberDigits !== undefined) {
+    if (dependencyValues.numberDigits !== null) {
 
       return valueWithNumbers.round_numbers_to_precision(dependencyValues.numberDigits);
 
@@ -351,25 +366,6 @@ export class Derivative extends MathBaseOperatorOneInput {
     let properties = super.createPropertiesObject(args);
     properties.variable = { default: me.fromAst('x') };
     return properties;
-  }
-
-
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.unnormalizedValue.returnDependencies = () => ({
-      value: {
-        dependencyType: "stateVariable",
-        variableName: "unnormalizedValuePreOperator"
-      },
-      variable: {
-        dependencyType: "stateVariable",
-        variableName: "variable"
-      },
-    })
-
-    return stateVariableDefinitions;
   }
 
 

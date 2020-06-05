@@ -5,7 +5,7 @@ import BaseRenderer from './BaseRenderer';
 
 class MathinputRenderer extends BaseRenderer {
   constructor({ actions, mathExpression, key, includeCheckWork, creditAchieved,
-    valueHasBeenValidated, numberTimesSubmitted, size, showCorrectness, disabled }) {
+    valueHasBeenValidated, size, showCorrectness, disabled }) {
 
     super({ key: key });
 
@@ -13,7 +13,6 @@ class MathinputRenderer extends BaseRenderer {
     this.includeCheckWork = includeCheckWork;
     this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
-    this.numberTimesSubmitted = numberTimesSubmitted;
     this.size = size;
     this.showCorrectness = showCorrectness;
     this.disabled = disabled;
@@ -29,6 +28,8 @@ class MathinputRenderer extends BaseRenderer {
     }
 
     this.mathExpression = mathExpression;
+    this.changeInitiatedWithThisComponent = false;
+
   }
 
   pushNewTextValue() {
@@ -49,7 +50,9 @@ class MathinputRenderer extends BaseRenderer {
     return JSON.stringify(mathExpression1.tree) === JSON.stringify(mathExpression2.tree);
   }
 
-  updateMathinputRenderer({ mathExpression, creditAchieved, valueHasBeenValidated, numberTimesSubmitted, disabled }) {
+  updateMathinputRenderer({ mathExpression, creditAchieved, valueHasBeenValidated,
+    disabled, changeInitiatedWithThisComponent
+  }) {
 
     if (mathExpression !== undefined) {
       // TODO: what should happen when have an invalid expression?
@@ -66,8 +69,8 @@ class MathinputRenderer extends BaseRenderer {
 
     this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
-    this.numberTimesSubmitted = numberTimesSubmitted;
     this.disabled = disabled;
+    this.changeInitiatedWithThisComponent = changeInitiatedWithThisComponent;
 
   }
 
@@ -93,11 +96,11 @@ class MathinputRenderer extends BaseRenderer {
       actions={this.actions}
       creditAchieved={this.creditAchieved}
       valueHasBeenValidated={this.valueHasBeenValidated}
-      numberTimesSubmitted={this.numberTimesSubmitted}
       showMathPreview={true}
       size={this.size}
       showCorrectness={this.showCorrectness}
       disabled={this.disabled}
+      changeInitiatedWithThisComponent={this.changeInitiatedWithThisComponent}
     />
   }
 

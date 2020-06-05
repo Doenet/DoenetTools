@@ -8,7 +8,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <mathinput />
     <p>
     <isinteger><ref prop="value">_mathinput1</ref></isinteger>

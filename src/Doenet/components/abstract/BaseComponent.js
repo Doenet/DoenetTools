@@ -33,8 +33,6 @@ export default class BaseComponent {
     this.componentName = componentName;
     this.ancestors = ancestors;
 
-    this.componentType = this.constructor.componentType;
-    this.rendererType = this.constructor.rendererType;
     this.standardComponentClasses = standardComponentClasses;
     this.allComponentClasses = allComponentClasses;
     this.isInheritedComponentType = isInheritedComponentType;
@@ -89,6 +87,14 @@ export default class BaseComponent {
     return this.componentType;
   }
 
+  get componentType() {
+    return this.constructor.componentType;
+  }
+
+  get rendererType() {
+    return this.constructor.rendererType;
+  }
+
   get allPotentialRendererTypes() {
     if (!this.rendererType) {
       return [];
@@ -96,6 +102,27 @@ export default class BaseComponent {
 
     let allPotentialRendererTypes = [this.rendererType];
 
+    // include any potential renderer type that could be
+    // created from a public state variable
+    for (let varName in this.state) {
+      if (this.state[varName].public) {
+        let componentTypes = this.state[varName].componentType;
+        if (!Array.isArray(componentTypes)) {
+          componentTypes = [componentTypes]
+        }
+        for (let componentType of componentTypes) {
+          let componentClass = this.allComponentClasses[componentType];
+          if (componentClass) {
+            let rendererType = componentClass.rendererType;
+            if (rendererType && !allPotentialRendererTypes.includes(rendererType)) {
+              allPotentialRendererTypes.push(rendererType)
+            }
+          }
+        }
+      }
+    }
+
+    // recurse to all children
     for (let childName in this.allChildren) {
       let child = this.allChildren[childName].component;
       for (let rendererType of child.allPotentialRendererTypes) {
@@ -141,8 +168,8 @@ export default class BaseComponent {
 
     return {
       hide: { default: false, forRenderer: true },
-      modifyIndirectly: { default: true, propagateToDescendants: true },
-      fixed: { default: false, propagateToDescendants: true },
+      modifyIndirectly: { default: true },
+      fixed: { default: false },
       styleNumber: { default: 1, propagateToDescendants: true },
     };
   }
@@ -194,7 +221,9 @@ export default class BaseComponent {
 
     let defAttributesToCopy = [
       "returnDependencies", "definition",
-      "inverseDefinition", "stateVariablesDeterminingDependencies"
+      "inverseDefinition", "stateVariablesDeterminingDependencies",
+      "isArray", "nDimensions",
+      "markStale", "getPreviousDependencyValuesForMarkStale",
     ];
 
     let stateVariableDefinitions = {};
@@ -207,7 +236,9 @@ export default class BaseComponent {
         for (let [ind, otherVarObj] of thisDef.additionalStateVariablesDefined.entries()) {
           let defCopy = {};
           for (let attr of defAttributesToCopy) {
-            defCopy[attr] = thisDef[attr];
+            if (attr in thisDef) {
+              defCopy[attr] = thisDef[attr];
+            }
           }
           defCopy.additionalStateVariablesDefined = [...thisDef.additionalStateVariablesDefined];
           defCopy.additionalStateVariablesDefined[ind] = varName;
@@ -499,7 +530,7 @@ export default class BaseComponent {
 
     // look in state for matching public value
     let stateFromAdapter = this.state[adapterStateVariable];
-    if (stateFromAdapter === undefined || stateFromAdapter.public !== true) {
+    if (stateFromAdapter === undefined || (!stateFromAdapter.public && !adapterComponentType)) {
       throw Error("Invalid adapter " + adapterStateVariable + " in "
         + this.componentType);
     }
@@ -515,6 +546,10 @@ export default class BaseComponent {
         [this.componentName]: [{
           dependencyType: "adapter",
           adapterVariable: adapterStateVariable,
+          adapterTargetIdentity: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          }
         }]
       }
     }

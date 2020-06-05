@@ -8,7 +8,7 @@ describe('ODEsystem Tag Tests', function () {
   it('1D linear system', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <p>a = <mathinput name="a" prefill="1"/></p>
   <p>initial condition = <mathinput name="ic" prefill="1"/></p>
   <p>tol = <mathinput name="tol" prefill="1E-6"/></p>
@@ -171,7 +171,7 @@ describe('ODEsystem Tag Tests', function () {
   it('effect of max iterations, chunksize', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <p>tol = <mathinput name="tol" prefill="1E-6"/></p>
   <p>T = <mathinput name="T" prefill="10"/></p>
   <p>maxiter = <mathinput name="maxiter" prefill="1000"/></p>
@@ -320,7 +320,7 @@ describe('ODEsystem Tag Tests', function () {
   it('change variables 1D', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <p>independent variable = <mathinput name="ivar" prefill="t"/></p>
   <p>dependent variable = <mathinput name="dvar" prefill="x"/></p>
   
@@ -536,7 +536,7 @@ describe('ODEsystem Tag Tests', function () {
   it('display digits', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <p>displaydigits = <mathinput name="digits" prefill="10"/></p>
   
   <odesystem name="ode">
@@ -571,7 +571,7 @@ describe('ODEsystem Tag Tests', function () {
   it('initial independent variable value', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <p>initial t = <mathinput name="t0" prefill="0"/></p>
   <p>final t = <mathinput name="tf" prefill="10"/></p>
   
@@ -641,7 +641,7 @@ describe('ODEsystem Tag Tests', function () {
   it('display initial conditions', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <p>display initial conditions: <booleaninput name="showic" prefill="true"/></p>  
   <odesystem name="ode" initialcondition="1" righthandside="x">
   <hideInitialCondition><not><ref prop="value">showic</ref></not></hideInitialCondition>
@@ -671,7 +671,7 @@ describe('ODEsystem Tag Tests', function () {
   it('2D linear system', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <p>initial condition 1 = <mathinput name="ic1" prefill="1"/></p>
   <p>initial condition 2 = <mathinput name="ic2" prefill="3"/></p>
   <odesystem name="ode">
@@ -790,7 +790,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("assign two ode variables")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <mathinput name="var1" prefill="u"/>
   <mathinput name="var2" prefill="v"/>
@@ -823,7 +823,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("match first rhs variable")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>b</text>
   <mathinput name="var1" prefill="u"/>
   <mathinput name="var2" prefill="v"/>
@@ -871,7 +871,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("match second rhs variable")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>c</text>
   <mathinput name="var1" prefill="u"/>
   <mathinput name="var2" prefill="v"/>
@@ -919,7 +919,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("match first initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>d</text>
   <mathinput name="var1" prefill="u"/>
   <mathinput name="var2" prefill="v"/>
@@ -967,7 +967,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("match second initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>e</text>
   <mathinput name="var1" prefill="u"/>
   <mathinput name="var2" prefill="v"/>
@@ -1015,7 +1015,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("match first rhs and initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>f</text>
   <mathinput name="rvar" prefill="u"/>
   <mathinput name="ivar" prefill="u"/>
@@ -1089,7 +1089,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("match first rhs and second initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>g</text>
   <mathinput name="rvar" prefill="u"/>
   <mathinput name="ivar" prefill="u"/>
@@ -1163,7 +1163,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("match second rhs and first initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>h</text>
   <mathinput name="rvar" prefill="u"/>
   <mathinput name="ivar" prefill="u"/>
@@ -1237,7 +1237,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("match second rhs and initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>i</text>
   <mathinput name="rvar" prefill="u"/>
   <mathinput name="ivar" prefill="u"/>
@@ -1311,7 +1311,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("match all variables and initial conditions")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>j</text>
   <mathinput name="var1" prefill="u"/>
   <mathinput name="var2" prefill="v"/>
@@ -1396,7 +1396,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("no variables assigned")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <odesystem>
   <righthandside>x + 3y</righthandside>
@@ -1417,7 +1417,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify first rhs variable")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>b</text>
   <mathinput name="rvar" prefill="u"/>
   <odesystem>
@@ -1452,7 +1452,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify second rhs variable")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>c</text>
   <mathinput name="rvar" prefill="u"/>
   <odesystem>
@@ -1487,7 +1487,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify first initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>d</text>
   <mathinput name="ivar" prefill="u"/>
   <odesystem>
@@ -1522,7 +1522,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify second initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>e</text>
   <mathinput name="ivar" prefill="u"/>
   <odesystem>
@@ -1557,7 +1557,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify both rhs variables")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>f</text>
   <mathinput name="rvar1" prefill="u"/>
   <mathinput name="rvar2" prefill="v"/>
@@ -1596,7 +1596,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify both initial conditions")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>g</text>
   <mathinput name="ivar1" prefill="u"/>
   <mathinput name="ivar2" prefill="v"/>
@@ -1635,7 +1635,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify first rhs and initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>h</text>
   <mathinput name="rvar" prefill="u"/>
   <mathinput name="ivar" prefill="v"/>
@@ -1681,7 +1681,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify second rhs and first initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>i</text>
   <mathinput name="rvar" prefill="u"/>
   <mathinput name="ivar" prefill="v"/>
@@ -1727,7 +1727,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify first rhs and second initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>j</text>
   <mathinput name="rvar" prefill="u"/>
   <mathinput name="ivar" prefill="v"/>
@@ -1773,7 +1773,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify second rhs and initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>k</text>
   <mathinput name="rvar" prefill="u"/>
   <mathinput name="ivar" prefill="v"/>
@@ -1819,7 +1819,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify both rhs variables and first initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>l</text>
   <mathinput name="ivar" prefill="u"/>
   <odesystem>
@@ -1854,7 +1854,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify both rhs variables and second initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>m</text>
   <mathinput name="ivar" prefill="u"/>
   <odesystem>
@@ -1889,7 +1889,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify first rhs variable and both initial conditions")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>n</text>
   <mathinput name="rvar" prefill="u"/>
   <odesystem>
@@ -1924,7 +1924,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify second rhs variable and both initial conditions")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>o</text>
   <mathinput name="rvar" prefill="u"/>
   <odesystem>
@@ -1959,7 +1959,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify all rhs variables and initial conditions")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>p</text>
   <mathinput name="ivar1" prefill="u"/>
   <mathinput name="ivar2" prefill="v"/>
@@ -2021,7 +2021,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("assign one ode variable")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <mathinput name="var" prefill="q"/>
   <odesystem>
@@ -2054,7 +2054,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify first rhs variable")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>b</text>
   <mathinput name="var" prefill="x"/>
   <mathinput name="rvar" prefill="x"/>
@@ -2106,7 +2106,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify second rhs variable")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>c</text>
   <mathinput name="var" prefill="x"/>
   <mathinput name="rvar" prefill="x"/>
@@ -2158,7 +2158,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify first initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>d</text>
   <mathinput name="var" prefill="x"/>
   <mathinput name="ivar" prefill="x"/>
@@ -2210,7 +2210,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify second initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>e</text>
   <mathinput name="var" prefill="x"/>
   <mathinput name="ivar" prefill="x"/>
@@ -2262,7 +2262,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify both rhs variables")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>f</text>
   <mathinput name="var" prefill="u"/>
   <odesystem>
@@ -2295,7 +2295,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify both initial conditions")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>g</text>
   <mathinput name="var" prefill="u"/>
   <odesystem>
@@ -2328,7 +2328,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify first rhs variable and initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>h</text>
   <mathinput name="var" prefill="x"/>
   <mathinput name="rvar" prefill="x"/>
@@ -2394,7 +2394,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify first rhs variable and second initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>i</text>
   <mathinput name="var" prefill="x"/>
   <mathinput name="rvar" prefill="x"/>
@@ -2460,7 +2460,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify second rhs variable and first initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>j</text>
   <mathinput name="var" prefill="x"/>
   <mathinput name="rvar" prefill="x"/>
@@ -2526,7 +2526,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify second rhs variable and initial condition")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>k</text>
   <mathinput name="var" prefill="x"/>
   <mathinput name="rvar" prefill="x"/>
@@ -2592,7 +2592,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("specify all rhs variables and initial conditions")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>l</text>
   <mathinput name="var" prefill="u"/>
   <mathinput name="ivar1" prefill="u"/>
@@ -2676,7 +2676,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("no variables assigned")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <odesystem>
   <righthandside>q</righthandside>
@@ -2721,7 +2721,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("one variable each")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>b</text>
   <mathinput name="var" prefill="x"/>
   <mathinput name="rvar" prefill="x"/>
@@ -2846,7 +2846,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("two variables each")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>c</text>
   <mathinput name="var1" prefill="x"/>
   <mathinput name="var2" prefill="y"/>
@@ -3075,7 +3075,7 @@ describe('ODEsystem Tag Tests', function () {
   it('ref righthandside, initial conditions', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <odesystem name="ode">
   <righthandside>a*x*y+z</righthandside>
   <righthandside>x/y</righthandside>

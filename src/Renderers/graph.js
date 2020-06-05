@@ -153,20 +153,6 @@ export default class Graph extends DoenetRenderer {
     }
   }
 
-  drawGraphicalComponents() {
-
-    this.renderers = {};
-
-    let currentRenderers = this.returnRenderersInGraph();
-
-    for (let componentName in currentRenderers) {
-      let componentRenderer = currentRenderers[componentName];
-      if (componentRenderer !== undefined && componentRenderer.createGraphicalObject !== undefined) {
-        componentRenderer.createGraphicalObject(this.board);
-        this.renderers[componentName] = currentRenderers[componentName];
-      }
-    }
-  }
 
   componentWillUnmount() {
     // let allRenderers = this.renderers;
@@ -176,32 +162,6 @@ export default class Graph extends DoenetRenderer {
     //     componentRenderer.deleteGraphicalObject();
     //   }
     // }
-  }
-
-  updateGraphicalComponents() {
-
-    // add any new renderers that aren't in renderers
-    let currentRenderers = this.returnRenderersInGraph();
-    for (let componentName in currentRenderers) {
-      let componentRenderer = currentRenderers[componentName];
-      if (componentRenderer !== undefined && componentRenderer.createGraphicalObject !== undefined &&
-        this.renderers[componentName] === undefined) {
-        componentRenderer.createGraphicalObject(this.board);
-        this.renderers[componentName] = currentRenderers[componentName];
-      }
-    }
-
-    // delete graphical objects from any renderers that aren't rendered anymore
-    for (let componentName in this.renderers) {
-      if (!(componentName in currentRenderers)) {
-
-        // only delete if actually not in currentRenders (not just if currentRenderer is undefined)
-        // as deleting JSX graphical object is incredibly slow, only delete if component is no longer there
-        this.renderers[componentName].deleteGraphicalObject();
-        delete this.renderers[componentName];
-      }
-    }
-
   }
 
 

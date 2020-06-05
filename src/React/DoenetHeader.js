@@ -62,10 +62,9 @@ class DoenetHeader extends Component {
       menuVisble: false,
       showToolbox: false,
       sliderVisible: false,
-      myProfile: {}
+      myProfile: {},
+      myRoles: {}
     }
-
-
 
     this.select = null
     this.updateNumber = 0;
@@ -145,22 +144,24 @@ class DoenetHeader extends Component {
   }
 
   componentDidMount() {
-    if (!this.props.guestUser){
     this.loadMyProfile();
-    }
   }
 
   componentWillReceiveProps(props) {
-    // console.log(props.headerConfig);
-    if (props.headerConfig) {
+    // console.log(props.headerChangesFromLayout);
+    if (props.headerChangesFromLayout) {
       this.setState({
-        myProfile: props.headerConfig
+        myProfile: props.headerChangesFromLayout
       });
-    } 
-    // else {
-    //   this.loadMyProfile();
-    // }
+    }
+    if(props.headerRoleFromLayout){
+      this.setState({
+        myRoles:props.headerRoleFromLayout
+      });
+    }
+  }
 
+  rolesToChoose(data) {
   }
 
   loadMyProfile() {
@@ -171,6 +172,7 @@ class DoenetHeader extends Component {
         this.setState({
           myProfile: resp.data
         });
+        this.rolesToChoose(resp.data);
 
       })
       .catch(err => console.error(err.response.toString()));
@@ -278,35 +280,8 @@ class DoenetHeader extends Component {
       this.headerSectionCount = this.refs.extendedHeader.children.length;
     }
     const extendedMarginOffTop = (this.headerSectionCount + 1) * 50;
-
-    if (this.props.guestUser){
-      //GUEST USER
-      return <>
-        <div className="headingContainer">
-        <div className="headerPlayBtn" onClick={this.toggleSlider}>
-            <FontAwesomeIcon id='headerPlayBtn-icon' fontSize='16px' icon={this.state.sliderVisible ? faCaretDown : faCaretRight} />
-          </div>
-          <div className="toolName">
-            <img id="doenetLogo" onClick={() => { location.href = "/"; }} src={doenetImage} height='40px' />
-            <span>{this.props.toolName}</span>
-          </div>
-          {this.props.headingTitle && <div className="headingTitle">
-            <span>{this.props.headingTitle}</span>
-            {/* <span>{ this.select }</span> */}
-          </div>}
-        </div>
-        <ExtendedHeader className={sliderClass} ref='extendedHeader' extendedMarginOffTop={extendedMarginOffTop}>
-          {this.props.headingTitle && <div className="extended-header">
-            <div className="headingTitlePhone">
-              <span>{this.props.headingTitle}</span>
-            </div>
-          </div>}
-
-        </ExtendedHeader>
-      </>
-    }
-
     let toolBox = {};
+
 
     toolBox = this.toolTitleToLinkMap &&
 
@@ -334,8 +309,8 @@ class DoenetHeader extends Component {
               {!this.state.myProfile.toolAccess.length && <p>Loading..!</p>}
           </Toolbox>}
       </div>
-    
-
+    const isMultipleRoles = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? Object.keys(this.state.myRoles.permissionRoles).length > 1 : false;
+    const isSingleRole = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? Object.keys(this.state.myRoles.permissionRoles).length === 1 : false;
     return (
       <React.Fragment>
         <div className="headingContainer">
@@ -347,14 +322,17 @@ class DoenetHeader extends Component {
             <span>{this.props.toolName}</span>
           </div>
 
-          {this.props.headingTitle && <div className="headingTitle">
+         {this.props.headingTitle && <div className="headingTitle">
             <span>{this.props.headingTitle}</span>
-            {/* <span>{ this.select }</span> */}
           </div>}
-          
-          <div className="headingToolbar">
-            {this.props.rights && this.props.rights.defaultRole && <Menu activeRole={this.props.rights.defaultRole} roles={this.roles} permissionCallback={this.props.rights ? this.props.rights.permissionCallBack : null} />}
-            {/* {this.selectPermission}     */}
+          {!this.props.guestUser && <div className="headingToolbar">
+            {isMultipleRoles && <Menu showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} />}
+            {isSingleRole && <div style={{
+              border:'1px solid #e2e2e2',
+              display: "flex",
+              alignItems: "center",
+              padding: "10px",
+               borderRadius: "5px"}}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</div>}
             {toolBox}
             {!this.state.myProfile.profilePicture && <div id="userButton-anonymous" onClick={() => { location.href = "/Profile"; }}>
               <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
@@ -370,21 +348,25 @@ class DoenetHeader extends Component {
             </div>
 
             }
-          </div>
+          </div>}
 
         </div>
 
-        {/* <div className={sliderClass} ref='extendedHeader' style={extendedOffMargin}> */}
         <ExtendedHeader className={sliderClass} ref='extendedHeader' extendedMarginOffTop={extendedMarginOffTop}>
           {this.props.headingTitle && <div className="extended-header">
             <div className="headingTitlePhone">
               <span>{this.props.headingTitle}</span>
             </div>
           </div>}
-
+            {!this.props.guestUser && 
           <div className="extended-header">
-            {
-              this.props.rights && this.props.rights.defaultRole && <Menu activeRole={this.props.rights.defaultRole} roles={this.roles} permissionCallback={this.props.rights ? this.props.rights.permissionCallBack : null} />}
+          {isMultipleRoles && <Menu showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} />}
+            {isSingleRole && <div style={{
+              border:'1px solid #e2e2e2',
+              display: "flex",
+              alignItems: "center",
+              padding: "10px",
+               borderRadius: "5px"}}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</div>}
             {toolBox}
             {!this.state.myProfile.profilePicture &&
               <div id="userButton-anonymous-phone" onClick={() => { location.href = "/Profile"; }}>
@@ -400,8 +382,7 @@ class DoenetHeader extends Component {
                 >
                 </ProfilePicture>
               </div>}
-          </div>
-          {/* </div> */}
+          </div>}
         </ExtendedHeader>
       </React.Fragment>
     );

@@ -1,20 +1,20 @@
 class LineRenderer {
-  constructor({key, label, draggable, layer=0, point1coords, point2coords, actions,
-    color, width, style, visible }){
+  constructor({ key, label, draggable, layer = 0, point1coords, point2coords, actions,
+    color, width, style, visible }) {
     this._key = key;
     this.label = label;
     this.draggable = draggable;
-    this.layer = 10*layer+7;
+    this.layer = 10 * layer + 7;
     this.point1coords = point1coords;
     this.point2coords = point2coords;
     this.actions = actions;
     this.color = color;
     this.width = width;
-    if(style === "solid") {
+    if (style === "solid") {
       this.dash = 0;
-    } else if(style === "dashed") {
+    } else if (style === "dashed") {
       this.dash = 2;
-    } else if(style === "dotted") {
+    } else if (style === "dotted") {
       this.dash = 1;
     } else {
       this.dash = 0;
@@ -40,24 +40,16 @@ class LineRenderer {
       dash: this.dash,
     };
 
-    if(!this.draggable) {
+    if (!this.draggable) {
       jsxLineAttributes.highlightStrokeWidth = this.width;
     }
 
 
-    let through = [ this.point1coords, this.point2coords ];
+    let through = [[...this.point1coords], [...this.point2coords]];
 
-    for(let coords of through) {
-      if(!Number.isFinite(coords[0])) {
-        coords[0] = NaN;
-      }
-      if(!Number.isFinite(coords[1])) {
-        coords[1] = NaN;
-      }
-    }
     this.lineJXG = this.board.create('line', through, jsxLineAttributes);
 
-    this.lineJXG.on('drag', function() {
+    this.lineJXG.on('drag', function () {
       //board.suspendUpdate();
       this.onDragHandler();
       //board.unsuspendUpdate();
@@ -73,7 +65,7 @@ class LineRenderer {
     delete this.lineJXG;
   }
 
-  updateLine({point1coords, point2coords, visible}) {
+  updateLine({ point1coords, point2coords, visible }) {
 
     this.point1coords = point1coords;
     this.point2coords = point2coords;
@@ -81,29 +73,27 @@ class LineRenderer {
 
     let validCoords = true;
 
-    for(let coords of [this.point1coords, this.point2coords]) {
-      if(!Number.isFinite(coords[0])) {
-        coords[0] = NaN;
+    for (let coords of [this.point1coords, this.point2coords]) {
+      if (!Number.isFinite(coords[0])) {
         validCoords = false;
       }
-      if(!Number.isFinite(coords[1])) {
-        coords[1] = NaN;
+      if (!Number.isFinite(coords[1])) {
         validCoords = false;
       }
     }
-    
+
     // even line that are hidden have renderers
     // (or this could be called before createGraphicalObject
     // for dynamically added components)
     // so this could be called even for lines that don't have a JXG line created
-    if(this.lineJXG === undefined) {
+    if (this.lineJXG === undefined) {
       return;
     }
+    
+    this.lineJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, this.point1coords);
+    this.lineJXG.point2.coords.setCoordinates(JXG.COORDS_BY_USER, this.point2coords);
 
-    this.lineJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, point1coords);
-    this.lineJXG.point2.coords.setCoordinates(JXG.COORDS_BY_USER, point2coords);
-
-    if(validCoords) {
+    if (validCoords) {
       this.lineJXG.visProp["visible"] = this.visible;
       this.lineJXG.visPropCalc["visible"] = this.visible;
       // this.lineJXG.setAttribute({visible: this.visible})
@@ -116,7 +106,7 @@ class LineRenderer {
 
     this.lineJXG.needsUpdate = true;
     this.lineJXG.update()
-    if(this.lineJXG.hasLabel) {
+    if (this.lineJXG.hasLabel) {
       this.lineJXG.label.needsUpdate = true;
       this.lineJXG.label.update();
     }
@@ -131,8 +121,8 @@ class LineRenderer {
     });
   }
 
-  jsxCode(){
-      return null;
+  jsxCode() {
+    return null;
   }
 }
 

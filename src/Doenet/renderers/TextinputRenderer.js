@@ -4,19 +4,20 @@ import BaseRenderer from './BaseRenderer';
 
 class TextinputRenderer extends BaseRenderer {
   constructor({ actions, text, key, includeCheckWork, creditAchieved,
-    valueHasBeenValidated, numberTimesSubmitted, size, showCorrectness }) {
+    valueHasBeenValidated, size, showCorrectness }) {
+
     super({ key: key });
 
     this.actions = actions;
     this.includeCheckWork = includeCheckWork;
     this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
-    this.numberTimesSubmitted = numberTimesSubmitted;
     this.size = size;
     this.showCorrectness = showCorrectness;
 
     this.initialTextValue = text;
     this.text = text;
+    this.changeInitiatedWithThisComponent = false;
 
     this.sharedState = {
       textValue: this.initialTextValue
@@ -35,7 +36,9 @@ class TextinputRenderer extends BaseRenderer {
     }
   }
 
-  updateTextinputRenderer({ text, creditAchieved, valueHasBeenValidated, numberTimesSubmitted }) {
+  updateTextinputRenderer({ text, creditAchieved, valueHasBeenValidated,
+    changeInitiatedWithThisComponent
+  }) {
 
     if (text !== this.text) {
       this.text = text;
@@ -44,7 +47,7 @@ class TextinputRenderer extends BaseRenderer {
 
     this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
-    this.numberTimesSubmitted = numberTimesSubmitted;
+    this.changeInitiatedWithThisComponent = changeInitiatedWithThisComponent;
 
   }
 
@@ -71,10 +74,10 @@ class TextinputRenderer extends BaseRenderer {
       actions={this.actions}
       creditAchieved={this.creditAchieved}
       valueHasBeenValidated={this.valueHasBeenValidated}
-      numberTimesSubmitted={this.numberTimesSubmitted}
       showMathPreview={false}
       size={this.size}
       showCorrectness={this.showCorrectness}
+      changeInitiatedWithThisComponent={this.changeInitiatedWithThisComponent}
     />
   }
 

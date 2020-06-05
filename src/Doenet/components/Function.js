@@ -3,7 +3,7 @@ import me from 'math-expressions';
 
 export default class Function extends InlineComponent {
   static componentType = "function";
-  static rendererType = undefined;
+  static rendererType = "math";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -49,7 +49,7 @@ export default class Function extends InlineComponent {
       propositions: [atLeastOneStrings, atLeastOneMaths],
       requireConsecutive: true,
       isSugar: true,
-      affectedBySugar: ["exactlyOneFormula"],
+      logicToWaitOnSugar: ["exactlyOneFormula"],
       replacementFunction: addFormula,
     });
 
@@ -72,7 +72,7 @@ export default class Function extends InlineComponent {
       }
       return {
         success: true,
-        newChildren: [{ componentType: "interpolatedfunction" }],
+        newChildren: [{ componentType: "interpolatedfunction", children }],
       }
     }
 
@@ -109,7 +109,7 @@ export default class Function extends InlineComponent {
       operator: "or",
       propositions: [atLeastOneMaximum, atLeastOneMinimum, atLeastOneExtremum, atLeastOneThrough],
       isSugar: true,
-      affectedBySugar: ["atMostOneFunction"],
+      logicToWaitOnSugar: ["atMostOneFunction"],
       replacementFunction: addInterpolatedFunction,
     })
 
@@ -278,7 +278,6 @@ export default class Function extends InlineComponent {
       }
     }
 
-
     stateVariableDefinitions.numericalf = {
       returnDependencies: () => ({
         formula: {
@@ -318,6 +317,21 @@ export default class Function extends InlineComponent {
           }
 
         }
+      }
+    }
+
+    stateVariableDefinitions.latex = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      returnDependencies: () => ({
+        formula: {
+          dependencyType: "stateVariable",
+          variableName: "formula"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { latex: dependencyValues.formula.toLatex() } };
       }
     }
 
@@ -362,6 +376,7 @@ export default class Function extends InlineComponent {
       },
       markStale: function ({ freshnessInfo, arrayKeys, changes }) {
 
+        let freshByKey = freshnessInfo.minima.freshByKey
         let arrayKey;
         if (arrayKeys) {
           arrayKey = Number(arrayKeys[0]);
@@ -376,7 +391,7 @@ export default class Function extends InlineComponent {
               delete freshByKey[key];
             }
 
-            return { fresh: false }
+            return { fresh: { minima: false } }
 
           } else {
 
@@ -404,31 +419,31 @@ export default class Function extends InlineComponent {
 
         if (changes.numericalf || changes.xscale) {
           // everything is stale
-          let freshByKey = freshnessInfo.freshByKey
           for (let key in freshByKey) {
             delete freshByKey[key];
           }
-          return { fresh: false }
+          return { fresh: { minima: false } }
         }
 
 
         if (arrayKey === undefined) {
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { minima: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { minima: true } }
           }
         } else {
-          // asked for just one component
-          return { fresh: freshByKey[arrayKey] === true }
+          // asked for just one component, so will be interpreted
+          // as giving freshness of just array entry
+          return { fresh: { minima: freshByKey[arrayKey] === true } }
         }
 
       },
       definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.minima.freshByKey;
 
         if (dependencyValues.functionChild.length === 1) {
 
@@ -523,7 +538,7 @@ export default class Function extends InlineComponent {
           if (fleft < fx) {
             if (minimumAtPreviousRight) {
               if (Number.isFinite(fleft)) {
-                minimaList.push(me.fromAst(["tuple", xleft, fleft]));
+                minimaList.push(me.fromAst(["vector", xleft, fleft]));
               }
             }
             minimumAtPreviousRight = false;
@@ -536,7 +551,7 @@ export default class Function extends InlineComponent {
             if (fx < fright && fx < fleft &&
               fx < f(x + result.tol) && fx < f(x - result.tol) &&
               Number.isFinite(fx)) {
-              minimaList.push(me.fromAst(["tuple", x, fx]));
+              minimaList.push(me.fromAst(["vector", x, fx]));
             }
           }
         }
@@ -553,7 +568,7 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.minimaLocations = {
       public: true,
-      componentType: "point",
+      componentType: "number",
       isArray: true,
       entryPrefixes: ["minimumLocation"],
       returnDependencies: function ({ arrayKeys }) {
@@ -586,7 +601,7 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.minimaLocations.freshByKey;
 
         if (arrayKey === undefined) {
           if (changes.minima) {
@@ -602,36 +617,58 @@ export default class Function extends InlineComponent {
 
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { minimaLocations: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { minimaLocations: true } }
           }
 
         } else {
-          if (valuesChanged["minimum" + (arrayKey + 1)]) {
-            delete freshByKey[arrayKey];
+
+          if (changes["minimum" + (arrayKey + 1)]) {
+
+            let valuesChanged = changes["minimum" + (arrayKey + 1)].valuesChanged;
+
+            if (valuesChanged["minimum" + (arrayKey + 1)]) {
+              delete freshByKey[arrayKey];
+            }
           }
-          return { fresh: freshByKey[arrayKey] === true }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { minimaLocations: freshByKey[arrayKey] === true } }
 
         }
 
       },
-      definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
+      definition: function ({ dependencyValues, freshnessInfo, arrayKeys, changes }) {
 
         let arrayKey;
         if (arrayKeys) {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.minimaLocations.freshByKey;
 
 
         if (arrayKey === undefined) {
 
-          if (Object.keys(freshByKey).length === 0) {
+          if (changes.minima && changes.minima.valuesChanged.minima.changed.changedEntireArray) {
+            // if entire array is changed, then send in an array
+            // to indicate have completely new values
 
-            let minimaLocations = dependencyValues.minima.map(x => x.get_component(0));
+            let minimaLocations = dependencyValues.minima.map(x => x.get_component(0).tree);
+
+            // mark everything fresh, but start with new object
+            // to make sure don't have extraneous keys
+            freshByKey = {}
+            for (let key in minimaLocations) {
+              freshByKey[key] = true;
+            }
+
+            return { newValues: { minimaLocations } }
+
+          } else if (Object.keys(freshByKey).length === 0) {
+
+            let minimaLocations = dependencyValues.minima.map(x => x.get_component(0).tree);
 
             // mark everything fresh
             for (let key in minimaLocations) {
@@ -646,7 +683,7 @@ export default class Function extends InlineComponent {
             for (let key in dependencyValues.minima) {
               if (!freshByKey[key]) {
                 freshByKey[key] = true;
-                minimaLocations[key] = dependencyValues.minima[key].get_component(0);
+                minimaLocations[key] = dependencyValues.minima[key].get_component(0).tree;
               }
             }
             return { newValues: { minimaLocations } }
@@ -660,10 +697,16 @@ export default class Function extends InlineComponent {
             return {};
           } else {
             freshByKey[arrayKey] = true;
+
+            let minimum = dependencyValues["minimum" + (arrayKey + 1)];
+            let minimumLocation;
+            if (minimum) {
+              minimumLocation = minimum.get_component(0).tree;
+            }
             return {
               newValues: {
                 minimaLocations: {
-                  [arrayKey]: dependencyValues["minimum" + (arrayKey + 1)].get_component(0)
+                  [arrayKey]: minimumLocation
                 }
               }
             }
@@ -677,7 +720,7 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.minimaValues = {
       public: true,
-      componentType: "point",
+      componentType: "number",
       isArray: true,
       entryPrefixes: ["minimumValue"],
       returnDependencies: function ({ arrayKeys }) {
@@ -709,7 +752,7 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.minimaValues.freshByKey;
 
         if (arrayKey === undefined) {
           if (changes.minima) {
@@ -725,36 +768,58 @@ export default class Function extends InlineComponent {
 
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { minimaValues: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { minimaValues: true } }
           }
 
         } else {
-          if (valuesChanged["minimum" + (arrayKey + 1)]) {
-            delete freshByKey[arrayKey];
+
+          if (changes["minimum" + (arrayKey + 1)]) {
+
+            let valuesChanged = changes["minimum" + (arrayKey + 1)].valuesChanged;
+
+            if (valuesChanged["minimum" + (arrayKey + 1)]) {
+              delete freshByKey[arrayKey];
+            }
           }
-          return { fresh: freshByKey[arrayKey] === true }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { minimaValues: freshByKey[arrayKey] === true } }
 
         }
 
       },
-      definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
+      definition: function ({ dependencyValues, freshnessInfo, arrayKeys, changes }) {
 
         let arrayKey;
         if (arrayKeys) {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.minimaValues.freshByKey;
 
 
         if (arrayKey === undefined) {
 
-          if (Object.keys(freshByKey).length === 0) {
+          if (changes.minima && changes.minima.valuesChanged.minima.changed.changedEntireArray) {
+            // if entire array is changed, then send in an array
+            // to indicate have completely new values
 
-            let minimaValues = dependencyValues.minima.map(x => x.get_component(1));
+            let minimaValues = dependencyValues.minima.map(x => x.get_component(1).tree);
+
+            // mark everything fresh, but start with new object
+            // to make sure don't have extraneous keys
+            freshByKey = {}
+            for (let key in minimaValues) {
+              freshByKey[key] = true;
+            }
+
+            return { newValues: { minimaValues } }
+
+          } else if (Object.keys(freshByKey).length === 0) {
+
+            let minimaValues = dependencyValues.minima.map(x => x.get_component(1).tree);
 
             // mark everything fresh
             for (let key in minimaValues) {
@@ -769,7 +834,7 @@ export default class Function extends InlineComponent {
             for (let key in dependencyValues.minima) {
               if (!freshByKey[key]) {
                 freshByKey[key] = true;
-                minimaValues[key] = dependencyValues.minima[key].get_component(1);
+                minimaValues[key] = dependencyValues.minima[key].get_component(1).tree;
               }
             }
             return { newValues: { minimaValues } }
@@ -783,10 +848,17 @@ export default class Function extends InlineComponent {
             return {};
           } else {
             freshByKey[arrayKey] = true;
+
+
+            let minimum = dependencyValues["minimum" + (arrayKey + 1)];
+            let minimumValue;
+            if (minimum) {
+              minimumValue = minimum.get_component(1).tree;
+            }
             return {
               newValues: {
                 minimaValues: {
-                  [arrayKey]: dependencyValues["minimum" + (arrayKey + 1)].get_component(1)
+                  [arrayKey]: minimumValue
                 }
               }
             }
@@ -840,6 +912,8 @@ export default class Function extends InlineComponent {
       },
       markStale: function ({ freshnessInfo, arrayKeys, changes }) {
 
+        let freshByKey = freshnessInfo.maxima.freshByKey;
+
         let arrayKey;
         if (arrayKeys) {
           arrayKey = Number(arrayKeys[0]);
@@ -854,7 +928,7 @@ export default class Function extends InlineComponent {
               delete freshByKey[key];
             }
 
-            return { fresh: false }
+            return { fresh: { maxima: false } }
 
           } else {
 
@@ -882,31 +956,30 @@ export default class Function extends InlineComponent {
 
         if (changes.numericalf || changes.xscale) {
           // everything is stale
-          let freshByKey = freshnessInfo.freshByKey
           for (let key in freshByKey) {
             delete freshByKey[key];
           }
-          return { fresh: false }
+          return { fresh: { maxima: false } }
         }
 
 
         if (arrayKey === undefined) {
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { maxima: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { maxima: true } }
           }
         } else {
           // asked for just one component
-          return { fresh: freshByKey[arrayKey] === true }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { maxima: freshByKey[arrayKey] === true } }
         }
 
       },
       definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
-
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.maxima.freshByKey;
 
         if (dependencyValues.functionChild.length === 1) {
 
@@ -1001,7 +1074,7 @@ export default class Function extends InlineComponent {
           if (fleft < fx) {
             if (maximumAtPreviousRight) {
               if (Number.isFinite(fleft)) {
-                maximaList.push(me.fromAst(["tuple", xleft, fleft]));
+                maximaList.push(me.fromAst(["vector", xleft, -fleft]));
               }
             }
             maximumAtPreviousRight = false;
@@ -1014,7 +1087,7 @@ export default class Function extends InlineComponent {
             if (fx < fright && fx < fleft &&
               fx < f(x + result.tol) && fx < f(x - result.tol) &&
               Number.isFinite(fx)) {
-              maximaList.push(me.fromAst(["tuple", x, -fx]));
+              maximaList.push(me.fromAst(["vector", x, -fx]));
             }
           }
         }
@@ -1031,7 +1104,7 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.maximaLocations = {
       public: true,
-      componentType: "point",
+      componentType: "number",
       isArray: true,
       entryPrefixes: ["maximumLocation"],
       returnDependencies: function ({ arrayKeys }) {
@@ -1064,7 +1137,7 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.maximaLocations.freshByKey;
 
         if (arrayKey === undefined) {
           if (changes.maxima) {
@@ -1080,36 +1153,55 @@ export default class Function extends InlineComponent {
 
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { maximaLocations: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { maximaLocations: true } }
           }
 
         } else {
-          if (valuesChanged["maximum" + (arrayKey + 1)]) {
-            delete freshByKey[arrayKey];
+
+          if (changes["maximum" + (arrayKey + 1)]) {
+
+            let valuesChanged = changes["maximum" + (arrayKey + 1)].valuesChanged;
+
+            if (valuesChanged["maximum" + (arrayKey + 1)]) {
+              delete freshByKey[arrayKey];
+            }
           }
-          return { fresh: freshByKey[arrayKey] === true }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { maximaLocations: freshByKey[arrayKey] === true } }
 
         }
 
       },
-      definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
+      definition: function ({ dependencyValues, freshnessInfo, arrayKeys, changes }) {
 
         let arrayKey;
         if (arrayKeys) {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
-
+        let freshByKey = freshnessInfo.maximaLocations.freshByKey;
 
         if (arrayKey === undefined) {
 
-          if (Object.keys(freshByKey).length === 0) {
+          if (changes.maxima && changes.maxima.valuesChanged.maxima.changed.changedEntireArray) {
+            // if entire array is changed, then send in an array
+            // to indicate have completely new values
 
-            let maximaLocations = dependencyValues.maxima.map(x => x.get_component(0));
+            let maximaLocations = dependencyValues.maxima.map(x => x.get_component(0).tree);
+
+            // mark everything fresh, but start with new object
+            // to make sure don't have extraneous keys
+            freshByKey = {}
+            for (let key in maximaLocations) {
+              freshByKey[key] = true;
+            }
+
+            return { newValues: { maximaLocations } }
+
+          } else if (Object.keys(freshByKey).length === 0) {
 
             // mark everything fresh
             for (let key in maximaLocations) {
@@ -1124,7 +1216,7 @@ export default class Function extends InlineComponent {
             for (let key in dependencyValues.maxima) {
               if (!freshByKey[key]) {
                 freshByKey[key] = true;
-                maximaLocations[key] = dependencyValues.maxima[key].get_component(0);
+                maximaLocations[key] = dependencyValues.maxima[key].get_component(0).tree;
               }
             }
             return { newValues: { maximaLocations } }
@@ -1138,10 +1230,15 @@ export default class Function extends InlineComponent {
             return {};
           } else {
             freshByKey[arrayKey] = true;
+            let maximum = dependencyValues["maximum" + (arrayKey + 1)];
+            let maximumLocation;
+            if (maximum) {
+              maximumLocation = maximum.get_component(0).tree;
+            }
             return {
               newValues: {
                 maximaLocations: {
-                  [arrayKey]: dependencyValues["maximum" + (arrayKey + 1)].get_component(0)
+                  [arrayKey]: maximumLocation
                 }
               }
             }
@@ -1155,7 +1252,7 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.maximaValues = {
       public: true,
-      componentType: "point",
+      componentType: "number",
       isArray: true,
       entryPrefixes: ["maximumValue"],
       returnDependencies: function ({ arrayKeys }) {
@@ -1187,7 +1284,7 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.maximaValues.freshByKey;
 
         if (arrayKey === undefined) {
           if (changes.maxima) {
@@ -1203,36 +1300,58 @@ export default class Function extends InlineComponent {
 
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { maximaValues: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { maximaValues: true } }
           }
 
         } else {
-          if (valuesChanged["maximum" + (arrayKey + 1)]) {
-            delete freshByKey[arrayKey];
+
+          if (changes["maximum" + (arrayKey + 1)]) {
+
+            let valuesChanged = changes["maximum" + (arrayKey + 1)].valuesChanged;
+
+            if (valuesChanged["maximum" + (arrayKey + 1)]) {
+              delete freshByKey[arrayKey];
+            }
           }
-          return { fresh: freshByKey[arrayKey] === true }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { maximaValues: freshByKey[arrayKey] === true } }
 
         }
 
       },
-      definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
+      definition: function ({ dependencyValues, freshnessInfo, arrayKeys, changes }) {
 
         let arrayKey;
         if (arrayKeys) {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.maximaValues.freshByKey;
 
 
         if (arrayKey === undefined) {
 
-          if (Object.keys(freshByKey).length === 0) {
+          if (changes.maxima && changes.maxima.valuesChanged.maxima.changed.changedEntireArray) {
+            // if entire array is changed, then send in an array
+            // to indicate have completely new values
 
-            let maximaValues = dependencyValues.maxima.map(x => x.get_component(1));
+            let maximaValues = dependencyValues.maxima.map(x => x.get_component(1).tree);
+
+            // mark everything fresh, but start with new object
+            // to make sure don't have extraneous keys
+            freshByKey = {}
+            for (let key in maximaValues) {
+              freshByKey[key] = true;
+            }
+
+            return { newValues: { maximaValues } }
+
+          } else if (Object.keys(freshByKey).length === 0) {
+
+            let maximaValues = dependencyValues.maxima.map(x => x.get_component(1).tree);
 
             // mark everything fresh
             for (let key in maximaValues) {
@@ -1247,7 +1366,7 @@ export default class Function extends InlineComponent {
             for (let key in dependencyValues.maxima) {
               if (!freshByKey[key]) {
                 freshByKey[key] = true;
-                maximaValues[key] = dependencyValues.maxima[key].get_component(1);
+                maximaValues[key] = dependencyValues.maxima[key].get_component(1).tree;
               }
             }
             return { newValues: { maximaValues } }
@@ -1260,11 +1379,17 @@ export default class Function extends InlineComponent {
           if (freshByKey[arrayKey]) {
             return {};
           } else {
+
             freshByKey[arrayKey] = true;
+            let maximum = dependencyValues["maximum" + (arrayKey + 1)];
+            let maximumValue;
+            if (maximum) {
+              maximumValue = maximum.get_component(1).tree;
+            }
             return {
               newValues: {
                 maximaValues: {
-                  [arrayKey]: dependencyValues["maximum" + (arrayKey + 1)].get_component(1)
+                  [arrayKey]: maximumValue
                 }
               }
             }
@@ -1294,7 +1419,6 @@ export default class Function extends InlineComponent {
         }
       }
     }
-
 
 
     stateVariableDefinitions.extrema = {
@@ -1351,6 +1475,8 @@ export default class Function extends InlineComponent {
       },
       markStale: function ({ freshnessInfo, arrayKeys, changes }) {
 
+        let freshByKey = freshnessInfo.extrema.freshByKey;
+
         let arrayKey;
         if (arrayKeys) {
           arrayKey = Number(arrayKeys[0]);
@@ -1365,7 +1491,7 @@ export default class Function extends InlineComponent {
               delete freshByKey[key];
             }
 
-            return { fresh: false }
+            return { fresh: { extrema: false } }
 
           } else {
 
@@ -1393,31 +1519,31 @@ export default class Function extends InlineComponent {
 
         if (changes.minima || changes.maxima) {
           // everything is stale
-          let freshByKey = freshnessInfo.freshByKey
           for (let key in freshByKey) {
             delete freshByKey[key];
           }
-          return { fresh: false }
+          return { fresh: { extrema: false } }
         }
 
 
         if (arrayKey === undefined) {
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { extrema: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { extrema: true } }
           }
         } else {
           // asked for just one component
-          return { fresh: freshByKey[arrayKey] === true }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { extrema: freshByKey[arrayKey] === true } }
         }
 
       },
       definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.extrema.freshByKey;
 
         // for extream functionChild dependency only if it is length 1
         if (dependencyValues.functionChild) {
@@ -1482,7 +1608,7 @@ export default class Function extends InlineComponent {
         }
 
         let extrema = [...dependencyValues.minima, ...dependencyValues.maxima]
-          .sort((a, b) => a.get_component(0) - b.get_component(0));
+          .sort((a, b) => a.get_component(0).tree - b.get_component(0).tree);
 
         // mark everything fresh
         for (let key in extrema) {
@@ -1496,7 +1622,7 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.extremaLocations = {
       public: true,
-      componentType: "point",
+      componentType: "number",
       isArray: true,
       entryPrefixes: ["extremumLocation"],
       returnDependencies: function ({ arrayKeys }) {
@@ -1529,7 +1655,7 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.extremaLocations.freshByKey;
 
         if (arrayKey === undefined) {
           if (changes.extrema) {
@@ -1545,36 +1671,58 @@ export default class Function extends InlineComponent {
 
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { extremaLocations: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { extremaLocations: true } }
           }
 
         } else {
-          if (valuesChanged["extremum" + (arrayKey + 1)]) {
-            delete freshByKey[arrayKey];
+
+          if (changes["extremum" + (arrayKey + 1)]) {
+
+            let valuesChanged = changes["extremum" + (arrayKey + 1)].valuesChanged;
+
+            if (valuesChanged["extremum" + (arrayKey + 1)]) {
+              delete freshByKey[arrayKey];
+            }
           }
-          return { fresh: freshByKey[arrayKey] === true }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { extremaLocations: freshByKey[arrayKey] === true } }
 
         }
 
       },
-      definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
+      definition: function ({ dependencyValues, freshnessInfo, arrayKeys, changes }) {
 
         let arrayKey;
         if (arrayKeys) {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.extremaLocations.freshByKey;
 
 
         if (arrayKey === undefined) {
 
-          if (Object.keys(freshByKey).length === 0) {
+          if (changes.extrema && changes.extrema.valuesChanged.extrema.changed.changedEntireArray) {
+            // if entire array is changed, then send in an array
+            // to indicate have completely new values
 
-            let extremaLocations = dependencyValues.extrema.map(x => x.get_component(0));
+            let extremaLocations = dependencyValues.extrema.map(x => x.get_component(0).tree);
+
+            // mark everything fresh, but start with new object
+            // to make sure don't have extraneous keys
+            freshByKey = {}
+            for (let key in extremaLocations) {
+              freshByKey[key] = true;
+            }
+
+            return { newValues: { extremaLocations } }
+
+          } else if (Object.keys(freshByKey).length === 0) {
+
+            let extremaLocations = dependencyValues.extrema.map(x => x.get_component(0).tree);
 
             // mark everything fresh
             for (let key in extremaLocations) {
@@ -1589,7 +1737,7 @@ export default class Function extends InlineComponent {
             for (let key in dependencyValues.extrema) {
               if (!freshByKey[key]) {
                 freshByKey[key] = true;
-                extremaLocations[key] = dependencyValues.extrema[key].get_component(0);
+                extremaLocations[key] = dependencyValues.extrema[key].get_component(0).tree;
               }
             }
             return { newValues: { extremaLocations } }
@@ -1603,10 +1751,16 @@ export default class Function extends InlineComponent {
             return {};
           } else {
             freshByKey[arrayKey] = true;
+
+            let extremum = dependencyValues["extremum" + (arrayKey + 1)];
+            let extremumLocation;
+            if (extremum) {
+              extremumLocation = extremum.get_component(0).tree;
+            }
             return {
               newValues: {
                 extremaLocations: {
-                  [arrayKey]: dependencyValues["extremum" + (arrayKey + 1)].get_component(0)
+                  [arrayKey]: extremumLocation
                 }
               }
             }
@@ -1620,7 +1774,7 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.extremaValues = {
       public: true,
-      componentType: "point",
+      componentType: "number",
       isArray: true,
       entryPrefixes: ["extremumValue"],
       returnDependencies: function ({ arrayKeys }) {
@@ -1652,7 +1806,7 @@ export default class Function extends InlineComponent {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.extremaValues.freshByKey;
 
         if (arrayKey === undefined) {
           if (changes.extrema) {
@@ -1668,36 +1822,67 @@ export default class Function extends InlineComponent {
 
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { extremaValues: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { extremaValues: true } }
           }
 
         } else {
-          if (valuesChanged["extremum" + (arrayKey + 1)]) {
-            delete freshByKey[arrayKey];
+          if (changes.extrema) {
+            // check if the extrema
+            // are no longer fresh
+            let newFreshByKey = changes.extrema.valuesChanged.extrema.freshnessInfo.freshByKey;
+            for (let key in freshByKey) {
+              if (!newFreshByKey[key]) {
+                delete freshByKey[key];
+              }
+            }
           }
-          return { fresh: freshByKey[arrayKey] === true }
+          if (changes["extremum" + (arrayKey + 1)]) {
+
+            let valuesChanged = changes["extremum" + (arrayKey + 1)].valuesChanged;
+
+            if (valuesChanged["extremum" + (arrayKey + 1)]) {
+              delete freshByKey[arrayKey];
+            }
+          }
+          // will be interpreted as indicating freshness of array entry
+          return { fresh: { extremaValues: freshByKey[arrayKey] === true } }
 
         }
 
       },
-      definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
+      definition: function ({ dependencyValues, freshnessInfo, arrayKeys, changes }) {
 
         let arrayKey;
         if (arrayKeys) {
           arrayKey = Number(arrayKeys[0]);
         }
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.extremaValues.freshByKey;
 
 
         if (arrayKey === undefined) {
 
-          if (Object.keys(freshByKey).length === 0) {
+          if (changes.extrema && changes.extrema.valuesChanged.extrema.changed.changedEntireArray) {
+            // if entire array is changed, then send in an array
+            // to indicate have completely new values
 
-            let extremaValues = dependencyValues.extrema.map(x => x.get_component(1));
+            let extremaValues = dependencyValues.extrema.map(x => x.get_component(1).tree);
+
+            // mark everything fresh, but start with new object
+            // to make sure don't have extraneous keys
+            freshByKey = {}
+            for (let key in extremaValues) {
+              freshByKey[key] = true;
+            }
+
+            return { newValues: { extremaValues } }
+
+          } else if (Object.keys(freshByKey).length === 0) {
+
+            let extremaValues = dependencyValues.extrema.map(x => x.get_component(1).tree);
 
             // mark everything fresh
             for (let key in extremaValues) {
@@ -1712,7 +1897,7 @@ export default class Function extends InlineComponent {
             for (let key in dependencyValues.extrema) {
               if (!freshByKey[key]) {
                 freshByKey[key] = true;
-                extremaValues[key] = dependencyValues.extrema[key].get_component(1);
+                extremaValues[key] = dependencyValues.extrema[key].get_component(1).tree;
               }
             }
             return { newValues: { extremaValues } }
@@ -1726,10 +1911,16 @@ export default class Function extends InlineComponent {
             return {};
           } else {
             freshByKey[arrayKey] = true;
+
+            let extremum = dependencyValues["extremum" + (arrayKey + 1)];
+            let extremumValue;
+            if (extremum) {
+              extremumValue = extremum.get_component(1).tree;
+            }
             return {
               newValues: {
                 extremaValues: {
-                  [arrayKey]: dependencyValues["extremum" + (arrayKey + 1)].get_component(1)
+                  [arrayKey]: extremumValue
                 }
               }
             }
@@ -1741,195 +1932,79 @@ export default class Function extends InlineComponent {
       }
     }
 
-    // stateVariableDefinitions.indexInParent = {
-    //   returnDependencies: () => ({
-    //     indexInParent: {
-    //       dependencyType: "indexInParent",
-    //     },
-    //     functionIndexInParent: {
-    //       dependencyType: "indexInParent",
-    //       componentTypes: ["function"]
-    //     }
-    //   }),
-    //   definition: function ({ dependencyValues }) {
-    //     console.log('definition of indexInParent');
-    //     console.log(dependencyValues);
 
-    //     return { newValues: { indexInParent: dependencyValues.functionIndexInParent } }
-    //   }
-    // }
+    stateVariableDefinitions.numberMinima = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        minima: {
+          dependencyType: "stateVariable",
+          variableName: "minima"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            numberMinima: dependencyValues.minima.length,
+          },
+          checkForActualChange: { numberMinima: true }
+        }
+      }
+    }
+
+
+    stateVariableDefinitions.numberMaxima = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        maxima: {
+          dependencyType: "stateVariable",
+          variableName: "maxima"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            numberMaxima: dependencyValues.maxima.length,
+          },
+          checkForActualChange: { numberMaxima: true }
+        }
+      }
+    }
+
+
+    stateVariableDefinitions.numberExtrema = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        extrema: {
+          dependencyType: "stateVariable",
+          variableName: "extrema"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            numberExtrema: dependencyValues.extrema.length,
+          },
+          checkForActualChange: { numberExtrema: true }
+        }
+      }
+    }
+
+
 
     return stateVariableDefinitions;
 
   }
 
-  updateStateOld(args = {}) {
-    if (args.init === true) {
-
-
-      this.makePublicStateVariableArray({
-        variableName: "minima",
-        componentType: "point",
-        stateVariableForRef: "coords",
-        additionalProperties: { draggable: false },
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "minimum",
-        arrayVariableName: "minima",
-      });
-      this.makePublicStateVariableArray({
-        variableName: "minimalocations",
-        componentType: "number",
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "minimumlocation",
-        arrayVariableName: "minimalocations",
-      });
-      this.makePublicStateVariableArray({
-        variableName: "minimavalues",
-        componentType: "number",
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "minimumvalue",
-        arrayVariableName: "minimavalues",
-      });
-      this.makePublicStateVariable({
-        variableName: "numberminima",
-        componentType: "number"
-      });
-
-      this.makePublicStateVariableArray({
-        variableName: "maxima",
-        componentType: "point",
-        stateVariableForRef: "coords",
-        additionalProperties: { draggable: false },
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "maximum",
-        arrayVariableName: "maxima",
-      });
-      this.makePublicStateVariableArray({
-        variableName: "maximalocations",
-        componentType: "number",
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "maximumlocation",
-        arrayVariableName: "maximalocations",
-      });
-      this.makePublicStateVariableArray({
-        variableName: "maximavalues",
-        componentType: "number",
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "maximumvalue",
-        arrayVariableName: "maximavalues",
-      });
-      this.makePublicStateVariable({
-        variableName: "numbermaxima",
-        componentType: "number"
-      });
-
-      this.makePublicStateVariableArray({
-        variableName: "extrema",
-        componentType: "point",
-        stateVariableForRef: "coords",
-        additionalProperties: { draggable: false },
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "extremum",
-        arrayVariableName: "extrema",
-      });
-      this.makePublicStateVariableArray({
-        variableName: "extremalocations",
-        componentType: "number",
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "extremumlocation",
-        arrayVariableName: "extremalocations",
-      });
-      this.makePublicStateVariableArray({
-        variableName: "extremavalues",
-        componentType: "number",
-        entryName: "extremumvalue",
-        emptyForOutOfBounds: true,
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "extremumvalue",
-        arrayVariableName: "extremavalues",
-      });
-      this.makePublicStateVariable({
-        variableName: "numberextrema",
-        componentType: "number"
-      });
-      this.makePublicStateVariable({
-        variableName: "styledescription",
-        componentType: "text",
-      });
-
-    }
-
-  }
-
-  // allow to adapt into curve
-  get nAdapters() {
-    return 1;
-  }
-
-  getAdapter(ind) {
-
-    if (ind >= 1) {
-      return;
-    }
-
-    let newState = {
-      functionComponentName: this.componentName
-    };
-
-
-    let downstreamStateVariables = [];
-    let upstreamStateVariables = [];
-
-    // copy any properties that match the adapter
-    // add them both to newState and to dependency state variables
-    let adapterClass = this.allComponentClasses.curve;
-    let availableClassProperties = adapterClass.createPropertiesObject({
-      standardComponentClasses: this.standardComponentClasses
-    });
-
-    for (let item in availableClassProperties) {
-      if (item in this._state) {
-        newState[item] = this.state[item];
-        downstreamStateVariables.push(item);
-        upstreamStateVariables.push(item);
-      }
-    }
-
-    let downDep = {
-      dependencyType: "adapter",
-      adapter: "curve",
-      downstreamStateVariables: downstreamStateVariables,
-      upstreamStateVariables: upstreamStateVariables,
-      includeDownstreamComponent: true,
-    }
-
-    // TODO: if unresolved, should pass unresolvedState to curve
-
-    return {
-      componentType: "curve",
-      downstreamDependencies: {
-        [this.componentName]: [downDep]
-      },
-      state: newState,
-    };
-
-  }
+  adapters = [{
+    stateVariable: "numericalf",
+    componentType: "functioncurve"
+  },
+  {
+    stateVariable: "formula",
+    componentType: "math"
+  }];
 
 }

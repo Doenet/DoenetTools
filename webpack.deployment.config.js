@@ -125,6 +125,13 @@ module.exports = {
       filename: "./page/index.html"
       // favicon: "",
     }),
+      // /GuestEditor
+      new HtmlWebPackPlugin({
+        chunks: ["guesteditor/index.js"],
+        template: "./src/guesteditor/index.html",
+        filename: "./guesteditor/index.html"
+        // favicon: "",
+      }),
     new HtmlWebPackPlugin({
       template: "./src/gradebook/assignment/index.html",
       filename: "./gradebook/assignment/index.html"
@@ -166,4 +173,3 @@ module.exports = {
     // openPage: "protected",
   }
 };
-

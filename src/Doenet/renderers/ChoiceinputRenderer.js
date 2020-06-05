@@ -6,63 +6,48 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
 
 class ChoiceinputRenderer extends BaseRenderer {
-  constructor({ key, actions, choicetexts,
-    selectedindices, selectmultiple, inline,
+  constructor({ key, actions, choiceTexts,
+    selectedIndices, selectMultiple, inline,
     includeCheckWork, creditAchieved, valueHasBeenValidated,
-    numberTimesSubmitted, returnChoiceRenderers, showCorrectness }) {
+    returnChoiceRenderers, showCorrectness, disabled }) {
     super({ key: key });
     this.actions = actions;
-    this.choicetexts = choicetexts;
-    this.selectedindices = selectedindices;
-    this.selectmultiple = selectmultiple;
+    this.choiceTexts = choiceTexts;
+    this.selectedIndices = selectedIndices;
+    this.selectMultiple = selectMultiple;
     this.inline = inline;
     this.includeCheckWork = includeCheckWork;
     this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
-    this.numberTimesSubmitted = numberTimesSubmitted;
     this.returnChoiceRenderers = returnChoiceRenderers;
     this.showCorrectness = showCorrectness;
-
-    this.localNumberTimesSubmitted = this.numberTimesSubmitted;
+    this.disabled = disabled;
 
     this.onChangeHandler = this.onChangeHandler.bind(this);
-    this.localSubmitAnswer = this.localSubmitAnswer.bind(this);
   }
 
   updateChoiceinputRenderer({
-    choicetexts,
-    selectedindices,
+    choiceTexts,
+    selectedIndices,
     creditAchieved,
     valueHasBeenValidated,
-    numberTimesSubmitted,
-    inline,
+    inline, disabled
   }) {
 
-    this.choicetexts = choicetexts;
-    this.selectedindices = selectedindices;
+    this.choiceTexts = choiceTexts;
+    this.selectedIndices = selectedIndices;
     this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
-    this.numberTimesSubmitted = numberTimesSubmitted;
     this.inline = inline;
+    this.disabled = disabled;
   }
 
 
 
   updateValidationState() {
-    if (this.localNumberTimesSubmitted !== this.numberTimesSubmitted) {
-      // if number of times submitted doesn't match,
-      // it means that the answer has been submitted since last pass
-      this.localNumberTimesSubmitted = this.numberTimesSubmitted;
-      this.lastSubmittedIndices = this.selectedindices;
-      this.valueAsSubmitted = true;
-    } else if (!this.valueHasBeenValidated) {
-      this.valueAsSubmitted = false;
-    } else if(this.valueAsSubmitted === undefined) {
-      this.valueAsSubmitted = true;
-    }
 
     this.validationState = "unvalidated";
-    if (this.valueAsSubmitted) {
+    if (this.valueHasBeenValidated) {
       if (this.creditAchieved === 1) {
         this.validationState = "correct";
       } else if (this.creditAchieved === 0) {
@@ -73,11 +58,6 @@ class ChoiceinputRenderer extends BaseRenderer {
     }
   }
 
-
-  localSubmitAnswer() {
-    this.actions.submitAnswer();
-  }
-
   onChangeHandler(e) {
 
     let newSelectedIndices = [];
@@ -86,10 +66,10 @@ class ChoiceinputRenderer extends BaseRenderer {
       newSelectedIndices = [Number(e.target.value)];
     }
 
-    if (this.selectedindices.length !== newSelectedIndices.length ||
-      this.selectedindices.some((v, i) => v != newSelectedIndices[i])) {
-      this.selectedindices = newSelectedIndices
-      this.actions.updateSelectedIndices({ selectedindices: this.selectedindices });
+    if (this.selectedIndices.length !== newSelectedIndices.length ||
+      this.selectedIndices.some((v, i) => v != newSelectedIndices[i])) {
+      this.selectedIndices = newSelectedIndices
+      this.actions.updateSelectedIndices({ selectedIndices: this.selectedIndices });
     }
   }
 
@@ -118,20 +98,20 @@ class ChoiceinputRenderer extends BaseRenderer {
 
         if (this.validationState === "unvalidated") {
           checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
-          checkWorkButton = <span
+          checkWorkButton = <button
             id={this._key + '_submit'}
             tabIndex="0"
             ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
             style={checkWorkStyle}
-            onClick={this.localSubmitAnswer}
+            onClick={this.actions.submitAnswer}
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
-                this.localSubmitAnswer();
+                this.actions.submitAnswer();
               }
             }}
           >
             <FontAwesomeIcon icon={faLevelDownAlt}  transform={{rotate:90}} />
-          </span>
+          </button>
         } else {
           if(this.showCorrectness) {
             if (this.validationState === "correct") {
@@ -179,7 +159,7 @@ class ChoiceinputRenderer extends BaseRenderer {
         }
       }
 
-      let optionsList = this.choicetexts.map(function (s, i) {
+      let optionsList = this.choiceTexts.map(function (s, i) {
         return <option key={i} value={i + 1}>{s}</option>
       });
       return <React.Fragment>
@@ -187,7 +167,8 @@ class ChoiceinputRenderer extends BaseRenderer {
         <select
           id={this._key}
           onChange={this.onChangeHandler}
-          value={this.selectedindices[0]}
+          value={this.selectedIndices[0]}
+          disabled={this.disabled}
         >
           <option></option>
           {optionsList}
@@ -218,7 +199,7 @@ class ChoiceinputRenderer extends BaseRenderer {
           }
 
           checkworkComponent = (
-            <span id={this._key + "_submit"}
+            <button id={this._key + "_submit"}
               tabIndex="0"
               style={checkWorkStyle}
               onClick={this.actions.submitAnswer}
@@ -231,7 +212,7 @@ class ChoiceinputRenderer extends BaseRenderer {
               <FontAwesomeIcon icon={faLevelDownAlt}  transform={{rotate:90}}/>
               &nbsp;
               {checkWorkText}
-          </span>);
+          </button>);
          
         } else {
           if(this.showCorrectness) {
@@ -288,7 +269,8 @@ class ChoiceinputRenderer extends BaseRenderer {
       }
 
       let onChangeHandler = this.onChangeHandler;
-      let selectedIndices = this.selectedindices;
+      let selectedIndices = this.selectedIndices;
+      let disabled = this.disabled;
       let keyBeginning = inputKey + '_choice'
       let choiceDoenetTags = this.returnChoiceRenderers().map(function (tag, i) {
         return <li key={inputKey + '_choice' + i}>
@@ -299,6 +281,7 @@ class ChoiceinputRenderer extends BaseRenderer {
             value={i + 1}
             checked={selectedIndices.includes(i + 1)}
             onChange={onChangeHandler}
+            disabled={disabled}
           />
           <label htmlFor={keyBeginning + i + "_input"}>
             <Doenet

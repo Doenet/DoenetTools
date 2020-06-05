@@ -217,6 +217,7 @@
   width: 100%;
   color: rgb(177, 177, 177);
   text-decoration: none;
+  line-height: 2em;
 }
 .headerPlayBtn{
   display: none;

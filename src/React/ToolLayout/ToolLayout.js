@@ -302,7 +302,7 @@ export default function ToolLayout(props) {
   const footerClass = props.children.length > 1 ? 'footer-on' : 'footer-off';
   return (
     <>
-      <DoenetHeader toolName={props.toolName} headingTitle={props.headingTitle} headerRoleFromLayout={props.headerRoleFromLayout} headerChangesFromLayout={props.headerChangesFromLayout} onChange={showCollapseMenu} />
+      <DoenetHeader toolName={props.toolName} headingTitle={props.headingTitle} headerRoleFromLayout={props.headerRoleFromLayout} headerChangesFromLayout={props.headerChangesFromLayout} guestUser = {props.guestUser} onChange={showCollapseMenu} />
       {deviceType === "phone" ? <div ref={container}>
         <div className={footerClass}>
           {(phoneVisiblePanel === "left" || allParts.length === 1) &&

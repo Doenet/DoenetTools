@@ -55,7 +55,7 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
           variableNames: ["value"],
         }
       }),
-      affectedBySugar: ["anythingForSelectedType"],
+      logicToWaitOnSugar: ["anythingForSelectedType"],
       replacementFunction: breakIntoTypesByCommas,
     });
 
@@ -132,7 +132,7 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
           variableName: "type",
         }
       }),
-      affectedBySugar: ["anythingForSelectedType"],
+      logicToWaitOnSugar: ["anythingForSelectedType"],
       replacementFunction: addType,
     });
 

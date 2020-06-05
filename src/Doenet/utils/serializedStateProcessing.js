@@ -379,7 +379,7 @@ export function createComponentsFromProps(serializedState, standardComponentClas
           newChildren.push(newComponent);
           delete component.props[prop];
         } else if (!(propLower === "name" || propLower === "assignnames" || propLower === "assignnamespaces" || propLower === "newnamespace")) {
-          throw Error("Invalid property " + prop);
+          throw Error("Invalid property: " + prop);
         }
       }
       component.children.unshift(...newChildren);

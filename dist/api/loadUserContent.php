@@ -17,41 +17,16 @@ SELECT   -- get personal content
   c.timestamp as publishDate,
   c.removedFlag as removedFlag,
   c.draft as draft,
-  'root' as rootId, 
-  'root' as parentId,
-  c.public as isPublic
-FROM content AS c
-LEFT JOIN user_content uc ON uc.branchId = c.branchId
-WHERE uc.username='$remoteuser' AND c.removedFlag=0
-UNION
-SELECT  -- get children content 
-  c.branchId as branchId,
-  c.title as title,
-  c.contentId as contentId,
-  c.timestamp as publishDate,
-  c.removedFlag as removedFlag,
-  c.draft as draft,
   fc.rootId as rootId, 
   fc.folderId as parentId,
   c.public as isPublic
 FROM content AS c
-LEFT JOIN folder_content fc ON fc.childId = c.branchId
-WHERE fc.childType='content' AND c.removedFlag=0
-AND rootId IN (
-    SELECT 
-      f.folderId as folderId
-    FROM repo_access AS ra
-    LEFT JOIN folder f ON ra.repoId = f.folderId
-    WHERE ra.username='$remoteuser' AND ra.removedFlag=0
-    UNION
-    SELECT 
-      f.folderId as folderId
-    FROM user_folders AS uf
-    LEFT JOIN folder f ON uf.folderId = f.folderId
-    WHERE uf.username='$remoteuser'
-  )
-ORDER BY branchId, publishDate DESC
+LEFT JOIN user_content uc ON uc.branchId = c.branchId
+LEFT JOIN folder_content fc ON fc.childId = c.branchId AND fc.childType='content'
+WHERE uc.username='$remoteuser' AND c.removedFlag=0
+ORDER BY branchId, publishDate DESC;
 ";
+
 
 $result = $conn->query($sql); 
 $response_arr = array();
@@ -84,8 +59,9 @@ if ($result->num_rows > 0){
                 "title"=>$row["title"],
                 "publishDate" => "",
                 "draftDate" => "",
-                "parentId" => $row["parentId"],
-                "rootId" => $row["rootId"],
+                "type" => "content",
+                "parentId" => $row["parentId"] == NULL ? "root" : $row["parentId"],
+                "rootId" => $row["rootId"] == NULL ? "root" : $row["rootId"],
                 "isPublic" => ($row["isPublic"] == 1)
                 );
                 array_push($sort_order_arr,$bi);

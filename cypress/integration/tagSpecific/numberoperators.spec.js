@@ -6,7 +6,7 @@ beforeEach(() => {
   })
 
   it('mean',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p name="pPrime">Mean of first primes: <mean name="meanPrime">2,3,5,7</mean></p>
     <p>Reffing that mean: <ref>meanPrime</ref></p>
     <ref>pPrime</ref>
@@ -53,7 +53,7 @@ beforeEach(() => {
   })
 
   it('variance',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p name="pPrime">Variance of first primes: <variance name="variancePrime">2,3,5,7</variance></p>
     <p>Reffing that variance: <ref>variancePrime</ref></p>
     <ref>pPrime</ref>
@@ -100,7 +100,7 @@ beforeEach(() => {
   })
 
   it('unbiased variance',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p name="pPrime">Variance of first primes: <variance unbiased name="variancePrime">2,3,5,7</variance></p>
     <p>Reffing that variance: <ref>variancePrime</ref></p>
     <ref>pPrime</ref>
@@ -147,7 +147,7 @@ beforeEach(() => {
   })
 
   it('standard deviation',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p name="pPrime">Standard deviation of first primes: <standarddeviation name="standarddeviationPrime">2,3,5,7</standarddeviation></p>
     <p>Reffing that standard deviation: <ref>standarddeviationPrime</ref></p>
     <ref>pPrime</ref>
@@ -194,7 +194,7 @@ beforeEach(() => {
   })
 
   it('unbiased standard deviation',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p name="pPrime">Standard deviation of first primes: <standarddeviation unbiased name="standarddeviationPrime">2,3,5,7</standarddeviation></p>
     <p>Reffing that standard deviation: <ref>standarddeviationPrime</ref></p>
     <ref>pPrime</ref>
@@ -241,7 +241,7 @@ beforeEach(() => {
   })
 
   it('count',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p name="pPrime">Count of first primes: <count name="countPrime">2,3,5,7</count></p>
     <p>Reffing that count: <ref>countPrime</ref></p>
     <ref>pPrime</ref>
@@ -288,7 +288,7 @@ beforeEach(() => {
   })
 
   it('mod',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <p>7 mod 2 is <mod><number>7</number><number>2</number></mod>.</p>
     `},"*");
     });
