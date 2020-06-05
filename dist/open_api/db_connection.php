@@ -1,10 +1,10 @@
 <?php
 
-$env_path = "../etc/env.ini";
+$env_path = "../etc/env.ini"; // ?
 $remoteuser = $_SERVER[ 'REMOTE_USER' ];
 
-if ($_SERVER['HTTP_HOST'] == 'localhost:3000'){
-  $env_path = "../../env.ini";
+if ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == 'localhost:3000'){
+  $env_path = "env.ini";
   $remoteuser = "devuser";
 }
 
@@ -14,10 +14,13 @@ $username = $ini_array["username"];
 $password = $ini_array["password"];
 $database = $ini_array["database"];
 
-if ($_SERVER['HTTP_HOST'] == 'localhost:3000'){
+if ($_SERVER['HTTP_HOST'] == 'localhost'){
   $database = "doenet_local";
 }
 
+if ($_SERVER['HTTP_HOST'] == 'localhost:3000'){
+  $dbhost = "127.0.0.1";
+}
 
 $conn = mysqli_connect($dbhost, $username, $password, $database);
 // Check connection
