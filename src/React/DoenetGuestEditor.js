@@ -35,7 +35,7 @@ class DoenetGuestEditor extends Component {
       //Load most recent content from the branch or
       //Load specific branch's content id if it is given      
 
-      const phpUrl = '/api/getDoenetML.php';
+      const phpUrl = '/open_api/getDoenetML.php';
       const data = {
         branchId: this.branchId,
         contentId: this.contentId,
