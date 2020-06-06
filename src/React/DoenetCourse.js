@@ -1823,7 +1823,7 @@ class DoenetCourse extends Component {
 
     }
 
-    saveTree(){
+    saveTree = ({courseId, headingsInfo, assignmentsInfo, callback=(()=>{})}) => {
       // console.log("saving the tree")
       /**
        * here passing in a payload of
@@ -1849,79 +1849,78 @@ class DoenetCourse extends Component {
                 ('ML for Sales','2019-05-15','2019-11-20');
        */
       let assignmentId_parentID_array = [];
-      let assignmentId_array = Object.keys(this.assignment_obj)
-      assignmentId_array.forEach(id => {
-        assignmentId_parentID_array.push(this.assignment_obj[id]['parentId']);
+      let assignmentId_array = Object.keys(assignmentsInfo)
+      assignmentId_array.forEach(id=>{
+        assignmentId_parentID_array.push(assignmentsInfo[id]['parentId']);
       })
-      let headerID_array = Object.keys(this.heading_obj);
+      let headerID_array = Object.keys(headingsInfo);
       let headerID_array_to_payload = []
-      let headerID_childrenId_array_to_payload = []
+      let headerID_childrenId_array_to_payload=[]
       let headerID_parentId_array_to_payload = []
-      let headerID_title = []
-      headerID_array.forEach(currentHeaderId => {
-        let currentHeaderObj = this.heading_obj[currentHeaderId]
-        let title = currentHeaderObj['title']
-        if (title == null) {
-          title = "NULL"
+      let headerID_name = []
+      headerID_array.forEach(currentHeaderId=>{
+        let currentHeaderObj=headingsInfo[currentHeaderId]
+        let name = currentHeaderObj['title']
+        if (name==null){
+          name="NULL"
         }
-        let currentHeaderObjHeadingIdArray = currentHeaderObj['childHeadings']
+        let currentHeaderObjHeadingIdArray = currentHeaderObj['childFolders']
         let lengthOfHeadingId = currentHeaderObjHeadingIdArray.length
-        let currentHeaderObjAssignmentIdArray = currentHeaderObj['childAssignments']
+        let currentHeaderObjAssignmentIdArray = currentHeaderObj['childContent']
         let currentHeaderObjParentId = currentHeaderObj['parentId']
         let lengthOfAssigmentId = currentHeaderObjAssignmentIdArray.length
         let iterator = 0
-        if (lengthOfHeadingId == 0 && lengthOfAssigmentId == 0) {
+        if (lengthOfHeadingId==0 && lengthOfAssigmentId==0){
           headerID_array_to_payload.push(currentHeaderId)
-          if (currentHeaderObjParentId == null) {
+          if (currentHeaderObjParentId==null){
             headerID_parentId_array_to_payload.push("NULL")
           } else {
-            headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+          headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
           }
           headerID_childrenId_array_to_payload.push("NULL")
-          headerID_title.push(title);
+          headerID_name.push(name);
         }
-        while (iterator < lengthOfHeadingId) {
+        while (iterator < lengthOfHeadingId){
           headerID_array_to_payload.push(currentHeaderId)
           headerID_childrenId_array_to_payload.push(currentHeaderObjHeadingIdArray[iterator])
-          headerID_title.push(title);
-          if (currentHeaderObjParentId == null) {
+          headerID_name.push(name);
+          if (currentHeaderObjParentId==null){
             headerID_parentId_array_to_payload.push("NULL")
           } else {
-            headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+          headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
           }
-          iterator += 1
+          iterator+=1
         }
         iterator = 0
-        while (iterator < lengthOfAssigmentId) {
+        while (iterator < lengthOfAssigmentId){
           headerID_array_to_payload.push(currentHeaderId)
           headerID_childrenId_array_to_payload.push(currentHeaderObjAssignmentIdArray[iterator])
-          headerID_title.push(title);
-          if (currentHeaderObjParentId == null) {
+          headerID_name.push(name);
+          if (currentHeaderObjParentId==null){
             headerID_parentId_array_to_payload.push("NULL")
           } else {
-            headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
+          headerID_parentId_array_to_payload.push(currentHeaderObjParentId)
           }
-          iterator += 1
+          iterator+=1
         }
       })
       const urlGetCode = '/api/saveTree.php';
       const data = {
         assignmentId_array: assignmentId_array,
         assignmentId_parentID_array: assignmentId_parentID_array,
-        headerID_array_to_payload: headerID_array_to_payload,
-        headerID_title: headerID_title,
-        headerID_parentId_array_to_payload: headerID_parentId_array_to_payload,
-        headerID_childrenId_array_to_payload: headerID_childrenId_array_to_payload,
-        courseId: "aI8sK4vmEhC5sdeSP3vNW"
+        headerID_array_to_payload:headerID_array_to_payload,
+        headerID_name:headerID_name,
+        headerID_parentId_array_to_payload:headerID_parentId_array_to_payload,
+        headerID_childrenId_array_to_payload:headerID_childrenId_array_to_payload,
+        courseId: courseId
       }
-
-      axios.post(urlGetCode, data)
-        .then(resp => {
-          // console.log(resp.data)
-        })
-        .catch(error => { this.setState({ error: error }) });
-
+      axios.post(urlGetCode,data)
+      .then(resp=>{
+        callback();
+      })
+      .catch(error=>{this.setState({error:error})});
     }
+
     moveHeaderUp({ headerObj }){
       /**
       * posses up arrow iff your id not first appear inside your parentId's headerId array
@@ -2944,6 +2943,7 @@ class DoenetCourse extends Component {
           if (resp.data[itemId]["type"] == "folder") {
             tempHeadingsInfo[itemId] = resp.data[itemId];
             tempHeadingsInfo[itemId]["type"] = "folder";
+            if (itemId == "root") tempHeadingsInfo[itemId]["title"] = this.courseInfo[courseId]["courseName"];
             // process children
             for (let i in resp.data[itemId]["childrenId"]) {
               let childId = resp.data[itemId]["childrenId"][i];
@@ -3475,8 +3475,13 @@ class DoenetCourse extends Component {
                         containerId={this.currentCourseId}
                         treeHeadingsInfo={this.headingsInfo[this.currentCourseId] ? this.headingsInfo[this.currentCourseId] : {}}
                         treeAssignmentsInfo={this.assignmentsInfo[this.currentCourseId] ? this.assignmentsInfo[this.currentCourseId] : {}}
-                      // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}
+                        updateHeadingsAndAssignments={() => this.saveTree({
+                          courseId: this.currentCourseId,
+                          headingsInfo: this.headingsInfo[this.currentCourseId],
+                          assignmentsInfo: this.assignmentsInfo[this.currentCourseId],
+                        })}
                       />}
+                      
                     </Route>
                     {/* {this.tree_route} */}
                   </Switch>

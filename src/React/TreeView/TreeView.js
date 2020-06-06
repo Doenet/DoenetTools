@@ -7,6 +7,12 @@ import { faFileAlt, faFolder, faLink} from '@fortawesome/free-solid-svg-icons';
 import ChooserConstants from "../chooser/ChooserConstants";
 
 /*
+
+// specific styles for selected items
+- frame
+- contentContainer
+- title
+
   Data and fields:
     mandatory fields:
       - loading       (set to false if loaders not async)
@@ -165,6 +171,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
    currentDraggedOverContainerId, onLeafNodeClick }) {
      
   const getItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
+    const icon = currentItemId == "root" ? "" : treeNodeIcons(itemType);
     let itemDragged = currentDraggedObject.id == currentItemId;
     let isShadow = itemDragged && 
       currentDraggedObject.dataObject.parentId == parentNodeHeadingId &&
@@ -176,7 +183,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           background: "none",
           padding: "0px"
         },
-        icon: treeNodeIcons(itemType)
+        icon: icon
       })
     } else if (isShadow) {  // copy of item
       return ({
@@ -198,7 +205,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           padding: "0px 5px",
           color: '#0083e3'
         },
-        icon: treeNodeIcons(itemType)
+        icon: icon
       })
     }
   }
@@ -226,7 +233,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
     onDraggableDragOver={onDraggableDragOver}
     currentDraggedId={currentDraggedObject.id}
     currentDraggedType={currentDraggedObject.type}
-    style={ treeStyles["parentNode"] || Object.assign({marginLeft: '5px', color: "rgba(0,0,0,0.8)"}, 
+    styles={ treeStyles["parentNode"] || Object.assign({marginLeft: '5px', color: "rgba(0,0,0,0.8)"}, 
       itemStyleAndIcon.style) }> 
       { // iterate through children headings to generate tree recursively
       parentsInfo[parentHeadingId]["childFolders"].map(parentId => {

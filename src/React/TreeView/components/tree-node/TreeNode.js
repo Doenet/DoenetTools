@@ -27,7 +27,7 @@ const TreeNode = memo(({ children, title, style, defaultOpen = false }) => {
   )
 })
 
-export const ParentNode = memo(({ hide = false, children, title, type, itemIcon, expanderIcon, style, defaultOpen = false, id, 
+export const ParentNode = memo(({ hide = false, children, title, type, itemIcon, expanderIcon, styles, defaultOpen = false, id, 
   onDrop, onDraggableDragOver, onDragStart, onDragEnd, onDropEnter, onDropLeave, draggedOver, currentDraggedId, currentDraggedType}) => {
   const [isOpen, setOpen] = useState(defaultOpen)
   const previous = usePrevious(isOpen)
@@ -61,14 +61,14 @@ export const ParentNode = memo(({ hide = false, children, title, type, itemIcon,
   }
 
   return(<DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
-    <Frame>
+    <Frame style={styles["frame"]}>
       <ListItem onClick={() => setOpen(!isOpen)}>
         {expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }} />}
         { itemIcon }
-        <Title style={style}>{title}</Title>
+        <Title style={styles["title"]}>{title}</Title>
       </ListItem>
       <DropItem id={id} onDrop={onDrop} onDropEnter={onDropEnter} onDropLeave={onDropLeave} >
-        <Content draggedover={draggedOver.toString()} style={{ opacity, height: isOpen && previous === isOpen ? 'auto' : height }}>
+        <Content draggedover={draggedOver.toString()} style={{ opacity, height: isOpen && previous === isOpen ? 'auto' : height, ...styles["contentContainer"]}}>
           {children[0].length == 0 && children[1].length == 0 && <div style={{height: "20px"}} />}
           <a.div style={{ transform }} {...bind} children={children} />
         </Content>
@@ -90,10 +90,10 @@ export const LeafNode = memo(({ id, title, type, itemIcon, styles, onDragStart, 
 
   return (
     <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
-      <Frame>
+      <Frame style={styles["frame"]}>
         <ListItem onClick={() => onClick(id)}>
         { itemIcon }
-        <Title style={styles}>{title}</Title>
+        <Title style={styles["title"]}>{title}</Title>
         </ListItem>
       </Frame>
     </DragItem>    

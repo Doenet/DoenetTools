@@ -7,7 +7,7 @@ import "./chooser.css";
 import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown, 
-  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, faLink, faRedoAlt} 
+  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, faLink, faRedoAlt}
   from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
@@ -1086,6 +1086,7 @@ class DoenetChooser extends Component {
         if (resp.data[itemId]["type"] == "folder") {
           tempHeadingsInfo[itemId] = resp.data[itemId];
           tempHeadingsInfo[itemId]["type"] = "folder";
+          // if (itemId == "root") tempHeadingsInfo[itemId]["title"] = this.courseInfo[courseId]["courseName"];
           // process children
           for (let i in resp.data[itemId]["childrenId"]) {
             let childId = resp.data[itemId]["childrenId"][i];
@@ -1183,7 +1184,7 @@ class DoenetChooser extends Component {
       headerID_name:headerID_name,
       headerID_parentId_array_to_payload:headerID_parentId_array_to_payload,
       headerID_childrenId_array_to_payload:headerID_childrenId_array_to_payload,
-      courseId:courseId
+      courseId: courseId
     }
     axios.post(urlGetCode,data)
     .then(resp=>{
@@ -1455,19 +1456,10 @@ class DoenetChooser extends Component {
   updateTree = ({containerType, folderInfo={}, contentInfo={}, urlInfo={}, courseId=""}) => {
     switch(containerType) {
       case ChooserConstants.COURSE_ASSIGNMENTS_TYPE:
-        const params =
-        this.saveAssignmentsTree({courseId:courseId, headingsInfo:folderInfo, assignmentsInfo:contentInfo, callback:() => {
-          this.loadUserFoldersAndRepo();
-          this.loadUserContentBranches();
-          this.loadUserUrls();
-        }});
+        this.saveAssignmentsTree({courseId:courseId, headingsInfo:folderInfo, assignmentsInfo:contentInfo, callback:() => {}});
         break;
       case ChooserConstants.USER_CONTENT_TYPE:
-        this.saveContentTree({folderInfo, callback: () => {
-          // this.loadUserFoldersAndRepo();
-          // this.loadUserContentBranches();
-          // this.loadUserUrls();
-        }} );
+        this.saveContentTree({folderInfo, callback: () => {}} );
         break;
       case ChooserConstants.COURSE_CONTENT_TYPE:
         console.log("TODO")
@@ -1572,6 +1564,7 @@ class DoenetChooser extends Component {
         loading={!this.assignments_and_headings_loaded}
         parentsInfo={this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
         childrenInfo={this.assignmentsInfo["aI8sK4vmEhC5sdeSP3vNW"]} 
+        treeNodeIcons={TreeIcons} 
         currentDraggedObject={this.state.currentDraggedObject}
         onDragStart={this.onTreeDragStart}
         onDragEnd={this.onTreeDragEnd}
@@ -1684,8 +1677,22 @@ class DoenetChooser extends Component {
         }} 
         hideRoot={true}
         treeStyles={{
-          parentNode: {color: "rgba(58,172,144)", margin: '5px'},
-          childNode: {color: "rgba(33,11,124)", margin: '5px'},
+          parentNode: {
+            "title": { color: "rgba(58,172,144)" },
+            "frame": {
+              border: "1px #b3b3b3 solid"
+            },
+            "contentContainer": {
+              border: "none",
+            }
+          },
+          childNode: {
+            "title": {
+              color: "rgba(33,11,124)", 
+            },
+            "frame": { },
+            "contentContainer": { }
+          },
           expanderIcon: <FontAwesomeIcon icon={faPlus} style={{paddingRight: "8px"}}/>
         }}
         onLeafNodeClick={(nodeId) => {console.log(nodeId)}}
