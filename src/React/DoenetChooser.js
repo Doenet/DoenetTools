@@ -1464,9 +1464,9 @@ class DoenetChooser extends Component {
         break;
       case ChooserConstants.USER_CONTENT_TYPE:
         this.saveContentTree({folderInfo, callback: () => {
-          this.loadUserFoldersAndRepo();
-          this.loadUserContentBranches();
-          this.loadUserUrls();
+          // this.loadUserFoldersAndRepo();
+          // this.loadUserContentBranches();
+          // this.loadUserUrls();
         }} );
         break;
       case ChooserConstants.COURSE_CONTENT_TYPE:
