@@ -116,6 +116,8 @@ class DoenetChooser extends Component {
     this.onBrowserDrop = this.onBrowserDrop.bind(this);
     this.getDataSource = this.getDataSource.bind(this);
     this.switchPanelContainer = this.switchPanelContainer.bind(this);
+
+    this.tempSet = new Set();
   }
 
   buildCourseList() {
@@ -1676,11 +1678,13 @@ class DoenetChooser extends Component {
             return map[itemType]
         }} 
         hideRoot={true}
+        specialNodes={this.tempSet}
         treeStyles={{
           parentNode: {
             "title": { color: "rgba(58,172,144)" },
             "frame": {
-              border: "1px #b3b3b3 solid"
+              border: "1px #b3b3b3 solid",
+              width: "100%"
             },
             "contentContainer": {
               border: "none",
@@ -1690,12 +1694,18 @@ class DoenetChooser extends Component {
             "title": {
               color: "rgba(33,11,124)", 
             },
-            "frame": { },
-            "contentContainer": { }
+            "frame": { border: "1px #a4a4a4 solid" },
+          },
+          specialChildNode: {
+            "frame": { background: "#a7a7a7" },
           },
           expanderIcon: <FontAwesomeIcon icon={faPlus} style={{paddingRight: "8px"}}/>
         }}
-        onLeafNodeClick={(nodeId) => {console.log(nodeId)}}
+        onLeafNodeClick={(nodeId) => {
+          if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
+          else this.tempSet.add(nodeId); 
+          this.forceUpdate()
+        }}
         />
       </div>
 

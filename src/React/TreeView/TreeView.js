@@ -8,11 +8,6 @@ import ChooserConstants from "../chooser/ChooserConstants";
 
 /*
 
-// specific styles for selected items
-- frame
-- contentContainer
-- title
-
   Data and fields:
     mandatory fields:
       - loading       (set to false if loaders not async)
@@ -46,11 +41,28 @@ import ChooserConstants from "../chooser/ChooserConstants";
               content: <FontAwesomeIcon icon={faFileAlt}/> }
             return map[iconName]
           }
+      - specialNodes: new Set()
       - treeStyles
         - example: 
           { 
-            parentNode: {},
-            childNode: {},
+            parentNode: {
+              title: {},
+              contentContainer: {},
+              frame: {},
+            },
+            childNode: {
+              title: {},
+              frame: {},
+            },
+            specialParentNode: {
+              title: {},
+              contentContainer: {},
+              frame: {},
+            },
+            specialChildNode: {
+              title: {},
+              frame: {},
+            },
             expanderIcon:          
           }
       - parentNodeOnClick
@@ -84,6 +96,7 @@ export const TreeView = ({
   childrenInfo={}, 
   hideRoot=false,
   treeNodeIcons={},
+  specialNodes=new Set(),
 	treeStyles={},
 	onLeafNodeClick,
   containerId, 
@@ -97,7 +110,6 @@ export const TreeView = ({
   onDropLeave
 }) => {
   const [currentDraggedOverContainerId, setCurrentDraggedOverContainerId] = useState(null);
-
   // handle dragEnd
   useEffect(() => {
 		if (currentDraggedObject.id == null) setCurrentDraggedOverContainerId(null);
@@ -151,6 +163,7 @@ export const TreeView = ({
         childrenInfo: childrenInfo, 
         hideRoot: hideRoot, 
         treeNodeIcons: treeNodeIcons, 
+        specialNodes: specialNodes,
 				treeStyles: treeStyles,
 				onLeafNodeClick: onLeafNodeClickCb,
         onDragStart: onDragStartCb, 
@@ -167,10 +180,10 @@ export const TreeView = ({
 }
 
 function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, hideRoot, treeNodeIcons, treeStyles,
-  onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
+  specialNodes, onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
    currentDraggedOverContainerId, onLeafNodeClick }) {
      
-  const getItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
+  const getBaseItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
     const icon = currentItemId == "root" ? "" : treeNodeIcons(itemType);
     let itemDragged = currentDraggedObject.id == currentItemId;
     let isShadow = itemDragged && 
@@ -212,8 +225,11 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
 
   const itemType = parentsInfo[parentHeadingId]["type"];
   const childrenList = [...parentsInfo[parentHeadingId]["childContent"], ...parentsInfo[parentHeadingId]["childUrls"]];
-  const itemStyleAndIcon = getItemStyleAndIcon(currentDraggedObject, itemType, parentNodeHeadingId, parentHeadingId);
-  
+  const baseItemStyleAndIcon = getBaseItemStyleAndIcon(currentDraggedObject, itemType, parentNodeHeadingId, parentHeadingId);
+  // set style to user-defined styles
+  let itemStyle = specialNodes.has(parentHeadingId) ? treeStyles["specialParentNode"] : treeStyles["parentNode"];
+  // if user-defined styles undefined, fallback to default style
+  itemStyle = itemStyle || {"title" :Object.assign({marginLeft: '5px', color: "rgba(0,0,0,0.8)"},  baseItemStyleAndIcon.style)};
 
   let subTree = <ParentNode 
     id={parentHeadingId}
@@ -222,7 +238,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
     type={itemType}
     hide={hideRoot && parentHeadingId == "root"}
     defaultOpen={parentHeadingId == "root"}
-    itemIcon={itemStyleAndIcon.icon}
+    itemIcon={baseItemStyleAndIcon.icon}
     expanderIcon={treeStyles["expanderIcon"]}
     onDrop={onDrop} 
     onDropEnter={onDropEnter}
@@ -233,8 +249,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
     onDraggableDragOver={onDraggableDragOver}
     currentDraggedId={currentDraggedObject.id}
     currentDraggedType={currentDraggedObject.type}
-    styles={ treeStyles["parentNode"] || Object.assign({marginLeft: '5px', color: "rgba(0,0,0,0.8)"}, 
-      itemStyleAndIcon.style) }> 
+    styles={ itemStyle }> 
       { // iterate through children headings to generate tree recursively
       parentsInfo[parentHeadingId]["childFolders"].map(parentId => {
         return buildTreeStructure({ 
@@ -244,6 +259,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           childrenInfo: childrenInfo, 
           hideRoot: hideRoot,
           treeNodeIcons: treeNodeIcons,
+          specialNodes: specialNodes,
 					treeStyles: treeStyles,
 					onLeafNodeClick: onLeafNodeClick,
           onDragStart: onDragStart, 
@@ -258,7 +274,12 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
       { // iterate through children assigments to generate tree recursively
       childrenList.map((childId, index) => {
         const itemType = childrenInfo[childId]["type"];
-        const itemStyleAndIcon = getItemStyleAndIcon(currentDraggedObject, itemType, parentHeadingId, childId);
+        const baseItemStyleAndIcon = getBaseItemStyleAndIcon(currentDraggedObject, itemType, parentHeadingId, childId);
+        // set style to user-defined styles
+        let itemStyle = specialNodes.has(childId) ? treeStyles["specialChildNode"] : treeStyles["childNode"];
+        // if user-defined styles undefined, fallback to default style
+        itemStyle = itemStyle || {"title": Object.assign({color: "rgba(0,0,0,0.8)", marginLeft: '5px'}, baseItemStyleAndIcon.style)};
+
 
         return <LeafNode 
           index={index}
@@ -266,10 +287,8 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           key={childId} 
           title={childrenInfo[childId]["title"]}
           type={itemType}
-					itemIcon = {itemStyleAndIcon.icon}
-          styles={ treeStyles["childNode"] || 
-            Object.assign({color: "rgba(0,0,0,0.8)", marginLeft: '5px'}, itemStyleAndIcon.style)
-					}
+					itemIcon = {baseItemStyleAndIcon.icon}
+          styles={itemStyle}
 					onClick={onLeafNodeClick}
           onDragStart={onDragStart} 
           onDragEnd={onDragEnd} 
