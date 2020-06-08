@@ -271,7 +271,7 @@ function (_DoenetRenderer) {
         };
         var checkWorkText = "Check Work";
 
-        if (!this.props.flags.showCorrectness) {
+        if (!this.doenetSvData.showCorrectness) {
           checkWorkText = "Submit Response";
         }
 
@@ -292,7 +292,7 @@ function (_DoenetRenderer) {
           }
         }), "\xA0", checkWorkText);
 
-        if (this.props.flags.showCorrectness) {
+        if (this.doenetSvData.showCorrectness) {
           if (validationState === "correct") {
             checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
             checkworkComponent = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {

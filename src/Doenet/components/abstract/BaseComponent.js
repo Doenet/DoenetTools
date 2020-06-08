@@ -224,6 +224,7 @@ export default class BaseComponent {
       "inverseDefinition", "stateVariablesDeterminingDependencies",
       "isArray", "nDimensions",
       "markStale", "getPreviousDependencyValuesForMarkStale",
+      "triggerParentChildLogicWhenResolved",
     ];
 
     let stateVariableDefinitions = {};
