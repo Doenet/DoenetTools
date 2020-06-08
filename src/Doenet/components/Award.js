@@ -76,19 +76,23 @@ export default class Award extends BaseComponent {
       additionalStateVariablesDefined: [
         "incompleteType", "childForIncomplete",
       ],
+      triggerParentChildLogicWhenResolved: true,
       returnDependencies: () => ({
         stringChild: {
           dependencyType: "childStateVariables",
           childLogicName: "exactlyOneString",
-          variableNames: ["value"]
+          variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
         },
         mathChild: {
           dependencyType: "childIdentity",
           childLogicName: "exactlyOneMath",
+          requireChildLogicInitiallySatisfied: true,
         },
         textChild: {
           dependencyType: "childIdentity",
           childLogicName: "exactlyOneText",
+          requireChildLogicInitiallySatisfied: true,
         },
       }),
       definition: function ({ dependencyValues }) {

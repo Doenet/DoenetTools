@@ -46,9 +46,12 @@ export default class Evaluate extends MathComponent {
     delete stateVariableDefinitions.codePre;
     delete stateVariableDefinitions.expressionWithCodes;
     delete stateVariableDefinitions.codesAdjacentToStrings;
-    delete stateVariableDefinitions.canBeModified;
     delete stateVariableDefinitions.mathChildrenByArrayComponent;
 
+    stateVariableDefinitions.canBeModified = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { canBeModified: false } })
+    }
 
     stateVariableDefinitions.evaluatedResults = {
       isArray: true,
