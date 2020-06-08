@@ -867,4 +867,28 @@ describe('Math Operator Tag Tests', function () {
     })
   })
 
+  it('derivative displayed inside <m>', () => {
+    // check to make fixed bug where wasn't displaying inside <m>
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p>Let <m>f(x) = <function name="f">sin(x)</function></m>.  
+      Then <m>f'(x) = <derivative><ref>f</ref></derivative></m>.</p>
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(x)=sin(x)')
+    });
+
+    cy.get('#\\/_m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal("f′(x)=cos(x)")
+    });
+
+  })
+
 })
