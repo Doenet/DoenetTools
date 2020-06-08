@@ -37,7 +37,7 @@ export default class Answer extends DoenetRenderer {
       }
 
       let checkWorkText = "Check Work";
-      if (!this.props.flags.showCorrectness) {
+      if (!this.doenetSvData.showCorrectness) {
         checkWorkText = "Submit Response";
       }
       let checkworkComponent = (
@@ -56,7 +56,7 @@ export default class Answer extends DoenetRenderer {
           {checkWorkText}
         </button>);
 
-      if (this.props.flags.showCorrectness) {
+      if (this.doenetSvData.showCorrectness) {
         if (validationState === "correct") {
           checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
           checkworkComponent = (
