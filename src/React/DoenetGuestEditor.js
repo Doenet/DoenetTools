@@ -46,6 +46,9 @@ class DoenetGuestEditor extends Component {
 
       axios.get(phpUrl, payload)
         .then(resp => {
+          
+          console.log("data",resp.data)
+
           if (resp.data.access === false) {
             this.setState({ loading: false, accessAllowed: false });
           } else {
