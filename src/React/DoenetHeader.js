@@ -328,12 +328,12 @@ class DoenetHeader extends Component {
           </div>}
           {!this.props.guestUser && <div className="headingToolbar">
             {isMultipleRoles && <Menu showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} />}
-            {isSingleRole && <div style={{
-              border:'1px solid #e2e2e2',
-              display: "flex",
+            {isSingleRole && <button style={{
+              // display: "flex",
               alignItems: "center",
-              padding: "10px",
-               borderRadius: "5px"}}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</div>}
+              // padding: "10px",
+               borderRadius: "5px"
+               }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
             {toolBox}
             {!this.state.myProfile.profilePicture && <div id="userButton-anonymous" onClick={() => { location.href = "/Profile"; }}>
               <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
