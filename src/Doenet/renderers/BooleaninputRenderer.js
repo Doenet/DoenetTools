@@ -5,7 +5,7 @@ import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-sol
 
 class BooleaninputRenderer extends BaseRenderer {
   constructor({ actions, boolean, key, label, includeCheckWork, creditAchieved,
-    valueHasBeenValidated, numberTimesSubmitted, showCorrectness  }) {
+    valueHasBeenValidated, showCorrectness  }) {
     super({ key: key });
 
     this.inputKey = key + "_input";
@@ -18,13 +18,9 @@ class BooleaninputRenderer extends BaseRenderer {
     this.includeCheckWork = includeCheckWork;
     this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
-    this.numberTimesSubmitted = numberTimesSubmitted;
     this.showCorrectness = showCorrectness;
 
-    this.localNumberTimesSubmitted = this.numberTimesSubmitted;
-
     this.onChangeHandler = this.onChangeHandler.bind(this);
-    this.localSubmitAnswer = this.localSubmitAnswer.bind(this);
 
   }
 
@@ -34,7 +30,7 @@ class BooleaninputRenderer extends BaseRenderer {
     });
   }
 
-  updateBoolean({ boolean, label, creditAchieved, valueHasBeenValidated, numberTimesSubmitted }) {
+  updateBoolean({ boolean, label, creditAchieved, valueHasBeenValidated }) {
     if (boolean !== this.boolean) {
       this.boolean = boolean;
     }
@@ -44,26 +40,14 @@ class BooleaninputRenderer extends BaseRenderer {
 
     this.creditAchieved = creditAchieved;
     this.valueHasBeenValidated = valueHasBeenValidated;
-    this.numberTimesSubmitted = numberTimesSubmitted;
 
   }
 
 
   updateValidationState() {
-    if (this.localNumberTimesSubmitted !== this.numberTimesSubmitted) {
-      // if number of times submitted doesn't match,
-      // it means that the answer has been submitted since last pass
-      this.localNumberTimesSubmitted = this.numberTimesSubmitted;
-      this.lastSubmittedIndices = this.selectedindices;
-      this.valueAsSubmitted = true;
-    } else if (!this.valueHasBeenValidated) {
-      this.valueAsSubmitted = false;
-    } else if(this.valueAsSubmitted === undefined) {
-      this.valueAsSubmitted = true;
-    }
 
     this.validationState = "unvalidated";
-    if (this.valueAsSubmitted) {
+    if (this.valueHasBeenValidated) {
       if (this.creditAchieved === 1) {
         this.validationState = "correct";
       } else if (this.creditAchieved === 0) {
@@ -72,10 +56,6 @@ class BooleaninputRenderer extends BaseRenderer {
         this.validationState = "partialcorrect";
       }
     }
-  }
-
-  localSubmitAnswer() {
-    this.actions.submitAnswer();
   }
 
   jsxCode() {
@@ -101,20 +81,20 @@ class BooleaninputRenderer extends BaseRenderer {
 
       if (this.validationState === "unvalidated") {
         checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
-        checkWorkButton = <span
+        checkWorkButton = <button
           id={this._key + '_submit'}
           tabIndex="0"
           ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           style={checkWorkStyle}
-          onClick={this.localSubmitAnswer}
+          onClick={this.actions.submitAnswer}
           onKeyPress={(e) => {
             if (e.key === 'Enter') {
-              this.localSubmitAnswer();
+              this.actions.submitAnswer();
             }
           }}
         >
           <FontAwesomeIcon icon={faLevelDownAlt}  transform={{rotate:90}}/>
-        </span>
+        </button>
       } else {
         if(this.showCorrectness) {
           if (this.validationState === "correct") {

@@ -1,5 +1,5 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import { postProcessRef } from './Ref';
+import { postProcessRef } from '../utils/refs';
 import me from 'math-expressions';
 
 export default class Intersection extends CompositeComponent {
@@ -44,15 +44,16 @@ export default class Intersection extends CompositeComponent {
       })
     }
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+    stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({
         lineChildren: {
           dependencyType: "stateVariable",
           variableName: "lineChildren"
         }
       }),
+      markStale: () => ({ updateReplacements: true }),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { newValues: { readyToExpand: true } };
       },
     }
 
@@ -61,6 +62,10 @@ export default class Intersection extends CompositeComponent {
 
 
   static createSerializedReplacements({ component, components }) {
+
+    // evaluate readyToExpand so that it is marked fresh,
+    // as it being marked stale triggers replacement update
+    component.stateValues.readyToExpand;
 
     let numberLineChildren = component.stateValues.lineChildren.length;
 
@@ -139,13 +144,18 @@ export default class Intersection extends CompositeComponent {
     // two intersecting lines, return point
     let x = (c2 * b1 - c1 * b2) / d;
     let y = (c1 * a2 - c2 * a1) / d;
-    let coords = me.fromAst(["tuple", x, y]);
+    let coords = me.fromAst(["vector", x, y]);
 
     return { replacements: [{ componentType: "point", state: { coords, draggable: false, fixed: true } }] };
 
   }
 
   static calculateReplacementChanges({ component, components }) {
+
+    // evaluate readyToExpand so that it is marked fresh,
+    // as it being marked stale triggers replacement update
+    component.stateValues.readyToExpand;
+
     let replacementChanges = [];
 
     let serializedIntersections = this.createSerializedReplacements({ component, components }).replacements;

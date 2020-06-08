@@ -35,7 +35,7 @@ class DoenetGuestEditor extends Component {
       //Load most recent content from the branch or
       //Load specific branch's content id if it is given      
 
-      const phpUrl = '/api/getDoenetML.php';
+      const phpUrl = '/open_api/getDoenetML.php';
       const data = {
         branchId: this.branchId,
         contentId: this.contentId,
@@ -46,6 +46,9 @@ class DoenetGuestEditor extends Component {
 
       axios.get(phpUrl, payload)
         .then(resp => {
+          
+          console.log("data",resp.data)
+
           if (resp.data.access === false) {
             this.setState({ loading: false, accessAllowed: false });
           } else {

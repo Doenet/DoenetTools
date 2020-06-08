@@ -7,7 +7,7 @@ describe('Math Tag Tests', function () {
   it('1+1', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <math>1+1</math>
     <math simplify>1+1</math>
@@ -34,7 +34,7 @@ describe('Math Tag Tests', function () {
   it('string math string', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <math>3<math>x+1</math>+5</math>
     <math simplify>3<math>x+1</math>+5</math>
@@ -65,7 +65,7 @@ describe('Math Tag Tests', function () {
   it('hidden string ref/math string', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <math hide>x+1</math>
     <math>3<ref>_math1</ref> + 5</math>
@@ -98,7 +98,7 @@ describe('Math Tag Tests', function () {
   it('math underscore when no value', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <math></math>
     `}, "*");
@@ -112,7 +112,7 @@ describe('Math Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>b</text>
     <math> </math>
     `}, "*");
@@ -125,7 +125,7 @@ describe('Math Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>c</text>
     <math />
     `}, "*");
@@ -140,7 +140,7 @@ describe('Math Tag Tests', function () {
   it('format latex', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <math format="latex">\\frac{x}{z}</math>
     `}, "*");
@@ -166,7 +166,7 @@ describe('Math Tag Tests', function () {
   it('ref latex property', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <math>x/y</math>
   <ref prop="latex">_math1</ref>
@@ -194,7 +194,7 @@ describe('Math Tag Tests', function () {
   it('math with internal and external refs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <math name="a" simplify><math name="x">x</math> + <ref>x</ref> + <ref>z</ref></math>
   <math name="z">z</math>
@@ -222,7 +222,7 @@ describe('Math Tag Tests', function () {
   it('point adapts into a math', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <point>3</point>
   <math simplify>2 + <ref>_point1</ref></math>
@@ -251,7 +251,7 @@ describe('Math Tag Tests', function () {
   it('adjacent string children in math', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <math simplify>2<sequence count="0"/>3</math>
   <graph>
@@ -296,7 +296,7 @@ describe('Math Tag Tests', function () {
   it('math displayed rounded to 14 significant digits by default', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <p><text>a</text></p>
   <p><math>1.000000000000001</math></p>
   <p><math>0.30000000000000004 x + 4pi</math></p>
@@ -325,7 +325,7 @@ describe('Math Tag Tests', function () {
   it('mutual references of format', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>q</text>
   <p><math name="a" simplify>
     <format><ref prop="value">_textinput1</ref></format>
@@ -435,7 +435,7 @@ describe('Math Tag Tests', function () {
   it('simplify math', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p><text>a</text></p>
     <p>Default is no simplification: <math>1x^2-3 +0x^2 + 4 -2x^2-3 + 5x^2</math></p>
     <p>Explicit no simplify: <math simplify="none">1x^2-3 +0x^2 + 4 -2x^2-3 + 5x^2</math></p>
@@ -509,7 +509,7 @@ describe('Math Tag Tests', function () {
   it('expand math', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p><text>a</text></p>
     <p>Default is to not expand: <math>(x-3)(2x+4)</math></p>
     <p>Expand: <math expand="true">(x-3)(2x+4)</math></p>
@@ -538,7 +538,7 @@ describe('Math Tag Tests', function () {
   it('create vectors and intervals', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p><text>a</text></p>
     <p>Default: <math>(1,2,3),(4,5),[6,7],(8,9],[10,11)</math></p>
     <p>Create vectors: <math createvectors="true">(1,2,3),(4,5),[6,7],(8,9],[10,11)</math></p>
@@ -602,7 +602,7 @@ describe('Math Tag Tests', function () {
   it('display small numbers as zero', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <p><text>a</text></p>
   <p><math>2x + (1E-15)y</math></p>
   <p><math displaysmallaszero>2x + (1E-15)y</math></p>

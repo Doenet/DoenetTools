@@ -8,7 +8,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <booleaninput />
     <not><ref prop="value">_booleaninput1</ref></not>
     `}, "*");
@@ -45,7 +45,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <booleaninput />
     <booleaninput />
     <booleaninput />
@@ -117,7 +117,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <booleaninput />
     <booleaninput />
     <booleaninput />
@@ -232,7 +232,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <booleaninput />
     <booleaninput />
     <booleaninput />
@@ -347,7 +347,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <booleaninput label="show point"/>
     <graph>
       <point><hide><not><ref prop="value">_booleaninput1</ref></not></hide>

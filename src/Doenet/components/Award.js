@@ -33,9 +33,9 @@ export default class Award extends BaseComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let exactlyOneIf = childLogic.newLeaf({
-      name: "exactlyOneIf",
-      componentType: 'if',
+    let exactlyOneWhen = childLogic.newLeaf({
+      name: "exactlyOneWhen",
+      componentType: 'when',
       number: 1
     });
 
@@ -58,9 +58,9 @@ export default class Award extends BaseComponent {
     });
 
     childLogic.newOperator({
-      name: "ifXorStringXorMathXorText",
+      name: "whenXorStringXorMathXorText",
       operator: 'xor',
-      propositions: [exactlyOneIf, exactlyOneString, exactlyOneMath, exactlyOneText],
+      propositions: [exactlyOneWhen, exactlyOneString, exactlyOneMath, exactlyOneText],
       setAsBase: true,
     });
 
@@ -76,19 +76,23 @@ export default class Award extends BaseComponent {
       additionalStateVariablesDefined: [
         "incompleteType", "childForIncomplete",
       ],
+      triggerParentChildLogicWhenResolved: true,
       returnDependencies: () => ({
         stringChild: {
           dependencyType: "childStateVariables",
           childLogicName: "exactlyOneString",
-          variableNames: ["value"]
+          variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
         },
         mathChild: {
           dependencyType: "childIdentity",
           childLogicName: "exactlyOneMath",
+          requireChildLogicInitiallySatisfied: true,
         },
         textChild: {
           dependencyType: "childIdentity",
           childLogicName: "exactlyOneText",
+          requireChildLogicInitiallySatisfied: true,
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -114,29 +118,29 @@ export default class Award extends BaseComponent {
     };
 
     stateVariableDefinitions.creditAchieved = {
-      additionalStateVariablesDefined: ["fractionSatisfied", "ifChild"],
+      additionalStateVariablesDefined: ["fractionSatisfied", "whenChild"],
       returnDependencies: () => ({
         credit: {
           dependencyType: "stateVariable",
           variableName: "credit"
         },
-        ifChild: {
+        whenChild: {
           dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneIf",
+          childLogicName: "exactlyOneWhen",
           variableNames: ["fractionSatisfied"]
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.ifChild.length === 0) {
+        if (dependencyValues.whenChild.length === 0) {
           return {
             newValues: {
               creditAchieved: 0,
               fractionSatisfied: 0,
-              ifChild: undefined,
+              whenChild: undefined,
             }
           }
         }
-        let fractionSatisfied = dependencyValues.ifChild[0].stateValues.fractionSatisfied;
+        let fractionSatisfied = dependencyValues.whenChild[0].stateValues.fractionSatisfied;
         let creditAchieved = 0;
         if (Number.isFinite(dependencyValues.credit)) {
           creditAchieved = Math.max(0, Math.min(1, dependencyValues.credit)) * Math.max(0, Math.min(1, fractionSatisfied));
@@ -144,7 +148,7 @@ export default class Award extends BaseComponent {
         return {
           newValues: {
             fractionSatisfied, creditAchieved,
-            ifChild: dependencyValues.ifChild[0],
+            whenChild: dependencyValues.whenChild[0],
           }
         }
 

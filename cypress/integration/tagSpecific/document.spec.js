@@ -7,7 +7,7 @@ describe('Document Tests', function () {
   it('angle determined by three points, 45-45-90 triangle', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
         <document>
             <p>this point will appear on graph</p>
             <mathinput prefill="2"></mathinput>

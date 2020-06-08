@@ -17,7 +17,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist from string', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist>a,1+1,</mathlist>
     <mathlist simplify="full">a,1+1,</mathlist>
@@ -28,13 +28,13 @@ describe('Mathlist Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let child1Name = components['/_mathlist1'].stateValues.childrenWhoRender[0];
+      let child1Name = components['/_mathlist1'].stateValues.childrenToRender[0];
       let child1Anchor = '#' + child1Name;
-      let child2Name = components['/_mathlist1'].stateValues.childrenWhoRender[1];
+      let child2Name = components['/_mathlist1'].stateValues.childrenToRender[1];
       let child2Anchor = '#' + child2Name;
-      let child3Name = components['/_mathlist2'].stateValues.childrenWhoRender[0];
+      let child3Name = components['/_mathlist2'].stateValues.childrenToRender[0];
       let child3Anchor = '#' + child3Name;
-      let child4Name = components['/_mathlist2'].stateValues.childrenWhoRender[1];
+      let child4Name = components['/_mathlist2'].stateValues.childrenToRender[1];
       let child4Anchor = '#' + child4Name;
 
 
@@ -69,7 +69,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist with error in string', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist>a,(, 1+1,</mathlist>
     ` }, "*");
@@ -80,11 +80,11 @@ describe('Mathlist Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let child1Name = components['/_mathlist1'].stateValues.childrenWhoRender[0];
+      let child1Name = components['/_mathlist1'].stateValues.childrenToRender[0];
       let child1Anchor = '#' + child1Name;
-      let child2Name = components['/_mathlist1'].stateValues.childrenWhoRender[1];
+      let child2Name = components['/_mathlist1'].stateValues.childrenToRender[1];
       let child2Anchor = '#' + child2Name;
-      let child3Name = components['/_mathlist1'].stateValues.childrenWhoRender[2];
+      let child3Name = components['/_mathlist1'].stateValues.childrenToRender[2];
       let child3Anchor = '#' + child3Name;
 
       cy.log('Test value displayed in browser')
@@ -113,7 +113,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist with math children', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist>
       <math>a</math>
@@ -144,7 +144,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist with math and number children', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist>
       <math>a</math>
@@ -182,7 +182,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist originally gets blank string children from group', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist>
       <group>
@@ -197,9 +197,9 @@ describe('Mathlist Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let child1Name = components['/_mathlist1'].stateValues.childrenWhoRender[0];
+      let child1Name = components['/_mathlist1'].stateValues.childrenToRender[0];
       let child1Anchor = '#' + child1Name;
-      let child2Name = components['/_mathlist1'].stateValues.childrenWhoRender[1];
+      let child2Name = components['/_mathlist1'].stateValues.childrenToRender[1];
       let child2Anchor = '#' + child2Name;
 
       cy.log('Test value displayed in browser')
@@ -223,7 +223,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist with mathlist children', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist>
       <math>a</math>
@@ -244,17 +244,17 @@ describe('Mathlist Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let child1Name = components['/_mathlist1'].stateValues.childrenWhoRender[1];
+      let child1Name = components['/_mathlist1'].stateValues.childrenToRender[1];
       let child1Anchor = '#' + child1Name;
-      let child2Name = components['/_mathlist1'].stateValues.childrenWhoRender[2];
+      let child2Name = components['/_mathlist1'].stateValues.childrenToRender[2];
       let child2Anchor = '#' + child2Name;
-      let child5Name = components['/_mathlist1'].stateValues.childrenWhoRender[5];
+      let child5Name = components['/_mathlist1'].stateValues.childrenToRender[5];
       let child5Anchor = '#' + child5Name;
-      let child6Name = components['/_mathlist1'].stateValues.childrenWhoRender[6];
+      let child6Name = components['/_mathlist1'].stateValues.childrenToRender[6];
       let child6Anchor = '#' + child6Name;
-      let child7Name = components['/_mathlist1'].stateValues.childrenWhoRender[7];
+      let child7Name = components['/_mathlist1'].stateValues.childrenToRender[7];
       let child7Anchor = '#' + child7Name;
-      let child8Name = components['/_mathlist1'].stateValues.childrenWhoRender[8];
+      let child8Name = components['/_mathlist1'].stateValues.childrenToRender[8];
       let child8Anchor = '#' + child8Name;
 
       cy.log('Test value displayed in browser')
@@ -318,7 +318,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist with maximum number', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist maximumnumber="7">
       <math>a</math>
@@ -340,13 +340,13 @@ describe('Mathlist Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let child1Name = components['/_mathlist1'].stateValues.childrenWhoRender[1];
+      let child1Name = components['/_mathlist1'].stateValues.childrenToRender[1];
       let child1Anchor = '#' + child1Name;
-      let child2Name = components['/_mathlist1'].stateValues.childrenWhoRender[2];
+      let child2Name = components['/_mathlist1'].stateValues.childrenToRender[2];
       let child2Anchor = '#' + child2Name;
-      let child5Name = components['/_mathlist1'].stateValues.childrenWhoRender[5];
+      let child5Name = components['/_mathlist1'].stateValues.childrenToRender[5];
       let child5Anchor = '#' + child5Name;
-      let child6Name = components['/_mathlist1'].stateValues.childrenWhoRender[6];
+      let child6Name = components['/_mathlist1'].stateValues.childrenToRender[6];
       let child6Anchor = '#' + child6Name;
 
       cy.log('Test value displayed in browser')
@@ -408,7 +408,7 @@ describe('Mathlist Tag Tests', function () {
   it('mathlist ancestor prop simplify', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathlist simplify="full">
       <math>a+a</math>
@@ -439,7 +439,7 @@ describe('Mathlist Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
     
-      let childNames = components['/_mathlist1'].stateValues.childrenWhoRender;
+      let childNames = components['/_mathlist1'].stateValues.childrenToRender;
       let childAnchors = childNames.map(x=> '#' + x);
 
       cy.log('Test value displayed in browser')

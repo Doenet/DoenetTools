@@ -1,5 +1,5 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import { postProcessRef } from './Ref';
+import { postProcessRef } from '../utils/refs';
 
 export default class Subsref extends CompositeComponent {
   static componentType = "subsref";
@@ -9,23 +9,33 @@ export default class Subsref extends CompositeComponent {
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.fromMapAncestor = { default: 0 };
-
-    // fixed will always be true, so delete as property and set as regular state variable
-    delete properties.fixed;
-
+    properties.fixed = { default: true, useDefaultForShadows: true }
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
+    let atMostOneFixed = childLogic.newLeaf({
+      name: "atMostOneFixed",
+      componentType: "fixed",
+      comparison: "atMost",
+      number: 1,
+    })
+
+    let atMostOneString = childLogic.newLeaf({
       name: "atMostOneString",
       componentType: 'string',
       comparison: 'atMost',
       number: 1,
-      setAsBase: true,
     });
+
+    childLogic.newOperator({
+      name: "stringAndFixed",
+      operator: "and",
+      propositions: [atMostOneFixed, atMostOneString],
+      setAsBase: true,
+    })
 
     return childLogic;
   }
@@ -34,11 +44,6 @@ export default class Subsref extends CompositeComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.fixed = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { fixed: true } })
-    }
 
     stateVariableDefinitions.substitutionsNumber = {
       returnDependencies: () => ({
@@ -135,7 +140,7 @@ export default class Subsref extends CompositeComponent {
     };
 
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+    stateVariableDefinitions.readyToExpand = {
       stateVariablesDeterminingDependencies: [
         "targetSubs"
       ],
@@ -149,8 +154,8 @@ export default class Subsref extends CompositeComponent {
         if (compositeClass.isPrototypeOf(targetSubsClass)) {
           dependencies.targetSubsReady = {
             dependencyType: "componentStateVariable",
-            componentName: stateValues.targetSubs.componentName,
-            variableName: "readyToExpandWhenResolved"
+            componentIdentity: stateValues.targetSubs,
+            variableName: "readyToExpand"
           }
         }
 
@@ -158,7 +163,7 @@ export default class Subsref extends CompositeComponent {
 
       },
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { newValues: { readyToExpand: true } };
       },
     };
 
@@ -170,6 +175,8 @@ export default class Subsref extends CompositeComponent {
 
 
   static createSerializedReplacements({ component, components, workspace }) {
+
+    // console.log(`createSerializedReplacements for ${component.componentName}`);
 
     let serializedCopy;
 

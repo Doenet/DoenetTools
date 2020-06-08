@@ -6,7 +6,7 @@ describe('Ref Tag Tests',function() {
     })
       
   it('ref copies properties',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math modifybyreference="false">x</math>
     <ref name="a">_math1</ref>
     <ref name="b">a</ref>
@@ -42,7 +42,7 @@ describe('Ref Tag Tests',function() {
   });
 
   it('ref overwrites properties',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math modifybyreference="false">x</math>
     <ref name="r1">_math1</ref>
     <ref name="r2" modifybyreference="true">_math1</ref>
@@ -81,7 +81,7 @@ describe('Ref Tag Tests',function() {
   });
 
   it('ref props',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math name="x" modifybyreference="false">x</math>
     <ref name="mr" prop="modifybyreference">x</ref>
     <ref name="frmt" prop="format" modifybyreference="true">x</ref>
@@ -127,7 +127,7 @@ describe('Ref Tag Tests',function() {
   });
 
   it('ref props of ref still updatable',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <graph>
     <point>(1,2)</point>
     </graph>
@@ -195,7 +195,7 @@ describe('Ref Tag Tests',function() {
   });
 
   it.skip('ref invalid prop',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math>x</math>
     <ref prop="label">_math1</ref>
 
@@ -219,7 +219,7 @@ describe('Ref Tag Tests',function() {
   });
 
   it('ref of prop ref shadows target',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <extract prop="y"><ref prop="head">_vector1</ref></extract>
     <graph>
     <vector><displacement>(-4,2)</displacement><tail>(1,1)</tail></vector>
@@ -359,7 +359,7 @@ describe('Ref Tag Tests',function() {
   });
 
   it('ref of child number',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <mathinput />
 
@@ -437,7 +437,7 @@ describe('Ref Tag Tests',function() {
   });
 
   it('property children account for on replacement changes',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <mathinput />
 

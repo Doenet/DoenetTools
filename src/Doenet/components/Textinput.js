@@ -64,6 +64,7 @@ export default class Textinput extends Input {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneText",
           variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
         },
         prefill: {
           dependencyType: "stateVariable",
@@ -155,8 +156,8 @@ export default class Textinput extends Input {
 
   updateText({ text }) {
     this.requestUpdate({
-      updateType: "updateValue",
       updateInstructions: [{
+        updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "value",
         value: text,

@@ -17,7 +17,9 @@ export default class Line extends DoenetRenderer {
 
   createGraphicalObject() {
 
-    if(this.doenetSvData.numericalPoints.length !== 2) {
+    if (this.doenetSvData.numericalPoints.length !== 2 ||
+      this.doenetSvData.numericalPoints.some(x => x.length !== 2)
+    ) {
       return;
     }
 
@@ -28,8 +30,8 @@ export default class Line extends DoenetRenderer {
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 7,
-      strokeColor: this.doenetSvData.selectedStyle.markerColor,
-      highlightStrokeColor: this.doenetSvData.selectedStyle.markerColor,
+      strokeColor: this.doenetSvData.selectedStyle.lineColor,
+      highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
       dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle),
     };
@@ -77,14 +79,15 @@ export default class Line extends DoenetRenderer {
       return;
     }
 
-    // even lines that are hidden have renderers
-    // (or this could be called before createGraphicalObject
-    // for dynamically added components)
-    // so this could be called even for lines that don't have a JXG line created
     if (this.lineJXG === undefined) {
-      return;
+      return this.createGraphicalObject();
     }
 
+    if (this.doenetSvData.numericalPoints.length !== 2 ||
+      this.doenetSvData.numericalPoints.some(x => x.length !== 2)
+    ) {
+      return this.deleteGraphicalObject();
+    }
 
     let validCoords = true;
 
@@ -159,7 +162,7 @@ export default class Line extends DoenetRenderer {
       return null;
     }
 
-    if(this.props.board) {
+    if (this.props.board) {
       return <><a name={this.componentName} />{this.children}</>
     }
 

@@ -1,5 +1,6 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import {postProcessRef, processChangesForReplacements} from './Ref';
+// import {postProcessRef, processChangesForReplacements} from './Ref';
+import { postProcessRef} from '../utils/refs';
 
 export default class Group extends CompositeComponent {
   static componentType = "group";
@@ -24,10 +25,10 @@ export default class Group extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+    stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({}),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { newValues: { readyToExpand: true } };
       },
     };
 

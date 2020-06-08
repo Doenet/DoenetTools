@@ -4,23 +4,19 @@ export default class Slider extends BaseComponent {
   constructor(args) {
     super(args);
     this.changeValue = this.changeValue.bind(this);
-
-    this.actions = {
-      changeValue: this.changeValue
-    };
   }
   static componentType = "slider";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.width = { default: 300, forRenderer: true };
-    properties.height = { default: 50, forRenderer: true };
+    properties.width = { default: 300 };
+    properties.height = { default: 50 };
     properties.initialNumber = { default: undefined };
     properties.initialText = { default: undefined };
-    properties.label = { default: undefined, forRenderer: true };
-    properties.showControls = { default: false, forRenderer: true };
-    properties.showTicks = { default: true, forRenderer: true };
-    // properties.collaborateGroups = { default: undefined }; //???
+    properties.label = { default: undefined };
+    properties.showControls = { default: false };
+    properties.showTicks = { default: true };
+    properties.collaborateGroups = { default: undefined };
 
     return properties;
   }
@@ -77,7 +73,6 @@ export default class Slider extends BaseComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.sliderType = {
-      forRenderer: true,
       returnDependencies: () => ({
         textChildren: {
           dependencyType: "childIdentity",
@@ -100,7 +95,6 @@ export default class Slider extends BaseComponent {
     }
 
     stateVariableDefinitions.items = {
-      forRenderer: true,
       public: true,
       isArray: true,
       entryPrefixes: ["item"],
@@ -139,7 +133,6 @@ export default class Slider extends BaseComponent {
     }
 
     stateVariableDefinitions.valueToIndex = {
-      forRenderer: true,
       returnDependencies: () => ({
         items: {
           dependencyType: "stateVariable",
@@ -190,7 +183,6 @@ export default class Slider extends BaseComponent {
     }
 
     stateVariableDefinitions.index = {
-      forRenderer: true,
       returnDependencies: () => ({
         sliderType: {
           dependencyType: "stateVariable",
@@ -227,7 +219,6 @@ export default class Slider extends BaseComponent {
     }
 
     stateVariableDefinitions.value = {
-      forRenderer: true,
       public: true,
       returnDependencies: () => ({
         sliderType: {
@@ -254,7 +245,6 @@ export default class Slider extends BaseComponent {
     }
 
     stateVariableDefinitions.markers = {
-      forRenderer: true,
       returnDependencies: () => ({
         markersChild: {
           dependencyType: "childStateVariables",
@@ -295,21 +285,19 @@ export default class Slider extends BaseComponent {
     }
 
     stateVariableDefinitions.disabled = {
-      forRenderer: true,
       returnDependencies: () => ({
-        // collaborateGroups: {
-        //   dependencyType: "stateVariable",
-        //   variableName: "collaborateGroups"
-        // },
-        // collaboration: {
-        //   dependencyType: "flag",
-        //   flagName: "collaboration"
-        // }
+        collaborateGroups: {
+          dependencyType: "stateVariable",
+          variableName: "collaborateGroups"
+        },
+        collaboration: {
+          dependencyType: "flag",
+          flagName: "collaboration"
+        }
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          // disabled: !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
-          disabled: false
+          disabled: !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
         }
       })
     }
@@ -331,7 +319,50 @@ export default class Slider extends BaseComponent {
     }
   }
 
+  initializeRenderer({ }) {
+    if (this.renderer !== undefined) {
+      this.updateRenderer();
+      return;
+    }
 
+    const actions = {
+      changeValue: this.changeValue,
+    }
+
+    this.renderer = new this.availableRenderers.slider({
+      actions: actions,
+      key: this.componentName,
+      index: this.stateValues.index,
+      items: this.stateValues.items,
+      sliderType: this.stateValues.sliderType,
+      width: this.stateValues.width,
+      height: this.stateValues.height,
+      valueToIndex: this.stateValues.valueToIndex,
+      markers: this.stateValues.markers,
+      label: this.stateValues.label,
+      showControls: this.stateValues.showControls,
+      showTicks: this.stateValues.showTicks,
+      disabled: this.stateValues.disabled,
+    });
+  }
+
+  updateRenderer() {
+
+    this.renderer.updateSlider({
+      index: this.stateValues.index,
+      items: this.stateValues.items,
+      sliderType: this.stateValues.sliderType,
+      width: this.stateValues.width,
+      height: this.stateValues.height,
+      valueToIndex: this.stateValues.valueToIndex,
+      markers: this.stateValues.markers,
+      label: this.stateValues.label,
+      showControls: this.stateValues.showControls,
+      showTicks: this.stateValues.showTicks,
+      disabled: this.stateValues.disabled,
+    })
+
+  }
 
 }
 

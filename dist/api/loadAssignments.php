@@ -14,7 +14,7 @@ if (!isset($_GET["courseId"])) {
     $courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 
     $sql = "
-        SELECT a.assignmentId, a.assignmentName
+        SELECT a.assignmentId, a.title
         FROM assignment AS a
         WHERE a.courseId = '$courseId'
         ORDER BY a.dueDate
@@ -29,7 +29,7 @@ if (!isset($_GET["courseId"])) {
             array_push($response_arr,
                 array(
                     $row['assignmentId'],
-                    $row['assignmentName']
+                    $row['title']
                 )
             );
         }

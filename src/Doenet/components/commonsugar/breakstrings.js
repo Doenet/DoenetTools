@@ -1,5 +1,5 @@
 
-// function: breakStringsAndOthersIntoComponentsByStringCommas
+// function: returnBreakStringsSugarFunction
 //
 // returns a sugar replacement function that
 // - expects string and other children,

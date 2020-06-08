@@ -8,7 +8,7 @@ describe('Problem Tag Tests', function () {
   it('problems default to weight 1', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <title>Activity</title>
     <p>Credit achieved for <ref prop="title">_document1</ref>:
     <ref prop="creditAchieved">_document1</ref>, or <ref prop="percentcreditachieved">_document1</ref>%</p>
@@ -538,7 +538,7 @@ describe('Problem Tag Tests', function () {
   it('problems with weights', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <title>Activity</title>
     <p>Credit achieved for <ref prop="title">_document1</ref>:
     <ref prop="creditAchieved">_document1</ref>, or <ref prop="percentcreditachieved">_document1</ref>%</p>
