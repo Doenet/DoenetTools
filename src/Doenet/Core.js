@@ -3994,6 +3994,9 @@ export default class Core {
     if (dependencyDefinition.__isDetermineDependencyStateVariable) {
       newDep.__isDetermineDependencyStateVariable = true;
     }
+    if (dependencyDefinition.triggerParentChildLogicWhenResolved) {
+      newDep.triggerParentChildLogicWhenResolved = true;
+    }
 
     if (dependencyDefinition.dependencyType === "childStateVariables" || dependencyDefinition.dependencyType === "childIdentity") {
 
@@ -5852,7 +5855,7 @@ export default class Core {
   }
 
   resolveStateVariables({ component, stateVariables, updatesNeeded }) {
-    // console.log(`resolve state variable ${stateVariable ? stateVariable : ""} for ${component.componentName}`);
+    // console.log(`resolve state variable ${stateVariables ? stateVariables.toString() : ""} for ${component.componentName}`);
 
     let componentName = component.componentName;
 
@@ -5861,6 +5864,8 @@ export default class Core {
 
     let numInternalUnresolved = Infinity;
     let prevUnresolved = [];
+
+    let triggerParentChildLogic = false;
 
     if (!stateVariables) {
       stateVariables = Object.keys(component.state);
@@ -6027,6 +6032,10 @@ export default class Core {
         if (resolved) {
           delete varsUnresolved[varName];
 
+          if (component.state[varName].triggerParentChildLogicWhenResolved) {
+            triggerParentChildLogic = true;
+          }
+
           if (component.state[varName].actionOnResolved) {
 
             let actionArgs = this.getStateVariableDependencyValues({ component, stateVariable: varName });
@@ -6074,7 +6083,7 @@ export default class Core {
 
     }
 
-    return { varsUnresolved, componentVarsDeleted };
+    return { varsUnresolved, componentVarsDeleted, triggerParentChildLogic };
 
   }
 
@@ -6345,14 +6354,37 @@ export default class Core {
 
                 // TODO: do we have to worry about circular dependence here?
 
+
                 // The state variable readyToExpand is a special state variable
                 // for composite components.
                 // Once this variable is newly resolved,
                 // we might be able to expand the composite component into its replacements
 
-                if (dep.stateVariable === "readyToExpand" &&
-                  depComponent instanceof this._allComponentClasses['_composite']
-                ) {
+                let processParentChildLogic = dep.stateVariable === "readyToExpand" &&
+                  depComponent instanceof this._allComponentClasses['_composite'];
+
+                if (resolveResult.triggerParentChildLogic) {
+                  // could also trigger parent child logic if all additional state variables defined
+                  // are resolved
+
+                  let allAdditionalResolved = true;
+
+                  let depStateVarObj = depComponent.state[dep.stateVariable];
+                  if(depStateVarObj.additionalStateVariablesDefined) {
+                    for(let vName of depStateVarObj.additionalStateVariablesDefined) {
+                      if(!depComponent.state[vName].isResolved) {
+                        allAdditionalResolved = false;
+                        break;
+                      }
+                    }
+                  }
+
+                  if(allAdditionalResolved) {
+                    processParentChildLogic = true;
+                  }
+                }
+
+                if (processParentChildLogic) {
 
                   this.processNewDefiningChildren({
                     parent: this._components[depComponent.parentName],
@@ -6409,15 +6441,20 @@ export default class Core {
       // check if any composites unexpanded composites can now be expanded
       for (let compositeName of updatesNeeded.compositesToExpand) {
 
+        let composite = this._components[compositeName];
+        if(!composite) {
+          continue;
+        }
+
         let nUnexpanded = updatesNeeded.compositesToExpand.size
 
         this.processNewDefiningChildren({
-          parent: this._components[this._components[compositeName].parentName],
+          parent: this._components[composite.parentName],
           updatesNeeded
         });
 
         let sugarResult = this.applySugarOrAddSugarCreationStateVariables({
-          component: this._components[this._components[compositeName].parentName],
+          component: this._components[composite.parentName],
           updatesNeeded
         });
 
@@ -9144,7 +9181,7 @@ export default class Core {
               updatesNeeded
             });
 
-            // TODO: do we need to do anything if applyGuar returns varsUnresolved?
+            // TODO: do we need to do anything if applySugar returns varsUnresolved?
 
           } else {
             // if not top level replacements
@@ -9166,7 +9203,7 @@ export default class Core {
               updatesNeeded
             });
 
-            // TODO: do we need to do anything if applyGuar returns varsUnresolved?
+            // TODO: do we need to do anything if applySugar returns varsUnresolved?
 
             let newChange = {
               changeType: "addedReplacements",
@@ -9564,7 +9601,9 @@ export default class Core {
     if (inheritedComponentType === baseComponentType) {
       return true;
     }
-    return this.allComponentClasses[baseComponentType].isPrototypeOf(inheritedComponentType);
+    return this.allComponentClasses[baseComponentType].isPrototypeOf(
+      this.allComponentClasses[inheritedComponentType]
+    );
   }
 
   get componentTypesTakingComponentNames() {

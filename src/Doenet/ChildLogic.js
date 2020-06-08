@@ -223,11 +223,18 @@ export default class childLogic {
       return this.logicResult;
     }
 
-    this.logicResult = this.propertyAndBaseLogic.applyLogic({
-      activeChildren,
-      matchSugar,
-      maxAdapterNumber: maxAdapterNumber,
-    });
+    try {
+      this.logicResult = this.propertyAndBaseLogic.applyLogic({
+        activeChildren,
+        matchSugar,
+        maxAdapterNumber: maxAdapterNumber,
+      });
+    } catch (e) {
+      console.warn(`error encountered when evaluating child logic`)
+      console.warn(e);
+      this.logicResult = { success: false, message: e.message };
+      return this.logicResult;
+    }
 
     // number of matches must match number of activeChildren
     if (this.logicResult.success === true) {
@@ -287,7 +294,8 @@ export default class childLogic {
   }
 
   calculateSugarReplacements({ childMatches, activeChildren, allChildren, definingChildren,
-    separateSugarInputs, replacementFunction, dependencyValues, idRng }) {
+    separateSugarInputs, replacementFunction, dependencyValues, idRng }
+  ) {
 
     let flattenedMatches = flattenDeep(childMatches);
     flattenedMatches.sort((a, b) => a - b);
@@ -406,7 +414,14 @@ export default class childLogic {
           + ". Can't change child than logic didn't match");
       }
 
-      let activeGrandchildrenMatched = changes.activeChildrenMatched;
+      let activeGrandchildrenMatched = [];
+
+      for (let grandChildIdentity of changes.activeChildrenMatched) {
+        // grandChildIdentity isn't actual component,
+        // as we don't give actual components to replacement functions
+        // Find actual component from child's children
+        activeGrandchildrenMatched.push(child.allChildren[grandChildIdentity.componentName].component)
+      }
 
       let activeGrandchildrenIndices = [];
       // verify that activeGrandchildrenMatched contains valid components

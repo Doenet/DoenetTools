@@ -218,11 +218,11 @@ export default function checkEquality({
         || object2_operator === "set"
       ) {
         return { fraction_equal: 0 };
-      } else if (object2_operator === "tuple") {
+      } else if (object2_operator === "tuple" || object2_operator === "vector") {
         // since we can convert tuple to vector
         // change object2 to array of selements
         object2 = object2.tree.slice(1);
-      } else if (object2_operator !== "vector") {
+      } else {
         // since can convert singleton to a vector of length 1
         // make object2 array of the one element
         object2 = [object2.tree];
