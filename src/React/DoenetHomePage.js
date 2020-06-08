@@ -283,8 +283,8 @@ class DoenetHomePage extends Component {
                 <ul style={{textAlign: "left", color: "#6de5ff"}}>
                   <li><a href="/guesteditor/?contentId=b9a44bf4c0407f7bef3da07c6f6e96f0aea3aef7fda031addbe182962a1b0765">Guest Editor</a></li>
                   <li><a href="/guesteditor/?contentId=a11c2db8fcc6280a91e763fcdf01de8b0770afffa4e70c5ef8d2fa670564eda4">A line through two points</a></li>
-                  <li><a href="/guesteditor/?contentId=19b3992f020a2d6c738eaad37d19a81908e9f7508b51586ad90d6b9af294b4c8">The derivative of a quadratic</a></li>
-                  <li><a href="/guesteditor/?contentId=ea679d587429fbeab982f296857eb856db3214da7327797553f285fe5ce72de3">Undamped pendulum simulation</a></li>
+                  <li><a href="/guesteditor/?contentId=4bca2bf314c86940ce03f38e56c83da04cb0903b917dbcd38bd853ec0bc45b5f">The derivative of a quadratic</a></li>
+                  {/* <li><a href="/guesteditor/?contentId=ea679d587429fbeab982f296857eb856db3214da7327797553f285fe5ce72de3">Undamped pendulum simulation</a></li> */}
                 </ul>
 
               </div>
