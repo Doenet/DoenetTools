@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import Menu from './menu.js'
+import MenuDropDown from './MenuDropDown.js'
 import SelectionSet from "./Selector/SelectionSet";
 import DoenetAssignmentTree from "./DoenetAssignmentTree"
 
@@ -3388,16 +3389,15 @@ class DoenetCourse extends Component {
               panelName="context"
               panelHeaderControls={[
                 (this.coursesToChoose ?
-                  <Menu
+                  <MenuDropDown
                     currentTool={"something"}
                     width={"200px"}
                     key={"menu00" + (this.updateNumber++)}
-                    //showThisRole={"N/A"}
-
-                    showThisRole={this.selectedCourseId && this.courseInfo ? (this.courseInfo[this.selectedCourseId]['courseName'] + "  ") : " "}
+                    showThisRole={this.selectedCourseId}
                     itemsToShow={this.coursesToChoose}
                     offsetPos={-20}
                     menuWidth={"200px"}
+                    placeholder={"Select Course"}
                   />
                   : null)
               ]}
