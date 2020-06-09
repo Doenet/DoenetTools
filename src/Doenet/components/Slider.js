@@ -321,8 +321,8 @@ export default class Slider extends BaseComponent {
   changeValue({ value }) {
     if (!this.stateValues.disabled) {
       this.requestUpdate({
-        updateType: "updateValue",
         updateInstructions: [{
+          updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "value",
           value
