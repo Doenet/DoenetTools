@@ -2715,7 +2715,14 @@ export default class Core {
           )) {
             // if value of property was specified on ref component itself
             // then use that property value
-            return { newValues: { [property]: dependencyValues.refComponentVariable } };
+
+            // need to validate it, since ref component
+            // wouldn't have the validation logic
+            let propertyValue = validatePropertyValue({
+              value: dependencyValues.refComponentVariable,
+              propertySpecification, property
+            })
+            return { newValues: { [property]: propertyValue } };
 
           } else if (dependencyValues.refTargetVariable !== undefined && (
             !usedDefault.refTargetVariable
@@ -2726,8 +2733,16 @@ export default class Core {
 
           } else if (dependencyValues.ancestorProp !== undefined) {
             // else if have ancestor prop, so use that it wasn't based on default
+
+            // need to validate it, since ancestor
+            // may not have had the validation logic
+            let ancestorPropertyValue = validatePropertyValue({
+              value: dependencyValues.ancestorProp,
+              propertySpecification, property
+            })
+
             if (!usedDefault.ancestorProp) {
-              return { newValues: { [property]: dependencyValues.ancestorProp } }
+              return { newValues: { [property]: ancestorPropertyValue } }
             } else {
               return {
                 // if ancestor prop used default, use its value as a fallback
@@ -2735,7 +2750,7 @@ export default class Core {
                 useEssentialOrDefaultValue: {
                   [property]: {
                     variablesToCheck: property,
-                    defaultValue: dependencyValues.ancestorProp,
+                    defaultValue: ancestorPropertyValue,
                   }
                 }
               };
@@ -5736,9 +5751,6 @@ export default class Core {
                 vNames.push(vName);
               }
             }
-            if (vNames.length === 0) {
-              vNames = ['__identity'];
-            }
           }
         }
 
@@ -6370,16 +6382,16 @@ export default class Core {
                   let allAdditionalResolved = true;
 
                   let depStateVarObj = depComponent.state[dep.stateVariable];
-                  if(depStateVarObj.additionalStateVariablesDefined) {
-                    for(let vName of depStateVarObj.additionalStateVariablesDefined) {
-                      if(!depComponent.state[vName].isResolved) {
+                  if (depStateVarObj.additionalStateVariablesDefined) {
+                    for (let vName of depStateVarObj.additionalStateVariablesDefined) {
+                      if (!depComponent.state[vName].isResolved) {
                         allAdditionalResolved = false;
                         break;
                       }
                     }
                   }
 
-                  if(allAdditionalResolved) {
+                  if (allAdditionalResolved) {
                     processParentChildLogic = true;
                   }
                 }
@@ -6442,7 +6454,7 @@ export default class Core {
       for (let compositeName of updatesNeeded.compositesToExpand) {
 
         let composite = this._components[compositeName];
-        if(!composite) {
+        if (!composite) {
           continue;
         }
 
