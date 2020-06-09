@@ -62,12 +62,10 @@ button{
   min-height: 60px;
   max-height: 60px;
   margin:0px;
-
-  z-index: 3;
+  /* z-index: 3; */
   background-color: white;
   border-bottom: 1px solid #E3E2E2;
-  align-content: space-between;
-    align-items: center;
+  align-items: center;
 }
 .panels-header-controls{
   margin: 10px 10px;

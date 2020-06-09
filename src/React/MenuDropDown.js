@@ -43,7 +43,7 @@ const MenuController = styled.button`
 const DropDownContent = styled.div`
     opacity:1;
     display: ${props => props.open ? 'block' : 'none'};
-    position: absolute;
+    position: fixed;
     background-color: white;
     min-width: 200px;
     border:1px solid #E2E2E2;
@@ -51,9 +51,13 @@ const DropDownContent = styled.div`
     color:black;
 `
 const DropDownContentItem = styled.div`
-    padding: 10px 0px;
+    padding: 10px 5px;
     background-color: ${props => props.selected ? 'black' : 'transperant'};
     color: ${props => props.selected ? 'white' : 'black'};
+    justify-content: center;
+    min-height: 40px;
+    align-items: center;
+    display:flex;
     &:hover {
         color: ${props => props.selected ? 'white' : 'blue'};
         background-color: ${props => props.selected ? 'black' : 'lightgray'};
