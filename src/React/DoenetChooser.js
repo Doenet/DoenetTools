@@ -223,28 +223,26 @@ class DoenetChooser extends Component {
       branchId:newBranchId,
       publish:true
     }, (branchId) => {
-      this.loadUserContentBranches(() => {
-        // if not in base dir, add document to current folder
-        if (this.state.directoryStack.length !== 0) {
-          let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
+      this.saveUserContent([branchId], ["content"], "insert", () => {
+        this.loadUserContentBranches(() => {
+        
+          // add document to current folder
+          let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
           this.addContentToFolder([branchId], ["content"], currentFolderId);
-        } else {
-          this.saveUserContent([branchId], ["content"], "insert"); // add to user root
-        }
+        
+          // set as selected and redirect to /editor 
+          this.setState({
+            directoryStack: [],
+            selectedItems: [branchId],
+            selectedItemsType: ["content"],
+            activeSection: "chooser",
+            selectedDrive: "Content"
+          }, () => {
+            setTimeout(function(){ window.location.href=`/editor?branchId=${branchId}`;}, 500);
+          });
+        })
+      });
       
-        // set as selected and redirect to /editor 
-        this.setState({
-          directoryStack: [],
-          selectedItems: [branchId],
-          selectedItemsType: ["content"],
-          activeSection: "chooser",
-          selectedDrive: "Content"
-        }, () => {
-          // this.forceUpdate();   
-          this.updateNumber++;
-          setTimeout(function(){ window.location.href=`/editor?branchId=${branchId}`;}, 500);
-        });
-      })
     });
   }
 
@@ -329,25 +327,21 @@ class DoenetChooser extends Component {
         description: description,
         usesDoenetAPI: usesDoenetAPI
       }, () => {
-        if (this.state.directoryStack.length !== 0) {
-          let currentFolderId = this.state.directoryStack[this.state.directoryStack.length - 1];
-          this.addContentToFolder([urlId], ["url"], currentFolderId, () => {
-            this.loadUserUrls();
-          });        
-        } else {
-          this.saveUserContent([urlId], ["url"], "insert", () => {  // add to user root
-            this.loadUserUrls(() => {
-              this.setState({
-                selectedItems: [urlId],
-                selectedItemsType: ["url"],
-                activeSection: "chooser",
-                selectedDrive: "Content"
-              }, () => { 
-                this.updateNumber++;
-              });
+        // add url to current folder
+        let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
+        this.addContentToFolder([urlId], ["url"], currentFolderId);        
+
+        this.saveUserContent([urlId], ["url"], "insert", () => {  // add to user root
+          this.loadUserUrls(() => {
+            this.setState({
+              selectedItems: [urlId],
+              selectedItemsType: ["url"],
+              activeSection: "chooser",
+              selectedDrive: "Content"
+            }, () => { 
             });
-          })  
-        }        
+          });
+        })        
       }),
     ])
     .then(() => {
@@ -384,6 +378,8 @@ class DoenetChooser extends Component {
       this.urlInfo = Object.assign({}, this.urlInfo, resp.data.urlInfo);
       this.userUrlInfo = resp.data.urlInfo;
       this.urlIds = resp.data.urlIds;
+      console.log("Updated")
+      console.log(this.urlIds)
       this.urls_loaded = true;
       this.userContentReloaded = true;
       callback();
@@ -1814,7 +1810,7 @@ class DoenetChooser extends Component {
               activeContainer={this.state.panelsCollection["first"].activeContainer}
               containersData={[
                 { name: "browser", container: this.mainSection },
-              { name: "tree", container: <div style={{display: "flex", flexDirection: "row"}}>{this.tree}{this.customizedTree}</div> },
+              { name: "tree", container: <div style={{display: "flex", flexDirection: "row"}}>{this.tree}</div> },
               ]}
             />
           </ToolLayoutPanel>

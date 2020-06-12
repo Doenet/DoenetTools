@@ -88,6 +88,52 @@ import ChooserConstants from "../chooser/ChooserConstants";
       - onDrop
       - onDropEnter
       - onDropLeave
+
+Example customized tree:
+<TreeView
+  containerId={treeContainerId}
+  containerType={treeContainerType}
+  loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
+  parentsInfo={treeParentsInfo} 
+  childrenInfo={treeChildrenInfo}
+  treeNodeIcons={(itemType) => { 
+      let map = { 
+        folder: <FontAwesomeIcon icon={faDotCircle}
+                style={{ fontSize: "16px",  color: "#737373" }}/>,
+        content: <FontAwesomeIcon icon={faTimesCircle}/> 
+      }
+      return map[itemType]
+  }} 
+  hideRoot={true}
+  specialNodes={this.tempSet}
+  treeStyles={{
+    parentNode: {
+      "title": { color: "rgba(58,172,144)" },
+      "frame": {
+        border: "1px #b3b3b3 solid",
+        width: "100%"
+      },
+      "contentContainer": {
+        border: "none",
+      }
+    },
+    childNode: {
+      "title": {
+        color: "rgba(33,11,124)", 
+      },
+      "frame": { border: "1px #a4a4a4 solid" },
+    },
+    specialChildNode: {
+      "frame": { background: "#a7a7a7" },
+    },
+    expanderIcon: <FontAwesomeIcon icon={faPlus} style={{paddingRight: "8px"}}/>
+  }}
+  onLeafNodeClick={(nodeId) => {
+    if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
+    else this.tempSet.add(nodeId); 
+    this.forceUpdate()
+  }}
+/>
 */
 
 export const TreeView = ({
