@@ -44,7 +44,11 @@ import Triangle from './components/Triangle';
 import Circle from './components/Circle';
 import Parabola from './components/Parabola';
 import Curve from './components/Curve';
+import FunctionCurve from './components/FunctionCurve';
+import ParametrizedCurve from './components/ParametrizedCurve';
+import BezierCurve from './components/BezierCurve';
 import BezierControls from './components/BezierControls';
+import ControlVectors from './components/ControlVectors';
 import PointListComponent from './components/abstract/PointListComponent';
 import VectorListComponent from './components/abstract/VectorListComponent';
 import AngleListComponent from './components/abstract/AngleListComponent';
@@ -53,7 +57,7 @@ import Angle from './components/Angle';
 import Equation from './components/Equation';
 import Answer from './components/Answer';
 import Award from './components/Award';
-import IfComponent from './components/If';
+import When from './components/When';
 import Mathinput from './components/Mathinput';
 import Textinput from './components/Textinput';
 import Booleaninput from './components/Booleaninput';
@@ -127,8 +131,6 @@ import Container from './components/Container';
 import CollaborateGroups from './components/CollaborateGroups';
 import CollaborateGroupSetup from './components/CollaborateGroupSetup';
 import Div from './components/Div';
-import IntervalInput from './components/IntervalInput';
-import Interval from './components/Interval';
 
 
 //Extended
@@ -194,12 +196,12 @@ const componentTypeArray = [
   Triangle,
   Circle,
   Parabola,
-  Curve,
-  BezierControls,
+  Curve, FunctionCurve, ParametrizedCurve, BezierCurve,
+  BezierControls, ControlVectors,
   Vector,
   Angle,
   Equation,
-  Answer, Award, IfComponent,
+  Answer, Award, When,
   Mathinput, Textinput, Booleaninput, Choiceinput,
   Choice,
   NumberComponent, Integer,
@@ -258,8 +260,6 @@ const componentTypeArray = [
   CollaborateGroups,
   CollaborateGroupSetup,
   Div,
-  IntervalInput, 
-  Interval, 
 ];
 
 const componentTypeArrayExtended = [

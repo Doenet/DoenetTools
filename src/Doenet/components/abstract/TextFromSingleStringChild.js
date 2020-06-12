@@ -13,6 +13,7 @@ export default class TextFromSingleStringChild extends Text {
       componentType: 'string',
       comparison: 'atMost',
       number: 1,
+      excludeCompositeReplacements: true,
       setAsBase: true,
     });
 

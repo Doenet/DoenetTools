@@ -8,7 +8,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -85,7 +85,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -162,7 +162,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -277,7 +277,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -391,7 +391,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -505,7 +505,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -619,7 +619,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -739,7 +739,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -858,7 +858,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -977,7 +977,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -1096,7 +1096,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -1216,7 +1216,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <point constrainToGrid>(1,2)</point>
@@ -1338,7 +1338,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <point constrainToGrid>(1,2)</point>
@@ -1461,7 +1461,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -1538,7 +1538,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -1607,7 +1607,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>
@@ -1700,7 +1700,7 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>(-3,-4),(0,0),(6,5)</curve>
@@ -1782,7 +1782,7 @@ describe('Curve Tag Bezier Tests', function () {
   it('new curve from reffed control vectors, some flipped', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>(-9,6),(-3,7),(4,0),(8,5)
@@ -2117,7 +2117,7 @@ describe('Curve Tag Bezier Tests', function () {
   it('new curve from reffed control points, some flipped', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <graph>
     <curve>(-9,6),(-3,7),(4,0),(8,5)
@@ -2450,7 +2450,7 @@ describe('Curve Tag Bezier Tests', function () {
   it('fourth point depends on internal ref of first point', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <curve>
@@ -2674,7 +2674,7 @@ describe('Curve Tag Bezier Tests', function () {
   it('first point depends on internal ref of fourth point', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <curve>
@@ -2898,7 +2898,7 @@ describe('Curve Tag Bezier Tests', function () {
   it('first point depends fourth, formula for fifth', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <curve>
@@ -3222,7 +3222,7 @@ describe('Curve Tag Bezier Tests', function () {
   it('first, fourth, seventh point depends on fourth, seventh, tenth', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <curve>
@@ -3474,7 +3474,7 @@ describe('Curve Tag Bezier Tests', function () {
   it('first, fourth, seventh point depends on shifted fourth, seventh, tenth', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <curve>
@@ -3753,7 +3753,7 @@ describe('Curve Tag Bezier Tests', function () {
   it('fourth control point depends on internal ref of first control point', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <curve>
@@ -3934,7 +3934,7 @@ describe('Curve Tag Bezier Tests', function () {
   it('first control point depends on internal ref of fourth control point', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <curve>
@@ -4115,7 +4115,7 @@ describe('Curve Tag Bezier Tests', function () {
   it('first control point depends on internal ref of fourth control vector', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <curve>
@@ -4296,7 +4296,7 @@ describe('Curve Tag Bezier Tests', function () {
   it('first control vector depends on internal ref of fourth control point', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <curve>
@@ -4472,7 +4472,7 @@ describe('Curve Tag Bezier Tests', function () {
   it('internal refs among controls, based on one vector, curve reffed', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <curve>

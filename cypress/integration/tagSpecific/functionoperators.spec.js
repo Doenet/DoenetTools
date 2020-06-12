@@ -10,7 +10,7 @@ describe('Function Operator Tag Tests', function () {
   it('clamp function', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <function name="original">x^3</function>
     <clampfunction name="clamp01"><ref>original</ref></clampfunction>
     <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><ref>original</ref></clampfunction>
@@ -91,7 +91,7 @@ describe('Function Operator Tag Tests', function () {
   it('wrap function', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <function name="original">x^3</function>
     <wrapfunctionperiodic name="wrap01"><ref>original</ref></wrapfunctionperiodic>
     <wrapfunctionperiodic name="wrapn23" lowervalue="-2" uppervalue="3"><ref>original</ref></wrapfunctionperiodic>

@@ -73,7 +73,7 @@ export default class ToolLayoutPanel extends Component {
       return (
         <>
 
-          {(this.context.leftOpenBtn) && (
+          {(this.context.leftOpenBtn) && !this.context.guestUser && (
 
             <button onClick={this.context.leftPanelVisible} className="middleLeftButton" 
             >

@@ -81,7 +81,7 @@ export default class MathList extends InlineComponent {
           variableNames: ["value"]
         }
       }),
-      affectedBySugar: ["atLeastZeroMaths"],
+      logicToWaitOnSugar: ["atLeastZeroMaths"],
       replacementFunction: breakStringIntoMathsByCommas,
     });
 

@@ -8,7 +8,7 @@ describe('Triangle Tag Tests', function () {
   it('triangle with string points', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <triangle>
@@ -67,7 +67,7 @@ describe('Triangle Tag Tests', function () {
   it('constrain to triangle', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
     <triangle>
@@ -155,7 +155,7 @@ describe('Triangle Tag Tests', function () {
   it('reflect triangle via individual vertices', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <triangle>(1,2),(3,4),(-5,6)</triangle>
@@ -255,7 +255,7 @@ describe('Triangle Tag Tests', function () {
   it('triangle with one vertex refection of other', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <text>a</text>
   <graph>
   <triangle>

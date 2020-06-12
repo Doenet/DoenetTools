@@ -27,34 +27,11 @@ SELECT  -- get all personal folders
   f.creationDate as creationDate,
   f.isRepo as isRepo,
   f.public as isPublic,
-  f.folderId as rootId
+  fc.rootId as rootId
 FROM user_folders AS uf
 LEFT JOIN folder f ON uf.folderId = f.folderId
+LEFT JOIN folder_content fc ON uf.folderId = fc.childId
 WHERE uf.username='$remoteuser'
-UNION
-SELECT  -- get all nested folders
-  f.folderId as folderId,
-  f.title as title,
-  f.parentId as parentId,
-  f.creationDate as creationDate,
-  f.isRepo as isRepo,
-  f.public as isPublic,
-  fc.rootId as rootId
-FROM folder_content AS fc
-LEFT JOIN folder f ON fc.childId = f.folderId
-WHERE fc.removedFlag=0 AND rootId IN (
-  SELECT 
-    f.folderId as folderId
-    FROM repo_access AS ra
-    LEFT JOIN folder f ON ra.repoId = f.folderId
-    WHERE ra.username='$remoteuser' AND ra.removedFlag=0
-    UNION
-    SELECT 
-    f.folderId as folderId
-    FROM user_folders AS uf
-    LEFT JOIN folder f ON uf.folderId = f.folderId
-    WHERE uf.username='$remoteuser'
-) AND fc.childType='folder'
 ";
 
 $result = $conn->query($sql); 
@@ -72,7 +49,8 @@ if ($result->num_rows > 0){
           "title" => $row["title"],
           "publishDate" => $row["creationDate"],
           "parentId" => $row["parentId"],
-          "rootId" => $row["rootId"],
+          "rootId" => $row["rootId"] == NULL ? $row["folderId"] : $row["rootId"],
+          "type" => ($row["isRepo"] == 1)? "repo": "folder",
           "childContent" => array(),
           "childUrls" => array(),
           "childFolders" => array(),
@@ -81,6 +59,20 @@ if ($result->num_rows > 0){
     );
   }
 }
+
+// insert root object into folderInfo
+$folder_info_arr["root"] = array(
+  "title" => "root",
+  "publishDate" => "",
+  "parentId" => "",
+  "rootId" => "",
+  "type" => "folder",
+  "childContent" => array(),
+  "childUrls" => array(),
+  "childFolders" => array(),
+  "isRepo" => FALSE,
+  "isPublic" => TRUE
+);
 
 
 // get children content and folders
@@ -127,11 +119,11 @@ $result = $conn->query($sql);
 $users = array();
 while($row = $result->fetch_assoc()){ 
   $user_info = array(
-    firstName=>$row["firstName"],
-    lastName=>$row["lastName"],
-    username=>$row["username"],
-    email=>$row["email"],
-    owner=>$row["owner"]
+    "firstName"=>$row["firstName"],
+    "lastName"=>$row["lastName"],
+    "username"=>$row["username"],
+    "email"=>$row["email"],
+    "owner"=>$row["owner"]
   );
   array_push($users,$user_info);
 }

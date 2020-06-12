@@ -10,7 +10,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it('no parameters, generate single random number from 1 to 10', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><aslist>
     <map>
@@ -68,7 +68,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it('generate single random number from 1 to 6', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><aslist>
     <map>
@@ -127,7 +127,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it('generate single random number from -3 to 5', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><aslist>
     <map>
@@ -186,7 +186,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it('generate single random number from -3 to 5, excluding 0', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><aslist>
     <map>
@@ -245,7 +245,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it('generate single odd random number from -3 to 5', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><aslist>
     <map>
@@ -304,7 +304,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it('generate two even random numbers from -4 to 4, excluding 0', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><aslist>
     <map>
@@ -367,7 +367,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it('generate five even random numbers with replacement from -4 to 4, excluding 0', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><aslist>
     <map>
@@ -428,7 +428,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it('generate five continuous random numbers, no parameters, between 0 and 1', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><aslist>
     <map>
@@ -490,7 +490,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it('generate ten continuous random numbers, between -3 and -2', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><aslist>
     <map>
@@ -552,7 +552,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it('generate twenty continuous standard normals, no parameters', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><aslist>
     <map>
@@ -635,7 +635,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it('generate twenty continuous standard normals, mean 100, standard deviation 10', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><aslist>
     <map>
@@ -718,7 +718,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it('generate twenty continuous standard normals, mean -3, variance 0.01', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><aslist>
     <map>
@@ -801,7 +801,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it("refs don't resample", () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><aslist>
     <generaterandomNumbers name="sample1">100</generaterandomNumbers>
@@ -854,7 +854,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it("random number does change dynamically", () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <mathinput prefill="20" name="numberofsamples"/>
     <mathinput prefill="10" name="maxnum"/>
@@ -927,7 +927,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it("random number does resample in dynamic map", () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     How many numbers do you want? <mathinput />
     <p name="p1"><aslist>
@@ -1237,7 +1237,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it('generate single number, assign name', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p><generaterandomNumbers from="3" step="7" count="3" assignnames="u"/></p>
     <p><generaterandomNumbers from="3" step="7" count="3" assignnames="v"/></p>
@@ -1279,7 +1279,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it('generate multiple random numbers, assign names', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p>Number of samples: <mathinput name="n" prefill="6"/> </p>
     <p><aslist>
@@ -1577,7 +1577,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
   it('generate multiple random numbers, assign names, new namespace', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <p>Number of samples: <mathinput name="n" prefill="6"/> </p>
     <p><aslist>

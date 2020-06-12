@@ -5,7 +5,7 @@ describe('Match partial validation tests',function() {
     })
   
   it('match partial with ordered and unordered tuple',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
   <p>Match partial: <answer>
     <award matchpartial>(1,2,3)</award>
   </answer></p>
@@ -285,7 +285,7 @@ describe('Match partial validation tests',function() {
   });
     
   it('match partial with ordered and unordered list',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
   <p>Match partial: <answer>
     <award matchpartial>1,2,3</award>
   </answer></p>
@@ -565,7 +565,7 @@ describe('Match partial validation tests',function() {
   });
     
   it('match partial with ordered and unordered array',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
   <p>Match partial: <answer>
     <award matchpartial>[1,2,3]</award>
   </answer></p>
@@ -845,7 +845,7 @@ describe('Match partial validation tests',function() {
   });
     
   it('match set',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
   <p>Match partial: <answer>
     <award matchpartial>{1,2,3}</award>
   </answer></p>
@@ -982,7 +982,7 @@ describe('Match partial validation tests',function() {
   });
    
   it('match intervals',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
   <p>Open, match partial: <answer>
     <award matchpartial><math createintervals>(1,2)</math></award>
   </answer></p>
@@ -1308,7 +1308,7 @@ describe('Match partial validation tests',function() {
   });
 
   it('match partial with ordered and unordered math inputs',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
   <p>Match partial:</p>
   <answer name="a" newnamespace>
     <p><mathinput name="x"/></p>
@@ -1605,7 +1605,7 @@ describe('Match partial validation tests',function() {
   });
     
   it('match partial with ordered and unordered text inputs',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
   <p>Match partial:</p>
   <answer name="a" newnamespace>
     <p><textinput name="x"/></p>
@@ -1903,7 +1903,7 @@ describe('Match partial validation tests',function() {
     
       
   it.only('match partial with ordered and unordered boolean inputs',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
   <p>Match partial:</p>
   <answer name="a" newnamespace>
     <p><booleaninput name="x"/></p>

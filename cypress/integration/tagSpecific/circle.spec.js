@@ -6,7 +6,7 @@ describe('Circle Tag Tests',function() {
     })
   
   it('circle with no parameters gives unit circle',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <circle/>
@@ -75,7 +75,7 @@ describe('Circle Tag Tests',function() {
   });
 
   it('circle with string point for sugared for center',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <circle>(-1,3)</circle>
@@ -172,7 +172,7 @@ describe('Circle Tag Tests',function() {
   });
 
   it('circle with point sugared for center',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <circle><point>(-1,3)</point></circle>
@@ -269,7 +269,7 @@ describe('Circle Tag Tests',function() {
   });
 
   it('circle with center containing sugared point',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <circle><center>(-1,3)</center></circle>
@@ -366,7 +366,7 @@ describe('Circle Tag Tests',function() {
   });
 
   it('circle with full center point',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <circle><center><point>(-1,3)</point></center></circle>
@@ -463,7 +463,7 @@ describe('Circle Tag Tests',function() {
   });
 
   it('circle with radius',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <point>(2,0)</point>
@@ -567,7 +567,7 @@ describe('Circle Tag Tests',function() {
   });
 
   it('circle through point',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <point>(2,-3)</point>
@@ -729,7 +729,7 @@ describe('Circle Tag Tests',function() {
   });
 
   it('circle through two points',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <point>(2,-3)</point><point>(3,4)</point>
@@ -911,7 +911,7 @@ describe('Circle Tag Tests',function() {
   });
 
   it('circle through two points, undefined on first pass',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <circle><through><ref>_point1</ref><ref>_point2</ref></through></circle>
@@ -1093,7 +1093,7 @@ describe('Circle Tag Tests',function() {
   })
 
   it('circle through three points',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <point>(2,-3)</point><point>(3,4)</point><point>(-3,4)</point>
@@ -1398,7 +1398,7 @@ describe('Circle Tag Tests',function() {
   });
 
   it('circle through three points, undefined on first pass',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <circle><through><ref>_point1</ref><ref>_point2</ref><ref>_point3</ref></through></circle>
@@ -1703,7 +1703,7 @@ describe('Circle Tag Tests',function() {
   });
 
   it('circle with radius and through one point',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <point>(2,0)</point><point>(3,4)</point>
@@ -1838,7 +1838,7 @@ describe('Circle Tag Tests',function() {
   });
 
   it('circle with radius and through two points',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <point>(2,0)</point><point>(3,4)</point><point>(5,6)</point>
@@ -2110,7 +2110,7 @@ describe('Circle Tag Tests',function() {
   })
 
   it('circle with point sugared as center and through point',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <point>(3,4)</point><point>(5,6)</point>
@@ -2304,7 +2304,7 @@ describe('Circle Tag Tests',function() {
   })
 
   it('circle with radius and string sugared as center',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <point>(3,0)</point>
@@ -2397,7 +2397,7 @@ describe('Circle Tag Tests',function() {
   })
 
   it('point constrained to circle',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <point>(3,0)</point><point>(-1,7)</point>
@@ -2537,7 +2537,7 @@ describe('Circle Tag Tests',function() {
   })
 
   it('all updatable with refs',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <point>(3,0)</point><point>(-1,7)</point>
@@ -2818,7 +2818,7 @@ describe('Circle Tag Tests',function() {
   })
 
   it('triangle inscribed in circle, ref center coordinates separately and radius',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <graph>
     <triangle layer="1" name="t">(1,2),(3,5),(-5,2)</triangle>
@@ -3120,7 +3120,7 @@ describe('Circle Tag Tests',function() {
   })
 
   it('circle where radius depends on center',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
   <graph>
     <circle>

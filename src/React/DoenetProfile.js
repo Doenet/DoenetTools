@@ -27,7 +27,7 @@ let SpanAll = styled.div`
 `;
 
 let WidthEnforcer = styled.div`
-  max-width: 1500px;
+  min-width: 1500px;
   margin: auto;
 `;
 

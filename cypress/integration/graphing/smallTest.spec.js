@@ -8,7 +8,7 @@ describe('Graph Reference Test 2', function () {
   it('graph referenced multiple ways 2', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <panel columns="4">
     <graph width="150px" height="150px" name="graph1">

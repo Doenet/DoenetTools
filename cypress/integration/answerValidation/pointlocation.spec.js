@@ -5,7 +5,7 @@ describe('Point location validation tests',function() {
     })
   
   it('point in first quadrant',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <p>Move point to first quadrant</p>
     <graph><point>(-3.9,4.5)</point></graph>
@@ -179,7 +179,7 @@ describe('Point location validation tests',function() {
   });
 
   it('point at precise location with attract',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <point name="goal">(-4.1, 7.4)</point>
     <p>Move point to <ref prop="coords">goal</ref></p>
@@ -305,7 +305,7 @@ describe('Point location validation tests',function() {
   });
 
   it('point close enough to precise location',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <point name="goal">(-4.1, 7.4)</point>
 

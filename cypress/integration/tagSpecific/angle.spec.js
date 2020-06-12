@@ -7,7 +7,7 @@ describe('Angle Tag Tests', function () {
   it('angle determined by three points, 45-45-90 triangle', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <ref prop="angle">_angle1</ref>
   <mathinput prefill="2"/>
   <mathinput prefill="2"/>
@@ -77,7 +77,7 @@ describe('Angle Tag Tests', function () {
   it('angle determined by two lines', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <ref prop="angle">_angle1</ref>
   <mathinput prefill="2"/>
   <mathinput prefill="2"/>
@@ -165,7 +165,7 @@ describe('Angle Tag Tests', function () {
   it('parallel and undefined lines', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <mathinput prefill="3"/>
   <mathinput prefill="4"/>
   <ref prop="angle">_angle1</ref>
@@ -222,7 +222,7 @@ describe('Angle Tag Tests', function () {
   it('changing radius', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <mathinput />
   <graph>
     <point>(5,0)</point>
@@ -287,7 +287,7 @@ describe('Angle Tag Tests', function () {
   it('systematically vary angle', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <mathinput />
   <graph>
     <point>(5,0)</point>
@@ -455,7 +455,7 @@ describe('Angle Tag Tests', function () {
   it('angle from number', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <angle>pi/2</angle>
   <math simplify>2<ref>_angle1</ref></math>
   <math simplify>2<ref prop="angle">_angle1</ref></math>
@@ -485,7 +485,7 @@ describe('Angle Tag Tests', function () {
   it('angle from variable', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <angle>alpha</angle>
   <math simplify>2<ref>_angle1</ref></math>
   <math simplify>2<ref prop="angle">_angle1</ref></math>

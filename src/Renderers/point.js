@@ -129,9 +129,7 @@ export default class Point extends DoenetRenderer {
     }
 
 
-    // TODO: determine if change initiated with point
-
-    if (sourceOfUpdate.originalComponents.includes(this.componentName)) {
+    if (this.componentName in sourceOfUpdate.sourceInformation) {
       this.props.board.updateInfobox(this.pointJXG);
     }
 
@@ -180,7 +178,7 @@ export default class Point extends DoenetRenderer {
     }
 
     if (this.props.board) {
-      return <a name="{this.componentName" />
+      return <a name={this.componentName} />
     }
 
     let mathJaxify = "\\(" + this.doenetSvData.coords + "\\)";

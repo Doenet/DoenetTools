@@ -8,7 +8,7 @@ beforeEach(() => {
 
 
 it('simple url',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <p>A link to <url href="http://doenet.org">Doenet</url>.</p>
   `},"*");
   });
@@ -22,7 +22,7 @@ it('simple url',() => {
 
 
 it('url with no link text',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <p>A link to <url href="http://doenet.org"/>.</p>
   `},"*");
   });
@@ -36,7 +36,7 @@ it('url with no link text',() => {
 
 
 it('referencing url',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <p>A link to <url href="http://doenet.org">Doenet</url>.</p>
   <p>Repeat url: <ref>_url1</ref>.</p>
   <p>The link address is: <ref prop="href">_url1</ref>.</p>

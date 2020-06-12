@@ -40,7 +40,7 @@ export default class Variants extends InlineComponent {
           variableNames: ["value"]
         }
       }),
-      affectedBySugar: ["atLeastZeroVariants"],
+      logicToWaitOnSugar: ["atLeastZeroVariants"],
       replacementFunction: breakStringIntoVariantsByCommas,
     });
 
