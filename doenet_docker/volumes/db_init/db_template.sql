@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2020-06-08 21:57:46 +0000
+# Generation Time: 2020-06-12 00:47:14 +0000
 # ************************************************************
 
 
@@ -1811,10 +1811,7 @@ VALUES
 	(327,'root','gPn_nJmbSEDpjEZdJS7bZ','content','yTfzco0fbTHL_JDCq8Tgz','2020-06-05 22:31:14',0,0),
 	(328,'root','gPn_nJmbSEDpjEZdJS7bZ','content','QqQ_rVz7xBog1jm1pY-pc','2020-06-05 22:31:14',0,0),
 	(329,'','root','folder','D9K5vETXe7J9iy9-tyhnO','2020-06-08 21:23:04',0,0),
-	(330,'D9K5vETXe7J9iy9-tyhnO','D9K5vETXe7J9iy9-tyhnO','content','F2pcSLR-qC3ozi57veHhh','2020-06-08 21:24:31',0,0),
-	(331,'','root','folder','L53eYmiC9Hs9HgBqP18ws','2020-06-08 21:24:56',0,0),
-	(332,'L53eYmiC9Hs9HgBqP18ws','L53eYmiC9Hs9HgBqP18ws','content','-hzb7qUPcYif4fVN0biIa','2020-06-08 21:25:33',0,0),
-	(333,'L53eYmiC9Hs9HgBqP18ws','L53eYmiC9Hs9HgBqP18ws','content','1q6e28Dg7HLaPaVzM0YSu','2020-06-08 21:43:50',0,0);
+	(331,'','root','folder','L53eYmiC9Hs9HgBqP18ws','2020-06-08 21:24:56',0,0);
 
 /*!40000 ALTER TABLE `folder_content` ENABLE KEYS */;
 UNLOCK TABLES;
