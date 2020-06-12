@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import styled from 'styled-components'
 import { TreeView } from './TreeView/TreeView'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileAlt, faCaretRight, faFolder, faLink }
+  from '@fortawesome/free-solid-svg-icons';
 
 
 const DoenetAssignmentTree = React.memo(({ loading, containerId, treeHeadingsInfo, treeAssignmentsInfo, updateHeadingsAndAssignments }) => {
@@ -127,10 +130,9 @@ const DoenetAssignmentTree = React.memo(({ loading, containerId, treeHeadingsInf
     }
     setTreeAssignments(currTreeAssignments);
     setTreeHeadings(currTreeHeadings);
-    updateHeadingsAndAssignments(currTreeHeadings, currTreeAssignments);
+    updateHeadingsAndAssignments();
     setOriginalTreeHeadingsAndAssignments({ headings: null, assignments: null });
     setCurrentDraggedObject({id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null});
-    updateCurrentDraggedObjectProps({id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null});
     
   }
 
@@ -164,8 +166,7 @@ const DoenetAssignmentTree = React.memo(({ loading, containerId, treeHeadingsInf
     
     setValidDrop(true);
     setCurrentDraggedObject({id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null});
-    updateCurrentDraggedObjectProps({id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null});
-    updateHeadingsAndAssignments(treeHeadings, treeAssignments);
+    updateHeadingsAndAssignments();
   }
 
   return (
@@ -175,6 +176,7 @@ const DoenetAssignmentTree = React.memo(({ loading, containerId, treeHeadingsInf
           containerId={containerId}
           parentsInfo={treeHeadings} 
           childrenInfo={treeAssignments} 
+          treeNodeIcons={TreeIcons}
           currentDraggedObject={currentDraggedObject}
           onDragStart={onDragStart}
           onDragEnd={onDragEnd}
@@ -194,5 +196,61 @@ const CourseOutlineFrame = styled('div')`
   padding: 2em;
   overflow-y: scroll;
 `
+
+const TreeIcons = (iconName) => {
+  const FolderIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
+    style={{
+      fontSize: "16px", 
+      color: "#737373", 
+    }}
+  />;
+  const RepoIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
+    style={{
+      fontSize: "16px", 
+      color: "#3aac90", 
+    }}
+  />;
+  const ContentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt}
+    style={{
+      fontSize: "16px", 
+      color: "#3D6EC9", 
+    }}
+  />;
+  const UrlIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faLink}
+    style={{
+      fontSize: "16px", 
+      color: "#a7a7a7", 
+    }}
+  />;
+  const HeadingIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
+    style={{
+      fontSize: "16px", 
+      color: "#a7a7a7", 
+    }}
+  />;
+  const AssignmentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt} 
+    style={{
+      fontSize: "16px", 
+      color: "#a7a7a7", 
+    }}
+  />;
+
+  switch(iconName){
+    case "folder":
+      return FolderIcon;
+    case "repo":
+      return RepoIcon;
+    case "content":
+      return ContentIcon;
+    case "url":
+      return UrlIcon;
+    case "header":
+      return HeadingIcon;
+    case "assignment":
+      return AssignmentIcon;
+    default:
+      return <span></span>;
+  } 
+};
 
 export default DoenetAssignmentTree;
