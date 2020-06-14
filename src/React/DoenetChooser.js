@@ -24,6 +24,7 @@ import {
 } from './chooser/SwitchableContainer';
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
+import { throws } from 'assert';
 
 
 class DoenetChooser extends Component {
@@ -114,9 +115,9 @@ class DoenetChooser extends Component {
     this.onBrowserDragEnd = this.onBrowserDragEnd.bind(this);
     this.onBrowserDropEnter = this.onBrowserDropEnter.bind(this);
     this.onBrowserDrop = this.onBrowserDrop.bind(this);
+    this.onBrowserFolderDrop = this.onBrowserFolderDrop.bind(this);
     this.getDataSource = this.getDataSource.bind(this);
     this.switchPanelContainer = this.switchPanelContainer.bind(this);
-
     this.tempSet = new Set();
   }
 
@@ -378,8 +379,6 @@ class DoenetChooser extends Component {
       this.urlInfo = Object.assign({}, this.urlInfo, resp.data.urlInfo);
       this.userUrlInfo = resp.data.urlInfo;
       this.urlIds = resp.data.urlIds;
-      console.log("Updated")
-      console.log(this.urlIds)
       this.urls_loaded = true;
       this.userContentReloaded = true;
       callback();
@@ -626,7 +625,6 @@ class DoenetChooser extends Component {
     }
     axios.post(url, data)
     .then((resp) => {
-      console.log(resp);
       callback();
     })
     .catch(function (error) {
@@ -1076,7 +1074,6 @@ class DoenetChooser extends Component {
       params: data
     }
     axios.get(url, payload).then(resp=>{
-      console.log(resp.data);
       let tempHeadingsInfo = {};
       let tempAssignmentsInfo = {};
       let tempUrlsInfo = {};
@@ -1524,8 +1521,33 @@ class DoenetChooser extends Component {
   }
 
   onBrowserDrop (containerId, parentsInfo, leavesInfo) {
-    console.log("onDrop")
+    console.log("onBrowserDrop")
     
+  }
+
+  onBrowserFolderDrop ({containerId, droppedId}) {
+    // handle dragging folder onto itself
+    if (this.state.currentDraggedObject.id == droppedId) return;
+
+    let draggedItems = {
+      id: this.state.selectedItems,
+      type: this.state.selectedItemsType
+    }
+    // remove droppedId, repos from (draggedIds, draggedTypes)
+    for (let i = 0; i < draggedItems.id.length; i++) {
+      if (draggedItems.id[i] == droppedId || draggedItems.type == "repo") {
+        draggedItems.id.splice(i, 1);
+        draggedItems.type.splice(i, 1);
+      }
+    }
+    if (droppedId == ChooserConstants.PREVIOUS_DIR_ID) {
+      // remove draggedIds from current directory
+      const currentDirectoryId = this.state.directoryStack.slice(-1)[0];
+      this.removeContentFromFolder(draggedItems.id, draggedItems.type, currentDirectoryId);
+    } else {
+      // add draggedIds to folder with droppedId
+      this.addContentToFolder(draggedItems.id, draggedItems.type, droppedId);
+    }    
   }
 
   switchPanelContainer(panelId) {
@@ -1737,7 +1759,7 @@ class DoenetChooser extends Component {
           onDraggableDragOver={() => {}} 
           onDropEnter={this.onBrowserDropEnter}
           onDrop={this.onBrowserDrop}
-
+          onFolderDrop={this.onBrowserFolderDrop}
         />
       </React.Fragment>
     }

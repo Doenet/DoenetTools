@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import DropItem from "./TreeView/components/drop-item";
 import DragItem from "./TreeView/components/drag-item";
 import { formatTimestamp } from './chooser/utility';
+import ChooserConstants from './chooser/ChooserConstants';
 
 
 class DoenetBranchBrowser extends Component {
@@ -60,6 +61,7 @@ class DoenetBranchBrowser extends Component {
     this.openEditUrlForm = this.openEditUrlForm.bind(this);
     this.onDragStartCb = this.onDragStartCb.bind(this);
     this.onDragEndCb = this.onDragEndCb.bind(this);
+    this.onFolderDropCb = this.onFolderDropCb.bind(this);
   }
 
   getAllSelectedItems() {
@@ -235,7 +237,12 @@ class DoenetBranchBrowser extends Component {
           handleRemoveContent={this.props.selectedDrive === "Content" ? 
                               this.handleRemoveContentFromCurrentFolder :
                               this.handleRemoveContentFromCourse}
-          renameFolder={this.props.renameFolder}/>
+          renameFolder={this.props.renameFolder}
+          onDragStart={this.onDragStartCb}
+          onDragEnd={this.onDragEndCb}
+          onDropEnter={() => {console.log("TODO:Highlight row")}}
+          onDrop={this.onFolderDropCb}
+          />
       );
     }
   }
@@ -307,7 +314,6 @@ class DoenetBranchBrowser extends Component {
   buildUrlItems(){
     this.urlItems = [];
     this.urlList = this.props.urlList;
-    console.log(this.urlList)
     // show items in current directory
     if (this.state.directoryStack.length !== 0) {
       let folderId = this.peekDirectoryStack();
@@ -649,7 +655,7 @@ class DoenetBranchBrowser extends Component {
     }
   }
 
-  onDragStartCb(draggedId, draggedType) {
+  onDragStartCb({draggedId, draggedType, tableIndex}) {
     this.props.onDragStart && 
       this.props.onDragStart({
         draggedId: draggedId, 
@@ -657,6 +663,10 @@ class DoenetBranchBrowser extends Component {
         sourceContainerId: this.props.containerId, 
         parentsInfo: this.props.allFolderInfo, 
         leavesInfo: this.props.allContentInfo });
+
+    if (this.state.selectedItems.indexOf(draggedId) < 0) {
+      this.handleContentItemClick(draggedId, draggedType, tableIndex);
+    }    
   }
 
   onDragEndCb() {
@@ -665,6 +675,14 @@ class DoenetBranchBrowser extends Component {
         containerId: this.props.containerId, 
         parentsInfo: this.props.allFolderInfo, 
         leavesInfo: this.props.allContentInfo });
+  }
+
+  onFolderDropCb(folderId) {
+    this.props.onFolderDrop && 
+      this.props.onFolderDrop({
+        containerId: this.props.containerId, 
+        droppedId: folderId
+      });
   }
 
   render() {
@@ -711,17 +729,23 @@ class DoenetBranchBrowser extends Component {
                     </th>
                   </tr>
                   {this.state.directoryStack.length !== 0 &&
-                  <tr
-                  className="browserDataRow"
-                  data-cy="upOneDirectory"
-                  onDoubleClick={this.upOneDirectory}>
-                    <td className="browserItemName">
-                      <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
-                      <span>{"..."}</span>
-                    </td>
-                    <td className="draftDate"></td>
-                    <td className="publishDate"></td>
-                  </tr>}
+                  <DropItem 
+                    id={ChooserConstants.PREVIOUS_DIR_ID} 
+                    onDrop={() => {this.onFolderDropCb(ChooserConstants.PREVIOUS_DIR_ID)}} 
+                    onDropEnter={() => {console.log("TODO:Highlight ... row")}}>
+                    <tr
+                    className="browserDataRow"
+                    data-cy="upOneDirectory"
+                    onDoubleClick={this.upOneDirectory}>
+                      <td className="browserItemName">
+                        <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
+                        <span>{"..."}</span>
+                      </td>
+                      <td className="draftDate"></td>
+                      <td className="publishDate"></td>  
+                    </tr>
+                  </DropItem>
+                  }
                   {this.folderList.length == 0 && this.contentList.length == 0 && this.urlList.length == 0 &&
                     <div id="browserEmptyMessage"><span>Create new files or folders using the New button</span></div>}
                   {this.folderItems}
@@ -745,7 +769,7 @@ const File = ({ branchId, classes, onClick, onDoubleClick, title, publishDate,
   }
 
   const onDragStartCb = (draggedId) => {
-    onDragStart(draggedId, "content");
+    onDragStart({draggedId: draggedId, draggedType: "content", tableIndex: tableIndex});
   }
 
   return(
@@ -852,6 +876,14 @@ class Folder extends React.Component {
     } 
   }
 
+  onDragStartCb = (draggedId) => {
+    this.props.onDragStart({draggedId: draggedId, draggedType: "folder", tableIndex: this.props.tableIndex});
+  }
+
+  onDropCb = () => {
+    this.props.onDrop(this.props.folderId);
+  }
+
   render() {
     let folderIcon = <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>;
     if (this.props.isRepo) {
@@ -863,43 +895,47 @@ class Folder extends React.Component {
     }
 
     return(
-      <tr
-      className={this.props.classes}
-      onClick={() => this.props.onClick(this.props.folderId, "folder", this.props.tableIndex)}
-      onDoubleClick={() => this.props.onDoubleClick(this.props.folderId)}
-      data-cy={this.props.folderId}>
-        <td className="browserItemName">
-          <div style={{"position":"relative"}}>
-            {this.props.showAddItemIcon && 
-            <div className="addContentButtonWrapper">
-              <FontAwesomeIcon icon={faArrowRight} className="addContentButton" 
-              onClick={() => this.props.handleAddContentToFolder(this.props.folderId)}/>
-              <div className="addContentButtonInfo"><span>Move to Folder</span></div>
-            </div>}
-            {folderIcon}
-            <span
-            contentEditable="true"
-            onKeyDown={(e) => {this.handleKeyPress(e)}}
-            onBlur={(e) => this.handleTitleChange(e)}
-            suppressContentEditableWarning={true}
-            >{this.state.title}</span>
-          </div>          
-        </td>
-        <td className="draftDate">
-          <span>{this.props.draftDate}</span>
-        </td>
-        <td className="publishDate">
-          <div style={{"position":"relative"}}>
-            {this.props.showRemoveItemIcon && 
-            <div className="removeContentButtonWrapper">
-              <FontAwesomeIcon icon={faArrowRight} className="removeContentButton" 
-              onClick={() => this.props.handleRemoveContent(this.props.folderId)}/>
-              <div className="removeContentButtonInfo"><span>Move out folder</span></div>
-            </div>}
-            <span>{this.props.publishDate}</span>
-          </div>          
-        </td>
-      </tr>
+      <DragItem id={this.props.folderId} onDragStart={this.onDragStartCb} onDragEnd={this.props.onDragEnd}>
+        <DropItem id={this.props.folderId} onDrop={this.onDropCb} onDropEnter={this.props.onDropEnter}>
+          <tr
+          className={this.props.classes}
+          onClick={() => this.props.onClick(this.props.folderId, "folder", this.props.tableIndex)}
+          onDoubleClick={() => this.props.onDoubleClick(this.props.folderId)}
+          data-cy={this.props.folderId}>
+            <td className="browserItemName">
+              <div style={{"position":"relative"}}>
+                {this.props.showAddItemIcon && 
+                <div className="addContentButtonWrapper">
+                  <FontAwesomeIcon icon={faArrowRight} className="addContentButton" 
+                  onClick={() => this.props.handleAddContentToFolder(this.props.folderId)}/>
+                  <div className="addContentButtonInfo"><span>Move to Folder</span></div>
+                </div>}
+                {folderIcon}
+                <span
+                contentEditable="true"
+                onKeyDown={(e) => {this.handleKeyPress(e)}}
+                onBlur={(e) => this.handleTitleChange(e)}
+                suppressContentEditableWarning={true}
+                >{this.state.title}</span>
+              </div>          
+            </td>
+            <td className="draftDate">
+              <span>{this.props.draftDate}</span>
+            </td>
+            <td className="publishDate">
+              <div style={{"position":"relative"}}>
+                {this.props.showRemoveItemIcon && 
+                <div className="removeContentButtonWrapper">
+                  <FontAwesomeIcon icon={faArrowRight} className="removeContentButton" 
+                  onClick={() => this.props.handleRemoveContent(this.props.folderId)}/>
+                  <div className="removeContentButtonInfo"><span>Move out folder</span></div>
+                </div>}
+                <span>{this.props.publishDate}</span>
+              </div>          
+            </td>
+          </tr>
+        </DropItem>
+      </DragItem>
     );
   }
 }
