@@ -2947,17 +2947,45 @@ export default class Core {
       if (stateObj.essential || stateObj.alwaysShadow) {
         stateVariablesToShadow.push(varName);
       } else if (!stateObj.isResolved) {
-        // TODO: How do we handle this situation?  Create an action state variable?
-        console.warn(`*************** don't know if ${varName} of ${refTargetComponent.componentName} is essential and should be shadowed.`)
+        if (!stateVariablesToShadowIfEssential.includes(varName)) {
+
+          let stateDef = stateVariableDefinitions[varName];
+
+          // some state variables, like determine dependency state variables
+          // won't be in shadowing component, so skip those
+          if (!stateDef) {
+            continue;
+          }
+
+          let allStateVariablesAffected = [varName];
+          if (stateDef.additionalStateVariablesDefined) {
+            allStateVariablesAffected.push(...stateDef.additionalStateVariablesDefined)
+          }
+
+          let determineIfShadowData = {
+            refTargetComponent,
+            foundReadyToExpand
+          }
+
+          for (let varName2 of allStateVariablesAffected) {
+            stateVariableDefinitions[varName2].determineIfShadowData = determineIfShadowData;
+          }
+          stateVariablesToShadowIfEssential.push(...allStateVariablesAffected)
+
+        }
+
       }
     }
 
+    this.modifyStateDefsToBeShadows({ stateVariablesToShadow, stateVariableDefinitions, foundReadyToExpand, refTargetComponent });
+
+  }
+
+  modifyStateDefsToBeShadows({ stateVariablesToShadow, stateVariableDefinitions, foundReadyToExpand, refTargetComponent }) {
 
     let deleteStateVariablesFromDefinition = {};
     for (let varName of stateVariablesToShadow) {
       let stateDef = stateVariableDefinitions[varName];
-
-
       if (stateDef.additionalStateVariablesDefined) {
         for (let varName2 of stateDef.additionalStateVariablesDefined) {
           if (!stateVariablesToShadow.includes(varName2)) {
@@ -2970,13 +2998,14 @@ export default class Core {
           }
         }
       }
-      // Todo: if have additionalStateVariablesDefined
-      // how do we remove value of varName from the other state variables?
       delete stateDef.additionalStateVariablesDefined;
-
-
       let originalReturnDependencies = stateDef.returnDependencies;
-
+      if (!foundReadyToExpand) {
+        // if didn't find a readyToExpand,
+        // then won't use original dependencies so can delete any
+        // stateVariablesDeterminingDependencies
+        delete stateDef.stateVariablesDeterminingDependencies;
+      }
       stateDef.returnDependencies = function (args) {
         let dependencies = {};
         if (foundReadyToExpand) {
@@ -2986,7 +3015,6 @@ export default class Core {
           // won't be resolved until all its dependent variables are resolved
           dependencies = originalReturnDependencies(args);
         }
-
         if (args.arrayKeys) {
           for (let key of args.arrayKeys) {
             dependencies[key] = {
@@ -2996,7 +3024,7 @@ export default class Core {
                 componentType: refTargetComponent.componentType
               },
               variableName: this.arrayVarNameFromArrayKey(key),
-            }
+            };
           }
         } else {
           dependencies.refTargetVariable = {
@@ -3040,81 +3068,52 @@ export default class Core {
             instructions.push({
               setDependency: key,
               desiredValue: desiredStateVariableValues[varName][key]
-            })
+            });
           }
           return {
             success: true,
             instructions
-          }
+          };
         }
       };
     }
-
-
     for (let varName in deleteStateVariablesFromDefinition) {
-      let varNamesToDelete = deleteStateVariablesFromDefinition[varName];
-      let stateDef = stateVariableDefinitions[varName];
+      this.modifyStateDefToDeleteVariableReferences({
+        varNamesToDelete: deleteStateVariablesFromDefinition[varName],
+        stateDef: stateVariableDefinitions[varName]
+      });
+    }
+  }
 
-      // delete variables from additionalStateVariablesDefined
-      for (let varName2 of varNamesToDelete) {
-        let ind = stateDef.additionalStateVariablesDefined.indexOf(varName2);
-        stateDef.additionalStateVariablesDefined.splice(ind, 1);
-      }
+  modifyStateDefToDeleteVariableReferences({ varNamesToDelete, stateDef }) {
 
-      // remove variables from definition
-      let originalDefinition = stateDef.definition;
-
-      stateDef.definition = function (args) {
-        let results = originalDefinition(args);
-
-        if (results.useEssentialOrDefaultValue) {
-          for (let varName2 of varNamesToDelete) {
-            delete results.useEssentialOrDefaultValue[varName2];
-          }
-        }
-        if (results.newValues) {
-          for (let varName2 of varNamesToDelete) {
-            delete results.newValues[varName2];
-          }
-        }
-        if (results.noChanges) {
-          for (let varName2 of varNamesToDelete) {
-            let ind = results.noChanges.indexOf(varName2);
-            if (ind !== -1) {
-              results.noChanges.splice(ind, 1);
-            }
-          }
-        }
-        if (results.makeEssential) {
-          for (let varName2 of varNamesToDelete) {
-            let ind = results.makeEssential.indexOf(varName2);
-            if (ind !== -1) {
-              results.makeEssential.splice(ind, 1);
-            }
-          }
-        }
-
-        if (results.alwaysShadow) {
-          for (let varName2 of varNamesToDelete) {
-            let ind = results.alwaysShadow.indexOf(varName2);
-            if (ind !== -1) {
-              results.alwaysShadow.splice(ind, 1);
-            }
-          }
-        }
-
-        if (results.setComponentType) {
-          if (results.setComponentType) {
-            for (let varName2 of varNamesToDelete) {
-              delete results.setComponentType[varName2];
-            }
-          }
-        }
-        return results;
-      }
-
+    // delete variables from additionalStateVariablesDefined
+    for (let varName2 of varNamesToDelete) {
+      let ind = stateDef.additionalStateVariablesDefined.indexOf(varName2);
+      stateDef.additionalStateVariablesDefined.splice(ind, 1);
     }
 
+    // remove variables from definition
+    let originalDefinition = stateDef.definition;
+    stateDef.definition = function (args) {
+      let results = originalDefinition(args);
+      for (let key of results) {
+        if (Array.isArray(results[key])) {
+          for (let varName2 of varNamesToDelete) {
+            let ind = results[key].indexOf(varName2);
+            if (ind !== -1) {
+              results[key].splice(ind, 1);
+            }
+          }
+        }
+        else {
+          for (let varName2 of varNamesToDelete) {
+            delete results[key][varName2];
+          }
+        }
+      }
+      return results;
+    };
   }
 
   // createAllResolvedStateVariableDefinition({
@@ -3751,12 +3750,12 @@ export default class Core {
     let stateVarObj = component.state[stateVariable];
     let dependencies;
 
-    if (stateVarObj.stateVariablesDeterminingDependencies) {
+    if (stateVarObj.stateVariablesDeterminingDependencies || stateVarObj.determineIfShadowData) {
       let dependencyStateVar = this.createDetermineDependenciesStateVariable({
         stateVariable, component, allStateVariablesAffected
       });
       // make dependencies of actual stateVariable be this
-      // temporary state variable we just created
+      // determineDependencies state variable we just created
       dependencies = {
         [dependencyStateVar]: {
           dependencyType: "componentStateVariable",
@@ -4735,6 +4734,22 @@ export default class Core {
   }) {
 
     let stateVariablesDeterminingDependencies = component.state[stateVariable].stateVariablesDeterminingDependencies;
+    if (!stateVariablesDeterminingDependencies) {
+      stateVariablesDeterminingDependencies = [];
+    }
+
+    let determineIfShadowData = component.state[stateVariable].determineIfShadowData;
+
+    let outsideStateVariablesDeterminingDependencies = [];
+
+    if (determineIfShadowData) {
+      for (let varName of allStateVariablesAffected) {
+        outsideStateVariablesDeterminingDependencies.push({
+          component: determineIfShadowData.refTargetComponent,
+          stateVariable: varName
+        })
+      }
+    }
 
     let dependencyStateVar = `__determine_dependencies_${stateVariable}`;
 
@@ -4743,6 +4758,8 @@ export default class Core {
     for (let varName of allStateVariablesAffected) {
       component.state[varName].determineDependenciesStateVariable = dependencyStateVar;
     }
+
+    let stateVariablesNotShadowed = [...allStateVariablesAffected];
 
     component.state[dependencyStateVar] = {
       actionOnResolved: true,
@@ -4758,6 +4775,16 @@ export default class Core {
             },
             variableName: varName
           };
+        }
+        for (let outsideVar of outsideStateVariablesDeterminingDependencies) {
+          theseDependencies['_' + outsideVar.component.componentName + "_" + outsideVar.stateVariable] = {
+            dependencyType: "componentStateVariable",
+            componentIdentity: {
+              componentName: outsideVar.component.componentName,
+              componentType: outsideVar.component.componentType
+            },
+            variableName: outsideVar.stateVariable
+          }
         }
         return theseDependencies;
       },
@@ -4776,6 +4803,39 @@ export default class Core {
         // Note: shouldn't have to delete any downstream dependencies
         // of changedStateVarObj
         // as they should have been deleted when deleting above dependencies
+
+
+        // first check if we should shadow state variable
+        if (determineIfShadowData) {
+          let stateVariablesToShadow = [];
+          stateVariablesNotShadowed = [];
+
+          for (let varName of allStateVariablesAffected) {
+            // since varName of refTargetComponent is now resolved
+            // can evaluate it and then determine if it is essential
+            determineIfShadowData.refTargetComponent.state[varName].value;
+
+            if (determineIfShadowData.refTargetComponent.state[varName].essential
+              || determineIfShadowData.refTargetComponent.state[varName].alwaysShadow
+            ) {
+              stateVariablesToShadow.push(varName);
+            } else {
+              stateVariablesNotShadowed.push(varName)
+            }
+
+          }
+
+          if (stateVariablesToShadow.length > 0) {
+            core.modifyStateDefsToBeShadows({
+              stateVariablesToShadow,
+              stateVariableDefinitions: component.state,
+              foundReadyToExpand: determineIfShadowData.foundReadyToExpand,
+              refTargetComponent: determineIfShadowData.refTargetComponent
+            });
+
+          }
+
+        }
 
         let newDependencies = changedStateVarObj.returnDependencies({
           stateValues: dependencyValues,
@@ -4801,13 +4861,22 @@ export default class Core {
 
         return {};
       },
-      markStale: () => ({
-        updateDependencies: component.state[dependencyStateVar].dependenciesForStateVariables
-      }),
+      markStale: function () {
+        // if have a state variable that wasn't shadowed, then we should
+        // update dependencies when the state variables determining dependencies change
+        if (stateVariablesNotShadowed.length > 0 && stateVariablesDeterminingDependencies.length > 0) {
+          return {
+            updateDependencies: component.state[dependencyStateVar].dependenciesForStateVariables
+          };
+        } else {
+          return {};
+        }
+      },
       definition: () => ({ newValues: { [dependencyStateVar]: true } })
     };
 
-    // create and set up dependencies for this temporary state variable
+
+    // create and set up dependencies for this determineDependencies state variable
     // i.e., repeat the process for creating a state variable here
     this.initializeStateVariable({ component, stateVariable: dependencyStateVar });
     // note: don't need to pass arguments to returnDependencies
@@ -8360,6 +8429,13 @@ export default class Core {
             stateVariable: stateVarObj.determineDependenciesStateVariable
           });
 
+          if (Object.keys(definitionArgs.changes).length === 0 &&
+            stateVarObj._previousValue !== undefined
+          ) {
+            // no changes
+            continue;
+          }
+
           let newDependencies = stateVarObj.returnDependencies({
             stateValues: definitionArgs.dependencyValues,
             componentInfoObjects: this.componentInfoObjects,
@@ -9836,7 +9912,7 @@ export default class Core {
 
 
     // get unique list of components touched
-    updatesNeeded.componentsTouched = new Set(updatesNeeded.componentsTouched);
+    updatesNeeded.componentsTouched = [...new Set(updatesNeeded.componentsTouched)];
 
     this.updateRendererInstructions({ componentNames: updatesNeeded.componentsTouched, sourceOfUpdate });
 

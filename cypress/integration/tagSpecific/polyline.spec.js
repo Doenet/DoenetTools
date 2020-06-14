@@ -343,10 +343,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("1{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 1;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 1;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).tree).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -358,10 +358,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("2{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 2;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 2;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -373,10 +373,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("3{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 3;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 3;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -388,10 +388,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("2{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 2;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 2;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -404,10 +404,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("0{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 0;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 0;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -419,10 +419,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("5{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 5;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 5;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -471,10 +471,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("10{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 10;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 10;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -486,10 +486,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("1{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 1;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 1;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -539,10 +539,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("1{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 1;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 1;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).tree).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -554,10 +554,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("2{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 2;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 2;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -569,10 +569,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("3{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 3;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 3;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -584,10 +584,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("2{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 2;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 2;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -600,10 +600,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("0{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 0;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 0;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -615,10 +615,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("5{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 5;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 5;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -669,10 +669,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("10{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 10;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 10;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -684,10 +684,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("1{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 1;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 1;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -738,10 +738,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("1{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 1;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 1;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).tree).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -753,10 +753,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("2{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 2;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 2;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -768,10 +768,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("3{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 3;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 3;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -783,10 +783,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("2{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 2;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 2;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -799,10 +799,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("0{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 0;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 0;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -814,10 +814,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("5{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 5;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 5;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -867,10 +867,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("10{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 10;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 10;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -882,10 +882,10 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("1{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 1;
-        expect(components['/_polyline1'].stateValues.nVertices).eq(nPoints);
-        expect(polyline2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 1;
+        expect(components['/_polyline1'].stateValues.nVertices).eq(nVertices);
+        expect(polyline2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polyline1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polyline2.stateValues.vertices[i].get_component(0).tree).eq(i);

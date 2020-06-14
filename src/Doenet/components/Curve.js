@@ -13,7 +13,7 @@ export default class Curve extends GraphicalComponent {
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
 
-    properties.draggable = { default: true, forRender: true, propagateToDescendants: true };
+    properties.draggable = { default: true, forRenderer: true, propagateToDescendants: true };
     properties.label.propagateToDescendants = true;
     properties.showLabel.propagateToDescendants = true;
     properties.layer.propagateToDescendants = true;
