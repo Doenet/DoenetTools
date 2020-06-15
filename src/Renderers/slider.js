@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
 export default function Slider(props) {
-  let [name, SVs, actions, children] = useDoenetRender(props);
+  let [name, SVs, actions] = useDoenetRender(props);
   // let [handlePos,setHandlePos] = useState(100);
+
 
   if (SVs.hide) {
     return null;
