@@ -20,6 +20,7 @@ module.exports = {
     "guesteditor/index.js": "./src/guesteditor/index.js",
     "page/index.js": "./src/page/index.js",
     "profile/index.js": "./src/profile/index.js",
+    "signin/index.js": "./src/signin/index.js",
     "test/index.js": "./src/test/index.js",
     "viewer/index.js": "./src/viewer/index.js",
     "exampletool/index.js": "./src/exampletool/index.js",
@@ -160,6 +161,12 @@ module.exports = {
       chunks: ["test/index.js"],
       template: "./src/test/index.html",
       filename: "./test/index.html"
+      // favicon: "",
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ["signin/index.js"],
+      template: "./src/signin/index.html",
+      filename: "./signin/index.html"
       // favicon: "",
     }),
     new HtmlWebPackPlugin({

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 //Renderers will need to set doenetPropsForChildren locally and pass it along. 
 //Renderer can change it later and values will be here

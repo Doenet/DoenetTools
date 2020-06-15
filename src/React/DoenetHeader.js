@@ -61,6 +61,7 @@ class DoenetHeader extends Component {
     this.state = {
       menuVisble: false,
       showToolbox: false,
+      signedIn: false,
       sliderVisible: false,
       myProfile: {},
       myRoles: {}
@@ -138,7 +139,6 @@ class DoenetHeader extends Component {
       "Course": "/course/",
       "Documentation": "/docs/",
       "Gradebook": "/gradebook/",
-      // "Profile": "/profile/",
     }
 
   }
@@ -334,11 +334,11 @@ class DoenetHeader extends Component {
               padding: "10px",
                borderRadius: "5px"}}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</div>}
             {toolBox}
-            {!this.state.myProfile.profilePicture && <div id="userButton-anonymous" onClick={() => { location.href = "/Profile"; }}>
+            {!this.state.myProfile.profilePicture && <div id="userButton-anonymous" onClick={() => { if (this.state.showProfile){location.href = "/Profile";}else{location.href = "/signin";} }}>
               <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
             </div>
             }
-            {this.state.myProfile.profilePicture && <div id="userButton-registered" onClick={() => { location.href = "/Profile"; }}>
+            {this.state.myProfile.profilePicture && <div id="userButton-registered" onClick={() => { if (this.state.showProfile){location.href = "/Profile";}else{location.href = "/signin";} }}>
               <ProfilePicture
                 pic={this.state.myProfile.profilePicture}
                 name="changeProfilePicture"
@@ -369,12 +369,12 @@ class DoenetHeader extends Component {
                borderRadius: "5px"}}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</div>}
             {toolBox}
             {!this.state.myProfile.profilePicture &&
-              <div id="userButton-anonymous-phone" onClick={() => { location.href = "/Profile"; }}>
+              <div id="userButton-anonymous-phone" onClick={() => { if (this.state.showProfile){location.href = "/Profile";}else{location.href = "/signin";} }}>
                 <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
               </div>
             }
             {this.state.myProfile.profilePicture &&
-              <div id="userButton-phone" onClick={() => { location.href = "/Profile"; }}>
+              <div id="userButton-phone" onClick={() => { if (this.state.showProfile){location.href = "/Profile";}else{location.href = "/signin";} }}>
                 <ProfilePicture
                   pic={this.state.myProfile.profilePicture}
                   name="changeProfilePicture"
