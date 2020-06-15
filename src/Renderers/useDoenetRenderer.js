@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export default function useDoenetRenderer(props,initializeChildrenOnConstruction=true){
+//Renderers will need to set doenetPropsForChildren locally and pass it along. 
+//Renderer can change it later and values will be here
+export default function useDoenetRenderer(props,initializeChildrenOnConstruction=true,doenetPropsForChildren={}){
   let [updateCount,setUpdateCount] = useState(0);
-
 
   let stateValues = props.componentInstructions.stateValues;
   let actions = props.componentInstructions.actions;
@@ -56,6 +57,7 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
   }
 
   function createChildFromInstructions(childInstructions) {
+    
     let propsForChild = {
       key: childInstructions.componentName,
       componentInstructions: childInstructions,
@@ -63,10 +65,15 @@ export default function useDoenetRenderer(props,initializeChildrenOnConstruction
       rendererUpdateMethods: props.rendererUpdateMethods,
       flags: props.flags,
     };
+    Object.assign(propsForChild, doenetPropsForChildren);
 
     let child = React.createElement(props.rendererClasses[childInstructions.rendererType], propsForChild);
     return child;
   }
 
-  return [name,stateValues,actions,children,initializeChildren];
+  function updatesetDoenetPropsForChildren(props){
+    setDoenetPropsForChildren(props);
+  }
+
+  return [name,stateValues,actions,children,initializeChildren,updatesetDoenetPropsForChildren];
 }
