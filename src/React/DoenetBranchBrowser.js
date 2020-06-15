@@ -369,8 +369,10 @@ class DoenetBranchBrowser extends Component {
         showRemoveItemIcon={showRemoveItemIcon}
         handleRemoveContent={this.props.selectedDrive === "Content" ? 
                             this.handleRemoveContentFromCurrentFolder :
-                            this.handleRemoveContentFromCourse}/>);
-        
+                            this.handleRemoveContentFromCourse}
+        onDragStart={this.onDragStartCb}
+        onDragEnd={this.onDragEndCb}
+        onDragOver={this.props.onDraggableDragOver}/>);
     }
   }
 
@@ -806,42 +808,49 @@ const File = ({ branchId, classes, onClick, onDoubleClick, title, publishDate,
   );
 }
 
-class Url extends React.Component {
-  constructor(props) {
-    super(props);
-  }
+const Url = ({ urlId, classes, onClick, onDoubleClick, title, publishDate,
+  isShared, isPublic, tableIndex, showRemoveItemIcon, handleRemoveContent,
+  onDragStart, onDragOver, onDragEnd }) => {
 
-  render() {
-
+    const onDraggableDragOverCb = (listId) => {
+      onDragOver(listId, "url")
+    }
+  
+    const onDragStartCb = (draggedId) => {
+      onDragStart({draggedId: draggedId, draggedType: "url", tableIndex: tableIndex});
+    }
+  
     return(
+      <DragItem id={urlId} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
       <tr
-      className={this.props.classes}
-      onClick={() => this.props.onClick(this.props.urlId, "url", this.props.tableIndex)}
-      onDoubleClick={() => this.props.onDoubleClick(this.props.urlId)}
-      data-cy={this.props.urlId}>
+      className={classes}
+      onClick={() => onClick(urlId, "url", tableIndex)}
+      onDoubleClick={() => onDoubleClick(urlId)}
+      data-cy={urlId}>
         <td className="browserItemName">
-          {this.props.isShared && this.props.isPublic ? 
+          {isShared && isPublic ? 
             <FontAwesomeIcon icon={faLink} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/> :
             <FontAwesomeIcon icon={faLink} style={{"fontSize":"18px", "color":"#3D6EC9", "margin": "0px 15px"}}/>}
-          <span>{this.props.title}</span>
+          <span>{title}</span>
         </td>
         <td className="draftDate">
           <span>-</span>
         </td>
         <td className="publishDate">
           <div style={{"position":"relative"}}>
-            {this.props.showRemoveItemIcon && 
+            {showRemoveItemIcon && 
             <div className="removeContentButtonWrapper">
               <FontAwesomeIcon icon={faArrowRight} className="removeContentButton" 
-              onClick={() => this.props.handleRemoveContent(this.props.urlId)}/>
+              onClick={() => handleRemoveContent(urlId)}/>
               <div className="removeContentButtonInfo"><span>Move out folder</span></div>
             </div>}
-            <span>{this.props.publishDate}</span>
+            <span>{publishDate}</span>
           </div>          
         </td>
       </tr>
+      </DragItem>
     );
-  }
+   
 }
 
 class Folder extends React.Component {
