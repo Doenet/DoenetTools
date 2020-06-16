@@ -11,7 +11,7 @@ describe('Meta Tag Tests', function () {
   it('meta keywords', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <meta>
       <keyword>cat</keyword>
       <keyword>dog</keyword>

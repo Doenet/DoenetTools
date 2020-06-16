@@ -9,7 +9,7 @@ describe('Math Operator Tag Tests', function () {
   it('sum', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <sum name="numbers"><math>3</math><number>17</number><number>5-4</number></sum>
       <sum name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></sum>
@@ -50,7 +50,7 @@ describe('Math Operator Tag Tests', function () {
   it('product', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
 
       <product name="numbers"><math>3</math><number>17</number><number>5-4</number></product>
@@ -93,7 +93,7 @@ describe('Math Operator Tag Tests', function () {
   it('clamp number', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
 
       <clampNumber>55.3</clampNumber>
@@ -195,7 +195,7 @@ describe('Math Operator Tag Tests', function () {
   it('wrap number periodic', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
 
       <wrapnumberperiodic>55.3</wrapnumberperiodic>
@@ -297,7 +297,7 @@ describe('Math Operator Tag Tests', function () {
   it('clamp and wrap number updatable', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <graph>
         <point layer="1">(6,7)</point>
@@ -489,7 +489,7 @@ describe('Math Operator Tag Tests', function () {
   it('round expressions', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <round>55.3252326</round>
       <round>log(31)</round>
@@ -596,7 +596,7 @@ describe('Math Operator Tag Tests', function () {
   it('convert set to list', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
 
       <p><text>a</text></p>
       <p><math>{1,2,3,2,1}</math></p>
@@ -679,7 +679,7 @@ describe('Math Operator Tag Tests', function () {
   it('convert set to list, initially unresolved', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
 
       <p><text>a</text></p>
 
@@ -719,7 +719,7 @@ describe('Math Operator Tag Tests', function () {
   it('floor and ceil', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <floor>55.3252326</floor>
       <ceil>log(31)</ceil>
@@ -799,7 +799,7 @@ describe('Math Operator Tag Tests', function () {
   it('abs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <abs>-5.3</abs>
       <abs>-x</abs>
@@ -821,6 +821,74 @@ describe('Math Operator Tag Tests', function () {
       expect(components['/_abs1'].stateValues.value.tree).eq(5.3);
       expect(components['/_abs2'].stateValues.value.tree).eqls(['apply', 'abs', ['-', 'x']]);
     })
+  })
+
+  it('derivative', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <function name="f1">sin(x)</function>
+      <function name="f2" variable="y">e^(2y)</function>
+      <function name="f3">xyz</function>
+      <function name="f4" variable="z">xyz</function>
+      <derivative name="d1">x^2</derivative>
+      <derivative name="d2"><math>x^2</math></derivative>
+      <derivative name="d3">x^2sin(z)</derivative>
+      <derivative variable="z" name="d4">x^2sin(z)</derivative>
+      <derivative name="d5"><ref>f1</ref></derivative>
+      <derivative name="d6"><ref>f2</ref></derivative>
+      <derivative name="d7"><ref>f3</ref></derivative>
+      <derivative name="d8"><ref>f4</ref></derivative>
+      <derivative variable="q" name="d9"><ref>f1</ref></derivative>
+      <derivative variable="q" name="d10"><ref>f2</ref></derivative>
+      <derivative variable="q" name="d11"><ref>f3</ref></derivative>
+      <derivative variable="q" name="d12"><ref>f4</ref></derivative>
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/d1'].stateValues.value.equals(me.fromText("2x"))).eq(true);
+      expect(components['/d2'].stateValues.value.equals(me.fromText("2x"))).eq(true);
+      expect(components['/d3'].stateValues.value.equals(me.fromText("2x sin(z)"))).eq(true);
+      expect(components['/d4'].stateValues.value.equals(me.fromText("x^2cos(z)"))).eq(true);
+      expect(components['/d5'].stateValues.value.equals(me.fromText("cos(x)"))).eq(true);
+      expect(components['/d6'].stateValues.value.equals(me.fromText("2e^(2y)"))).eq(true);
+      expect(components['/d7'].stateValues.value.equals(me.fromText("yz"))).eq(true);
+      expect(components['/d8'].stateValues.value.equals(me.fromText("xy"))).eq(true);
+      expect(components['/d9'].stateValues.value.equals(me.fromText("cos(x)"))).eq(true);
+      expect(components['/d10'].stateValues.value.equals(me.fromText("2e^(2y)"))).eq(true);
+      expect(components['/d11'].stateValues.value.equals(me.fromText("yz"))).eq(true);
+      expect(components['/d12'].stateValues.value.equals(me.fromText("xy"))).eq(true);
+    })
+  })
+
+  it('derivative displayed inside <m>', () => {
+    // check to make fixed bug where wasn't displaying inside <m>
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p>Let <m>f(x) = <function name="f">sin(x)</function></m>.  
+      Then <m>f'(x) = <derivative><ref>f</ref></derivative></m>.</p>
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(x)=sin(x)')
+    });
+
+    cy.get('#\\/_m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal("f′(x)=cos(x)")
+    });
+
   })
 
 })

@@ -31,7 +31,7 @@ export default class Seeds extends InlineComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["atLeastZeroSeeds"],
+      logicToWaitOnSugar: ["atLeastZeroSeeds"],
       replacementFunction: breakStringIntoSeedsByCommas,
     });
 

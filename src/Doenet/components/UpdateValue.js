@@ -95,8 +95,8 @@ export default class UpdateValue extends BlockComponent {
 
   updateValue({ }) {
     this.requestUpdate({
-      updateType: "updateValue",
       updateInstructions: [{
+        updateType: "updateValue",
         componentName: this.stateValues.targetedMathName,
         stateVariable: "value",
         value: this.stateValues.newMathValue,

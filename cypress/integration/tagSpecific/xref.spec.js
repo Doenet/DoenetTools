@@ -6,7 +6,7 @@ describe('Xref Tag Tests',function() {
     })
       
   it('xref to sections',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <section newnamespace name="section1">
       <title>Section 1</title>
       <p>Paragraph one</p>

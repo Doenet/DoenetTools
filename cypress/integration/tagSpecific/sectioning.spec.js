@@ -8,7 +8,7 @@ describe('Sectioning Tag Tests', function () {
   it('sections default to not aggregating scores', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <title>Activity</title>
     <p>Credit achieved for <ref prop="title">_document1</ref>:
     <ref prop="creditAchieved">_document1</ref>, or <ref prop="percentcreditachieved">_document1</ref>%</p>
@@ -464,7 +464,7 @@ describe('Sectioning Tag Tests', function () {
   it('sections aggregating scores default to weight 1', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <title>Activity</title>
     <p>Credit achieved for <ref prop="title">_document1</ref>:
     <ref prop="creditAchieved">_document1</ref>, or <ref prop="percentcreditachieved">_document1</ref>%</p>
@@ -979,7 +979,7 @@ describe('Sectioning Tag Tests', function () {
   it('sections aggregating scores, with weights', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <title>Activity</title>
     <p>Credit achieved for <ref prop="title">_document1</ref>:
     <ref prop="creditAchieved">_document1</ref>, or <ref prop="percentcreditachieved">_document1</ref>%</p>
@@ -1509,7 +1509,7 @@ describe('Sectioning Tag Tests', function () {
   it('paragraphs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <paragraphs title="Some paragraphs">
 
     <p>Paragraph 1</p>

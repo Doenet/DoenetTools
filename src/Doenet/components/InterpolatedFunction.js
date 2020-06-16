@@ -2,7 +2,7 @@ import Function from './Function';
 import me from 'math-expressions';
 
 export default class InterpolatedFunction extends Function {
-  static componentType = "interpolatedFunction";
+  static componentType = "interpolatedfunction";
   static rendererType = undefined;
 
 
@@ -134,21 +134,22 @@ export default class InterpolatedFunction extends Function {
           variableNames: ["points", "slope", "nPoints"]
         }
       }),
-      markStale: function ({ freshnessInfo, changes, arrayKeys, previousValues }) {
-        let freshByKey = freshnessInfo.freshByKey;
+      getPreviousDependencyValuesForMarkStale: true,
+      markStale: function ({ freshnessInfo, changes, arrayKeys, previousDependencyValues }) {
+        let freshByKey = freshnessInfo.prescribedPoints.freshByKey;
 
         // console.log('mark stale for prescribed points');
         // console.log(JSON.parse(JSON.stringify(freshByKey)));
         // console.log(JSON.parse(JSON.stringify(changes)))
         // console.log(arrayKeys);
-        // console.log(previousValues);
+        // console.log(previousDependencyValues);
 
         if (changes.throughChildren) {
           if (changes.throughChildren.componentIdentitiesChanged) {
 
             // if any through children changed, everything is stale
-            freshnessInfo.freshByKey = {};
-            return { fresh: false }
+            freshnessInfo.prescribedPoints.freshByKey = {};
+            return { fresh: { prescribedPoints: false } }
 
           } else {
             let valuesChanged = changes.throughChildren.valuesChanged;
@@ -156,8 +157,8 @@ export default class InterpolatedFunction extends Function {
             if (valuesChanged.some(x => x.nPoints)) {
               // if number of points changed for any through points,
               // everything is stale
-              freshnessInfo.freshByKey = {};
-              return { fresh: false }
+              freshnessInfo.prescribedPoints.freshByKey = {};
+              return { fresh: { prescribedPoints: false } }
             }
 
             // through children didn't change
@@ -170,17 +171,24 @@ export default class InterpolatedFunction extends Function {
 
             for (let [throughInd, throughChange] of valuesChanged.entries()) {
 
-              let previousThrough = previousValues.throughChildren[throughInd];
+              let previousThrough = previousDependencyValues.throughChildren[throughInd];
               let nPointsInThrough = previousThrough.stateValues.points.length;
 
               if (throughChange) {
 
-                let pointFreshByKey = throughChange.points.freshnessInfo.freshByKey;
+                let pointsChanged = "points" in throughChange;
+
+                let pointFreshByKey;
+
+                if (pointsChanged) {
+                  pointFreshByKey = throughChange.points.freshnessInfo.freshByKey;
+                }
+
                 let slopeChanged = "slope" in throughChange;
 
                 for (let throughArrayKey = 0; throughArrayKey < nPointsInThrough; throughArrayKey++) {
                   let thisArrayKey = numberKeysSoFar + throughArrayKey;
-                  if (slopeChanged || !pointFreshByKey[throughArrayKey]) {
+                  if (slopeChanged || pointsChanged && !pointFreshByKey[throughArrayKey]) {
                     delete freshByKey[thisArrayKey];
                   }
                 }
@@ -202,20 +210,20 @@ export default class InterpolatedFunction extends Function {
         if (arrayKey === undefined) {
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { prescribedPoints: false } }
           } else {
             // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: true }
+            return { partiallyFresh: { prescribedPoints: true } }
           }
         } else {
           // asked for just one component
-          return { fresh: freshByKey[arrayKey] === true }
+          return { fresh: { prescribedPoints: freshByKey[arrayKey] === true } }
         }
 
 
       },
       definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.prescribedPoints.freshByKey;
 
         // console.log('definition of prescribed points')
         // console.log(dependencyValues);
@@ -306,7 +314,6 @@ export default class InterpolatedFunction extends Function {
       })
     }
 
-
     stateVariableDefinitions.prescribedMaxima = {
       returnDependencies: () => ({
         maximumChildren: {
@@ -324,7 +331,6 @@ export default class InterpolatedFunction extends Function {
         }
       })
     }
-
 
     stateVariableDefinitions.prescribedExtrema = {
       returnDependencies: () => ({
@@ -489,13 +495,13 @@ export default class InterpolatedFunction extends Function {
       markStale: function ({ freshnessInfo, arrayKeys, changes }) {
 
         // with any change, mark whole array as stale
-        freshnessInfo.freshByKey = {}
-        return { fresh: false }
+        freshnessInfo.minima.freshByKey = {}
+        return { fresh: { minima: false } }
 
       },
       definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.minima.freshByKey;
 
         if (Object.keys(freshByKey).length > 0) {
           // if anything is fresh, it all is fresh
@@ -507,6 +513,11 @@ export default class InterpolatedFunction extends Function {
         let eps = numerics.eps;
 
         let minimaList = [];
+
+        if (xs === null) {
+          return { newValues: { minima: minimaList } }
+        }
+
         let minimumAtPreviousRight = false;
 
         // since extrapolate for x < xs[0], formula based on coeffs[0]
@@ -648,13 +659,13 @@ export default class InterpolatedFunction extends Function {
       markStale: function ({ freshnessInfo, arrayKeys, changes }) {
 
         // with any change, mark whole array as stale
-        freshnessInfo.freshByKey = {}
-        return { fresh: false }
+        freshnessInfo.maxima.freshByKey = {}
+        return { fresh: { maxima: false } }
 
       },
       definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.maxima.freshByKey;
 
         if (Object.keys(freshByKey).length > 0) {
           // if anything is fresh, it all is fresh
@@ -666,6 +677,11 @@ export default class InterpolatedFunction extends Function {
         let eps = numerics.eps;
 
         let maximaList = [];
+
+        if (xs === null) {
+          return { newValues: { maxima: maximaList } }
+        }
+
         let maximumAtPreviousRight = false;
 
         // since extrapolate for x < xs[0], formula based on coeffs[0]
@@ -807,13 +823,13 @@ export default class InterpolatedFunction extends Function {
       markStale: function ({ freshnessInfo }) {
 
         // with any change, mark whole array as stale
-        freshnessInfo.freshByKey = {}
-        return { fresh: false }
+        freshnessInfo.extrema.freshByKey = {}
+        return { fresh: { extrema: false } }
 
       },
       definition: function ({ dependencyValues, freshnessInfo }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.extrema.freshByKey;
 
         // freshByKey is all or nothing
         // so if it contains anything, then everything is fresh
@@ -1161,7 +1177,7 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
           }
         } else {
           // if previous point slope is null
-          // set previouse point slope according to monotonic formula
+          // set previous point slope according to monotonic formula
           if (prevPoint.slope === null) {
             prevPoint.slope = monotonicSlope({
               point: prevPoint,
@@ -1433,7 +1449,7 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
       // with y at least yscale below both
       let yMin = Math.min(yPrev, y) - yscale;
       let xNew = (x + xPrev) / 2;
-      let yNew, typeNew, slopeNew;
+      let yNew, typeNew, slopeNew = null;
       // see if can find a min or extremum that didn't have x specified
       let results = getPointWithoutX({
         allowedTypes: ["minimum", "extremum"],
@@ -1483,7 +1499,7 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
           let findTypes = [["maximum", "extremum"], ["minimum", "extremum"]];
           for (let newPointNum = 0; newPointNum < 2; newPointNum++) {
             let xNew = xs[newPointNum];
-            let yNew, typeNew, slopeNew;
+            let yNew, typeNew, slopeNew = null;
             // attempt to find an unused point that meets criteria
             let results = getPointWithoutX({
               allowedTypes: findTypes[newPointNum],
@@ -1527,7 +1543,7 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
         if (y < yPrev + yscale) {
           // need to add a point to the left at least as low as y-yscale
           let xNew = (x + xPrev) / 2;
-          let yNew, typeNew, slopeNew;
+          let yNew, typeNew, slopeNew = null;
           // see if can find a min or extremum that didn't have x specified
           let results = getPointWithoutX({
             allowedTypes: ["minimum", "extremum"],
@@ -1606,7 +1622,7 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
           let findTypes = [["minimum", "extremum"], ["maximum", "extremum"]];
           for (let newPointNum = 0; newPointNum < 2; newPointNum++) {
             let xNew = xs[newPointNum];
-            let yNew, typeNew, slopeNew;
+            let yNew, typeNew, slopeNew = null;
             // attempt to find an unused point that meets criteria
             let results = getPointWithoutX({
               allowedTypes: findTypes[newPointNum],
@@ -1649,7 +1665,7 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
       // with y at least yscale above both
       let yMax = Math.max(yPrev, y) + yscale;
       let xNew = (x + xPrev) / 2;
-      let yNew, typeNew, slopeNew;
+      let yNew, typeNew, slopeNew = null;
       // see if can find a min or extremum that didn't have x specified
       let results = getPointWithoutX({
         allowedTypes: ["maximum", "extremum"],
@@ -1689,7 +1705,7 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
         if (y > yPrev - yscale) {
           // need to add a point to the left at least as high as y+yscale
           let xNew = (x + xPrev) / 2;
-          let yNew, typeNew, slopeNew;
+          let yNew, typeNew, slopeNew = null;
           // see if can find a max or extremum that didn't have x specified
           let results = getPointWithoutX({
             allowedTypes: ["maximum", "extremum"],
@@ -1739,7 +1755,7 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
 
         let yMin = Math.min(yPrev, y) - yscale;
         let xNew = (x + xPrev) / 2;
-        let yNew, typeNew, slopeNew;
+        let yNew, typeNew, slopeNew = null;
         // see if can find a min or extremum that didn't have x specified
         let results = getPointWithoutX({
           allowedTypes: ["minimum", "extremum"],
@@ -1773,7 +1789,7 @@ function calculateInterpolationPoints({ dependencyValues, numerics }) {
 
         let yMax = Math.max(yPrev, y) + yscale;
         let xNew = (x + xPrev) / 2;
-        let yNew, typeNew, slopeNew;
+        let yNew, typeNew, slopeNew = null;
         // see if can find a max or extremum that didn't have x specified
         let results = getPointWithoutX({
           allowedTypes: ["maximum", "extremum"],
@@ -1877,6 +1893,14 @@ function computeSplineParamCoeffs({ dependencyValues }) {
 
   let interpolationPoints = dependencyValues.interpolationPoints;
 
+
+  if (interpolationPoints === null) {
+    return {
+      newValues: {
+        xs: null, coeffs: null
+      }
+    }
+  }
 
   let coeffs = [];
   let xs = [];

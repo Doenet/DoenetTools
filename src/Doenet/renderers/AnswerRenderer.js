@@ -57,7 +57,7 @@ class AnswerRenderer extends BaseRenderer {
         checkWorkText = "Submit Response";
       }
       let checkworkComponent = (
-        <span id={this._key + "_submit"}
+        <button id={this._key + "_submit"}
           tabIndex="0"
           style={checkWorkStyle}
           onClick={this.actions.submitAnswer}
@@ -70,7 +70,7 @@ class AnswerRenderer extends BaseRenderer {
           <FontAwesomeIcon icon={faLevelDownAlt}  transform={{rotate:90}}/>
           &nbsp;
           {checkWorkText}
-      </span>);
+      </button>);
 
       if (this.showCorrectness) {
         if (this.validationState === "correct") {

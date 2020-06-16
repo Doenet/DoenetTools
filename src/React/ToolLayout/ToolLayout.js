@@ -29,7 +29,6 @@ export default function ToolLayout(props) {
   let leftW;
   let rightW;
 
-
   if (props.children && Array.isArray(props.children)) {
     if (props.leftPanelWidth) {
       leftW = parseInt(props.leftPanelWidth, 10) > 300 ? 300 : props.leftPanelWidth;
@@ -42,7 +41,7 @@ export default function ToolLayout(props) {
   } else {
     rightW = 300;
   }
-  const resizerW = 5;
+  const resizerW = 3;
 
 
   //Assume 3 if 1 child then we don't worry about middleW
@@ -85,9 +84,6 @@ export default function ToolLayout(props) {
       };
     }
   });
-// const updateProfilePic = () => {
-//   debugger;
-// }
   const windowResizeHandler = () => {
     let deviceWidth = widthToDevice();
     if (deviceType !== deviceWidth) {
@@ -148,38 +144,40 @@ export default function ToolLayout(props) {
           setFirstPanelHidden(false);
         }
         let middleW = w - leftW - rightW - resizerW - resizerW;
+        if (props.children.length === 2) {
+          middleW = w - leftW - resizerW;
+        }
         if (middleW < 100) {
           middleW = 100;
           leftW = w - rightW - resizerW - resizerW - middleW;
         }
-        if (props.children.length === 2) {
-          middleW = w - leftW - resizerW;
-        }
-        // console.log(leftW);
         setLeftWidth(leftW);
         setMiddleWidth(middleW);
-        // setRightWidth(rightW);
       } else if (currentResizer === "second") {
         const secondResizer = document.querySelector('#second.resizer');
         const leftW = (!!leftCloseBtn ? leftWidth : 0);
-        let middleW = event.clientX - leftW - resizerW;
-        let rightW = w - leftW - resizerW - middleW - resizerW;
+        let rightW = w - event.clientX - resizerW - resizerW;
         if (rightW < 40) {
           rightW = 0;
           setRightOpenBtn(true);
-          middleW = w - leftW - resizerW - resizerW - rightW;
           secondResizer.className = 'resizer right-resizer';
         } else if (rightW < 100) {
           rightW = 100;
+          setRightCloseBtn(true);
           setRightOpenBtn(false);
-          middleW = w - leftW - resizerW - resizerW - rightW;
           secondResizer.className = 'resizer column-resizer';
-        } else if (middleW <= 100) {
+        }  else {
+          setRightCloseBtn(true);
+          setRightOpenBtn(false);
+          secondResizer.className = 'resizer column-resizer';
+        }
+        middleW = w - leftW - resizerW - resizerW - rightW;
+        if (middleW <= 100) {
           middleW = 100;
           secondResizer.className = 'resizer left-resizer';
           rightW = w - leftW - resizerW - resizerW - middleW;
-        } else {
-          secondResizer.className = 'resizer column-resizer';
+          setRightCloseBtn(true);
+          setRightOpenBtn(false);
         }
         setRightWidth(rightW);
         setMiddleWidth(middleW);
@@ -204,12 +202,37 @@ export default function ToolLayout(props) {
     // if (middleWidth === 100) {
     //   return;
     // }
+    let leftW = 0;
+    if (!leftCloseBtn) {
+      leftW = leftWidth;
+    }
+    if (leftWidth === 0) {
+      leftW = 200;
+    }
     setLeftCloseBtn(true);
     setLeftOpenBtn(false);
-    let middleW = w - resizerW - resizerW - (!!leftCloseBtn ? 0 : leftWidth) - (!!rightCloseBtn ? rightWidth : 0);
+    let middleW = w - resizerW - resizerW - leftW - (!!rightCloseBtn ? rightWidth : 0);
+    if (props.children.length === 2) {
+      middleW = w - leftW - resizerW;
+    }
+    setLeftWidth(leftW);
+    setMiddleWidth(middleW);
+  };
+  const rightPanelVisible = () => {
+    let rightW = 0;
+    if (!rightCloseBtn) {
+      rightW = rightWidth;
+    }
+    if (rightWidth === 0) {
+      rightW = 300;
+    }
+    setRightCloseBtn(true);
+    setRightOpenBtn(false);
+    let middleW = w - resizerW - resizerW - rightW - (!!leftCloseBtn ? leftWidth : 0);
     if (props.children.length === 2) {
       middleW = w - (!!leftCloseBtn ? 0 : leftWidth) - resizerW;
     }
+    setRightWidth(rightW);
     setMiddleWidth(middleW);
   };
 
@@ -220,15 +243,6 @@ export default function ToolLayout(props) {
     setMiddleWidth(middleW);
   };
 
-  const rightPanelVisible = () => {
-    setRightCloseBtn(true);
-    setRightOpenBtn(false);
-    let middleW = w - resizerW - resizerW - (!!rightCloseBtn ? 0 : rightWidth) - (!!leftCloseBtn ? leftWidth : 0);
-    if (props.children.length === 2) {
-      middleW = w - (!!leftCloseBtn ? 0 : leftWidth) - resizerW;
-    }
-    setMiddleWidth(middleW);
-  };
 
   const showCollapseMenu = (flag, count) => {
     setSliderVisible(flag);
@@ -252,32 +266,29 @@ export default function ToolLayout(props) {
   panelHeadersControlVisible.hideCollapse = !Array.isArray(props.children);
 
   let leftNav = <PlacementContext.Provider value={{ leftCloseBtn: leftCloseBtn, width: `${leftWidth}px`, position: 'left', panelHeadersControlVisible, leftPanelHideable, isResizing }}>{leftNavContent}</PlacementContext.Provider>
-  allParts.push(<div key="part1" id="leftpanel" className="leftpanel" style={{ width: `${leftWidth}px`, marginLeft: `${leftOpenBtn ? `-${leftWidth}px` : '0px'} ` }} >{leftNav}</div>);
+ 
+  !props.guestUser && allParts.push(<div key="part1" id="leftpanel" className="leftpanel" style={{ width: `${leftWidth}px`, marginLeft: `${leftOpenBtn ? `-${leftWidth}px` : '0px'} ` }} >{leftNav}</div>);
 
   //Resizer
   if (props.children.length === 2 || props.children.length === 3) {
     allParts.push(
-      <div key="resizer1" id="first" className="resizer column-resizer">
-        <div className="horizontal-seperator" />
-        <div className="vertical-seperator" />
-      </div>
+      <div key="resizer1" id="first" className="resizer column-resizer" />
+      
     );
   }
 
   //Props children[1]
   let middleNav
   if (props.children[1]) {
-    middleNav = <PlacementContext.Provider value={{ rightOpenBtn, leftOpenBtn, position: 'middle', panelHeadersControlVisible, leftPanelVisible, rightPanelVisible, isResizing, leftWidth: leftWidth }}> {props.children[1]}</PlacementContext.Provider>
+    middleNav = <PlacementContext.Provider value={{ rightOpenBtn, leftOpenBtn, position: 'middle', panelHeadersControlVisible, leftPanelVisible, rightPanelVisible, isResizing, leftWidth: leftWidth, guestUser: props.guestUser }}> {props.children[1]}</PlacementContext.Provider>
     allParts.push(<div key="part2" id="middlepanel" className="middlepanel" style={{ width: `${middleWidth}px`, display: `${middleWidth === 0 ? "none" : "flex"} ` }} >  {middleNav}</div>);
   }
 
   //Resizer2
   if (props.children.length >= 3) {
     allParts.push(
-      <div key="resizer2" id="second" className="resizer column-resizer">
-        <div className="horizontal-seperator" />
-        <div className="vertical-seperator" />
-      </div>
+      <div key="resizer2" id="second" className="resizer column-resizer" />
+     
     );
   }
 
@@ -291,7 +302,7 @@ export default function ToolLayout(props) {
   const footerClass = props.children.length > 1 ? 'footer-on' : 'footer-off';
   return (
     <>
-      <DoenetHeader toolName={props.toolName} headingTitle={props.headingTitle} headerRoleFromLayout={props.headerRoleFromLayout} headerChangesFromLayout={props.headerChangesFromLayout} onChange={showCollapseMenu} />
+      <DoenetHeader toolName={props.toolName} headingTitle={props.headingTitle} headerRoleFromLayout={props.headerRoleFromLayout} headerChangesFromLayout={props.headerChangesFromLayout} guestUser = {props.guestUser} onChange={showCollapseMenu} />
       {deviceType === "phone" ? <div ref={container}>
         <div className={footerClass}>
           {(phoneVisiblePanel === "left" || allParts.length === 1) &&
@@ -305,8 +316,8 @@ export default function ToolLayout(props) {
         {props.children.length > 1 && <div className="phonebuttoncontainer" >
           {leftNav && middleNav && leftNav.props.children.props && middleNav.props.children[1].props && (
             <>
-              <button className="phonebutton"
-                onClick={() => setPhoneVisiblePanel("left")}>{leftNav.props.children.props.panelName}</button>
+             {!props.guestUser &&  <button className="phonebutton"
+                onClick={() => setPhoneVisiblePanel("left")}>{leftNav.props.children.props.panelName}</button>}
               <button className="phonebutton"
                 onClick={() => setPhoneVisiblePanel("middle")}>{middleNav.props.children[1].props.panelName}</button>
             </>)}

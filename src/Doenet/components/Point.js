@@ -91,7 +91,7 @@ export default class Point extends GraphicalComponent {
       propositions: [atLeastOneString, atLeastOneMath],
       requireConsecutive: true,
       isSugar: true,
-      affectedBySugar: ["exactlyOneCoords"],
+      logicToWaitOnSugar: ["exactlyOneCoords"],
       replacementFunction: addCoords,
     });
 
@@ -131,7 +131,7 @@ export default class Point extends GraphicalComponent {
       number: 1,
       isSugar: true,
       requireConsecutive: true,
-      affectedBySugar: ["atMostOneConstraints"],
+      logicToWaitOnSugar: ["atMostOneConstraints"],
       replacementFunction: addConstraints,
 
     });
@@ -200,7 +200,7 @@ export default class Point extends GraphicalComponent {
           coordsShadow: { variablesToCheck: ["coords", "coordsShadow"] }
         }
       }),
-      inverseDefinition: function ({desiredStateVariableValues}) {
+      inverseDefinition: function ({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
@@ -264,9 +264,9 @@ export default class Point extends GraphicalComponent {
             nDimensions = 1;
           }
 
-          // if based on coords, should check to for actual change
+          // if based on coords, should check for actual change
           // as frequently the dimension doesn't change
-          return { newValues: { nDimensions }, checkForActualChange: ["nDimensions"] };
+          return { newValues: { nDimensions }, checkForActualChange: { nDimensions: true } };
 
 
         } else {
@@ -286,7 +286,7 @@ export default class Point extends GraphicalComponent {
           }
         }
 
-        return { newValues: { nDimensions }, checkForActualChange: ["nDimensions"] };
+        return { newValues: { nDimensions }, checkForActualChange: { nDimensions: true } };
 
       }
     }
@@ -356,7 +356,7 @@ export default class Point extends GraphicalComponent {
         // as xs won't be able to take advantage of it due
         // possible constraints that could introduce dependencies among components? 
 
-        let freshByKey = freshnessInfo.freshByKey
+        let freshByKey = freshnessInfo.unconstrainedXs.freshByKey
         if (changes.coordsShadow || changes.coordsChild || changes.nDimensions) {
           // if based on coords or number of dimensions changed
           // always regard as the whole entry changed
@@ -372,7 +372,7 @@ export default class Point extends GraphicalComponent {
           // as core will recurse markStale to upstream dependents now
           // but won't recurse again if there are additional changes
           // (as fresh===false indicates everything is already stale)
-          return { fresh: false }
+          return { fresh: { unconstrainedXs: false } }
 
         } else {
 
@@ -394,14 +394,14 @@ export default class Point extends GraphicalComponent {
           if (arrayKey === undefined) {
             if (Object.keys(freshByKey).length === 0) {
               // asked for entire array and it is all stale
-              return { fresh: false }
+              return { fresh: { unconstrainedXs: false } }
             } else {
               // asked for entire array, but it has some fresh elements
-              return { partiallyFresh: true }
+              return { partiallyFresh: { unconstrainedXs: true } }
             }
           } else {
             // asked for just one component
-            return { fresh: freshByKey[arrayKey] === true }
+            return { fresh: { unconstrainedXs: freshByKey[arrayKey] === true } }
           }
 
         }
@@ -454,7 +454,11 @@ export default class Point extends GraphicalComponent {
       },
       markStale: function ({ freshnessInfo, changes, arrayKeys }) {
 
-        let freshByKey = freshnessInfo.freshByKey
+        // console.log(`mark stale of xs`);
+        // console.log(arrayKeys)
+        // console.log(changes)
+
+        let freshByKey = freshnessInfo.xs.freshByKey
 
         let arrayKey;
         if (arrayKeys) {
@@ -475,29 +479,41 @@ export default class Point extends GraphicalComponent {
               delete freshByKey[key];
             }
           }
+        } else {
+          // check if any of the unconstraintedXn's for a fresh n changed
+          for (let key in freshByKey) {
+            if (changes[`unconstrainedX${Number(key) + 1}`]) {
+              delete freshByKey[key]
+            }
+          }
+
         }
 
 
         if (arrayKey === undefined) {
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { xs: false } }
           } else {
             // asked for entire array, but it has some fresh elements
             // (we don't know here how many elements xs has, 
             // so can't determine if completely fresh)
-            return { partiallyFresh: true }
+            return { partiallyFresh: { xs: true } }
           }
         } else {
           // asked for just one component
-          return { fresh: freshByKey[arrayKey] === true }
+          return { fresh: { xs: freshByKey[arrayKey] === true } }
         }
 
       },
 
       definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
 
-        let freshByKey = freshnessInfo.freshByKey
+        // console.log('definition of xs')
+        // console.log(dependencyValues)
+        // console.log(arrayKeys)
+
+        let freshByKey = freshnessInfo.xs.freshByKey
 
         let arrayKey;
         if (arrayKeys) {
@@ -555,22 +571,32 @@ export default class Point extends GraphicalComponent {
           freshByKey[arrayKey] = true;
 
           if (dependencyValues.constraintsChild.length === 1) {
-            return {
-              newValues: {
-                xs:
-                {
-                  [arrayKey]:
-                    convertValueToMathExpression(
-                      dependencyValues.constraintsChild[0].stateValues[`constraintResult${arrayKey + 1}`]
-                    )
+            if (dependencyValues.constraintsChild[0].stateValues[`constraintResult${arrayKey + 1}`] === undefined) {
+              return {};
+            } else {
+              return {
+                newValues: {
+                  xs:
+                  {
+                    [arrayKey]:
+                      convertValueToMathExpression(
+                        dependencyValues.constraintsChild[0].stateValues[`constraintResult${arrayKey + 1}`]
+                      )
+                  }
                 }
               }
             }
           } else {
-            return {
-              newValues: {
-                xs: {
-                  [arrayKey]: dependencyValues[`unconstrainedX${arrayKey + 1}`]
+            if (dependencyValues[`unconstrainedX${arrayKey + 1}`] === undefined) {
+              return {};
+            } else {
+              return {
+                newValues: {
+                  xs: {
+                    [arrayKey]: convertValueToMathExpression(
+                      dependencyValues[`unconstrainedX${arrayKey + 1}`]
+                    )
+                  }
                 }
               }
             }
@@ -678,7 +704,7 @@ export default class Point extends GraphicalComponent {
           coordsAst.push(v.tree);
         }
         if (coordsAst.length > 1) {
-          coordsAst = ["tuple", ...coordsAst];
+          coordsAst = ["vector", ...coordsAst];
         } else {
           coordsAst = coordsAst[0];
         }
@@ -781,7 +807,7 @@ export default class Point extends GraphicalComponent {
       },
       markStale({ freshnessInfo, changes, arrayKeys }) {
 
-        let freshByKey = freshnessInfo.freshByKey;
+        let freshByKey = freshnessInfo.numericalXs.freshByKey;
 
         let arrayKey;
         if (arrayKeys) {
@@ -799,12 +825,12 @@ export default class Point extends GraphicalComponent {
           }
           if (Object.keys(freshByKey).length === 0) {
             // asked for entire array and it is all stale
-            return { fresh: false }
+            return { fresh: { numericalXs: false } }
           } else {
             // asked for entire array, but it has some fresh elements
             // (we don't know here how many elements numericalXs has, 
             // so can't determine if completely fresh)
-            return { partiallyFresh: true }
+            return { partiallyFresh: { numericalXs: true } }
           }
         } else {
 
@@ -815,13 +841,13 @@ export default class Point extends GraphicalComponent {
             delete freshByKey[arrayKey];
           }
 
-          return { fresh: freshByKey[arrayKey] === true };
+          return { fresh: { numericalXs: freshByKey[arrayKey] === true } };
         }
 
       },
       definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
 
-        let freshByKey = freshnessInfo.freshByKey
+        let freshByKey = freshnessInfo.numericalXs.freshByKey
 
 
         let arrayKey;
@@ -961,8 +987,8 @@ export default class Point extends GraphicalComponent {
       components[1] = y;
     }
     this.requestUpdate({
-      updateType: "updateValue",
       updateInstructions: [{
+        updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "xs",
         value: components,
@@ -1014,7 +1040,7 @@ function calculateUnconstrainedXs({ dependencyValues, arrayKeys, freshnessInfo }
 
   } else {
 
-    let freshByKey = freshnessInfo.freshByKey
+    let freshByKey = freshnessInfo.unconstrainedXs.freshByKey
 
     let arrayKey;
     if (arrayKeys) {
@@ -1105,7 +1131,7 @@ function invertUnconstrainedXs({ desiredStateVariableValues, dependencyValues,
 
   if (basedOnCoords) {
     let currentCoordsTree = Array(stateValues.nDimensions + 1);
-    currentCoordsTree[0] = "tuple";
+    currentCoordsTree[0] = "vector";
     for (let arrayKey in desiredStateVariableValues.unconstrainedXs) {
       currentCoordsTree[Number(arrayKey) + 1] = desiredStateVariableValues.unconstrainedXs[arrayKey];
     }

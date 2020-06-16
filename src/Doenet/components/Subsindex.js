@@ -100,7 +100,7 @@ export default class Subsindex extends CompositeComponent {
     };
 
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+    stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({
         index: {
           dependencyType: "stateVariable",
@@ -108,7 +108,7 @@ export default class Subsindex extends CompositeComponent {
         }
       }),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { newValues: { readyToExpand: true } };
       },
     };
 

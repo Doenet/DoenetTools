@@ -30,12 +30,53 @@ export default class NumberComponent extends InlineComponent {
       componentType: 'number',
       number: 1,
     });
-    childLogic.newOperator({
-      name: "stringXorNumber",
-      operator: 'xor',
-      propositions: [atMostOneString, exactlyOneNumber],
-      setAsBase: true,
+
+    ;
+
+    let addMath = function ({ activeChildrenMatched }) {
+      // Note: math will get adapted into a number
+      let mathChildren = [];
+      for (let child of activeChildrenMatched) {
+        mathChildren.push({
+          createdComponent: true,
+          componentName: child.componentName
+        });
+      }
+      return {
+        success: true,
+        newChildren: [{ componentType: "math", children: mathChildren }],
+      }
+    }
+
+
+    let atLeastZeroStrings = childLogic.newLeaf({
+      name: "atLeastZeroStrings",
+      componentType: 'string',
+      comparison: 'atLeast',
+      number: 0,
     });
+    let atLeastOneMath = childLogic.newLeaf({
+      name: "atLeastOneMath",
+      componentType: 'math',
+      comparison: 'atLeast',
+      number: 1,
+    });
+    let stringsAndMaths = childLogic.newOperator({
+      name: "stringsAndMaths",
+      operator: 'and',
+      propositions: [atLeastZeroStrings, atLeastOneMath],
+      requireConsecutive: true,
+      isSugar: true,
+      replacementFunction: addMath
+    });
+
+    childLogic.newOperator({
+      name: "stringXorNumberXorSugar",
+      operator: 'xor',
+      propositions: [exactlyOneNumber, stringsAndMaths, atMostOneString],
+      setAsBase: true,
+    })
+
     return childLogic;
   }
 
@@ -52,11 +93,13 @@ export default class NumberComponent extends InlineComponent {
           dependencyType: "childStateVariables",
           childLogicName: "exactlyOneNumber",
           variableNames: ["value", "canBeModified"],
+          requireChildLogicInitiallySatisfied: true,
         },
         stringChild: {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneString",
           variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
         },
       }),
       defaultValue: NaN,
@@ -229,7 +272,8 @@ export default class NumberComponent extends InlineComponent {
         numberChildModifiable: {
           dependencyType: "childStateVariables",
           childLogicName: "exactlyOneNumber",
-          variableNames: ["canBeModified"]
+          variableNames: ["canBeModified"],
+          requireChildLogicInitiallySatisfied: true,
         },
         modifyIndirectly: {
           dependencyType: "stateVariable",

@@ -56,7 +56,7 @@ export default class TextList extends InlineComponent {
           variableNames: ["value"]
         }
       }),
-      affectedBySugar: ["atLeastZeroTexts"],
+      logicToWaitOnSugar: ["atLeastZeroTexts"],
       replacementFunction: breakStringIntoTextsByCommas,
     });
 

@@ -89,14 +89,14 @@ const SelectionSet = ({allElements,CommonCallBack,type="",forceSelected=""}) =>{
     if (allElements[item]['type']==="IndependentItem"){ // individual items
       if (selectedItem===allElements[item]['thisElementLabel'] || forceSelected===allElements[item]['thisElementLabel']){
         if (type==="Link"){
-          console.log("this000")
+          // console.log("this000")
           branch = (
             <Link
               style={IndependentItemSelectedStyle}
               to={`/${allElements[item]['thisElementLabel']}`}
               key={updateNumber++}
               onClick={()=>{
-                console.log("calling THIS")
+                // console.log("calling THIS")
                 if (selectedItem!=allElements[item]['thisElementLabel']){
                   setSelectedItem(allElements[item]['thisElementLabel'])
                 }
@@ -145,14 +145,14 @@ const SelectionSet = ({allElements,CommonCallBack,type="",forceSelected=""}) =>{
         
       } else{ //"IndependentItem" and not selected
         if (type==="Link"){
-          console.log("this001")
+          // console.log("this001")
           branch = (
             <Link
               style={IndependentItemNotSelectedStyle}
               to={`/${allElements[item]['thisElementLabel']}`}
               key={updateNumber++}
               onClick={()=>{
-                console.log("calling 001")
+                // console.log("calling 001")
                 if (selectedItem!=allElements[item]['thisElementLabel']){
                   setSelectedItem(allElements[item]['thisElementLabel'])
                 }

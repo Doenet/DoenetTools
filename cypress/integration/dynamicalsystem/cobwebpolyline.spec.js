@@ -8,7 +8,7 @@ describe('ODEsystem Tag Tests', function () {
   it('1D linear system', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <function name='f' hide='true' variable='x'>1/3*x*(3-x)+x</function>
   <number hide="true" name="nPoints">1</number>
 

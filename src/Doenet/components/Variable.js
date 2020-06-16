@@ -2,6 +2,7 @@ import MathComponent from './Math';
 
 export default class Variable extends MathComponent {
   static componentType = "variable";
+  static rendererType = "math";
 
   // TODO: how to add this feature?
   static additionalStateVariablesForProperties = ["validVariable"];

@@ -1,352 +1,430 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import {replaceIncompleteProp} from './commonsugar/createprop';
 
 export default class Extract extends CompositeComponent {
   static componentType = "extract";
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let anythingForSugar = childLogic.newLeaf({
-      name: 'anythingForSugar',
-      componentType: '_base',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let atMostOneChildnumberForSugar = childLogic.newLeaf({
-      name: 'atMostOneChildnumberForSugar',
-      componentType: 'childnumber',
-      comparison: 'atMost',
-      number: 1,
-    });
-
-    let propIsIncomplete = function(child) {
-      return (child.state.incomplete === true);
-    }
-
-    let exactlyOneIncompletePropForSugar = childLogic.newLeaf({
-      name: "exactlyOneIncompletePropForSugar",
-      componentType: 'prop',
-      number: 1,
-      condition: propIsIncomplete,
-    });
-
-    let incompletePropPlus = childLogic.newOperator({
-      name: "incompletePropPlus",
-      operator: "and",
-      propositions: [exactlyOneIncompletePropForSugar, atMostOneChildnumberForSugar, anythingForSugar],
-      isSugar: true,
-      replacementFunction: replaceIncompleteProp,
-      separateSugarInputs: true,
-    })
-
-
-    let atMostOneChildnumberForNothing = childLogic.newLeaf({
-      name: 'atMostOneChildnumberForNothing',
-      componentType: 'childnumber',
-      comparison: 'atMost',
-      number: 1,
-    });
-
-    let exactlyOneIncompletePropForNothing = childLogic.newLeaf({
-      name: "exactlyOneIncompletePropForNothing",
-      componentType: 'prop',
-      number: 1,
-      condition: propIsIncomplete,
-    });
-
-    let nothing = childLogic.newLeaf({
-      name: "nothing",
-      componentType: '_base',
-      number: 0,
-    });
-
-    let nothingPlus = childLogic.newOperator({
-      name: "nothingPlus",
-      operator: "and",
-      propositions: [atMostOneChildnumberForNothing, exactlyOneIncompletePropForNothing, nothing]
-    })
-
-    
     let anything = childLogic.newLeaf({
       name: 'anything',
       componentType: '_base',
       comparison: 'atLeast',
+      excludeComponentTypes: ["_composite"],
       number: 0,
     });
 
-    let atMostOneChildnumber = childLogic.newLeaf({
-      name: 'atMostOneChildnumber',
-      componentType: 'childnumber',
-      comparison: 'atMost',
-      number: 1,
-    });
 
-    let propIsComplete = function(child) {
-      return (child.state.incomplete !== true);
-    }
-
-    let exactlyOneCompleteProp = childLogic.newLeaf({
-      name: "exactlyOneCompleteProp",
+    let exactlyOneProp = childLogic.newLeaf({
+      name: "exactlyOneProp",
       componentType: 'prop',
       number: 1,
-      condition: propIsComplete,
-    });
-
-    let completePropPlus = childLogic.newOperator({
-      name: "completePropPlus",
-      operator: "and",
-      propositions: [exactlyOneCompleteProp, atMostOneChildnumber, anything]
     });
 
     childLogic.newOperator({
-      name: "refTargetPropXorSugar",
-      operator: "xor",
-      propositions: [incompletePropPlus, completePropPlus, nothingPlus],
+      name: "propPlus",
+      operator: "and",
+      propositions: [exactlyOneProp, anything],
       setAsBase: true,
-    })
+    });
+
 
     return childLogic;
   }
 
-  updateState(args={}) {
-    if(args.init) {
-      this.state.numReplacementsBySource = [];
-    }
-    super.updateState(args);
 
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.sourceComponents = true;
-      this.state.sourceComponents = [];
-      this.state.previousSources = [];
-      return;
-    }
+  static returnStateVariableDefinitions() {
 
-    this.state.previousSources = this.state.sourceComponents;
-    if(this.state.previousSources === undefined) {
-      this.state.previousSources = [];
-    }
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
 
-    if(childrenChanged) {
-      delete this.unresolvedState.sourceComponents;
-
-      let childInds = this.childLogic.returnMatches("anything");
-      if(childInds.length > 0) {
-        this.state.sourceComponents = childInds.map(x => this.activeChildren[x]);
-      }else {
-        this.state.sourceComponents = [];
-        return;
-      }
-        
-      let atMostOneChildnumber = this.childLogic.returnMatches("atMostOneChildnumber");
-      if(atMostOneChildnumber.length === 1) {
-        this.state.childnumberChild = this.activeChildren[atMostOneChildnumber[0]];
-      }else {
-        delete this.state.childnumberChild;
-      }
-
-      let exactlyOneCompleteProp = this.childLogic.returnMatches("exactlyOneCompleteProp");
-      this.state.propChild = this.activeChildren[exactlyOneCompleteProp[0]];
-    }
-
-    // if childnumber is specified, determine new sources
-    // it might be undefined if childnumber is not a valid value
-    if(this.state.childnumberChild) {
-      if(this.state.childnumberChild.unresolvedState.number) {
-        this.unresolvedState.sourceComponents = true;
-        this.state.sourceComponents = [];
-        return;
-      }
-      // don't bother checking for changes in childnumber, just set it
-      this.state.childnumber = this.state.childnumberChild.state.number;
-    }else if(this.state.childnumber !== undefined && !this._state.childnumber.essential) {
-      delete this.state.childnumber;
-    }
-    
-    let childnumber = this.state.childnumber;
-
-    if(childnumber !== undefined) {
-      let childIndex = childnumber-1;
-      if(!Number.isInteger(childIndex) || childIndex < 0) {
-        console.log("Invalid child number");
-        this.state.sourceComponents = [];
-      } else {
-        for(let sourceNum=0; sourceNum < this.state.sourceComponents.length; sourceNum++) {
-          let source = this.state.sourceComponents[sourceNum];
-
-          if(childIndex < source.activeChildren.length) {
-            this.state.sourceComponents[sourceNum] = source.activeChildren[childIndex];
-          }else {
-            this.state.sourceComponents[sourceNum] === undefined;
-          }
+    stateVariableDefinitions.sourceComponents = {
+      returnDependencies: () => ({
+        children: {
+          dependencyType: "childIdentity",
+          childLogicName: "anything",
         }
-      }
-    }
-
-    // if a source is a ref or extract
-    // use its replacements instead
-    for(let sourceNum=0; sourceNum < this.state.sourceComponents.length; sourceNum++) {
-      let source = this.state.sourceComponents[sourceNum];
-      if(source !== undefined) {
-        if(source.componentType === "ref" || source.componentType === "extract") {
-          this.state.sourceComponents.splice(sourceNum, 1, ...source.replacements);
-          sourceNum--;
-          continue;
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          sourceComponents: dependencyValues.children
         }
-        this.state.sourceComponents[sourceNum] = source;
-      }
-    }
-
-    this.state.stateForSource = [];
-
-    // get prop
-
-    for(let sourceNum=0; sourceNum < this.state.sourceComponents.length; sourceNum++) {
-      let source = this.state.sourceComponents[sourceNum];
-      if(source === undefined) {
-        continue;
-      }
-
-      if(this.state.stateForSource[sourceNum] === undefined) {
-        this.state.stateForSource[sourceNum] = {};
-      }
-      let stateForSource = this.state.stateForSource[sourceNum];
-
-      let result = this.state.propChild.validateProp({
-        component: source,
-        standardComponentClasses: this.standardComponentClasses,
       })
-
-      if(result.success !== true) {
-        if(result.error === true) {
-
-          let propChildState = this.state.propChild.state;
-          let message = "Cannot extract prop " + propChildState.variableName;
-          if(propChildState.authorProp !== undefined) {
-            message += " (" + propChildState.authorProp + ")"
-          }
-          message += " from " + source.componentType;
-          if(source.doenetAttributes.componentName !== undefined) {
-            message += " (" + source.doenetAttributes.componentName + ")";
-          }
-          console.warn(message);
-          this.unresolvedState.stateForSource = true;
-
-        }else if(result.unresolved === true) {
-          this.unresolvedState.stateForSource = true;
-        }
-
-        this.state.sourceComponents[sourceNum] = undefined;
-        continue;
-      }
-
-      stateForSource.propData = result.propData;
-      stateForSource.availableClassProperties = result.availableClassProperties;
-
-      // add state of source for any state values that
-      // correspond to properties
-      this.copyPropertiesFromSources(true, sourceNum);
     }
 
-  }
-
-  // Look in source component for property state variables.
-  // If those properties haven't expectly been specified 
-  // as an attribute of the <extract> tag,
-  // then add those properties to the state for this source
-  // Rationale: When creating the serialized replacement for the source
-  // we will add these properties to the seralized replacement
-  copyPropertiesFromSources(init=true, sourceNum) {
-    let stateForSource = this.state.stateForSource[sourceNum];
-    stateForSource.properties = {};
-
-    for(let item in stateForSource.availableClassProperties) {
-
-      // don't copy prop
-      if(item === "prop") {
-        continue;
+    stateVariableDefinitions.effectiveTargetClasses = {
+      returnDependencies: () => ({
+        sourceComponents: {
+          dependencyType: "stateVariable",
+          variableName: "sourceComponents"
+        }
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let effectiveTargetClasses = dependencyValues.sourceComponents.map(
+          x => componentInfoObjects.allComponentClasses[x.componentType]
+        )
+        return {
+          newValues: { effectiveTargetClasses }
+        };
       }
+    };
 
-      let propertyInSource = this.state.sourceComponents[sourceNum]._state[item];
-
-      // don't copy a state variable from target than isn't a property
-      if(propertyInSource !== undefined && propertyInSource.isProperty !== true) {
-        continue;
-      }
-
-      if(propertyInSource !== undefined) {
-        stateForSource.properties[item] = propertyInSource.value;
-      }else {
-        if(init && stateForSource.availableClassProperties[item].default !== undefined) {
-          // assign default value if available and not defined elsewhere
-          stateForSource.properties[item] = stateForSource.availableClassProperties[item].default;
+    stateVariableDefinitions.propVariableObjs = {
+      returnDependencies: () => ({
+        propChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneProp",
+          variableNames: ["propVariableObjs"],
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.propChild.length === 0) {
+          return {
+            newValues: {
+              propVariableObjs: null
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              propVariableObjs: dependencyValues.propChild[0].stateValues.propVariableObjs
+            }
+          }
         }
       }
     }
 
-    // check if any properties have been added explicitly in extract tag
-    // and add those to state
-    // (Currently, only possibilities are the properties from basecomponent:
-    // hide, modifyIndirectly, and fixed)
-    for(let item in this.state) {
-      if(this._state[item].isProperty && !this._state[item].usedDefault) {
-        stateForSource.properties[item] = this.state[item];
+    // replacement classes are determined by componentType
+    // of propVariableObjs
+    // Except that, if propVariableObjs doesn't have componentType specified,
+    // then the componentType is determined by the actual statevariable of source components
+    stateVariableDefinitions.replacementClasses = {
+      additionalStateVariablesDefined: [
+        "stateVariablesRequested", "validProp", "componentTypeBySource"
+      ],
+      stateVariablesDeterminingDependencies: [
+        "propVariableObjs", "sourceComponents",
+      ],
+      returnDependencies: function ({ stateValues }) {
+
+        let dependencies = {
+          effectiveTargetClasses: {
+            dependencyType: "stateVariable",
+            variableName: "effectiveTargetClasses",
+          },
+          sourceComponents: {
+            dependencyType: "stateVariable",
+            variableName: "sourceComponents",
+          },
+          propVariableObjs: {
+            dependencyType: "stateVariable",
+            variableName: "propVariableObjs",
+          },
+        };
+
+        // if have a prop variable where couldn't determine componentType
+        // from just the component class, we will get 
+        // componentType of the actual statevariable
+        // of the source component
+        // Also, get actual statevariable for arrays so that can determine their size
+        if (stateValues.propVariableObjs !== null) {
+          for (let [ind, propVariableObj] of stateValues.propVariableObjs.entries()) {
+            if (!propVariableObj.componentType) {
+              dependencies[`replacementComponentType${ind}`] = {
+                dependencyType: "componentStateVariableComponentType",
+                componentIdentity: stateValues.sourceComponents[ind],
+                variableName: propVariableObj.varName,
+              }
+            }
+            if (propVariableObj.isArray) {
+              dependencies[`targetArray${ind}`] = {
+                dependencyType: "componentStateVariable",
+                componentIdentity: stateValues.sourceComponents[ind],
+                variableName: propVariableObj.varName,
+              }
+            }
+          }
+        }
+        return dependencies;
+      },
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+
+        if (dependencyValues.propVariableObjs === null) {
+          return {
+            newValues: {
+              replacementClasses: null,
+              stateVariablesRequested: null,
+              validProp: false,
+              componentTypeBySource: null,
+            }
+          };
+        }
+
+        let replacementClasses = [];
+        let stateVariablesRequested = [];
+        let componentTypeBySource = [];
+
+        for (let [ind, propVariableObj] of dependencyValues.propVariableObjs.entries()) {
+          let componentType = propVariableObj.componentType;
+          if (!componentType) {
+            componentType = dependencyValues[`replacementComponentType${ind}`];
+          }
+
+          if (Array.isArray(componentType)) {
+            replacementClasses.push(...componentType.map(x =>
+              componentInfoObjects.allComponentClasses[x])
+            );
+          } else if (propVariableObj.isArray) {
+            // TODO: what about multi-dimensional arrays?
+            let arrayLength = dependencyValues[`targetArray${ind}`].length;
+            let componentClass = componentInfoObjects.allComponentClasses[componentType];
+            replacementClasses.push(...Array(arrayLength).fill(componentClass));
+            componentType = Array(arrayLength).fill(componentType);
+          } else {
+            replacementClasses.push(componentInfoObjects.allComponentClasses[componentType]);
+          }
+
+          componentTypeBySource.push(componentType);
+
+          stateVariablesRequested.push({
+            componentOrReplacementOf: dependencyValues.sourceComponents[ind].componentName,
+            stateVariable: propVariableObj.varName,
+          })
+        }
+
+        return {
+          newValues: {
+            replacementClasses,
+            stateVariablesRequested,
+            validProp: true,
+            componentTypeBySource,
+          }
+        };
+
       }
     }
+
+
+    stateVariableDefinitions.readyToExpand = {
+      returnDependencies: () => ({
+        replacementClasses: {
+          dependencyType: "stateVariable",
+          variableName: "replacementClasses"
+        },
+        needsReplacementsUpdatedWhenStale: {
+          dependencyType: "stateVariable",
+          variableName: "needsReplacementsUpdatedWhenStale"
+        },
+      }),
+      definition: function () {
+        return { newValues: { readyToExpand: true } };
+      },
+    };
+
+
+    // similar to sourceComponents state variable
+    // but include prop variable if have a prop
+    // Note: this collects components a second time when have a prop
+    stateVariableDefinitions.needsReplacementsUpdatedWhenStale = {
+      stateVariablesDeterminingDependencies: [
+        "propVariableObjs"
+      ],
+      returnDependencies: function ({ stateValues }) {
+        let dependencies = {};
+
+        if (stateValues.propVariableObjs === null) {
+          dependencies.children = {
+            dependencyType: "childIdentity",
+            childLogicName: "anything",
+          }
+        } else {
+          dependencies.childrenWithProp = {
+            dependencyType: "childStateVariables",
+            childLogicName: "anything",
+            variableNames: stateValues.propVariableObjs.map(x => x.varName),
+          }
+        }
+
+        return dependencies;
+      },
+      // the whole point of this state variable is to return updateReplacements
+      // on mark stale
+      markStale: () => ({ updateReplacements: true }),
+      definition: () => ({ newValues: { needsReplacementsUpdatedWhenStale: true } })
+    }
+
+
+
+    return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({component, components}) {
+  get allPotentialRendererTypes() {
 
-    if(Object.keys(component.unresolvedState).length > 0) {
-      return {replacements: [] };
+    let allPotentialRendererTypes = [];
+
+    if (this.stateValues.replacementClassesForProp) {
+      for (let replacementClass of this.stateValues.replacementClassesForProp) {
+        let rendererType = replacementClass.rendererType;
+        if (rendererType && !allPotentialRendererTypes.includes(rendererType)) {
+          allPotentialRendererTypes.push(rendererType);
+        }
+      }
     }
-    
+
+    if (this.replacements) {
+      for (let replacement of this.replacements) {
+        for (let rendererType of replacement.allPotentialRendererTypes) {
+          if (!allPotentialRendererTypes.includes(rendererType)) {
+            allPotentialRendererTypes.push(rendererType);
+          }
+        }
+
+      }
+    }
+
+    return allPotentialRendererTypes;
+
+  }
+
+  static createSerializedReplacements({ component, components, workspace }) {
+
+    // evaluate needsReplacementsUpdatedWhenStale to make it fresh
+    component.stateValues.needsReplacementsUpdatedWhenStale;
+
+    // console.log(`calculating replacements for ${component.componentName}`);
+
     let replacements = [];
 
     let numReplacementsBySource = [];
 
-    for(let sourceNum=0; sourceNum < component.state.sourceComponents.length; sourceNum++) {
-      if(component.state.sourceComponents[sourceNum] !== undefined) {
-        let sourceReplacements = this.createReplacementForSource({component,sourceNum, components});
+    let numReplacementsSoFar = 0;
+
+    for (let sourceNum = 0; sourceNum < component.stateValues.sourceComponents.length; sourceNum++) {
+      if (component.stateValues.sourceComponents[sourceNum] !== undefined) {
+        let sourceReplacements = this.createReplacementForSource({
+          component,
+          sourceNum,
+          components,
+          numReplacementsSoFar
+        });
         numReplacementsBySource[sourceNum] = sourceReplacements.length;
+        numReplacementsSoFar += sourceReplacements.length;
         replacements.push(...sourceReplacements);
-      }else {
+      } else {
         numReplacementsBySource[sourceNum] = 0;
       }
     }
 
-    return {replacements, stateVariableChanges: {numReplacementsBySource}};
+    workspace.numReplacementsBySource = numReplacementsBySource;
+    workspace.sourceNames = component.stateValues.sourceComponents.map(x => x.componentName)
+
+    return { replacements };
 
   }
 
-  static createReplacementForSource({component, sourceNum, components}) {
-    let stateForSource = component.state.stateForSource[sourceNum];
-    
-    let additionalDepProperties = {
-      extractComponentName: component.componentName,
+
+  static createReplacementForSource({ component, components, sourceNum, numReplacementsSoFar }) {
+
+    // console.log(`create replacement for source ${sourceNum}, ${numReplacementsSoFar}`)
+
+    let serializedReplacements = [];
+
+    let replacementInd = numReplacementsSoFar - 1;
+    let propVariableObj = component.stateValues.propVariableObjs[sourceNum];
+    let componentTypes = component.stateValues.componentTypeBySource[sourceNum];
+
+    let numReplacementsForSource = 1;
+    if (Array.isArray(componentTypes)) {
+      numReplacementsForSource = componentTypes.length;
     }
 
-    // add properties copied from source
-    let additionalProperties = stateForSource.properties;
+    let sourceName = component.stateValues.sourceComponents[sourceNum].componentName;
+    let sourceComponent = components[sourceName];
 
-    return component.state.propChild.constructor.createSerializedReplacements({
-      component: component.state.propChild,
-      propData: stateForSource.propData, 
-      additionalProperties: additionalProperties,
-      additionalDepProperties: additionalDepProperties,
-      components,
-    });
+    for (let ind = 0; ind < numReplacementsForSource; ind++) {
+      replacementInd++;
+
+      let replacementClass = component.stateValues.replacementClasses[replacementInd];
+
+      let componentType = replacementClass.componentType
+
+      if (propVariableObj.isArray) {
+        let arrayStateVarObj = sourceComponent.state[propVariableObj.varName];
+
+        // TODO: generalize to multi-dimensional arrays
+
+        let arrayKey = arrayStateVarObj.indexToKey(ind);
+        serializedReplacements.push({
+          componentType,
+          downstreamDependencies: {
+            [sourceName]: [{
+              dependencyType: "referenceShadow",
+              refComponentName: component.componentName,
+              propVariable: arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey),
+              // arrayStateVariable: propVariableObj.varName,
+              // arrayKey
+            }]
+          }
+        })
+      } else if (propVariableObj.isArrayEntry) {
+
+        let arrayStateVarObj = sourceComponent.state[propVariableObj.arrayVarName];
+        let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
+          varEnding: propVariableObj.varEnding,
+          arrayEntryPrefix: propVariableObj.arrayEntryPrefix,
+        });
+
+        // TODO: commented out below two conditiions to get tests to pass
+        // Check why these conditions were added in the first place.
+
+        // let entryValue = targetComponent.state[propVariableObj.varName].value;
+
+        // if (entryValue !== undefined) {
+        let arrayKey = arrayKeys[ind];
+        // if (arrayStateVarObj.getArrayValue({ arrayKey }) !== undefined) {
+        serializedReplacements.push({
+          componentType,
+          downstreamDependencies: {
+            [sourceName]: [{
+              dependencyType: "referenceShadow",
+              refComponentName: component.componentName,
+              propVariable: arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey),
+              // propVariable: propVariableObj.varName,
+              // arrayStateVariable: propVariableObj.arrayVarName,
+              // arrayKey
+            }]
+          }
+        })
+        // }
+        // }
+
+      } else {
+        serializedReplacements.push({
+          componentType,
+          downstreamDependencies: {
+            [sourceName]: [{
+              dependencyType: "referenceShadow",
+              refComponentName: component.componentName,
+              propVariable: propVariableObj.varName,
+            }]
+          }
+        })
+      }
+    }
+
+    return serializedReplacements;
 
   }
 
-  static calculateReplacementChanges({component, components}) {
+  static calculateReplacementChanges({ component, components, workspace }) {
+
+    // evaluate needsReplacementsUpdatedWhenStale to make it fresh
+    component.stateValues.needsReplacementsUpdatedWhenStale;
 
     // console.log(`calculating replacement changes for ${component.componentName}`);
-    // console.log(component.state.numReplacementsBySource);
+    // console.log(workspace.numReplacementsBySource);
+    // console.log(component.replacements);
+
 
     let replacementChanges = [];
 
@@ -354,23 +432,23 @@ export default class Extract extends CompositeComponent {
 
     let numReplacementsBySource = [];
 
-    // cumulative sum: https://stackoverflow.com/a/44081700
-    let replacementIndexBySource = [0, ...component.state.numReplacementsBySource];
-    replacementIndexBySource = replacementIndexBySource.reduce(
-      (a, x, i) => [...a, x + (a[i-1] || 0)], []); 
+    // // cumulative sum: https://stackoverflow.com/a/44081700
+    // let replacementIndexBySource = [0, ...workspace.numReplacementsBySource];
+    // replacementIndexBySource = replacementIndexBySource.reduce(
+    //   (a, x, i) => [...a, x + (a[i - 1] || 0)], []);
 
 
-    let maxSourceLength = Math.max(component.state.sourceComponents.length, component.state.previousSources.length);
+    let maxSourceLength = Math.max(component.stateValues.sourceComponents.length, workspace.numReplacementsBySource.length);
 
-    for(let sourceNum=0; sourceNum < maxSourceLength; sourceNum++) {
-      let source = component.state.sourceComponents[sourceNum];
-      if(source === undefined) {
-        if(component.state.numReplacementsBySource[sourceNum] > 0) {
+    for (let sourceNum = 0; sourceNum < maxSourceLength; sourceNum++) {
+      let source = component.stateValues.sourceComponents[sourceNum];
+      if (source === undefined) {
+        if (workspace.numReplacementsBySource[sourceNum] > 0) {
           let replacementInstruction = {
             changeType: "delete",
             changeTopLevelReplacements: true,
             firstReplacementInd: numReplacementsSoFar,
-            numberReplacementsToDelete: component.state.numReplacementsBySource[sourceNum],
+            numberReplacementsToDelete: workspace.numReplacementsBySource[sourceNum],
           }
 
           replacementChanges.push(replacementInstruction);
@@ -380,22 +458,23 @@ export default class Extract extends CompositeComponent {
         continue;
       }
 
-      let prevSource = component.state.previousSources[sourceNum];
+      let prevSourceName = workspace.sourceNames[sourceNum];
 
       // check if source has changed
-      if(prevSource=== undefined || source.componentName !== prevSource.componentName) {
+      if (prevSourceName === undefined || source.componentName !== prevSourceName) {
 
         let prevNumReplacements = 0;
-        if(prevSource !== undefined) {
-          prevNumReplacements = component.state.numReplacementsBySource[sourceNum];
+        if (prevSourceName !== undefined) {
+          prevNumReplacements = workspace.numReplacementsBySource[sourceNum];
         }
         let results = this.recreateReplacements({
           component,
-          sourceNum: sourceNum,
-          numReplacementsSoFar: numReplacementsSoFar,
-          prevNumReplacements: prevNumReplacements,
-          replacementChanges: replacementChanges,
+          sourceNum,
+          numReplacementsSoFar,
+          prevNumReplacements,
+          replacementChanges,
           components,
+          workspace,
         });
 
         numReplacementsSoFar += results.numReplacements;
@@ -414,87 +493,86 @@ export default class Extract extends CompositeComponent {
       // the number of components or their component types changed
       results = this.recreateReplacements({
         component,
-        sourceNum: sourceNum,
-        numReplacementsSoFar: numReplacementsSoFar,
-        prevNumReplacements: component.state.numReplacementsBySource[sourceNum],
+        sourceNum,
+        numReplacementsSoFar,
+        prevNumReplacements: workspace.numReplacementsBySource[sourceNum],
         replacementChanges: testReplacementChanges,
         components,
       });
 
-      let changeInstruction = testReplacementChanges[testReplacementChanges.length-1];
+      let changeInstruction = testReplacementChanges[testReplacementChanges.length - 1];
       let newSerializedReplacements = changeInstruction.serializedReplacements;
 
-      if(newSerializedReplacements.length !== component.state.numReplacementsBySource[sourceNum]) {
+      if (newSerializedReplacements.length !== workspace.numReplacementsBySource[sourceNum]) {
         redoReplacements = true;
-      }else {
-        for(let ind=0; ind < newSerializedReplacements.length; ind++) {
-          if(newSerializedReplacements[ind].componentType !== 
-            component.replacements[numReplacementsSoFar+ind].componentType) {
-            redoReplacements=true;
+      } else {
+        for (let ind = 0; ind < newSerializedReplacements.length; ind++) {
+          if (newSerializedReplacements[ind].componentType !==
+            component.replacements[numReplacementsSoFar + ind].componentType) {
+            redoReplacements = true;
             break;
           }
         }
       }
 
 
-      if(redoReplacements) {
+      if (redoReplacements) {
         replacementChanges.push(...testReplacementChanges);
-        numReplacementsSoFar += results.numReplacements;
 
+        numReplacementsSoFar += results.numReplacements;
         numReplacementsBySource[sourceNum] = results.numReplacements;
-      }else {
-        numReplacementsSoFar += component.state.numReplacementsBySource[sourceNum];
-        numReplacementsBySource[sourceNum] = component.state.numReplacementsBySource[sourceNum];
+      } else {
+        numReplacementsSoFar += workspace.numReplacementsBySource[sourceNum];
+        numReplacementsBySource[sourceNum] = workspace.numReplacementsBySource[sourceNum];
       }
 
     }
 
-    let replacementInstruction = {
-      changeType: "updateStateVariables",
-      component: component,
-      stateChanges: {numReplacementsBySource},
-      allowChangeToNonEssential: true,
-    }
 
-    // console.log(replacementInstruction);
+    workspace.numReplacementsBySource = numReplacementsBySource;
+    workspace.sourceNames = component.stateValues.sourceComponents.map(x => x.componentName)
 
-    replacementChanges.push(replacementInstruction);
+    // console.log("replacementChanges");
+    // console.log(replacementChanges);
+
 
     return replacementChanges;
 
   }
 
-  static recreateReplacements({component, sourceNum, numReplacementsSoFar, prevNumReplacements, replacementChanges, components}) {
-    if (prevNumReplacements > 0) {
-      // give instructions to move dependency to new source
-      let prevSource = component.state.previousSources[sourceNum];
-      let newSource = component.state.sourceComponents[sourceNum];
-      if (prevSource !== undefined) {
-        if(prevSource.componentName !== newSource.componentName) {
-          let replacementInstruction = {
-            changeType: "moveDependency",
-            dependencyDirection: "downstream",
-            oldComponentName: prevSource.componentName,
-            newComponentName: newSource.componentName,
-            dependencyType: "reference",
-            otherAttributes: { shadowed: true, prop: component.state.propChild.componentName}
-          };
-          replacementChanges.push(replacementInstruction);
-        }
-      }
-      else {
-        // since no previous source, need to create new dependencies
-        let replacementInstruction = {
-          changeType: "addDependency",
-          dependencyDirection: "downstream",
-          newComponentName: newSource.componentName,
-          dependencyType: "reference",
-          otherAttributes: { shadowed: true, prop: component.state.propChild.componentName}
-        };
-        replacementChanges.push(replacementInstruction);
-      }
-    }
-    let newSerializedChildren = this.createReplacementForSource({component, sourceNum, components});
+  static recreateReplacements({ component, sourceNum, numReplacementsSoFar, prevNumReplacements,
+    replacementChanges, workspace, components
+  }) {
+    // if (prevNumReplacements > 0) {
+    //   // give instructions to move dependency to new source
+    //   let prevSourceName = workspace.previousSources[sourceNum];
+    //   let newSource = component.stateValues.sourceComponents[sourceNum];
+    //   if (prevSourceName !== undefined) {
+    //     if (prevSourceName !== newSource.componentName) {
+    //       let replacementInstruction = {
+    //         changeType: "moveDependency",
+    //         dependencyDirection: "downstream",
+    //         oldComponentName: prevSourceName,
+    //         newComponentName: newSource.componentName,
+    //         dependencyType: "reference",
+    //         otherAttributes: { shadowed: true, prop: component.state.propChild.componentName }
+    //       };
+    //       replacementChanges.push(replacementInstruction);
+    //     }
+    //   }
+    //   else {
+    //     // since no previous source, need to create new dependencies
+    //     let replacementInstruction = {
+    //       changeType: "addDependency",
+    //       dependencyDirection: "downstream",
+    //       newComponentName: newSource.componentName,
+    //       dependencyType: "reference",
+    //       otherAttributes: { shadowed: true, prop: component.state.propChild.componentName }
+    //     };
+    //     replacementChanges.push(replacementInstruction);
+    //   }
+    // }
+    let newSerializedChildren = this.createReplacementForSource({ component, sourceNum, numReplacementsSoFar, components, workspace });
 
     let replacementInstruction = {
       changeType: "add",
@@ -505,7 +583,7 @@ export default class Extract extends CompositeComponent {
     };
     replacementChanges.push(replacementInstruction);
 
-    return {numReplacements: newSerializedChildren.length}
+    return { numReplacements: newSerializedChildren.length }
   }
 
 }

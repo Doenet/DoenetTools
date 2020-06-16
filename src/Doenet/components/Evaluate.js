@@ -3,14 +3,15 @@ import me from 'math-expressions';
 
 export default class Evaluate extends MathComponent {
   static componentType = "evaluate";
+  static rendererType = "math";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.numeric = {default: true};
+    properties.symbolic = { default: false };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.deleteAllLogic();
@@ -20,6 +21,7 @@ export default class Evaluate extends MathComponent {
       componentType: 'function',
       comparison: 'atLeast',
       number: 0,
+      requireConsecutive: true,
     });
     let atMostOneMath = childLogic.newLeaf({
       name: "atMostOneMath",
@@ -37,169 +39,104 @@ export default class Evaluate extends MathComponent {
     return childLogic;
   }
 
-  updateState(args ={}) {
-    super.updateState(args);
+  static returnStateVariableDefinitions() {
 
-    if(args.init) {
-      this.makePublicStateVariableArray({
-        variableName: "evaluatedResults",
-        componentType: this.state.numeric ? "number" : "math",
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "evaluatedResult",
-        arrayVariableName: "evaluatedResults",
-      });
-     
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    delete stateVariableDefinitions.codePre;
+    delete stateVariableDefinitions.expressionWithCodes;
+    delete stateVariableDefinitions.codesAdjacentToStrings;
+    delete stateVariableDefinitions.mathChildrenByArrayComponent;
+
+    stateVariableDefinitions.canBeModified = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { canBeModified: false } })
     }
 
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.evaluatedResults = true;
-      return;
-    }
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(trackChanges.getVariableChanges({
-      component: this, variable: "numeric"
-    })) {
-      this._state.evaluatedResults.componentType =  this.state.numeric ? "number" : "math";
-    }
-
-    if(childrenChanged) {
-
-      let atLeastZeroFunctions = this.childLogic.returnMatches("atLeastZeroFunctions");
-      if(atLeastZeroFunctions.length > 0) {
-        this.state.functionChildren = atLeastZeroFunctions.map(x => this.activeChildren[x]);
-        this.state.numFunctions = atLeastZeroFunctions.length;
-      }else {
-        delete this.state.functionChildren;
-        this.state.numFunctions = 0;
-        this.state.evaluatedResults = [];
-        if(!this._state.value.essential) {
-          this.state.value = me.fromAst('\uFF3F');  // long underscore
+    stateVariableDefinitions.evaluatedResults = {
+      isArray: true,
+      entryPrefixes: ["evaluatedResult"],
+      public: true,
+      componentType: "math",
+      returnDependencies: () => ({
+        symbolic: {
+          dependencyType: "stateVariable",
+          variableName: "symbolic",
+        },
+        functionChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroFunctions",
+          variableNames: ["f", "numericalf"]
+        },
+        mathChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneMath",
+          variableNames: ["value"]
         }
-        let rounded = this.state.value
-        .round_numbers_to_precision(this.state.displaydigits);
-        this.state.latex = rounded.toLatex();
-        this.state.text = rounded.toString();
+      }),
+      definition: function ({ dependencyValues, changes }) {
 
-        delete this.unresolvedState.value;
-        delete this.unresolvedState.latex;
-        delete this.unresolvedState.text;
-        delete this.unresolvedState.evaluatedResults;
-        return;
-      }
-
-      let atMostOneMath = this.childLogic.returnMatches("atMostOneMath");
-      if(atMostOneMath.length == 1) {
-        this.state.mathChild = this.activeChildren[atMostOneMath[0]];
-      }else {
-        delete this.state.mathChild;
-        this.state.evaluatedResults = [];
-        if(!this._state.value.essential) {
-          this.state.value = me.fromAst('\uFF3F');  // long underscore
+        if (dependencyValues.functionChildren.length == 0
+          || dependencyValues.mathChild.length == 0
+        ) {
+          return {
+            useEssentialOrDefaultValue: {
+              evaluatedResults: { variablesToCheck: ["evaluatedResults"] }
+            }
+          }
         }
-        let rounded = this.state.value
-        .round_numbers_to_precision(this.state.displaydigits);
-        this.state.latex = rounded.toLatex();
-        this.state.text = rounded.toString();
 
-        delete this.unresolvedState.value;
-        delete this.unresolvedState.latex;
-        delete this.unresolvedState.text;
-        delete this.unresolvedState.evaluatedResults;
-        return;
-      }
-    }
+        let evaluatedResults = [];
 
-    if(!this.state.functionChildren || !this.state.mathChild) {
-      if(
-        trackChanges.getVariableChanges({
-          component: this, variable: "value"
-        }) ||
-        trackChanges.getVariableChanges({
-          component: this, variable: "displaydigits"
-        })
-      ) {
-        let rounded = this.state.value
-        .round_numbers_to_precision(this.state.displaydigits);
-        this.state.latex = rounded.toLatex();
-        this.state.text = rounded.toString();
-      }
-      return;
-    }
-
-    if(this.state.mathChild.unresolvedState.value || 
-        this.state.functionChildren.some(x => Object.keys(x.unresolvedState).length >0)) {
-      this.unresolvedState.value = true;
-      this.unresolvedState.latex = true;
-      this.unresolvedState.text = true;
-      this.unresolvedState.evaluatedResults = true;
-      return;
-    }
-
-    if(trackChanges.getVariableChanges({component: this.state.mathChild, variable: "value"}) ||
-      this.state.functionChildren.some(x => trackChanges.checkIfVariableChanged(x))
-    ) {
-      delete this.unresolvedState.value;
-      delete this.unresolvedState.latex;
-      delete this.unresolvedState.text;
-      delete this.unresolvedState.evaluatedResults;
-
-      this.state.evaluatedResults = [];
-
-      if(this.state.numeric) {
-        let numericInput = this.state.mathChild.state.value.evaluate_to_constant();
-        for(let f of this.state.functionChildren) {
-          this.state.evaluatedResults.push(
-            me.fromAst(f.returnNumericF()(numericInput)))
+        if (dependencyValues.symbolic) {
+          let input = dependencyValues.mathChild[0].stateValues.value;
+          for (let fChild of dependencyValues.functionChildren) {
+            evaluatedResults.push(fChild.stateValues.f(input));
+          }
+        } else {
+          let numericInput = dependencyValues.mathChild[0].stateValues.value.evaluate_to_constant();
+          for (let fChild of dependencyValues.functionChildren) {
+            evaluatedResults.push(
+              me.fromAst(fChild.stateValues.numericalf(numericInput)))
+          }
         }
-      }else {
-        let input = this.state.mathChild.state.value;
-        for(let f of this.state.functionChildren) {
-          this.state.evaluatedResults.push(f.returnF()(input));
+
+        return {
+          newValues: { evaluatedResults }
         }
+
       }
-
-      if(this.state.numFunctions === 1) {
-        this.state.value = this.state.evaluatedResults[0];
-      }else {
-        this.state.value = me.fromAst(["tuple", ...this.state.evaluatedResults.map(x=>x.tree)]);
-      }
-
-
-      let rounded = this.state.value
-      .round_numbers_to_precision(this.state.displaydigits);
-      this.state.latex = rounded.toLatex();
-      this.state.text = rounded.toString();
-
-    }else if(trackChanges.getVariableChanges({
-      component: this, variable: "displaydigits"
-    })){
-      let rounded = this.state.value
-      .round_numbers_to_precision(this.state.displaydigits);
-      this.state.latex = rounded.toLatex();
-      this.state.text = rounded.toString();
     }
+
+    stateVariableDefinitions.evaluatedResult = {
+      isAlias: true,
+      targetVariableName: "evaluatedResult1"
+    };
+
+    stateVariableDefinitions.unnormalizedValue = {
+      public: true,
+      componentType: this.componentType,
+      returnDependencies: () => ({
+        evaluatedResults: {
+          dependencyType: "stateVariable",
+          variableName: "evaluatedResults"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        if (dependencyValues.evaluatedResults.length === 1) {
+          return { newValues: { unnormalizedValue: dependencyValues.evaluatedResults[0] } }
+        } else if (dependencyValues.evaluatedResults.length > 1) {
+          return { newValues: { unnormalizedValue: me.fromAst(["tuple", ...dependencyValues.evaluatedResults.map(x => x.tree)]) } }
+        } else {
+          return { newValues: { unnormalizedValue: me.fromAst('\uFF3F') } }
+        }
+
+      }
+    }
+
+    return stateVariableDefinitions;
+
   }
-
-  initializeRenderer({}){
-    if(this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-    
-    this.renderer = new this.availableRenderers.math({
-      key: this.componentName,
-      mathLatex: this.state.latex,
-      renderMode: this.state.rendermode,
-    });
-  }
-
-  updateRenderer() {
-    this.renderer.updateMathLatex(this.state.latex);
-  }
-
 
 }

@@ -65,6 +65,7 @@ export default class Mathinput extends Input {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneMath",
           variableNames: ["value", "valueForDisplay"],
+          requireChildLogicInitiallySatisfied: true,
         },
         prefill: {
           dependencyType: "stateVariable",
@@ -171,8 +172,8 @@ export default class Mathinput extends Input {
   updateMathExpression({ mathExpression }) {
     if (!this.stateValues.disabled) {
       this.requestUpdate({
-        updateType: "updateValue",
         updateInstructions: [{
+          updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "value",
           value: mathExpression,

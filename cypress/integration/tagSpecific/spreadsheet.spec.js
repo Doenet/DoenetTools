@@ -20,7 +20,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('empty spreadsheet', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <spreadsheet/>
   <math>1</math>
   `}, "*");
@@ -72,7 +72,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('spreadsheet with cell children', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <extract prop="text"><ref prop="cellC1">_spreadsheet1</ref></extract>
   <extract prop="text"><ref prop="cellC3">_spreadsheet1</ref></extract>
@@ -171,7 +171,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('ref individual cells into new spreadsheet', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <extract prop="text"><ref prop="cellA3">_spreadsheet2</ref></extract>
   <extract prop="text"><ref prop="cellD3">C1</ref></extract>
@@ -330,7 +330,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('ref spreadsheet cells into new spreadsheet', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <extract prop="text"><ref prop="cellA3">_spreadsheet2</ref></extract>
   <extract prop="text"><ref prop="cellD3">C1</ref></extract>
@@ -492,7 +492,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('build spreadsheet from cells and rows', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet>
   <row><cell>A1</cell><cell>B1</cell><cell colnum="D">D1</cell></row>
@@ -555,7 +555,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('build spreadsheet from cells and columns', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet>
   <column><cell>A1</cell><cell>A2</cell><cell rownum="D">A4</cell></column>
@@ -618,7 +618,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('build spreadsheet with cellblocks', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellC3">_spreadsheet1</ref></extract>
   <spreadsheet>
   <cellblock rownum="2" colnum="3">
@@ -698,7 +698,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('ref spreadsheet with cellblocks', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet>
   <row><cell>A1</cell><cell>B1</cell><cell>C1</cell></row>
@@ -789,7 +789,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('ref spreadsheet with cellblocks - no sugar', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet>
   <row><cell>A1</cell><cell>B1</cell><cell>C1</cell></row>
@@ -906,7 +906,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('ref spreadsheet with rows and columns', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet>
   <row><cell>A1</cell><cell>B1</cell><cell>C1</cell></row>
@@ -1010,7 +1010,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('ref spreadsheet with rows and columns - no sugar', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet>
   <row><cell>A1</cell><cell>B1</cell><cell>C1</cell></row>
@@ -1130,7 +1130,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('ref all spreadsheet cells shifted', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet numrows="3" numcolumns="3">
   <cell>A1</cell><cell>B1</cell><cell>C1</cell>
@@ -1203,7 +1203,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('ref spreadsheet cells ignores cell col/row num', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellE1">_spreadsheet1</ref></extract>
   <spreadsheet>
   <cell colnum="5">alpha</cell>
@@ -1291,7 +1291,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('ref points from spreadsheet', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet>
   <cell>(1,2)</cell>
@@ -1511,7 +1511,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('internal references within spreadsheet', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet>
     <ref prop="cellC1">_spreadsheet1</ref>
@@ -1633,7 +1633,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('internal references within spreadsheet 2', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet>
     <ref rownum="2" prop="cellC3">_spreadsheet1</ref>
@@ -1831,7 +1831,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('internal references to rows', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet>
     <ref prop="rowC">_spreadsheet1</ref>
@@ -1918,7 +1918,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('internal references to columns', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet>
     <ref prop="columnC">_spreadsheet1</ref>
@@ -2006,7 +2006,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('internal references to cell ranges', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellF1">_spreadsheet1</ref></extract>
   <spreadsheet>
     <ref prop="rangeE1F2">_spreadsheet1</ref>
@@ -2173,7 +2173,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('mutual references between two spreadsheets', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet>
     <ref rownum="2" colnum="1" prop="cellC3">_spreadsheet2</ref>
@@ -2383,7 +2383,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('references to cells outside spreadsheet area', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet>
     <ref prop="cellQ1">_spreadsheet1</ref>
@@ -2489,7 +2489,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('internal references to spreadsheet size', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet>
     <cell><ref prop="numrows">_spreadsheet1</ref></cell>
@@ -2585,7 +2585,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('spreadsheet size based on internal references', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <extract prop="text"><ref prop="cellA1">_spreadsheet1</ref></extract>
   <spreadsheet>
     <numrows><ref prop="cellA1">_spreadsheet1</ref></numrows>
@@ -2681,7 +2681,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('references to cells, adapter to math, number, or text', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
 <spreadsheet>
   <cell>1</cell>
 </spreadsheet>
@@ -2825,7 +2825,7 @@ describe('Spreadsheet Tag Tests', function () {
   it('references to cells within other cells math', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
   <spreadsheet>
   <cell>1</cell><cell><math simplify><ref fixed>x</ref>+<ref prop="cellA2">_spreadsheet1</ref></math></cell>
   <cell rownum="2" colnum="1">3</cell>

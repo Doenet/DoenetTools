@@ -1,5 +1,5 @@
 import InlineComponent from './abstract/InlineComponent';
-import { breakStringsAndOthersIntoComponentsByStringCommas } from './commonsugar/breakstrings';
+import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { createUniqueName } from '../utils/naming';
 import { deepCompare } from '../utils/deepFunctions';
 
@@ -43,7 +43,7 @@ export default class Answer extends InlineComponent {
       // answer where only child is a string (other than activeChildren from properties)
       // create two activeChildren for the answer:
       // <[defaultType]input/>
-      // <award><if><ref prop="value">[theinput]</ref>=<[type]>[originalString]</[type]></if></award>
+      // <award><when><ref prop="value">[theinput]</ref>=<[type]>[originalString]</[type]></when></award>
 
       let inputType, typeUsed;
       if (dependencyValues.type === "math") {
@@ -70,12 +70,18 @@ export default class Answer extends InlineComponent {
       }];
 
       if (dependencyValues.splitIntoOptions) {
-        let breakFunction = breakStringsAndOthersIntoComponentsByStringCommas(x => ({
+
+        let childrenToComponentFunction = x => ({
           componentType: typeUsed,
           children: x
-        }));
-        let breakResults = breakFunction({ activeChildrenMatched: dependencyValues.stringChildren })
+        });
+        let breakFunction = returnBreakStringsSugarFunction({
+          childrenToComponentFunction,
+          dependencyNameWithChildren: "stringChildren"
+        });
 
+        let breakResults = breakFunction({ dependencyValues })
+        
         if (breakResults.success) {
           childrenForEquals = breakResults.newChildren;
           toDelete = breakResults.toDelete;
@@ -84,7 +90,7 @@ export default class Answer extends InlineComponent {
 
       let componentName = createUniqueName(inputType, idRng)
 
-      let ifChildren = [
+      let whenChildren = [
         {
           componentType: 'ref', children: [
             { componentType: 'reftarget', state: { refTargetName: componentName } },
@@ -96,7 +102,7 @@ export default class Answer extends InlineComponent {
       ];
 
       for (let child of childrenForEquals.slice(1)) {
-        ifChildren.push(...[
+        whenChildren.push(...[
           { componentType: 'string', state: { value: ' or ' } },
           {
             componentType: 'ref', children: [
@@ -126,7 +132,7 @@ export default class Answer extends InlineComponent {
           {
             componentType: 'award',
             children: [
-              { componentType: 'if', children: ifChildren }
+              { componentType: 'when', children: whenChildren }
             ]
           }
         ],
@@ -158,7 +164,7 @@ export default class Answer extends InlineComponent {
           variableNames: ["value"]
         }
       }),
-      affectedBySugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
+      logicToWaitOnSugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
       replacementFunction: replaceFromOneString,
     });
 
@@ -167,7 +173,7 @@ export default class Answer extends InlineComponent {
       // answer where only child is a math (other than activeChildren from properties)
       // create two activeChildren for the answer:
       // <mathinput/>
-      // <award><if><ref prop="value">[themathinput]</ref>=[originalMath]</if></award>
+      // <award><when><ref prop="value">[themathinput]</ref>=[originalMath]</when></award>
 
       let componentName = createUniqueName("mathinput", idRng)
 
@@ -189,7 +195,7 @@ export default class Answer extends InlineComponent {
             componentType: 'award',
             children: [
               {
-                componentType: 'if', children: [
+                componentType: 'when', children: [
                   {
                     componentType: 'ref', children: [
                       { componentType: 'reftarget', state: { refTargetName: componentName } },
@@ -220,7 +226,7 @@ export default class Answer extends InlineComponent {
           variableName: "size"
         }
       }),
-      affectedBySugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
+      logicToWaitOnSugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
       replacementFunction: replaceFromOneMath,
     });
 
@@ -229,7 +235,7 @@ export default class Answer extends InlineComponent {
       // answer where only child is a text (other than activeChildren from properties)
       // create two activeChildren for the answer:
       // <textinput/>
-      // <award><if><ref prop="value">[thetextinput]</ref>=[originaltext]</if></award>
+      // <award><when><ref prop="value">[thetextinput]</ref>=[originaltext]</when></award>
 
       let componentName = createUniqueName("textinput", idRng)
 
@@ -251,7 +257,7 @@ export default class Answer extends InlineComponent {
             componentType: 'award',
             children: [
               {
-                componentType: 'if', children: [
+                componentType: 'when', children: [
                   {
                     componentType: 'ref', children: [
                       { componentType: 'reftarget', state: { refTargetName: componentName } },
@@ -282,7 +288,7 @@ export default class Answer extends InlineComponent {
           variableName: "size"
         }
       }),
-      affectedBySugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
+      logicToWaitOnSugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
 
       replacementFunction: replaceFromOneText,
     });
@@ -294,7 +300,7 @@ export default class Answer extends InlineComponent {
       // and for each choice
       // create an award of the form
       // <award><credit>[creditfromchoice]</credit>
-      //   <if><ref prop="selectedindex">[thechoiceinput]</ref>=[indexofchoice]</if>
+      //   <when><ref prop="selectedindex">[thechoiceinput]</ref>=[indexofchoice]</when>
       // </award>
       // also determine inline based on inline property of answer
 
@@ -326,16 +332,16 @@ export default class Answer extends InlineComponent {
       comparison: 'atLeast',
       number: 1,
       isSugar: true,
-      affectedBySugar: ["anyInlineComponents"],
+      logicToWaitOnSugar: ["anyInlineComponents"],
       replacementFunction: replaceFromJustChoices,
     });
 
 
     let replaceFromIncompleteAwards = function ({ activeChildrenMatched, dependencyValues, idRng }) {
       // answer where only activeChildren (other than from properties) are incomplete awards
-      // (meaning awards with a <string> child rather than an <if> child)
+      // (meaning awards with a <string> child rather than an <when> child)
       // create an input and replace the <string> child of each award with
-      // <if><ref prop="value">[theinput]</ref>=<defaultType>[originalString]</type></if>
+      // <when><ref prop="value">[theinput]</ref>=<defaultType>[originalString]</type></when>
 
 
       // if all award have that aren't strings have same incomplete type,
@@ -414,11 +420,24 @@ export default class Answer extends InlineComponent {
           }];
 
           if (award.stateValues.splitIntoOptions) {
-            let breakFunction = breakStringsAndOthersIntoComponentsByStringCommas(x => ({
+            let childrenToComponentFunction = x => ({
               componentType: typeForStrings,
               children: x
-            }));
-            let breakResults = breakFunction({ activeChildrenMatched: [award.stateValues.childForIncomplete] })
+            });
+            let breakFunction = returnBreakStringsSugarFunction({
+              childrenToComponentFunction,
+              dependencyNameWithChildren: "childForIncomplete"
+            });
+    
+
+            // since break function is expecting a dependencyValue with childForIncomplete
+            // we create a dependencyValues object with that structure
+            let breakResults = breakFunction({ 
+              dependencyValues: {
+                childForIncomplete: [dependencyValues.incompleteAwards[0].stateValues.childForIncomplete]
+              } 
+            })
+            
 
             if (breakResults.success) {
               childrenForEquals = breakResults.newChildren;
@@ -428,7 +447,7 @@ export default class Answer extends InlineComponent {
           }
         }
 
-        let ifChildren = [
+        let whenChildren = [
           {
             componentType: 'ref', children: [
               { componentType: 'reftarget', state: { refTargetName: componentName } },
@@ -440,7 +459,7 @@ export default class Answer extends InlineComponent {
         ];
 
         for (let child of childrenForEquals.slice(1)) {
-          ifChildren.push(...[
+          whenChildren.push(...[
             { componentType: 'string', state: { value: ' or ' } },
             {
               componentType: 'ref', children: [
@@ -453,8 +472,8 @@ export default class Answer extends InlineComponent {
           ])
         }
 
-        let newIf = { componentType: 'if', children: ifChildren };
-        newAwardChildren.push(newIf);
+        let newWhen = { componentType: 'when', children: whenChildren };
+        newAwardChildren.push(newWhen);
 
         childChanges[award.componentName] = {
           activeChildrenMatched: [award.stateValues.childForIncomplete],
@@ -497,7 +516,7 @@ export default class Answer extends InlineComponent {
           variableNames: ["incompleteType", "childForIncomplete", "splitIntoOptions"]
         }
       }),
-      affectedBySugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
+      logicToWaitOnSugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
       replacementFunction: replaceFromIncompleteAwards,
       condition: awardIsIncomplete,
     });
@@ -638,7 +657,7 @@ export default class Answer extends InlineComponent {
 
         let arrayKey;
         if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
+          arrayKey = arrayKeys[0];
         }
 
         let numberValuesSoFar = 0;
@@ -693,11 +712,14 @@ export default class Answer extends InlineComponent {
       defaultEntryValue: '\uFF3F',
       returnDependencies: () => ({
         inputDescendants: {
-          dependencyType: "stateVariable",
-          variableName: "inputDescendants"
+          dependencyType: "descendantStateVariables",
+          componentTypes: ["_input"],
+          variableNames: ["componentType"],
         },
       }),
-      definition: function ({ dependencyValues, arrayKeys, freshByKey }) {
+      definition: function ({ dependencyValues, arrayKeys, freshnessInfo }) {
+
+        let freshByKey = freshnessInfo.submittedResponses.freshByKey;
 
         let componentType = dependencyValues.inputDescendants.map(x => x.stateValues.componentType);
 
@@ -705,7 +727,7 @@ export default class Answer extends InlineComponent {
 
         let arrayKey;
         if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
+          arrayKey = arrayKeys[0];
         }
 
         for (let ind in componentType) {
@@ -715,22 +737,14 @@ export default class Answer extends InlineComponent {
           // this function doesn't return anything once the values are set for the first time
           // (The values will just be changed using the inverse function)
           if (!freshByKey[ind]) {
-            if (arrayKey === ind || arrayKey === undefined) {
-              essentialSubmittedResponses[ind] = {
-                variablesToCheck: [
-                  { variableName: "submittedResponses", arrayIndex: ind }
-                ],
-              }
+            freshByKey[ind] = true;
+            essentialSubmittedResponses[ind] = {
+              variablesToCheck: [
+                { variableName: "submittedResponses", arrayIndex: ind }
+              ],
             }
           }
 
-        }
-
-        // if this is second pass through (i.e., freshByKey was set)
-        // then don't change anything
-        // (For array state variables, don't need to return noChanges)
-        if (Object.keys(essentialSubmittedResponses).length === 0) {
-          return {}
         }
 
         if (arrayKey !== undefined) {
@@ -993,6 +1007,13 @@ export default class Answer extends InlineComponent {
       }
     }
 
+    // placeholder until we determine how to send flags to renderer
+    stateVariableDefinitions.showCorrectness = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { showCorrectness: true } })
+    }
+
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         blockOrInlineChildren: {
@@ -1020,47 +1041,6 @@ export default class Answer extends InlineComponent {
     return stateVariableDefinitions;
   }
 
-  updateState(args = {}) {
-    if (args.init === true) {
-
-      this.makePublicStateVariableArray({
-        variableName: "feedbacks",
-        componentType: "feedback",
-        returnSerializedComponents: returnSerializedComponentsFeedback,
-        emptyForOutOfBounds: true,
-      });
-
-      if (this._state.creditAchieved.essential !== true) {
-        this.state.creditAchieved = 0;
-      }
-      this._state.creditAchieved.essential = true;
-
-    }
-
-
-    if (childrenChanged) {
-      let awardInds = this.childLogic.returnMatches("atLeastOneCompleteAward");
-      this.state.awardChildren = awardInds.map(x => this.activeChildren[x]);
-    }
-
-
-
-    this.additionalComponentsToUpdate = [];
-    for (let input of this.descendantsFound._input) {
-      if (input.state.justSubmitted
-        != this.state.justSubmitted) {
-        this.additionalComponentsToUpdate.push(input.componentName);
-      }
-    }
-    if (this.additionalComponentsToUpdate.length === 0) {
-      delete this.additionalComponentsToUpdate;
-    }
-
-
-  }
-
-
-
   actions = {
     submitAnswer: this.submitAnswer.bind(
       new Proxy(this, this.readOnlyProxyHandler)
@@ -1074,10 +1054,12 @@ export default class Answer extends InlineComponent {
 
     // request to update credit
     let instructions = [{
+      updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "creditAchieved",
       value: creditAchieved,
     }, {
+      updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "responseHasBeenSubmitted",
       value: true
@@ -1096,6 +1078,7 @@ export default class Answer extends InlineComponent {
 
     for (let input of this.stateValues.inputDescendants) {
       instructions.push({
+        updateType: "updateValue",
         componentName: input.componentName,
         stateVariable: "creditAchieved",
         value: creditAchievedForInput,
@@ -1103,6 +1086,7 @@ export default class Answer extends InlineComponent {
 
       if (input.componentType === "choiceinput") {
         instructions.push({
+          updateType: "updateValue",
           componentName: input.componentName,
           stateVariable: "submittedIndices",
           value: input.stateValues.selectedIndices
@@ -1110,6 +1094,7 @@ export default class Answer extends InlineComponent {
         submittedResponses.push(...input.stateValues.values);
       } else {
         instructions.push({
+          updateType: "updateValue",
           componentName: input.componentName,
           stateVariable: "submittedValue",
           value: input.stateValues.value,
@@ -1120,12 +1105,14 @@ export default class Answer extends InlineComponent {
 
     // add submitted responses to instruction for answer
     instructions.push({
+      updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "submittedResponses",
       value: submittedResponses
     })
 
     instructions.push({
+      updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "creditAchievedDependenciesAtSubmit",
       value: this.stateValues.creditAchievedDependencies
@@ -1134,6 +1121,7 @@ export default class Answer extends InlineComponent {
     for (let child of this.stateValues.awardChildren) {
       let awarded = child.componentName === awardUsed;
       instructions.push({
+        updateType: "updateValue",
         componentName: child.componentName,
         stateVariable: "awarded",
         value: awarded
@@ -1141,7 +1129,6 @@ export default class Answer extends InlineComponent {
     }
 
     this.requestUpdate({
-      updateType: "updateValue",
       updateInstructions: instructions
     })
 
@@ -1162,88 +1149,4 @@ export default class Answer extends InlineComponent {
 
   }
 
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    const actions = {
-      submitAnswer: this.submitAnswer,
-    }
-
-    this.renderer = new this.availableRenderers.answer({
-      actions: actions,
-      key: this.componentName,
-      includeCheckWork: !this.stateValues.delegateCheckWork,
-      creditAchieved: this.stateValues.creditAchieved,
-      valuesAsSubmitted: this.stateValues.justSubmitted,
-      showCorrectness: this.flags.showCorrectness,
-    });
-  }
-
-  updateRenderer() {
-    this.renderer.updateAnswerRenderer({
-      creditAchieved: this.stateValues.creditAchieved,
-      valuesAsSubmitted: this.stateValues.justSubmitted,
-    });
-
-  }
-
-}
-
-
-
-// return the JSON representing the portion of array determined by the given propChildren
-function returnSerializedComponentsFeedback({
-  stateVariable, variableName,
-  propChildren, propName,
-  componentName,
-}) {
-
-  function returnSerializedFeedback(index) {
-    return {
-      componentType: "ref",
-      children: [
-        {
-          componentType: "prop",
-          state: { variableName: "feedback" }
-        },
-        {
-          componentType: "reftarget",
-          state: { refTargetName: stateVariable.value[index] }
-        }
-      ],
-      downstreamDependencies: {
-        [componentName]: [{
-          dependencyType: "referenceShadow",
-          prop: propName,
-        }]
-      },
-    }
-  }
-
-  if (propChildren === undefined || propChildren.length === 0) {
-    let numComponents = stateVariable.value.length;
-    let newComponents = [];
-    for (let index = 0; index < numComponents; index++) {
-      newComponents.push(returnSerializedFeedback(index));
-    }
-    return newComponents;
-  } else {
-    let numComponents = stateVariable.value.length;
-    let index = propChildren[0].state.number;
-
-    // already know index is a non-negative integer
-    // else would have failed validateParameters
-
-    let outOfBounds = index >= numComponents;
-    if (outOfBounds) {
-      return [];
-    }
-    let newComponents = [returnSerializedFeedback(index)];
-
-    return newComponents;
-
-  }
 }

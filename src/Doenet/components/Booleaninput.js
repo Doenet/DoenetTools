@@ -64,6 +64,7 @@ export default class Booleaninput extends Input {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneBoolean",
           variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
         },
         prefill: {
           dependencyType: "stateVariable",
@@ -159,8 +160,8 @@ export default class Booleaninput extends Input {
 
   updateBoolean({ boolean }) {
     this.requestUpdate({
-      updateType: "updateValue",
       updateInstructions: [{
+        updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "value",
         value: boolean,
