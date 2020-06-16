@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import PlacementContext from "./PlacementContext";
+import PlacementContext from './PlacementContext';
+import SplitPanelContext from './SplitPanelContext';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -12,18 +13,21 @@ const MainContent = styled.div`
   overflow:auto;
   background-color:white;
   height:  calc(100vh - ${props => props.height});
-
+  flex-direction: row;
+  display: flex;
 `;
 
 export default class ToolLayoutPanel extends Component {
   static contextType = PlacementContext;
 
   render() {
-    let mainHeight = this.context.panelHeadersControlVisible.sliderVisible ? (this.context.panelHeadersControlVisible.headerSectionCount+1)*50 +'px' : '50px' ;
+    let mainHeight = this.context.panelHeadersControlVisible.sliderVisible ? (this.context.panelHeadersControlVisible.headerSectionCount + 1) * 50 + 'px' : '50px';
 
     let panelHeader = null;
     if (this.props.panelHeaderControls) {
       panelHeader = [...this.props.panelHeaderControls];
+      // console.log(panelHeader);
+      // console.log(this.props.panelHeaderControls);
     }
 
     //Context collapse and open panels 
@@ -31,20 +35,15 @@ export default class ToolLayoutPanel extends Component {
       return (
         <>
           {this.context.leftCloseBtn && (
-            <button onClick={this.context.leftPanelHideable} className="leftCloseButton">
+            <button onClick={this.context.leftPanelHideable} className="leftCloseButton custom">
               <FontAwesomeIcon
-              style={{
-                // position: "absolute",
-                // right: "0px",
-                // color: "#e3d2d2",
-                alignSelf: "center",
-                fontSize:'16px'
-              }}
-              icon={faChevronLeft}
-            />
+                style={{
+                  alignSelf: "center",
+                  fontSize: '16px'
+                }}
+                icon={faChevronLeft}
+              />
             </button>
-            
-          
           )}
         </>
       );
@@ -53,17 +52,14 @@ export default class ToolLayoutPanel extends Component {
       return (
         <>
           {this.context.rightCloseBtn && (
-            <button   onClick={this.context.rightPanelHideable} className="rightCloseButton" >
+            <button onClick={this.context.rightPanelHideable} className="rightCloseButton custom" >
               <FontAwesomeIcon
-              style={{
-                // position: "absolute",
-                // color: "#e3d2d2",
-                alignSelf: "center",
-                fontSize:'16px'
-              }}
-              icon={faChevronRight}
-             
-            />
+                style={{
+                  alignSelf: "center",
+                  fontSize: '16px'
+                }}
+                icon={faChevronRight}
+              />
             </button>
           )}
         </>
@@ -72,39 +68,29 @@ export default class ToolLayoutPanel extends Component {
     const middleOpenLeftRightButton = () => {
       return (
         <>
-
           {(this.context.leftOpenBtn) && !this.context.guestUser && (
-
-            <button onClick={this.context.leftPanelVisible} className="middleLeftButton" 
+            <button onClick={this.context.leftPanelVisible} className="middleLeftButton custom"
             >
               <FontAwesomeIcon
-              icon={faChevronRight}
-              style={{
-                // position: "absolute",
-                // color: "#e3d2d2",
-                display: "block",
-                alignSelf: "center",
-                fontSize:'16px'
-              }}
-              
-            />
-              </button>
+                icon={faChevronRight}
+                style={{
+                  display: "block",
+                  alignSelf: "center",
+                  fontSize: '16px'
+                }}
+              />
+            </button>
           )}
           {this.context.rightOpenBtn && (
-            <button  onClick={this.context.rightPanelVisible} className="middleRightButton" >
+            <button onClick={this.context.rightPanelVisible} className="middleRightButton custom" >
               <FontAwesomeIcon
-              icon={faChevronLeft}
-              style={{
-                // position: "absolute",
-                // color: "#e3d2d2",
-                // right: "1px",
-                alignSelf: "center",
-                fontSize:'16px'
-
-              }}
-             
-            />
-              </button>
+                icon={faChevronLeft}
+                style={{
+                  alignSelf: "center",
+                  fontSize: '16px'
+                }}
+              />
+            </button>
           )}
         </>
       );
@@ -113,19 +99,21 @@ export default class ToolLayoutPanel extends Component {
     return (
       <>
         {!this.context.panelHeadersControlVisible.hideMenu ? <div className="panels-header-content">
-         
           {!this.context.panelHeadersControlVisible.hideCollapse ? this.context.position === 'left' ? leftPanelCloseButton() :
             this.context.position === 'middle' ? middleOpenLeftRightButton() :
               this.context.position === 'right' ? rightPanelCloseButton() : '' : ''}
-              <div className="panels-header-controls">
-               {panelHeader}
-               {/* panelHeaderWidth: {panelHeaderWidth} */}
-               </div>
+          <div className="panels-header-controls">
+            {/* {this.props.panelHeaderControls && this.props.panelHeaderControls.map((p,i)=> 
+              (<div className="xyz" key={i}>{p}</div>)
+            )} */}
+            {panelHeader}
+            {/* <div>{this.props.panelHeaderControls && this.props.panelHeaderControls[0]}</div> */}
+          </div>
         </div> : ''}
-       
 
         <MainContent height={mainHeight} isResizing={this.context.isResizing}>
-          {this.props.children}
+          <SplitPanelContext.Provider value={{ splitPanel: this.props.splitPanel, name: "channel" }}>{this.props.children}</SplitPanelContext.Provider>
+          {/* {this.props.children} */}
           {this.context.panelHeadersControlVisible.showFooter && <div className='tool-footer'></div>}
         </MainContent>
 
