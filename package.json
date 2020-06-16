@@ -43,7 +43,6 @@
     "test:all": "cypress run -b 'chrome'",
     "generate-docs:components": "babel-node generate-components-json.js",
     "docs": "babel-node test2.js",
-    "print": "sh -c 'echo \"hi\n\nthree\"'",
     "export": "cd doenet_docker && docker-compose up -d mysql && docker exec --privileged -w /var/lib/mysql doenet_docker_mysql_1 mysqldump -u root -phelloworld doenet_local > ../doenet_local.sql",
     "import": "docker exec -i doenet_docker_mysql_1 sh -c 'mysql -u root -phelloworld doenet_local' < ./doenet_local.sql",
     "deploy": "cd doenet_docker_deploy && docker-compose up"
