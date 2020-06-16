@@ -9,7 +9,7 @@ import styled from "styled-components";
 
 // import { animated, useSpring } from 'react-spring';
 import Menu from './menu.js'
-import MenuDropDown from './MenuDropDown.js';
+import MenuDropDown from '../imports/MenuDropDown.js';
 // import IndexedDB from '../services/IndexedDB';
 // import axios from 'axios';
 // import ConstrainToAngles from '../Doenet/components/ConstrainToAngles';

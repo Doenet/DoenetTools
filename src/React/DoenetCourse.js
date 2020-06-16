@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import Menu from './menu.js'
-import MenuDropDown from './MenuDropDown.js'
+import MenuDropDown from '../imports/MenuDropDown.js'
 import SelectionSet from "./Selector/SelectionSet";
 import DoenetAssignmentTree from "./DoenetAssignmentTree"
 
@@ -3396,7 +3396,7 @@ class DoenetCourse extends Component {
                     showThisRole={this.selectedCourseId}
                     itemsToShow={this.coursesToChoose}
                     offsetPos={-20}
-                    menuWidth={"200px"}
+                    // menuWidth={"200px"}
                     placeholder={"Select Course"}
                   />
                   : null)
@@ -3412,6 +3412,7 @@ class DoenetCourse extends Component {
 
                 </>
               </Router>
+              <div style={{display:'block', width:'100%'}}>
               <SelectionSet
                 key={"SelectSet1" + (this.updateNumber++)}
                 // CommonCallBack={(e)=>{console.log(e)}}
@@ -3420,6 +3421,8 @@ class DoenetCourse extends Component {
                 forceSelected={this.activeSection}
                 gradeOut={[this.listGrayOut]}
               />
+              </div>
+             
               {/* {this.activeSection==="assignments"?this.assignmentTree:null} */}
               {/* <SelectionSet 
             key={"SelectSet1"+(this.updateNumber++)}
