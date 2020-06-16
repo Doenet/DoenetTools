@@ -4,12 +4,12 @@ import { useCookies } from 'react-cookie';
 
 export default function DoenetSignIn(props) {
   let [email, setEmail] = useState("");
+  let [nineCode, setNineCode] = useState("");
   let [stayLoggedIn, setStayLoggedIn] = useState(false);
-  let [submittedEmail, setSubmittedEmail] = useState(false);
+  let [submittedEmail, setSubmittedEmail] = useState(true);
+  let [signedIn, setSignedIn] = useState(false);
   const [cookiePassword,setCookiePassword] = useCookies('cookiePassword');
   const [cookieEmail,setCookieEmail] = useCookies('cookieEmail');
-  let url_string = window.location.href;
-  var url = new URL(url_string);
 
 
   if (cookiePassword.cookiePassword && cookieEmail.cookieEmail){
@@ -17,13 +17,18 @@ export default function DoenetSignIn(props) {
   }
 
   let validEmail = false;
-
-
-
   if ((/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))){
     validEmail = true;
   }
 
+  let validCode = false;
+  if ((/^\d{9}$/.test(nineCode))){
+    validCode = true;
+  }
+
+  if (signedIn){
+    location.href = "/profile";
+  }
 
 
   if (submittedEmail){
@@ -39,9 +44,9 @@ export default function DoenetSignIn(props) {
           margin: "20",
         }}>
       <h2 style={{textAlign: "center"}}>Email Sent!</h2>
-      <div><p>Check your email for a short password to complete sign in.</p></div>
-      <p><label>Email Address: <input type="text" value={shortPassword} onChange={(e)=>{setShortPassword(e.target.value)}}/></label></p>
-
+      <div><p>Check your email for a code to complete sign in.</p></div>
+      <p><label>Code (9 digit code): <input type="text" value={nineCode} onChange={(e)=>{setNineCode(e.target.value)}}/></label></p>
+      <button disabled={!validCode} style={{  }} onClick={()=>setSignedIn(true)}>Sign In</button>
       </div>
       </>
     )
