@@ -103,11 +103,10 @@ export default class ToolLayoutPanel extends Component {
             this.context.position === 'middle' ? middleOpenLeftRightButton() :
               this.context.position === 'right' ? rightPanelCloseButton() : '' : ''}
           <div className="panels-header-controls">
-            {/* {this.props.panelHeaderControls && this.props.panelHeaderControls.map((p,i)=> 
+            {this.props.panelHeaderControls && this.props.panelHeaderControls.map((p,i)=> 
               (<div className="xyz" key={i}>{p}</div>)
-            )} */}
-            {panelHeader}
-            {/* <div>{this.props.panelHeaderControls && this.props.panelHeaderControls[0]}</div> */}
+            )}
+            {/* {panelHeader} */}
           </div>
         </div> : ''}
 

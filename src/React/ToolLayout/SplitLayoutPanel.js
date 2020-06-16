@@ -35,8 +35,6 @@ export default function SplitLayoutPanel(props){
         //   let panelHeader = null;
 
         // console.log('*********splitcontext*************', splitcontext);
-
-
         return (
             showPanel ? <SplitPanel width={splitcontext.splitPanel ? props.width: 100}>
 
