@@ -6,7 +6,7 @@ export default function DoenetSignIn(props) {
   let [email, setEmail] = useState("");
   let [nineCode, setNineCode] = useState("");
   let [stayLoggedIn, setStayLoggedIn] = useState(false);
-  let [submittedEmail, setSubmittedEmail] = useState(true);
+  let [submittedEmail, setSubmittedEmail] = useState(false);
   let [signedIn, setSignedIn] = useState(false);
   const [cookiePassword,setCookiePassword] = useCookies('cookiePassword');
   const [cookieEmail,setCookieEmail] = useCookies('cookieEmail');
@@ -33,6 +33,7 @@ export default function DoenetSignIn(props) {
 
   if (submittedEmail){
       setCookieEmail('cookieEmail', {email},{path:"/"})
+      
       return (
       <>
       <div style={
