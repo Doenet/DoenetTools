@@ -85,7 +85,7 @@ button{
   cursor: pointer;
 
 }
-.success{
+.custom{
   color: rgb(67, 170, 144);
   border-radius: 20px 0px 0px 20px;
  height:40px;
