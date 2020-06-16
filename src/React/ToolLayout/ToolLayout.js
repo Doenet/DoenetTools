@@ -25,6 +25,17 @@ const widthToDevice = () => {
 };
 
 export default function ToolLayout(props) {
+  useEffect(()=>{
+    //Fires each time you change the tool
+    if (location.hostname === "localhost"){
+      console.log("LOCAL HOST NO SIGN IN!!!!!!!!")
+    }
+    return ()=>{
+      console.log("SIGN OUT!");
+      
+    }
+  },[]);
+
   var w = window.innerWidth;
   let leftW;
   let rightW;
