@@ -32,6 +32,7 @@ class DoenetBranchBrowser extends Component {
       selectedItems: props.selectedItems,
       selectedItemsType: props.selectedItemsType,
       currentDraggedOverFolder: null,
+      currentDraggedOverBreadcrumb: null,
       sortBy: "title",
       sortOrderAsc: "ASC",
     }
@@ -64,6 +65,7 @@ class DoenetBranchBrowser extends Component {
     this.onDragEndCb = this.onDragEndCb.bind(this);
     this.onFolderDropCb = this.onFolderDropCb.bind(this);
     this.onFolderDropEnterCb = this.onFolderDropEnterCb.bind(this);
+    this.onBreadcrumbDropEnterCb = this.onBreadcrumbDropEnterCb.bind(this);
   }
 
   getAllSelectedItems() {
@@ -134,16 +136,22 @@ class DoenetBranchBrowser extends Component {
     // build directory list
     // always add current drive/course as first item
     directoryList.push(
-      <div 
-      onClick={() => this.jumpToDirectory("")} 
-      key="breadcrumbDrive"
-      data-cy="breadcrumbbase">
-        <label>
-          {this.props.selectedDrive === "Courses" ? 
-            this.props.allCourseInfo[this.props.selectedCourse].courseCode 
-            : this.props.selectedDrive}
-        </label>
-      </div>
+      <DropItem 
+        id={"root"} 
+        onDrop={() => {this.onFolderDropCb("root")}} 
+        onDropEnter={() => {this.onBreadcrumbDropEnterCb("root")}}>
+        <div 
+          onClick={() => this.jumpToDirectory("")} 
+          key="breadcrumbDrive"
+          className={`${"root" == this.state.currentDraggedOverBreadcrumb ? "draggedOverBreadcrumb" : ""} breadcrumbWrapper`}
+          data-cy="breadcrumbbase">
+          <label>
+            {this.props.selectedDrive === "Courses" ? 
+              this.props.allCourseInfo[this.props.selectedCourse].courseCode 
+              : this.props.selectedDrive}
+          </label>
+        </div>
+      </DropItem>
     );
 
     // add items in directoryStack if any
@@ -151,12 +159,19 @@ class DoenetBranchBrowser extends Component {
       let folderTitle = this.props.allFolderInfo[folderId].title;
 
       directoryList.push(
-        <div 
-        onClick={() => this.jumpToDirectory(folderId)} 
-        key={"breadcrumb"+folderId}
-        data-cy={"breadcrumb"+folderId}>
-          <label>{folderTitle}</label>
-        </div>
+        <DropItem 
+        id={folderId} 
+        onDrop={() => {this.onFolderDropCb(folderId)}} 
+        onDropEnter={() => {this.onBreadcrumbDropEnterCb(folderId)}}>
+          <div 
+          onClick={() => this.jumpToDirectory(folderId)} 
+          key={"breadcrumb"+folderId}
+          className={`${folderId == this.state.currentDraggedOverBreadcrumb ? "draggedOverBreadcrumb" : ""} breadcrumbWrapper`}
+          data-cy={"breadcrumb"+folderId}>
+            <label>{folderTitle}</label>
+          </div>
+        </DropItem>
+        
       );
     });
 
@@ -614,7 +629,8 @@ class DoenetBranchBrowser extends Component {
         parentsInfo: this.props.allFolderInfo, 
         leavesInfo: this.props.allContentInfo });
     this.setState({
-      currentDraggedOverFolder: null      
+      currentDraggedOverFolder: null,    
+      currentDraggedOverBreadcrumb: null,
     })
   }
 
@@ -627,9 +643,16 @@ class DoenetBranchBrowser extends Component {
   }
   
   onFolderDropEnterCb(folderId) {
-    console.log("dropEnter")
     this.setState({
-      currentDraggedOverFolder: folderId
+      currentDraggedOverFolder: folderId,
+      currentDraggedOverBreadcrumb: null
+    });
+  }
+
+  onBreadcrumbDropEnterCb(folderId) {
+    this.setState({
+      currentDraggedOverBreadcrumb: folderId,
+      currentDraggedOverFolder: null,
     });
   }
 

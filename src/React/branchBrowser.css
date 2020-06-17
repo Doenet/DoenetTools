@@ -334,11 +334,19 @@ tbody::-webkit-scrollbar-thumb {
   margin: 0;
 }
 
-.breadcrumbItem {
-  font-size: 18px;
+.breadcrumbWrapper {
   margin: 2px 0;
   padding: 4px 8px 4px;
+}
+
+.breadcrumbItem {
+  font-size: 18px;
   color: #8a8a8a;
+}
+
+.draggedOverBreadcrumb {
+  background-color: #e6efff;
+  color: #2675ff;
 }
 
 .breadcrumbItem:hover {
