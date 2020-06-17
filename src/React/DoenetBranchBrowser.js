@@ -31,6 +31,7 @@ class DoenetBranchBrowser extends Component {
       directoryStack: props.directoryData,
       selectedItems: props.selectedItems,
       selectedItemsType: props.selectedItemsType,
+      currentDraggedOverFolder: null,
       sortBy: "title",
       sortOrderAsc: "ASC",
     }
@@ -62,6 +63,7 @@ class DoenetBranchBrowser extends Component {
     this.onDragStartCb = this.onDragStartCb.bind(this);
     this.onDragEndCb = this.onDragEndCb.bind(this);
     this.onFolderDropCb = this.onFolderDropCb.bind(this);
+    this.onFolderDropEnterCb = this.onFolderDropEnterCb.bind(this);
   }
 
   getAllSelectedItems() {
@@ -184,7 +186,7 @@ class DoenetBranchBrowser extends Component {
       let isRepo = this.props.allFolderInfo[folderId].isRepo;
       let isPublic = this.props.allFolderInfo[folderId].isPublic;
       let isShared = this.props.allFolderInfo[this.props.allFolderInfo[folderId].rootId].isRepo;
-      let classes = this.state.selectedItems.includes(folderId) ?
+      let classes = this.state.selectedItems.includes(folderId) || folderId == this.state.currentDraggedOverFolder ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
 
 
@@ -212,7 +214,7 @@ class DoenetBranchBrowser extends Component {
           renameFolder={this.props.renameFolder}
           onDragStart={this.onDragStartCb}
           onDragEnd={this.onDragEndCb}
-          onDropEnter={() => {console.log("TODO:Highlight row")}}
+          onDropEnter={this.onFolderDropEnterCb}
           onDrop={this.onFolderDropCb}
           />
       );
@@ -611,6 +613,9 @@ class DoenetBranchBrowser extends Component {
         containerId: this.props.containerId, 
         parentsInfo: this.props.allFolderInfo, 
         leavesInfo: this.props.allContentInfo });
+    this.setState({
+      currentDraggedOverFolder: null      
+    })
   }
 
   onFolderDropCb(folderId) {
@@ -619,6 +624,13 @@ class DoenetBranchBrowser extends Component {
         containerId: this.props.containerId, 
         droppedId: folderId
       });
+  }
+  
+  onFolderDropEnterCb(folderId) {
+    console.log("dropEnter")
+    this.setState({
+      currentDraggedOverFolder: folderId
+    });
   }
 
   render() {
@@ -668,9 +680,9 @@ class DoenetBranchBrowser extends Component {
                   <DropItem 
                     id={ChooserConstants.PREVIOUS_DIR_ID} 
                     onDrop={() => {this.onFolderDropCb(ChooserConstants.PREVIOUS_DIR_ID)}} 
-                    onDropEnter={() => {console.log("TODO:Highlight ... row")}}>
+                    onDropEnter={this.onFolderDropEnterCb}>
                     <tr
-                    className="browserDataRow"
+                    className={this.currentDraggedOverFolder == ChooserConstants.PREVIOUS_DIR_ID ? "browserDataRow browserSelectedRow" : "browserDataRow" }
                     data-cy="upOneDirectory"
                     onDoubleClick={this.upOneDirectory}>
                       <td className="browserItemName">
@@ -827,7 +839,9 @@ class Folder extends React.Component {
 
     return(
       <DragItem id={this.props.folderId} onDragStart={this.onDragStartCb} onDragEnd={this.props.onDragEnd}>
-        <DropItem id={this.props.folderId} onDrop={this.onDropCb} onDropEnter={this.props.onDropEnter}>
+        <DropItem id={this.props.folderId} 
+          onDrop={this.onDropCb} 
+          onDropEnter={() => this.props.onDropEnter(this.props.folderId)}>
           <tr
           className={this.props.classes}
           onClick={() => this.props.onClick(this.props.folderId, "folder", this.props.tableIndex)}
