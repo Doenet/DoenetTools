@@ -25,8 +25,6 @@
   display: block;
   width: 100%;
   max-height: 77vh;
-  padding-right: 15px;
-  margin-right: 5px;
   padding-bottom: 10%;
   overflow-y: scroll;
 }

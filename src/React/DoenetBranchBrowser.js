@@ -36,7 +36,7 @@ class DoenetBranchBrowser extends Component {
     }
 
     // handle null props
-    this.hideAddRemoveButtons = this.disableEditing = this.props.addContentToFolder === null
+    this.disableEditing = this.props.addContentToFolder === null
                      || this.props.removeContentFromFolder === null;
 
     this.handleAddContentToFolder = this.handleAddContentToFolder.bind(this);
@@ -186,32 +186,6 @@ class DoenetBranchBrowser extends Component {
       let isShared = this.props.allFolderInfo[this.props.allFolderInfo[folderId].rootId].isRepo;
       let classes = this.state.selectedItems.includes(folderId) ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
-      
-      let showRemoveItemIcon = false;
-      let showAddItemIcon = true;
-      if (this.props.selectedDrive === "Content") {
-        // disable remove content in base dir when in mycontent
-        let notInBaseDirOfContent = this.state.directoryStack.length !== 0;
-        showRemoveItemIcon = !this.hideAddRemoveButtons && 
-                              notInBaseDirOfContent &&
-                              this.state.selectedItems.length !== 0 &&
-                              this.state.selectedItems.includes(folderId);
-
-        showAddItemIcon = !this.hideAddRemoveButtons &&
-                          this.state.selectedItems.length !== 0 &&
-                          !this.state.selectedItems.includes(folderId) &&
-                          !this.state.selectedItems.includes(this.state.directoryStack[this.state.directoryStack.length - 1]);
-
-      } else if (this.props.selectedDrive === "Courses") {
-        // disable remove content when not in base dir
-        let inBaseDir = this.state.directoryStack.length === 0;
-        showRemoveItemIcon = !this.hideAddRemoveButtons &&
-                              inBaseDir &&
-                              this.state.selectedItems.length !== 0 &&
-                              this.state.selectedItems.includes(folderId);
-        // restrict content editing in courses
-        showAddItemIcon = false;
-      }
 
 
       this.folderItems.push(
@@ -232,8 +206,6 @@ class DoenetBranchBrowser extends Component {
           key={"folder" + folderId}
           tableIndex={this.tableIndex++}
           handleAddContentToFolder={this.handleAddContentToFolder}
-          showAddItemIcon={showAddItemIcon}
-          showRemoveItemIcon={showRemoveItemIcon}
           handleRemoveContent={this.props.selectedDrive === "Content" ? 
                               this.handleRemoveContentFromCurrentFolder :
                               this.handleRemoveContentFromCourse}
@@ -267,24 +239,6 @@ class DoenetBranchBrowser extends Component {
       let isPublic = this.props.allContentInfo[branchId].isPublic;
       let classes = this.state.selectedItems.includes(branchId) ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
-      
-      let showRemoveItemIcon = false;
-      if (this.props.selectedDrive === "Content") {
-        // disable remove content in base dir when in mycontent
-        let notInBaseDirOfContent = this.state.directoryStack.length !== 0;
-        showRemoveItemIcon = !this.hideAddRemoveButtons && 
-                              notInBaseDirOfContent &&
-                              this.state.selectedItems.length !== 0 &&
-                              this.state.selectedItems.includes(branchId);
-
-      } else if (this.props.selectedDrive === "Courses") {
-        // disable remove content when not in base dir
-        let inBaseDir = this.state.directoryStack.length === 0;
-        showRemoveItemIcon = !this.hideAddRemoveButtons &&
-                              inBaseDir &&
-                              this.state.selectedItems.length !== 0 &&
-                              this.state.selectedItems.includes(branchId);
-      }
 
       // create table row items to be rendered in chooser
       this.contentItems.push(
@@ -300,7 +254,6 @@ class DoenetBranchBrowser extends Component {
         isPublic={isPublic}
         key={"contentItem" + branchId}
         tableIndex={this.tableIndex++}
-        showRemoveItemIcon={showRemoveItemIcon}
         handleRemoveContent={this.props.selectedDrive === "Content" ? 
                             this.handleRemoveContentFromCurrentFolder :
                             this.handleRemoveContentFromCourse}
@@ -332,24 +285,6 @@ class DoenetBranchBrowser extends Component {
       let isPublic = this.props.allUrlInfo[urlId].isPublic;
       let classes = this.state.selectedItems.includes(urlId) ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
-      
-      let showRemoveItemIcon = false;
-      if (this.props.selectedDrive === "Content") {
-        // disable remove content in base dir when in mycontent
-        let notInBaseDirOfContent = this.state.directoryStack.length !== 0;
-        showRemoveItemIcon = !this.hideAddRemoveButtons && 
-                              notInBaseDirOfContent &&
-                              this.state.selectedItems.length !== 0 &&
-                              this.state.selectedItems.includes(urlId);
-
-      } else if (this.props.selectedDrive === "Courses") {
-        // disable remove content when not in base dir
-        let inBaseDir = this.state.directoryStack.length === 0;
-        showRemoveItemIcon = !this.hideAddRemoveButtons &&
-                              inBaseDir &&
-                              this.state.selectedItems.length !== 0 &&
-                              this.state.selectedItems.includes(urlId);
-      }
 
       // create table row items to be rendered in chooser
       this.urlItems.push(
@@ -366,7 +301,6 @@ class DoenetBranchBrowser extends Component {
         isPublic={isPublic}
         key={"urlItem" + urlId}
         tableIndex={this.tableIndex++}
-        showRemoveItemIcon={showRemoveItemIcon}
         handleRemoveContent={this.props.selectedDrive === "Content" ? 
                             this.handleRemoveContentFromCurrentFolder :
                             this.handleRemoveContentFromCourse}
@@ -763,7 +697,7 @@ class DoenetBranchBrowser extends Component {
 }
 
 const File = ({ branchId, classes, onClick, onDoubleClick, title, publishDate,
-  draftDate, isShared, isPublic, tableIndex, showRemoveItemIcon, handleRemoveContent,
+  draftDate, isShared, isPublic, tableIndex, handleRemoveContent,
   onDragStart, onDragOver, onDragEnd }) => {
 
   const onDraggableDragOverCb = (listId) => {
@@ -793,12 +727,6 @@ const File = ({ branchId, classes, onClick, onDoubleClick, title, publishDate,
         </td>
         <td className="publishDate">
           <div style={{"position":"relative"}}>
-            {showRemoveItemIcon && 
-            <div className="removeContentButtonWrapper">
-              <FontAwesomeIcon icon={faArrowRight} className="removeContentButton" 
-              onClick={() => handleRemoveContent(branchId)}/>
-              <div className="removeContentButtonInfo"><span>Move out folder</span></div>
-            </div>}
             <span>{publishDate}</span>
           </div>          
         </td>
@@ -809,7 +737,7 @@ const File = ({ branchId, classes, onClick, onDoubleClick, title, publishDate,
 }
 
 const Url = ({ urlId, classes, onClick, onDoubleClick, title, publishDate,
-  isShared, isPublic, tableIndex, showRemoveItemIcon, handleRemoveContent,
+  isShared, isPublic, tableIndex, handleRemoveContent,
   onDragStart, onDragOver, onDragEnd }) => {
 
     const onDraggableDragOverCb = (listId) => {
@@ -838,12 +766,6 @@ const Url = ({ urlId, classes, onClick, onDoubleClick, title, publishDate,
         </td>
         <td className="publishDate">
           <div style={{"position":"relative"}}>
-            {showRemoveItemIcon && 
-            <div className="removeContentButtonWrapper">
-              <FontAwesomeIcon icon={faArrowRight} className="removeContentButton" 
-              onClick={() => handleRemoveContent(urlId)}/>
-              <div className="removeContentButtonInfo"><span>Move out folder</span></div>
-            </div>}
             <span>{publishDate}</span>
           </div>          
         </td>
@@ -913,12 +835,6 @@ class Folder extends React.Component {
           data-cy={this.props.folderId}>
             <td className="browserItemName">
               <div style={{"position":"relative"}}>
-                {this.props.showAddItemIcon && 
-                <div className="addContentButtonWrapper">
-                  <FontAwesomeIcon icon={faArrowRight} className="addContentButton" 
-                  onClick={() => this.props.handleAddContentToFolder(this.props.folderId)}/>
-                  <div className="addContentButtonInfo"><span>Move to Folder</span></div>
-                </div>}
                 {folderIcon}
                 <span
                 contentEditable="true"
@@ -933,12 +849,6 @@ class Folder extends React.Component {
             </td>
             <td className="publishDate">
               <div style={{"position":"relative"}}>
-                {this.props.showRemoveItemIcon && 
-                <div className="removeContentButtonWrapper">
-                  <FontAwesomeIcon icon={faArrowRight} className="removeContentButton" 
-                  onClick={() => this.props.handleRemoveContent(this.props.folderId)}/>
-                  <div className="removeContentButtonInfo"><span>Move out folder</span></div>
-                </div>}
                 <span>{this.props.publishDate}</span>
               </div>          
             </td>
