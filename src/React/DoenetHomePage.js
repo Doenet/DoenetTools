@@ -279,8 +279,8 @@ class DoenetHomePage extends Component {
               <p style={{ textAlign: "left" }}>The markup language DoenetML allows you to build richly interactive activities by focusing on the meaning of the elements you wish to create.  Based on <a href="http://pretextbook.org">PreTeXt</a>, DoenetML looks similar to HTML, with descriptive tags such as <code>&lt;point&gt;</code>, <code>&lt;intersection&gt;</code>, and <code>&lt;answer&gt;</code>.</p>
 
               <p style={{ textAlign: "left" }}>You can experiment with activities using a preliminary version of DoenetML below.  Click on a link to open a page with both the DoenetML code and resulting activity.  Only a small subset of DoenetML tags are implemented in these demonstrations.  If you are familiar with HTML, you can edit the code and update the activity.</p>
-              <div style={{ margin: "auto", width: "300px"}}>
-                <ul style={{textAlign: "left", color: "#6de5ff"}}>
+              <div style={{ margin: "auto", width: "300px" }}>
+                <ul style={{ textAlign: "left", color: "#6de5ff" }}>
                   <li><a href="/guesteditor/?contentId=b9a44bf4c0407f7bef3da07c6f6e96f0aea3aef7fda031addbe182962a1b0765">Guest Editor</a></li>
                   <li><a href="/guesteditor/?contentId=a11c2db8fcc6280a91e763fcdf01de8b0770afffa4e70c5ef8d2fa670564eda4">A line through two points</a></li>
                   <li><a href="/guesteditor/?contentId=4bca2bf314c86940ce03f38e56c83da04cb0903b917dbcd38bd853ec0bc45b5f">The derivative of a quadratic</a></li>
@@ -305,6 +305,21 @@ class DoenetHomePage extends Component {
                 <button style={{ margin: "3px" }} onClick={() => location.href = "/page/?contentId=e7337aea5a4558326669a88ba737eea65bbe044d16e1c889b793eff94549dded"} >Demo 2c</button></div>
             </div>
           </div>
+
+          <div className="cloud-color section">
+            <div className="section-text">
+              <h1 className="section-headline">Timeline</h1>
+              <p style={{ textAlign: "left" }}>In Fall 2020, we will begin piloting Doenet in a small number of courses.  We’ll use Doenet both for content delivery and learning experiments analyzing the effectiveness of the materials.
+              </p>
+              <p style={{ textAlign: "left" }}>
+              After a successful pilot, we will expand the use of Doenet to include more courses at the University of Minnesota, Ohio State University and Ithaca College.  Starting in Fall 2021, we expect Doenet to be available to instructors at other institutions on a limited basis.
+              </p>
+            </div>
+          </div>
+
+
+
+
 
 
 
