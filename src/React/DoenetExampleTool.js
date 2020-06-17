@@ -26,7 +26,6 @@ import {
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import SplitLayoutPanel from "./ToolLayout/SplitLayoutPanel";
-import ButtonGroup from '../imports/PanelHeaderComponents/ButtonGroup';
 import DropDownSelect from '../imports/PanelHeaderComponents/DropDownSelect';
 
 
@@ -1757,7 +1756,6 @@ class DoenetExampleTool extends Component {
     //   <FontAwesomeIcon onClick={() => this.switchPanelContainer("first")} icon={faAlignJustify} style={{ fontSize: "17px" }} />
     // </button>;
 
-const switchPanelButton = <ButtonGroup clickCallBack={this.switchPanelContainer} valueOne='browser' valueTwo="tree"></ButtonGroup>
 const dropDownSelectButton = <DropDownSelect />
 
 {/* <button style={{ background: "none", border: "none", cursor: "pointer", outline: "none" }}>
@@ -1774,7 +1772,7 @@ const dropDownSelectButton = <DropDownSelect />
     </button>;
 
     const navigationPanelMenuControls = [newItemButton];
-    const mainPanelMenuControls = [switchPanelButton];
+    const mainPanelMenuControls = [<button>middle</button>];
     const middlePanelMenuControls = [splitPanelButton];
     const rightPanelMenuControls = [dropDownSelectButton];
     // console.log('example tool split panel Icon:::', this.state.splitPanelLayout);
@@ -1787,9 +1785,10 @@ const dropDownSelectButton = <DropDownSelect />
           rightPanelWidth="365">
           <ToolLayoutPanel
             panelName="Navigation Panel"
-            panelHeaderControls={navigationPanelMenuControls}
+            panelHeaderControls={navigationPanelMenuControls} 
           >
-            {this.leftNavPanel}
+            <p>Left Panel</p>
+            {/* {this.leftNavPanel} */}
           </ToolLayoutPanel>
 
           <ToolLayoutPanel
@@ -1797,40 +1796,19 @@ const dropDownSelectButton = <DropDownSelect />
             splitPanel={this.state.splitPanelLayout}
             panelHeaderControls={[ mainPanelMenuControls, middlePanelMenuControls]}
             >
-            <SplitLayoutPanel defaultVisible={true}
-             width={50}
-             >
-              <MainPanel
-                key = { " mainpanel1" } 
-                panelId="first"
-                initialContainer="browser"
-                activeContainer={this.state.panelsCollection["first"].activeContainer}
-                containersData={[
-                  { name: "browser", container: this.mainSection },
-                  { name: "tree", container: this.tree },
-                ]}
-              />
+
+              <p>Middle and Left panel</p>
+              <div><p>Left stuff</p></div>
+              <div><p>Left stuff</p></div>
+            <SplitLayoutPanel defaultVisible={true} panelHeaderControls={[<button>close</button>]}>
+               i am split layout panel
             </SplitLayoutPanel>
 
-            <SplitLayoutPanel 
-            width={50}
-            >
-            <MainPanel
-                key = {"mainpanel2" }
-                panelId="browser"
-                initialContainer="browser"
-                activeContainer={this.state.panelsCollection["first"].activeContainer}
-                containersData={[
-                  { name: "browser", container: this.mainSection },
-                  { name: "tree", container: this.tree },
-                ]}
-              />
-            </SplitLayoutPanel>
+         
             
           </ToolLayoutPanel>
           <ToolLayoutPanel panelName="Info Panel" panelHeaderControls={rightPanelMenuControls}>
-            {/* <ButtonTheme /> */}
-            {/* <ButtonGroup/> */}
+          
             
             {/* <InfoPanel
               selectedItems={this.state.selectedItems}
@@ -1845,6 +1823,7 @@ const dropDownSelectButton = <DropDownSelect />
               openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
               openEditUrlForm={() => this.toggleManageUrlForm("edit_url")}
             /> */}
+            <p>Right panel</p>
           </ToolLayoutPanel>
         </ToolLayout>
 
