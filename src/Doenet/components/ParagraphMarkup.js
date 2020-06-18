@@ -18,7 +18,7 @@ export class SQ extends InlineRenderInlineChildren {
 
 export class Term extends InlineRenderInlineChildren {
   static componentType = "term";
-  static rendererName = "alert";
+  static rendererType = "alert";
 }
 
 export class c extends InlineRenderInlineChildren {
