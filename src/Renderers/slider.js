@@ -143,7 +143,7 @@ export default function Slider(props) {
     return (
         <SliderContainer labeled = {(SVs.showControls||SVs.label)} noTicked = {SVs.showTicks === false} ref = {containerRef}>
             <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
-                {SVs.label? <StyledValueLabel>{SVs.items[index]}</StyledValueLabel> : null}
+                {SVs.label? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
                 {SVs.showControls? <>
                 <button style = {{float: "right", userSelect: "none"}} onClick = {handleNext} disabled>Next</button>
                 <button style = {{float: "right", userSelect: "none"}} onClick = {handlePrevious} disabled>Prev</button>
@@ -264,9 +264,24 @@ function handlePrevious(e) {
 }
   
   return (
+    // <SliderContainer labeled = {(SVs.showControls||SVs.label)} noTicked = {SVs.showTicks === false} ref = {containerRef}>
+    // <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
+    //     {SVs.label? <StyledValueLabel>{SVs.items[index]}</StyledValueLabel> : null}
+    //     {SVs.showControls? <>
+    //     <button style = {{float: "right", userSelect: "none"}} onClick = {handleNext} disabled>Next</button>
+    //     <button style = {{float: "right", userSelect: "none"}} onClick = {handlePrevious} disabled>Prev</button>
+    //     </> : null}
+    // </div>
+    // <SubContainer2>
+    //     <StyledSlider width = {`${500}px`} >
+    //     <StyledThumb disabled style={{left: `${-3}px`}}/>
+    //     {(SVs.showTicks === false) ? null : ((SVs.sliderType === "text") ? generateTextLabels(SVs.items, divisionWidth) : generateNumericLabels(SVs.items, divisionWidth, startValue))}
+    //     </StyledSlider>
+    // </SubContainer2>
+    // </SliderContainer>
     <SliderContainer  ref = {containerRef} labeled = {(SVs.showControls||SVs.label)} noTicked = {SVs.showTicks === false}>
         <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
-            {SVs.label? <StyledValueLabel>{SVs.items[SVs.index]}</StyledValueLabel> : null}
+            {SVs.label? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
             {SVs.showControls? <>
             <button style = {{float: "right", userSelect: "none"}} onClick = {handleNext}>Next</button>
             <button style = {{float: "right", userSelect: "none"}} onClick = {handlePrevious}>Prev</button>
