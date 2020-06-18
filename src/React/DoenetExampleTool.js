@@ -1762,7 +1762,7 @@ const dropDownSelectButton = <DropDownSelect />
 <FontAwesomeIcon onClick={() => this.switchPanelContainer("first")} icon={faAlignJustify} style={{ fontSize: "17px" }} />
 </button>; */}
 
-    const splitPanelButton = <button style={{ background: "none", border: "none", cursor: "pointer", outline: "none", position:'absolute', right:"30px" , top:"8px"}}>
+    const splitPanelButton = <button style={{ background: "none", border: "none", cursor: "pointer", outline: "none"}}>
     <FontAwesomeIcon onClick={() => this.toggleSplitPanel()} icon={faColumns} style={{ fontSize: "17px" }} />
     </button>;
 
@@ -1797,32 +1797,18 @@ const dropDownSelectButton = <DropDownSelect />
             panelHeaderControls={[ mainPanelMenuControls, middlePanelMenuControls]}
             >
 
-              <p>Middle and Left panel</p>
-              <div><p>Left stuff</p></div>
-              <div><p>Left stuff</p></div>
-            <SplitLayoutPanel defaultVisible={true} panelHeaderControls={[<button>close</button>]}>
-               i am split layout panel
+              <p>Middle Panel</p>
+            
+              
+            <SplitLayoutPanel defaultVisible={true} panelHeaderControls={[<button onClick={() => this.toggleSplitPanel()}><FontAwesomeIcon icon={faTimesCircle} style={{ fontSize: "17px" }}/></button>]}>
+            <p>Split Panel</p>
             </SplitLayoutPanel>
 
          
             
           </ToolLayoutPanel>
           <ToolLayoutPanel panelName="Info Panel" panelHeaderControls={rightPanelMenuControls}>
-          
-            
-            {/* <InfoPanel
-              selectedItems={this.state.selectedItems}
-              selectedItemsType={this.state.selectedItemsType}
-              selectedDrive={this.state.selectedDrive}
-              selectedCourse={this.state.selectedCourse}
-              allFolderInfo={this.folderInfo}
-              allContentInfo={this.branchId_info}
-              allUrlInfo={this.urlInfo}
-              allCourseInfo={this.courseInfo}
-              publicizeRepo={this.publicizeRepo}
-              openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
-              openEditUrlForm={() => this.toggleManageUrlForm("edit_url")}
-            /> */}
+
             <p>Right panel</p>
           </ToolLayoutPanel>
         </ToolLayout>
