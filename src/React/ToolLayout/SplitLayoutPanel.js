@@ -20,6 +20,10 @@ const MainContent = styled.div`
 export default function SplitLayoutPanel(props) {
     const splitcontext = useContext(SplitPanelContext);
     const showPanel = props.defaultVisible || splitcontext.splitPanel;
+    let panelHeader;
+    if (props.panelHeaderControls) {
+        panelHeader = [...props.panelHeaderControls];
+      }
     return (
         <>
             {/* <div className='panels-header-content'>

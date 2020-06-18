@@ -18,13 +18,28 @@ const MainContent = styled.div`
   flex-direction: row;
   display: flex;
 `;
-const SplitPanel = styled.div`
-    // display: flex;
-    // flex-direction: column;
+const SplitPanelHeader = styled.div`
     min-height: 1vh;
     overflow: hidden;
     width: 50%;
-    border-right: 1px solid #e2e2e2;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding:3px;
+    justify-content: ${props => props.justifyContent || 'space-between'};
+`;
+const SplitDivider = styled.div`
+    border: 0.5px solid #e2e2e2;
+    height: 100%;
+    position:absolute;
+    left: 50%;
+`;
+
+const SplitPanelContent = styled.div`
+    min-height: 1vh;
+    overflow: hidden;
+    width: 50%;
+    padding:3px;
 `;
 
 export default class ToolLayoutPanel extends Component {
@@ -120,23 +135,30 @@ export default class ToolLayoutPanel extends Component {
         </>
       );
     };
-    const  splitPanelProps = splitLayoutPanel && splitLayoutPanel.props;
-    console.log('^^^^^^^^^^^^^', splitPanelProps);
+    const splitPanelProps = splitLayoutPanel && splitLayoutPanel.props;
+    console.log('***********', panelHeader.length);
     return (
       <>
         {!this.context.panelHeadersControlVisible.hideMenu ? <div className="panels-header-content">
           <div className="panels-header-controls">
-          {!this.context.panelHeadersControlVisible.hideCollapse ? this.context.position === 'left' ? leftPanelCloseButton() :
-            this.context.position === 'middle' ? middleOpenLeftRightButton() :
-              this.context.position === 'right' ? rightPanelCloseButton() : '' : ''}
-          
-            {/* {this.props.panelHeaderControls && this.props.panelHeaderControls.map((p,i)=> 
-              (<div className="xyz" key={i}>{p}</div>)
-            )} */}
-            {!this.props.splitPanel ? panelHeader
-            : <><SplitPanel>{[panelHeader[0]]}</SplitPanel><SplitPanel>{splitPanelProps && splitPanelProps.panelHeaderControls}</SplitPanel></>
+            {!this.context.panelHeadersControlVisible.hideCollapse ? this.context.position === 'left' ? leftPanelCloseButton() :
+              this.context.position === 'middle' ? middleOpenLeftRightButton() :
+                this.context.position === 'right' ? rightPanelCloseButton() : '' : ''}
+
+            {!this.props.splitPanel ?
+              panelHeader && panelHeader.length > 1 ? <>
+                {<SplitPanelHeader>{[panelHeader[0]]}</SplitPanelHeader>}
+                {<SplitPanelHeader justifyContent="flex-end">{[panelHeader[1]]}</SplitPanelHeader>}
+              </> : panelHeader
+              : <>
+                {<SplitPanelHeader>
+                  {[panelHeader[0]]}
+                </SplitPanelHeader>}
+                <SplitDivider></SplitDivider>
+                {<SplitPanelHeader justifyContent="flex-end">
+                  {splitPanelProps.panelHeaderControls}
+                </SplitPanelHeader>}</>
             }
-            {/* <div>{this.props.panelHeaderControls && this.props.panelHeaderControls[0]}</div> */}
           </div>
         </div> : ''}
 
@@ -144,9 +166,11 @@ export default class ToolLayoutPanel extends Component {
           {/* <SplitPanelContext.Provider value={{ splitPanel: this.props.splitPanel, name: "channel" }}>{this.props.children}</SplitPanelContext.Provider> */}
           {/* {this.props.children} */}
           {!this.props.splitPanel ?
-           filteredChildren : 
-           (<><SplitPanel>{filteredChildren}</SplitPanel><SplitPanel>{splitLayoutPanel}</SplitPanel></>)}
-          {/* {this.context.panelHeadersControlVisible.showFooter && <div className='tool-footer'></div>} */}
+            filteredChildren :
+            (<><SplitPanelContent>{filteredChildren}</SplitPanelContent>
+              <SplitDivider></SplitDivider>
+              <SplitPanelContent>{splitLayoutPanel}</SplitPanelContent></>)}
+          {this.context.panelHeadersControlVisible.showFooter && <div className='tool-footer'></div>}
         </MainContent>
 
       </>

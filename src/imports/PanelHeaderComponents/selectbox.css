@@ -10,14 +10,14 @@
   box-sizing: border-box;
 }
 .drop-down-select{
-  position: absolute;
+  /* position: absolute;
   top:2%;
-  z-index:1;
+  z-index:1; */
+  height: 30px;
 }
 .select-box-box {
   width: 120px;
   position: absolute;
-  left: 15px;
 }
 
 .select-box-selected-item {
