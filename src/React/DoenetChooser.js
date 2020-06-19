@@ -7,7 +7,7 @@ import "./chooser.css";
 import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown, 
-  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, faLink, faRedoAlt} 
+  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, faLink, faRedoAlt, faAlignJustify , faStream, faColumns} 
   from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
@@ -24,6 +24,8 @@ import {
 } from './chooser/SwitchableContainer';
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
+import SplitLayoutPanel from "./ToolLayout/SplitLayoutPanel";
+import ButtonGroup from '../imports/PanelHeaderComponents/ButtonGroup';
 
 
 class DoenetChooser extends Component {
@@ -116,6 +118,8 @@ class DoenetChooser extends Component {
     this.onBrowserDrop = this.onBrowserDrop.bind(this);
     this.getDataSource = this.getDataSource.bind(this);
     this.switchPanelContainer = this.switchPanelContainer.bind(this);
+    this.toggleSplitPanel = this.toggleSplitPanel.bind(this);
+
   }
 
   buildCourseList() {
@@ -1538,21 +1542,31 @@ class DoenetChooser extends Component {
     
   }
 
-  switchPanelContainer(panelId) {
-    const values = this.state.panelsCollection[panelId].values;
-    const currentActiveContainer = this.state.panelsCollection[panelId].activeContainer;
-    const nextActiveContainer = values[(values.indexOf(currentActiveContainer) + 1) % values.length];
+  switchPanelContainer(view) {
+    const values = this.state.panelsCollection["first"].values;
+    // const values = this.state.panelsCollection[panelId].values;
+    // const currentActiveContainer = this.state.panelsCollection[panelId].activeContainer;
+    // const nextActiveContainer = values[(values.indexOf(currentActiveContainer) + 1) % values.length];
     const newPanelData = {
       values: values,
-      activeContainer: nextActiveContainer
+      activeContainer: view
+      // activeContainer: nextActiveContainer
+
     }
     this.setState({
       panelsCollection: {
         ...this.state.panelsCollection,
-        [panelId]: newPanelData
+        "first": newPanelData
+        // [panelId]: newPanelData
+
       }
     })
   }
+
+  toggleSplitPanel() {
+    this.setState({splitPanelLayout: !this.state.splitPanelLayout});
+  }
+
 
   render(){
 
@@ -1736,9 +1750,26 @@ class DoenetChooser extends Component {
       </div>
     </div>
 
-    const switchPanelButton = <button style={{background: "none", border: "none", cursor: "pointer", outline: "none"}}>
-        <FontAwesomeIcon onClick={() => this.switchPanelContainer("first")} icon={faRedoAlt} style={{fontSize:"17px"}}/>
-      </button>;
+    // const switchPanelButton = <button style={{background: "none", border: "none", cursor: "pointer", outline: "none"}}>
+    //     <FontAwesomeIcon onClick={() => this.switchPanelContainer("first")} icon={faRedoAlt} style={{fontSize:"17px"}}/>
+    //   </button>;
+
+    const buttonGroupData = [{
+      label: '',
+      icon: faAlignJustify,
+      value: 'browser',
+      default: true
+    },{
+      label: '',
+      icon: faStream,
+      value: 'tree',
+      default: false
+    }
+    ]
+    const switchPanelButton = <ButtonGroup clickCallBack={this.switchPanelContainer} data={buttonGroupData}></ButtonGroup>
+    const splitPanelButton = <button style={{ background: "none", border: "none", cursor: "pointer", outline: "none", height:"20px" }}>
+    <FontAwesomeIcon onClick={() => this.toggleSplitPanel()} icon={faColumns} style={{ fontSize: "17px" }} />
+    </button>;
 
     const testSaveContentTreeButton = <button style={{background: "none", border: "none", cursor: "pointer", outline: "none"}}>
       <FontAwesomeIcon onClick={() => this.saveContentTree({folderInfo: this.userFolderInfo})} icon={faEdit} style={{fontSize:"17px"}}/>
@@ -1746,6 +1777,8 @@ class DoenetChooser extends Component {
 
     const navigationPanelMenuControls = [newItemButton];
     const mainPanelMenuControls = [switchPanelButton];
+    const middlePanelMenuControls = [splitPanelButton];
+
    
     return (<React.Fragment>
       <ToastProvider>
@@ -1762,7 +1795,9 @@ class DoenetChooser extends Component {
           </ToolLayoutPanel>
           <ToolLayoutPanel 
             panelName="Main Panel"
-            panelHeaderControls={mainPanelMenuControls}
+            splitPanel={this.state.splitPanelLayout}
+            panelHeaderControls={[ mainPanelMenuControls, middlePanelMenuControls]}
+            disableSplitPanelScroll={[true , false]}         
           >
             <MainPanel 
               panelId="first"
@@ -1773,6 +1808,14 @@ class DoenetChooser extends Component {
                 { name: "tree", container: this.tree },
               ]}
             />
+
+            <SplitLayoutPanel 
+                 defaultVisible={true} 
+                 panelHeaderControls={[ <button  style={{ height:'24px', padding:'1px'}} onClick={() => this.toggleSplitPanel()}><FontAwesomeIcon icon={faTimesCircle} style={{ fontSize: "17px" , height:'15px', padding:'2px'}}/></button>]}>
+           
+                <p>  Split panel</p>
+            </SplitLayoutPanel>
+
           </ToolLayoutPanel>
           <ToolLayoutPanel panelName="Info Panel">
             <InfoPanel
