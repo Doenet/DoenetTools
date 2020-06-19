@@ -2390,6 +2390,21 @@ input:checked + .slider:before {
   float: left;
 }
 
+.react-datepicker__year-container {
+  margin: 0.4rem;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.react-datepicker__year-container-text {
+  display: inline-block;
+  cursor: pointer;
+  flex: 1 0 30%;
+  width: 12px;
+  padding: 2px;
+}
+
 .react-datepicker__month {
   margin: 0.4rem;
   text-align: center;

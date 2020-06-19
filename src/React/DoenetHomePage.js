@@ -290,7 +290,7 @@ class DoenetHomePage extends Component {
               </div>
             </div>
           </div>
-
+{/* 
           <div className="shadow-color section">
             <div className="section-text">
               <h1 className="section-headline">Introducing DoenetAPI</h1>
@@ -304,9 +304,9 @@ class DoenetHomePage extends Component {
                 <button style={{ margin: "3px" }} onClick={() => location.href = "/page/?contentId=6626b57cc3dcb369ddfb4ef412d514692613701c773ad31f9359d589a2a26674"}>Demo 2b</button>
                 <button style={{ margin: "3px" }} onClick={() => location.href = "/page/?contentId=e7337aea5a4558326669a88ba737eea65bbe044d16e1c889b793eff94549dded"} >Demo 2c</button></div>
             </div>
-          </div>
+          </div> */}
 
-          <div className="cloud-color section">
+          <div className="shadow-color section">
             <div className="section-text">
               <h1 className="section-headline">Timeline</h1>
               <p style={{ textAlign: "left" }}>In Fall 2020, we will begin piloting Doenet in a small number of courses.  We’ll use Doenet both for content delivery and learning experiments analyzing the effectiveness of the materials.
