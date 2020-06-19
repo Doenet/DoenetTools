@@ -1,4 +1,4 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[30,0],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[31,0],{
 
 /***/ 495:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -192,7 +192,7 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 525:
+/***/ 526:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
