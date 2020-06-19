@@ -3460,12 +3460,14 @@ class DoenetCourse extends Component {
               key={"TLP02" + this.updateNumber++}
               panelName="Editor"
               panelHeaderControls={[
-                (this.activeSection === "grades" || this.activeSection === "assignments" ? null :
-                  this.editCategoryButton),
-                this.switchCategoryButton
+               <div style={{display:'flex'}}> {(this.activeSection === "grades" || this.activeSection === "assignments" ? null :
+               this.editCategoryButton)}
+             {this.switchCategoryButton}
+             </div>
 
               ]}
             >
+              <div style={{display:'flex', flexDirection:'column'}}>
               <Router>
                 <>
                   <Switch>
@@ -3496,6 +3498,8 @@ class DoenetCourse extends Component {
                   </Switch>
                 </>
               </Router>
+              </div>
+              
             </ToolLayoutPanel>
 
             <ToolLayoutPanel
