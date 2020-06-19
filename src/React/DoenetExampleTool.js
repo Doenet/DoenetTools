@@ -7,7 +7,7 @@ import "./chooser.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown,
-  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, faLink, faRedoAlt, faAlignJustify, faColumns
+  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, faLink, faRedoAlt, faAlignJustify,faStream, faColumns
 }
   from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
@@ -27,6 +27,7 @@ import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import SplitLayoutPanel from "./ToolLayout/SplitLayoutPanel";
 import DropDownSelect from '../imports/PanelHeaderComponents/DropDownSelect';
+import ButtonGroup from '../imports/PanelHeaderComponents/ButtonGroup';
 
 
 class DoenetExampleTool extends Component {
@@ -1761,8 +1762,21 @@ const dropDownSelectButton = <DropDownSelect />
 {/* <button style={{ background: "none", border: "none", cursor: "pointer", outline: "none" }}>
 <FontAwesomeIcon onClick={() => this.switchPanelContainer("first")} icon={faAlignJustify} style={{ fontSize: "17px" }} />
 </button>; */}
+const buttonGroupData = [{
+  label: '',
+  icon: faAlignJustify,
+  value: 'browser',
+  default: true
+},{
+  label: '',
+  icon: faStream,
+  value: 'tree',
+  default: false
+}
+]
+    const switchPanelButton = <ButtonGroup clickCallBack={this.switchPanelContainer} data={buttonGroupData}></ButtonGroup>
 
-    const splitPanelButton = <button style={{ background: "none", border: "none", cursor: "pointer", outline: "none"}}>
+    const splitPanelButton = <button style={{ background: "none", border: "none", cursor: "pointer", outline: "none", height:"20px" }}>
     <FontAwesomeIcon onClick={() => this.toggleSplitPanel()} icon={faColumns} style={{ fontSize: "17px" }} />
     </button>;
 
@@ -1772,7 +1786,7 @@ const dropDownSelectButton = <DropDownSelect />
     </button>;
 
     const navigationPanelMenuControls = [newItemButton];
-    const mainPanelMenuControls = [<button>middle</button>];
+    const mainPanelMenuControls = [switchPanelButton];
     const middlePanelMenuControls = [splitPanelButton];
     const rightPanelMenuControls = [dropDownSelectButton];
     // console.log('example tool split panel Icon:::', this.state.splitPanelLayout);
@@ -1783,32 +1797,44 @@ const dropDownSelectButton = <DropDownSelect />
           toolName="Chooser"
           leftPanelWidth="235"
           rightPanelWidth="365">
+         
           <ToolLayoutPanel
             panelName="Navigation Panel"
             panelHeaderControls={navigationPanelMenuControls} 
           >
-            <p>Left Panel</p>
-            {/* {this.leftNavPanel} */}
+            {this.leftNavPanel}
           </ToolLayoutPanel>
+
 
           <ToolLayoutPanel
             panelName="Main Panel"
             splitPanel={this.state.splitPanelLayout}
             panelHeaderControls={[ mainPanelMenuControls, middlePanelMenuControls]}
+            disableSplitPanelScroll={[true , false]}
             >
 
-              <p>Middle Panel</p>
+             <MainPanel 
+              panelId="first"
+              initialContainer="browser"
+              activeContainer={this.state.panelsCollection["first"].activeContainer}
+              containersData={[
+                { name: "browser", container: this.mainSection },
+                { name: "tree", container: this.tree },
+              ]}
+            />
             
               
-            <SplitLayoutPanel defaultVisible={true} panelHeaderControls={[<button onClick={() => this.toggleSplitPanel()}><FontAwesomeIcon icon={faTimesCircle} style={{ fontSize: "17px" }}/></button>]}>
-            <p>Split Panel</p>
+            <SplitLayoutPanel 
+                 defaultVisible={true} 
+                 panelHeaderControls={[ <button  style={{ height:'24px', padding:'1px'}} onClick={() => this.toggleSplitPanel()}><FontAwesomeIcon icon={faTimesCircle} style={{ fontSize: "20px" , height:'20px', padding:'2px'}}/></button>]}>
+           
+            <p>  Split panel</p>
             </SplitLayoutPanel>
 
          
             
           </ToolLayoutPanel>
           <ToolLayoutPanel panelName="Info Panel" panelHeaderControls={rightPanelMenuControls}>
-
             <p>Right panel</p>
           </ToolLayoutPanel>
         </ToolLayout>
