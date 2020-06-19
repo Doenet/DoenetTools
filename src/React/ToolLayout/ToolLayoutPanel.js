@@ -21,25 +21,26 @@ const MainContent = styled.div`
 const SplitPanelHeader = styled.div`
     min-height: 1vh;
     overflow: hidden;
-    width: 50%;
+    width: ${props => props.width || '50'}%;
     height: 100%;
     display: flex;
-    align-items: center;
     padding:3px;
     justify-content: ${props => props.justifyContent || 'space-between'};
 `;
 const SplitDivider = styled.div`
-    border: 0.5px solid #e2e2e2;
+    width:1px;
+    background-color:#e2e2e2;
     height: 100%;
     position:absolute;
-    left: 50%;
+    z-index:10;
+    left: calc(50% - 1px);
 `;
 
 const SplitPanelContent = styled.div`
     min-height: 1vh;
-    overflow: hidden;
-    width: 50%;
-    padding:3px;
+    overflow: ${props => props.disableScroll ? 'hidden' : 'scroll'};
+    width: calc(50% - 1px);
+    
 `;
 
 export default class ToolLayoutPanel extends Component {
@@ -136,7 +137,6 @@ export default class ToolLayoutPanel extends Component {
       );
     };
     const splitPanelProps = splitLayoutPanel && splitLayoutPanel.props;
-    console.log('***********', panelHeader.length);
     return (
       <>
         {!this.context.panelHeadersControlVisible.hideMenu ? <div className="panels-header-content">
@@ -146,10 +146,8 @@ export default class ToolLayoutPanel extends Component {
                 this.context.position === 'right' ? rightPanelCloseButton() : '' : ''}
 
             {!this.props.splitPanel ?
-              panelHeader && panelHeader.length > 1 ? <>
-                {<SplitPanelHeader>{[panelHeader[0]]}</SplitPanelHeader>}
-                {<SplitPanelHeader justifyContent="flex-end">{[panelHeader[1]]}</SplitPanelHeader>}
-              </> : panelHeader
+             
+              <SplitPanelHeader width={100}>{panelHeader}</SplitPanelHeader>
               : <>
                 {<SplitPanelHeader>
                   {[panelHeader[0]]}
@@ -163,13 +161,13 @@ export default class ToolLayoutPanel extends Component {
         </div> : ''}
 
         <MainContent height={mainHeight} isResizing={this.context.isResizing}>
-          {/* <SplitPanelContext.Provider value={{ splitPanel: this.props.splitPanel, name: "channel" }}>{this.props.children}</SplitPanelContext.Provider> */}
-          {/* {this.props.children} */}
+       
           {!this.props.splitPanel ?
             filteredChildren :
-            (<><SplitPanelContent>{filteredChildren}</SplitPanelContent>
+
+            (<><SplitPanelContent disableScroll={this.props.disableSplitPanelScroll[0]}>{filteredChildren}</SplitPanelContent>
               <SplitDivider></SplitDivider>
-              <SplitPanelContent>{splitLayoutPanel}</SplitPanelContent></>)}
+              <SplitPanelContent disableScroll={this.props.disableSplitPanelScroll[1]}>{splitLayoutPanel}</SplitPanelContent></>)}
           {this.context.panelHeadersControlVisible.showFooter && <div className='tool-footer'></div>}
         </MainContent>
 
