@@ -611,7 +611,7 @@ class DoenetChooser extends Component {
     }
     axios.post(url, data)
     .then((resp) => {
-      callback(folderId);
+      callback(resp);
     })
     .catch(function (error) {
       this.setState({error:error});
@@ -737,23 +737,75 @@ class DoenetChooser extends Component {
     let isRepo = this.folderInfo[folderId].isRepo;
     let isPublic = this.folderInfo[folderId].isPublic;
 
-
-    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (folderId) => {
+    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (resp) => {
       // creating new folder
       //    in a folder ~ set childItem.rootId = folderId.rootId
       //    at root ~ addContentToFolder not invoked
       // moving into folder
       //    from another root ~ set childItem.rootId = folderId.rootId
       //    from same root ~ set childItem.rootId = folderId.rootId
-      let itemIds = [];
+      if (resp.status != 200) return;
+      for (let i = 0; i < childIds.length; i++) {
+        if (childType[i] == "content") {
+          let originalParent = this.branchId_info[childIds[i]].parentId;
+          let originalIndex = this.folderInfo[originalParent]["childContent"].indexOf(childIds[i]);
+          this.folderInfo[originalParent]["childContent"].splice(originalIndex, 1);
+          this.folderInfo[folderId]["childContent"].push(childIds[i]);
+          this.branchId_info[childIds[i]].parentId = folderId;
+          if (folderId == "root") this.sort_order.push(childIds[i]);
+          if (originalParent == "root") {
+            let index = this.sort_order.indexOf(childIds[i]);
+            this.sort_order.splice(index, 1);
+          }
+        } else if (childType[i] == "folder") {
+          let originalParent = this.folderInfo[childIds[i]].parentId;
+          let originalIndex = this.folderInfo[originalParent]["childFolders"].indexOf(childIds[i]);
+          this.folderInfo[originalParent]["childFolders"].splice(originalIndex, 1);
+          this.folderInfo[folderId]["childFolders"].push(childIds[i]);
+          this.folderInfo[childIds[i]].parentId = folderId;
+          if (folderId == "root") this.folderIds.push(childIds[i]);
+          if (originalParent == "root") {
+            let index = this.folderIds.indexOf(childIds[i]);
+            this.folderIds.splice(index, 1);
+          }
+        } else if (childType[i] == "url") {
+          let originalParent = this.urlInfo[childIds[i]].parentId;
+          let originalIndex = this.folderInfo[originalParent]["childUrls"].indexOf(childIds[i]);
+          this.folderInfo[originalParent]["childUrls"].splice(originalIndex, 1);
+          this.folderInfo[folderId]["childUrls"].push(childIds[i]);
+          this.urlInfo[childIds[i]].parentId = folderId;
+          if (folderId == "root") this.urlIds.push(childIds[i]);
+          if (originalParent == "root") {
+            let index = this.urlIds.indexOf(childIds[i]);
+            this.urlIds.splice(index, 1);
+          }
+        }
+      }
+      this.userContentReloaded = true;
+
+      let allItems = { itemIds: [], itemType: [] };
       childIds.forEach(childId => {
-          itemIds = itemIds.concat(this.flattenFolder(childId).itemIds);
+        let res = this.flattenFolder(childId);
+        allItems.itemIds = allItems.itemIds.concat(res.itemIds);
+        allItems.itemType = allItems.itemType.concat(res.itemType);
       });
-      
-      this.modifyFolderChildrenRoot(this.folderInfo[folderId].rootId, itemIds, () => {
-        this.loadUserFoldersAndRepo();
-        this.loadUserContentBranches();
-        this.loadUserUrls();
+
+      this.modifyFolderChildrenRoot(this.folderInfo[folderId].rootId, allItems.itemIds, () => {
+        // this.loadUserFoldersAndRepo();
+        // this.loadUserContentBranches();
+        // this.loadUserUrls();
+        for (let i = 0; i < allItems.itemIds.length; i++) {
+          let currentItemType = allItems.itemType[i];
+          let currentItemId = allItems.itemIds[i];
+          if (currentItemType == "content") {
+            this.branchId_info[currentItemId].rootId = this.folderInfo[folderId].rootId;
+          } else if (currentItemType == "folder") {
+            this.folderInfo[currentItemId].rootId = this.folderInfo[folderId].rootId;
+          } else if (currentItemType == "url") {
+            this.urlInfo[currentItemId].rootId = this.folderInfo[folderId].rootId;
+          }
+        }
+        this.forceUpdate();
         callback();
       });
     });
@@ -774,7 +826,7 @@ class DoenetChooser extends Component {
       // private -> private redundant, continue with removing    
     }
 
-    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (folderId) => {
+    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (resp) => {
       // within same root ~ set childItem.rootId = folderId.rootId (unchanged)
       // to diff root ~ set childItem.rootId = folderId.rootId (changed)
       // to root ~ set childItem.rootId = childItem.id
@@ -852,7 +904,7 @@ class DoenetChooser extends Component {
     }
     axios.post(url, data)
     .then((resp) => {
-      callback();
+      callback(resp);
     })
     .catch(function (error) {
       this.setState({error:error});
@@ -2599,7 +2651,7 @@ class InfoPanel extends Component {
   }
 
   buildInfoPanelItemDetails(selectedItemId, selectedItemType) {
-    
+    console.log(selectedItemId + " " + selectedItemType)
     this.infoPanelDetails = [];
     let itemDetails = {};
     if (selectedItemType === "folder") {
@@ -2758,7 +2810,7 @@ class InfoPanel extends Component {
         "Versions" : versions,
         // "Related content" : relatedContent,
       };
-
+      console.log(this.props.allContentInfo[selectedItemId].rootId);
       let isShared = this.props.allContentInfo[selectedItemId].rootId == "root" ? false :
         this.props.allFolderInfo[this.props.allContentInfo[selectedItemId].rootId].isRepo;
 

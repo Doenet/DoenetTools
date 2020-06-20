@@ -702,10 +702,10 @@ class DoenetBranchBrowser extends Component {
                   {this.state.directoryStack.length !== 0 &&
                   <DropItem 
                     id={ChooserConstants.PREVIOUS_DIR_ID} 
-                    onDrop={() => {this.onFolderDropCb(ChooserConstants.PREVIOUS_DIR_ID)}} 
-                    onDropEnter={this.onFolderDropEnterCb}>
+                    onDrop={() => this.onFolderDropCb(ChooserConstants.PREVIOUS_DIR_ID)} 
+                    onDropEnter={() => this.onFolderDropEnterCb(ChooserConstants.PREVIOUS_DIR_ID)}>
                     <tr
-                    className={this.currentDraggedOverFolder == ChooserConstants.PREVIOUS_DIR_ID ? "browserDataRow browserSelectedRow" : "browserDataRow" }
+                    className={`${this.state.currentDraggedOverFolder == ChooserConstants.PREVIOUS_DIR_ID ? "browserSelectedRow" : "" } browserDataRow`}
                     data-cy="upOneDirectory"
                     onDoubleClick={this.upOneDirectory}>
                       <td className="browserItemName">
