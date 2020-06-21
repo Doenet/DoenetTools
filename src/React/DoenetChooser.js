@@ -737,6 +737,49 @@ class DoenetChooser extends Component {
     let isRepo = this.folderInfo[folderId].isRepo;
     let isPublic = this.folderInfo[folderId].isPublic;
 
+    const getDataObjects = (itemType) => {
+      let data = {};
+      switch(itemType) {
+        case "content":
+          data = {
+            "idList": this.sort_order,
+            "info": this.branchId_info,
+            "folderChildList": "childContent"
+          }
+          break;
+        case "folder":
+          data = {
+            "idList": this.folderIds,
+            "info": this.folderInfo,
+            "folderChildList": "childFolders"
+          }
+          break;
+        case "url":
+          data = {
+            "idList": this.urlIds,
+            "info": this.urlInfo,
+            "folderChildList": "childUrls"
+          }
+          break;
+      }
+      return data;
+    }
+
+    // check if moving item out of public repo 
+    const itemDataInfo = getDataObjects(childType[0])["info"]
+    console.log(itemDataInfo[childIds[0]])
+    if (itemDataInfo[childIds[0]] != undefined) {
+      const firstParentId = itemDataInfo[childIds[0]].parentId;
+      const movingOutOfPublicRepo = this.folderInfo[firstParentId].isRepo && 
+                                    this.folderInfo[firstParentId].isPublic &&
+                                    folderId == "root";
+      
+      if (movingOutOfPublicRepo) {
+        this.displayToast(`Public content cannot be made private`);
+        return; // public -> private not allowed
+      } 
+    }
+
     this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (resp) => {
       // creating new folder
       //    in a folder ~ set childItem.rootId = folderId.rootId
@@ -746,39 +789,26 @@ class DoenetChooser extends Component {
       //    from same root ~ set childItem.rootId = folderId.rootId
       if (resp.status != 200) return;
       for (let i = 0; i < childIds.length; i++) {
-        if (childType[i] == "content") {
-          let originalParent = this.branchId_info[childIds[i]].parentId;
-          let originalIndex = this.folderInfo[originalParent]["childContent"].indexOf(childIds[i]);
-          this.folderInfo[originalParent]["childContent"].splice(originalIndex, 1);
-          this.folderInfo[folderId]["childContent"].push(childIds[i]);
-          this.branchId_info[childIds[i]].parentId = folderId;
-          if (folderId == "root") this.sort_order.push(childIds[i]);
+        let childId = childIds[i];
+        let childDataObject = getDataObjects(childType[i]);
+        let childDataInfo = childDataObject["info"];
+        let childDataIdList = childDataObject["idList"];
+        let childListKey = childDataObject["folderChildList"]
+        // not new item
+        if (childDataObject["info"][childId] != undefined) {
+          let originalParent = childDataInfo[childId].parentId;
+          let originalIndex = this.folderInfo[originalParent][childListKey].indexOf(childId);
+          this.folderInfo[originalParent][childListKey].splice(originalIndex, 1);
+          this.folderInfo[folderId][childListKey].push(childId);
+          childDataInfo[childId].parentId = folderId;
+          if (folderId == "root") childDataIdList.push(childId);
           if (originalParent == "root") {
-            let index = this.sort_order.indexOf(childIds[i]);
-            this.sort_order.splice(index, 1);
+            let index = childDataIdList.indexOf(childId);
+            childDataIdList.splice(index, 1);
           }
-        } else if (childType[i] == "folder") {
-          let originalParent = this.folderInfo[childIds[i]].parentId;
-          let originalIndex = this.folderInfo[originalParent]["childFolders"].indexOf(childIds[i]);
-          this.folderInfo[originalParent]["childFolders"].splice(originalIndex, 1);
-          this.folderInfo[folderId]["childFolders"].push(childIds[i]);
-          this.folderInfo[childIds[i]].parentId = folderId;
-          if (folderId == "root") this.folderIds.push(childIds[i]);
-          if (originalParent == "root") {
-            let index = this.folderIds.indexOf(childIds[i]);
-            this.folderIds.splice(index, 1);
-          }
-        } else if (childType[i] == "url") {
-          let originalParent = this.urlInfo[childIds[i]].parentId;
-          let originalIndex = this.folderInfo[originalParent]["childUrls"].indexOf(childIds[i]);
-          this.folderInfo[originalParent]["childUrls"].splice(originalIndex, 1);
-          this.folderInfo[folderId]["childUrls"].push(childIds[i]);
-          this.urlInfo[childIds[i]].parentId = folderId;
-          if (folderId == "root") this.urlIds.push(childIds[i]);
-          if (originalParent == "root") {
-            let index = this.urlIds.indexOf(childIds[i]);
-            this.urlIds.splice(index, 1);
-          }
+        } else {
+          this.folderInfo[folderId][childListKey].push(childId);
+          if (folderId == "root") childDataIdList.push(childId);
         }
       }
       this.userContentReloaded = true;
@@ -791,19 +821,18 @@ class DoenetChooser extends Component {
       });
 
       this.modifyFolderChildrenRoot(this.folderInfo[folderId].rootId, allItems.itemIds, () => {
-        // this.loadUserFoldersAndRepo();
-        // this.loadUserContentBranches();
-        // this.loadUserUrls();
         for (let i = 0; i < allItems.itemIds.length; i++) {
           let currentItemType = allItems.itemType[i];
           let currentItemId = allItems.itemIds[i];
-          if (currentItemType == "content") {
-            this.branchId_info[currentItemId].rootId = this.folderInfo[folderId].rootId;
-          } else if (currentItemType == "folder") {
-            this.folderInfo[currentItemId].rootId = this.folderInfo[folderId].rootId;
-          } else if (currentItemType == "url") {
-            this.urlInfo[currentItemId].rootId = this.folderInfo[folderId].rootId;
-          }
+          let childDataObject = getDataObjects(currentItemType);
+          let childDataInfo = childDataObject["info"];
+          if (childDataInfo[currentItemId]) {
+            childDataInfo[currentItemId].rootId = this.folderInfo[folderId].rootId; 
+          } else {
+            this.loadUserContentBranches();
+            this.loadUserFoldersAndRepo();
+            this.loadUserUrls();
+          }   
         }
         this.forceUpdate();
         callback();
@@ -1593,9 +1622,12 @@ class DoenetChooser extends Component {
       }
     }
     if (droppedId == ChooserConstants.PREVIOUS_DIR_ID) {
-      // remove draggedIds from current directory
-      const currentDirectoryId = this.state.directoryStack.slice(-1)[0];
-      this.removeContentFromFolder(draggedItems.id, draggedItems.type, currentDirectoryId);
+      // add content to previous directory
+      let previousDirectoryId = this.state.directoryStack.slice(-2)[0];
+      if (this.state.directoryStack.length < 2) previousDirectoryId = "root";
+      console.log(this.state.directoryStack)
+      console.log("add content to " + previousDirectoryId)
+      this.addContentToFolder(draggedItems.id, draggedItems.type, previousDirectoryId);
     } else {
       // add draggedIds to folder with droppedId
       this.addContentToFolder(draggedItems.id, draggedItems.type, droppedId);
@@ -2651,7 +2683,6 @@ class InfoPanel extends Component {
   }
 
   buildInfoPanelItemDetails(selectedItemId, selectedItemType) {
-    console.log(selectedItemId + " " + selectedItemType)
     this.infoPanelDetails = [];
     let itemDetails = {};
     if (selectedItemType === "folder") {
