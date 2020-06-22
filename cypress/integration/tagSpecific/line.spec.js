@@ -6,7 +6,7 @@ describe('Line Tag Tests', function () {
     cy.visit('/test')
   })
 
-  it('move points reffed by line', () => {
+  it('move points copied by line', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -16,8 +16,8 @@ describe('Line Tag Tests', function () {
   <point label='Q'>(-4,-1)</point>
     <line>
       <through>
-        <ref>_point1</ref>
-        <ref>_point2</ref>
+        <copy tname="_point1" />
+        <copy tname="_point2" />
       </through>
     </line>
   </graph>
@@ -159,7 +159,7 @@ describe('Line Tag Tests', function () {
   <math>2</math>
   <graph>
     <line label='l'>
-      (<ref>_math1</ref>,<ref>_math2</ref>),(<math>4</math>,7)
+      (<copy tname="_math1" />,<copy tname="_math2" />),(<math>4</math>,7)
     </line>
   </graph>
     `}, "*");
@@ -199,7 +199,7 @@ describe('Line Tag Tests', function () {
   <math>2</math>
   <graph>
     <line label='l'>
-      <point>(<ref>_math1</ref>,<ref>_math2</ref>)</point>
+      <point>(<copy tname="_math1" />,<copy tname="_math2" />)</point>
       <point>(<math>4</math>,7)</point>
     </line>
   </graph>
@@ -407,7 +407,7 @@ describe('Line Tag Tests', function () {
   <number>2</number>
   <graph>
     <line>
-      <ref>_math1</ref>-<ref>_number1</ref>y=3
+      <copy tname="_math1" />-<copy tname="_number1" />y=3
     </line>
   </graph>
   `}, "*");
@@ -441,7 +441,7 @@ describe('Line Tag Tests', function () {
       5u-2v=3
     </line>
   </graph>
-  <p>Variables are <ref prop="var1">_line1</ref> and <ref prop="var2">_line1</ref>.</p>
+  <p>Variables are <copy prop="var1" tname="_line1" /> and <copy prop="var2" tname="_line1" />.</p>
   `}, "*");
     });
 
@@ -449,9 +449,9 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let math1 = components['/_ref1'].replacements[0];
+      let math1 = components['/_copy1'].replacements[0];
       let math1Anchor = '#' + math1.componentName;
-      let math2 = components['/_ref2'].replacements[0];
+      let math2 = components['/_copy2'].replacements[0];
       let math2Anchor = '#' + math2.componentName;
 
       cy.log('equation and line variable are what they should be')
@@ -527,14 +527,14 @@ describe('Line Tag Tests', function () {
 
   <point>
   <coords>
-  (<ref prop="y">_point2</ref>,
-  <ref>a</ref>)
+  (<copy prop="y" tname="_point2" />,
+  <copy tname="a" />)
   </coords>
   </point>
   <point>(5,3)</point>
-  <line><through><ref>_point1</ref><ref>_point2</ref></through></line>
+  <line><through><copy tname="_point1" /><copy tname="_point2" /></through></line>
   </graph>
-  <math name="a" hide simplify><ref prop="x">_point2</ref>+1</math>
+  <math name="a" hide simplify><copy prop="x" tname="_point2" />+1</math>
   `}, "*");
     });
 
@@ -657,7 +657,7 @@ describe('Line Tag Tests', function () {
 
   });
 
-  it('reffed line', () => {
+  it('copied line', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -665,11 +665,11 @@ describe('Line Tag Tests', function () {
   <graph>
   <point>(0,0)</point>
   <point>(1,3)</point>
-  <line><through><ref>_point1</ref><ref>_point2</ref></through></line>
+  <line><through><copy tname="_point1" /><copy tname="_point2" /></through></line>
   </graph>
   
   <graph>
-  <ref>_line1</ref>
+  <copy tname="_line1" />
   </graph>
   `}, "*");
     });
@@ -678,9 +678,9 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let point1 = components['/_ref1'].replacements[0];
-      let point2 = components['/_ref2'].replacements[0];
-      let line2 = components['/_ref3'].replacements[0];
+      let point1 = components['/_copy1'].replacements[0];
+      let point2 = components['/_copy2'].replacements[0];
+      let line2 = components['/_copy3'].replacements[0];
 
       cy.log('line starts off correctly')
       cy.window().then((win) => {
@@ -764,7 +764,7 @@ describe('Line Tag Tests', function () {
     })
   })
 
-  it('line via reffed through', () => {
+  it('line via copied through', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -772,11 +772,11 @@ describe('Line Tag Tests', function () {
   <graph>
   <point>(0,0)</point>
   <point>(1,3)</point>
-  <line><through><ref>_point1</ref><ref>_point2</ref></through></line>
+  <line><through><copy tname="_point1" /><copy tname="_point2" /></through></line>
   </graph>
   
   <graph>
-  <line><ref>_through1</ref></line>
+  <line><copy tname="_through1" /></line>
   </graph>
   `}, "*");
     });
@@ -785,8 +785,8 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let point1 = components['/_ref1'].replacements[0];
-      let point2 = components['/_ref2'].replacements[0];
+      let point1 = components['/_copy1'].replacements[0];
+      let point2 = components['/_copy2'].replacements[0];
 
       cy.log('line starts off correctly')
       cy.window().then((win) => {
@@ -873,7 +873,7 @@ describe('Line Tag Tests', function () {
 
   })
 
-  it('ref points of line', () => {
+  it('copy points of line', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -882,11 +882,11 @@ describe('Line Tag Tests', function () {
   <line>(1,2),(3,4)</line>
   </graph>
   <graph>
-  <ref prop="point1">_line1</ref>
-  <ref prop="point2">_line1</ref>
+  <copy prop="point1" tname="_line1" />
+  <copy prop="point2" tname="_line1" />
   </graph>
   <graph>
-  <ref prop="points">_line1</ref>
+  <copy prop="points" tname="_line1" />
   </graph>
   `}, "*");
     });
@@ -898,10 +898,10 @@ describe('Line Tag Tests', function () {
       let through1 = components['/_line1'].activeChildren[0];
       let point1 = through1.activeChildren[0];
       let point2 = through1.activeChildren[1];
-      let point3 = components['/_ref1'].replacements[0];
-      let point4 = components['/_ref2'].replacements[0];
-      let point5 = components['/_ref3'].replacements[0];
-      let point6 = components['/_ref3'].replacements[1];
+      let point3 = components['/_copy1'].replacements[0];
+      let point4 = components['/_copy2'].replacements[0];
+      let point5 = components['/_copy3'].replacements[0];
+      let point6 = components['/_copy3'].replacements[1];
 
       cy.window().then((win) => {
         let p1x = 1;
@@ -922,7 +922,7 @@ describe('Line Tag Tests', function () {
         expect(point6.stateValues.xs[1].tree).eq(p2y)
       })
 
-      cy.log('move first individually reffed point');
+      cy.log('move first individually copied point');
       cy.window().then((win) => {
         let p1x = -2;
         let p1y = -5;
@@ -943,7 +943,7 @@ describe('Line Tag Tests', function () {
         expect(point6.stateValues.xs[1].tree).eq(p2y)
       })
 
-      cy.log('move second individually reffed point');
+      cy.log('move second individually copied point');
       cy.window().then((win) => {
         let p2x = 8;
         let p2y = -1;
@@ -964,7 +964,7 @@ describe('Line Tag Tests', function () {
         expect(point6.stateValues.xs[1].tree).eq(p2y)
       })
 
-      cy.log('move second array-reffed point');
+      cy.log('move second array-copied point');
       cy.window().then((win) => {
         let p2x = -6;
         let p2y = 4;
@@ -985,7 +985,7 @@ describe('Line Tag Tests', function () {
         expect(point6.stateValues.xs[1].tree).eq(p2y)
       })
 
-      cy.log('move first array-reffed point');
+      cy.log('move first array-copied point');
       cy.window().then((win) => {
         let p1x = 0;
         let p1y = 7;
@@ -1054,7 +1054,7 @@ describe('Line Tag Tests', function () {
 
   })
 
-  it('new line from reffed points of line', () => {
+  it('new line from copied points of line', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1064,9 +1064,9 @@ describe('Line Tag Tests', function () {
   </graph>
   <graph>
   <line>
-    <ref prop="points">_line1</ref>
+    <copy prop="points" tname="_line1" />
   </line>
-  <ref prop="points">_line1</ref>
+  <copy prop="points" tname="_line1" />
   </graph>
   `}, "*");
     });
@@ -1079,8 +1079,8 @@ describe('Line Tag Tests', function () {
       let through1 = components['/_line1'].activeChildren[0];
       let point1 = through1.activeChildren[0];
       let point2 = through1.activeChildren[1];
-      let point3 = components['/_ref1'].replacements[0];
-      let point4 = components['/_ref1'].replacements[1];
+      let point3 = components['/_copy1'].replacements[0];
+      let point4 = components['/_copy1'].replacements[1];
 
       cy.window().then((win) => {
         let p1x = -1;
@@ -1197,7 +1197,7 @@ describe('Line Tag Tests', function () {
     })
   })
 
-  it('reference public state variables of line', () => {
+  it('copy public state variables of line', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1208,11 +1208,11 @@ describe('Line Tag Tests', function () {
     </line>
   </graph>
 
-  <p>Variables are <ref prop="var1">_line1</ref> and <ref prop="var2">_line1</ref>.</p>
-  <p><m>x</m>-intercept is: <ref prop="xintercept">_line1</ref>.</p>
-  <p><m>y</m>-intercept is: <ref prop="yintercept">_line1</ref>.</p>
-  <p>Slope is: <ref prop="slope">_line1</ref>.</p>
-  <p>Equation is: <ref prop="equation">_line1</ref>.</p>
+  <p>Variables are <copy prop="var1" tname="_line1" /> and <copy prop="var2" tname="_line1" />.</p>
+  <p><m>x</m>-intercept is: <copy prop="xintercept" tname="_line1" />.</p>
+  <p><m>y</m>-intercept is: <copy prop="yintercept" tname="_line1" />.</p>
+  <p>Slope is: <copy prop="slope" tname="_line1" />.</p>
+  <p>Equation is: <copy prop="equation" tname="_line1" />.</p>
   `}, "*");
     });
 
@@ -1220,17 +1220,17 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let var1 = components['/_ref1'].replacements[0];
+      let var1 = components['/_copy1'].replacements[0];
       let var1Anchor = '#' + var1.componentName;
-      let var2 = components['/_ref2'].replacements[0];
+      let var2 = components['/_copy2'].replacements[0];
       let var2Anchor = '#' + var2.componentName;
-      let xintercept = components['/_ref3'].replacements[0];
+      let xintercept = components['/_copy3'].replacements[0];
       let xinterceptAnchor = '#' + xintercept.componentName;
-      let yintercept = components['/_ref4'].replacements[0];
+      let yintercept = components['/_copy4'].replacements[0];
       let yinterceptAnchor = '#' + yintercept.componentName;
-      let slope = components['/_ref5'].replacements[0];
+      let slope = components['/_copy5'].replacements[0];
       let slopeAnchor = '#' + slope.componentName;
-      let equation = components['/_ref6'].replacements[0];
+      let equation = components['/_copy6'].replacements[0];
 
       cy.get(var1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
@@ -1270,7 +1270,7 @@ describe('Line Tag Tests', function () {
     })
   });
 
-  it('line from reference to equation and coefficients', () => {
+  it('line from copy of equation and coefficients', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1281,11 +1281,11 @@ describe('Line Tag Tests', function () {
     </line>
   </graph>
   <graph>
-  <line><ref prop="equation">_line1</ref></line>
+  <line><copy prop="equation" tname="_line1" /></line>
   </graph>
   <graph>
   <line variables="u,v">
-    <ref prop="coeffvar1">_line1</ref>u + <ref prop="coeffvar2">_line1</ref>v + <ref prop="coeff0">_line1</ref> =0
+    <copy prop="coeffvar1" tname="_line1" />u + <copy prop="coeffvar2" tname="_line1" />v + <copy prop="coeff0" tname="_line1" /> =0
   </line>
   </graph>
   `}, "*");
@@ -1358,23 +1358,23 @@ describe('Line Tag Tests', function () {
   <line>
     <point>(1,2)</point>
     <point>
-      (<ref prop="y">_point1</ref>, <ref prop="x">_point1</ref>)
+      (<copy prop="y" tname="_point1" />, <copy prop="x" tname="_point1" />)
     </point>
   </line> 
   <point name="x1">
-    <x><extract prop="x"><ref prop="point1">_line1</ref></extract></x>
+    <x><extract prop="x"><copy prop="point1" tname="_line1" /></extract></x>
     <y fixed>3</y>
   </point>
   <point name="x2">
-    <x><extract prop="x"><ref prop="point2">_line1</ref></extract></x>
+    <x><extract prop="x"><copy prop="point2" tname="_line1" /></extract></x>
     <y fixed>4</y>
   </point>
   <point name="y1">
-    <y><extract prop="y"><ref prop="point1">_line1</ref></extract></y>
+    <y><extract prop="y"><copy prop="point1" tname="_line1" /></extract></y>
     <x fixed>3</x>
   </point>
   <point name="y2">
-    <y><extract prop="y"><ref prop="point2">_line1</ref></extract></y>
+    <y><extract prop="y"><copy prop="point2" tname="_line1" /></extract></y>
     <x fixed>4</x>
   </point>
 </graph>
@@ -1462,19 +1462,19 @@ describe('Line Tag Tests', function () {
   <graph>
   <line>
     <through>
-    <ref prop="point2">_line2</ref>
+    <copy prop="point2" tname="_line2" />
     <point>(1,0)</point>
     </through>
   </line>
   <line>
     <through hide="false">
-    <ref prop="point2">_line3</ref>
+    <copy prop="point2" tname="_line3" />
     <point>(3,2)</point>
     </through>
   </line>
   <line>
     <through hide="false">
-    <ref prop="point2">_line1</ref>
+    <copy prop="point2" tname="_line1" />
     <point>(-1,4)</point>
     </through>
   </line>
@@ -1601,17 +1601,17 @@ describe('Line Tag Tests', function () {
   <text>a</text>
   <graph>
     <line/>
-    <ref name="A" prop="point1">_line1</ref>
-    <ref name="B" prop="point2">_line1</ref>
+    <copy name="A" prop="point1" tname="_line1" />
+    <copy name="B" prop="point2" tname="_line1" />
   </graph>
 
   <graph>
-    <ref name="l2">_line1</ref>
-    <ref name="A2" prop="point1">l2</ref>
-    <ref name="B2" prop="point2">l2</ref>  
+    <copy name="l2" tname="_line1" />
+    <copy name="A2" prop="point1" tname="l2" />
+    <copy name="B2" prop="point2" tname="l2" />  
   </graph>
 
-  <ref name="g3">_graph2</ref>
+  <copy name="g3" tname="_graph2" />
 
 
   `}, "*");
@@ -1858,16 +1858,16 @@ describe('Line Tag Tests', function () {
   <text>a</text>
   <graph>
     <line><through/></line>
-    <ref name="A" prop="point1">_line1</ref>
-    <ref name="B" prop="point2">_line1</ref>
+    <copy name="A" prop="point1" tname="_line1" />
+    <copy name="B" prop="point2" tname="_line1" />
   </graph>
   <graph>
-    <ref name="l2">_line1</ref>
-    <ref name="A2" prop="point1">l2</ref>
-    <ref name="B2" prop="point2">l2</ref>  
+    <copy name="l2" tname="_line1" />
+    <copy name="A2" prop="point1" tname="l2" />
+    <copy name="B2" prop="point2" tname="l2" />  
   </graph>
 
-  <ref name="g3">_graph2</ref>
+  <copy name="g3" tname="_graph2" />
   `}, "*");
     });
 
@@ -2112,16 +2112,16 @@ describe('Line Tag Tests', function () {
   <text>a</text>
   <graph>
     <line><through>(-5,9)</through></line>
-    <ref name="A" prop="point1">_line1</ref>
-    <ref name="B" prop="point2">_line1</ref>
+    <copy name="A" prop="point1" tname="_line1" />
+    <copy name="B" prop="point2" tname="_line1" />
   </graph>
   <graph>
-    <ref name="l2">_line1</ref>
-    <ref name="A2" prop="point1">l2</ref>
-    <ref name="B2" prop="point2">l2</ref>  
+    <copy name="l2" tname="_line1" />
+    <copy name="A2" prop="point1" tname="l2" />
+    <copy name="B2" prop="point2" tname="l2" />  
   </graph>
 
-  <ref name="g3">_graph2</ref>
+  <copy name="g3" tname="_graph2" />
   `}, "*");
     });
 
@@ -2367,16 +2367,16 @@ describe('Line Tag Tests', function () {
   <text>a</text>
   <graph>
     <line><through><point fixed>(-5,9)</point></through></line>
-    <ref name="A" prop="point1">_line1</ref>
-    <ref name="B" prop="point2">_line1</ref>
+    <copy name="A" prop="point1" tname="_line1" />
+    <copy name="B" prop="point2" tname="_line1" />
   </graph>
   <graph>
-    <ref name="l2">_line1</ref>
-    <ref name="A2" prop="point1">l2</ref>
-    <ref name="B2" prop="point2">l2</ref>  
+    <copy name="l2" tname="_line1" />
+    <copy name="A2" prop="point1" tname="l2" />
+    <copy name="B2" prop="point2" tname="l2" />  
   </graph>
 
-  <ref name="g3">_graph2</ref>
+  <copy name="g3" tname="_graph2" />
   `}, "*");
     });
 
@@ -2612,24 +2612,24 @@ describe('Line Tag Tests', function () {
     <line><through>
     <map>
       <template>
-        <point>(<subsref/> + <math>0</math>, 2<subsref/> + <math>0</math>)</point>
+        <point>(<copyFromSubs/> + <math>0</math>, 2<copyFromSubs/> + <math>0</math>)</point>
       </template>
       <substitutions>
-        <sequence><count><ref prop="value">_mathinput1</ref></count></sequence>
+        <sequence><count><copy prop="value" tname="_mathinput1" /></count></sequence>
       </substitutions>
     </map>
     </through></line>
-    <ref name="A" prop="point1">_line1</ref>
-    <ref name="B" prop="point2">_line1</ref>
+    <copy name="A" prop="point1" tname="_line1" />
+    <copy name="B" prop="point2" tname="_line1" />
   </graph>
 
   <graph>
-    <ref name="l2">_line1</ref>
-    <ref name="A2" prop="point1">l2</ref>
-    <ref name="B2" prop="point2">l2</ref>  
+    <copy name="l2" tname="_line1" />
+    <copy name="A2" prop="point1" tname="l2" />
+    <copy name="B2" prop="point2" tname="l2" />  
   </graph>
 
-  <ref name="g3">_graph2</ref>
+  <copy name="g3" tname="_graph2" />
 
   <mathinput prefill="0"/>
   `}, "*");
@@ -3758,24 +3758,24 @@ describe('Line Tag Tests', function () {
     <line><through>
     <map>
       <template>
-        <point>(<subsref/>, 2<subsref/>)</point>
+        <point>(<copyFromSubs/>, 2<copyFromSubs/>)</point>
       </template>
       <substitutions>
-        <sequence><count><ref prop="value">_mathinput1</ref></count></sequence>
+        <sequence><count><copy prop="value" tname="_mathinput1" /></count></sequence>
       </substitutions>
     </map>
     </through></line>
-    <ref name="A" prop="point1">_line1</ref>
-    <ref name="B" prop="point2">_line1</ref>
+    <copy name="A" prop="point1" tname="_line1" />
+    <copy name="B" prop="point2" tname="_line1" />
   </graph>
 
   <graph>
-    <ref name="l2">_line1</ref>
-    <ref name="A2" prop="point1">l2</ref>
-    <ref name="B2" prop="point2">l2</ref>  
+    <copy name="l2" tname="_line1" />
+    <copy name="A2" prop="point1" tname="l2" />
+    <copy name="B2" prop="point2" tname="l2" />  
   </graph>
 
-  <ref name="g3">_graph2</ref>
+  <copy name="g3" tname="_graph2" />
 
   <mathinput prefill="0"/>
   `}, "*");

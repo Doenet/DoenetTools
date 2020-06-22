@@ -11,7 +11,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
         doenetML: `
     <mathinput />
     <p>
-    <isinteger><ref prop="value">_mathinput1</ref></isinteger>
+    <isinteger><copy prop="value" tname="_mathinput1" /></isinteger>
     </p>
     `}, "*");
     });
@@ -19,7 +19,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/_isinteger1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_isinteger1'].state.value).eq(false);
+      expect(components['/_isinteger1'].stateValues.value).eq(false);
     });
 
     cy.log('37');
@@ -27,7 +27,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/_isinteger1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_isinteger1'].state.value).eq(true);
+      expect(components['/_isinteger1'].stateValues.value).eq(true);
     });
 
     cy.log('37.1');
@@ -35,7 +35,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/_isinteger1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_isinteger1'].state.value).eq(false);
+      expect(components['/_isinteger1'].stateValues.value).eq(false);
     });
 
     cy.log('39/3');
@@ -43,7 +43,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/_isinteger1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_isinteger1'].state.value).eq(true);
+      expect(components['/_isinteger1'].stateValues.value).eq(true);
     });
 
     cy.log('-39.6/3.3');
@@ -51,7 +51,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/_isinteger1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_isinteger1'].state.value).eq(true);
+      expect(components['/_isinteger1'].stateValues.value).eq(true);
     });
 
     cy.log('x');
@@ -59,7 +59,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/_isinteger1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_isinteger1'].state.value).eq(false);
+      expect(components['/_isinteger1'].stateValues.value).eq(false);
     });
 
     cy.log('sqrt(4)');
@@ -67,7 +67,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/_isinteger1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_isinteger1'].state.value).eq(true);
+      expect(components['/_isinteger1'].stateValues.value).eq(true);
     });
 
     cy.log('2sin(pi/4)^2');
@@ -75,7 +75,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/_isinteger1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_isinteger1'].state.value).eq(true);
+      expect(components['/_isinteger1'].stateValues.value).eq(true);
     });
 
     cy.log('1E-300');
@@ -83,7 +83,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/_isinteger1').should('have.text', "false");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_isinteger1'].state.value).eq(false);
+      expect(components['/_isinteger1'].stateValues.value).eq(false);
     });
 
     cy.log('-0');
@@ -91,7 +91,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/_isinteger1').should('have.text', "true");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_isinteger1'].state.value).eq(true);
+      expect(components['/_isinteger1'].stateValues.value).eq(true);
     });
 
 

@@ -10,20 +10,20 @@ describe('UpdateValue Tag Tests',function() {
 
     cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
-    <number name="step">20/<ref>count</ref></number>
+    <number name="step">20/<copy tname="count" /></number>
     <graph>
     <map>
     <template>
     <linesegment>
       <endpoints>
-      <point><coords>(<subsref/>, sin(<subsref/>))</coords></point>
-      <point><coords>(<subsref/>+<ref>step</ref>, sin(<subsref/>+<ref>step</ref>))</coords></point>
+      <point><coords>(<copyFromSubs/>, sin(<copyFromSubs/>))</coords></point>
+      <point><coords>(<copyFromSubs/>+<copy tname="step" />, sin(<copyFromSubs/>+<copy tname="step" />))</coords></point>
       </endpoints>
     </linesegment>
     </template>
     <substitutions>
     <sequence from="-10">
-      <to><number>10-<ref>step</ref></number></to>
+      <to><number>10-<copy tname="step" /></number></to>
       <count><number name="count">2</number></count>
     </sequence>
     </substitutions>
@@ -31,8 +31,8 @@ describe('UpdateValue Tag Tests',function() {
     </graph>
     <p></p>
     <updatevalue label="double">
-      <mathtarget><ref>count</ref></mathtarget>
-      <newmathvalue>2<ref>count</ref></newmathvalue>
+      <mathtarget><copy tname="count" /></mathtarget>
+      <newmathvalue>2<copy tname="count" /></newmathvalue>
     </updatevalue>
     `},"*");
     });

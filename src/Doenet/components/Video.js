@@ -5,28 +5,14 @@ export default class Video extends BlockComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.width = {default: 500};
-    properties.height = {default: 500};
-    properties.youtube = {default: undefined};
+    properties.width = { default: 500, forRenderer: true };
+    properties.height = { default: 500, forRenderer: true };
+    properties.youtube = { default: null, forRenderer: true };
 
-    // TODO: changed how isArray works to be like normal state variables
-    // determine how to handle this situation of allowing multiple children
-    properties.sources = {isArray: true, singularName: "source"};
+    properties.source = { default: null, forRenderer: true };
 
     return properties;
   }
 
-
-  initializeRenderer(){
-    if(this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.video({
-        key: this.componentName,
-        sources: this.state.sources,
-        youtube: this.state.youtube,
-        width: this.state.width,
-        height: this.state.height,
-      });
-    }
-  }
 
 }

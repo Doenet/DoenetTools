@@ -256,7 +256,7 @@ describe('Function curve Tag Tests', function () {
     <mathinput prefill="1"/>
     <graph>
     <curve>
-    <math>x</math>^3-x<ref prop="value">_mathinput1</ref>
+    <math>x</math>^3-x<copy prop="value" tname="_mathinput1" />
     </curve>
     </graph>
     `}, "*");
@@ -357,7 +357,7 @@ describe('Function curve Tag Tests', function () {
     <graph>
     <functioncurve>
     <function>
-    <math>x</math>^3-x<ref prop="value">_mathinput1</ref>
+    <math>x</math>^3-x<copy prop="value" tname="_mathinput1" />
     </function>
     </functioncurve>
     </graph>
@@ -399,7 +399,7 @@ describe('Function curve Tag Tests', function () {
     </curve>
     
     <point>(3,5)
-    <constrainTo><ref>_curve1</ref></constrainTo>
+    <constrainTo><copy tname="_curve1" /></constrainTo>
     </point>
     
     </graph>
@@ -467,7 +467,7 @@ describe('Function curve Tag Tests', function () {
     </curve>
     
     <point>(5,3)
-    <constrainTo><ref>_curve1</ref></constrainTo>
+    <constrainTo><copy tname="_curve1" /></constrainTo>
     </point>
     
     </graph>
@@ -535,7 +535,7 @@ describe('Function curve Tag Tests', function () {
     </functioncurve>
     
     <point>(3,5)
-    <constrainTo><ref>_functioncurve1</ref></constrainTo>
+    <constrainTo><copy tname="_functioncurve1" /></constrainTo>
     </point>
     
     </graph>
@@ -601,7 +601,7 @@ describe('Function curve Tag Tests', function () {
     </functioncurve>
     
     <point>(5,3)
-    <constrainTo><ref>_functioncurve1</ref></constrainTo>
+    <constrainTo><copy tname="_functioncurve1" /></constrainTo>
     </point>
     
     </graph>

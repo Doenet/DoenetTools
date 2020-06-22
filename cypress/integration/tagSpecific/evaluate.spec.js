@@ -19,19 +19,19 @@ describe('Evaluate Tag Tests', function () {
   <p>Input value: <mathinput name="input" prefill="0" /></p>
 
   <function name="f">
-    <variable><ref prop="value">variable</ref></variable>
-    <ref prop="value">formula</ref>
+    <variable><copy prop="value" tname="variable" /></variable>
+    <copy prop="value" tname="formula" />
   </function>
 
   <p>Evaluation: 
     <evaluate name="result">
-      <symbolic><ref prop="value">symbolic</ref></symbolic>
-      <ref>f</ref>
-      <ref prop="value">input</ref>
+      <symbolic><copy prop="value" tname="symbolic" /></symbolic>
+      <copy tname="f" />
+      <copy prop="value" tname="input" />
     </evaluate>
   </p>
 
-  <p>Evaluated result again: <math name="result2"><ref prop="evaluatedResult">result</ref></math></p>
+  <p>Evaluated result again: <math name="result2"><copy prop="evaluatedResult" tname="result" /></math></p>
 
   `}, "*");
     });

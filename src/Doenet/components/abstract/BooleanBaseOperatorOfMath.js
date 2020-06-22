@@ -2,6 +2,7 @@ import BooleanComponent from '../Boolean';
 
 export default class BooleanBaseOperatorOfMath extends BooleanComponent {
   static componentType = "_booleanoperatorofmath";
+  static rendererType = "boolean";
 
   static returnChildLogic (args) {
     let childLogic = super.returnChildLogic(args);
@@ -20,37 +21,36 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
 
   }
 
-  updateState(args) {
+  static returnStateVariableDefinitions() {
 
-    super.updateState(args);
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    if(!this.childLogicSatisfied) {
-      return;
+    let constructor = this;
+
+    stateVariableDefinitions.value = {
+      public: true,
+      componentType: this.componentType,
+      forRenderer: true,
+      returnDependencies: () => ({
+        mathChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastOneMath",
+          variableNames: ["value"]
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            value: constructor.applyBooleanOperator(
+              dependencyValues.mathChildren
+                .map(x => x.stateValues.value)
+            )
+          }
+        }
+      }
     }
 
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-
-      let mathInds = this.childLogic.returnMatches("atLeastOneMath");
-      this.state.nMaths = mathInds.length;
-      this.state.mathChildren = mathInds.map(x=>this.activeChildren[x]);
-    }
-
-    if(this.state.mathChildren.some(x => x.unresolvedState.value)) {
-      this.unresolvedState.value = true;
-    }else if(childrenChanged || this.state.mathChildren.some(x => trackChanges.getVariableChanges({
-      component: x, variable: "value"
-    }))) {
-
-      delete this.unresolvedState.value;
-      
-      this.state.value = this.applyBooleanOperator();
-      
-      // text version of value
-      this.state.textvalue = this.state.value.toString();
-    }
+    return stateVariableDefinitions;
 
   }
 

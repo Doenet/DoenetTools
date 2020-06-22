@@ -10,18 +10,18 @@ beforeEach(() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p><textlist hide="true">a,b,c</textlist></p>
 
-    <p><ref hide="false">_textlist1</ref></p>
+    <p><copy hide="false" tname="_textlist1" /></p>
 
     <p><textlist>
       <text>hello</text>
-      <ref>_textlist1</ref>
+      <copy tname="_textlist1" />
       <text>bye</text>
-      <ref>_ref1</ref>
+      <copy tname="_copy1" />
     </textlist></p>
 
-    <p><ref maximumnumber="6">_textlist2</ref></p>
+    <p><copy maximumnumber="6" tname="_textlist2" /></p>
 
-    <p><ref prop="text">_textlist2</ref></p>
+    <p><copy prop="text" tname="_textlist2" /></p>
 
     `},"*");
     });

@@ -101,14 +101,14 @@ describe('Extract Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-      <ref name="copy">original</ref>
-      <point name="transformed">(<ref prop="y">copy2</ref>, <extract prop="x1"><ref name="copy2">copy</ref></extract>)</point>
+      <copy name="copy" tname="original" />
+      <point name="transformed">(<copy prop="y" tname="copy2" />, <extract prop="x1"><copy name="copy2" tname="copy" /></extract>)</point>
     </graph>
 
     <graph>
     <point name="original">(1,2)</point>
     </graph>
-    <ref prop="x">original</ref>
+    <copy prop="x" tname="original" />
     `}, "*");
     });
 
@@ -165,7 +165,7 @@ describe('Extract Tag Tests', function () {
 
   });
 
-  it('ref prop of extract', () => {
+  it('copy prop of extract', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -173,49 +173,44 @@ describe('Extract Tag Tests', function () {
     <extract prop="center">
     <circle>
       <through>
-        <ref>_point1</ref>
-        <ref>_point2</ref>
+        <copy tname="_point1" />
+        <copy tname="_point2" />
       </through>
     </circle>
     </extract>
     
-    <ref prop="x">_extract1</ref>,
-    <ref prop="y">_extract1</ref>
+    <copy name="x1" prop="x" tname="_extract1" />,
+    <copy name="y1" prop="y" tname="_extract1" />
     
     <graph>
     <point>(1,2)</point>
     <point>(5,6)</point>
-    <ref name="reffedextract">_extract1</ref>
+    <copy name="copiedextract" tname="_extract1" />
     </graph>
 
-    <ref prop="x">reffedextract</ref>,
-    <ref prop="y">reffedextract</ref>
+    <copy name="x2" prop="x" tname="copiedextract" />,
+    <copy name="y2" prop="y" tname="copiedextract" />
     `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    // to wait for page to load
-    cy.get('#__math4 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('4')
-    })
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components.__math1.state.value.tree).eq(3);
-      expect(components.__math2.state.value.tree).eq(4);
-      expect(components.__math3.state.value.tree).eq(3);
-      expect(components.__math4.state.value.tree).eq(4);
+      expect(components["/x1"].replacements[0].stateValues.value.tree).eq(3);
+      expect(components["/y1"].replacements[0].stateValues.value.tree).eq(4);
+      expect(components["/x2"].replacements[0].stateValues.value.tree).eq(3);
+      expect(components["/y2"].replacements[0].stateValues.value.tree).eq(4);
     })
 
     cy.log('move extracted center');
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      components['/reffedextract'].replacements[0].movePoint({ x: -2, y: -5 });
-      expect(components.__math1.state.value.tree).closeTo(-2, 1E-12);
-      expect(components.__math2.state.value.tree).closeTo(-5, 1E-12);
-      expect(components.__math3.state.value.tree).closeTo(-2, 1E-12);
-      expect(components.__math4.state.value.tree).closeTo(-5, 1E-12);
+      components['/copiedextract'].replacements[0].replacements[0].movePoint({ x: -2, y: -5 });
+      expect(components["/x1"].replacements[0].stateValues.value.tree).closeTo(-2, 1E-12);
+      expect(components["/y1"].replacements[0].stateValues.value.tree).closeTo(-5, 1E-12);
+      expect(components["/x2"].replacements[0].stateValues.value.tree).closeTo(-2, 1E-12);
+      expect(components["/y2"].replacements[0].stateValues.value.tree).closeTo(-5, 1E-12);
       expect(components['/_point1'].stateValues.xs[0].tree).closeTo(-4, 1E-12);
       expect(components['/_point1'].stateValues.xs[1].tree).closeTo(-7, 1E-12);
       expect(components['/_point2'].stateValues.xs[0].tree).closeTo(0, 1E-12);
@@ -227,15 +222,14 @@ describe('Extract Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       components['/_point1'].movePoint({ x: 8, y: -1 });
       components['/_point2'].movePoint({ x: -6, y: -7 });
-      expect(components.__math1.state.value.tree).closeTo(1, 1E-12);
-      expect(components.__math2.state.value.tree).closeTo(-4, 1E-12);
-      expect(components.__math3.state.value.tree).closeTo(1, 1E-12);
-      expect(components.__math4.state.value.tree).closeTo(-4, 1E-12);
+      expect(components["/x1"].replacements[0].stateValues.value.tree).closeTo(1, 1E-12);
+      expect(components["/y1"].replacements[0].stateValues.value.tree).closeTo(-4, 1E-12);
+      expect(components["/x2"].replacements[0].stateValues.value.tree).closeTo(1, 1E-12);
+      expect(components["/y2"].replacements[0].stateValues.value.tree).closeTo(-4, 1E-12);
     })
 
 
   });
-
 
   it('extract from sequence', () => {
     cy.window().then((win) => {
@@ -246,13 +240,13 @@ describe('Extract Tag Tests', function () {
 
     <p><aslist>
     <extract prop="text">
-      <sequence><count><ref prop="value">n</ref></count></sequence>
+      <sequence><count><copy prop="value" tname="n" /></count></sequence>
     </extract>
     </aslist></p>
     
-    <p><aslist><ref>_extract1</ref></aslist></p>
+    <p><aslist><copy tname="_extract1" /></aslist></p>
     
-    <p><ref>_aslist2</ref></p>
+    <p><copy tname="_aslist2" /></p>
     `}, "*");
     });
 
@@ -273,7 +267,7 @@ describe('Extract Tag Tests', function () {
     })
 
     cy.log('set to 3')
-    cy.get('#\\/n_input').clear().type(`3`);
+    cy.get('#\\/n_input').clear().type(`3{enter}`);
     cy.get('#\\/_p1').should('have.text', '1, 2, 3');
     cy.get('#\\/_p2').should('have.text', '1, 2, 3');
     cy.get('#\\/_p3').should('have.text', '1, 2, 3');
@@ -289,7 +283,7 @@ describe('Extract Tag Tests', function () {
     })
 
     cy.log('increase to 4')
-    cy.get('#\\/n_input').clear().type(`4`);
+    cy.get('#\\/n_input').clear().type(`4{enter}`);
     cy.get('#\\/_p1').should('have.text', '1, 2, 3, 4');
     cy.get('#\\/_p2').should('have.text', '1, 2, 3, 4');
     cy.get('#\\/_p3').should('have.text', '1, 2, 3, 4');
@@ -307,7 +301,7 @@ describe('Extract Tag Tests', function () {
 
 
     cy.log('decrease to 2')
-    cy.get('#\\/n_input').clear().type(`2`);
+    cy.get('#\\/n_input').clear().type(`2{enter}`);
     cy.get('#\\/_p1').should('have.text', '1, 2');
     cy.get('#\\/_p2').should('have.text', '1, 2');
     cy.get('#\\/_p3').should('have.text', '1, 2');
@@ -323,7 +317,7 @@ describe('Extract Tag Tests', function () {
     })
 
     cy.log('increase to 5')
-    cy.get('#\\/n_input').clear().type(`5`);
+    cy.get('#\\/n_input').clear().type(`5{enter}`);
     cy.get('#\\/_p1').should('have.text', '1, 2, 3, 4, 5');
     cy.get('#\\/_p2').should('have.text', '1, 2, 3, 4, 5');
     cy.get('#\\/_p3').should('have.text', '1, 2, 3, 4, 5');
@@ -352,17 +346,17 @@ describe('Extract Tag Tests', function () {
     <p><aslist>
     <extract prop="x">
       <map>
-        <template><point>(<subsref/>+<ref prop="value">../m</ref>,0)</point></template>
+        <template><point>(<copyFromSubs/>+<copy prop="value" tname="../m" />,0)</point></template>
         <substitutions>
-          <sequence><count><ref prop="value">n</ref></count></sequence>
+          <sequence><count><copy prop="value" tname="n" /></count></sequence>
         </substitutions>
       </map>
     </extract>
     </aslist></p>
     
-    <p><aslist><ref>_extract1</ref></aslist></p>
+    <p><aslist><copy tname="_extract1" /></aslist></p>
     
-    <p><ref>_aslist2</ref></p>
+    <p><copy tname="_aslist2" /></p>
     `}, "*");
     });
 
@@ -388,7 +382,7 @@ describe('Extract Tag Tests', function () {
       })
 
       cy.log('set n to 3')
-      cy.get('#\\/n_input').clear().type(`3`);
+      cy.get('#\\/n_input').clear().type(`3{enter}`);
       cy.window().then((win) => {
         for (let i = 0; i < 3; i++) {
           cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -416,7 +410,7 @@ describe('Extract Tag Tests', function () {
       })
 
       cy.log('set m to 7')
-      cy.get('#\\/m_input').clear().type(`7`);
+      cy.get('#\\/m_input').clear().type(`7{enter}`);
       cy.window().then((win) => {
         for (let i = 0; i < 3; i++) {
           cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -444,7 +438,7 @@ describe('Extract Tag Tests', function () {
       })
 
       cy.log('increase n to 4')
-      cy.get('#\\/n_input').clear().type(`4`);
+      cy.get('#\\/n_input').clear().type(`4{enter}`);
       cy.window().then((win) => {
         for (let i = 0; i < 4; i++) {
           cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -472,7 +466,7 @@ describe('Extract Tag Tests', function () {
       })
 
       cy.log('change m to q')
-      cy.get('#\\/m_input').clear().type(`q`);
+      cy.get('#\\/m_input').clear().type(`q{enter}`);
       cy.window().then((win) => {
         for (let i = 0; i < 4; i++) {
           cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -502,7 +496,7 @@ describe('Extract Tag Tests', function () {
 
 
       cy.log('decrease n to 2')
-      cy.get('#\\/n_input').clear().type(`2`);
+      cy.get('#\\/n_input').clear().type(`2{enter}`);
       cy.window().then((win) => {
         for (let i = 0; i < 2; i++) {
           cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -531,7 +525,7 @@ describe('Extract Tag Tests', function () {
 
 
       cy.log('set m to -1')
-      cy.get('#\\/m_input').clear().type(`-1`);
+      cy.get('#\\/m_input').clear().type(`-1{enter}`);
       cy.window().then((win) => {
         for (let i = 0; i < 2; i++) {
           cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -560,7 +554,7 @@ describe('Extract Tag Tests', function () {
 
 
       cy.log('increase n to 5')
-      cy.get('#\\/n_input').clear().type(`5`);
+      cy.get('#\\/n_input').clear().type(`5{enter}`);
       cy.window().then((win) => {
         for (let i = 0; i < 5; i++) {
           cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -589,7 +583,6 @@ describe('Extract Tag Tests', function () {
 
     })
   });
-
 
 
 });

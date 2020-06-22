@@ -4,12 +4,14 @@ import me from 'math-expressions';
 export default class Mathinput extends Input {
   constructor(args) {
     super(args);
-    this.updateMathExpression = this.updateMathExpression.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    );
 
     this.actions = {
-      updateMathExpression: this.updateMathExpression
+      updateImmediateValue: this.updateImmediateValue.bind(
+        new Proxy(this, this.readOnlyProxyHandler)
+      ),
+      updateValue: this.updateValue.bind(
+        new Proxy(this, this.readOnlyProxyHandler)
+      )
     };
 
     //Complex because the stateValues isn't defined until later
@@ -120,6 +122,66 @@ export default class Mathinput extends Input {
       }
     }
 
+    stateVariableDefinitions.immediateValue = {
+      public: true,
+      componentType: "math",
+      forRenderer: true,
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        }
+      }),
+      definition: function ({ dependencyValues, changes }) {
+        // console.log(`definition of immediateValue`)
+        // console.log(dependencyValues)
+        // console.log(changes);
+
+        if (changes.value) {
+          // only update to value when it changes
+          // (otherwise, let its essential value change)
+          return {
+            newValues: { immediateValue: dependencyValues.value },
+            makeEssential: ["immediateValue"]
+          };
+
+
+        } else {
+          return {
+            useEssentialOrDefaultValue: {
+              immediateValue: {
+                variablesToCheck: "immediateValue",
+                defaultValue: dependencyValues.value
+              }
+            }
+          }
+        }
+
+      },
+      inverseDefinition: function ({ desiredStateVariableValues, initialChange, shadowedVariable }) {
+
+        // value is essential; give it the desired value
+        let instructions = [{
+          setStateVariable: "immediateValue",
+          value: desiredStateVariableValues.immediateValue
+        }]
+
+
+        // if from outside sources, also set value
+        if (!(initialChange || shadowedVariable)) {
+          instructions.push({
+            setDependency: "value",
+            desiredValue: desiredStateVariableValues.immediateValue
+          })
+        }
+
+        return {
+          success: true,
+          instructions
+        };
+      }
+    }
+
     stateVariableDefinitions.text = {
       public: true,
       componentType: "text",
@@ -140,28 +202,28 @@ export default class Mathinput extends Input {
     }
 
 
-    stateVariableDefinitions.submittedValue = {
-      defaultValue: me.fromAst('\uFF3F'),
-      public: true,
-      componentType: "math",
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          submittedValue: {
-            variablesToCheck: ["submittedValue"]
-          }
-        }
-      }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "submittedValue",
-            value: desiredStateVariableValues.submittedValue
-          }]
-        };
-      }
-    }
+    // stateVariableDefinitions.submittedValue = {
+    //   defaultValue: me.fromAst('\uFF3F'),
+    //   public: true,
+    //   componentType: "math",
+    //   returnDependencies: () => ({}),
+    //   definition: () => ({
+    //     useEssentialOrDefaultValue: {
+    //       submittedValue: {
+    //         variablesToCheck: ["submittedValue"]
+    //       }
+    //     }
+    //   }),
+    //   inverseDefinition: function ({ desiredStateVariableValues }) {
+    //     return {
+    //       success: true,
+    //       instructions: [{
+    //         setStateVariable: "submittedValue",
+    //         value: desiredStateVariableValues.submittedValue
+    //       }]
+    //     };
+    //   }
+    // }
 
 
     return stateVariableDefinitions;
@@ -169,14 +231,38 @@ export default class Mathinput extends Input {
   }
 
 
-  updateMathExpression({ mathExpression }) {
+  updateImmediateValue({ mathExpression }) {
+    if (!this.stateValues.disabled) {
+      this.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "immediateValue",
+          value: mathExpression,
+        }]
+      })
+    }
+  }
+
+  updateValue() {
     if (!this.stateValues.disabled) {
       this.requestUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "value",
-          value: mathExpression,
+          value: this.stateValues.immediateValue,
+        }]
+      })
+
+      // in case value ended up being a different value than requested
+      // we set immediate value to whatever was the result
+      this.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "immediateValue",
+          value: this.stateValues.value,
         }]
       })
     }

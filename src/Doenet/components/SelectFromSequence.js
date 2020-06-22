@@ -490,8 +490,8 @@ export default class SelectFromSequence extends Sequence {
 
 
 function makeSelection({ dependencyValues }) {
-  console.log(`make selection`)
-  console.log(dependencyValues)
+  // console.log(`make selection`)
+  // console.log(dependencyValues)
 
   if (dependencyValues.essentialSelectedValues !== null) {
     return {
