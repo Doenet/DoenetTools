@@ -24,8 +24,8 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./volumes/db:/var/lib/mysql
-      - ./volumes/db_init:/docker-entrypoint-initdb.d
+      - ../doenet_docker/volumes/db:/var/lib/mysql
+      - ../doenet_docker/volumes/db_init:/docker-entrypoint-initdb.d
     restart: always
 
   node:

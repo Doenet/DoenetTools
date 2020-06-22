@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[16,0],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[20,0],{
 
-/***/ 554:
+/***/ 555:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -183,7 +183,7 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 571:
+/***/ 576:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -193,7 +193,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(19);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(554);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(555);
 /* harmony import */ var math_expressions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(1);
 /* harmony import */ var math_expressions__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(math_expressions__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(7);
@@ -272,14 +272,14 @@ var MathInput = /*#__PURE__*/function (_DoenetRenderer) {
       return expression;
     }
   }, {
-    key: "updateMathExpressionFromText",
-    value: function updateMathExpressionFromText(text) {
+    key: "updateImmediateValueFromText",
+    value: function updateImmediateValueFromText(text) {
       this.textValue = text;
       var newMathExpression = this.calculateMathExpressionFromText(text);
 
       if (!newMathExpression.equalsViaSyntax(this.mathExpression)) {
         this.mathExpression = newMathExpression;
-        this.actions.updateMathExpression({
+        this.actions.updateImmediateValue({
           mathExpression: newMathExpression
         });
       }
@@ -303,8 +303,12 @@ var MathInput = /*#__PURE__*/function (_DoenetRenderer) {
     key: "handleKeyPress",
     value: function handleKeyPress(e) {
       if (e.key === "Enter") {
-        this.valueToRevertTo = this.doenetSvData.value;
+        this.valueToRevertTo = this.doenetSvData.immediateValue;
         this.textValueToRevertTo = this.textValue;
+
+        if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
+          this.actions.updateValue();
+        }
 
         if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
           this.actions.submitAnswer();
@@ -320,7 +324,7 @@ var MathInput = /*#__PURE__*/function (_DoenetRenderer) {
         if (!this.mathExpression.equalsViaSyntax(this.valueToRevertTo)) {
           this.textValue = this.textValueToRevertTo;
           this.mathExpression = this.valueToRevertTo;
-          this.actions.updateMathExpression({
+          this.actions.updateImmediateValue({
             mathExpression: this.valueToRevertTo
           });
           this.forceUpdate();
@@ -337,13 +341,19 @@ var MathInput = /*#__PURE__*/function (_DoenetRenderer) {
     key: "handleBlur",
     value: function handleBlur(e) {
       this.focused = false;
-      this.valueToRevertTo = this.doenetSvData.value;
+      this.valueToRevertTo = this.doenetSvData.immediateValue;
+      this.textValueToRevertTo = this.textValue;
+
+      if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
+        this.actions.updateValue();
+      }
+
       this.forceUpdate();
     }
   }, {
     key: "onChangeHandler",
     value: function onChangeHandler(e) {
-      this.updateMathExpressionFromText(e.target.value);
+      this.updateImmediateValueFromText(e.target.value);
       this.forceUpdate();
     }
   }, {
@@ -363,7 +373,7 @@ var MathInput = /*#__PURE__*/function (_DoenetRenderer) {
         surroundingBorderColor = "#82a5ff";
       }
 
-      if (!this.mathExpression.equalsViaSyntax(this.doenetSvData.value)) {
+      if (!this.valueToRevertTo.equalsViaSyntax(this.doenetSvData.value)) {
         this.mathExpression = this.doenetSvData.value;
         this.textValue = this.mathExpression.toString();
 

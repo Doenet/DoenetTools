@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[11,0],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[15,0],{
 
-/***/ 554:
+/***/ 555:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -183,7 +183,7 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 566:
+/***/ 571:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -191,7 +191,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Graph; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(554);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(555);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -251,8 +251,9 @@ var Graph = /*#__PURE__*/function (_DoenetRenderer) {
     key: "drawBoard",
     value: function drawBoard() {
       window.JXG.Options.axis.ticks.majorHeight = 20;
+      var boundingbox = [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin];
       this.board = window.JXG.JSXGraph.initBoard(this.componentName, {
-        boundingbox: [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin],
+        boundingbox: boundingbox,
         axis: false,
         showCopyright: false
       });
@@ -307,51 +308,34 @@ var Graph = /*#__PURE__*/function (_DoenetRenderer) {
         board: this.board
       };
       this.initializeChildren();
+      this.previousBoundingbox = boundingbox;
     }
   }, {
-    key: "resizeBoard",
-    value: function resizeBoard(_ref) {
-      var xmin = _ref.xmin,
-          xmax = _ref.xmax,
-          ymin = _ref.ymin,
-          ymax = _ref.ymax;
-      var changedSize = false;
+    key: "update",
+    value: function update() {
+      var _this2 = this;
 
-      if (xmin !== undefined && xmin !== this.xmin) {
-        this.xmin = xmin;
-        changedSize = true;
-      }
+      var boundingbox = [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin];
 
-      if (xmax !== undefined && xmax !== this.xmax) {
-        this.xmax = xmax;
-        changedSize = true;
-      }
-
-      if (ymin !== undefined && ymin !== this.ymin) {
-        this.ymin = ymin;
-        changedSize = true;
-      }
-
-      if (ymax !== undefined && ymax !== this.ymax) {
-        this.ymax = ymax;
-        changedSize = true;
-      }
-
-      if (changedSize) {
-        this.board.setBoundingBox([this.xmin, this.ymax, this.xmax, this.ymin]); // seem to need to call this again to get the ticks correct
+      if (boundingbox.some(function (v, i) {
+        return v !== _this2.previousBoundingbox[i];
+      })) {
+        this.board.setBoundingBox(boundingbox); // seem to need to call this again to get the ticks correct
 
         this.board.fullUpdate();
 
         if (this.board.updateQuality === this.board.BOARD_QUALITY_LOW) {
           this.board.itemsRenderedLowQuality[this.componentName] = this.board;
         }
+
+        this.previousBoundingbox = boundingbox;
       }
     }
   }, {
     key: "setToLowQualityRender",
     value: function setToLowQualityRender() {
-      var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-          stayLowQuality = _ref2.stayLowQuality;
+      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+          stayLowQuality = _ref.stayLowQuality;
 
       if (this.board !== undefined) {
         this.board.updateQuality = this.board.BOARD_QUALITY_LOW;
@@ -364,9 +348,9 @@ var Graph = /*#__PURE__*/function (_DoenetRenderer) {
   }, {
     key: "setToHighQualityRenderAndUpdate",
     value: function setToHighQualityRenderAndUpdate() {
-      var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-          _ref3$overrideStayLow = _ref3.overrideStayLowQuality,
-          overrideStayLowQuality = _ref3$overrideStayLow === void 0 ? false : _ref3$overrideStayLow;
+      var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+          _ref2$overrideStayLow = _ref2.overrideStayLowQuality,
+          overrideStayLowQuality = _ref2$overrideStayLow === void 0 ? false : _ref2$overrideStayLow;
 
       if (this.stayLowQuality && !overrideStayLowQuality) {
         return;

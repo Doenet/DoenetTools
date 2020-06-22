@@ -281,9 +281,9 @@ class DoenetHomePage extends Component {
               <p style={{ textAlign: "left" }}>You can experiment with activities using a preliminary version of DoenetML below.  Click on a link to open a page with both the DoenetML code and resulting activity.  Only a small subset of DoenetML tags are implemented in these demonstrations.  If you are familiar with HTML, you can edit the code and update the activity.</p>
               <div style={{ margin: "auto", width: "300px" }}>
                 <ul style={{ textAlign: "left", color: "#6de5ff" }}>
-                  <li><a href="/guesteditor/?contentId=b9a44bf4c0407f7bef3da07c6f6e96f0aea3aef7fda031addbe182962a1b0765">Guest Editor</a></li>
-                  <li><a href="/guesteditor/?contentId=a11c2db8fcc6280a91e763fcdf01de8b0770afffa4e70c5ef8d2fa670564eda4">A line through two points</a></li>
-                  <li><a href="/guesteditor/?contentId=4bca2bf314c86940ce03f38e56c83da04cb0903b917dbcd38bd853ec0bc45b5f">The derivative of a quadratic</a></li>
+                  <li><a href="/guesteditor/?contentId=8c6c046148bce603dd8670c1274e0353e041f1d7bce6343382f94d06ca72b77d">Guest Editor</a></li>
+                  <li><a href="/guesteditor/?contentId=d386fa777d0bf25175b8d3e0fe95f309cc9f20fdd88c5b996419dd4742598b42">A line through two points</a></li>
+                  <li><a href="/guesteditor/?contentId=a22a2e97e1d853d385319e6cf24992eb2598cd2c597c68f249f0efa2c437dce7">The derivative of a quadratic</a></li>
                   {/* <li><a href="/guesteditor/?contentId=ea679d587429fbeab982f296857eb856db3214da7327797553f285fe5ce72de3">Undamped pendulum simulation</a></li> */}
                 </ul>
 

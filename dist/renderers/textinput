@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[28,0],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[34,0],{
 
-/***/ 554:
+/***/ 555:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -183,7 +183,7 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 583:
+/***/ 590:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -193,7 +193,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(19);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(554);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(555);
 /* harmony import */ var _fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7);
 /* harmony import */ var _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -268,6 +268,10 @@ var TextInput = /*#__PURE__*/function (_DoenetRenderer) {
       if (e.key === "Enter") {
         this.valueToRevertTo = this.doenetSvData.value;
 
+        if (this.doenetSvData.value !== this.doenetSvData.immediateValue) {
+          this.actions.updateValue();
+        }
+
         if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
           this.actions.submitAnswer();
         }
@@ -279,7 +283,7 @@ var TextInput = /*#__PURE__*/function (_DoenetRenderer) {
     key: "handleKeyDown",
     value: function handleKeyDown(e) {
       if (e.key === "Escape") {
-        this.actions.updateText({
+        this.actions.updateImmediateValue({
           text: this.valueToRevertTo
         });
         this.forceUpdate();
@@ -295,14 +299,19 @@ var TextInput = /*#__PURE__*/function (_DoenetRenderer) {
     key: "handleBlur",
     value: function handleBlur(e) {
       this.focused = false;
-      this.valueToRevertTo = this.doenetSvData.value;
+      this.valueToRevertTo = this.doenetSvData.immediateValue;
+
+      if (this.doenetSvData.immediateValue !== this.doenetSvData.value) {
+        this.actions.updateValue();
+      }
+
       this.forceUpdate();
     }
   }, {
     key: "onChangeHandler",
     value: function onChangeHandler(e) {
       this.currentValue = e.target.value;
-      this.actions.updateText({
+      this.actions.updateImmediateValue({
         text: e.target.value
       });
       this.forceUpdate();
@@ -324,9 +333,9 @@ var TextInput = /*#__PURE__*/function (_DoenetRenderer) {
         surroundingBorderColor = "#82a5ff";
       }
 
-      if (this.doenetSvData.value !== this.currentValue) {
-        this.currentValue = this.doenetSvData.value;
-        this.valueToRevertTo = this.doenetSvData.value;
+      if (this.doenetSvData.immediateValue !== this.currentValue) {
+        this.currentValue = this.doenetSvData.immediateValue;
+        this.valueToRevertTo = this.doenetSvData.immediateValue;
       }
 
       var checkWorkStyle = {
