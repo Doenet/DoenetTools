@@ -375,7 +375,8 @@ class DoenetEditor extends Component {
         <div >Left Nav</div>
         </ToolLayoutPanel>
         <ToolLayoutPanel panelHeaderControls={[doenetViewerMenu]} panelName="Viewer">
-          {doenetViewer}
+          <div style={{display:'flex', flexDirection:'column'}}> {doenetViewer}</div>
+         
         </ToolLayoutPanel>
         <ToolLayoutPanel panelHeaderControls={[textEditorMenu]} panelName="DoenetML">
         <div style={{width:"100%",height:"calc(100vh - 42px)",backgroundColor:"blue"}} >
