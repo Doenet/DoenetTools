@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import Menu from './menu.js'
+import MenuDropDown from '../imports/MenuDropDown.js'
 import SelectionSet from "./Selector/SelectionSet";
 import DoenetAssignmentTree from "./DoenetAssignmentTree"
 
@@ -3077,7 +3078,7 @@ class DoenetCourse extends Component {
                 backgroundColor: "#4CAF50",
                 border: "none",
                 color: "white",
-                padding: "8px 15px",
+                padding: "1px 15px",
                 textAlign: "center",
                 textDecoration: "none",
                 display: "inline-block",
@@ -3114,7 +3115,7 @@ class DoenetCourse extends Component {
                 backgroundColor: "#4CAF50",
                 border: "none",
                 color: "white",
-                padding: "8px 15px",
+                padding: "1px 15px",
                 textAlign: "center",
                 textDecoration: "none",
                 display: "inline-block",
@@ -3388,16 +3389,15 @@ class DoenetCourse extends Component {
               panelName="context"
               panelHeaderControls={[
                 (this.coursesToChoose ?
-                  <Menu
+                  <MenuDropDown
                     currentTool={"something"}
                     width={"200px"}
                     key={"menu00" + (this.updateNumber++)}
-                    //showThisRole={"N/A"}
-
-                    showThisRole={this.selectedCourseId && this.courseInfo ? (this.courseInfo[this.selectedCourseId]['courseName'] + "  ") : " "}
+                    showThisRole={this.selectedCourseId}
                     itemsToShow={this.coursesToChoose}
                     offsetPos={-20}
-                    menuWidth={"200px"}
+                    // menuWidth={"200px"}
+                    placeholder={"Select Course"}
                   />
                   : null)
               ]}
@@ -3412,6 +3412,7 @@ class DoenetCourse extends Component {
 
                 </>
               </Router>
+              <div style={{display:'block', width:'100%'}}>
               <SelectionSet
                 key={"SelectSet1" + (this.updateNumber++)}
                 // CommonCallBack={(e)=>{console.log(e)}}
@@ -3420,6 +3421,8 @@ class DoenetCourse extends Component {
                 forceSelected={this.activeSection}
                 gradeOut={[this.listGrayOut]}
               />
+              </div>
+             
               {/* {this.activeSection==="assignments"?this.assignmentTree:null} */}
               {/* <SelectionSet 
             key={"SelectSet1"+(this.updateNumber++)}
@@ -3457,12 +3460,14 @@ class DoenetCourse extends Component {
               key={"TLP02" + this.updateNumber++}
               panelName="Editor"
               panelHeaderControls={[
-                (this.activeSection === "grades" || this.activeSection === "assignments" ? null :
-                  this.editCategoryButton),
-                this.switchCategoryButton
+               <div style={{display:'flex'}}> {(this.activeSection === "grades" || this.activeSection === "assignments" ? null :
+               this.editCategoryButton)}
+             {this.switchCategoryButton}
+             </div>
 
               ]}
             >
+              <div style={{display:'flex', flexDirection:'column'}}>
               <Router>
                 <>
                   <Switch>
@@ -3498,6 +3503,8 @@ class DoenetCourse extends Component {
                   </Switch>
                 </>
               </Router>
+              </div>
+              
             </ToolLayoutPanel>
 
             <ToolLayoutPanel
