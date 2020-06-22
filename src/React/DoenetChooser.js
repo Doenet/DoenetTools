@@ -1674,23 +1674,6 @@ class DoenetChooser extends Component {
     }    
   }
 
-  // switchPanelContainer(panelId) {
-  //   const values = this.state.panelsCollection[panelId].values;
-  //   const currentActiveContainer = this.state.panelsCollection[panelId].activeContainer;
-  //   const nextActiveContainer = values[(values.indexOf(currentActiveContainer) + 1) % values.length];
-  //   const newPanelData = {
-  //     values: values,
-  //     activeContainer: view
-  //   }
-  //   this.setState({
-  //     panelsCollection: {
-  //       ...this.state.panelsCollection,
-  //       "first": newPanelData
-  //     }
-  //   })
-  // }
-
-
   toggleSplitPanel() {
     this.setState({splitPanelLayout: !this.state.splitPanelLayout});
   }
