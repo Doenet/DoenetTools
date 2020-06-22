@@ -12,8 +12,8 @@ describe('Curve Tag Tests', function () {
     <mathinput prefill="-2"/>
     <graph>
     <curve>
-    (-1,2),(2, <ref prop="value">_mathinput1</ref>),
-    (2<ref prop="value">_mathinput1</ref>, -4), (5,6)
+    (-1,2),(2, <copy prop="value" tname="_mathinput1" />),
+    (2<copy prop="value" tname="_mathinput1" />, -4), (5,6)
     </curve>
     </graph>
     `}, "*");
@@ -61,14 +61,14 @@ describe('Curve Tag Tests', function () {
     <mathinput prefill="-2"/>
     <graph>
     <point>(-1,2)</point>
-    <point>(2, <ref prop="value">_mathinput1</ref>)</point>
-    <point>(2<ref prop="value">_mathinput1</ref>, -4)</point>
+    <point>(2, <copy prop="value" tname="_mathinput1" />)</point>
+    <point>(2<copy prop="value" tname="_mathinput1" />, -4)</point>
     <point>(5,6)</point>
     <curve>
-    <ref>_point1</ref>
-    <ref>_point2</ref>
-    <ref>_point3</ref>
-    <ref>_point4</ref>
+    <copy tname="_point1" />
+    <copy tname="_point2" />
+    <copy tname="_point3" />
+    <copy tname="_point4" />
     </curve>
     </graph>
     `}, "*");
@@ -131,15 +131,15 @@ describe('Curve Tag Tests', function () {
     <mathinput prefill="-2"/>
     <graph>
     <point>(-1,2)</point>
-    <point>(2, <ref prop="value">_mathinput1</ref>)</point>
-    <point>(2<ref prop="value">_mathinput1</ref>, -4)</point>
+    <point>(2, <copy prop="value" tname="_mathinput1" />)</point>
+    <point>(2<copy prop="value" tname="_mathinput1" />, -4)</point>
     <point>(5,6)</point>
     <curve>
     <through>
-    <ref>_point1</ref>
-    <ref>_point2</ref>
-    <ref>_point3</ref>
-    <ref>_point4</ref>
+    <copy tname="_point1" />
+    <copy tname="_point2" />
+    <copy tname="_point3" />
+    <copy tname="_point4" />
     </through>
     </curve>
     </graph>
@@ -203,14 +203,14 @@ describe('Curve Tag Tests', function () {
     <mathinput prefill="-2"/>
     <graph>
     <point>(-1,2)</point>
-    <point>(2, <ref prop="value">_mathinput1</ref>)</point>
-    <point>(2<ref prop="value">_mathinput1</ref>, -4)</point>
+    <point>(2, <copy prop="value" tname="_mathinput1" />)</point>
+    <point>(2<copy prop="value" tname="_mathinput1" />, -4)</point>
     <point>(5,6)</point>
     <curve splineform="uniform" splinetension="0.4">
-    <ref>_point1</ref>
-    <ref>_point2</ref>
-    <ref>_point3</ref>
-    <ref>_point4</ref>
+    <copy tname="_point1" />
+    <copy tname="_point2" />
+    <copy tname="_point3" />
+    <copy tname="_point4" />
     </curve>
     </graph>
     `}, "*");
@@ -278,16 +278,16 @@ describe('Curve Tag Tests', function () {
     <point>(3, 5.8)</point>
     <point>(8,-6)</point>
     <curve>
-      <splineform><ref prop="value">_textinput1</ref></splineform>
-      <splinetension><ref prop="value">_mathinput1</ref></splinetension>
-     <ref>_point1</ref>
-     <ref>_point2</ref>
-     <ref>_point3</ref>
-     <ref>_point4</ref>
+      <splineform><copy prop="value" tname="_textinput1" /></splineform>
+      <splinetension><copy prop="value" tname="_mathinput1" /></splinetension>
+     <copy tname="_point1" />
+     <copy tname="_point2" />
+     <copy tname="_point3" />
+     <copy tname="_point4" />
     </curve>
     
     <point>(5,10)
-    <constrainTo><ref>_curve1</ref></constrainTo>
+    <constrainTo><copy tname="_curve1" /></constrainTo>
     </point>
     
     </graph>
@@ -418,20 +418,20 @@ describe('Curve Tag Tests', function () {
     <point>(4, 3)</point>
     <point>(7,-4)</point>
     <curve>
-    <extrapolatebackward><ref prop="value">_booleaninput1</ref></extrapolatebackward>
-    <extrapolateforward><ref prop="value">_booleaninput2</ref></extrapolateforward>
+    <extrapolatebackward><copy prop="value" tname="_booleaninput1" /></extrapolatebackward>
+    <extrapolateforward><copy prop="value" tname="_booleaninput2" /></extrapolateforward>
 
-     <ref>_point1</ref>
-     <ref>_point2</ref>
-     <ref>_point3</ref>
-     <ref>_point4</ref>
+     <copy tname="_point1" />
+     <copy tname="_point2" />
+     <copy tname="_point3" />
+     <copy tname="_point4" />
     </curve>
     
     <point>(8,-8)
-    <constrainTo><ref>_curve1</ref></constrainTo>
+    <constrainTo><copy tname="_curve1" /></constrainTo>
     </point>
     <point>(-8,-8)
-    <constrainTo><ref>_curve1</ref></constrainTo>
+    <constrainTo><copy tname="_curve1" /></constrainTo>
     </point>
     
     </graph>
@@ -538,11 +538,11 @@ describe('Curve Tag Tests', function () {
     <curve>
       <through>
       <map>
-        <template><point>(<subsref/>, sin(<subsref/>))</point></template>
+        <template><point>(<copyFromSubs/>, sin(<copyFromSubs/>))</point></template>
         <substitutions>
           <sequence from="0">
-            <count><ref prop="value">_mathinput1</ref></count>
-            <step><ref prop="value">_mathinput2</ref></step>
+            <count><copy prop="value" tname="_mathinput1" /></count>
+            <step><copy prop="value" tname="_mathinput2" /></step>
           </sequence>
         </substitutions>
       </map>
@@ -652,15 +652,15 @@ describe('Curve Tag Tests', function () {
     </graph>
     <graph>
     <curve>
-      <ref prop="throughpoint1">_curve1</ref>
+      <copy prop="throughpoint1" tname="_curve1" />
       <point>
-        (<extract prop="y"><ref prop="throughpoint2">_curve1</ref></extract>,
-        <extract prop="x"><ref prop="throughpoint2">_curve1</ref></extract>)
+        (<extract prop="y"><copy prop="throughpoint2" tname="_curve1" /></extract>,
+        <extract prop="x"><copy prop="throughpoint2" tname="_curve1" /></extract>)
       </point>
-      <ref prop="throughpoint3">_curve1</ref>
+      <copy prop="throughpoint3" tname="_curve1" />
       <point>
-        <x><extract prop="y"><ref prop="throughpoint4">_curve1</ref></extract></x>
-        <y><extract prop="x"><ref prop="throughpoint4">_curve1</ref></extract></y>
+        <x><extract prop="y"><copy prop="throughpoint4" tname="_curve1" /></extract></x>
+        <y><extract prop="x"><copy prop="throughpoint4" tname="_curve1" /></extract></y>
       </point>
     </curve>
     </graph>
@@ -775,23 +775,23 @@ describe('Curve Tag Tests', function () {
     <curve>
       <point>(1,2)</point>
       <point>
-        (<ref prop="y">_point1</ref>, <ref prop="x">_point1</ref>)
+        (<copy prop="y" tname="_point1" />, <copy prop="x" tname="_point1" />)
       </point>
     </curve> 
     <point name="x1">
-      <x><extract prop="x"><ref prop="throughpoint1">_curve1</ref></extract></x>
+      <x><extract prop="x"><copy prop="throughpoint1" tname="_curve1" /></extract></x>
       <y fixed>3</y>
     </point>
     <point name="x2">
-      <x><extract prop="x"><ref prop="throughpoint2">_curve1</ref></extract></x>
+      <x><extract prop="x"><copy prop="throughpoint2" tname="_curve1" /></extract></x>
       <y fixed>4</y>
     </point>
     <point name="y1">
-      <y><extract prop="y"><ref prop="throughpoint1">_curve1</ref></extract></y>
+      <y><extract prop="y"><copy prop="throughpoint1" tname="_curve1" /></extract></y>
       <x fixed>3</x>
     </point>
     <point name="y2">
-      <y><extract prop="y"><ref prop="throughpoint2">_curve1</ref></extract></y>
+      <y><extract prop="y"><copy prop="throughpoint2" tname="_curve1" /></extract></y>
       <x fixed>4</x>
     </point>
   </graph>

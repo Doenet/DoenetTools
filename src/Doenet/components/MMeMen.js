@@ -5,6 +5,9 @@ export class M extends InlineComponent {
   static componentType = "m";
   static rendererType = "math";
 
+  // used when creating new component via adapter or ref prop
+  static primaryStateVariableForDefinition = "latex";
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -143,12 +146,12 @@ export class M extends InlineComponent {
       definition: function ({ dependencyValues }) {
         let expression;
         try {
-          expression = me.fromLatex(dependencyValues.stateValues.latex);
+          expression = me.fromLatex(dependencyValues.latex);
         } catch (e) {
           // just return latex if can't parse with math-expressions
-          return dependencyValues.stateValues.latex;
+          return { newValues: { text: dependencyValues.latex } };
         }
-        return expression.toString();
+        return { newValues: { text: expression.toString() } };
       }
     }
 

@@ -89,7 +89,7 @@ export default class DiscreteInfiniteSet extends MathComponent {
               componentType: "ref",
               children: [{
                 componentType: "reftarget",
-                state: { refTargetName: sharedParameters.simplifyChild.componentName }
+                state: { targetName: sharedParameters.simplifyChild.componentName }
               }]
             })
           }
@@ -110,7 +110,7 @@ export default class DiscreteInfiniteSet extends MathComponent {
           componentType: "ref",
           children: [{
             componentType: "reftarget",
-            state: { refTargetName: sharedParameters.simplifyChild.componentName }
+            state: { targetName: sharedParameters.simplifyChild.componentName }
           }]
         })
         newChildren.push({

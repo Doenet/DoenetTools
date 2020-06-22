@@ -1,5 +1,5 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import { postProcessRef } from '../utils/refs';
+import { postProcessCopy } from '../utils/copy';
 import me from 'math-expressions';
 
 export default class Intersection extends CompositeComponent {
@@ -76,14 +76,14 @@ export default class Intersection extends CompositeComponent {
     // intersection of one object is the object itself
     if (numberLineChildren === 1) {
       let childName = component.stateValues.lineChildren[0].componentName;
-      let serializedChild = components[childName].serialize({ forReference: true });
+      let serializedChild = components[childName].serialize({ forCopy: true });
       if (!serializedChild.state) {
         serializedChild.state = {};
       }
       serializedChild.state.draggable = false;
       serializedChild.state.fixed = true;
 
-      return { replacements: postProcessRef({ serializedComponents: [serializedChild], componentName: component.componentName }) };
+      return { replacements: postProcessCopy({ serializedComponents: [serializedChild], componentName: component.componentName }) };
 
     }
 
@@ -129,14 +129,14 @@ export default class Intersection extends CompositeComponent {
       } else {
 
         let childName = component.stateValues.lineChildren[0].componentName;
-        let serializedChild = components[childName].serialize({ forReference: true });
+        let serializedChild = components[childName].serialize({ forCopy: true });
         if (!serializedChild.state) {
           serializedChild.state = {};
         }
         serializedChild.state.draggable = false;
         serializedChild.state.fixed = true;
 
-        return { replacements: postProcessRef({ serializedComponents: [serializedChild], componentName: component.componentName }) };
+        return { replacements: postProcessCopy({ serializedComponents: [serializedChild], componentName: component.componentName }) };
 
       }
     }

@@ -1,303 +1,318 @@
-describe('Number Operator Tag Tests',function() {
+describe('Number Operator Tag Tests', function () {
 
-beforeEach(() => {
+  beforeEach(() => {
     cy.visit('/test')
 
   })
 
-  it('mean',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('mean', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <p name="pPrime">Mean of first primes: <mean name="meanPrime">2,3,5,7</mean></p>
-    <p>Reffing that mean: <ref>meanPrime</ref></p>
-    <ref>pPrime</ref>
+    <p>Copying that mean: <copy tname="meanPrime" /></p>
+    <copy tname="pPrime" />
 
-    <p name="p100">Mean of numbers from 1 to 100: 
-      <mean name="mean100"><sequence>100</sequence></mean>
-    </p>
-    <p>Reffing that mean: <ref>mean100</ref></p>
-    <ref>p100</ref>
-    `},"*");
+    <p name="p100">Mean of numbers from 1 to 100: <mean name="mean100"><sequence>100</sequence></mean></p>
+    <p>Copying that mean: <copy tname="mean100" /></p>
+    <copy tname="p100" />
+    `}, "*");
     });
 
-    cy.log('Test value displayed in browser')
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/meanprime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('4.25')
-    })
-    cy.get('#__mean1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('4.25')
-    })
-    cy.get('#__mean2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('4.25')
-    })
-    cy.get('#\\/mean100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('50.5')
-    })
-    cy.get('#__mean3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('50.5')
-    })
-    cy.get('#__mean4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('50.5')
-    })
-
-    cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/meanprime'].state.number).eq(4.25);
-      expect(components['/_ref1'].replacements[0].state.number).eq(4.25);
-      expect(components['/_ref2'].replacements[0].activeChildren[1].state.number).eq(4.25);
-      expect(components['/mean100'].state.number).eq(50.5);
-      expect(components['/_ref3'].replacements[0].state.number).eq(50.5);
-      expect(components['/_ref4'].replacements[0].activeChildren[1].state.number).eq(50.5);
+      let components = Object.assign({}, win.state.components);
+      let mean2Anchor = '#' + components['/_copy1'].replacements[0].componentName;
+      let mean3Anchor = '#' + components['/_copy2'].replacements[0].componentName;
+      let mean5Anchor = '#' + components['/_copy3'].replacements[0].componentName;
+      let mean6Anchor = '#' + components['/_copy4'].replacements[0].componentName;
+
+      cy.log('Test value displayed in browser')
+
+      cy.get('#\\/meanprime').should('have.text', '4.25')
+      cy.get(mean2Anchor).should('have.text', '4.25')
+      cy.get(mean3Anchor).should('have.text', 'Mean of first primes: 4.25')
+      cy.get('#\\/mean100').should('have.text', '50.5')
+      cy.get(mean5Anchor).should('have.text', '50.5')
+      cy.get(mean6Anchor).should('have.text', 'Mean of numbers from 1 to 100: 50.5')
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        expect(components['/meanprime'].stateValues.value).eq(4.25);
+        expect(components['/_copy1'].replacements[0].stateValues.value).eq(4.25);
+        expect(components['/_copy2'].replacements[0].activeChildren[1].stateValues.value).eq(4.25);
+        expect(components['/mean100'].stateValues.value).eq(50.5);
+        expect(components['/_copy3'].replacements[0].stateValues.value).eq(50.5);
+        expect(components['/_copy4'].replacements[0].activeChildren[1].stateValues.value).eq(50.5);
+      })
     })
   })
 
-  it('variance',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('variance', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <p name="pPrime">Variance of first primes: <variance name="variancePrime">2,3,5,7</variance></p>
-    <p>Reffing that variance: <ref>variancePrime</ref></p>
-    <ref>pPrime</ref>
+    <p>Copying that variance: <copy tname="variancePrime" /></p>
+    <copy tname="pPrime" />
 
-    <p name="p100">Variance of numbers from 1 to 100: 
-      <variance name="variance100"><sequence>100</sequence></variance>
-    </p>
-    <p>Reffing that variance: <ref>variance100</ref></p>
-    <ref>p100</ref>
-    `},"*");
+    <p name="p100">Variance of numbers from 1 to 100: <variance name="variance100"><sequence>100</sequence></variance></p>
+    <p>Copying that variance: <copy tname="variance100" /></p>
+    <copy tname="p100" />
+    `}, "*");
     });
 
-    cy.log('Test value displayed in browser')
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/varianceprime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3.6875')
-    })
-    cy.get('#__variance1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3.6875')
-    })
-    cy.get('#__variance2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3.6875')
-    })
-    cy.get('#\\/variance100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('833.25')
-    })
-    cy.get('#__variance3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('833.25')
-    })
-    cy.get('#__variance4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('833.25')
-    })
-
-    cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/varianceprime'].state.number).closeTo(59/16, 1E-12);
-      expect(components['/_ref1'].replacements[0].state.number).closeTo(59/16, 1E-12);
-      expect(components['/_ref2'].replacements[0].activeChildren[1].state.number).closeTo(59/16, 1E-12);
-      expect(components['/variance100'].state.number).closeTo((100**2-1)/12, 1E-12);
-      expect(components['/_ref3'].replacements[0].state.number).closeTo((100**2-1)/12, 1E-12);
-      expect(components['/_ref4'].replacements[0].activeChildren[1].state.number).closeTo((100**2-1)/12, 1E-12);
+      let components = Object.assign({}, win.state.components);
+      let variance2Anchor = '#' + components['/_copy1'].replacements[0].componentName;
+      let variance3Anchor = '#' + components['/_copy2'].replacements[0].componentName;
+      let variance5Anchor = '#' + components['/_copy3'].replacements[0].componentName;
+      let variance6Anchor = '#' + components['/_copy4'].replacements[0].componentName;
+
+      cy.log('Test value displayed in browser')
+
+      cy.get('#\\/varianceprime').should('have.text', '3.6875')
+      cy.get(variance2Anchor).should('have.text', '3.6875')
+      cy.get(variance3Anchor).should('have.text', 'Variance of first primes: 3.6875')
+      cy.get('#\\/variance100').should('have.text', '833.25')
+      cy.get(variance5Anchor).should('have.text', '833.25')
+      cy.get(variance6Anchor).should('have.text', 'Variance of numbers from 1 to 100: 833.25')
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/varianceprime'].stateValues.value).closeTo(59 / 16, 1E-12);
+        expect(components['/_copy1'].replacements[0].stateValues.value).closeTo(59 / 16, 1E-12);
+        expect(components['/_copy2'].replacements[0].activeChildren[1].stateValues.value).closeTo(59 / 16, 1E-12);
+        expect(components['/variance100'].stateValues.value).closeTo((100 ** 2 - 1) / 12, 1E-12);
+        expect(components['/_copy3'].replacements[0].stateValues.value).closeTo((100 ** 2 - 1) / 12, 1E-12);
+        expect(components['/_copy4'].replacements[0].activeChildren[1].stateValues.value).closeTo((100 ** 2 - 1) / 12, 1E-12);
+      })
     })
   })
 
-  it('unbiased variance',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('unbiased variance', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <p name="pPrime">Variance of first primes: <variance unbiased name="variancePrime">2,3,5,7</variance></p>
-    <p>Reffing that variance: <ref>variancePrime</ref></p>
-    <ref>pPrime</ref>
+    <p>Copying that variance: <copy tname="variancePrime" /></p>
+    <copy tname="pPrime" />
 
-    <p name="p100">Variance of numbers from 1 to 100: 
-      <variance name="variance100" unbiased><sequence>100</sequence></variance>
-    </p>
-    <p>Reffing that variance: <ref>variance100</ref></p>
-    <ref>p100</ref>
-    `},"*");
+    <p name="p100">Variance of numbers from 1 to 100: <variance name="variance100" unbiased><sequence>100</sequence></variance></p>
+    <p>Copying that variance: <copy tname="variance100" /></p>
+    <copy tname="p100" />
+    `}, "*");
     });
 
-    cy.log('Test value displayed in browser')
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/varianceprime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(59/12,1E-6)
-    })
-    cy.get('#__variance1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(59/12,1E-6)
-    })
-    cy.get('#__variance2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(59/12,1E-6)
-    })
-    cy.get('#\\/variance100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo((100**2-1)/12*100/99,1E-6)
-    })
-    cy.get('#__variance3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo((100**2-1)/12*100/99,1E-6)
-    })
-    cy.get('#__variance4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo((100**2-1)/12*100/99,1E-6)
-    })
-
-    cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/varianceprime'].state.number).closeTo(59/12, 1E-12);
-      expect(components['/_ref1'].replacements[0].state.number).closeTo(59/12, 1E-12);
-      expect(components['/_ref2'].replacements[0].activeChildren[1].state.number).closeTo(59/12, 1E-12);
-      expect(components['/variance100'].state.number).closeTo((100**2-1)/12*100/99, 1E-12);
-      expect(components['/_ref3'].replacements[0].state.number).closeTo((100**2-1)/12*100/99, 1E-12);
-      expect(components['/_ref4'].replacements[0].activeChildren[1].state.number).closeTo((100**2-1)/12*100/99, 1E-12);
+      let components = Object.assign({}, win.state.components);
+      let variance2Anchor = '#' + components['/_copy1'].replacements[0].componentName;
+      let variance3Anchor = '#' + components['/_copy2'].replacements[0].componentName;
+      let variance5Anchor = '#' + components['/_copy3'].replacements[0].componentName;
+      let variance6Anchor = '#' + components['/_copy4'].replacements[0].componentName;
+
+      cy.log('Test value displayed in browser')
+
+      cy.get('#\\/varianceprime').invoke('text').then((text) => {
+        expect(Number(text)).closeTo(59 / 12, 1E-6);
+        let textNum = text;
+        cy.get(variance2Anchor).should('have.text', textNum)
+        cy.get(variance3Anchor).should('have.text', 'Variance of first primes: ' + textNum)
+      });
+      cy.get('#\\/variance100').invoke('text').then((text) => {
+        expect(Number(text)).closeTo((100 ** 2 - 1) / 12 * 100 / 99, 1E-6);
+        let textNum = text;
+        cy.get(variance5Anchor).should('have.text', textNum)
+        cy.get(variance6Anchor).should('have.text', 'Variance of numbers from 1 to 100: ' + textNum)
+      });
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/varianceprime'].stateValues.value).closeTo(59 / 12, 1E-12);
+        expect(components['/_copy1'].replacements[0].stateValues.value).closeTo(59 / 12, 1E-12);
+        expect(components['/_copy2'].replacements[0].activeChildren[1].stateValues.value).closeTo(59 / 12, 1E-12);
+        expect(components['/variance100'].stateValues.value).closeTo((100 ** 2 - 1) / 12 * 100 / 99, 1E-12);
+        expect(components['/_copy3'].replacements[0].stateValues.value).closeTo((100 ** 2 - 1) / 12 * 100 / 99, 1E-12);
+        expect(components['/_copy4'].replacements[0].activeChildren[1].stateValues.value).closeTo((100 ** 2 - 1) / 12 * 100 / 99, 1E-12);
+      })
     })
   })
 
-  it('standard deviation',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('standard deviation', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <p name="pPrime">Standard deviation of first primes: <standarddeviation name="standarddeviationPrime">2,3,5,7</standarddeviation></p>
-    <p>Reffing that standard deviation: <ref>standarddeviationPrime</ref></p>
-    <ref>pPrime</ref>
+    <p>Copying that standard deviation: <copy tname="standarddeviationPrime" /></p>
+    <copy tname="pPrime" />
 
-    <p name="p100">Standard deviation of numbers from 1 to 100: 
-      <standarddeviation name="standarddeviation100"><sequence>100</sequence></standarddeviation>
-    </p>
-    <p>Reffing that standard deviation: <ref>standarddeviation100</ref></p>
-    <ref>p100</ref>
-    `},"*");
+    <p name="p100">Standard deviation of numbers from 1 to 100: <standarddeviation name="standarddeviation100"><sequence>100</sequence></standarddeviation></p>
+    <p>Copying that standard deviation: <copy tname="standarddeviation100" /></p>
+    <copy tname="p100" />
+    `}, "*");
     });
 
-    cy.log('Test value displayed in browser')
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/standarddeviationprime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(Math.sqrt(59/16),1E-6)
-    })
-    cy.get('#__standarddeviation1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(Math.sqrt(59/16),1E-6)
-    })
-    cy.get('#__standarddeviation2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(Math.sqrt(59/16),1E-6)
-    })
-    cy.get('#\\/standarddeviation100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(Math.sqrt((100**2-1)/12),1E-6)
-    })
-    cy.get('#__standarddeviation3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(Math.sqrt((100**2-1)/12),1E-6)
-    })
-    cy.get('#__standarddeviation4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(Math.sqrt((100**2-1)/12),1E-6)
-    })
-
-    cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/standarddeviationprime'].state.number).closeTo(Math.sqrt(59/16), 1E-12);
-      expect(components['/_ref1'].replacements[0].state.number).closeTo(Math.sqrt(59/16), 1E-12);
-      expect(components['/_ref2'].replacements[0].activeChildren[1].state.number).closeTo(Math.sqrt(59/16), 1E-12);
-      expect(components['/standarddeviation100'].state.number).closeTo(Math.sqrt((100**2-1)/12), 1E-12);
-      expect(components['/_ref3'].replacements[0].state.number).closeTo(Math.sqrt((100**2-1)/12), 1E-12);
-      expect(components['/_ref4'].replacements[0].activeChildren[1].state.number).closeTo(Math.sqrt((100**2-1)/12), 1E-12);
+      let components = Object.assign({}, win.state.components);
+      let standarddeviation2Anchor = '#' + components['/_copy1'].replacements[0].componentName;
+      let standarddeviation3Anchor = '#' + components['/_copy2'].replacements[0].componentName;
+      let standarddeviation5Anchor = '#' + components['/_copy3'].replacements[0].componentName;
+      let standarddeviation6Anchor = '#' + components['/_copy4'].replacements[0].componentName;
+
+      cy.log('Test value displayed in browser')
+
+      cy.get('#\\/standarddeviationprime').invoke('text').then((text) => {
+        expect(Number(text)).closeTo(Math.sqrt(59 / 16), 1E-6);
+        let textNum = text;
+        cy.get(standarddeviation2Anchor).should('have.text', textNum)
+        cy.get(standarddeviation3Anchor).should('have.text', 'Standard deviation of first primes: ' + textNum)
+      });
+      cy.get('#\\/standarddeviation100').invoke('text').then((text) => {
+        expect(Number(text)).closeTo(Math.sqrt((100 ** 2 - 1) / 12), 1E-6);
+        let textNum = text;
+        cy.get(standarddeviation5Anchor).should('have.text', textNum)
+        cy.get(standarddeviation6Anchor).should('have.text', 'Standard deviation of numbers from 1 to 100: ' + textNum)
+      });
+
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/standarddeviationprime'].stateValues.value).closeTo(Math.sqrt(59 / 16), 1E-12);
+        expect(components['/_copy1'].replacements[0].stateValues.value).closeTo(Math.sqrt(59 / 16), 1E-12);
+        expect(components['/_copy2'].replacements[0].activeChildren[1].stateValues.value).closeTo(Math.sqrt(59 / 16), 1E-12);
+        expect(components['/standarddeviation100'].stateValues.value).closeTo(Math.sqrt((100 ** 2 - 1) / 12), 1E-12);
+        expect(components['/_copy3'].replacements[0].stateValues.value).closeTo(Math.sqrt((100 ** 2 - 1) / 12), 1E-12);
+        expect(components['/_copy4'].replacements[0].activeChildren[1].stateValues.value).closeTo(Math.sqrt((100 ** 2 - 1) / 12), 1E-12);
+      })
     })
   })
 
-  it('unbiased standard deviation',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('unbiased standard deviation', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <p name="pPrime">Standard deviation of first primes: <standarddeviation unbiased name="standarddeviationPrime">2,3,5,7</standarddeviation></p>
-    <p>Reffing that standard deviation: <ref>standarddeviationPrime</ref></p>
-    <ref>pPrime</ref>
+    <p>Copying that standard deviation: <copy tname="standarddeviationPrime" /></p>
+    <copy tname="pPrime" />
 
-    <p name="p100">Standard deviation of numbers from 1 to 100: 
-      <standarddeviation name="standarddeviation100" unbiased><sequence>100</sequence></standarddeviation>
-    </p>
-    <p>Reffing that standard deviation: <ref>standarddeviation100</ref></p>
-    <ref>p100</ref>
-    `},"*");
+    <p name="p100">Standard deviation of numbers from 1 to 100: <standarddeviation name="standarddeviation100" unbiased><sequence>100</sequence></standarddeviation></p>
+    <p>Copying that standard deviation: <copy tname="standarddeviation100" /></p>
+    <copy tname="p100" />
+    `}, "*");
     });
 
-    cy.log('Test value displayed in browser')
 
-    cy.get('#\\/standarddeviationprime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(Math.sqrt(59/12),1E-6)
-    })
-    cy.get('#__standarddeviation1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(Math.sqrt(59/12),1E-6)
-    })
-    cy.get('#__standarddeviation2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(Math.sqrt(59/12),1E-6)
-    })
-    cy.get('#\\/standarddeviation100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(Math.sqrt((100**2-1)/12*100/99),1E-6)
-    })
-    cy.get('#__standarddeviation3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(Math.sqrt((100**2-1)/12*100/99),1E-6)
-    })
-    cy.get('#__standarddeviation4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(Math.sqrt((100**2-1)/12*100/99),1E-6)
-    })
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/standarddeviationprime'].state.number).closeTo(Math.sqrt(59/12), 1E-12);
-      expect(components['/_ref1'].replacements[0].state.number).closeTo(Math.sqrt(59/12), 1E-12);
-      expect(components['/_ref2'].replacements[0].activeChildren[1].state.number).closeTo(Math.sqrt(59/12), 1E-12);
-      expect(components['/standarddeviation100'].state.number).closeTo(Math.sqrt((100**2-1)/12*100/99), 1E-12);
-      expect(components['/_ref3'].replacements[0].state.number).closeTo(Math.sqrt((100**2-1)/12*100/99), 1E-12);
-      expect(components['/_ref4'].replacements[0].activeChildren[1].state.number).closeTo(Math.sqrt((100**2-1)/12*100/99), 1E-12);
+      let components = Object.assign({}, win.state.components);
+      let standarddeviation2Anchor = '#' + components['/_copy1'].replacements[0].componentName;
+      let standarddeviation3Anchor = '#' + components['/_copy2'].replacements[0].componentName;
+      let standarddeviation5Anchor = '#' + components['/_copy3'].replacements[0].componentName;
+      let standarddeviation6Anchor = '#' + components['/_copy4'].replacements[0].componentName;
+
+      cy.log('Test value displayed in browser')
+
+      cy.get('#\\/standarddeviationprime').invoke('text').then((text) => {
+        expect(Number(text)).closeTo(Math.sqrt(59 / 12), 1E-6);
+        let textNum = text;
+        cy.get(standarddeviation2Anchor).should('have.text', textNum)
+        cy.get(standarddeviation3Anchor).should('have.text', 'Standard deviation of first primes: ' + textNum)
+      });
+      cy.get('#\\/standarddeviation100').invoke('text').then((text) => {
+        expect(Number(text)).closeTo(Math.sqrt((100 ** 2 - 1) / 12 * 100 / 99), 1E-6);
+        let textNum = text;
+        cy.get(standarddeviation5Anchor).should('have.text', textNum)
+        cy.get(standarddeviation6Anchor).should('have.text', 'Standard deviation of numbers from 1 to 100: ' + textNum)
+      });
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/standarddeviationprime'].stateValues.value).closeTo(Math.sqrt(59 / 12), 1E-12);
+        expect(components['/_copy1'].replacements[0].stateValues.value).closeTo(Math.sqrt(59 / 12), 1E-12);
+        expect(components['/_copy2'].replacements[0].activeChildren[1].stateValues.value).closeTo(Math.sqrt(59 / 12), 1E-12);
+        expect(components['/standarddeviation100'].stateValues.value).closeTo(Math.sqrt((100 ** 2 - 1) / 12 * 100 / 99), 1E-12);
+        expect(components['/_copy3'].replacements[0].stateValues.value).closeTo(Math.sqrt((100 ** 2 - 1) / 12 * 100 / 99), 1E-12);
+        expect(components['/_copy4'].replacements[0].activeChildren[1].stateValues.value).closeTo(Math.sqrt((100 ** 2 - 1) / 12 * 100 / 99), 1E-12);
+      })
     })
   })
 
-  it('count',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('count', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <p name="pPrime">Count of first primes: <count name="countPrime">2,3,5,7</count></p>
-    <p>Reffing that count: <ref>countPrime</ref></p>
-    <ref>pPrime</ref>
+    <p>Copying that count: <copy tname="countPrime" /></p>
+    <copy tname="pPrime" />
 
-    <p name="p100">count of numbers from 1 to 100: 
-      <count name="count100"><sequence>100</sequence></count>
-    </p>
-    <p>Reffing that count: <ref>count100</ref></p>
-    <ref>p100</ref>
-    `},"*");
+    <p name="p100">Count of numbers from 1 to 100: <count name="count100"><sequence>100</sequence></count></p>
+    <p>Copying that count: <copy tname="count100" /></p>
+    <copy tname="p100" />
+    `}, "*");
     });
 
-    cy.log('Test value displayed in browser')
 
-    cy.get('#\\/countprime').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('4')
-    })
-    cy.get('#__count1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('4')
-    })
-    cy.get('#__count2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('4')
-    })
-    cy.get('#\\/count100').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('100')
-    })
-    cy.get('#__count3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('100')
-    })
-    cy.get('#__count4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('100')
-    })
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/countprime'].state.number).eq(4);
-      expect(components['/_ref1'].replacements[0].state.number).eq(4);
-      expect(components['/_ref2'].replacements[0].activeChildren[1].state.number).eq(4);
-      expect(components['/count100'].state.number).eq(100);
-      expect(components['/_ref3'].replacements[0].state.number).eq(100);
-      expect(components['/_ref4'].replacements[0].activeChildren[1].state.number).eq(100);
+      let components = Object.assign({}, win.state.components);
+      let count2Anchor = '#' + components['/_copy1'].replacements[0].componentName;
+      let count3Anchor = '#' + components['/_copy2'].replacements[0].componentName;
+      let count5Anchor = '#' + components['/_copy3'].replacements[0].componentName;
+      let count6Anchor = '#' + components['/_copy4'].replacements[0].componentName;
+
+      cy.log('Test value displayed in browser')
+
+      cy.get('#\\/countprime').should('have.text', '4')
+      cy.get(count2Anchor).should('have.text', '4')
+      cy.get(count3Anchor).should('have.text', 'Count of first primes: 4')
+      cy.get('#\\/count100').should('have.text', '100')
+      cy.get(count5Anchor).should('have.text', '100')
+      cy.get(count6Anchor).should('have.text', 'Count of numbers from 1 to 100: 100')
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/countprime'].stateValues.value).eq(4);
+        expect(components['/_copy1'].replacements[0].stateValues.value).eq(4);
+        expect(components['/_copy2'].replacements[0].activeChildren[1].stateValues.value).eq(4);
+        expect(components['/count100'].stateValues.value).eq(100);
+        expect(components['/_copy3'].replacements[0].stateValues.value).eq(100);
+        expect(components['/_copy4'].replacements[0].activeChildren[1].stateValues.value).eq(100);
+      })
     })
   })
 
-  it('mod',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('mod', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
     <p>7 mod 2 is <mod><number>7</number><number>2</number></mod>.</p>
-    `},"*");
+    `}, "*");
     });
 
     cy.log('Test value displayed in browser')
 
-    cy.get('#\\/_mod1 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('1')
-    })
+    cy.get('#\\/_mod1').should('have.text','1');
+
   })
 
 });

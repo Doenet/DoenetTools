@@ -987,7 +987,7 @@ function convertComponentTarget({ allComponentClasses, componentType,
     originalTarget = parentDoenetAttributes.originalTarget;
   }
   else if (stateVariableForTakingComponentName) {
-    throw Error(`Have state variable for taking component name but original target defined.`);
+    throw Error(`Have state variable for taking component name but original target not defined.`);
   }
 
   let stringChild;

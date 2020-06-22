@@ -5,12 +5,11 @@ export default class Choiceinput extends Input {
   constructor(args) {
     super(args);
 
-    this.updateSelectedIndices = this.updateSelectedIndices.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    );
 
     this.actions = {
-      updateSelectedIndices: this.updateSelectedIndices,
+      updateSelectedIndices: this.updateSelectedIndices.bind(
+        new Proxy(this, this.readOnlyProxyHandler)
+      )
     }
 
     //Complex because the stateValues isn't defined until later
@@ -256,92 +255,92 @@ export default class Choiceinput extends Input {
     };
 
 
-    stateVariableDefinitions.submittedIndices = {
-      public: true,
-      componentType: "number",
-      isArray: true,
-      entryPrefixes: ["submittedIndex"],
-      returnDependencies: () => ({
-        choiceOrder: {
-          dependencyType: "stateVariable",
-          variableName: "choiceOrder"
-        },
-        choiceChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroChoices",
-          variableNames: ["submitted"]
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        let submittedIndices = [];
-        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
+    // stateVariableDefinitions.submittedIndices = {
+    //   public: true,
+    //   componentType: "number",
+    //   isArray: true,
+    //   entryPrefixes: ["submittedIndex"],
+    //   returnDependencies: () => ({
+    //     choiceOrder: {
+    //       dependencyType: "stateVariable",
+    //       variableName: "choiceOrder"
+    //     },
+    //     choiceChildren: {
+    //       dependencyType: "childStateVariables",
+    //       childLogicName: "atLeastZeroChoices",
+    //       variableNames: ["submitted"]
+    //     },
+    //   }),
+    //   definition: function ({ dependencyValues }) {
+    //     let submittedIndices = [];
+    //     let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
 
-        for (let [ind, choiceChild] of choiceChildrenOrdered.entries()) {
-          if (choiceChild.stateValues.submitted) {
-            submittedIndices.push(ind + 1)
-          }
-        }
-        return { newValues: { submittedIndices } }
-      },
-      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+    //     for (let [ind, choiceChild] of choiceChildrenOrdered.entries()) {
+    //       if (choiceChild.stateValues.submitted) {
+    //         submittedIndices.push(ind + 1)
+    //       }
+    //     }
+    //     return { newValues: { submittedIndices } }
+    //   },
+    //   inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
 
-        let instructions = [];
-        for (let [ind, choiceChild] of dependencyValues.choiceChildren.entries()) {
+    //     let instructions = [];
+    //     for (let [ind, choiceChild] of dependencyValues.choiceChildren.entries()) {
 
-          let indexInOrder = dependencyValues.choiceOrder.indexOf(ind) + 1;
-          let choiceSubmitted = desiredStateVariableValues.submittedIndices.includes(indexInOrder);
-          if (choiceChild.stateValues.submitted !== choiceSubmitted) {
-            instructions.push({
-              setDependency: "choiceChildren",
-              desiredValue: choiceSubmitted,
-              childIndex: ind,
-              variableIndex: 0,
-            });
-          }
-        }
+    //       let indexInOrder = dependencyValues.choiceOrder.indexOf(ind) + 1;
+    //       let choiceSubmitted = desiredStateVariableValues.submittedIndices.includes(indexInOrder);
+    //       if (choiceChild.stateValues.submitted !== choiceSubmitted) {
+    //         instructions.push({
+    //           setDependency: "choiceChildren",
+    //           desiredValue: choiceSubmitted,
+    //           childIndex: ind,
+    //           variableIndex: 0,
+    //         });
+    //       }
+    //     }
 
-        return {
-          success: true,
-          instructions,
-        };
+    //     return {
+    //       success: true,
+    //       instructions,
+    //     };
 
-      }
-    }
+    //   }
+    // }
 
-    stateVariableDefinitions.submittedIndex = {
-      isAlias: true,
-      targetVariableName: "submittedIndex1"
-    };
+    // stateVariableDefinitions.submittedIndex = {
+    //   isAlias: true,
+    //   targetVariableName: "submittedIndex1"
+    // };
 
 
-    stateVariableDefinitions.submittedValues = {
-      public: true,
-      componentType: "text",
-      isArray: true,
-      entryPrefixes: ["submittedValue"],
-      returnDependencies: () => ({
-        submittedIndices: {
-          dependencyType: "stateVariable",
-          variableName: "submittedIndices"
-        },
-        choiceTexts: {
-          dependencyType: "stateVariable",
-          variableName: "choiceTexts"
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          submittedValues: dependencyValues.submittedIndices
-            .map(i => dependencyValues.choiceTexts[i - 1])
-        }
-      })
+    // stateVariableDefinitions.submittedValues = {
+    //   public: true,
+    //   componentType: "text",
+    //   isArray: true,
+    //   entryPrefixes: ["submittedValue"],
+    //   returnDependencies: () => ({
+    //     submittedIndices: {
+    //       dependencyType: "stateVariable",
+    //       variableName: "submittedIndices"
+    //     },
+    //     choiceTexts: {
+    //       dependencyType: "stateVariable",
+    //       variableName: "choiceTexts"
+    //     }
+    //   }),
+    //   definition: ({ dependencyValues }) => ({
+    //     newValues: {
+    //       submittedValues: dependencyValues.submittedIndices
+    //         .map(i => dependencyValues.choiceTexts[i - 1])
+    //     }
+    //   })
 
-    }
+    // }
 
-    stateVariableDefinitions.submittedValue = {
-      isAlias: true,
-      targetVariableName: "submittedValue1"
-    };
+    // stateVariableDefinitions.submittedValue = {
+    //   isAlias: true,
+    //   targetVariableName: "submittedValue1"
+    // };
 
 
     stateVariableDefinitions.creditAchievedIfSubmit = {

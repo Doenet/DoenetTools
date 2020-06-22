@@ -1,10 +1,10 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import { postProcessRef } from '../utils/refs';
+import { postProcessCopy } from '../utils/copy';
 
-export default class Subsref extends CompositeComponent {
-  static componentType = "subsref";
+export default class CopyFromSubs extends CompositeComponent {
+  static componentType = "copyfromsubs";
 
-  static refPropOfReplacements = true;
+  static useReplacementsWhenCopyProp = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -73,17 +73,17 @@ export default class Subsref extends CompositeComponent {
         let substitutionsInfo = sharedParameters.substitutionsInfo;
 
         if (substitutionsInfo === undefined) {
-          throw Error(`subsref can only be inside a map template.`);
+          throw Error(`copyfromsubs can only be inside a map template.`);
         }
 
         let level = substitutionsInfo.length - 1 - stateValues.fromMapAncestor;
         let infoForLevel = substitutionsInfo[level];
         if (infoForLevel === undefined) {
-          throw Error(`Invalid value of subsref fromMapAncestor: ${stateValues.fromMapAncestor}`);
+          throw Error(`Invalid value of copyfromsubs fromMapAncestor: ${stateValues.fromMapAncestor}`);
         }
         let infoForSubs = infoForLevel[stateValues.substitutionsNumber - 1];
         if (infoForSubs === undefined) {
-          throw Error(`Invalid substitutionsNumber of subsref: ${stateValues.substitutionsNumber}`);
+          throw Error(`Invalid substitutionsNumber of copyfromsubs: ${stateValues.substitutionsNumber}`);
         };
 
         return {
@@ -187,10 +187,10 @@ export default class Subsref extends CompositeComponent {
       return [];
     }
     workspace.targetChildName = targetChild.componentName;
-    serializedCopy = targetChild.serialize({ forReference: true });
+    serializedCopy = targetChild.serialize({ forCopy: true });
     serializedCopy = [serializedCopy];
 
-    return { replacements: postProcessRef({ serializedComponents: serializedCopy, componentName: component.componentName }) };
+    return { replacements: postProcessCopy({ serializedComponents: serializedCopy, componentName: component.componentName }) };
 
   }
 
@@ -216,10 +216,10 @@ export default class Subsref extends CompositeComponent {
       // have different child than last time
       // create new replacements and delete old ones
       workspace.targetChildName = targetChild.componentName;
-      serializedCopy = targetChild.serialize({ forReference: true });
+      serializedCopy = targetChild.serialize({ forCopy: true });
       serializedCopy = [serializedCopy];
 
-      let newSerializedReplacements = postProcessRef({ serializedComponents: serializedCopy, componentName: component.componentName });
+      let newSerializedReplacements = postProcessCopy({ serializedComponents: serializedCopy, componentName: component.componentName });
 
       let replacementInstruction = {
         changeType: "add",

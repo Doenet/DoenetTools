@@ -460,9 +460,10 @@ export default class Line extends GraphicalComponent {
               }
             }
 
-            if (changes.throughChild.componentIdentitiesChanged ||
+            if (changes.throughChild && (
+              changes.throughChild.componentIdentitiesChanged ||
               changes.throughChild.valuesChanged[0].points.changed.changedEntireArray
-            ) {
+            )) {
               // send array to indicate that should overwrite entire array
               for (let key in throughPoints) {
                 freshByKey[key] = true;

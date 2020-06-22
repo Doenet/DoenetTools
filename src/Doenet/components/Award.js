@@ -217,15 +217,15 @@ export default class Award extends BaseComponent {
 
         for (let feedbackCode of dependencyValues.feedbackCodes) {
           let code = feedbackCode.toLowerCase();
-          for(let feedbackDefinition of dependencyValues.feedbackDefinitions) {
-            if(code === feedbackDefinition.feedbackCode) {
+          for (let feedbackDefinition of dependencyValues.feedbackDefinitions) {
+            if (code === feedbackDefinition.feedbackCode) {
               feedbacks.push(feedbackDefinition.feedbackText);
               break;  // just take first match
             }
           }
         }
 
-        if(dependencyValues.feedbackText !== null) {
+        if (dependencyValues.feedbackText !== null) {
           feedbacks.push(dependencyValues.feedbackText);
         }
 
@@ -233,6 +233,25 @@ export default class Award extends BaseComponent {
 
       }
     };
+
+    stateVariableDefinitions.responseComponents = {
+      returnDependencies: () => ({
+        whenChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneWhen",
+          variableNames: ["responseComponents"]
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.whenChild.length === 1) {
+          return {
+            newValues: {
+              responseComponents: dependencyValues.whenChild[0].stateValues.responseComponents
+            }
+          }
+        }
+      }
+    }
 
     return stateVariableDefinitions;
   }
