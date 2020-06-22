@@ -14,24 +14,24 @@ describe('Collect Tag Tests',function() {
     </graph>
 
     <graph>
-      <ref>_point1</ref>
+      <copy tname="_point1" />
       <point>(4,2)</point>
       <point>
-        <x><ref prop="y">_point2</ref></x>
-        <y><ref prop="x">_point2</ref></y>
+        <x><copy prop="y" tname="_point2" /></x>
+        <y><copy prop="x" tname="_point2" /></y>
       </point>
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point" name="points">_panel1</collect>
+      <collect componentTypes="point" name="points" tname="_panel1"/>
     </graph>
 
-    <p>Coordinates of points: <collect componentTypes="point" prop="coords" name="coords">_panel1</collect></p>
-    <p><m>x</m>-coordinates of points: <aslist><collect componentTypes="point" prop="x" name="xs">_graph3</collect></aslist></p>
-    <p><m>x</m>-coordinates of points via a ref: <aslist><ref name="xs2">xs</ref></aslist></p>
-    <p><m>x</m>-coordinates of points via extract: <aslist><extract prop="x" name="xs3"><ref name="points2">points</ref></extract></aslist></p>
-    <p>Average of <m>y</m>-coordinates of points: <mean name="mean"><collect componentTypes="point" prop="y" name="ys">_graph3</collect></mean></p>
+    <p>Coordinates of points: <collect componentTypes="point" prop="coords" name="coords" tname="_panel1"/></p>
+    <p><m>x</m>-coordinates of points: <aslist><collect componentTypes="point" prop="x" name="xs" tname="_graph3"/></aslist></p>
+    <p><m>x</m>-coordinates of points via a copy: <aslist><copy name="xs2" tname="xs" /></aslist></p>
+    <p><m>x</m>-coordinates of points via extract: <aslist><extract prop="x" name="xs3"><copy name="points2" tname="points" /></extract></aslist></p>
+    <p>Average of <m>y</m>-coordinates of points: <mean name="mean"><collect componentTypes="point" prop="y" name="ys" tname="_graph3"/></mean></p>
     `},"*");
     });
   
@@ -163,7 +163,7 @@ describe('Collect Tag Tests',function() {
 
     })
 
-    cy.log("move point 1 via ref")
+    cy.log("move point 1 via copy")
     cy.window().then((win) => {
       x1 = 2;
       y1 = 0;
@@ -172,7 +172,7 @@ describe('Collect Tag Tests',function() {
       meany = (y1+y2+y1+y3+x2)/5
 
       let components = Object.assign({},win.state.components);
-      components['/_ref1'].replacements[0].movePoint({x:x1, y:y1});
+      components['/_copy1'].replacements[0].movePoint({x:x1, y:y1});
 
       for(let i=0; i<5; i++) {
         expect(components['/points'].replacements[i].stateValues.xs[0].tree).eq(xs[i]);
@@ -278,27 +278,27 @@ describe('Collect Tag Tests',function() {
     <panel>
     <graph>
       <map>
-        <template><point>(<subsref/>, <ref prop="value">../mult</ref><subsref/>)</point></template>
-        <substitutions><sequence><to><ref prop="value">count</ref></to></sequence></substitutions>
+        <template><point>(<copyFromSubs/>, <copy prop="value" tname="../mult" /><copyFromSubs/>)</point></template>
+        <substitutions><sequence><to><copy prop="value" tname="count" /></to></sequence></substitutions>
       </map>
       <line>y=x/3</line>
     </graph>
 
     <graph>
       <map>
-      <template><point>(<extract prop="x"><subsref/></extract>+1, 1.5*<extract prop="y"><subsref/></extract>)</point></template>
-      <substitutions><collect componentTypes="point">_map1</collect></substitutions>
+      <template><point>(<extract prop="x"><copyFromSubs/></extract>+1, 1.5*<extract prop="y"><copyFromSubs/></extract>)</point></template>
+      <substitutions><collect componentTypes="point" tname="_map1"/></substitutions>
     </map>
 
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point">_panel1</collect>
+      <collect componentTypes="point" tname="_panel1"/>
     </graph>
 
     <p>y-coordinates of points: <aslist>
-      <collect componentTypes="point" prop="y">_graph3</collect>
+      <collect componentTypes="point" prop="y" tname="_graph3" />
     </aslist></p>
     `},"*");
     });
@@ -485,16 +485,16 @@ describe('Collect Tag Tests',function() {
   it.skip(`default don't include hidden`,() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
-    <extract prop="x"><ref prop="endpoint1">_linesegment1</ref></extract>
+    <extract prop="x"><copy prop="endpoint1" tname="_linesegment1" /></extract>
     <graph>
       <linesegment>(1,2),(-3,5)</linesegment>
     </graph>
 
     <graph>
-      <collect componentTypes="point">_graph1</collect>
+      <collect componentTypes="point" tname="_graph1"/>
     </graph>
 
-    <collect componentTypes="point" prop="x">_graph1</collect>
+    <collect componentTypes="point" prop="x" tname="_graph1"/>
 
     `},"*");
     });
@@ -516,22 +516,21 @@ describe('Collect Tag Tests',function() {
   it.skip(`dynamically change if include hidden`,() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
-    <extract prop="x"><ref prop="endpoint1">_linesegment1</ref></extract>
+    <extract prop="x"><copy prop="endpoint1" tname="_linesegment1" /></extract>
     <p>Include hidden: <booleaninput /></p>
     <graph>
       <linesegment>(1,2),(-3,5)</linesegment>
     </graph>
 
     <graph>
-      <collect componentTypes="point">
-        <includehidden><ref prop="value">_booleaninput1</ref></includehidden>
-        _graph1
+      <collect componentTypes="point" tname="_graph1">
+        <includehidden><copy prop="value" tname="_booleaninput1" /></includehidden>
       </collect>
     </graph>
 
     <p>x-coordinates of points: <aslist>
       <collect componentTypes="point" prop="x">
-        <includehidden><ref prop="value">_booleaninput1</ref></includehidden>
+        <includehidden><copy prop="value" tname="_booleaninput1" /></includehidden>
         _graph1
       </collect>
     </aslist></p>
@@ -651,24 +650,24 @@ describe('Collect Tag Tests',function() {
     <graph>
       <point>(-3,1)</point>
       <point>(-7,4)</point>
-      <vector><ref>_point1</ref><ref>_point2</ref></vector>
+      <vector><copy tname="_point1" /><copy tname="_point2" /></vector>
     </graph>
 
     <graph>
       <point>
-        <x><ref prop="y">_point1</ref></x>
-        <y><ref prop="x">_point1</ref></y>
+        <x><copy prop="y" tname="_point1" /></x>
+        <y><copy prop="x" tname="_point1" /></y>
       </point>
       <point>
-        <x><ref prop="y">_point2</ref></x>
-        <y><ref prop="x">_point2</ref></y>
+        <x><copy prop="y" tname="_point2" /></x>
+        <y><copy prop="x" tname="_point2" /></y>
       </point>
-      <vector><ref>_point3</ref><ref>_point4</ref></vector>
+      <vector><copy tname="_point3" /><copy tname="_point4" /></vector>
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point,vector" >_panel1</collect>
+      <collect componentTypes="point,vector" tname="_panel1"/>
     </graph>
     `},"*");
     });
@@ -769,27 +768,27 @@ describe('Collect Tag Tests',function() {
     <panel>
     <graph>
       <map>
-        <template><point>(<subsref/>, <ref prop="value">../mult</ref><subsref/>)</point></template>
-        <substitutions><sequence><to><ref prop="value">count</ref></to></sequence></substitutions>
+        <template><point>(<copyFromSubs/>, <copy prop="value" tname="../mult" /><copyFromSubs/>)</point></template>
+        <substitutions><sequence><to><copy prop="value" tname="count" /></to></sequence></substitutions>
       </map>
       <line>y=x/3</line>
     </graph>
 
     <graph>
       <map>
-      <template><point>(<extract prop="x"><subsref/></extract>+1, 1.5*<extract prop="y"><subsref/></extract>)</point></template>
-      <substitutions><collect componentTypes="point"><maximumnumber><ref prop="value">maxnumber</ref></maximumnumber>_map1</collect></substitutions>
+      <template><point>(<extract prop="x"><copyFromSubs/></extract>+1, 1.5*<extract prop="y"><copyFromSubs/></extract>)</point></template>
+      <substitutions><collect componentTypes="point" tname="_map1"><maximumnumber><copy prop="value" tname="maxnumber" /></maximumnumber></collect></substitutions>
     </map>
 
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point"><maximumnumber>2<ref prop="value">maxnumber</ref></maximumnumber>_panel1</collect>
+      <collect componentTypes="point" tname="_panel1"><maximumnumber>2<copy prop="value" tname="maxnumber" /></maximumnumber></collect>
     </graph>
 
     <p>y-coordinates of points: <aslist>
-      <collect componentTypes="point" prop="y"><maximumnumber><ref prop="value">maxnumber</ref></maximumnumber>_graph3</collect>
+      <collect componentTypes="point" prop="y" tname="_graph3"><maximumnumber><copy prop="value" tname="maxnumber" /></maximumnumber></collect>
     </aslist></p>
     `},"*");
     });
@@ -1031,13 +1030,13 @@ describe('Collect Tag Tests',function() {
     <mathinput />
 
     <math>
-      <sequence><to><ref prop="value">_mathinput1</ref></to></sequence>
+      <sequence><to><copy prop="value" tname="_mathinput1" /></to></sequence>
       <math>a</math>
       <math>b</math>
       <math>c</math>
     </math>
     
-    <collect prop="childnumber" componentTypes="math">_math1</collect>
+    <collect prop="childnumber" componentTypes="math" tname="_math1"/>
     `},"*");
     });
 
@@ -1117,7 +1116,7 @@ describe('Collect Tag Tests',function() {
 
   });
 
-  it('collect, extract, ref multiple ways',() => {
+  it('collect, extract, copy multiple ways',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
   <text>a</text>
 
@@ -1131,36 +1130,36 @@ describe('Collect Tag Tests',function() {
         <mathinput />
       </template>
       <substitutions>
-        <sequence><count><ref prop="value">n</ref></count></sequence>
+        <sequence><count><copy prop="value" tname="n" /></count></sequence>
       </substitutions>
     </map>
   </p>
   
   <p name="p_1">Inputs collected then, values extracted: 
-  <aslist name="al1"><extract prop="value" name="values1"><collect componentTypes="mathinput">p_original</collect></extract></aslist></p>
+  <aslist name="al1"><extract prop="value" name="values1"><collect componentTypes="mathinput" tname="p_original"/></extract></aslist></p>
 
-  <p name="p_1a">Reffed: <aslist name="al1a"><ref name="values1a">values1</ref></aslist></p>
-  <p name="p_1b">Ref aslist: <ref name="al1b">al1</ref></p>
-  <p name="p_1c">Ref reffed: <aslist><ref>values1a</ref></aslist></p>
-  <p name="p_1d">Ref aslist containing ref: <ref>al1a</ref></p>
-  <p name="p_1e">Ref reffed aslist: <ref>al1b</ref></p>
+  <p name="p_1a">Copied: <aslist name="al1a"><copy name="values1a" tname="values1" /></aslist></p>
+  <p name="p_1b">Copy aslist: <copy name="al1b" tname="al1" /></p>
+  <p name="p_1c">Copy copied: <aslist><copy tname="values1a" /></aslist></p>
+  <p name="p_1d">Copy aslist containing copy: <copy tname="al1a" /></p>
+  <p name="p_1e">Copy copied aslist: <copy tname="al1b" /></p>
 
   <p name="p_2">Values collected: 
-    <aslist name="al2"><collect prop="value" name="values2" componentTypes="mathinput">p_original</collect></aslist></p>
+    <aslist name="al2"><collect prop="value" name="values2" componentTypes="mathinput" tname="p_original"/></aslist></p>
     
-  <p name="p_2a">Reffed: <aslist name="al2a"><ref name="values2a">values2</ref></aslist></p>
-  <p name="p_2b">Ref aslist: <ref name="al2b">al2</ref></p>
-  <p name="p_2c">Ref reffed: <aslist><ref>values2a</ref></aslist></p>
-  <p name="p_2d">Ref aslist containing ref: <ref>al2a</ref></p>
-  <p name="p_2e">Ref reffed aslist: <ref>al2b</ref></p>
+  <p name="p_2a">Copied: <aslist name="al2a"><copy name="values2a" tname="values2" /></aslist></p>
+  <p name="p_2b">Copy aslist: <copy name="al2b" tname="al2" /></p>
+  <p name="p_2c">Copy copied: <aslist><copy tname="values2a" /></aslist></p>
+  <p name="p_2d">Copy aslist containing copy: <copy tname="al2a" /></p>
+  <p name="p_2e">Copy copied aslist: <copy tname="al2b" /></p>
 
-  <p name="p_3">Inputs collected: <aslist name="al3"><collect name="col" componentTypes="mathinput">p_original</collect></aslist></p>
+  <p name="p_3">Inputs collected: <aslist name="al3"><collect name="col" componentTypes="mathinput" tname="p_original"/></aslist></p>
   
-  <p name="p_3a">Reffed: <aslist name="al3a"><ref name="cola">col</ref></aslist></p>
-  <p name="p_3b">Ref aslist: <ref name="al3b">al3</ref></p>
-  <p name="p_3c">Ref reffed: <aslist><ref>cola</ref></aslist></p>
-  <p name="p_3d">Ref aslist containing ref: <ref>al3a</ref></p>
-  <p name="p_3e">Ref reffed aslist: <ref>al3b</ref></p>
+  <p name="p_3a">Copied: <aslist name="al3a"><copy name="cola" tname="col" /></aslist></p>
+  <p name="p_3b">Copy aslist: <copy name="al3b" tname="al3" /></p>
+  <p name="p_3c">Copy copied: <aslist><copy tname="cola" /></aslist></p>
+  <p name="p_3d">Copy aslist containing copy: <copy tname="al3a" /></p>
+  <p name="p_3e">Copy copied aslist: <copy tname="al3b" /></p>
   
     `},"*");
     });

@@ -15,8 +15,8 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       <award>
         <if>
         <discreteinfiniteset name="s1" simplify>
-          <offsets mergemathlists="true"><ref prop="value">o</ref></offsets>
-          <period><ref prop="value">p</ref></period>
+          <offsets mergemathlists="true"><copy prop="value" tname="o" /></offsets>
+          <period><copy prop="value" tname="p" /></period>
         </discreteinfiniteset>
         =
         <discreteinfiniteset name="s2" simplify>
@@ -26,7 +26,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
         </if>
       </award>
     </answer>
-    <p>Credit achieved: <ref prop="creditAchieved">_answer1</ref></p>
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_answer1" /></p>
     `}, "*");
     });
 
@@ -219,24 +219,24 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
     <p>Period 2: <mathinput name="period2" /></p>
     
     <discreteinfiniteset name="a">
-    <offsets mergemathlists="true"><ref prop="value">offsets</ref></offsets>
-    <period><ref prop="value">period</ref></period>
+    <offsets mergemathlists="true"><copy prop="value" tname="offsets" /></offsets>
+    <period><copy prop="value" tname="period" /></period>
     </discreteinfiniteset>
     
     <discreteinfiniteset name="b">
-    <offsets mergemathlists="true"><ref prop="value">offsets2</ref></offsets>
-    <period><ref prop="value">period2</ref></period>
+    <offsets mergemathlists="true"><copy prop="value" tname="offsets2" /></offsets>
+    <period><copy prop="value" tname="period2" /></period>
     </discreteinfiniteset>
     
     <answer>
       <award>
-        <if><ref name="a2">a</ref> = <ref name="b2">b</ref></if>
+        <if><copy name="a2" tname="a" /> = <copy name="b2" tname="b" /></if>
       </award>
     </answer>
     
-    <p>Credit achieved: <ref prop="creditAchieved">_answer1</ref></p>
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_answer1" /></p>
     
-    <p>Redundancies: <ref prop="redundantoffsets">a</ref>, <ref prop="redundantoffsets">b</ref>, <ref prop="redundantoffsets">a2</ref>, <ref prop="redundantoffsets">b2</ref></p>
+    <p>Redundancies: <copy prop="redundantoffsets" tname="a" />, <copy prop="redundantoffsets" tname="b" />, <copy prop="redundantoffsets" tname="a2" />, <copy prop="redundantoffsets" tname="b2" /></p>
     `}, "*");
     });
 
@@ -586,8 +586,8 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
     <offsets hide name="correct_offsets" mergemathlists="true">30,150</offsets>
     <period hide name="correct_period">180</period>
     <discreteinfiniteset name="correct" simplify="full">
-      <ref>correct_offsets</ref>
-      <ref>correct_period</ref>
+      <copy tname="correct_offsets" />
+      <copy tname="correct_period" />
     </discreteinfiniteset>
     
     <p>What is the period?
@@ -595,7 +595,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
         <mathinput name="period_input" />
         <award><if>
           <isinteger>
-            <number><ref prop="value">period_input</ref>/<ref prop="value">correct_period</ref></number>
+            <number><copy prop="value" tname="period_input" />/<copy prop="value" tname="correct_period" /></number>
           </isinteger>
         </if></award>
       </answer>
@@ -605,11 +605,11 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
       <answer name="number_offsets">
         <mathinput name="number_offsets_input" />
         <award><if>
-          <isinteger><number><ref prop="value">number_offsets_input</ref></number></isinteger>
+          <isinteger><number><copy prop="value" tname="number_offsets_input" /></number></isinteger>
           and
-          <ref prop="value">number_offsets_input</ref> >= 
-            <number><ref prop="submittedResponse">period</ref>/<ref prop="value">correct_period</ref>
-              *<ref prop="ncomponents">correct_offsets</ref>
+          <copy prop="value" tname="number_offsets_input" /> >= 
+            <number><copy prop="submittedResponse" tname="period" />/<copy prop="value" tname="correct_period" />
+              *<copy prop="ncomponents" tname="correct_offsets" />
             </number>
         </if></award>  
       </answer> 
@@ -621,7 +621,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
           <mathinput />
         </template>
         <substitutions>
-          <sequence><count><ref prop="submittedResponse">number_offsets</ref></count></sequence>
+          <sequence><count><copy prop="submittedResponse" tname="number_offsets" /></count></sequence>
         </substitutions>
       </map>
     </p>
@@ -631,12 +631,12 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
           <if matchpartial="true">
           <discreteinfiniteset simplify="full">
             <offsets>
-              <extract prop="value"><collect components="mathinput">offset_p</collect></extract>
+              <extract prop="value"><collect components="mathinput" tname="offset_p" /></extract>
             </offsets>
-            <period><ref prop="submittedResponse">period</ref></period>
+            <period><copy prop="submittedResponse" tname="period" /></period>
           </discreteinfiniteset>
           =
-          <ref>correct</ref>
+          <copy tname="correct" />
         </if>
       </award>
     </answer>

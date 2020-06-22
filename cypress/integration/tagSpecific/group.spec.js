@@ -4,24 +4,24 @@ describe('Group Tag Tests',function() {
     cy.visit('/test')
   })
 
-  it('nested groups, reffed', () => {
+  it.only('nested groups, copied', () => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p>Animal: <textinput name="animal" prefill="fox"/></p>
     <p>Plant: <textinput name="plant" prefill="tree"/></p>
     
     <group name="g1">
-      <p name="animalp">The animal is a <ref prop="value">animal</ref>.</p>
+      <p name="animalp">The animal is a <copy prop="value" tname="animal" />.</p>
       <group name="g2">
-        <p name="plantp">The plant is a <ref prop="value">plant</ref>.</p>
-        <ref>animalp</ref>
+        <p name="plantp">The plant is a <copy prop="value" tname="plant" />.</p>
+        <copy tname="animalp" />
         <group name="g3">
-          <ref>plantp</ref>
+          <copy tname="plantp" />
         </group>
-        <ref>g3</ref>
+        <copy tname="g3" />
       </group>
-      <ref>g2</ref>
+      <copy tname="g2" />
     </group>
-    <ref>g1</ref>
+    <copy tname="g1" />
     `},"*");
     });
 
@@ -80,31 +80,31 @@ describe('Group Tag Tests',function() {
     cy.window().then((win) => { win.postMessage({doenetML: `
 
     <group name="g1">
-      <p name="animalp">The animal <ref>animalphrase</ref>.</p>
+      <p name="animalp">The animal <copy tname="animalphrase" />.</p>
       <group name="g2">
-        <p name="plantp">The plant <ref>plantphrase</ref>.</p>
-        <ref>animalp</ref>
+        <p name="plantp">The plant <copy tname="plantphrase" />.</p>
+        <copy tname="animalp" />
         <group name="g3">
-          <ref>plantp</ref>
+          <copy tname="plantp" />
         </group>
-        <ref>g3</ref>
+        <copy tname="g3" />
       </group>
-      <ref>g2</ref>
+      <copy tname="g2" />
     </group>
-    <ref>g1</ref>
+    <copy tname="g1" />
 
-    <ref name="verb">verb1</ref>
-    <ref name="animalphrase">animalphrase1</ref>
-    <text name="animalphrase1"><ref>verb</ref> <ref>animal1</ref></text>
-    <text name="animal1"><ref>article</ref> <ref prop="value">animal</ref></text>
-    <ref name="verb1">verb2</ref>
+    <copy name="verb" tname="verb1" />
+    <copy name="animalphrase" tname="animalphrase1" />
+    <text name="animalphrase1"><copy tname="verb" /> <copy tname="animal1" /></text>
+    <text name="animal1"><copy tname="article" /> <copy prop="value" tname="animal" /></text>
+    <copy name="verb1" tname="verb2" />
     <text name="verb2">is</text>
-    <text name="article"><ref>article1</ref></text>
-    <ref name="article1">article2</ref>
+    <text name="article"><copy tname="article1" /></text>
+    <copy name="article1" tname="article2" />
     <text name="article2">a</text>
-    <ref name="plantphrase">plantphrase1</ref>
-    <text name="plantphrase1"><ref>verb</ref> <ref>plant1</ref></text>
-    <text name="plant1"><ref>article</ref> <ref prop="value">plant</ref></text>
+    <copy name="plantphrase" tname="plantphrase1" />
+    <text name="plantphrase1"><copy tname="verb" /> <copy tname="plant1" /></text>
+    <text name="plant1"><copy tname="article" /> <copy prop="value" tname="plant" /></text>
 
     <p>Animal: <textinput name="animal" prefill="fox"/></p>
     <p>Plant: <textinput name="plant" prefill="tree"/></p>
@@ -171,12 +171,12 @@ describe('Group Tag Tests',function() {
     Number list:
     <aslist>
     <map>
-    <template><math simplify><subsref/>^2</math></template>
+    <template><math simplify><copyFromSubs/>^2</math></template>
     <substitutions>
     <sequence>
-      <from><ref prop="value">from</ref></from>
-      <to><ref prop="value">to</ref></to>
-      <count><ref prop="value">count</ref></count>
+      <from><copy prop="value" tname="from" /></from>
+      <to><copy prop="value" tname="to" /></to>
+      <count><copy prop="value" tname="count" /></count>
     </sequence>
     </substitutions>
     </map>
@@ -188,12 +188,12 @@ describe('Group Tag Tests',function() {
     <mathinput name="to" prefill="2"/>
     <mathinput name="count" prefill="0"/>
     
-    <ref name="refgroup2">_group1</ref>
-    <ref name="refgroup3">refgroup2</ref>
+    <copy name="refgroup2" tname="_group1" />
+    <copy name="refgroup3" tname="refgroup2" />
 
-    <ref name="refgroupthroughp">_p1</ref>
-    <ref name="refgroupthroughp2">refgroupthroughp</ref>
-    <ref name="refgroupthroughp3">refgroupthroughp2</ref>
+    <copy name="refgroupthroughp" tname="_p1" />
+    <copy name="refgroupthroughp2" tname="refgroupthroughp" />
+    <copy name="refgroupthroughp3" tname="refgroupthroughp2" />
     `},"*");
     });
   
@@ -429,24 +429,24 @@ describe('Group Tag Tests',function() {
     <text>a</text>
     <p name="p1">
     <aslist>
-    <group><math simplify><math name="x"><ref prop="value">var1</ref></math> + <ref>y</ref></math></group>
-    <group><math simplify><math name="y"><ref prop="value">var2</ref></math> + <ref>x</ref></math></group>
+    <group><math simplify><math name="x"><copy prop="value" tname="var1" /></math> + <copy tname="y" /></math></group>
+    <group><math simplify><math name="y"><copy prop="value" tname="var2" /></math> + <copy tname="x" /></math></group>
     </aslist>
     </p>
     
     <mathinput prefill="x" name="var1"/>
     <mathinput prefill="y" name="var2"/>
     
-    <p name="p2"><aslist><ref>_group1</ref><ref>_group2</ref></aslist></p>
-    <p name="p3"><ref>_aslist1</ref></p>
+    <p name="p2"><aslist><copy tname="_group1" /><copy tname="_group2" /></aslist></p>
+    <p name="p3"><copy tname="_aslist1" /></p>
     
-    <ref name="p4">p1</ref>
-    <ref name="p5">p2</ref>
-    <ref name="p6">p3</ref>
+    <copy name="p4" tname="p1" />
+    <copy name="p5" tname="p2" />
+    <copy name="p6" tname="p3" />
     
-    <ref name="p7">p4</ref>
-    <ref name="p8">p5</ref>
-    <ref name="p9">p6</ref>
+    <copy name="p7" tname="p4" />
+    <copy name="p8" tname="p5" />
+    <copy name="p9" tname="p6" />
     `},"*");
     });
   

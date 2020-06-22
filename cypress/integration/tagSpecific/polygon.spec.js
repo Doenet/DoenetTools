@@ -315,7 +315,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices>
     <map>
-      <template><point>(<subsref/>, 5sin(<subsref/>))</point></template>
+      <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
         <count><ref prop="value">count</ref></count>
       </sequence></substitutions>
@@ -442,7 +442,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices>
     <map>
-      <template><point>(<subsref/>, 5sin(<subsref/>))</point></template>
+      <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
         <count><ref prop="value">count</ref></count>
       </sequence></substitutions>
@@ -510,7 +510,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon>
     <map>
-      <template><point>(<subsref/>, 5sin(<subsref/>))</point></template>
+      <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
         <count><ref prop="value">count</ref></count>
       </sequence></substitutions>
@@ -639,7 +639,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon>
     <map>
-      <template><point>(<subsref/>, 5sin(<subsref/>))</point></template>
+      <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
         <count><ref prop="value">count</ref></count>
       </sequence></substitutions>
@@ -708,7 +708,7 @@ describe('Polygon Tag Tests', function () {
   <mathinput name="count" prefill="0" />
   <graph>
   <map>
-    <template><point>(<subsref/>, 5sin(<subsref/>))</point></template>
+    <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
     <substitutions><sequence from="0">
       <count><ref prop="value">count</ref></count>
     </sequence></substitutions>
@@ -836,7 +836,7 @@ describe('Polygon Tag Tests', function () {
   <mathinput name="count" prefill="0" />
   <graph>
   <map>
-    <template><point>(<subsref/>, 5sin(<subsref/>))</point></template>
+    <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
     <substitutions><sequence from="0">
       <count><ref prop="value">count</ref></count>
     </sequence></substitutions>
@@ -969,7 +969,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices hide="false">
     <map>
-      <template><point>(<subsref/>, 5sin(<subsref/>))</point></template>
+      <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="-5" to="5"/></substitutions>
     </map>
     </vertices></polygon>
@@ -1099,7 +1099,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices hide="false">
     <map>
-      <template><point>(<subsref/> + <math>0</math>, 5sin(<subsref/>) + <math>0</math>)</point></template>
+      <template><point>(<copyFromSubs/> + <math>0</math>, 5sin(<copyFromSubs/>) + <math>0</math>)</point></template>
       <substitutions><sequence from="-5" to="5"/></substitutions>
     </map>
     </vertices></polygon>
@@ -1462,9 +1462,9 @@ describe('Polygon Tag Tests', function () {
     <polygon>
       <map>
         <template>
-          <point>(<extract prop="x"><subsref fixed="false"/></extract>+
+          <point>(<extract prop="x"><copyFromSubs fixed="false"/></extract>+
             <ref prop="value" modifyIndirectly="false">../transx</ref>,
-           <extract prop="y"><subsref fixed="false" /></extract>+
+           <extract prop="y"><copyFromSubs fixed="false" /></extract>+
            <ref prop="value" modifyIndirectly="false">../transy</ref>)
           </point>
         </template>

@@ -871,3 +871,8 @@ export class Periodic extends BooleanComponent {
   static componentType = "periodic";
   static rendererType = "boolean";
 }
+
+export class IsResponse extends BooleanComponent {
+  static componentType = "isResponse";
+  static rendererType = "boolean";
+}

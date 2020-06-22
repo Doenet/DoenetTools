@@ -210,6 +210,22 @@ export default class When extends BaseComponent {
       definition: evaluateLogic
     };
 
+    stateVariableDefinitions.responseComponents = {
+      returnDependencies: () => ({
+        allDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: ["_base"],
+          variableNames: ["isResponse", "value", "values"],
+          variablesOptional: true,
+          requireChildLogicInitiallySatisfied: true,
+        }
+      }),
+      definition: ({dependencyValues}) => ({
+        newValues: {
+          responseComponents: dependencyValues.allDescendants.filter(x=> x.stateValues.isResponse)
+        }
+      })
+    }
 
     return stateVariableDefinitions;
   }

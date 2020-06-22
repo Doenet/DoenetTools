@@ -1026,7 +1026,7 @@ function returnTableSerializedComponents({
     //     componentType: "ref",
     //     children: [{
     //       componentType: "reftarget",
-    //       state: {refTargetName: cellComponent.componentName}
+    //       state: {targetName: cellComponent.componentName}
     //     }],
     //     state: {rownum: "", colnum:""},
     //   }

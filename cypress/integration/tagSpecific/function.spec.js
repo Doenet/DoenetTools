@@ -831,7 +831,7 @@ describe('Function Tag Tests', function () {
     <p>slope: <mathinput/></p>
     <graph>
     <function>
-    <through><slope><ref prop="value">_mathinput1</ref></slope>(-6,-1)</through>
+    <through><slope><copy prop="value" tname="_mathinput1" /></slope>(-6,-1)</through>
     </function>
     </graph>
     `}, "*");
@@ -890,7 +890,7 @@ describe('Function Tag Tests', function () {
     <p>slope: <mathinput/></p>
     <graph>
     <function>
-    <through><slope><ref prop="value">_mathinput1</ref></slope>(-6,-1),(3,8)</through>
+    <through><slope><copy prop="value" tname="_mathinput1" /></slope>(-6,-1),(3,8)</through>
     </function>
     </graph>
     `}, "*");
@@ -1114,7 +1114,7 @@ describe('Function Tag Tests', function () {
     </function>
 
     <point>
-      <constrainTo><ref>_function1</ref></constrainTo>
+      <constrainTo><copy tname="_function1" /></constrainTo>
       (1,2)
     </point>
     </graph>
@@ -1214,7 +1214,7 @@ describe('Function Tag Tests', function () {
       log(2u)
     </function>
     <point>
-    <constrainTo><ref>_function1</ref></constrainTo>
+    <constrainTo><copy tname="_function1" /></constrainTo>
     (-3,5)
     </point>
 
@@ -1265,23 +1265,23 @@ describe('Function Tag Tests', function () {
     <point>(-5,6)</point>
     <function>
       <through>
-      <ref>_point1</ref>
-      <ref>_point2</ref>
+      <copy tname="_point1" />
+      <copy tname="_point2" />
       </through>
 
-      <maximum><ref>_point3</ref></maximum>
-      <minimum><ref>_point4</ref></minimum>
+      <maximum><copy tname="_point3" /></maximum>
+      <minimum><copy tname="_point4" /></minimum>
     </function>
-    <ref prop="maxima">_function1</ref>
-    <ref prop="minima">_function1</ref>
+    <copy prop="maxima" tname="_function1" />
+    <copy prop="minima" tname="_function1" />
     </graph>
 
-    <p>Number of maxima: <ref prop="numbermaxima" name="numbermaxima">_function1</ref></p>
-    <p>Maxima: <math simplify="none"><ref prop="maxima">_function1</ref></math></p>
-    <p>Number of minima: <ref prop="numberminima" name="numberminima">_function1</ref></p>
-    <p>Minima: <math simplify="none"><ref prop="minima">_function1</ref></math></p>
-    <p>Number of extrema: <ref prop="numberextrema" name="numberextrema">_function1</ref></p>
-    <p>Extrema: <math simplify="none"><ref prop="extrema">_function1</ref></math></p>
+    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" tname="_function1" /></p>
+    <p>Maxima: <math simplify="none"><copy prop="maxima" tname="_function1" /></math></p>
+    <p>Number of minima: <copy prop="numberminima" name="numberminima" tname="_function1" /></p>
+    <p>Minima: <math simplify="none"><copy prop="minima" tname="_function1" /></math></p>
+    <p>Number of extrema: <copy prop="numberextrema" name="numberextrema" tname="_function1" /></p>
+    <p>Extrema: <math simplify="none"><copy prop="extrema" tname="_function1" /></math></p>
     `}, "*");
     });
 
@@ -1463,32 +1463,32 @@ describe('Function Tag Tests', function () {
     <point layer="2">(0,1)</point>
     <point layer="2">(3,1)</point>
     <function>
-      <ref prop="y">_point1</ref>
-      exp(-(x-<ref prop="x">_point1</ref>)^2)
+      <copy prop="y" tname="_point1" />
+      exp(-(x-<copy prop="x" tname="_point1" />)^2)
       + 
-      <ref prop="y">_point2</ref>
-      exp(-(x-<ref prop="x">_point2</ref>)^2)
+      <copy prop="y" tname="_point2" />
+      exp(-(x-<copy prop="x" tname="_point2" />)^2)
     </function>
-    <ref prop="extrema">_function1</ref>
+    <copy prop="extrema" tname="_function1" />
     </graph>
     
-    <p>Number of maxima: <ref prop="numbermaxima" name="numbermaxima">_function1</ref></p>
-    <p>Maxima locations: <ref prop="maximumlocation1" name="maximumlocation1">_function1</ref>,
-    <ref prop="maximumlocation2" name="maximumlocation2">_function1</ref></p>
-    <p>Maxima values: <ref prop="maximumvalue1" name="maximumvalue1">_function1</ref>,
-    <ref prop="maximumvalue2" name="maximumvalue2">_function1</ref></p>
-    <p>Number of minima: <ref prop="numberminima" name="numberminima">_function1</ref></p>
-    <p>Minima locations: <ref prop="minimumlocation1" name="minimumlocation1">_function1</ref>,
-    <ref prop="minimumlocation2" name="minimumlocation2">_function1</ref></p>
-    <p>Minima values: <ref prop="minimumvalue1" name="minimumvalue1">_function1</ref>,
-    <ref prop="minimumvalue2" name="minimumvalue2">_function1</ref></p>
-    <p>Number of extrema: <ref prop="numberextrema" name="numberextrema">_function1</ref></p>
-    <p>Extrema locations: <ref prop="extremumlocation1" name="extremumlocation1">_function1</ref>,
-    <ref prop="extremumlocation2" name="extremumlocation2">_function1</ref>,
-    <ref prop="extremumlocation3" name="extremumlocation3">_function1</ref></p>
-    <p>Extrema values: <ref prop="extremumvalue1" name="extremumvalue1">_function1</ref>,
-    <ref prop="extremumvalue2" name="extremumvalue2">_function1</ref>,
-    <ref prop="extremumvalue3" name="extremumvalue3">_function1</ref></p>
+    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" tname="_function1" /></p>
+    <p>Maxima locations: <copy prop="maximumlocation1" name="maximumlocation1" tname="_function1" />,
+    <copy prop="maximumlocation2" name="maximumlocation2" tname="_function1" /></p>
+    <p>Maxima values: <copy prop="maximumvalue1" name="maximumvalue1" tname="_function1" />,
+    <copy prop="maximumvalue2" name="maximumvalue2" tname="_function1" /></p>
+    <p>Number of minima: <copy prop="numberminima" name="numberminima" tname="_function1" /></p>
+    <p>Minima locations: <copy prop="minimumlocation1" name="minimumlocation1" tname="_function1" />,
+    <copy prop="minimumlocation2" name="minimumlocation2" tname="_function1" /></p>
+    <p>Minima values: <copy prop="minimumvalue1" name="minimumvalue1" tname="_function1" />,
+    <copy prop="minimumvalue2" name="minimumvalue2" tname="_function1" /></p>
+    <p>Number of extrema: <copy prop="numberextrema" name="numberextrema" tname="_function1" /></p>
+    <p>Extrema locations: <copy prop="extremumlocation1" name="extremumlocation1" tname="_function1" />,
+    <copy prop="extremumlocation2" name="extremumlocation2" tname="_function1" />,
+    <copy prop="extremumlocation3" name="extremumlocation3" tname="_function1" /></p>
+    <p>Extrema values: <copy prop="extremumvalue1" name="extremumvalue1" tname="_function1" />,
+    <copy prop="extremumvalue2" name="extremumvalue2" tname="_function1" />,
+    <copy prop="extremumvalue3" name="extremumvalue3" tname="_function1" /></p>
     `}, "*");
     });
 
@@ -1676,8 +1676,8 @@ describe('Function Tag Tests', function () {
     <text>a</text>
     Period: <mathinput />
     <graph>
-    <function>sin(2*pi*x/<ref prop="value">_mathinput1</ref>)</function>
-    <ref prop="extrema">_function1</ref>
+    <function>sin(2*pi*x/<copy prop="value" tname="_mathinput1" />)</function>
+    <copy prop="extrema" tname="_function1" />
     </graph>
     `}, "*");
     });
@@ -1802,8 +1802,8 @@ describe('Function Tag Tests', function () {
     <function>
       1/(1+exp(-10*x))
     </function>
-    <ref prop="minima">_function1</ref>
-    <ref prop="maxima">_function1</ref>
+    <copy prop="minima" tname="_function1" />
+    <copy prop="maxima" tname="_function1" />
     </graph>
     `}, "*");
     });
@@ -1832,7 +1832,7 @@ describe('Function Tag Tests', function () {
     <function>
       (x+8)(x-8)/((x-2)(x+4)(x-5)^2)
     </function>
-    <ref prop="extrema">_function1</ref>
+    <copy prop="extrema" tname="_function1" />
     </graph>
     `}, "*");
     });
@@ -1877,7 +1877,7 @@ describe('Function Tag Tests', function () {
      (-8,7), (-7,2), (-6,2), (-4,3), (-2,5), (8,5), (10,4)
       </through>
     </function>
-    <ref prop="extrema">_function1</ref>
+    <copy prop="extrema" tname="_function1" />
     </graph>
     `}, "*");
     });
@@ -1906,11 +1906,11 @@ describe('Function Tag Tests', function () {
     <function>
       log(x^2-1)*sqrt((x-5)^2-1)
     </function>
-    <ref prop="extrema">_function1</ref>
+    <copy prop="extrema" tname="_function1" />
     </graph>
 
-    <ref prop="extremalocations">_function1</ref>,
-    <ref prop="extremavalues">_function1</ref>
+    <copy prop="extremalocations" tname="_function1" />,
+    <copy prop="extremavalues" tname="_function1" />
 
     `}, "*");
     });
@@ -1945,26 +1945,26 @@ describe('Function Tag Tests', function () {
     <point>(-5,7)</point>
     <point>(8,-1)</point>
     <function yscale="5">
-      <maximum>(<ref prop="numbermaxima">_function2</ref>,
-      <ref prop="numberminima">_function2</ref>)
+      <maximum>(<copy prop="numbermaxima" tname="_function2" />,
+      <copy prop="numberminima" tname="_function2" />)
       </maximum>
       <through >(-8,5),(9,10)</through>
     </function>
     
     <function>
-      <yscale><ref prop="yscale">_function1</ref></yscale>
+      <yscale><copy prop="yscale" tname="_function1" /></yscale>
       <through>
-        <ref>_point1</ref>
-        <ref>_point2</ref>
-        <ref>_point3</ref>
-        <ref>_point4</ref>
+        <copy tname="_point1" />
+        <copy tname="_point2" />
+        <copy tname="_point3" />
+        <copy tname="_point4" />
       </through>
       <maximum>x=0</maximum>
     </function>
     </graph>
     
-    <p>Number of maxima: <ref prop="numbermaxima" name="numbermaxima">_function2</ref></p>
-    <p>Number of minima: <ref prop="numberminima" name="numberminima">_function2</ref></p>
+    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" tname="_function2" /></p>
+    <p>Number of minima: <copy prop="numberminima" name="numberminima" tname="_function2" /></p>
     
     `}, "*");
     });
@@ -2063,16 +2063,16 @@ describe('Function Tag Tests', function () {
     <mathinput />
     
     <function>
-    <xscale><ref prop="value">_mathinput1</ref></xscale>
-    <ref prop="value">_mathinput2</ref>x^3
+    <xscale><copy prop="value" tname="_mathinput1" /></xscale>
+    <copy prop="value" tname="_mathinput2" />x^3
     +1
     </function>
     
     <graph>
-      <ref name="f1a">_function1</ref>
+      <copy name="f1a" tname="_function1" />
     </graph>
-    <p><ref prop="xscale">f1a</ref></p>
-    <p><ref prop="xscale">_function1</ref></p>
+    <p><copy prop="xscale" tname="f1a" /></p>
+    <p><copy prop="xscale" tname="_function1" /></p>
     
     `}, "*");
     });
@@ -2092,7 +2092,7 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components["/_function1"].stateValues.numericalf(-2)).eq(2*(-2)**3+1)
+      expect(components["/_function1"].stateValues.numericalf(-2)).eq(2 * (-2) ** 3 + 1)
     });
 
 
@@ -2105,7 +2105,7 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components["/_function1"].stateValues.numericalf(-2)).eq(4*(-2)**3+1)
+      expect(components["/_function1"].stateValues.numericalf(-2)).eq(4 * (-2) ** 3 + 1)
     });
 
   });
@@ -2120,22 +2120,22 @@ describe('Function Tag Tests', function () {
     <mathinput prefill="-2" />
     
     <function>
-    <ref prop="value">_mathinput1</ref>x^4
-    +<ref prop="value">_mathinput2</ref>x^3
-    +<ref prop="value">_mathinput3</ref>x^2
+    <copy prop="value" tname="_mathinput1" />x^4
+    +<copy prop="value" tname="_mathinput2" />x^3
+    +<copy prop="value" tname="_mathinput3" />x^2
     + 1
     </function>
     
     <graph>
-      <ref name="f1a">_function1</ref>
-      <ref name="maxima" prop="maxima">_function1</ref>
-      <ref name="minima" prop="minima">f1a</ref>
+      <copy name="f1a" tname="_function1" />
+      <copy name="maxima" prop="maxima" tname="_function1" />
+      <copy name="minima" prop="minima" tname="f1a" />
     </graph>
     <graph>
-      <ref name="f1b">f1a</ref>
-      <ref name="extremum1" prop="extremum1">f1b</ref>
-      <ref name="extremum2" prop="extremum2">f1b</ref>
-      <ref name="extremum3" prop="extremum3">f1b</ref>
+      <copy name="f1b" tname="f1a" />
+      <copy name="extremum1" prop="extremum1" tname="f1b" />
+      <copy name="extremum2" prop="extremum2" tname="f1b" />
+      <copy name="extremum3" prop="extremum3" tname="f1b" />
     </graph>
     
     `}, "*");
@@ -2148,16 +2148,16 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/maxima"].replacements.length).eq(1);
-      expect(components["/maxima"].replacements[0].stateValues.coords.tree).eqls(["vector", 0,1]);
+      expect(components["/maxima"].replacements[0].stateValues.coords.tree).eqls(["vector", 0, 1]);
       expect(components["/minima"].replacements.length).eq(2);
-      expect(components["/minima"].replacements[0].stateValues.coords.tree).eqls(["vector", -1,0]);
-      expect(components["/minima"].replacements[1].stateValues.coords.tree).eqls(["vector", 1,0]);
+      expect(components["/minima"].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 0]);
+      expect(components["/minima"].replacements[1].stateValues.coords.tree).eqls(["vector", 1, 0]);
       expect(components["/extremum1"].replacements.length).eq(1);
-      expect(components["/extremum1"].replacements[0].stateValues.coords.tree).eqls(["vector", -1,0]);
+      expect(components["/extremum1"].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 0]);
       expect(components["/extremum2"].replacements.length).eq(1);
       expect(components["/extremum2"].replacements[0].stateValues.coords.tree).eqls(["vector", 0, 1]);
       expect(components["/extremum3"].replacements.length).eq(1);
-      expect(components["/extremum3"].replacements[0].stateValues.coords.tree).eqls(["vector", 1,0]);
+      expect(components["/extremum3"].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 0]);
 
     });
 
@@ -2167,28 +2167,28 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/maxima"].replacements.length).eq(1);
-      expect(components["/maxima"].replacements[0].stateValues.coords.tree).eqls(["vector", 0,1]);
+      expect(components["/maxima"].replacements[0].stateValues.coords.tree).eqls(["vector", 0, 1]);
       expect(components["/minima"].replacements.length).eq(2);
       let min1 = components["/minima"].replacements[0].stateValues.coords.tree;
       expect(min1[1]).closeTo(-2, 0.00001)
       expect(min1[2]).closeTo(-7, 0.00001)
-      
+
       let min2 = components["/minima"].replacements[1].stateValues.coords.tree;
       expect(min2[1]).closeTo(0.5, 0.00001)
-      expect(min2[2]).closeTo(13/16, 0.00001)
+      expect(min2[2]).closeTo(13 / 16, 0.00001)
 
       expect(components["/extremum1"].replacements.length).eq(1);
       min1 = components["/extremum1"].replacements[0].stateValues.coords.tree;
       expect(min1[1]).closeTo(-2, 0.00001)
       expect(min1[2]).closeTo(-7, 0.00001)
-      
+
       expect(components["/extremum2"].replacements.length).eq(1);
       expect(components["/extremum2"].replacements[0].stateValues.coords.tree).eqls(["vector", 0, 1]);
 
       expect(components["/extremum3"].replacements.length).eq(1);
       min2 = components["/extremum3"].replacements[0].stateValues.coords.tree;
       expect(min2[1]).closeTo(0.5, 0.00001)
-      expect(min2[2]).closeTo(13/16, 0.00001)
+      expect(min2[2]).closeTo(13 / 16, 0.00001)
 
     });
 
@@ -2198,7 +2198,7 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/maxima"].replacements.length).eq(1);
-      expect(components["/maxima"].replacements[0].stateValues.coords.tree).eqls(["vector", 0,1]);
+      expect(components["/maxima"].replacements[0].stateValues.coords.tree).eqls(["vector", 0, 1]);
       expect(components["/minima"].replacements.length).eq(0);
 
       expect(components["/extremum1"].replacements.length).eq(1);
@@ -2209,6 +2209,86 @@ describe('Function Tag Tests', function () {
 
     });
   });
+
+  it('function of function uses second variable', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <function variable="t" name="f">t^3</function>
+
+    <function name="f2"><copy tname="f"/></function>
+    <function name="f3" variable="s"><copy tname="f"/></function>
+
+    <copy name="f4" tname="f"/>
+    <copy name="f5" tname="f2"/>
+    <copy name="f6" tname="f3"/>
+
+    <copy prop="variable" tname="f" name="fv" />
+    <copy prop="variable" tname="f2" name="f2v" />
+    <copy prop="variable" tname="f3" name="f3v" />
+    <copy prop="variable" tname="f4" name="f4v" />
+    <copy prop="variable" tname="f5" name="f5v" />
+    <copy prop="variable" tname="f6" name="f6v" />
+    
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let variable1Anchor = '#' + components["/fv"].replacements[0].componentName;
+      let variable2Anchor = '#' + components["/f2v"].replacements[0].componentName;
+      let variable3Anchor = '#' + components["/f3v"].replacements[0].componentName;
+      let variable4Anchor = '#' + components["/f4v"].replacements[0].componentName;
+      let variable5Anchor = '#' + components["/f5v"].replacements[0].componentName;
+      let variable6Anchor = '#' + components["/f6v"].replacements[0].componentName;
+
+      cy.get(variable1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('t')
+      })
+      cy.get(variable2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('t')
+      })
+      cy.get(variable3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('t')
+      })
+      cy.get(variable4Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('t')
+      })
+      cy.get(variable5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('t')
+      })
+      cy.get(variable6Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('t')
+      })
+      
+      cy.window().then((win) => {
+
+        expect(components["/f"].stateValues.variable.tree).eq('t');
+        expect(components["/f2"].stateValues.variable.tree).eq('t');
+        expect(components["/f3"].stateValues.variable.tree).eq('t');
+        expect(components["/f4"].replacements[0].stateValues.variable.tree).eq('t');
+        expect(components["/f5"].replacements[0].stateValues.variable.tree).eq('t');
+        expect(components["/f6"].replacements[0].stateValues.variable.tree).eq('t');
+
+        expect(components["/f"].stateValues.formula.tree).eqls(["^", "t", 3]);
+        expect(components["/f2"].stateValues.formula.tree).eqls(["^", "t", 3]);
+        expect(components["/f3"].stateValues.formula.tree).eqls(["^", "t", 3]);
+        expect(components["/f4"].replacements[0].stateValues.formula.tree).eqls(["^", "t", 3]);
+        expect(components["/f5"].replacements[0].stateValues.formula.tree).eqls(["^", "t", 3]);
+        expect(components["/f6"].replacements[0].stateValues.formula.tree).eqls(["^", "t", 3]);
+
+      })
+    });
+
+  });
+
 
 
 });

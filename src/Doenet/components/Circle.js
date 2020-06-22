@@ -220,9 +220,10 @@ export default class Circle extends Curve {
           if (arrayKey === undefined) {
             let throughPoints = dependencyValues.throughChild[0].stateValues.points;
 
-            if (changes.throughChild.componentIdentitiesChanged ||
+            if (changes.throughChild && (
+              changes.throughChild.componentIdentitiesChanged ||
               changes.throughChild.valuesChanged[0].points.changed.changedEntireArray
-            ) {
+            )) {
               // send array to indicate that should overwrite entire array
               for (let key in throughPoints) {
                 freshByKey[key] = true;
@@ -1212,8 +1213,8 @@ export default class Circle extends Curve {
         return dependencies;
       },
       definition: function ({ dependencyValues }) {
-        console.log(`definition of numericalCenter of circle`);
-        console.log(dependencyValues);
+        // console.log(`definition of numericalCenter of circle`);
+        // console.log(dependencyValues);
 
         if (dependencyValues.haveNonNumericalPrescribedRadius
           || dependencyValues.haveNonNumericalPrescribedCenter

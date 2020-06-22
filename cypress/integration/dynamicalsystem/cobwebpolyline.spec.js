@@ -69,7 +69,7 @@ describe('ODEsystem Tag Tests', function () {
   <map>
     <template>
       <mrow>
-        x_{<subsindex/>} \\amp = <subsref displaydigits="5"/>
+        x_{<indexFromSubs/>} \\amp = <copyFromSubs displaydigits="5"/>
       </mrow>
     </template>
     <substitutions>

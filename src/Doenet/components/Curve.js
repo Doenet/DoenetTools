@@ -196,10 +196,10 @@ export default class Curve extends GraphicalComponent {
         functionChildren.push({
           componentType: "variable",
           children: [{
-            componentType: "ref",
+            componentType: "copy",
             children: [{
-              componentType: "reftarget",
-              state: { refTargetName: functionCurveName }
+              componentType: "tname",
+              state: { targetName: functionCurveName }
             },
             {
               componentType: "prop",
@@ -226,10 +226,10 @@ export default class Curve extends GraphicalComponent {
         let variableForParameterFunctions = {
           componentType: "variable",
           children: [{
-            componentType: "ref",
+            componentType: "copy",
             children: [{
-              componentType: "reftarget",
-              state: { refTargetName: parametrizedCurveName }
+              componentType: "tname",
+              state: { targetName: parametrizedCurveName }
             },
             {
               componentType: "prop",

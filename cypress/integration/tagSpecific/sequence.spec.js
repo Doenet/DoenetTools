@@ -627,7 +627,7 @@ describe('Sequence Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist><sequence from="1" count="10">
-    <exclude><ref prop="value">exclude2</ref></exclude>
+    <exclude><copy prop="value" tname="exclude2" /></exclude>
     <exclude>2,6</exclude>
     </sequence></aslist>
     <p>Also exclude: <mathinput name="exclude2" /></p>
@@ -740,7 +740,7 @@ describe('Sequence Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist><sequence type="letters" count="10">
-    <exclude><ref prop="value">_textinput1</ref></exclude>
+    <exclude><copy prop="value" tname="_textinput1" /></exclude>
     <exclude>b,f</exclude>
     </sequence></aslist>
     <p>Also exclude: <textinput /></p>
@@ -853,7 +853,7 @@ describe('Sequence Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist><sequence type="math" count="10" from="x" step="x">
-    <exclude><ref prop="value">_mathinput1</ref></exclude>
+    <exclude><copy prop="value" tname="_mathinput1" /></exclude>
     <exclude>2x,6x</exclude>
     </sequence></aslist>
     <p>Also exclude: <mathinput /></p>
@@ -1003,8 +1003,8 @@ describe('Sequence Tag Tests', function () {
     <math name="n">5</math>
     <number name="m">10</number>
     <aslist><sequence>
-      <from><min><ref>n</ref><number>11</number></min></from>
-      <to><max><math><ref>m</ref>+3</math><number>11</number></max></to>
+      <from><min><copy tname="n" /><number>11</number></min></from>
+      <to><max><math><copy tname="m" />+3</math><number>11</number></max></to>
     </sequence></aslist>
     `}, "*");
     });
@@ -1035,7 +1035,7 @@ describe('Sequence Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <mathinput name="n"/>
-  <aslist><sequence from="2"><to><ref prop="value">n</ref></to></sequence></aslist>
+  <aslist><sequence from="2"><to><copy prop="value" tname="n" /></to></sequence></aslist>
     `}, "*");
     });
 

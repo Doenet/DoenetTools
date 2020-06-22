@@ -14,14 +14,14 @@ describe('Circle Tag Tests', function () {
     <circle/>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
-      <ref name="circle2">_circle1</ref>
+      <copy name="circle2" tname="_circle1" />
     </graph>
-    <ref name="graph4">graph3</ref>
+    <copy name="graph4" tname="graph3" />
     `}, "*");
     });
 
@@ -174,14 +174,14 @@ describe('Circle Tag Tests', function () {
     <circle>(-1,3)</circle>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
-      <ref name="circle2">_circle1</ref>
+      <copy name="circle2" tname="_circle1" />
     </graph>
-    <ref name="graph4">graph3</ref>
+    <copy name="graph4" tname="graph3" />
     `}, "*");
     });
 
@@ -371,14 +371,14 @@ describe('Circle Tag Tests', function () {
     <circle><point>(-1,3)</point></circle>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
-      <ref name="circle2">_circle1</ref>
+      <copy name="circle2" tname="_circle1" />
     </graph>
-    <ref name="graph4">graph3</ref>
+    <copy name="graph4" tname="graph3" />
     `}, "*");
     });
 
@@ -566,14 +566,14 @@ describe('Circle Tag Tests', function () {
     <circle><center>(-1,3)</center></circle>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
-      <ref name="circle2">_circle1</ref>
+      <copy name="circle2" tname="_circle1" />
     </graph>
-    <ref name="graph4">graph3</ref>
+    <copy name="graph4" tname="graph3" />
     `}, "*");
     });
 
@@ -759,14 +759,14 @@ describe('Circle Tag Tests', function () {
     <circle><center><point>(-1,3)</point></center></circle>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
-      <ref name="circle2">_circle1</ref>
+      <copy name="circle2" tname="_circle1" />
     </graph>
-    <ref name="graph4">graph3</ref>
+    <copy name="graph4" tname="graph3" />
     `}, "*");
     });
 
@@ -952,17 +952,17 @@ describe('Circle Tag Tests', function () {
     <text>a</text>
     <graph>
     <point>(2,0)</point>
-    <circle><radius><ref prop="x">_point1</ref></radius></circle>
+    <circle><radius><copy prop="x" tname="_point1" /></radius></circle>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
-      <ref name="circle2">_circle1</ref>
+      <copy name="circle2" tname="_circle1" />
     </graph>
-    <ref name="graph4">graph3</ref>
+    <copy name="graph4" tname="graph3" />
     `}, "*");
     });
 
@@ -1155,17 +1155,17 @@ describe('Circle Tag Tests', function () {
     <text>a</text>
     <graph>
     <point>(2,-3)</point>
-    <circle><through><ref>_point1</ref></through></circle>
+    <circle><through><copy tname="_point1" /></through></circle>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
-      <ref name="circle2">_circle1</ref>
+      <copy name="circle2" tname="_circle1" />
     </graph>
-    <ref name="graph4">graph3</ref>
+    <copy name="graph4" tname="graph3" />
     `}, "*");
     });
 
@@ -1444,17 +1444,17 @@ describe('Circle Tag Tests', function () {
     <text>a</text>
     <graph>
     <point>(2,-3)</point><point>(3,4)</point>
-    <circle><through><ref>_point1</ref><ref>_point2</ref></through></circle>
+    <circle><through><copy tname="_point1" /><copy tname="_point2" /></through></circle>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
-      <ref name="circle2">_circle1</ref>
+      <copy name="circle2" tname="_circle1" />
     </graph>
-    <ref name="graph4">graph3</ref>
+    <copy name="graph4" tname="graph3" />
     `}, "*");
     });
 
@@ -1804,18 +1804,18 @@ describe('Circle Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <circle><through><ref>_point1</ref><ref>_point2</ref></through></circle>
+    <circle><through><copy tname="_point1" /><copy tname="_point2" /></through></circle>
     <point>(2,-3)</point><point>(3,4)</point>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
-      <ref name="circle2">_circle1</ref>
+      <copy name="circle2" tname="_circle1" />
     </graph>
-    <ref name="graph4">graph3</ref>
+    <copy name="graph4" tname="graph3" />
     `}, "*");
     });
 
@@ -2169,17 +2169,17 @@ describe('Circle Tag Tests', function () {
     <text>a</text>
     <graph>
     <point>(2,-3)</point><point>(3,4)</point><point>(-3,4)</point>
-    <circle><through><ref>_point1</ref><ref>_point2</ref><ref>_point3</ref></through></circle>
+    <circle><through><copy tname="_point1" /><copy tname="_point2" /><copy tname="_point3" /></through></circle>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
-      <ref name="circle2">_circle1</ref>
+      <copy name="circle2" tname="_circle1" />
     </graph>
-    <ref name="graph4">graph3</ref>
+    <copy name="graph4" tname="graph3" />
     `}, "*");
     });
 
@@ -2826,18 +2826,18 @@ describe('Circle Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <circle><through><ref>_point1</ref><ref>_point2</ref><ref>_point3</ref></through></circle>
+    <circle><through><copy tname="_point1" /><copy tname="_point2" /><copy tname="_point3" /></through></circle>
     <point>(2,-3)</point><point>(3,4)</point><point>(-3,4)</point>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
-      <ref name="circle2">_circle1</ref>
+      <copy name="circle2" tname="_circle1" />
     </graph>
-    <ref name="graph4">graph3</ref>
+    <copy name="graph4" tname="graph3" />
     `}, "*");
     });
 
@@ -3487,19 +3487,19 @@ describe('Circle Tag Tests', function () {
     <point>(2,0)</point><point>(3,4)</point>
 
     <circle>
-      <radius><ref prop="x">_point1</ref></radius>
-      <through><ref>_point2</ref></through>
+      <radius><copy prop="x" tname="_point1" /></radius>
+      <through><copy tname="_point2" /></through>
     </circle>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
-      <ref name="circle2">_circle1</ref>
+      <copy name="circle2" tname="_circle1" />
     </graph>
-    <ref name="graph4">graph3</ref>
+    <copy name="graph4" tname="graph3" />
     `}, "*");
     });
 
@@ -3761,19 +3761,19 @@ describe('Circle Tag Tests', function () {
     <point>(2,0)</point><point>(3,4)</point><point>(5,6)</point>
 
     <circle>
-      <radius><ref prop="x">_point1</ref></radius>
-      <through><ref>_point2</ref><ref>_point3</ref></through>
+      <radius><copy prop="x" tname="_point1" /></radius>
+      <through><copy tname="_point2" /><copy tname="_point3" /></through>
     </circle>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
-      <ref name="circle2">_circle1</ref>
+      <copy name="circle2" tname="_circle1" />
     </graph>
-    <ref name="graph4">graph3</ref>
+    <copy name="graph4" tname="graph3" />
     `}, "*");
     });
 
@@ -4312,19 +4312,19 @@ describe('Circle Tag Tests', function () {
     <point>(3,4)</point><point>(5,6)</point>
 
     <circle>
-      <ref>_point1</ref>
-      <through><ref>_point2</ref></through>
+      <copy tname="_point1" />
+      <through><copy tname="_point2" /></through>
     </circle>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
-      <ref name="circle2">_circle1</ref>
+      <copy name="circle2" tname="_circle1" />
     </graph>
-    <ref name="graph4">graph3</ref>
+    <copy name="graph4" tname="graph3" />
     `}, "*");
     });
 
@@ -4683,19 +4683,19 @@ describe('Circle Tag Tests', function () {
     <point>(3,0)</point>
 
     <circle>
-      <radius><ref prop="x">_point1</ref></radius>
+      <radius><copy prop="x" tname="_point1" /></radius>
       (-3,5)
     </circle>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
-      <ref name="circle2">_circle1</ref>
+      <copy name="circle2" tname="_circle1" />
     </graph>
-    <ref name="graph4">graph3</ref>
+    <copy name="graph4" tname="graph3" />
     `}, "*");
     });
 
@@ -4825,19 +4825,19 @@ describe('Circle Tag Tests', function () {
     <point>(3,0)</point><point>(-1,7)</point>
     <graph>
     <circle>
-      <radius><ref prop="x">_point1</ref></radius>
-      <center><ref>_point2</ref></center>
+      <radius><copy prop="x" tname="_point1" /></radius>
+      <center><copy tname="_point2" /></center>
     </circle>
     <point>(-4,-6)
-      <constrainTo><ref>_circle1</ref></constrainTo>
+      <constrainTo><copy tname="_circle1" /></constrainTo>
     </point>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="radius">_circle1</ref>, 0)</point>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="radius" tname="_circle1" />, 0)</point>
     </graph>
-    <ref prop="radius" name="radiusNumber">_circle1</ref>
-    <ref name="graph2">_graph1</ref>
+    <copy prop="radius" name="radiusNumber" tname="_circle1" />
+    <copy name="graph2" tname="_graph1" />
     `}, "*");
     });
 
@@ -5079,14 +5079,14 @@ describe('Circle Tag Tests', function () {
     <graph>
     <point>(3,0)</point><point>(-1,7)</point>
     <circle>
-      <center><ref>_point1</ref></center>
-      <through><ref>_point2</ref></through>
+      <center><copy tname="_point1" /></center>
+      <through><copy tname="_point2" /></through>
     </circle>
     </graph>
     <graph>
-    <ref prop="center" name="centerPoint">_circle1</ref>
-    <point>(<ref prop="y">centerPoint</ref>, <ref prop="radius">_circle1</ref>)</point>
-    <ref name="circle2">_circle1</ref>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
+    <point>(<copy prop="y" tname="centerPoint" />, <copy prop="radius" tname="_circle1" />)</point>
+    <copy name="circle2" tname="_circle1" />
     </graph>
     `}, "*");
     });
@@ -5405,22 +5405,22 @@ describe('Circle Tag Tests', function () {
   
     <circle name="c">
       <through>
-        <ref prop="vertex1">t</ref>
-        <ref prop="vertex2">t</ref>
-        <ref prop="vertex3">t</ref>
+        <copy prop="vertex1" tname="t" />
+        <copy prop="vertex2" tname="t" />
+        <copy prop="vertex3" tname="t" />
       </through>
     </circle>
   
     <point name="x">
-      <x><extract prop="x"><ref prop="center">c</ref></extract></x>
+      <x><extract prop="x"><copy prop="center" tname="c" /></extract></x>
       <y fixed>0</y>
     </point>
   
     <point name="y">
       <x fixed>0</x>
-      <y><extract prop="y"><ref prop="center">c</ref></extract></y>
+      <y><extract prop="y"><copy prop="center" tname="c" /></extract></y>
     </point>
-    <point name="r">(<ref prop="radius">c</ref>,5)</point>
+    <point name="r">(<copy prop="radius" tname="c" />,5)</point>
   
     </graph>
     `}, "*");
@@ -5702,9 +5702,9 @@ describe('Circle Tag Tests', function () {
   <graph>
     <circle>
       <center>(1,2)</center>
-      <radius><extract prop="y"><ref prop="center">_circle1</ref></extract></radius>
+      <radius><extract prop="y"><copy prop="center" tname="_circle1" /></extract></radius>
     </circle>
-    <ref prop="center">_circle1</ref>
+    <copy prop="center" tname="_circle1" />
   </graph>
     `}, "*");
     });
@@ -5715,7 +5715,7 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, 2]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(2);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
     })
 
     cy.log("move circle");
@@ -5724,16 +5724,16 @@ describe('Circle Tag Tests', function () {
       components['/_circle1'].moveCircle({ center: [-3, 5] });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", -3, 5]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(5);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 5])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 5])
     })
 
     cy.log("move center point");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_ref2'].replacements[0].movePoint({ x: 8, y: 7 });
+      components['/_copy2'].replacements[0].movePoint({ x: 8, y: 7 });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 8, 7]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(7);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, 7])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, 7])
     })
 
     cy.log("move circle below x-axis");
@@ -5742,16 +5742,16 @@ describe('Circle Tag Tests', function () {
       components['/_circle1'].moveCircle({ center: [3, -2] });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 3, -2]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(0);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -2])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -2])
     })
 
     cy.log("move circle back up with center point");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_ref2'].replacements[0].movePoint({ x: 1, y: 4 });
+      components['/_copy2'].replacements[0].movePoint({ x: 1, y: 4 });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, 4]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(4);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 4])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 4])
     })
 
   })
@@ -5763,9 +5763,9 @@ describe('Circle Tag Tests', function () {
   <text>a</text>
   <graph>
     <circle radius="2">
-      <center>(1,<ref prop="radius">_circle1</ref>)</center>
+      <center>(1,<copy prop="radius" tname="_circle1" />)</center>
     </circle>
-    <ref prop="center">_circle1</ref>
+    <copy prop="center" tname="_circle1" />
   </graph>
   `}, "*");
     });
@@ -5776,7 +5776,7 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, 2]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(2);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
     })
 
     cy.log("move circle");
@@ -5785,16 +5785,16 @@ describe('Circle Tag Tests', function () {
       components['/_circle1'].moveCircle({ center: [-3, 5] });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", -3, 5]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(5);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 5])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 5])
     })
 
     cy.log("move center point");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_ref2'].replacements[0].movePoint({ x: 8, y: 7 });
+      components['/_copy2'].replacements[0].movePoint({ x: 8, y: 7 });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 8, 7]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(7);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, 7])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, 7])
     })
 
     cy.log("move circle below x-axis");
@@ -5803,16 +5803,16 @@ describe('Circle Tag Tests', function () {
       components['/_circle1'].moveCircle({ center: [3, -2] });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 3, 0]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(0);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 3, 0])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 3, 0])
     })
 
     cy.log("move circle back up with center point");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_ref2'].replacements[0].movePoint({ x: 1, y: 4 });
+      components['/_copy2'].replacements[0].movePoint({ x: 1, y: 4 });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, 4]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(4);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 4])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 4])
     })
 
   })
@@ -5824,9 +5824,9 @@ describe('Circle Tag Tests', function () {
   <text>a</text>
   <graph>
     <circle>
-      <center>(1,<ref prop="radius">_circle1</ref>)</center>
+      <center>(1,<copy prop="radius" tname="_circle1" />)</center>
     </circle>
-    <ref prop="center">_circle1</ref>
+    <copy prop="center" tname="_circle1" />
   </graph>
   `}, "*");
     });
@@ -5837,7 +5837,7 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, 1]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(1);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 1])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 1])
     })
 
     cy.log("move circle");
@@ -5846,16 +5846,16 @@ describe('Circle Tag Tests', function () {
       components['/_circle1'].moveCircle({ center: [-3, 5] });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", -3, 5]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(5);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 5])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 5])
     })
 
     cy.log("move center point");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_ref2'].replacements[0].movePoint({ x: 8, y: 7 });
+      components['/_copy2'].replacements[0].movePoint({ x: 8, y: 7 });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 8, 7]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(7);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, 7])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, 7])
     })
 
     cy.log("move circle below x-axis");
@@ -5864,16 +5864,16 @@ describe('Circle Tag Tests', function () {
       components['/_circle1'].moveCircle({ center: [3, -2] });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 3, 0]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(0);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 3, 0])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 3, 0])
     })
 
     cy.log("move circle back up with center point");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_ref2'].replacements[0].movePoint({ x: 1, y: 4 });
+      components['/_copy2'].replacements[0].movePoint({ x: 1, y: 4 });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, 4]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(4);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 4])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 4])
     })
 
   })
@@ -5885,9 +5885,9 @@ describe('Circle Tag Tests', function () {
   <text>a</text>
   <graph>
     <circle radius="2">
-      <through>(1,2<ref prop="radius">_circle1</ref>)</through>
+      <through>(1,2<copy prop="radius" tname="_circle1" />)</through>
     </circle>
-    <ref prop="center">_circle1</ref>
+    <copy prop="center" tname="_circle1" />
   </graph>
   `}, "*");
     });
@@ -5898,7 +5898,7 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, 2]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(2);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
     })
 
     cy.log("move circle");
@@ -5912,7 +5912,7 @@ describe('Circle Tag Tests', function () {
 
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", -3, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
     })
 
     cy.log("move center point");
@@ -5920,10 +5920,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 7;
       let actualHeight = (7 + 3.5) / 2;  // given previous radius is 3.5
-      components['/_ref2'].replacements[0].movePoint({ x: 8, y: desiredHeight });
+      components['/_copy2'].replacements[0].movePoint({ x: 8, y: desiredHeight });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 8, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
     })
 
     cy.log("move circle below x-axis");
@@ -5932,7 +5932,7 @@ describe('Circle Tag Tests', function () {
       components['/_circle1'].moveCircle({ center: [4, -6] });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 4, 0]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(0);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, 0])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, 0])
     })
 
     cy.log("move circle back up with center point");
@@ -5940,10 +5940,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 4;
       let actualHeight = (4 + 0) / 2;  // given previous radius is 0
-      components['/_ref2'].replacements[0].movePoint({ x: 1, y: desiredHeight });
+      components['/_copy2'].replacements[0].movePoint({ x: 1, y: desiredHeight });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
     })
 
   })
@@ -5955,9 +5955,9 @@ describe('Circle Tag Tests', function () {
   <text>a</text>
   <graph>
     <circle>
-      <through>(1,2<ref prop="radius">_circle1</ref>)</through>
+      <through>(1,2<copy prop="radius" tname="_circle1" />)</through>
     </circle>
-    <ref prop="center">_circle1</ref>
+    <copy prop="center" tname="_circle1" />
   </graph>
   `}, "*");
     });
@@ -5968,7 +5968,7 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, 1]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(1);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 1])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 1])
     })
 
     cy.log("move circle");
@@ -5982,7 +5982,7 @@ describe('Circle Tag Tests', function () {
 
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", -3, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
     })
 
     cy.log("move center point");
@@ -5990,10 +5990,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 7;
       let actualHeight = (7 + 3) / 2;  // given previous radius is 3
-      components['/_ref2'].replacements[0].movePoint({ x: 8, y: desiredHeight });
+      components['/_copy2'].replacements[0].movePoint({ x: 8, y: desiredHeight });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 8, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
     })
 
     cy.log("move circle below x-axis");
@@ -6002,7 +6002,7 @@ describe('Circle Tag Tests', function () {
       components['/_circle1'].moveCircle({ center: [4, -6] });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 4, 0]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(0);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, 0])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, 0])
     })
 
     cy.log("move circle back up with center point");
@@ -6010,10 +6010,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 4;
       let actualHeight = (4 + 0) / 2;  // given previous radius is 0
-      components['/_ref2'].replacements[0].movePoint({ x: 1, y: desiredHeight });
+      components['/_copy2'].replacements[0].movePoint({ x: 1, y: desiredHeight });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
     })
 
   })
@@ -6025,10 +6025,10 @@ describe('Circle Tag Tests', function () {
   <text>a</text>
   <graph>
     <circle>
-      <radius><extract prop="y"><ref prop="throughPoint1">_circle1</ref></extract>/2</radius>
+      <radius><extract prop="y"><copy prop="throughPoint1" tname="_circle1" /></extract>/2</radius>
       <through>(1,4)</through>
     </circle>
-    <ref prop="center">_circle1</ref>
+    <copy prop="center" tname="_circle1" />
   </graph>
   `}, "*");
     });
@@ -6039,7 +6039,7 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, 2]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(2);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
     })
 
     cy.log("move circle");
@@ -6053,7 +6053,7 @@ describe('Circle Tag Tests', function () {
 
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", -3, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
     })
 
     cy.log("move center point");
@@ -6061,10 +6061,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 7;
       let actualHeight = (7 + 3.5) / 2;  // given previous radius is 3.5
-      components['/_ref2'].replacements[0].movePoint({ x: 8, y: desiredHeight });
+      components['/_copy2'].replacements[0].movePoint({ x: 8, y: desiredHeight });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 8, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
     })
 
     cy.log("move circle below x-axis");
@@ -6077,7 +6077,7 @@ describe('Circle Tag Tests', function () {
       components['/_circle1'].moveCircle({ center: [4, desiredHeight] });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 4, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(0);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, actualHeight])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, actualHeight])
     })
 
     cy.log("move circle back up with center point");
@@ -6085,10 +6085,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 4;
       let actualHeight = (4 + 0) / 2;  // given previous radius is 0
-      components['/_ref2'].replacements[0].movePoint({ x: 1, y: desiredHeight });
+      components['/_copy2'].replacements[0].movePoint({ x: 1, y: desiredHeight });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_ref2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
+      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
     })
 
   })
@@ -6102,11 +6102,11 @@ describe('Circle Tag Tests', function () {
     <circle>
       <through>(1,4)</through>
       <center>
-        <x><extract prop="x"><ref prop="throughPoint1">_circle1</ref></extract></x>
-        <y><extract prop="y"><ref prop="throughPoint1">_circle1</ref></extract>/2</y>
+        <x><extract prop="x"><copy prop="throughPoint1" tname="_circle1" /></extract></x>
+        <y><extract prop="y"><copy prop="throughPoint1" tname="_circle1" /></extract>/2</y>
       </center>
     </circle>
-    <ref prop="center">_circle1</ref>
+    <copy prop="center" tname="_circle1" />
   </graph>
   `}, "*");
     });
@@ -6117,7 +6117,7 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, 2]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(2);
-      expect(components['/_ref3'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
+      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
     })
 
     cy.log("move circle");
@@ -6131,7 +6131,7 @@ describe('Circle Tag Tests', function () {
 
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", -3, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_ref3'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
+      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
     })
 
     cy.log("move center point");
@@ -6139,10 +6139,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 7;
       let actualHeight = 7;  // since moving center itself
-      components['/_ref3'].replacements[0].movePoint({ x: 8, y: desiredHeight });
+      components['/_copy3'].replacements[0].movePoint({ x: 8, y: desiredHeight });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 8, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_ref3'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
+      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
     })
 
     cy.log("move circle below x-axis");
@@ -6153,7 +6153,7 @@ describe('Circle Tag Tests', function () {
       components['/_circle1'].moveCircle({ center: [4, desiredHeight] });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 4, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(-actualHeight);
-      expect(components['/_ref3'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, actualHeight])
+      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, actualHeight])
     })
 
     cy.log("move circle back up with center point");
@@ -6161,10 +6161,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 4;
       let actualHeight = 4;  // since moving point itself
-      components['/_ref3'].replacements[0].movePoint({ x: 1, y: desiredHeight });
+      components['/_copy3'].replacements[0].movePoint({ x: 1, y: desiredHeight });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_ref3'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
+      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
     })
 
   })
@@ -6178,13 +6178,13 @@ describe('Circle Tag Tests', function () {
     <circle>
       <through>
         <point>
-          <x><extract prop="x"><ref prop="center">_circle1</ref></extract></x>
-          <y><extract prop="y"><ref prop="center">_circle1</ref></extract>2</y>
+          <x><extract prop="x"><copy prop="center" tname="_circle1" /></extract></x>
+          <y><extract prop="y"><copy prop="center" tname="_circle1" /></extract>2</y>
         </point>
       </through>
       <center>(1,2)</center>
     </circle>
-    <ref prop="center">_circle1</ref>
+    <copy prop="center" tname="_circle1" />
   </graph>
   `}, "*");
     });
@@ -6195,7 +6195,7 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, 2]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(2);
-      expect(components['/_ref3'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
+      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
     })
 
     cy.log("move circle");
@@ -6209,7 +6209,7 @@ describe('Circle Tag Tests', function () {
 
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", -3, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_ref3'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
+      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
     })
 
     cy.log("move center point");
@@ -6217,10 +6217,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 7;
       let actualHeight = 7;  // since moving center itself
-      components['/_ref3'].replacements[0].movePoint({ x: 8, y: desiredHeight });
+      components['/_copy3'].replacements[0].movePoint({ x: 8, y: desiredHeight });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 8, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_ref3'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
+      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
     })
 
     cy.log("move circle below x-axis");
@@ -6231,7 +6231,7 @@ describe('Circle Tag Tests', function () {
       components['/_circle1'].moveCircle({ center: [4, desiredHeight] });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 4, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(-actualHeight);
-      expect(components['/_ref3'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, actualHeight])
+      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, actualHeight])
     })
 
     cy.log("move circle back up with center point");
@@ -6239,10 +6239,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 4;
       let actualHeight = 4;  // since moving point itself
-      components['/_ref3'].replacements[0].movePoint({ x: 1, y: desiredHeight });
+      components['/_copy3'].replacements[0].movePoint({ x: 1, y: desiredHeight });
       expect(components['/_circle1'].stateValues.center.tree).eqls(["vector", 1, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_ref3'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
+      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
     })
 
   })
@@ -6258,11 +6258,11 @@ describe('Circle Tag Tests', function () {
       (1,2),(3,4)
       </through>
       <radius>
-        abs(<extract prop="x"><ref prop="throughPoint1">_circle1</ref></extract>
-        -<extract prop="x"><ref prop="throughPoint2">_circle1</ref></extract>)
+        abs(<extract prop="x"><copy prop="throughPoint1" tname="_circle1" /></extract>
+        -<extract prop="x"><copy prop="throughPoint2" tname="_circle1" /></extract>)
       </radius>
     </circle>
-    <ref prop="center" name="centerPoint">_circle1</ref>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
   </graph>
   `}, "*");
     });
@@ -6449,13 +6449,13 @@ describe('Circle Tag Tests', function () {
   <graph>
     <circle>
       <through hide="false">
-      (1,2),(<ref prop="radius">_circle1</ref>+1, 3)
+      (1,2),(<copy prop="radius" tname="_circle1" />+1, 3)
       </through>
       <radius>
-        <extract prop="x"><ref prop="throughPoint1">_circle1</ref></extract>
+        <extract prop="x"><copy prop="throughPoint1" tname="_circle1" /></extract>
       </radius>
     </circle>
-    <ref prop="center" name="centerPoint">_circle1</ref>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
   </graph>
   `}, "*");
     });
@@ -6647,11 +6647,11 @@ describe('Circle Tag Tests', function () {
       <through hide="false">
         <point>(1,2)</point>
         <point>
-        (<extract prop="x"><ref prop="throughPoint1">_circle1</ref></extract>+1, 3)
+        (<extract prop="x"><copy prop="throughPoint1" tname="_circle1" /></extract>+1, 3)
         </point>
       </through>
     </circle>
-    <ref prop="center" name="centerPoint">_circle1</ref>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
   </graph>
   `}, "*");
     });
@@ -6837,15 +6837,15 @@ describe('Circle Tag Tests', function () {
     <circle>
       <through hide="false">
         <point>
-        (<extract prop="x"><ref prop="throughPoint2">_circle1</ref></extract>+1, 3)
+        (<extract prop="x"><copy prop="throughPoint2" tname="_circle1" /></extract>+1, 3)
         </point>
         <point>(1,2)</point>
         <point>
-        (<extract prop="x"><ref prop="throughPoint1">_circle1</ref></extract>+1, 5)
+        (<extract prop="x"><copy prop="throughPoint1" tname="_circle1" /></extract>+1, 5)
         </point>
       </through>
     </circle>
-    <ref prop="center" name="centerPoint">_circle1</ref>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
   </graph>
   `}, "*");
     });
@@ -7088,11 +7088,11 @@ describe('Circle Tag Tests', function () {
     <circle/>
     <point>
       (
-        <extract prop="y"><ref prop="center">_circle1</ref></extract>,
-        <extract prop="x"><ref prop="center">_circle1</ref></extract>
+        <extract prop="y"><copy prop="center" tname="_circle1" /></extract>,
+        <extract prop="x"><copy prop="center" tname="_circle1" /></extract>
       )
     </point>
-    <ref prop="center" name="centerPoint">_circle1</ref>
+    <copy prop="center" name="centerPoint" tname="_circle1" />
   </graph>
   `}, "*");
     });
