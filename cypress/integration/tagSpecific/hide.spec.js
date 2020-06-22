@@ -8,18 +8,18 @@ describe('Hide Tag Tests', function () {
   })
 
 
-  it('reffed hide is not a property', () => {
+  it('copied hide is not a property', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <booleaninput label="hide" name="bib" />
-  <p name="p1"><hide><ref prop="value">bib</ref></hide>
+  <p name="p1"><hide><copy prop="value" tname="bib" /></hide>
   This paragraph should be hidden when box is checked.
   </p>
-  <p name="p2"><ref prop="hide">p1</ref>
+  <p name="p2"><copy prop="hide" tname="p1" />
   This paragraph should not be hidden, but should include boolean text.
   </p>
-  <p name="p3"><hide><ref prop="hide">p1</ref></hide>
+  <p name="p3"><hide><copy prop="hide" tname="p1" /></hide>
   This paragraph should also be hidden when boxed is checked.
   </p>
   `}, "*");

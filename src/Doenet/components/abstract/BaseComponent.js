@@ -168,9 +168,10 @@ export default class BaseComponent {
 
     return {
       hide: { default: false, forRenderer: true },
-      modifyIndirectly: { default: true },
+      modifyIndirectly: { default: true, propagateToProps: true },
       fixed: { default: false },
       styleNumber: { default: 1, propagateToDescendants: true },
+      isResponse: { default: false },
     };
   }
 
@@ -210,6 +211,9 @@ export default class BaseComponent {
       propertyNames, numerics,
     });
 
+    if(!newDefinitions) {
+      throw Error(`Error in state variable definitions of ${this.componentType}: returnStateVariableDefinitions did not return anything`)
+    }
 
     let cleanAdditionalStateVariableDefined = function (additionalStateVariablesDefined) {
       for (let [ind, varObj] of additionalStateVariablesDefined.entries()) {
@@ -383,13 +387,13 @@ export default class BaseComponent {
 
   serialize(parameters = {}) {
     // TODO: this function is converted only for the case with the parameter
-    // forReference set
+    // forCopy set
 
     let includePropertyChildren = true;
     let includeOtherDefiningChildren = true;
     let stateVariablesToInclude = [];
 
-    if (parameters.forReference) {
+    if (parameters.forCopy) {
       includePropertyChildren = false;
       includeOtherDefiningChildren = this.constructor.useChildrenForReference;
     } else {
@@ -435,10 +439,10 @@ export default class BaseComponent {
     }
 
 
-    if (parameters.forReference) {
+    if (parameters.forCopy) {
       serializedState.preserializedName = this.componentName;
     } else {
-      console.warn('serializing a component without forReference set is not yet converted!!!!')
+      console.warn('serializing a component without forCopy set is not yet converted!!!!')
       let additionalState = {};
       for (let item in this._state) {
         if (this.state[item].essential || stateVariablesToInclude.includes(item)) {
@@ -486,7 +490,7 @@ export default class BaseComponent {
       doenetAttributes: {},
     }
 
-    if (//parameters.forReference !== true &&
+    if (//parameters.forCopy !== true &&
       serializedComponent.doenetAttributes !== undefined) {
       // shallow copy of doenetAttributes
       Object.assign(serializedState.doenetAttributes, serializedComponent.doenetAttributes);

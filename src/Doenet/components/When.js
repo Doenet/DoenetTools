@@ -118,7 +118,7 @@ export default class When extends BaseComponent {
         stringMathTextBooleanChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "stringsMathsTextsAndBooleans",
-          variableNames: ["value","texts","maths"],
+          variableNames: ["value", "texts", "maths", "booleans"],
           variablesOptional: true,
         },
       }),
@@ -174,13 +174,13 @@ export default class When extends BaseComponent {
         stringMathTextBooleanChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "stringsMathsTextsAndBooleans",
-          variableNames: ["value","texts","maths"],
+          variableNames: ["value", "texts", "maths", "unordered"],
           variablesOptional: true,
         },
         mathChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "atLeastZeroMaths",
-          variableNames: ["value", "unordered", "expand", "simplify"]
+          variableNames: ["value", "expand", "simplify"]
         },
         booleanChildrenByCode: {
           dependencyType: "stateVariable",
@@ -210,6 +210,22 @@ export default class When extends BaseComponent {
       definition: evaluateLogic
     };
 
+    stateVariableDefinitions.responseComponents = {
+      returnDependencies: () => ({
+        allDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: ["_base"],
+          variableNames: ["isResponse", "value", "values"],
+          variablesOptional: true,
+          requireChildLogicInitiallySatisfied: true,
+        }
+      }),
+      definition: ({dependencyValues}) => ({
+        newValues: {
+          responseComponents: dependencyValues.allDescendants.filter(x=> x.stateValues.isResponse)
+        }
+      })
+    }
 
     return stateVariableDefinitions;
   }
@@ -334,14 +350,18 @@ function evaluateLogic({ dependencyValues, usedDefault }) {
 
   // if compare attributes haven't been explicitly prescribed by <if>
   // or one of its ancestors
-  // then any of the attributes can be turned on if there is a math
+  // then any of the attributes can be turned on if there is a
   // child with the comparable property
 
-  for (let child of dependencyValues.mathChildren) {
-
+  // check all children for an unordered property
+  for (let child of dependencyValues.stringMathTextBooleanChildren) {
     if (canOverrideUnorderedCompare && child.stateValues.unordered) {
       unorderedCompare = true;
     }
+  }
+
+  // check math children for additional properties
+  for (let child of dependencyValues.mathChildren) {
 
     if (canOverrideExpandOnCompare && child.stateValues.expand) {
       expandOnCompare = true;

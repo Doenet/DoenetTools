@@ -2,10 +2,11 @@ import BooleanComponent from '../Boolean';
 
 export default class BooleanOperator extends BooleanComponent {
   static componentType = "_booleanoperator";
+  static rendererType = "boolean";
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
-    
+
     childLogic.deleteAllLogic();
 
     childLogic.newLeaf({
@@ -20,39 +21,38 @@ export default class BooleanOperator extends BooleanComponent {
 
   }
 
-  updateState(args) {
 
-    super.updateState(args);
+  static returnStateVariableDefinitions() {
 
-    if(!this.childLogicSatisfied) {
-      return;
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let constructor = this;
+
+    stateVariableDefinitions.value = {
+      public: true,
+      componentType: this.componentType,
+      forRenderer: true,
+      returnDependencies: () => ({
+        booleanChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastOneBoolean",
+          variableNames: ["value"]
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: {
+            value: constructor.applyBooleanOperator(
+              dependencyValues.booleanChildren
+                .map(x => x.stateValues.value)
+            )
+          }
+        }
+      }
     }
 
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-
-      let booleanInds = this.childLogic.returnMatches("atLeastOneBoolean");
-      this.state.nBooleans = booleanInds.length;
-      this.state.booleanChildren = booleanInds.map(x=>this.activeChildren[x]);
-    }
-
-    if(this.state.booleanChildren.some(x => x.unresolvedState.value)) {
-      this.unresolvedState.value = true;
-    }else if(childrenChanged || this.state.booleanChildren.some(x => trackChanges.getVariableChanges({
-      component: x, variable: "value"
-    }))) {
-
-      delete this.unresolvedState.value;
-      
-      this.state.value = this.applyBooleanOperator();
-      
-      // text version of value
-      this.state.textvalue = this.state.value.toString();
-    }
+    return stateVariableDefinitions;
 
   }
-
 
 }

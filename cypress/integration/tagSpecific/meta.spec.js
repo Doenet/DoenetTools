@@ -17,16 +17,16 @@ describe('Meta Tag Tests', function () {
       <keyword>dog</keyword>
     </meta>
     
-    <p>Keywords from meta: <aslist><ref prop="keywords">_meta1</ref></aslist></p>
-    <p>Keywords from document: <aslist><ref prop="keywords">_document1</ref></aslist></p>
-    <p>Keyword 1 from meta: <aslist><ref prop="keyword1">_meta1</ref></aslist></p>
-    <p>Keyword 1 from document: <aslist><ref prop="keyword1">_document1</ref></aslist></p>
-    <p>Keyword 2 from meta: <aslist><ref prop="keyword2">_meta1</ref></aslist></p>
-    <p>Keyword 2 from document: <aslist><ref prop="keyword2">_document1</ref></aslist></p>
-    <p>Keyword 3 from meta: <aslist><ref prop="keyword3">_meta1</ref></aslist></p>
-    <p>Keyword 3 from document: <aslist><ref prop="keyword3">_document1</ref></aslist></p>
-    <p>Keyword from meta: <aslist><ref prop="keyword">_meta1</ref></aslist></p>
-    <p>Keyword from document: <aslist><ref prop="keyword">_document1</ref></aslist></p>
+    <p>Keywords from meta: <aslist><copy prop="keywords" tname="_meta1" /></aslist></p>
+    <p>Keywords from document: <aslist><copy prop="keywords" tname="_document1" /></aslist></p>
+    <p>Keyword 1 from meta: <aslist><copy prop="keyword1" tname="_meta1" /></aslist></p>
+    <p>Keyword 1 from document: <aslist><copy prop="keyword1" tname="_document1" /></aslist></p>
+    <p>Keyword 2 from meta: <aslist><copy prop="keyword2" tname="_meta1" /></aslist></p>
+    <p>Keyword 2 from document: <aslist><copy prop="keyword2" tname="_document1" /></aslist></p>
+    <p>Keyword 3 from meta: <aslist><copy prop="keyword3" tname="_meta1" /></aslist></p>
+    <p>Keyword 3 from document: <aslist><copy prop="keyword3" tname="_document1" /></aslist></p>
+    <p>Keyword from meta: <aslist><copy prop="keyword" tname="_meta1" /></aslist></p>
+    <p>Keyword from document: <aslist><copy prop="keyword" tname="_document1" /></aslist></p>
         `}, "*");
     });
 

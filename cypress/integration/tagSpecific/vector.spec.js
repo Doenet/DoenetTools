@@ -15,9 +15,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -27,9 +27,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let tailx = 0;
@@ -165,9 +165,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -177,9 +177,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let tailx = 0;
@@ -315,9 +315,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -327,9 +327,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let tailx = 0;
@@ -465,9 +465,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -477,9 +477,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -619,9 +619,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -631,9 +631,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -773,9 +773,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -785,9 +785,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -927,9 +927,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -939,9 +939,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1081,9 +1081,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1093,9 +1093,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1235,9 +1235,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1247,9 +1247,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1389,9 +1389,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1401,9 +1401,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1543,9 +1543,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1555,9 +1555,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1697,9 +1697,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1709,9 +1709,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1851,9 +1851,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -1863,9 +1863,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -2005,9 +2005,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2017,9 +2017,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -2159,9 +2159,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2171,9 +2171,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let tailx = 4;
@@ -2311,9 +2311,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2323,9 +2323,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -2465,9 +2465,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2477,9 +2477,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -2619,9 +2619,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2631,9 +2631,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -2773,9 +2773,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2785,9 +2785,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -2927,9 +2927,9 @@ describe('Vector Tag Tests', function () {
   </graph>
 
   <graph>
-  <ref prop="tail">_vector1</ref>
-  <ref prop="head">_vector1</ref>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -2939,9 +2939,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let tail = components['/_ref1'].replacements[0];
-      let head = components['/_ref2'].replacements[0];
-      let displacement = components['/_ref3'].replacements[0];
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -3084,19 +3084,19 @@ describe('Vector Tag Tests', function () {
     <point>(-4,7)</point>
     <point>(3,5)</point>
     <vector>
-      <ref>_point3</ref>
-      <ref>_point4</ref>
+      <copy tname="_point3" />
+      <copy tname="_point4" />
     </vector>
     <vector>(-9,-1),(-3,6)</vector>
   </graph>
 
   <graph>
-    <ref>_vector1</ref>
-    <ref>_vector2</ref>
-    <ref>_vector3</ref>
+    <copy tname="_vector1" />
+    <copy tname="_vector2" />
+    <copy tname="_vector3" />
   </graph>
 
-  <ref>_graph2</ref>
+  <copy tname="_graph2" />
   `}, "*");
     });
 
@@ -3105,13 +3105,13 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let vector4 = components['/_ref3'].replacements[0];
-      let vector5 = components['/_ref4'].replacements[0];
-      let vector6 = components['/_ref5'].replacements[0];
+      let vector4 = components['/_copy3'].replacements[0];
+      let vector5 = components['/_copy4'].replacements[0];
+      let vector6 = components['/_copy5'].replacements[0];
 
-      let vector7 = components['/_ref6'].replacements[0].activeChildren[0];
-      let vector8 = components['/_ref6'].replacements[0].activeChildren[1];
-      let vector9 = components['/_ref6'].replacements[0].activeChildren[2];
+      let vector7 = components['/_copy6'].replacements[0].activeChildren[0];
+      let vector8 = components['/_copy6'].replacements[0].activeChildren[1];
+      let vector9 = components['/_copy6'].replacements[0].activeChildren[2];
 
 
 
@@ -3477,15 +3477,15 @@ describe('Vector Tag Tests', function () {
   </graph>
   
   <graph>
-  <ref>_vector1</ref>
+  <copy tname="_vector1" />
   </graph>
   
   <graph>
-  <ref>_vector2</ref>
+  <copy tname="_vector2" />
   </graph>
 
   <graph>
-  <ref prop="displacement">_vector1</ref>
+  <copy prop="displacement" tname="_vector1" />
   </graph>
   `}, "*");
     });
@@ -3496,9 +3496,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let vector3 = components['/_ref1'].replacements[0];
-      let vector4 = components['/_ref2'].replacements[0];
-      let vector5 = components['/_ref3'].replacements[0];
+      let vector3 = components['/_copy1'].replacements[0];
+      let vector4 = components['/_copy2'].replacements[0];
+      let vector5 = components['/_copy3'].replacements[0];
 
       let vectors = ['/_vector1', vector3.componentName];
       let displacements = [vector4.componentName, vector5.componentName];
@@ -3626,10 +3626,10 @@ describe('Vector Tag Tests', function () {
   <graph>
   <point>(1,2)</point>
   <point>(3,4)</point>
-  <vector><ref>_point1</ref><ref>_point2</ref></vector>
+  <vector><copy tname="_point1" /><copy tname="_point2" /></vector>
 
   <point>(-5,2)
-    <constrainTo><ref>_vector1</ref></constrainTo>
+    <constrainTo><copy tname="_vector1" /></constrainTo>
   </point>
   </graph>
   `}, "*");
@@ -3746,10 +3746,10 @@ describe('Vector Tag Tests', function () {
   <graph>
   <point>(1,2)</point>
   <point>(3,4)</point>
-  <vector><ref>_point1</ref><ref>_point2</ref></vector>
+  <vector><copy tname="_point1" /><copy tname="_point2" /></vector>
 
   <point>(-5,2)
-    <attractTo><ref>_vector1</ref></attractTo>
+    <attractTo><copy tname="_vector1" /></attractTo>
   </point>
   </graph>
   `}, "*");
@@ -3863,7 +3863,7 @@ describe('Vector Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <extract prop="y"><ref prop="head">original</ref></extract>
+  <extract prop="y"><copy prop="head" tname="original" /></extract>
   <mathinput name="a" prefill="2" modifyIndirectly="false" />
   <graph>
     <vector name="original">
@@ -3876,12 +3876,12 @@ describe('Vector Tag Tests', function () {
       <tail fixed>(0,0)</tail>
       <head>
         <x>
-          <ref prop="value">a</ref>
-          <extract prop="x"><ref prop="head">original</ref></extract>
+          <copy prop="value" tname="a" />
+          <extract prop="x"><copy prop="head" tname="original" /></extract>
         </x>
         <y>
-          <ref prop="value">a</ref>
-          <extract prop="y"><ref prop="head">original</ref></extract>
+          <copy prop="value" tname="a" />
+          <extract prop="y"><copy prop="head" tname="original" /></extract>
         </y>
       </head>
     </vector>
@@ -3956,12 +3956,12 @@ describe('Vector Tag Tests', function () {
   <graph>
   <vector name="u">(1,1)</vector>
   <vector name="v">
-    <tail><ref prop="head">u</ref></tail>
+    <tail><copy prop="head" tname="u" /></tail>
     <displacement>(1,3)</displacement>
   </vector>
   <vector name="w">
-    <head><ref prop="head">v</ref></head>
-    <tail><ref prop="tail">u</ref></tail>
+    <head><copy prop="head" tname="v" /></head>
+    <tail><copy prop="tail" tname="u" /></tail>
   </vector>
   </graph>
   `}, "*");
@@ -4152,18 +4152,18 @@ describe('Vector Tag Tests', function () {
   <graph>
   <vector name="u">(1,5),(7,3)</vector>
   </graph>
-  <p>x coordinate of u is <ref name="ux" prop="x">u</ref></p>
-  <p>y coordinate of u is <ref name="uy" prop="y">u</ref></p>
-  <p>x1 coordinate of u is <ref name="ux1" prop="x1">u</ref></p>
-  <p>x2 coordinate of u is <ref name="ux2" prop="x2">u</ref></p>
+  <p>x coordinate of u is <copy name="ux" prop="x" tname="u" /></p>
+  <p>y coordinate of u is <copy name="uy" prop="y" tname="u" /></p>
+  <p>x1 coordinate of u is <copy name="ux1" prop="x1" tname="u" /></p>
+  <p>x2 coordinate of u is <copy name="ux2" prop="x2" tname="u" /></p>
 
   <vector name="v">(9,1,-3),(-3,10,8)</vector>
-  <p>x coordinate of v is <ref name="vx" prop="x">v</ref></p>
-  <p>y coordinate of v is <ref name="vy" prop="y">v</ref></p>
-  <p>z coordinate of v is <ref name="vz" prop="z">v</ref></p>
-  <p>x1 coordinate of v is <ref name="vx1" prop="x1">v</ref></p>
-  <p>x2 coordinate of v is <ref name="vx2" prop="x2">v</ref></p>
-  <p>x3 coordinate of v is <ref name="vx3" prop="x3">v</ref></p>
+  <p>x coordinate of v is <copy name="vx" prop="x" tname="v" /></p>
+  <p>y coordinate of v is <copy name="vy" prop="y" tname="v" /></p>
+  <p>z coordinate of v is <copy name="vz" prop="z" tname="v" /></p>
+  <p>x1 coordinate of v is <copy name="vx1" prop="x1" tname="v" /></p>
+  <p>x2 coordinate of v is <copy name="vx2" prop="x2" tname="v" /></p>
+  <p>x3 coordinate of v is <copy name="vx3" prop="x3" tname="v" /></p>
   `}, "*");
     });
 
@@ -4214,10 +4214,10 @@ describe('Vector Tag Tests', function () {
   <text>a</text>
   <graph>
     <vector name="v1">(1,2),(3,5)</vector>
-    <ref name="v2">v1</ref>
-    <ref name="v3" prop="displacement">v1</ref>
+    <copy name="v2" tname="v1" />
+    <copy name="v3" prop="displacement" tname="v1" />
     <vector name="v4"><displacement>
-      (<ref prop="y">v2</ref>,<ref prop="x">v3</ref>)
+      (<copy prop="y" tname="v2" />,<copy prop="x" tname="v3" />)
     </displacement></vector>
   </graph>
   `}, "*");
@@ -4496,21 +4496,21 @@ describe('Vector Tag Tests', function () {
   <text>a</text>
   <graph>
     <vector name="v1">(1,2),(3,5)</vector>
-    <ref name="v2">v1</ref>
-    <ref name="v3" prop="displacement">v1</ref>
+    <copy name="v2" tname="v1" />
+    <copy name="v3" prop="displacement" tname="v1" />
     <vector name="v4"><displacement>
       <head>
         <x>
           <extract prop="y">
             <extract prop="head">
-              <ref prop="displacement">v2</ref>
+              <copy prop="displacement" tname="v2" />
             </extract>
           </extract>
         </x>
         <y>
           <extract prop="x">
             <extract prop="head">
-              <ref prop="displacement">v3</ref>
+              <copy prop="displacement" tname="v3" />
             </extract>
           </extract>
         </y>
@@ -4793,14 +4793,14 @@ describe('Vector Tag Tests', function () {
   <text>a</text>
   <graph>
   <vector name="v">(1,2),(-2,3)</vector>
-  <ref prop="head" name="vh">v</ref>
-  <ref prop="tail" name="vt">v</ref>
+  <copy prop="head" name="vh" tname="v" />
+  <copy prop="tail" name="vt" tname="v" />
   <point name="c">
     <x>
-      <ref prop="x">vh</ref>
+      <copy prop="x" tname="vh" />
     </x>
     <y>
-      <ref prop="y">vt</ref>
+      <copy prop="y" tname="vt" />
     </y>
   </point>
   </graph>
@@ -4924,88 +4924,88 @@ describe('Vector Tag Tests', function () {
 
   <graph>
   <vector name="vt">
-    <tail><ref>tvt</ref></tail>
+    <tail><copy tname="tvt" /></tail>
   </vector>
   <vector name="vh">
-    <head><ref>hvh</ref></head>
+    <head><copy tname="hvh" /></head>
   </vector>
   <vector name="vd">
-    <displacement><ref>dvd</ref></displacement>
+    <displacement><copy tname="dvd" /></displacement>
   </vector>
   <vector name="vth">
-    <tail><ref>tvth</ref></tail>
-    <head><ref>hvth</ref></head>
+    <tail><copy tname="tvth" /></tail>
+    <head><copy tname="hvth" /></head>
   </vector>
   <vector name="vtd">
-    <tail><ref>tvtd</ref></tail>
-    <displacement><ref>dvtd</ref></displacement>
+    <tail><copy tname="tvtd" /></tail>
+    <displacement><copy tname="dvtd" /></displacement>
   </vector>
   <vector name="vhd">
-    <head><ref>hvhd</ref></head>
-    <displacement><ref>dvhd</ref></displacement>
+    <head><copy tname="hvhd" /></head>
+    <displacement><copy tname="dvhd" /></displacement>
   </vector>
   </graph>
 
   <graph>
-  <ref prop="tail" name="tfvt">vt</ref>
-  <ref prop="head" name="hfvt">vt</ref>
-  <ref prop="displacement" name="dfvt">vt</ref>
+  <copy prop="tail" name="tfvt" tname="vt" />
+  <copy prop="head" name="hfvt" tname="vt" />
+  <copy prop="displacement" name="dfvt" tname="vt" />
 
-  <ref prop="tail" name="tfvh">vh</ref>
-  <ref prop="head" name="hfvh">vh</ref>
-  <ref prop="displacement" name="dfvh">vh</ref>
+  <copy prop="tail" name="tfvh" tname="vh" />
+  <copy prop="head" name="hfvh" tname="vh" />
+  <copy prop="displacement" name="dfvh" tname="vh" />
 
-  <ref prop="tail" name="tfvd">vd</ref>
-  <ref prop="head" name="hfvd">vd</ref>
-  <ref prop="displacement" name="dfvd">vd</ref>
+  <copy prop="tail" name="tfvd" tname="vd" />
+  <copy prop="head" name="hfvd" tname="vd" />
+  <copy prop="displacement" name="dfvd" tname="vd" />
 
-  <ref prop="tail" name="tfvth">vth</ref>
-  <ref prop="head" name="hfvth">vth</ref>
-  <ref prop="displacement" name="dfvth">vth</ref>
+  <copy prop="tail" name="tfvth" tname="vth" />
+  <copy prop="head" name="hfvth" tname="vth" />
+  <copy prop="displacement" name="dfvth" tname="vth" />
 
-  <ref prop="tail" name="tfvtd">vtd</ref>
-  <ref prop="head" name="hfvtd">vtd</ref>
-  <ref prop="displacement" name="dfvtd">vtd</ref>
+  <copy prop="tail" name="tfvtd" tname="vtd" />
+  <copy prop="head" name="hfvtd" tname="vtd" />
+  <copy prop="displacement" name="dfvtd" tname="vtd" />
 
-  <ref prop="tail" name="tfvhd">vhd</ref>
-  <ref prop="head" name="hfvhd">vhd</ref>
-  <ref prop="displacement" name="dfvhd">vhd</ref>
+  <copy prop="tail" name="tfvhd" tname="vhd" />
+  <copy prop="head" name="hfvhd" tname="vhd" />
+  <copy prop="displacement" name="dfvhd" tname="vhd" />
 
   </graph>
 
   <graph>
-  <ref name="vt2">vt</ref>
-  <ref name="vh2">vh</ref>
-  <ref name="vd2">vd</ref>
-  <ref name="vth2">vth</ref>
-  <ref name="vtd2">vtd</ref>
-  <ref name="vhd2">vhd</ref>
+  <copy name="vt2" tname="vt" />
+  <copy name="vh2" tname="vh" />
+  <copy name="vd2" tname="vd" />
+  <copy name="vth2" tname="vth" />
+  <copy name="vtd2" tname="vtd" />
+  <copy name="vhd2" tname="vhd" />
   </graph>
 
   <graph>
-  <ref prop="tail" name="tfvt2">vt2</ref>
-  <ref prop="head" name="hfvt2">vt2</ref>
-  <ref prop="displacement" name="dfvt2">vt2</ref>
+  <copy prop="tail" name="tfvt2" tname="vt2" />
+  <copy prop="head" name="hfvt2" tname="vt2" />
+  <copy prop="displacement" name="dfvt2" tname="vt2" />
 
-  <ref prop="tail" name="tfvh2">vh2</ref>
-  <ref prop="head" name="hfvh2">vh2</ref>
-  <ref prop="displacement" name="dfvh2">vh2</ref>
+  <copy prop="tail" name="tfvh2" tname="vh2" />
+  <copy prop="head" name="hfvh2" tname="vh2" />
+  <copy prop="displacement" name="dfvh2" tname="vh2" />
 
-  <ref prop="tail" name="tfvd2">vd2</ref>
-  <ref prop="head" name="hfvd2">vd2</ref>
-  <ref prop="displacement" name="dfvd2">vd2</ref>
+  <copy prop="tail" name="tfvd2" tname="vd2" />
+  <copy prop="head" name="hfvd2" tname="vd2" />
+  <copy prop="displacement" name="dfvd2" tname="vd2" />
 
-  <ref prop="tail" name="tfvth2">vth2</ref>
-  <ref prop="head" name="hfvth2">vth2</ref>
-  <ref prop="displacement" name="dfvth2">vth2</ref>
+  <copy prop="tail" name="tfvth2" tname="vth2" />
+  <copy prop="head" name="hfvth2" tname="vth2" />
+  <copy prop="displacement" name="dfvth2" tname="vth2" />
 
-  <ref prop="tail" name="tfvtd2">vtd2</ref>
-  <ref prop="head" name="hfvtd2">vtd2</ref>
-  <ref prop="displacement" name="dfvtd2">vtd2</ref>
+  <copy prop="tail" name="tfvtd2" tname="vtd2" />
+  <copy prop="head" name="hfvtd2" tname="vtd2" />
+  <copy prop="displacement" name="dfvtd2" tname="vtd2" />
 
-  <ref prop="tail" name="tfvhd2">vhd2</ref>
-  <ref prop="head" name="hfvhd2">vhd2</ref>
-  <ref prop="displacement" name="dfvhd2">vhd2</ref>
+  <copy prop="tail" name="tfvhd2" tname="vhd2" />
+  <copy prop="head" name="hfvhd2" tname="vhd2" />
+  <copy prop="displacement" name="dfvhd2" tname="vhd2" />
 
   </graph>
 
@@ -6734,7 +6734,7 @@ describe('Vector Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <math><ref>_vector1</ref></math>
+  <math><copy tname="_vector1" /></math>
   <graph>
     <vector>(1,2),(3,5)</vector>
   </graph>
@@ -6789,15 +6789,15 @@ describe('Vector Tag Tests', function () {
   <text>a</text>
   <graph>
   <vector>
-    <head><ref prop="head">_vector2</ref></head>
+    <head><copy prop="head" tname="_vector2" /></head>
     <tail><point>(1,0)</point></tail>
   </vector>
   <vector>
-    <tail><ref prop="tail">_vector3</ref></tail>
+    <tail><copy prop="tail" tname="_vector3" /></tail>
     <head>(3,2)</head>
   </vector>
   <vector>
-    <head><ref prop="tail">_vector1</ref></head>
+    <head><copy prop="tail" tname="_vector1" /></head>
     <tail>(-1,4)</tail>
   </vector>
   </graph>
@@ -6929,19 +6929,19 @@ describe('Vector Tag Tests', function () {
   <vector>
     <endpoints>
     <point>(1,0)</point>
-    <ref prop="head">_vector2</ref>
+    <copy prop="head" tname="_vector2" />
     </endpoints>
   </vector>
   <vector>
     <endpoints>
-    <ref prop="tail">_vector3</ref>
+    <copy prop="tail" tname="_vector3" />
     <point>(3,2)</point>
     </endpoints>
   </vector>
   <vector>
     <endpoints>
       <tail>(-1,4)</tail>
-      <ref prop="tail">_vector1</ref>
+      <copy prop="tail" tname="_vector1" />
     </endpoints>
   </vector>
   </graph>
@@ -7070,10 +7070,10 @@ describe('Vector Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <vector>(3,<ref prop="value">b</ref>),(<ref prop="value">a</ref>,4)</vector>
+  <vector>(3,<copy prop="value" tname="b" />),(<copy prop="value" tname="a" />,4)</vector>
 
-  <ref prop="x">_vector1</ref>
-  <ref prop="y">_vector1</ref>
+  <copy prop="x" tname="_vector1" />
+  <copy prop="y" tname="_vector1" />
   
   <p><mathinput name="a" prefill="1"></mathinput></p>
   <p><mathinput name="b" prefill="2"></mathinput></p>
@@ -7086,9 +7086,9 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let x = components['/_ref3'].replacements[0];
+      let x = components['/_copy3'].replacements[0];
       let xAnchor = '#' + x.componentName;
-      let y = components['/_ref4'].replacements[0];
+      let y = components['/_copy4'].replacements[0];
       let yAnchor = '#' + y.componentName;
 
 

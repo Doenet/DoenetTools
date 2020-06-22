@@ -39,6 +39,9 @@ export default class TextInput extends DoenetRenderer {
   handleKeyPress(e) {
     if (e.key === "Enter") {
       this.valueToRevertTo = this.doenetSvData.value;
+      if(this.doenetSvData.value !== this.doenetSvData.immediateValue) {
+        this.actions.updateValue();
+      }
       if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
         this.actions.submitAnswer();
       }
@@ -48,7 +51,7 @@ export default class TextInput extends DoenetRenderer {
 
   handleKeyDown(e) {
     if (e.key === "Escape") {
-      this.actions.updateText({
+      this.actions.updateImmediateValue({
         text: this.valueToRevertTo
       });
       this.forceUpdate();
@@ -62,14 +65,17 @@ export default class TextInput extends DoenetRenderer {
 
   handleBlur(e) {
     this.focused = false;
-    this.valueToRevertTo = this.doenetSvData.value;
+    this.valueToRevertTo = this.doenetSvData.immediateValue;
+    if(this.doenetSvData.immediateValue !== this.doenetSvData.value) {
+      this.actions.updateValue();
+    }
 
     this.forceUpdate();
   }
 
   onChangeHandler(e) {
     this.currentValue = e.target.value;
-    this.actions.updateText({
+    this.actions.updateImmediateValue({
       text: e.target.value
     });
     this.forceUpdate();
@@ -91,9 +97,9 @@ export default class TextInput extends DoenetRenderer {
     }
 
 
-    if (this.doenetSvData.value !== this.currentValue) {
-      this.currentValue = this.doenetSvData.value;
-      this.valueToRevertTo = this.doenetSvData.value;
+    if (this.doenetSvData.immediateValue !== this.currentValue) {
+      this.currentValue = this.doenetSvData.immediateValue;
+      this.valueToRevertTo = this.doenetSvData.immediateValue;
     }
 
 

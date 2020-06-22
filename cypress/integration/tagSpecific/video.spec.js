@@ -31,7 +31,7 @@ it('video from external source',() => {
   cy.get('#\\/_video1 source').invoke('attr', 'type').then((type) => expect(type).eq("video/mp4"));
 })
 
-it('video from multiple sources',() => {
+it.skip('video from multiple sources',() => {
   cy.window().then((win) => { win.postMessage({doenetML: `
   <video width="560 px" height="315px">
    <source>https://flowergarden.noaa.gov/image_library/video/seaharew.mp4</source>

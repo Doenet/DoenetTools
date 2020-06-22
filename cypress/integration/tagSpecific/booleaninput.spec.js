@@ -11,8 +11,8 @@ describe('Booleaninput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <booleaninput label="hello"/>
-    <ref prop="value">_booleaninput1</ref>
-    <ref>_ref1</ref>
+    <copy prop="value" tname="_booleaninput1" />
+    <copy tname="_copy1" />
     `}, "*");
     });
 
@@ -20,9 +20,9 @@ describe('Booleaninput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let boolean1 = components['/_ref1'].replacements[0];
+      let boolean1 = components['/_copy1'].replacements[0];
       let boolean1Anchor = '#' + boolean1.componentName;
-      let boolean2 = components['/_ref2'].replacements[0].replacements[0];
+      let boolean2 = components['/_copy2'].replacements[0].replacements[0];
       let boolean2Anchor = '#' + boolean2.componentName;
 
       cy.log('Test values displayed in browser')
@@ -78,7 +78,7 @@ describe('Booleaninput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <booleaninput prefill="true"/>
-    <ref prop="value">_booleaninput1</ref>
+    <copy prop="value" tname="_booleaninput1" />
     `}, "*");
     });
 
@@ -87,7 +87,7 @@ describe('Booleaninput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let boolean1 = components['/_ref1'].replacements[0];
+      let boolean1 = components['/_copy1'].replacements[0];
       let boolean1Anchor = '#' + boolean1.componentName;
 
       cy.log('Test values displayed in browser')
@@ -133,10 +133,10 @@ describe('Booleaninput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p><booleaninput prefill="t" label="green"/></p>
-    <p><ref>_booleaninput1</ref></p>
-    <p><ref prop="value">_booleaninput1</ref></p>
+    <p><copy tname="_booleaninput1" /></p>
+    <p><copy prop="value" tname="_booleaninput1" /></p>
     <p><booleaninput label="red" /></p>
-    <p><ref prop="value">_booleaninput2</ref></p>
+    <p><copy prop="value" tname="_booleaninput2" /></p>
     `}, "*");
     });
 
@@ -145,11 +145,11 @@ describe('Booleaninput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let booleaninput1a = components['/_ref1'].replacements[0];
+      let booleaninput1a = components['/_copy1'].replacements[0];
       let booleaninput1aAnchor = '#' + booleaninput1a.componentName + "_input";
-      let boolean1 = components['/_ref2'].replacements[0];
+      let boolean1 = components['/_copy2'].replacements[0];
       let boolean1Anchor = '#' + boolean1.componentName;
-      let boolean2 = components['/_ref3'].replacements[0];
+      let boolean2 = components['/_copy3'].replacements[0];
       let boolean2Anchor = '#' + boolean2.componentName;
 
       cy.get(boolean1Anchor).should('have.text', "true");
@@ -214,9 +214,9 @@ describe('Booleaninput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>Original boolean: <boolean>true</boolean></p>
-    <p>booleaninput based on boolean: <booleaninput><ref>_boolean1</ref></booleaninput></p>
-    <p>Reffed boolean: <ref>_boolean1</ref></p>
-    <p>Reffed boolean input: <ref prop="value">_booleaninput1</ref></p>
+    <p>booleaninput based on boolean: <booleaninput><copy tname="_boolean1" /></booleaninput></p>
+    <p>Reffed boolean: <copy tname="_boolean1" /></p>
+    <p>Reffed boolean input: <copy prop="value" tname="_booleaninput1" /></p>
     `}, "*");
     });
 
@@ -227,9 +227,9 @@ describe('Booleaninput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let boolean2 = components['/_ref2'].replacements[0];
+      let boolean2 = components['/_copy2'].replacements[0];
       let boolean2Anchor = '#' + boolean2.componentName;
-      let boolean3 = components['/_ref3'].replacements[0];
+      let boolean3 = components['/_copy3'].replacements[0];
       let boolean3Anchor = '#' + boolean3.componentName;
 
       cy.get('#\\/_boolean1').should('have.text', 'true');
@@ -268,7 +268,7 @@ describe('Booleaninput Tag Tests', function () {
         doenetML: `
     <text>b</text>
     <p>Original boolean: <boolean>true</boolean></p>
-    <p>booleaninput based on boolean: <booleaninput prefill="false"><ref>_boolean1</ref></booleaninput></p>
+    <p>booleaninput based on boolean: <booleaninput prefill="false"><copy tname="_boolean1" /></booleaninput></p>
     `}, "*");
     });
 
@@ -287,7 +287,7 @@ describe('Booleaninput Tag Tests', function () {
         doenetML: `
     <text>c</text>
     <p>Original boolean: <boolean>can't <text>update</text> <text>me</text></boolean></p>
-    <p>booleaninput based on boolean: <booleaninput><ref>_boolean1</ref></booleaninput></p>
+    <p>booleaninput based on boolean: <booleaninput><copy tname="_boolean1" /></booleaninput></p>
     `}, "*");
     });
 
