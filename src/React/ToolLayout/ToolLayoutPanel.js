@@ -20,7 +20,7 @@ const MainContent = styled.div`
 `;
 const SplitPanelHeader = styled.div`
     min-height: 1vh;
-    overflow: hidden;
+    // overflow: hidden;
     width: ${props => props.width || '50'}%;
     height: 100%;
     display: flex;

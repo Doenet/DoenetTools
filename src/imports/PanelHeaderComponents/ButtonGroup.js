@@ -12,7 +12,7 @@ export default function ButtonGroup(props) {
     }
 
     return (
-        <div style={{ border: '1px solid grey', width: '55px', height: '18px', borderRadius: '5px', padding: '1px', display: 'flex', alignItems: 'center' }}>
+        <div style={{ border: '1px solid grey', width: '55px', height: '23px', borderRadius: '5px', padding: '1px', display: 'flex', alignItems: 'center' }}>
             {props.data.map((d,i) =>
                 <button key={i} style={{ backroundColor: "transperant", borderRadius: '5px', border: 'none', cursor: 'pointer', outline: 'none', width: '50%', height: '18px', backgroundColor: currentValue === d.value ? '#E2E2E2' : 'white' }}>
                     <FontAwesomeIcon onClick={() => { handleClick(d.value) }} icon={d.icon} style={{ fontSize: '15px' }} />

@@ -13,23 +13,33 @@
   /* position: absolute;
   top:2%;
   z-index:1; */
+  position: relative;
   height: 30px;
 }
 .select-box-box {
   width: 120px;
-  position: absolute;
+  /* position: absolute; */
 }
 
 .select-box-selected-item {
   display: inline-block;
   height: 100%;
   width: 100%;
-  padding: 4px 12px;
+  /* padding: 4px 12px; */
   vertical-align: middle;
+  
+}
+.select-box-selected-item input {
+  width: calc(100% - 30px);
+  height: 100%;
+  border: 0;
+  outline: none;
 }
 
 .select-box-items{
   z-index:1000;
+    position: absolute;
+    width: 100%;
 }
 .select-box-items div {
   border-bottom: 1px solid #ddd;

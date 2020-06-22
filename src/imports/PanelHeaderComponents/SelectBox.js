@@ -5,7 +5,7 @@ class SelectBox extends Component {
   state = {
     items: this.props.items || [],
     showItems: false,
-    selectedItem: this.props.items && this.props.items[0]
+    selectedItem: null
   };
 
   dropDown = () => {
@@ -26,7 +26,7 @@ class SelectBox extends Component {
       <div className="select-box-box">
         <div className="select-box-container">
           <div className="select-box-selected-item">
-            {this.state.selectedItem.value}
+            {this.state.selectedItem ? this.state.selectedItem.value : <input type="text"></input>}
           </div>
           <div className="select-box-arrow" onClick={this.dropDown}>
             <span
