@@ -307,6 +307,7 @@ class DoenetBranchBrowser extends Component {
   buildUrlItems(){
     this.urlItems = [];
     this.urlList = this.props.urlList;
+    console.log(this.urlList)
     // show items in current directory
     if (this.state.directoryStack.length !== 0) {
       let folderId = this.peekDirectoryStack();
