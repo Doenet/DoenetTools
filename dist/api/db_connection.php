@@ -25,7 +25,6 @@ if ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == 'localhost:
 
 $database = $db_temp; //TODO: remove all $db_temp's
 
-echo "$dbhost, $username, $password, $database";
 $conn = mysqli_connect($dbhost, $username, $password, $database);
 // Check connection
 if (!$conn) {
