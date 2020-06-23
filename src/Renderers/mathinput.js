@@ -41,12 +41,12 @@ export default class MathInput extends DoenetRenderer {
     return expression;
   }
 
-  updateMathExpressionFromText(text) {
+  updateImmediateValueFromText(text) {
     this.textValue = text;
     let newMathExpression = this.calculateMathExpressionFromText(text);
     if (!newMathExpression.equalsViaSyntax(this.mathExpression)) {
       this.mathExpression = newMathExpression;
-      this.actions.updateMathExpression({
+      this.actions.updateImmediateValue({
         mathExpression: newMathExpression
       });
     }
@@ -69,8 +69,11 @@ export default class MathInput extends DoenetRenderer {
 
   handleKeyPress(e) {
     if (e.key === "Enter") {
-      this.valueToRevertTo = this.doenetSvData.value;
+      this.valueToRevertTo = this.doenetSvData.immediateValue;
       this.textValueToRevertTo = this.textValue;
+      if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
+        this.actions.updateValue();
+      }
       if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
         this.actions.submitAnswer();
       }
@@ -83,7 +86,7 @@ export default class MathInput extends DoenetRenderer {
       if (!this.mathExpression.equalsViaSyntax(this.valueToRevertTo)) {
         this.textValue = this.textValueToRevertTo;
         this.mathExpression = this.valueToRevertTo;
-        this.actions.updateMathExpression({
+        this.actions.updateImmediateValue({
           mathExpression: this.valueToRevertTo
         });
         this.forceUpdate();
@@ -98,13 +101,16 @@ export default class MathInput extends DoenetRenderer {
 
   handleBlur(e) {
     this.focused = false;
-    this.valueToRevertTo = this.doenetSvData.value;
-
+    this.valueToRevertTo = this.doenetSvData.immediateValue;
+    this.textValueToRevertTo = this.textValue;
+    if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
+      this.actions.updateValue();
+    }
     this.forceUpdate();
   }
 
   onChangeHandler(e) {
-    this.updateMathExpressionFromText(e.target.value)
+    this.updateImmediateValueFromText(e.target.value)
     this.forceUpdate();
   }
 
@@ -123,7 +129,7 @@ export default class MathInput extends DoenetRenderer {
       surroundingBorderColor = "#82a5ff";
     }
 
-    if (!this.mathExpression.equalsViaSyntax(this.doenetSvData.value)) {
+    if (!this.valueToRevertTo.equalsViaSyntax(this.doenetSvData.value)) {
       this.mathExpression = this.doenetSvData.value;
       this.textValue = this.mathExpression.toString();
       if (this.textValue === '\uFF3F') {

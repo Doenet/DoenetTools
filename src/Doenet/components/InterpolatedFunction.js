@@ -61,6 +61,11 @@ export default class InterpolatedFunction extends Function {
       newValues: { formula: me.fromAst('\uff3f') }
     })
 
+    stateVariableDefinitions.variable.returnDependencies = () => ({})
+    stateVariableDefinitions.variable.definition = () => ({
+      newValues: { variable: me.fromAst('\uff3f') }
+    })
+
     stateVariableDefinitions.selectedStyle = {
       forRenderer: true,
       returnDependencies: () => ({

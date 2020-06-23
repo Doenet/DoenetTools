@@ -1709,7 +1709,7 @@ describe('Point Tag Tests', function () {
   <line hide>y = x - 3</line>
   <map>
     <template>
-      <point hide>(<subsref/>,<subsref/>+2)</point>
+      <point hide>(<copyFromSubs/>,<copyFromSubs/>+2)</point>
     </template>
     <substitutions><sequence from="-10" to="10"/></substitutions>
   </map>
@@ -1784,7 +1784,7 @@ describe('Point Tag Tests', function () {
   <line hide>y = x - 3</line>
   <map>
     <template>
-      <point hide>(<subsref/>,<subsref/>+2)</point>
+      <point hide>(<copyFromSubs/>,<copyFromSubs/>+2)</point>
     </template>
     <substitutions><sequence from="-10" to="10"/></substitutions>
   </map>

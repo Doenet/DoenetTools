@@ -68,7 +68,7 @@ describe('Math Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <math hide>x+1</math>
-    <math>3<ref>_math1</ref> + 5</math>
+    <math>3<copy tname="_math1" /> + 5</math>
     `}, "*");
     });
 
@@ -85,7 +85,7 @@ describe('Math Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let replacement = components['/_ref1'].replacements[0];
+      let replacement = components['/_copy1'].replacements[0];
       expect(components['/_math1'].stateValues.value.tree).eqls(['+', 'x', 1])
       expect(replacement.stateValues.value.tree).eqls(['+', 'x', 1])
       expect(components['/_math2'].stateValues.value.tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
@@ -169,7 +169,7 @@ describe('Math Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <math>x/y</math>
-  <ref prop="latex">_math1</ref>
+  <copy prop="latex" tname="_math1" />
   `}, "*");
     });
 
@@ -184,7 +184,7 @@ describe('Math Tag Tests', function () {
     })
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let replacement = components['/_ref1'].replacements[0];
+      let replacement = components['/_copy1'].replacements[0];
       cy.get('#' + replacement.componentName).should('have.text', '\\frac{x}{y}');
 
     })
@@ -196,9 +196,9 @@ describe('Math Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <math name="a" simplify><math name="x">x</math> + <ref>x</ref> + <ref>z</ref></math>
+  <math name="a" simplify><math name="x">x</math> + <copy tname="x" /> + <copy tname="z" /></math>
   <math name="z">z</math>
-  <ref name="a2">a</ref>
+  <copy name="a2" tname="a" />
   `}, "*");
     });
 
@@ -225,7 +225,7 @@ describe('Math Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <point>3</point>
-  <math simplify>2 + <ref>_point1</ref></math>
+  <math simplify>2 + <copy tname="_point1" /></math>
   `}, "*");
     });
 
@@ -239,7 +239,7 @@ describe('Math Tag Tests', function () {
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let point = components['/_ref1'].replacements[0];
+      let point = components['/_copy1'].replacements[0];
       let coords = point.adapterUsed;
       expect(components['/_math1'].stateValues.value.tree).eq(5);
       expect(components['/_math1'].activeChildren[2].componentName).equal(coords.componentName);
@@ -255,7 +255,7 @@ describe('Math Tag Tests', function () {
   <text>a</text>
   <math simplify>2<sequence count="0"/>3</math>
   <graph>
-  <point><coords>(<ref>_math1</ref>, 3)</coords></point>
+  <point><coords>(<copy tname="_math1" />, 3)</coords></point>
   </graph>
   `}, "*");
     });
@@ -328,26 +328,26 @@ describe('Math Tag Tests', function () {
         doenetML: `
   <text>q</text>
   <p><math name="a" simplify>
-    <format><ref prop="value">_textinput1</ref></format>
+    <format><copy prop="value" tname="_textinput1" /></format>
     \\sin(y)
     <math name="c">
-      <ref prop="format">b</ref>
+      <format><copy prop="format" tname="b" /></format>
       sin(x)
     </math>
   </math></p>
   <p><math name="b" simplify>
-    <format><ref prop="value">_textinput2</ref></format>
+    <format><copy prop="value" tname="_textinput2" /></format>
     sin(u)
     <math name="d">
-      <ref prop="format">a</ref>
+      <format><copy prop="format" tname="a" /></format>
       \\sin(v)
     </math>
   </math></p>
   
-  <p name="formata"><ref prop="format">a</ref></p>
-  <p name="formatb"><ref prop="format">b</ref></p>
-  <p name="formatc"><ref prop="format">c</ref></p>
-  <p name="formatd"><ref prop="format">d</ref></p>
+  <p name="formata"><copy prop="format" tname="a" /></p>
+  <p name="formatb"><copy prop="format" tname="b" /></p>
+  <p name="formatc"><copy prop="format" tname="c" /></p>
+  <p name="formatd"><copy prop="format" tname="d" /></p>
   
   <textinput prefill="latex"/>
   <textinput prefill="text"/>

@@ -143,7 +143,7 @@ export default class Polyline extends GraphicalComponent {
             verticesChild: {
               dependencyType: "childStateVariables",
               childLogicName: "exactlyOneVertices",
-              variableNames: ["points"]
+              variableNames: ["points", "nPoints"]
             }
           })
         } else {
@@ -151,7 +151,7 @@ export default class Polyline extends GraphicalComponent {
             verticesChild: {
               dependencyType: "childStateVariables",
               childLogicName: "exactlyOneVertices",
-              variableNames: ["point" + (arrayKey + 1)]
+              variableNames: ["point" + (arrayKey + 1), "nPoints"]
             }
           })
         }

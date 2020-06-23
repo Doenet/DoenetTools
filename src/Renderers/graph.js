@@ -22,9 +22,11 @@ export default class Graph extends DoenetRenderer {
 
     window.JXG.Options.axis.ticks.majorHeight = 20;
 
+    let boundingbox = [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin];
+
     this.board = window.JXG.JSXGraph.initBoard(this.componentName,
       {
-        boundingbox: [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin],
+        boundingbox,
         axis: false,
         showCopyright: false,
       });
@@ -76,35 +78,25 @@ export default class Graph extends DoenetRenderer {
 
     this.doenetPropsForChildren = { board: this.board };
     this.initializeChildren();
+
+    this.previousBoundingbox = boundingbox;
   }
 
-  resizeBoard({ xmin, xmax, ymin, ymax }) {
-    let changedSize = false;
-    if (xmin !== undefined && xmin !== this.xmin) {
-      this.xmin = xmin;
-      changedSize = true;
-    }
-    if (xmax !== undefined && xmax !== this.xmax) {
-      this.xmax = xmax;
-      changedSize = true;
-    }
-    if (ymin !== undefined && ymin !== this.ymin) {
-      this.ymin = ymin;
-      changedSize = true;
-    }
-    if (ymax !== undefined && ymax !== this.ymax) {
-      this.ymax = ymax;
-      changedSize = true;
-    }
+  update() {
 
-    if (changedSize) {
-      this.board.setBoundingBox([this.xmin, this.ymax, this.xmax, this.ymin]);
+    let boundingbox = [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin];
+
+    if (boundingbox.some((v, i) => v !== this.previousBoundingbox[i])) {
+      this.board.setBoundingBox(boundingbox);
       // seem to need to call this again to get the ticks correct
       this.board.fullUpdate();
 
       if (this.board.updateQuality === this.board.BOARD_QUALITY_LOW) {
         this.board.itemsRenderedLowQuality[this.componentName] = this.board;
       }
+
+      this.previousBoundingbox = boundingbox;
+
     }
 
   }

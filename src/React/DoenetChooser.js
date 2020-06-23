@@ -7,7 +7,7 @@ import "./chooser.css";
 import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown, 
-  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, faLink, faRedoAlt}
+  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, faLink, faRedoAlt, faAlignJustify,faStream, faColumns}
   from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
@@ -24,6 +24,10 @@ import {
 } from './chooser/SwitchableContainer';
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
+import SplitLayoutPanel from "./ToolLayout/SplitLayoutPanel";
+import DropDownSelect from '../imports/PanelHeaderComponents/DropDownSelect';
+import ButtonGroup from '../imports/PanelHeaderComponents/ButtonGroup';
+import { throws } from 'assert';
 
 
 class DoenetChooser extends Component {
@@ -41,7 +45,9 @@ class DoenetChooser extends Component {
       activeSection: "chooser",
       directoryStack: [],
       currentDraggedObject: {id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null},
-      panelsCollection: {"first": {values:["browser", "tree"], activeContainer: "browser"}}
+      panelsCollection: {"first": {values:["browser", "tree"], activeContainer: "browser"}},
+      splitPanelLayout: false
+
     };
 
     this.containerCache = {};
@@ -114,8 +120,10 @@ class DoenetChooser extends Component {
     this.onBrowserDragEnd = this.onBrowserDragEnd.bind(this);
     this.onBrowserDropEnter = this.onBrowserDropEnter.bind(this);
     this.onBrowserDrop = this.onBrowserDrop.bind(this);
+    this.onBrowserFolderDrop = this.onBrowserFolderDrop.bind(this);
     this.getDataSource = this.getDataSource.bind(this);
     this.switchPanelContainer = this.switchPanelContainer.bind(this);
+    this.toggleSplitPanel = this.toggleSplitPanel.bind(this);
 
     this.tempSet = new Set();
   }
@@ -378,8 +386,6 @@ class DoenetChooser extends Component {
       this.urlInfo = Object.assign({}, this.urlInfo, resp.data.urlInfo);
       this.userUrlInfo = resp.data.urlInfo;
       this.urlIds = resp.data.urlIds;
-      console.log("Updated")
-      console.log(this.urlIds)
       this.urls_loaded = true;
       this.userContentReloaded = true;
       callback();
@@ -612,7 +618,7 @@ class DoenetChooser extends Component {
     }
     axios.post(url, data)
     .then((resp) => {
-      callback(folderId);
+      callback(resp);
     })
     .catch(function (error) {
       this.setState({error:error});
@@ -626,7 +632,6 @@ class DoenetChooser extends Component {
     }
     axios.post(url, data)
     .then((resp) => {
-      console.log(resp);
       callback();
     })
     .catch(function (error) {
@@ -739,23 +744,104 @@ class DoenetChooser extends Component {
     let isRepo = this.folderInfo[folderId].isRepo;
     let isPublic = this.folderInfo[folderId].isPublic;
 
+    const getDataObjects = (itemType) => {
+      let data = {};
+      switch(itemType) {
+        case "content":
+          data = {
+            "idList": this.sort_order,
+            "info": this.branchId_info,
+            "folderChildList": "childContent"
+          }
+          break;
+        case "folder":
+          data = {
+            "idList": this.folderIds,
+            "info": this.folderInfo,
+            "folderChildList": "childFolders"
+          }
+          break;
+        case "url":
+          data = {
+            "idList": this.urlIds,
+            "info": this.urlInfo,
+            "folderChildList": "childUrls"
+          }
+          break;
+      }
+      return data;
+    }
 
-    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (folderId) => {
+    // check if moving item out of public repo 
+    const itemDataInfo = getDataObjects(childType[0])["info"]
+    console.log(itemDataInfo[childIds[0]])
+    if (itemDataInfo[childIds[0]] != undefined) {
+      const firstParentId = itemDataInfo[childIds[0]].parentId;
+      const movingOutOfPublicRepo = this.folderInfo[firstParentId].isRepo && 
+                                    this.folderInfo[firstParentId].isPublic &&
+                                    folderId == "root";
+      
+      if (movingOutOfPublicRepo) {
+        this.displayToast(`Public content cannot be made private`);
+        return; // public -> private not allowed
+      } 
+    }
+
+    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (resp) => {
       // creating new folder
       //    in a folder ~ set childItem.rootId = folderId.rootId
       //    at root ~ addContentToFolder not invoked
       // moving into folder
       //    from another root ~ set childItem.rootId = folderId.rootId
       //    from same root ~ set childItem.rootId = folderId.rootId
-      let itemIds = [];
+      if (resp.status != 200) return;
+      for (let i = 0; i < childIds.length; i++) {
+        let childId = childIds[i];
+        let childDataObject = getDataObjects(childType[i]);
+        let childDataInfo = childDataObject["info"];
+        let childDataIdList = childDataObject["idList"];
+        let childListKey = childDataObject["folderChildList"]
+        // not new item
+        if (childDataObject["info"][childId] != undefined) {
+          let originalParent = childDataInfo[childId].parentId;
+          let originalIndex = this.folderInfo[originalParent][childListKey].indexOf(childId);
+          this.folderInfo[originalParent][childListKey].splice(originalIndex, 1);
+          this.folderInfo[folderId][childListKey].push(childId);
+          childDataInfo[childId].parentId = folderId;
+          if (folderId == "root") childDataIdList.push(childId);
+          if (originalParent == "root") {
+            let index = childDataIdList.indexOf(childId);
+            childDataIdList.splice(index, 1);
+          }
+        } else {
+          this.folderInfo[folderId][childListKey].push(childId);
+          if (folderId == "root") childDataIdList.push(childId);
+        }
+      }
+      this.userContentReloaded = true;
+
+      let allItems = { itemIds: [], itemType: [] };
       childIds.forEach(childId => {
-          itemIds = itemIds.concat(this.flattenFolder(childId).itemIds);
+        let res = this.flattenFolder(childId);
+        allItems.itemIds = allItems.itemIds.concat(res.itemIds);
+        allItems.itemType = allItems.itemType.concat(res.itemType);
       });
-      
-      this.modifyFolderChildrenRoot(this.folderInfo[folderId].rootId, itemIds, () => {
-        this.loadUserFoldersAndRepo();
-        this.loadUserContentBranches();
-        this.loadUserUrls();
+
+      this.modifyFolderChildrenRoot(this.folderInfo[folderId].rootId, allItems.itemIds, () => {
+        for (let i = 0; i < allItems.itemIds.length; i++) {
+          let currentItemType = allItems.itemType[i];
+          let currentItemId = allItems.itemIds[i];
+          let childDataObject = getDataObjects(currentItemType);
+          let childDataInfo = childDataObject["info"];
+          if (childDataInfo[currentItemId]) {
+            childDataInfo[currentItemId].rootId = this.folderInfo[folderId].rootId; 
+          } else {
+            this.loadUserContentBranches();
+            this.loadUserFoldersAndRepo();
+            this.loadUserUrls();
+          }   
+        }
+        this.forceUpdate();
         callback();
       });
     });
@@ -776,7 +862,7 @@ class DoenetChooser extends Component {
       // private -> private redundant, continue with removing    
     }
 
-    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (folderId) => {
+    this.saveFolder(folderId, title, childIds, childType, operationType, isRepo, isPublic, (resp) => {
       // within same root ~ set childItem.rootId = folderId.rootId (unchanged)
       // to diff root ~ set childItem.rootId = folderId.rootId (changed)
       // to root ~ set childItem.rootId = childItem.id
@@ -854,7 +940,7 @@ class DoenetChooser extends Component {
     }
     axios.post(url, data)
     .then((resp) => {
-      callback();
+      callback(resp);
     })
     .catch(function (error) {
       this.setState({error:error});
@@ -1076,7 +1162,6 @@ class DoenetChooser extends Component {
       params: data
     }
     axios.get(url, payload).then(resp=>{
-      console.log(resp.data);
       let tempHeadingsInfo = {};
       let tempAssignmentsInfo = {};
       let tempUrlsInfo = {};
@@ -1524,24 +1609,73 @@ class DoenetChooser extends Component {
   }
 
   onBrowserDrop (containerId, parentsInfo, leavesInfo) {
-    console.log("onDrop")
+    console.log("onBrowserDrop")
     
   }
 
-  switchPanelContainer(panelId) {
-    const values = this.state.panelsCollection[panelId].values;
-    const currentActiveContainer = this.state.panelsCollection[panelId].activeContainer;
-    const nextActiveContainer = values[(values.indexOf(currentActiveContainer) + 1) % values.length];
+  // switchPanelContainer(panelId) {
+  //   const values = this.state.panelsCollection[panelId].values;
+  //   const currentActiveContainer = this.state.panelsCollection[panelId].activeContainer;
+  //   const nextActiveContainer = values[(values.indexOf(currentActiveContainer) + 1) % values.length];
+  //   const newPanelData = {
+  //     values: values,
+  //     activeContainer: nextActiveContainer
+  //   }
+  //   this.setState({
+  //     panelsCollection: {
+  //       ...this.state.panelsCollection,
+  //       [panelId]: newPanelData
+  //     }
+  //   })
+  // }
+
+
+  switchPanelContainer(view) {
+    const values = this.state.panelsCollection['first'].values;
     const newPanelData = {
       values: values,
-      activeContainer: nextActiveContainer
+      activeContainer: view
+
     }
     this.setState({
       panelsCollection: {
         ...this.state.panelsCollection,
-        [panelId]: newPanelData
+        ["first"]: newPanelData
       }
     })
+  }
+
+
+  onBrowserFolderDrop ({containerId, droppedId}) {
+    // handle dragging folder onto itself
+    if (this.state.currentDraggedObject.id == droppedId) return;
+
+    let draggedItems = {
+      id: this.state.selectedItems,
+      type: this.state.selectedItemsType
+    }
+    // remove droppedId, repos from (draggedIds, draggedTypes)
+    for (let i = 0; i < draggedItems.id.length; i++) {
+      if (draggedItems.id[i] == droppedId || draggedItems.type == "repo") {
+        draggedItems.id.splice(i, 1);
+        draggedItems.type.splice(i, 1);
+      }
+    }
+    if (droppedId == ChooserConstants.PREVIOUS_DIR_ID) {
+      // add content to previous directory
+      let previousDirectoryId = this.state.directoryStack.slice(-2)[0];
+      if (this.state.directoryStack.length < 2) previousDirectoryId = "root";
+      console.log(this.state.directoryStack)
+      console.log("add content to " + previousDirectoryId)
+      this.addContentToFolder(draggedItems.id, draggedItems.type, previousDirectoryId);
+    } else {
+      // add draggedIds to folder with droppedId
+      this.addContentToFolder(draggedItems.id, draggedItems.type, droppedId);
+    }    
+  }
+
+  toggleSplitPanel() {
+    this.setState({splitPanelLayout: !this.state.splitPanelLayout});
   }
 
   render(){
@@ -1737,7 +1871,7 @@ class DoenetChooser extends Component {
           onDraggableDragOver={() => {}} 
           onDropEnter={this.onBrowserDropEnter}
           onDrop={this.onBrowserDrop}
-
+          onFolderDrop={this.onBrowserFolderDrop}
         />
       </React.Fragment>
     }
@@ -1776,46 +1910,77 @@ class DoenetChooser extends Component {
       </div>
     </div>
 
-    const switchPanelButton = <button style={{background: "none", border: "none", cursor: "pointer", outline: "none"}}>
-        <FontAwesomeIcon onClick={() => this.switchPanelContainer("first")} icon={faRedoAlt} style={{fontSize:"17px"}}/>
-      </button>;
+    // const switchPanelButton = <button style={{background: "none", border: "none", cursor: "pointer", outline: "none"}}>
+    //     <FontAwesomeIcon onClick={() => this.switchPanelContainer("first")} icon={faRedoAlt} style={{fontSize:"17px"}}/>
+    //   </button>;
+    let buttonGroupData = [{
+      label: '',
+      icon: faAlignJustify,
+      value: 'browser',
+      default: true
+    }, {
+      label: '',
+      icon: faStream,
+      value: 'tree',
+      default: false
+    }];
+    buttonGroupData.map(b=>b.default = b.value === this.state.panelsCollection.first.activeContainer);
+    const switchPanelButton = <ButtonGroup clickCallBack={this.switchPanelContainer} data={buttonGroupData}></ButtonGroup>
+    const splitPanelButton = <button style={{ background: "none", border: "none", cursor: "pointer", outline: "none", height:"20px" }}>
+    <FontAwesomeIcon onClick={() => this.toggleSplitPanel()} icon={faColumns} style={{ fontSize: "17px" }} />
+    </button>;
+        const dropDownSelectButton = <DropDownSelect />
+
 
     const testSaveContentTreeButton = <button style={{background: "none", border: "none", cursor: "pointer", outline: "none"}}>
       <FontAwesomeIcon onClick={() => this.saveContentTree({folderInfo: this.userFolderInfo})} icon={faEdit} style={{fontSize:"17px"}}/>
     </button>;
 
     const navigationPanelMenuControls = [newItemButton];
+    // const mainPanelMenuControls = [switchPanelButton];
     const mainPanelMenuControls = [switchPanelButton];
-   
+    const middlePanelMenuControls = [splitPanelButton];
+    const rightPanelMenuControls = [dropDownSelectButton];
+
     return (<React.Fragment>
       <ToastProvider>
-        <this.ToastWrapper/>
-        <ToolLayout 
+        <this.ToastWrapper />
+        <ToolLayout
           toolName="Chooser"
           leftPanelWidth="235"
           rightPanelWidth="365">
-          <ToolLayoutPanel 
+
+          <ToolLayoutPanel
             panelName="Navigation Panel"
             panelHeaderControls={navigationPanelMenuControls}
           >
-            { this.leftNavPanel }  
+            {this.leftNavPanel}
           </ToolLayoutPanel>
-          <ToolLayoutPanel 
+
+          <ToolLayoutPanel
             panelName="Main Panel"
-            panelHeaderControls={mainPanelMenuControls}
+            splitPanel={this.state.splitPanelLayout}
+            panelHeaderControls={[mainPanelMenuControls, middlePanelMenuControls]}
+            disableSplitPanelScroll={[true, false]}
           >
-            <MainPanel 
-              panelId="first"
+            <MainPanel
+              // panelId="first"
               initialContainer="browser"
               activeContainer={this.state.panelsCollection["first"].activeContainer}
               containersData={[
                 { name: "browser", container: this.mainSection },
-              { name: "tree", container: <div style={{display: "flex", flexDirection: "row"}}>{this.tree}</div> },
+                { name: "tree", container: this.tree },
               ]}
             />
+            <SplitLayoutPanel
+              defaultVisible={true}
+              panelHeaderControls={[rightPanelMenuControls  ,<button style={{ height: '24px', padding: '1px' }} onClick={() => this.toggleSplitPanel()}><FontAwesomeIcon icon={faTimesCircle} style={{ fontSize: "20px", height: '20px', padding: '2px' }} /></button>]}>
+              <p>  Split panel</p>
+            </SplitLayoutPanel>
           </ToolLayoutPanel>
-          <ToolLayoutPanel panelName="Info Panel">
-            <InfoPanel
+
+          <ToolLayoutPanel panelName="Info Panel" >
+             <InfoPanel
               selectedItems={this.state.selectedItems}
               selectedItemsType={this.state.selectedItemsType}
               selectedDrive={this.state.selectedDrive}
@@ -1833,8 +1998,13 @@ class DoenetChooser extends Component {
 
       </ToastProvider>
     </React.Fragment>);
+
   }
 }
+
+
+
+
 
 const MainPanel = ({panelId, initialContainer, activeContainer, containersData}) => {
   return <div className="mainPanel">
@@ -2577,7 +2747,6 @@ class InfoPanel extends Component {
   }
 
   buildInfoPanelItemDetails(selectedItemId, selectedItemType) {
-    
     this.infoPanelDetails = [];
     let itemDetails = {};
     if (selectedItemType === "folder") {
@@ -2736,7 +2905,7 @@ class InfoPanel extends Component {
         "Versions" : versions,
         // "Related content" : relatedContent,
       };
-
+      console.log(this.props.allContentInfo[selectedItemId].rootId);
       let isShared = this.props.allContentInfo[selectedItemId].rootId == "root" ? false :
         this.props.allFolderInfo[this.props.allContentInfo[selectedItemId].rootId].isRepo;
 

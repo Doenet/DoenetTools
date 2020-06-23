@@ -124,7 +124,7 @@ export class Center extends Point {
   static componentType = "center"
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.hide = { default: true };
+    properties.hide = { default: true, forRenderer: true };
     return properties;
   }
   static rendererType = "point";
@@ -869,5 +869,10 @@ export class NDiscretizationPoints extends NumberComponent {
 
 export class Periodic extends BooleanComponent {
   static componentType = "periodic";
+  static rendererType = "boolean";
+}
+
+export class IsResponse extends BooleanComponent {
+  static componentType = "isResponse";
   static rendererType = "boolean";
 }

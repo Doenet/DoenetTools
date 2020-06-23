@@ -20,10 +20,10 @@ export default class Graph extends BlockComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addCurve = function ({ activeChildrenMatched }) {
+    let addCurve = function ({ activeChildrenMatched, dependencyValues }) {
       // add <curve> around strings, as long as they don't have points
       let curveChildren = [];
-      for (let child of activeChildrenMatched) {
+      for (let child of dependencyValues.atLeastOneString) {
         if (child.stateValues.value.includes(",")) {
           return { success: false };
         }
@@ -45,6 +45,14 @@ export default class Graph extends BlockComponent {
       number: 1,
       requireConsecutive: true,
       isSugar: true,
+      returnSugarDependencies: () => ({
+        atLeastOneString: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastOneString",
+          variableNames: ["value"]
+        }
+      }),
+      logicToWaitOnSugar: ["atLeastZeroGraphical"],
       replacementFunction: addCurve,
     });
 
@@ -56,7 +64,7 @@ export default class Graph extends BlockComponent {
     });
 
     childLogic.newOperator({
-      name: "SugarXorGraph",
+      name: "sugarXorGraph",
       operator: "xor",
       propositions: [atLeastOneString, atLeastZeroGraphical],
       setAsBase: true,

@@ -16,8 +16,9 @@ describe('Mathinput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <mathinput prefill='x+1'/>
-    <ref>_mathinput1</ref>
-    <ref prop='value'>_mathinput1</ref>
+    <copy tname="_mathinput1" />
+    <copy prop='value' tname="_mathinput1" />
+    <copy prop='immediatevalue' tname="_mathinput1" />
     <mathinput/>
     `}, "*");
     });
@@ -27,10 +28,12 @@ describe('Mathinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinput1a = components['/_ref1'].replacements[0];
+      let mathinput1a = components['/_copy1'].replacements[0];
       let mathinput1aAnchor = '#' + mathinput1a.componentName + '_input';
-      let math1 = components['/_ref2'].replacements[0];
+      let math1 = components['/_copy2'].replacements[0];
       let math1Anchor = '#' + math1.componentName;
+      let math2 = components['/_copy3'].replacements[0];
+      let math2Anchor = '#' + math2.componentName;
 
 
       cy.log('Test values displayed in browser')
@@ -41,10 +44,16 @@ describe('Mathinput Tag Tests', function () {
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+1')
       });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+1')
+      });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 1]);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['+', 'x', 1]);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).to.eq('\uFF3F');
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 1]);
         expect(mathinput1a.stateValues.value.tree).eqls(['+', 'x', 1]);
         expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
@@ -56,18 +65,24 @@ describe('Mathinput Tag Tests', function () {
 
       cy.log('Test values displayed in browser')
       cy.get('#\\/_mathinput1_input').should('have.value', 'x + 12');
-      cy.get(mathinput1aAnchor).should('have.value', 'x + 12');
+      cy.get(mathinput1aAnchor).should('have.value', 'x + 1');
       cy.get('#\\/_mathinput2_input').should('have.value', '');
 
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+1')
+      });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+12')
       });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 12]);
-        expect(mathinput1a.stateValues.value.tree).eqls(['+', 'x', 12]);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 12]);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['+', 'x', 12]);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).to.eq('\uFF3F');
+        expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 1]);
+        expect(mathinput1a.stateValues.value.tree).eqls(['+', 'x', 1]);
         expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
       });
 
@@ -83,10 +98,16 @@ describe('Mathinput Tag Tests', function () {
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+1')
       });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+1')
+      });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 1]);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['+', 'x', 1]);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).to.eq('\uFF3F');
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 1]);
         expect(mathinput1a.stateValues.value.tree).eqls(['+', 'x', 1]);
         expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
@@ -98,18 +119,24 @@ describe('Mathinput Tag Tests', function () {
 
       cy.log('Test values displayed in browser')
       cy.get('#\\/_mathinput1_input').should('have.value', 'x + 13');
-      cy.get(mathinput1aAnchor).should('have.value', 'x + 13');
+      cy.get(mathinput1aAnchor).should('have.value', 'x + 1');
       cy.get('#\\/_mathinput2_input').should('have.value', '');
 
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+1')
+      });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+13')
       });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 13]);
-        expect(mathinput1a.stateValues.value.tree).eqls(['+', 'x', 13]);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 13]);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['+', 'x', 13]);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).to.eq('\uFF3F');
+        expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 1]);
+        expect(mathinput1a.stateValues.value.tree).eqls(['+', 'x', 1]);
         expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
       });
 
@@ -125,10 +152,16 @@ describe('Mathinput Tag Tests', function () {
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+13')
       });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+13')
+      });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 13]);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['+', 'x', 13]);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).to.eq('\uFF3F');
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 13]);
         expect(mathinput1a.stateValues.value.tree).eqls(['+', 'x', 13]);
         expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
@@ -146,10 +179,16 @@ describe('Mathinput Tag Tests', function () {
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+13')
       });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+13')
+      });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 13]);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['+', 'x', 13]);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).to.eq('\uFF3F');
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 13]);
         expect(mathinput1a.stateValues.value.tree).eqls(['+', 'x', 13]);
         expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
@@ -162,19 +201,25 @@ describe('Mathinput Tag Tests', function () {
       cy.get(mathinput1aAnchor).type(`{backspace}{backspace}y`);
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', 'x + y');
+      cy.get('#\\/_mathinput1_input').should('have.value', 'x + 13');
       cy.get(mathinput1aAnchor).should('have.value', 'x + y');
       cy.get('#\\/_mathinput2_input').should('have.value', '');
 
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+13')
+      });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 'y']);
-        expect(mathinput1a.stateValues.value.tree).eqls(['+', 'x', 'y']);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 'y']);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['+', 'x', 'y']);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).to.eq('\uFF3F');
+        expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 13]);
+        expect(mathinput1a.stateValues.value.tree).eqls(['+', 'x', 13]);
         expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
       });
 
@@ -190,10 +235,16 @@ describe('Mathinput Tag Tests', function () {
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+y')
+      });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 'y']);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['+', 'x', 'y']);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).to.eq('\uFF3F');
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 'y']);
         expect(mathinput1a.stateValues.value.tree).eqls(['+', 'x', 'y']);
         expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
@@ -212,10 +263,16 @@ describe('Mathinput Tag Tests', function () {
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+y')
+      });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 'y']);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['+', 'x', 'y']);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).to.eq('\uFF3F');
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 'y']);
         expect(mathinput1a.stateValues.value.tree).eqls(['+', 'x', 'y']);
         expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
@@ -235,13 +292,19 @@ describe('Mathinput Tag Tests', function () {
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+y')
+      });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 'y']);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['+', 'x', 'y']);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['*', 'p', 'q']);
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 'y']);
         expect(mathinput1a.stateValues.value.tree).eqls(['+', 'x', 'y']);
-        expect(components['/_mathinput2'].stateValues.value.tree).eqls(['*', 'p', 'q']);
+        expect(components['/_mathinput2'].stateValues.value.tree).to.eq('\uFF3F');
       });
 
 
@@ -259,10 +322,16 @@ describe('Mathinput Tag Tests', function () {
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+y')
       });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+y')
+      });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 'y']);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['+', 'x', 'y']);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['*', 'p', 'q']);
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 'y']);
         expect(mathinput1a.stateValues.value.tree).eqls(['+', 'x', 'y']);
         expect(components['/_mathinput2'].stateValues.value.tree).eqls(['*', 'p', 'q']);
@@ -275,6 +344,35 @@ describe('Mathinput Tag Tests', function () {
       cy.get(mathinput1aAnchor).clear().type(`abc`);
 
       cy.log('Test values displayed in browser')
+      cy.get('#\\/_mathinput1_input').should('have.value', 'x + y');
+      cy.get(mathinput1aAnchor).should('have.value', 'abc');
+      cy.get('#\\/_mathinput2_input').should('have.value', 'pq');
+
+      cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+y')
+      });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('abc')
+      });
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['*', 'a', 'b', 'c']);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['*', 'a', 'b', 'c']);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['*', 'p', 'q']);
+        expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 'y']);
+        expect(mathinput1a.stateValues.value.tree).eqls(['+', 'x', 'y']);
+        expect(components['/_mathinput2'].stateValues.value.tree).eqls(['*', 'p', 'q']);
+      });
+
+
+      // leave mathinput 2
+
+      cy.log("Leave second mathinput");
+      cy.get(mathinput1aAnchor).blur();
+
+      cy.log('Test values displayed in browser')
       cy.get('#\\/_mathinput1_input').should('have.value', 'a b c');
       cy.get(mathinput1aAnchor).should('have.value', 'abc');
       cy.get('#\\/_mathinput2_input').should('have.value', 'pq');
@@ -282,32 +380,44 @@ describe('Mathinput Tag Tests', function () {
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('abc')
       });
-
-      cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
-        expect(mathinput1a.stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
-        expect(components['/_mathinput2'].stateValues.value.tree).eqls(['*', 'p', 'q']);
-      });
-
-      // type abc in mathinput 1
-
-      cy.log("Typing abc in first mathinput");
-      cy.get('#\\/_mathinput1_input').clear().type(`abc`);
-
-      cy.log('Test values displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', 'abc');
-      cy.get(mathinput1aAnchor).should('have.value', 'a b c');
-      cy.get('#\\/_mathinput2_input').should('have.value', 'pq');
-
-      cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('abc')
       });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['*', 'a', 'b', 'c']);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['*', 'a', 'b', 'c']);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['*', 'p', 'q']);
+        expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
+        expect(mathinput1a.stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
+        expect(components['/_mathinput2'].stateValues.value.tree).eqls(['*', 'p', 'q']);
+      });
+
+      // Enter abc in mathinput 1
+
+      cy.log("Enter abc in first mathinput");
+      cy.get('#\\/_mathinput1_input').clear().type(`abc{enter}`);
+
+      cy.log('Test values displayed in browser')
+      cy.get('#\\/_mathinput1_input').should('have.value', 'abc');
+      cy.get(mathinput1aAnchor).should('have.value', 'abc');
+      cy.get('#\\/_mathinput2_input').should('have.value', 'pq');
+
+      cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('abc')
+      });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('abc')
+      });
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['*', 'a', 'b', 'c']);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['*', 'a', 'b', 'c']);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['*', 'p', 'q']);
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
         expect(mathinput1a.stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
         expect(components['/_mathinput2'].stateValues.value.tree).eqls(['*', 'p', 'q']);
@@ -321,19 +431,25 @@ describe('Mathinput Tag Tests', function () {
 
       cy.log('Test values displayed in browser')
       cy.get('#\\/_mathinput1_input').should('have.value', 'abc');
-      cy.get(mathinput1aAnchor).should('have.value', 'a b c');
+      cy.get(mathinput1aAnchor).should('have.value', 'abc');
       cy.get('#\\/_mathinput2_input').should('have.value', 'u/v');
 
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('abc')
+      });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('abc')
       });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['*', 'a', 'b', 'c']);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['*', 'a', 'b', 'c']);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['/', 'u', 'v']);
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
         expect(mathinput1a.stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
-        expect(components['/_mathinput2'].stateValues.value.tree).eqls(['/', 'u', 'v']);
+        expect(components['/_mathinput2'].stateValues.value.tree).eqls(['*', 'p', 'q']);
       });
 
 
@@ -344,38 +460,102 @@ describe('Mathinput Tag Tests', function () {
 
       cy.log('Test values displayed in browser')
       cy.get('#\\/_mathinput1_input').should('have.value', 'abcd');
-      cy.get(mathinput1aAnchor).should('have.value', 'a b c d');
+      cy.get(mathinput1aAnchor).should('have.value', 'abc');
       cy.get('#\\/_mathinput2_input').should('have.value', 'u/v');
 
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('abc')
+      });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('abcd')
       });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['*', 'a', 'b', 'c', 'd']);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['*', 'a', 'b', 'c', 'd']);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['/', 'u', 'v']);
+        expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
+        expect(mathinput1a.stateValues.value.tree).eqls(['*', 'a', 'b', 'c']);
+        expect(components['/_mathinput2'].stateValues.value.tree).eqls(['/', 'u', 'v']);
+      });
+
+
+      cy.log("Leaving first mathinput");
+      cy.get('#\\/_mathinput1_input').blur();
+
+      cy.log('Test values displayed in browser')
+      cy.get('#\\/_mathinput1_input').should('have.value', 'abcd');
+      cy.get(mathinput1aAnchor).should('have.value', 'a b c d');
+      cy.get('#\\/_mathinput2_input').should('have.value', 'u/v');
+
+      cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('abcd')
+      });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('abcd')
+      });
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['*', 'a', 'b', 'c', 'd']);
+        expect(mathinput1a.stateValues.immediateValue.tree).eqls(['*', 'a', 'b', 'c', 'd']);
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['/', 'u', 'v']);
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'a', 'b', 'c', 'd']);
         expect(mathinput1a.stateValues.value.tree).eqls(['*', 'a', 'b', 'c', 'd']);
         expect(components['/_mathinput2'].stateValues.value.tree).eqls(['/', 'u', 'v']);
       });
 
-
       cy.log("Clearing second mathinput");
-      cy.get('#\\/_mathinput1_input').blur();
       cy.get(mathinput1aAnchor).clear();
 
       cy.log('Test values displayed in browser')
-      cy.get('#\\/_mathinput1_input').should('have.value', '');
+      cy.get('#\\/_mathinput1_input').should('have.value', 'abcd');
       cy.get(mathinput1aAnchor).should('have.value', '');
       cy.get('#\\/_mathinput2_input').should('have.value', 'u/v');
 
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('abcd')
+      });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('\uFF3F')
       });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).to.eq('\uFF3F');
+        expect(mathinput1a.stateValues.immediateValue.tree).to.eq('\uFF3F');
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['/', 'u', 'v']);
+        expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'a', 'b', 'c', 'd']);
+        expect(mathinput1a.stateValues.value.tree).eqls(['*', 'a', 'b', 'c', 'd']);
+        expect(components['/_mathinput2'].stateValues.value.tree).eqls(['/', 'u', 'v']);
+      });
+
+      cy.log("Focus on third mathinput");
+      cy.get('#\\/_mathinput2_input').focus();
+
+      cy.log('Test values displayed in browser')
+      cy.get('#\\/_mathinput1_input').should('have.value', '');
+      cy.get(mathinput1aAnchor).should('have.value', '');
+      cy.get('#\\/_mathinput2_input').should('have.value', 'u/v');
+
+
+      cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('\uFF3F')
+      });
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('\uFF3F')
+      });
+
+      cy.log('Test internal values are set to the correct values')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).to.eq('\uFF3F');
+        expect(mathinput1a.stateValues.immediateValue.tree).to.eq('\uFF3F');
+        expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['/', 'u', 'v']);
         expect(components['/_mathinput1'].stateValues.value.tree).to.eq('\uFF3F');
         expect(mathinput1a.stateValues.value.tree).to.eq('\uFF3F');
         expect(components['/_mathinput2'].stateValues.value.tree).eqls(['/', 'u', 'v']);
@@ -392,8 +572,12 @@ describe('Mathinput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>Original math: <math>1+2x</math></p>
-    <p>Mathinput based on math: <mathinput><ref>_math1</ref></mathinput></p>
-    <p>Reffed mathinput: <ref>_mathinput1</ref></p>
+    <p>Mathinput based on math: <mathinput><copy tname="_math1" /></mathinput></p>
+    <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
+    <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
+    <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>
+    <p>Value of copied mathinput: <copy tname="mathinput2" prop="value" name="value2" /></p>
+    <p>Immediate value of copied mathinput: <copy tname="mathinput2" prop="immediateValue" name="immediate2" /></p>
     `}, "*");
     });
 
@@ -402,8 +586,12 @@ describe('Mathinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinput2 = components['/_ref2'].replacements[0];
+      let mathinput2 = components['/mathinput2'].replacements[0];
       let mathinput2Anchor = '#' + mathinput2.componentName + '_input';
+      let value1Anchor = '#' + components['/value1'].replacements[0].componentName;
+      let immedateValue1Anchor = '#' + components['/immediate1'].replacements[0].componentName;
+      let value2Anchor = '#' + components['/value2'].replacements[0].componentName;
+      let immediateValue2Anchor = '#' + components['/immediate2'].replacements[0].componentName;
 
       cy.get('#\\/_mathinput1_input').should('have.value', '1 + 2 x');
       cy.get(mathinput2Anchor).should('have.value', '1 + 2 x');
@@ -411,15 +599,62 @@ describe('Mathinput Tag Tests', function () {
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1+2x')
       });
+      cy.get(value1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2x')
+      });
+      cy.get(immedateValue1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2x')
+      });
+      cy.get(value2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2x')
+      });
+      cy.get(immediateValue2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2x')
+      });
+
 
       cy.window().then(() => {
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x']]);
         expect(components['/_math1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x']]);
         expect(mathinput2.stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x']]);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 1, ['*', 2, 'x']]);
+        expect(mathinput2.stateValues.immediateValue.tree).eqls(['+', 1, ['*', 2, 'x']]);
       });
 
-      cy.log('enter new values')
-      cy.get('#\\/_mathinput1_input').clear().type(`xy{enter}`);
+      cy.log('type new values')
+      cy.get('#\\/_mathinput1_input').clear().type(`xy`);
+
+      cy.get('#\\/_mathinput1_input').should('have.value', 'xy');
+      cy.get(mathinput2Anchor).should('have.value', '1 + 2 x');
+
+      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2x')
+      });
+      cy.get(value1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2x')
+      });
+      cy.get(immedateValue1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('xy')
+      });
+      cy.get(value2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2x')
+      });
+      cy.get(immediateValue2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('xy')
+      });
+
+
+      cy.window().then(() => {
+        expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x']]);
+        expect(components['/_math1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x']]);
+        expect(mathinput2.stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x']]);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['*', 'x', 'y']);
+        expect(mathinput2.stateValues.immediateValue.tree).eqls(['*', 'x', 'y']);
+      });
+
+
+      cy.log('press enter')
+      cy.get('#\\/_mathinput1_input').type(`{enter}`);
 
       cy.get('#\\/_mathinput1_input').should('have.value', 'xy');
       cy.get(mathinput2Anchor).should('have.value', 'x y');
@@ -427,12 +662,28 @@ describe('Mathinput Tag Tests', function () {
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('xy')
       });
+      cy.get(value1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('xy')
+      });
+      cy.get(immedateValue1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('xy')
+      });
+      cy.get(value2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('xy')
+      });
+      cy.get(immediateValue2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('xy')
+      });
+
 
       cy.window().then(() => {
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'x', 'y']);
         expect(components['/_math1'].stateValues.value.tree).eqls(['*', 'x', 'y']);
         expect(mathinput2.stateValues.value.tree).eqls(['*', 'x', 'y']);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['*', 'x', 'y']);
+        expect(mathinput2.stateValues.immediateValue.tree).eqls(['*', 'x', 'y']);
       });
+
 
       cy.log('enter new values in referenced')
       cy.get(mathinput2Anchor).clear().type(`qr{enter}`);
@@ -444,11 +695,26 @@ describe('Mathinput Tag Tests', function () {
         expect(text.trim()).equal('qr')
       });
 
+      cy.get(value1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('qr')
+      });
+      cy.get(immedateValue1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('qr')
+      });
+      cy.get(value2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('qr')
+      });
+      cy.get(immediateValue2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('qr')
+      });
+
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'q', 'r']);
         expect(components['/_math1'].stateValues.value.tree).eqls(['*', 'q', 'r']);
         expect(mathinput2.stateValues.value.tree).eqls(['*', 'q', 'r']);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['*', 'q', 'r']);
+        expect(mathinput2.stateValues.immediateValue.tree).eqls(['*', 'q', 'r']);
       });
 
     });
@@ -460,8 +726,13 @@ describe('Mathinput Tag Tests', function () {
         doenetML: `
     <text>b</text>
     <p>Original math: <math>1+2x</math></p>
-    <p>Mathinput based on math: <mathinput prefill="x^2/9"><ref>_math1</ref></mathinput></p>
-    <p>Reffed mathinput: <ref>_mathinput1</ref></p>
+    <p>Mathinput based on math: <mathinput prefill="x^2/9"><copy tname="_math1" /></mathinput></p>
+    <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
+    <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
+    <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>
+    <p>Value of copied mathinput: <copy tname="mathinput2" prop="value" name="value2" /></p>
+    <p>Immediate value of copied mathinput: <copy tname="mathinput2" prop="immediateValue" name="immediate2" /></p>
+
     `}, "*");
     });
 
@@ -470,8 +741,12 @@ describe('Mathinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinput2 = components['/_ref2'].replacements[0];
+      let mathinput2 = components['/mathinput2'].replacements[0];
       let mathinput2Anchor = '#' + mathinput2.componentName + '_input';
+      let value1Anchor = '#' + components['/value1'].replacements[0].componentName;
+      let immedateValue1Anchor = '#' + components['/immediate1'].replacements[0].componentName;
+      let value2Anchor = '#' + components['/value2'].replacements[0].componentName;
+      let immediateValue2Anchor = '#' + components['/immediate2'].replacements[0].componentName;
 
 
       cy.get('#\\/_mathinput1_input').should('have.value', '1 + 2 x');
@@ -480,6 +755,27 @@ describe('Mathinput Tag Tests', function () {
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1+2x')
       });
+      cy.get(value1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2x')
+      });
+      cy.get(immedateValue1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2x')
+      });
+      cy.get(value2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2x')
+      });
+      cy.get(immediateValue2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2x')
+      });
+
+      cy.window().then(() => {
+        expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x']]);
+        expect(components['/_math1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x']]);
+        expect(mathinput2.stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x']]);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 1, ['*', 2, 'x']]);
+        expect(mathinput2.stateValues.immediateValue.tree).eqls(['+', 1, ['*', 2, 'x']]);
+      });
+
     })
 
 
@@ -489,8 +785,13 @@ describe('Mathinput Tag Tests', function () {
         doenetML: `
     <text>c</text>
     <p>Original math: <math simplify>1+<math>3x</math></math></p>
-    <p>Mathinput based on math: <mathinput><ref>_math1</ref></mathinput></p>
-    <p>Reffed mathinput: <ref>_mathinput1</ref></p>
+    <p>Mathinput based on math: <mathinput><copy tname="_math1" /></mathinput></p>
+    <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
+    <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
+    <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>
+    <p>Value of copied mathinput: <copy tname="mathinput2" prop="value" name="value2" /></p>
+    <p>Immediate value of copied mathinput: <copy tname="mathinput2" prop="immediateValue" name="immediate2" /></p>
+
     `}, "*");
     });
 
@@ -498,8 +799,12 @@ describe('Mathinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinput2 = components['/_ref2'].replacements[0];
+      let mathinput2 = components['/mathinput2'].replacements[0];
       let mathinput2Anchor = '#' + mathinput2.componentName + '_input';
+      let value1Anchor = '#' + components['/value1'].replacements[0].componentName;
+      let immedateValue1Anchor = '#' + components['/immediate1'].replacements[0].componentName;
+      let value2Anchor = '#' + components['/value2'].replacements[0].componentName;
+      let immediateValue2Anchor = '#' + components['/immediate2'].replacements[0].componentName;
 
 
       cy.get('#\\/_mathinput1_input').should('have.value', '3 x + 1');
@@ -509,9 +814,24 @@ describe('Mathinput Tag Tests', function () {
         expect(text.trim()).equal('3x+1')
       });
 
+      cy.get(value1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x+1')
+      });
+      cy.get(immedateValue1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x+1')
+      });
+      cy.get(value2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x+1')
+      });
+      cy.get(immediateValue2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x+1')
+      });
+
       cy.window().then(() => {
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', ['*', 3, 'x'], 1]);
         expect(mathinput2.stateValues.value.tree).eqls(['+', ['*', 3, 'x'], 1]);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', ['*', 3, 'x'], 1]);
+        expect(mathinput2.stateValues.immediateValue.tree).eqls(['+', ['*', 3, 'x'], 1]);
         expect(components['/_math1'].stateValues.value.tree).eqls(['+', ['*', 3, 'x'], 1]);
         expect(components['/_math2'].stateValues.value.tree).eqls(['*', 3, 'x']);
       });
@@ -527,9 +847,24 @@ describe('Mathinput Tag Tests', function () {
         expect(text.trim()).equal('xy')
       });
 
+      cy.get(value1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('xy')
+      });
+      cy.get(immedateValue1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('xy')
+      });
+      cy.get(value2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('xy')
+      });
+      cy.get(immediateValue2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('xy')
+      });
+
       cy.window().then(() => {
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'x', 'y']);
         expect(mathinput2.stateValues.value.tree).eqls(['*', 'x', 'y']);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['*', 'x', 'y']);
+        expect(mathinput2.stateValues.immediateValue.tree).eqls(['*', 'x', 'y']);
         expect(components['/_math1'].stateValues.value.tree).eqls(['*', 'x', 'y']);
         expect(components['/_math2'].stateValues.value.tree).eqls(['+', ['*', 'x', 'y'], -1]);
       });
@@ -545,9 +880,25 @@ describe('Mathinput Tag Tests', function () {
         expect(text.trim()).equal('qr')
       });
 
+      cy.get(value1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('qr')
+      });
+      cy.get(immedateValue1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('qr')
+      });
+      cy.get(value2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('qr')
+      });
+      cy.get(immediateValue2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('qr')
+      });
+
+
       cy.window().then(() => {
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['*', 'q', 'r']);
         expect(mathinput2.stateValues.value.tree).eqls(['*', 'q', 'r']);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['*', 'q', 'r']);
+        expect(mathinput2.stateValues.immediateValue.tree).eqls(['*', 'q', 'r']);
         expect(components['/_math1'].stateValues.value.tree).eqls(['*', 'q', 'r']);
         expect(components['/_math2'].stateValues.value.tree).eqls(['+', ['*', 'q', 'r'], -1]);
       });
@@ -560,8 +911,13 @@ describe('Mathinput Tag Tests', function () {
         doenetML: `
     <text>d</text>
     <p>Original math: <math>1+<math>2x</math><math>z</math></math></p>
-    <p>Mathinput based on math: <mathinput><ref>_math1</ref></mathinput></p>
-    <p>Reffed mathinput: <ref>_mathinput1</ref></p>
+    <p>Mathinput based on math: <mathinput><copy tname="_math1" /></mathinput></p>
+    <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
+    <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
+    <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>
+    <p>Value of copied mathinput: <copy tname="mathinput2" prop="value" name="value2" /></p>
+    <p>Immediate value of copied mathinput: <copy tname="mathinput2" prop="immediateValue" name="immediate2" /></p>
+
     `}, "*");
     });
 
@@ -570,9 +926,12 @@ describe('Mathinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinput2 = components['/_ref2'].replacements[0];
+      let mathinput2 = components['/mathinput2'].replacements[0];
       let mathinput2Anchor = '#' + mathinput2.componentName + '_input';
-
+      let value1Anchor = '#' + components['/value1'].replacements[0].componentName;
+      let immedateValue1Anchor = '#' + components['/immediate1'].replacements[0].componentName;
+      let value2Anchor = '#' + components['/value2'].replacements[0].componentName;
+      let immediateValue2Anchor = '#' + components['/immediate2'].replacements[0].componentName;
 
       cy.get('#\\/_mathinput1_input').should('have.value', '1 + 2 x z');
       cy.get(mathinput2Anchor).should('have.value', '1 + 2 x z');
@@ -581,10 +940,26 @@ describe('Mathinput Tag Tests', function () {
         expect(text.trim()).equal('1+2xz')
       });
 
+      cy.get(value1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2xz')
+      });
+      cy.get(immedateValue1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2xz')
+      });
+      cy.get(value2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2xz')
+      });
+      cy.get(immediateValue2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2xz')
+      });
+
+
       cy.window().then(() => {
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
-        expect(components['/_math1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
         expect(mathinput2.stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+        expect(mathinput2.stateValues.immediateValue.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+        expect(components['/_math1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
       });
 
       cy.log('enter new values, but they revert')
@@ -597,10 +972,26 @@ describe('Mathinput Tag Tests', function () {
         expect(text.trim()).equal('1+2xz')
       });
 
+      cy.get(value1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2xz')
+      });
+      cy.get(immedateValue1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2xz')
+      });
+      cy.get(value2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2xz')
+      });
+      cy.get(immediateValue2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2xz')
+      });
+
+
       cy.window().then(() => {
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
-        expect(components['/_math1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
         expect(mathinput2.stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+        expect(mathinput2.stateValues.immediateValue.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+        expect(components['/_math1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
       });
 
 
@@ -614,14 +1005,333 @@ describe('Mathinput Tag Tests', function () {
         expect(text.trim()).equal('1+2xz')
       });
 
+      cy.get(value1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2xz')
+      });
+      cy.get(immedateValue1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2xz')
+      });
+      cy.get(value2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2xz')
+      });
+      cy.get(immediateValue2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('1+2xz')
+      });
+
+
       cy.window().then(() => {
         expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
-        expect(components['/_math1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
         expect(mathinput2.stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+        expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+        expect(mathinput2.stateValues.immediateValue.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
+        expect(components['/_math1'].stateValues.value.tree).eqls(['+', 1, ['*', 2, 'x', 'z']]);
       });
     })
 
   })
+
+  it('mathinput based on value of mathinput', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <p>Original mathinput: <mathinput prefill="x+1"/></p>
+    <p>mathinput based on mathinput: <mathinput><copy prop="value" tname="_mathinput1" /></mathinput></p>
+    <p>Immediate value of original: <math name="originalimmediate"><copy prop="immediateValue" tname="_mathinput1"/></math></p>
+    <p>Value of original: <math name="originalvalue"><copy prop="value" tname="_mathinput1"/></math></p>
+    <p>Immediate value of second: <math name="secondimmediate"><copy prop="immediateValue" tname="_mathinput2"/></math></p>
+    <p>Value of second: <math name="secondvalue"><copy prop="value" tname="_mathinput2"/></math></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_mathinput1_input').should('have.value', 'x + 1');
+    cy.get('#\\/_mathinput2_input').should('have.value', 'x + 1');
+
+
+    cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+    cy.get('#\\/originalvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+    cy.get('#\\/secondimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+    cy.get('#\\/secondvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 1]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 1]);
+      expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['+', 'x', 1]);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['+', 'x', 1]);
+    });
+
+
+    cy.log('type 2 first mathinput')
+    cy.get('#\\/_mathinput1_input').type(`2`);
+
+    cy.get('#\\/_mathinput1_input').should('have.value', 'x + 12');
+    cy.get('#\\/_mathinput2_input').should('have.value', 'x + 1');
+
+    cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+    cy.get('#\\/originalvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+    cy.get('#\\/secondimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+    cy.get('#\\/secondvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 12]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 1]);
+      expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['+', 'x', 1]);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['+', 'x', 1]);
+    });
+
+
+    cy.log('press enter')
+    cy.get('#\\/_mathinput1_input').type(`{enter}`);
+
+    cy.get('#\\/_mathinput1_input').should('have.value', 'x + 12');
+    cy.get('#\\/_mathinput2_input').should('have.value', 'x + 12');
+
+    cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+    cy.get('#\\/originalvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+    cy.get('#\\/secondimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+    cy.get('#\\/secondvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 12]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 12]);
+      expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['+', 'x', 12]);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['+', 'x', 12]);
+    });
+
+
+    cy.log('type 3 in second mathinput')
+    cy.get('#\\/_mathinput2_input').type(`3`);
+
+    cy.get('#\\/_mathinput1_input').should('have.value', 'x + 12');
+    cy.get('#\\/_mathinput2_input').should('have.value', 'x + 123');
+
+    cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+    cy.get('#\\/originalvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+    cy.get('#\\/secondimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+123')
+    });
+    cy.get('#\\/secondvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 12]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 12]);
+      expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['+', 'x', 123]);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['+', 'x', 12]);
+    });
+
+    cy.log('leave second mathinput')
+    cy.get('#\\/_mathinput2_input').blur();
+
+    cy.get('#\\/_mathinput1_input').should('have.value', 'x + 123');
+    cy.get('#\\/_mathinput2_input').should('have.value', 'x + 123');
+
+    cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+123')
+    });
+    cy.get('#\\/originalvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+123')
+    });
+    cy.get('#\\/secondimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+123')
+    });
+    cy.get('#\\/secondvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+123')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 123]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 123]);
+      expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['+', 'x', 123]);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['+', 'x', 123]);
+    });
+  })
+
+
+  it('mathinput based on immediate value of mathinput', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <p>Original mathinput: <mathinput prefill="x+1"/></p>
+    <p>mathinput based on mathinput: <mathinput><copy prop="immediatevalue" tname="_mathinput1" /></mathinput></p>
+    <p>Immediate value of original: <math name="originalimmediate"><copy prop="immediateValue" tname="_mathinput1"/></math></p>
+    <p>Value of original: <math name="originalvalue"><copy prop="value" tname="_mathinput1"/></math></p>
+    <p>Immediate value of second: <math name="secondimmediate"><copy prop="immediateValue" tname="_mathinput2"/></math></p>
+    <p>Value of second: <math name="secondvalue"><copy prop="value" tname="_mathinput2"/></math></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_mathinput1_input').should('have.value', 'x + 1');
+    cy.get('#\\/_mathinput2_input').should('have.value', 'x + 1');
+
+
+    cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+    cy.get('#\\/originalvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+    cy.get('#\\/secondimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+    cy.get('#\\/secondvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 1]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 1]);
+      expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['+', 'x', 1]);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['+', 'x', 1]);
+    });
+
+
+    cy.log('type 2 first mathinput')
+    cy.get('#\\/_mathinput1_input').type(`2`);
+
+    cy.get('#\\/_mathinput1_input').should('have.value', 'x + 12');
+    cy.get('#\\/_mathinput2_input').should('have.value', 'x + 12');
+
+    cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+    cy.get('#\\/originalvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+1')
+    });
+    cy.get('#\\/secondimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+    cy.get('#\\/secondvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 12]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 1]);
+      expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['+', 'x', 12]);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['+', 'x', 12]);
+    });
+
+
+    cy.log('press enter')
+    cy.get('#\\/_mathinput1_input').type(`{enter}`);
+
+    cy.get('#\\/_mathinput1_input').should('have.value', 'x + 12');
+    cy.get('#\\/_mathinput2_input').should('have.value', 'x + 12');
+
+    cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+    cy.get('#\\/originalvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+    cy.get('#\\/secondimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+    cy.get('#\\/secondvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 12]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 12]);
+      expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['+', 'x', 12]);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['+', 'x', 12]);
+    });
+
+
+    cy.log('type 3 in second mathinput')
+    cy.get('#\\/_mathinput2_input').type(`3`);
+
+    cy.get('#\\/_mathinput1_input').should('have.value', 'x + 12');
+    cy.get('#\\/_mathinput2_input').should('have.value', 'x + 123');
+
+    cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+    cy.get('#\\/originalvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+    cy.get('#\\/secondimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+123')
+    });
+    cy.get('#\\/secondvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+12')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 12]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 12]);
+      expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['+', 'x', 123]);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['+', 'x', 12]);
+    });
+
+    cy.log('leave second mathinput')
+    cy.get('#\\/_mathinput2_input').blur();
+
+    cy.get('#\\/_mathinput1_input').should('have.value', 'x + 123');
+    cy.get('#\\/_mathinput2_input').should('have.value', 'x + 123');
+
+    cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+123')
+    });
+    cy.get('#\\/originalvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+123')
+    });
+    cy.get('#\\/secondimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+123')
+    });
+    cy.get('#\\/secondvalue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+123')
+    });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathinput1'].stateValues.immediateValue.tree).eqls(['+', 'x', 123]);
+      expect(components['/_mathinput1'].stateValues.value.tree).eqls(['+', 'x', 123]);
+      expect(components['/_mathinput2'].stateValues.immediateValue.tree).eqls(['+', 'x', 123]);
+      expect(components['/_mathinput2'].stateValues.value.tree).eqls(['+', 'x', 123]);
+    });
+  })
+
+
 
   it('preview input', () => {
     cy.window().then((win) => {

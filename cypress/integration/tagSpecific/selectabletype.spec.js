@@ -1,225 +1,329 @@
 import me from 'math-expressions';
 
-describe('Selectable Type Tag Tests',function() {
+describe('Selectable Type Tag Tests', function () {
 
-beforeEach(() => {
+  beforeEach(() => {
     cy.visit('/test')
   })
 
-  it('from with number string',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('from with number string', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <from>7</from>
-    <ref prop="value">_from1</ref>
-    `},"*");
+    <copy prop="value" tname="_from1" />
+    `}, "*");
     });
 
-    cy.get('#__number2 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    })
-  
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_from1'].state.type).eq("number");
-      expect(components['/_from1'].state.value).eq(7);
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let numberAnchor = "#" + components["/_copy1"].replacements[0].componentName;
+
+      cy.get(numberAnchor).should('have.text','7');
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_from1'].stateValues.selectedType).eq("number");
+        expect(components['/_from1'].stateValues.value).eq(7);
+
+      })
     })
   });
 
-  it('from with letter string',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('from with letter string', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <from>q</from>
-    <ref prop="value">_from1</ref>
-    `},"*");
+    <copy prop="value" tname="_from1" />
+    `}, "*");
     });
 
-    cy.get('#__letters2').should('have.text','q')
-  
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_from1'].state.type).eq("letters");
-      expect(components['/_from1'].state.value).eq('q');
 
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let letterAnchor = "#" + components["/_copy1"].replacements[0].componentName;
+
+      cy.get(letterAnchor).should('have.text', 'q')
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_from1'].stateValues.selectedType).eq("letters");
+        expect(components['/_from1'].stateValues.value).eq('q');
+      })
     })
   });
 
-  it('from with letternumber string',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('from with letternumber string', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <from>z3</from>
-    <ref prop="value">_from1</ref>
-    `},"*");
+    <copy prop="value" tname="_from1" />
+    `}, "*");
     });
 
-    cy.get('#__text2').should('have.text','z3')
-  
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_from1'].state.type).eq("text");
-      expect(components['/_from1'].state.value).eq('z3');
 
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let textAnchor = "#" + components["/_copy1"].replacements[0].componentName;
+
+      cy.get(textAnchor).should('have.text', 'z3')
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_from1'].stateValues.selectedType).eq("text");
+        expect(components['/_from1'].stateValues.value).eq('z3');
+      })
     })
   });
 
-  it('from with boolean child',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('from with boolean child', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <from><boolean>false</boolean></from>
-    <ref prop="value">_from1</ref>
-    `},"*");
+    <copy prop="value" tname="_from1" />
+    `}, "*");
     });
 
-    cy.get('#__boolean1').should('have.text','false')
-  
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_from1'].state.type).eq("boolean");
-      expect(components['/_from1'].state.value).eq(false);
 
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let booleanAnchor = "#" + components["/_copy1"].replacements[0].componentName;
+
+      cy.get(booleanAnchor).should('have.text', 'false')
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_from1'].stateValues.selectedType).eq("boolean");
+        expect(components['/_from1'].stateValues.value).eq(false);
+      })
     })
   });
 
-  it('from with dynamic boolean child',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
-    <from><ref prop="value">b</ref></from>
-    <ref prop="value">_from1</ref>
+  it('from with dynamic boolean child', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <from><copy prop="value" tname="b" /></from>
+    <copy prop="value" tname="_from1" />
     <booleaninput name="b"/>
-    `},"*");
+    `}, "*");
     });
 
-    cy.get('#__boolean2').should('have.text','false')
-  
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_from1'].state.type).eq("boolean");
-      expect(components['/_from1'].state.value).eq(false);
+      let components = Object.assign({}, win.state.components);
+      let booleanAnchor = "#" + components["/_copy2"].replacements[0].componentName;
+
+      cy.get(booleanAnchor).should('have.text', 'false')
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_from1'].stateValues.selectedType).eq("boolean");
+        expect(components['/_from1'].stateValues.value).eq(false);
+      })
+
+      cy.log('check the box')
+      cy.get('#\\/b_input').click();
+
+      cy.get(booleanAnchor).should('have.text', 'true')
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_from1'].stateValues.selectedType).eq("boolean");
+        expect(components['/_from1'].stateValues.value).eq(true);
+      })
+
+      cy.log('uncheck the box')
+      cy.get('#\\/b_input').click();
+
+      cy.get(booleanAnchor).should('have.text', 'false')
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_from1'].stateValues.selectedType).eq("boolean");
+        expect(components['/_from1'].stateValues.value).eq(false);
+      })
     })
-
-    cy.log('check the box')
-    cy.get('#\\/b_input').click();
-
-    cy.get('#__boolean2').should('have.text','true')
-  
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_from1'].state.type).eq("boolean");
-      expect(components['/_from1'].state.value).eq(true);
-    })
-
-    cy.log('uncheck the box')
-    cy.get('#\\/b_input').click();
-
-    cy.get('#__boolean2').should('have.text','false')
-  
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_from1'].state.type).eq("boolean");
-      expect(components['/_from1'].state.value).eq(false);
-    })
-
   });
-  
-  it('from with type from originally unresolved ref',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+
+  it('from with type from originally unresolved copy', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <from>
-      <type><ref>_text1</ref></type>
+      <type><copy tname="_text2" /></type>
       x^2
     </from>
-    <ref prop="value">_from1</ref>
+    <copy prop="value" tname="_from1" />
     <text>math</text>
-    `},"*");
+    `}, "*");
     });
 
-    cy.get('#__math2 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x2')
-    })
-  
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_from1'].state.type).eq("math");
-      expect(components['/_from1'].state.value.tree).eqls(['^', 'x',2]);
 
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathAnchor = "#" + components["/_copy2"].replacements[0].componentName;
+
+      cy.get(mathAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x2')
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_from1'].stateValues.selectedType).eq("math");
+        expect(components['/_from1'].stateValues.value.tree).eqls(['^', 'x', 2]);
+
+      })
     })
 
   });
 
-  it('exclude with number string',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('exclude with number string', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <exclude>3,7</exclude>
-    <p><aslist><ref prop="values">_exclude1</ref></aslist></p>
-    `},"*");
+    <p><aslist><copy prop="values" tname="_exclude1" /></aslist></p>
+    `}, "*");
     });
 
-    cy.get('#__number3 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('3')
-    })
-    cy.get('#__number4 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('7')
-    })
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_exclude1'].state.type).eq("number");
-      expect(components['/_exclude1'].state.values).eqls([3,7]);
 
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let number1Anchor = "#" + components["/_copy1"].replacements[0].componentName;
+      let number2Anchor = "#" + components["/_copy1"].replacements[1].componentName;
+
+      cy.get(number1Anchor).should('have.text', '3');
+      cy.get(number2Anchor).should('have.text', '7');
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_exclude1'].stateValues.selectedType).eq("number");
+        expect(components['/_exclude1'].stateValues.values).eqls([3, 7]);
+
+      })
     })
   });
 
-  it('exclude with letters string',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('exclude with letters string', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <exclude>q,u</exclude>
-    <p><aslist><ref prop="values">_exclude1</ref></aslist></p>
-    `},"*");
+    <p><aslist><copy prop="values" tname="_exclude1" /></aslist></p>
+    `}, "*");
     });
 
-    cy.get('#__letters3').should('have.text', 'q')
-    cy.get('#__letters4').should('have.text', 'u')
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_exclude1'].state.type).eq("letters");
-      expect(components['/_exclude1'].state.values).eqls(['q','u']);
+      let components = Object.assign({}, win.state.components);
+      let text1Anchor = "#" + components["/_copy1"].replacements[0].componentName;
+      let text2Anchor = "#" + components["/_copy1"].replacements[1].componentName;
+
+      cy.get(text1Anchor).should('have.text', 'q')
+      cy.get(text2Anchor).should('have.text', 'u')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_exclude1'].stateValues.selectedType).eq("letters");
+        expect(components['/_exclude1'].stateValues.values).eqls(['q', 'u']);
+      })
     })
 
   });
 
-  it('exclude with letternumber string',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+  it('exclude with letternumber string', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <exclude>2,i</exclude>
-    <p><aslist><ref prop="values">_exclude1</ref></aslist></p>
-    `},"*");
+    <p><aslist><copy prop="values" tname="_exclude1" /></aslist></p>
+    `}, "*");
     });
 
-    cy.get('#__text3').should('have.text', '2')
-    cy.get('#__text4').should('have.text', 'i')
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
     cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_exclude1'].state.type).eq("text");
-      expect(components['/_exclude1'].state.values).eqls(['2','i']);
+      let components = Object.assign({}, win.state.components);
+      let text1Anchor = "#" + components["/_copy1"].replacements[0].componentName;
+      let text2Anchor = "#" + components["/_copy1"].replacements[1].componentName;
+
+      cy.get(text1Anchor).should('have.text', '2')
+      cy.get(text2Anchor).should('have.text', 'i')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_exclude1'].stateValues.selectedType).eq("text");
+        expect(components['/_exclude1'].stateValues.values).eqls(['2', 'i']);
+      })
     })
-    
+
   });
 
-  
-  it('exclude with type from originally unresolved ref',() => {
-    cy.window().then((win) => { win.postMessage({doenetML: `
+
+  it('exclude with type from originally unresolved copy', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
     <exclude>
-      <type><ref>_text1</ref></type>
+      <type><copy tname="_text2" /></type>
       x^2, b/u
     </exclude>
-    <ref prop="values">_exclude1</ref>
+    <copy prop="values" tname="_exclude1" />
     <text>math</text>
-    `},"*");
+    `}, "*");
     });
 
-    cy.get('#__math3 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('x2')
-    })
-    cy.get('#__math4 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('bu')
-    })
-  
-    cy.window().then((win) => {
-      let components = Object.assign({},win.state.components);
-      expect(components['/_exclude1'].state.type).eq("math");
-      expect(components['/_exclude1'].state.values[0].tree).eqls(['^', 'x',2]);
-      expect(components['/_exclude1'].state.values[1].tree).eqls(['/', 'b','u']);
 
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let math1Anchor = "#" + components["/_copy2"].replacements[0].componentName;
+      let math2Anchor = "#" + components["/_copy2"].replacements[1].componentName;
+
+      cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x2')
+      })
+      cy.get(math2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('bu')
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_exclude1'].stateValues.selectedType).eq("math");
+        expect(components['/_exclude1'].stateValues.values[0].tree).eqls(['^', 'x', 2]);
+        expect(components['/_exclude1'].stateValues.values[1].tree).eqls(['/', 'b', 'u']);
+
+      })
     })
 
   });

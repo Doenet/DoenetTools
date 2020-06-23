@@ -34,10 +34,10 @@ class DoenetTest extends Component {
     }
   }
 
-  componentDidCatch(error, info) {
+  // componentDidCatch(error, info) {
 
-    this.setState({ error: error, errorInfo: info });
-  }
+  //   this.setState({ error: error, errorInfo: info });
+  // }
 
   render() {
 

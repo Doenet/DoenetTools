@@ -13,7 +13,7 @@ export default class Curve extends GraphicalComponent {
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
 
-    properties.draggable = { default: true, forRender: true, propagateToDescendants: true };
+    properties.draggable = { default: true, forRenderer: true, propagateToDescendants: true };
     properties.label.propagateToDescendants = true;
     properties.showLabel.propagateToDescendants = true;
     properties.layer.propagateToDescendants = true;
@@ -196,10 +196,10 @@ export default class Curve extends GraphicalComponent {
         functionChildren.push({
           componentType: "variable",
           children: [{
-            componentType: "ref",
+            componentType: "copy",
             children: [{
-              componentType: "reftarget",
-              state: { refTargetName: functionCurveName }
+              componentType: "tname",
+              state: { targetName: functionCurveName }
             },
             {
               componentType: "prop",
@@ -226,10 +226,10 @@ export default class Curve extends GraphicalComponent {
         let variableForParameterFunctions = {
           componentType: "variable",
           children: [{
-            componentType: "ref",
+            componentType: "copy",
             children: [{
-              componentType: "reftarget",
-              state: { refTargetName: parametrizedCurveName }
+              componentType: "tname",
+              state: { targetName: parametrizedCurveName }
             },
             {
               componentType: "prop",

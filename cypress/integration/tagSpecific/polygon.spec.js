@@ -315,7 +315,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices>
     <map>
-      <template><point>(<subsref/>, 5sin(<subsref/>))</point></template>
+      <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
         <count><ref prop="value">count</ref></count>
       </sequence></substitutions>
@@ -343,10 +343,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("1{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 1;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 1;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).tree).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -358,10 +358,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("2{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 2;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 2;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -373,10 +373,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("3{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 3;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 3;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -388,10 +388,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("2{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 2;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 2;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -404,10 +404,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("0{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 0;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 0;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -419,10 +419,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("5{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 5;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 5;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -442,7 +442,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices>
     <map>
-      <template><point>(<subsref/>, 5sin(<subsref/>))</point></template>
+      <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
         <count><ref prop="value">count</ref></count>
       </sequence></substitutions>
@@ -471,10 +471,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("10{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 10;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 10;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -486,10 +486,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("1{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 1;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 1;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -510,7 +510,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon>
     <map>
-      <template><point>(<subsref/>, 5sin(<subsref/>))</point></template>
+      <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
         <count><ref prop="value">count</ref></count>
       </sequence></substitutions>
@@ -539,10 +539,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("1{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 1;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 1;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).tree).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -554,10 +554,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("2{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 2;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 2;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -569,10 +569,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("3{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 3;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 3;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -584,10 +584,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("2{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 2;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 2;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -600,10 +600,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("0{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 0;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 0;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -615,10 +615,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("5{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 5;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 5;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -639,7 +639,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon>
     <map>
-      <template><point>(<subsref/>, 5sin(<subsref/>))</point></template>
+      <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
         <count><ref prop="value">count</ref></count>
       </sequence></substitutions>
@@ -669,10 +669,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("10{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 10;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 10;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -684,10 +684,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("1{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 1;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 1;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -708,7 +708,7 @@ describe('Polygon Tag Tests', function () {
   <mathinput name="count" prefill="0" />
   <graph>
   <map>
-    <template><point>(<subsref/>, 5sin(<subsref/>))</point></template>
+    <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
     <substitutions><sequence from="0">
       <count><ref prop="value">count</ref></count>
     </sequence></substitutions>
@@ -738,10 +738,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("1{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 1;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 1;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).tree).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -753,10 +753,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("2{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 2;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 2;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -768,10 +768,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("3{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 3;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 3;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -783,10 +783,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("2{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 2;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 2;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -799,10 +799,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("0{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 0;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 0;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -814,10 +814,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("5{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 5;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 5;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -836,7 +836,7 @@ describe('Polygon Tag Tests', function () {
   <mathinput name="count" prefill="0" />
   <graph>
   <map>
-    <template><point>(<subsref/>, 5sin(<subsref/>))</point></template>
+    <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
     <substitutions><sequence from="0">
       <count><ref prop="value">count</ref></count>
     </sequence></substitutions>
@@ -867,10 +867,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("10{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 10;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 10;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -882,10 +882,10 @@ describe('Polygon Tag Tests', function () {
       cy.get('#\\/count_input').clear().type("1{enter}");
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let nPoints = 1;
-        expect(components['/_polygon1'].stateValues.nVertices).eq(nPoints);
-        expect(polygon2.stateValues.nVertices).eq(nPoints);
-        for (let i = 0; i < nPoints; i++) {
+        let nVertices = 1;
+        expect(components['/_polygon1'].stateValues.nVertices).eq(nVertices);
+        expect(polygon2.stateValues.nVertices).eq(nVertices);
+        for (let i = 0; i < nVertices; i++) {
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(0).tree).eq(i);
           expect(components['/_polygon1'].stateValues.vertices[i].get_component(1).evaluate_to_constant()).closeTo(5 * Math.sin(i), 1E-12);
           expect(polygon2.stateValues.vertices[i].get_component(0).tree).eq(i);
@@ -969,7 +969,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices hide="false">
     <map>
-      <template><point>(<subsref/>, 5sin(<subsref/>))</point></template>
+      <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="-5" to="5"/></substitutions>
     </map>
     </vertices></polygon>
@@ -1099,7 +1099,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon><vertices hide="false">
     <map>
-      <template><point>(<subsref/> + <math>0</math>, 5sin(<subsref/>) + <math>0</math>)</point></template>
+      <template><point>(<copyFromSubs/> + <math>0</math>, 5sin(<copyFromSubs/>) + <math>0</math>)</point></template>
       <substitutions><sequence from="-5" to="5"/></substitutions>
     </map>
     </vertices></polygon>
@@ -1462,9 +1462,9 @@ describe('Polygon Tag Tests', function () {
     <polygon>
       <map>
         <template>
-          <point>(<extract prop="x"><subsref fixed="false"/></extract>+
+          <point>(<extract prop="x"><copyFromSubs fixed="false"/></extract>+
             <ref prop="value" modifyIndirectly="false">../transx</ref>,
-           <extract prop="y"><subsref fixed="false" /></extract>+
+           <extract prop="y"><copyFromSubs fixed="false" /></extract>+
            <ref prop="value" modifyIndirectly="false">../transy</ref>)
           </point>
         </template>

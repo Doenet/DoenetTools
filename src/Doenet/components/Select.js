@@ -257,8 +257,8 @@ export default class Select extends CompositeComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        console.log(`definition of selected Indices`)
-        console.log(dependencyValues);
+        // console.log(`definition of selected Indices`)
+        // console.log(dependencyValues);
 
         if (dependencyValues.essentialSelectedIndices !== null) {
           return {

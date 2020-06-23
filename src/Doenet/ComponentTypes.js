@@ -28,8 +28,8 @@ import P from './components/P';
 import BooleanComponent from './components/Boolean';
 import BooleanList from './components/BooleanList';
 import MathComponent from './components/Math';
-import Ref from './components/Ref';
-import RefTarget from './components/RefTarget';
+import Copy from './components/Copy';
+import Tname from './components/Tname';
 import Prop from './components/Prop';
 import Extract from './components/Extract';
 import Collect from './components/Collect';
@@ -74,8 +74,8 @@ import Template from './components/Template';
 import Sequence from './components/Sequence';
 import Map from './components/Map';
 import Substitutions from './components/Substitutions';
-import Subsref from './components/Subsref';
-import Subsindex from './components/Subsindex';
+import CopyFromSubs from './components/CopyFromSubs';
+import IndexFromSubs from './components/IndexFromSubs';
 import FromMapAncestor from './components/FromMapAncestor';
 import Slider from './components/Slider';
 import Markers from './components/Markers';
@@ -185,7 +185,7 @@ const componentTypeArray = [
   BooleanComponent, BooleanList,
   MathComponent, MathList,
   NumberList,
-  Ref, RefTarget,
+  Copy, Tname,
   Prop,
   Extract,
   Collect,
@@ -221,7 +221,7 @@ const componentTypeArray = [
   Table,
   Markers,
   Panel,
-  Map, Substitutions, Subsref, Subsindex, FromMapAncestor,
+  Map, Substitutions, CopyFromSubs, IndexFromSubs, FromMapAncestor,
   Constraints,
   ConstrainToGrid,
   AttractToGrid,
