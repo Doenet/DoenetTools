@@ -2,8 +2,8 @@
 
 $env_path = "/var/www/html/dev.doenet.org/etc/env.ini";
 $remoteuser = "devuser";
-  // $remoteuser = $_SERVER[ 'REMOTE_USER' ];
-$db_temp = "cse_doenet";
+// $remoteuser = $_SERVER[ 'REMOTE_USER' ];
+// $db_temp = "cse_doenet";
 
 
 if ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == 'localhost:3000'){
@@ -19,11 +19,10 @@ $password = $ini_array["password"];
 $database = $ini_array["database"];
 
 if ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == 'localhost:3000'){
-  $db_temp = "doenet_local";
+  $database = "doenet_local";
   $dbhost = "127.0.0.1";
 }
 
-$database = $db_temp; //TODO: remove all $db_temp's
 
 $conn = mysqli_connect($dbhost, $username, $password, $database);
 // Check connection
