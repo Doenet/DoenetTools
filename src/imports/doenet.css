@@ -14,3 +14,9 @@ a {
 a:hover {
     text-decoration:underline;
 }
+button{
+    height:20px;
+}
+select{
+    height:20px;
+}

@@ -1,15 +1,15 @@
 import BaseComponent from './abstract/BaseComponent';
 
-export default class RefTarget extends BaseComponent {
-  static componentType = "reftarget";
+export default class Tname extends BaseComponent {
+  static componentType = "tname";
   static rendererType = undefined;
 
   static takesComponentName = true;
-  static stateVariableForTakingComponentName = 'refTargetName';
+  static stateVariableForTakingComponentName = 'targetName';
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["refTargetName"] };
+  static get stateVariablesShadowedForReference() { return ["targetName"] };
 
   static createPropertiesObject() {
     return {};
@@ -34,7 +34,7 @@ export default class RefTarget extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.refTargetName = {
+    stateVariableDefinitions.targetName = {
       returnDependencies: () => ({
         stringChild: {
           dependencyType: "childStateVariables",
@@ -46,24 +46,24 @@ export default class RefTarget extends BaseComponent {
         if (dependencyValues.stringChild.length === 0) {
           return {
             useEssentialOrDefaultValue: {
-              refTargetName: { variablesToCheck: "refTargetName" }
+              targetName: { variablesToCheck: "targetName" }
             }
           }
         }
-        return { newValues: { refTargetName: dependencyValues.stringChild[0].stateValues.value } }
+        return { newValues: { targetName: dependencyValues.stringChild[0].stateValues.value } }
       },
     };
 
-    stateVariableDefinitions.refTarget = {
-      stateVariablesDeterminingDependencies: ["refTargetName"],
+    stateVariableDefinitions.targetComponent = {
+      stateVariablesDeterminingDependencies: ["targetName"],
       returnDependencies: ({ stateValues }) => ({
-        refTargetComponent: {
+        targetComponent: {
           dependencyType: "componentIdentity",
-          componentName: stateValues.refTargetName,
+          componentName: stateValues.targetName,
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { refTarget: dependencyValues.refTargetComponent } }
+        return { newValues: { targetComponent: dependencyValues.targetComponent } }
       },
     };
 
@@ -73,7 +73,7 @@ export default class RefTarget extends BaseComponent {
 
 
   returnSerializeInstructions() {
-    return { skipChildren: true, stateVariables: ["refTargetName"] };
+    return { skipChildren: true, stateVariables: ["targetName"] };
   }
 
 }

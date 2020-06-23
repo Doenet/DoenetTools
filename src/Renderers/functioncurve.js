@@ -22,7 +22,7 @@ export default class FunctionCurve extends DoenetRenderer {
       name: this.doenetSvData.label,
       visible: !this.doenetSvData.hide,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
-      fixed: this.doenetSvData.draggable !== true,
+      fixed: true, //this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 5,
       strokeColor: this.doenetSvData.selectedStyle.markerColor,
       highlightStrokeColor: this.doenetSvData.selectedStyle.markerColor,
@@ -137,7 +137,7 @@ export default class FunctionCurve extends DoenetRenderer {
     }
 
     if (this.props.board) {
-      return <><a name={this.componentName} /></>
+      return <><a name={this.componentName} />{this.children}</>
     }
 
 

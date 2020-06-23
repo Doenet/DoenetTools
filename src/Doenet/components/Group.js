@@ -1,6 +1,6 @@
 import CompositeComponent from './abstract/CompositeComponent';
-// import {postProcessRef, processChangesForReplacements} from './Ref';
-import { postProcessRef} from '../utils/refs';
+// import {postProcessCopy, processChangesForReplacements} from './Ref';
+import { postProcessCopy} from '../utils/copy';
 
 export default class Group extends CompositeComponent {
   static componentType = "group";
@@ -38,7 +38,7 @@ export default class Group extends CompositeComponent {
   static createSerializedReplacements({component}) {
 
     let serializedChildrenCopy = component.activeChildren.map(
-      x => x.serialize({forReference: true})
+      x => x.serialize({forCopy: true})
     );
 
     if(component.stateValues.hide) {
@@ -50,7 +50,7 @@ export default class Group extends CompositeComponent {
       }
     }
 
-    return {replacements: postProcessRef({serializedComponents: serializedChildrenCopy, componentName: component.componentName}) };
+    return {replacements: postProcessCopy({serializedComponents: serializedChildrenCopy, componentName: component.componentName}) };
 
   }
 

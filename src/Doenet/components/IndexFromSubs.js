@@ -1,10 +1,9 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import Ref from './Ref';
 
-export default class Subsindex extends CompositeComponent {
-  static componentType = "subsindex";
+export default class IndexFromSubs extends CompositeComponent {
+  static componentType = "indexfromsubs";
 
-  static refPropOfReplacements = true;
+  static useReplacementsWhenCopyProp = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -58,17 +57,17 @@ export default class Subsindex extends CompositeComponent {
         let substitutionsChildIndices = sharedParameters.substitutionsChildIndices;
 
         if (substitutionsChildIndices === undefined) {
-          throw Error(`subsindex can only be inside a map template.`);
+          throw Error(`indexfromsubs can only be inside a map template.`);
         }
 
         let level = substitutionsChildIndices.length - 1 - stateValues.fromMapAncestor;
         let childIndices = substitutionsChildIndices[level];
         if (childIndices === undefined) {
-          throw Error(`Invalid value of subsindex fromMapAncestor: ${stateValues.fromMapAncestor}`);
+          throw Error(`Invalid value of indexfromsubs fromMapAncestor: ${stateValues.fromMapAncestor}`);
         }
         let childIndex = childIndices[stateValues.substitutionsNumber - 1];
         if (childIndex === undefined) {
-          throw Error(`Invalid substitutionsNumber of subsindex: ${stateValues.substitutionsNumber}`);
+          throw Error(`Invalid substitutionsNumber of indexfromsubs: ${stateValues.substitutionsNumber}`);
         };
 
         return {

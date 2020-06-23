@@ -1225,10 +1225,10 @@ describe('Curve Tag Bezier Tests', function () {
     <point constrainToGrid>(2,1)</point>
       
     <curve>
-      <ref>_point1</ref>
-      <ref>_point2</ref>
-      <ref>_point3</ref>
-      <ref>_point4</ref>
+      <copy tname="_point1" />
+      <copy tname="_point2" />
+      <copy tname="_point3" />
+      <copy tname="_point4" />
       <beziercontrols>
         (7,8),(3,1),((4,1),(0,0)),(-1,-2)
       </beziercontrols>
@@ -1350,13 +1350,13 @@ describe('Curve Tag Bezier Tests', function () {
     <curve>
       (7,8),(3,1),(0,0),(-1,-2)
       <beziercontrols>
-      <ref>_point1</ref>
-      <ref>_point2</ref>
+      <copy tname="_point1" />
+      <copy tname="_point2" />
       <controlPoints>
-        <ref>_point3</ref>
-        <ref>_point4</ref>
+        <copy tname="_point3" />
+        <copy tname="_point4" />
       </controlPoints>
-      <ref>_point5</ref>
+      <copy tname="_point5" />
       </beziercontrols>
     </curve>
     </graph>
@@ -1796,37 +1796,37 @@ describe('Curve Tag Bezier Tests', function () {
     </graph>
     <graph>
     <curve>
-      <ref prop="throughpoint1">_curve1</ref>
+      <copy prop="throughpoint1" tname="_curve1" />
       <point>
-        (<extract prop="y"><ref prop="throughpoint2">_curve1</ref></extract>,
-        <extract prop="x"><ref prop="throughpoint2">_curve1</ref></extract>)
+        (<extract prop="y"><copy prop="throughpoint2" tname="_curve1" /></extract>,
+        <extract prop="x"><copy prop="throughpoint2" tname="_curve1" /></extract>)
       </point>
-      <ref prop="throughpoint3">_curve1</ref>
+      <copy prop="throughpoint3" tname="_curve1" />
       <point>
-        <x><extract prop="y"><ref prop="throughpoint4">_curve1</ref></extract></x>
-        <y><extract prop="x"><ref prop="throughpoint4">_curve1</ref></extract></y>
+        <x><extract prop="y"><copy prop="throughpoint4" tname="_curve1" /></extract></x>
+        <y><extract prop="x"><copy prop="throughpoint4" tname="_curve1" /></extract></y>
       </point>
       <beziercontrols>
-        <ref prop="controlvector1">_curve1</ref>
+        <copy prop="controlvector1" tname="_curve1" />
         <vector>
           <head>
             <x>
-              <extract prop="y"><ref prop="controlvector2">_curve1</ref></extract>
+              <extract prop="y"><copy prop="controlvector2" tname="_curve1" /></extract>
             </x>
             <y>
-              <extract prop="x"><ref prop="controlvector2">_curve1</ref></extract>
+              <extract prop="x"><copy prop="controlvector2" tname="_curve1" /></extract>
             </y>
           </head>
         </vector>
         <controlVectors>
-          <ref prop="controlvector4">_curve1</ref>
+          <copy prop="controlvector4" tname="_curve1" />
           <vector>
             <head>
               <x>
-                <extract prop="y"><ref prop="controlvector5">_curve1</ref></extract>
+                <extract prop="y"><copy prop="controlvector5" tname="_curve1" /></extract>
               </x>
               <y>
-                <extract prop="x"><ref prop="controlvector5">_curve1</ref></extract>
+                <extract prop="x"><copy prop="controlvector5" tname="_curve1" /></extract>
               </y>
             </head>
           </vector>
@@ -1834,10 +1834,10 @@ describe('Curve Tag Bezier Tests', function () {
         <vector>
           <head>
             <x>
-              <extract prop="y"><ref prop="controlvector6">_curve1</ref></extract>
+              <extract prop="y"><copy prop="controlvector6" tname="_curve1" /></extract>
             </x>
             <y>
-              <extract prop="x"><ref prop="controlvector6">_curve1</ref></extract>
+              <extract prop="x"><copy prop="controlvector6" tname="_curve1" /></extract>
             </y>
           </head>
         </vector>
@@ -2131,47 +2131,47 @@ describe('Curve Tag Bezier Tests', function () {
     </graph>
     <graph>
     <curve>
-      <ref prop="throughpoint1">_curve1</ref>
+      <copy prop="throughpoint1" tname="_curve1" />
       <point>
-        (<extract prop="y"><ref prop="throughpoint2">_curve1</ref></extract>,
-        <extract prop="x"><ref prop="throughpoint2">_curve1</ref></extract>)
+        (<extract prop="y"><copy prop="throughpoint2" tname="_curve1" /></extract>,
+        <extract prop="x"><copy prop="throughpoint2" tname="_curve1" /></extract>)
       </point>
-      <ref prop="throughpoint3">_curve1</ref>
+      <copy prop="throughpoint3" tname="_curve1" />
       <point>
-        <x><extract prop="y"><ref prop="throughpoint4">_curve1</ref></extract></x>
-        <y><extract prop="x"><ref prop="throughpoint4">_curve1</ref></extract></y>
+        <x><extract prop="y"><copy prop="throughpoint4" tname="_curve1" /></extract></x>
+        <y><extract prop="x"><copy prop="throughpoint4" tname="_curve1" /></extract></y>
       </point>
       <beziercontrols>
-        <ref prop="controlpoint1">_curve1</ref>
+        <copy prop="controlpoint1" tname="_curve1" />
         <point>
           <x>
-            <extract prop="y"><ref prop="controlpoint2">_curve1</ref></extract>
+            <extract prop="y"><copy prop="controlpoint2" tname="_curve1" /></extract>
           </x>
           <y>
-            <extract prop="x"><ref prop="controlpoint2">_curve1</ref></extract>
+            <extract prop="x"><copy prop="controlpoint2" tname="_curve1" /></extract>
           </y>
         </point>
         <controlPoints>
-          <ref prop="controlpoint4">_curve1</ref>
+          <copy prop="controlpoint4" tname="_curve1" />
           <point>
             <x>
-              <extract prop="y"><ref prop="controlpoint5">_curve1</ref></extract>
-              -<extract fixed prop="y"><ref prop="throughpoint3">_curve1</ref></extract>
-              +<extract fixed prop="x"><ref prop="throughpoint3">_curve1</ref></extract>
+              <extract prop="y"><copy prop="controlpoint5" tname="_curve1" /></extract>
+              -<extract fixed prop="y"><copy prop="throughpoint3" tname="_curve1" /></extract>
+              +<extract fixed prop="x"><copy prop="throughpoint3" tname="_curve1" /></extract>
             </x>
             <y>
-              <extract prop="x"><ref prop="controlpoint5">_curve1</ref></extract>
-              -<extract fixed prop="x"><ref prop="throughpoint3">_curve1</ref></extract>
-              +<extract fixed prop="y"><ref prop="throughpoint3">_curve1</ref></extract>
+              <extract prop="x"><copy prop="controlpoint5" tname="_curve1" /></extract>
+              -<extract fixed prop="x"><copy prop="throughpoint3" tname="_curve1" /></extract>
+              +<extract fixed prop="y"><copy prop="throughpoint3" tname="_curve1" /></extract>
             </y>
           </point>
         </controlPoints>
         <point>
           <x>
-            <extract prop="y"><ref prop="controlpoint6">_curve1</ref></extract>
+            <extract prop="y"><copy prop="controlpoint6" tname="_curve1" /></extract>
           </x>
           <y>
-            <extract prop="x"><ref prop="controlpoint6">_curve1</ref></extract>
+            <extract prop="x"><copy prop="controlpoint6" tname="_curve1" /></extract>
           </y>
         </point>
       </beziercontrols>
@@ -2458,7 +2458,7 @@ describe('Curve Tag Bezier Tests', function () {
   <point>(1,2)</point>
   <point>(3,4)</point>
   <point>(-5,6)</point>
-  <ref prop="throughpoint1">_curve1</ref>
+  <copy prop="throughpoint1" tname="_curve1" />
   </through>
   </curve>
   </graph>
@@ -2679,7 +2679,7 @@ describe('Curve Tag Bezier Tests', function () {
   <graph>
   <curve>
   <through>
-  <ref prop="throughpoint4">_curve1</ref>
+  <copy prop="throughpoint4" tname="_curve1" />
   <point>(3,4)</point>
   <point>(-5,6)</point>
   <point>(1,2)</point>
@@ -2903,12 +2903,12 @@ describe('Curve Tag Bezier Tests', function () {
   <graph>
   <curve>
   <through>
-  <ref prop="throughpoint4">_curve1</ref>
+  <copy prop="throughpoint4" tname="_curve1" />
   <point>(3,4)</point>
   <point>(-5,6)</point>
   <point>(1,2)</point>
   <point>
-    <x><extract prop="x"><ref prop="throughpoint1">_curve1</ref></extract>+1</x>
+    <x><extract prop="x"><copy prop="throughpoint1" tname="_curve1" /></extract>+1</x>
     <y>2</y>
   </point>
   </through>
@@ -3227,13 +3227,13 @@ describe('Curve Tag Bezier Tests', function () {
   <graph>
   <curve>
   <through>
-    <ref prop="throughpoint4">_curve1</ref>
+    <copy prop="throughpoint4" tname="_curve1" />
     <point>(1,2)</point>
     <point>(3,4)</point>
-    <ref prop="throughpoint7">_curve1</ref>
+    <copy prop="throughpoint7" tname="_curve1" />
     <point>(5,7)</point>
     <point>(-5,7)</point>
-    <ref prop="throughpoint10">_curve1</ref>
+    <copy prop="throughpoint10" tname="_curve1" />
     <point>(3,1)</point>
     <point>(5,0)</point>
     <point>(-5,-1)</point>
@@ -3480,20 +3480,20 @@ describe('Curve Tag Bezier Tests', function () {
   <curve>
   <through>
     <point>
-      <x><extract prop="x"><ref prop="throughpoint4">_curve1</ref></extract>+1</x>
-      <y><extract prop="y"><ref prop="throughpoint4">_curve1</ref></extract>+1</y>
+      <x><extract prop="x"><copy prop="throughpoint4" tname="_curve1" /></extract>+1</x>
+      <y><extract prop="y"><copy prop="throughpoint4" tname="_curve1" /></extract>+1</y>
     </point>
     <point>(1,2)</point>
     <point>(3,4)</point>
     <point>
-      <x><extract prop="x"><ref prop="throughpoint7">_curve1</ref></extract>+1</x>
-      <y><extract prop="y"><ref prop="throughpoint7">_curve1</ref></extract>+1</y>
+      <x><extract prop="x"><copy prop="throughpoint7" tname="_curve1" /></extract>+1</x>
+      <y><extract prop="y"><copy prop="throughpoint7" tname="_curve1" /></extract>+1</y>
     </point>
     <point>(5,7)</point>
     <point>(-5,7)</point>
     <point>
-      <x><extract prop="x"><ref prop="throughpoint10">_curve1</ref></extract>+1</x>
-      <y><extract prop="y"><ref prop="throughpoint10">_curve1</ref></extract>+1</y>
+      <x><extract prop="x"><copy prop="throughpoint10" tname="_curve1" /></extract>+1</x>
+      <y><extract prop="y"><copy prop="throughpoint10" tname="_curve1" /></extract>+1</y>
     </point>
     <point>(3,1)</point>
     <point>(5,0)</point>
@@ -3761,7 +3761,7 @@ describe('Curve Tag Bezier Tests', function () {
   <beziercontrols>
     <point>(-1,4)</point>
     <point>(2,0)</point>
-    <ref prop="controlpoint1">_curve1</ref>
+    <copy prop="controlpoint1" tname="_curve1" />
   </beziercontrols>
   </curve>
   </graph>
@@ -3940,7 +3940,7 @@ describe('Curve Tag Bezier Tests', function () {
   <curve>
   <through>(1,2),(3,4),(-5,6)</through>
   <beziercontrols>
-    <ref prop="controlpoint4">_curve1</ref>
+    <copy prop="controlpoint4" tname="_curve1" />
     <point>(2,0)</point>
     <point>(-1,4)</point>
   </beziercontrols>
@@ -4121,7 +4121,7 @@ describe('Curve Tag Bezier Tests', function () {
   <curve>
   <through>(1,2),(3,4),(-5,6)</through>
   <beziercontrols>
-    <ref prop="controlpoint4">_curve1</ref>
+    <copy prop="controlpoint4" tname="_curve1" />
     <point>(2,0)</point>
     <vector>(4,-2)</vector>
   </beziercontrols>
@@ -4302,7 +4302,7 @@ describe('Curve Tag Bezier Tests', function () {
   <curve>
   <through>(1,2),(3,4),(-5,6)</through>
   <beziercontrols>
-    <ref prop="controlvector4">_curve1</ref>
+    <copy prop="controlvector4" tname="_curve1" />
     <point>(2,0)</point>
     <point>(-1,4)</point>
   </beziercontrols>
@@ -4478,16 +4478,16 @@ describe('Curve Tag Bezier Tests', function () {
   <curve>
   <through>(1,2),(3,4),(-5,6),(3,5)</through>
   <beziercontrols>
-    <ref prop="controlvector3">_curve1</ref>
-    <controlpoints><ref prop="controlpoint1">_curve1</ref><ref prop="controlpoint4">_curve1</ref></controlpoints>
-    <controlvectors><ref prop="controlvector6">_curve1</ref><ref prop="controlvector2">_curve1</ref></controlvectors>
+    <copy prop="controlvector3" tname="_curve1" />
+    <controlpoints><copy prop="controlpoint1" tname="_curve1" /><copy prop="controlpoint4" tname="_curve1" /></controlpoints>
+    <controlvectors><copy prop="controlvector6" tname="_curve1" /><copy prop="controlvector2" tname="_curve1" /></controlvectors>
     <vector>(4,-2)</vector>
   </beziercontrols>
   </curve>
   </graph>
   
   <graph>
-    <ref name="c2">_curve1</ref>
+    <copy name="c2" tname="_curve1" />
   </graph>
   `}, "*");
     });

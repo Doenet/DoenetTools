@@ -1,11 +1,9 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import { postProcessRef } from '../utils/refs';
+import { postProcessCopy } from '../utils/copy';
 
 
 export default class Collect extends CompositeComponent {
   static componentType = "collect";
-
-  static takesComponentName = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -16,54 +14,9 @@ export default class Collect extends CompositeComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addRefTarget = function ({ activeChildrenMatched }) {
-      // add <reftarget> around string
-      return {
-        success: true,
-        newChildren: [{
-          componentType: "reftarget", children: [{
-            createdComponent: true,
-            componentName: activeChildrenMatched[0].componentName
-          }]
-        }],
-      }
-    }
-
-    let exactlyOneString = childLogic.newLeaf({
-      name: 'exactlyOneString',
-      componentType: 'string',
-      number: 1,
-      isSugar: true,
-      logicToWaitOnSugar: ["exactlyOneRefTarget"],
-      replacementFunction: addRefTarget,
-    });
-
-    let atMostOnePropForString = childLogic.newLeaf({
-      name: "atMostOnePropForString",
-      componentType: 'prop',
-      comparison: 'atMost',
-      number: 1,
-    });
-
-    let exactlyOneComponentTypesForString = childLogic.newLeaf({
-      name: "exactlyOneComponentTypesForString",
-      componentType: "componentTypes",
-      number: 1,
-    })
-
-    let stringWithOptionalProp = childLogic.newOperator({
-      name: "stringWithOptionalProp",
-      propositions: [
-        exactlyOneString,
-        atMostOnePropForString,
-        exactlyOneComponentTypesForString,
-      ],
-      operator: 'and',
-    })
-
-    let exactlyOneRefTarget = childLogic.newLeaf({
-      name: 'exactlyOneRefTarget',
-      componentType: 'reftarget',
+    let exactlyOneTname = childLogic.newLeaf({
+      name: 'exactlyOneTname',
+      componentType: 'tname',
       number: 1,
     });
 
@@ -80,22 +33,16 @@ export default class Collect extends CompositeComponent {
       number: 1,
     });
 
-    let refTargetWithOptionalProp = childLogic.newOperator({
-      name: "refTargetWithOptionalProp",
+    let tnameWithOptionalProp = childLogic.newOperator({
+      name: "tnameWithOptionalProp",
       operator: "and",
       propositions: [
-        exactlyOneRefTarget,
+        exactlyOneTname,
         atMostOneProp,
         exactlyOneComponentTypes,
-      ]
+      ],
+      setAsBase: true
     });
-
-    childLogic.newOperator({
-      name: "refTargetPropXorSugar",
-      operator: "xor",
-      propositions: [refTargetWithOptionalProp, stringWithOptionalProp],
-      setAsBase: true,
-    })
 
     return childLogic;
   }
@@ -105,36 +52,40 @@ export default class Collect extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.refTarget = {
+    stateVariableDefinitions.targetComponent = {
       returnDependencies: () => ({
-        refTargetChild: {
+        tnameChild: {
           dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneRefTarget",
-          variableNames: ["refTarget"],
+          childLogicName: "exactlyOneTname",
+          variableNames: ["targetComponent"],
         },
       }),
-      defaultValue: undefined,
+      defaultValue: null,
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.refTargetChild.length === 0) {
+        if (dependencyValues.tnameChild.length === 0) {
           return {
             useEssentialOrDefaultValue: {
-              refTarget: { variablesToCheck: "refTarget" }
+              targetComponent: { variablesToCheck: "targetComponent" }
             }
           }
         }
-        return { newValues: { refTarget: dependencyValues.refTargetChild[0].stateValues.refTarget } }
+        return { newValues: { targetComponent: dependencyValues.tnameChild[0].stateValues.targetComponent } }
       },
     };
 
-    stateVariableDefinitions.refTargetName = {
+    stateVariableDefinitions.targetName = {
       returnDependencies: () => ({
-        refTarget: {
+        targetComponent: {
           dependencyType: "stateVariable",
-          variableName: "refTarget",
+          variableName: "targetComponent",
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { refTargetName: dependencyValues.refTarget.componentName } }
+        if (dependencyValues.targetComponent === null) {
+          console.warn(`No copy target`);
+          return { newValues: { targetName: "" } }
+        }
+        return { newValues: { targetName: dependencyValues.targetComponent.componentName } }
       },
     };
 
@@ -171,9 +122,17 @@ export default class Collect extends CompositeComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            componentTypesToCollect: dependencyValues.componentTypesChild[0].stateValues.texts
+        if (dependencyValues.componentTypesChild.length === 1) {
+          return {
+            newValues: {
+              componentTypesToCollect: dependencyValues.componentTypesChild[0].stateValues.texts
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              componentTypesToCollect: []
+            }
           }
         }
       }
@@ -205,27 +164,35 @@ export default class Collect extends CompositeComponent {
     }
 
     stateVariableDefinitions.collectedComponents = {
-      stateVariablesDeterminingDependencies: ["componentTypesToCollect", "refTargetName"],
-      returnDependencies: ({ stateValues }) => ({
-        descendants: {
-          dependencyType: "componentDescendantIdentity",
-          ancestorName: stateValues.refTargetName,
-          componentTypes: stateValues.componentTypesToCollect,
-          useReplacementsForComposites: true,
-          includeNonActiveChildren: true,
-          recurseToMatchedChildren: false,
-        },
-        maximumNumber: {
-          dependencyType: "stateVariable",
-          variableName: "maximumNumber"
+      stateVariablesDeterminingDependencies: ["componentTypesToCollect", "targetName"],
+      returnDependencies: function ({ stateValues }) {
+        if (!stateValues.targetName) {
+          return {};
         }
-      }),
+        return {
+          descendants: {
+            dependencyType: "componentDescendantIdentity",
+            ancestorName: stateValues.targetName,
+            componentTypes: stateValues.componentTypesToCollect,
+            useReplacementsForComposites: true,
+            includeNonActiveChildren: true,
+            recurseToMatchedChildren: false,
+          },
+          maximumNumber: {
+            dependencyType: "stateVariable",
+            variableName: "maximumNumber"
+          }
+        }
+      },
       definition: function ({ dependencyValues }) {
 
         // console.log(`definition of collectedComponents`)
         // console.log(dependencyValues)
 
         let collectedComponents = dependencyValues.descendants;
+        if(!collectedComponents) {
+          collectedComponents = [];
+        }
 
         if (dependencyValues.maximumNumber !== null && collectedComponents.length > dependencyValues.maximumNumber) {
           let maxnum = Math.max(0, Math.floor(dependencyValues.maximumNumber));
@@ -429,7 +396,7 @@ export default class Collect extends CompositeComponent {
     // Note: this collects components a second time when have a prop
     stateVariableDefinitions.needsReplacementsUpdatedWhenStale = {
       stateVariablesDeterminingDependencies: [
-        "componentTypesToCollect", "refTargetName", "propVariableObjs"
+        "componentTypesToCollect", "targetName", "propVariableObjs"
       ],
       returnDependencies: function ({ stateValues }) {
         let dependencies = {
@@ -445,12 +412,10 @@ export default class Collect extends CompositeComponent {
             variableName: "collectedComponents"
           }
         } else {
-          console.log(`return dependencies`)
-          console.log(stateValues.propVariableObjs)
           dependencies.descendantsWithProp = {
             dependencyType: "componentDescendantStateVariables",
             variableNames: [stateValues.propVariableObjs[0].varName],
-            ancestorName: stateValues.refTargetName,
+            ancestorName: stateValues.targetName,
             componentTypes: stateValues.componentTypesToCollect,
             useReplacementsForComposites: true,
             includeNonActiveChildren: true,
@@ -479,7 +444,7 @@ export default class Collect extends CompositeComponent {
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
 
-    if (component.stateValues.refTarget === undefined) {
+    if (component.stateValues.targetComponent === undefined) {
       return { replacements: [] };
     }
 
@@ -521,9 +486,9 @@ export default class Collect extends CompositeComponent {
 
       let target = components[component.stateValues.collectedComponents[collectedNum].componentName];
 
-      let serializedCopy = [target.serialize({ forReference: true })];
+      let serializedCopy = [target.serialize({ forCopy: true })];
 
-      return postProcessRef({ serializedComponents: serializedCopy, componentName: component.componentName });
+      return postProcessCopy({ serializedComponents: serializedCopy, componentName: component.componentName });
     }
 
     let serializedReplacements = [];
@@ -558,7 +523,7 @@ export default class Collect extends CompositeComponent {
           downstreamDependencies: {
             [collectedName]: [{
               dependencyType: "referenceShadow",
-              refComponentName: component.componentName,
+              compositeName: component.componentName,
               propVariable: arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey),
               // arrayStateVariable: propVariableObj.varName,
               // arrayKey
@@ -586,7 +551,7 @@ export default class Collect extends CompositeComponent {
           downstreamDependencies: {
             [collectedName]: [{
               dependencyType: "referenceShadow",
-              refComponentName: component.componentName,
+              compositeName: component.componentName,
               propVariable: arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey),
               // propVariable: propVariableObj.varName,
               // arrayStateVariable: propVariableObj.arrayVarName,
@@ -603,7 +568,7 @@ export default class Collect extends CompositeComponent {
           downstreamDependencies: {
             [collectedName]: [{
               dependencyType: "referenceShadow",
-              refComponentName: component.componentName,
+              compositeName: component.componentName,
               propVariable: propVariableObj.varName,
             }]
           }

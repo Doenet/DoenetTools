@@ -4,7 +4,7 @@ describe('LineSegment Tag Tests', function () {
     cy.visit('/test')
   })
 
-  it('lineSegment with sugared reffed points', () => {
+  it('lineSegment with sugared copied points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -13,8 +13,8 @@ describe('LineSegment Tag Tests', function () {
   <point label='P'>(3,5)</point>
   <point label='Q'>(-4,-1)</point>
     <lineSegment>
-      <ref>_point1</ref>
-      <ref>_point2</ref>
+      <copy tname="_point1" />
+      <copy tname="_point2" />
     </lineSegment>
   </graph>
   `}, "*");
@@ -154,7 +154,7 @@ describe('LineSegment Tag Tests', function () {
     })
   })
 
-  it('lineSegment with sugared strings and refs', () => {
+  it('lineSegment with sugared strings and copies', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -163,8 +163,8 @@ describe('LineSegment Tag Tests', function () {
   <graph>
   <point>(-2,1)</point>
   <linesegment>
-  (<ref>_number1</ref>, <ref prop="x">_point1</ref>),
-  (<ref prop="y">_point1</ref>, 5)
+  (<copy tname="_number1" />, <copy prop="x" tname="_point1" />),
+  (<copy prop="y" tname="_point1" />, 5)
   </linesegment>
   </graph>
   `}, "*");
@@ -224,7 +224,7 @@ describe('LineSegment Tag Tests', function () {
     })
   })
 
-  it('lineSegment with endpoints containing sugared strings and refs', () => {
+  it('lineSegment with endpoints containing sugared strings and copies', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -233,8 +233,8 @@ describe('LineSegment Tag Tests', function () {
   <graph>
   <point>(-2,1)</point>
   <linesegment><endpoints>
-  (<ref>_number1</ref>, <ref prop="x">_point1</ref>),
-  (<ref prop="y">_point1</ref>, 5)
+  (<copy tname="_number1" />, <copy prop="x" tname="_point1" />),
+  (<copy prop="y" tname="_point1" />, 5)
   </endpoints></linesegment>
   </graph>
   `}, "*");
@@ -296,7 +296,7 @@ describe('LineSegment Tag Tests', function () {
     })
   })
 
-  it('lineSegment with sugared points containing sugared strings and refs', () => {
+  it('lineSegment with sugared points containing sugared strings and copies', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -305,8 +305,8 @@ describe('LineSegment Tag Tests', function () {
   <graph>
   <point>(-2,1)</point>
   <linesegment>
-  <point>(<ref>_number1</ref>, <ref prop="x">_point1</ref>)</point>
-  <point>(<ref prop="y">_point1</ref>, 5)</point>
+  <point>(<copy tname="_number1" />, <copy prop="x" tname="_point1" />)</point>
+  <point>(<copy prop="y" tname="_point1" />, 5)</point>
   </linesegment>
   </graph>
   `}, "*");
@@ -444,27 +444,27 @@ describe('LineSegment Tag Tests', function () {
     })
   })
 
-  it('lineSegment with multiple layers of reffed points in sugar', () => {
+  it('lineSegment with multiple layers of copied points in sugar', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <point>(2,1)</point>
   <point>(-2,-5)</point>
-  <ref>_point1</ref>
-  <ref>_point2</ref>
-  <ref>_ref1</ref>
-  <ref>_ref2</ref>
-  <ref>_ref3</ref>
-  <ref>_ref4</ref>
+  <copy tname="_point1" />
+  <copy tname="_point2" />
+  <copy tname="_copy1" />
+  <copy tname="_copy2" />
+  <copy tname="_copy3" />
+  <copy tname="_copy4" />
   
   <graph>
     <lineSegment>
-      <ref>_ref5</ref>
-      <ref>_ref6</ref>
+      <copy tname="_copy5" />
+      <copy tname="_copy6" />
     </lineSegment>
   </graph>
-  <ref prop="y">_point1</ref>
+  <copy prop="y" tname="_point1" />
   `}, "*");
     });
 
@@ -531,7 +531,7 @@ describe('LineSegment Tag Tests', function () {
     })
   })
 
-  it('reffed line segments', () => {
+  it('copied line segments', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -544,19 +544,19 @@ describe('LineSegment Tag Tests', function () {
     <point>(-4,7)</point>
     <point>(3,5)</point>
     <linesegment>
-      <ref>_point3</ref>
-      <ref>_point4</ref>
+      <copy tname="_point3" />
+      <copy tname="_point4" />
     </linesegment>
     <linesegment>(-9,-1),(-3,6)</linesegment>
   </graph>
 
   <graph>
-    <ref name="ls1a">_linesegment1</ref>
-    <ref name="ls2a">_linesegment2</ref>
-    <ref name="ls3a">_linesegment3</ref>
+    <copy name="ls1a" tname="_linesegment1" />
+    <copy name="ls2a" tname="_linesegment2" />
+    <copy name="ls3a" tname="_linesegment3" />
   </graph>
 
-  <ref name="g3">_graph2</ref>
+  <copy name="g3" tname="_graph2" />
   `}, "*");
     });
 
@@ -929,7 +929,7 @@ describe('LineSegment Tag Tests', function () {
   <mathinput name="x" prefill="q"/>
   <graph>
     <lineSegment>
-      <point>(<ref prop="value">x</ref>,2)</point>
+      <point>(<copy prop="value" tname="x" />,2)</point>
       <point>(-2,3)</point>
     </lineSegment>
   </graph>
@@ -965,10 +965,10 @@ describe('LineSegment Tag Tests', function () {
   <graph>
   <point>(1,2)</point>
   <point>(3,4)</point>
-  <linesegment><ref>_point1</ref><ref>_point2</ref></linesegment>
+  <linesegment><copy tname="_point1" /><copy tname="_point2" /></linesegment>
 
   <point>(-5,2)
-    <constrainTo><ref>_linesegment1</ref></constrainTo>
+    <constrainTo><copy tname="_linesegment1" /></constrainTo>
   </point>
   </graph>
   `}, "*");
@@ -1084,10 +1084,10 @@ describe('LineSegment Tag Tests', function () {
   <graph>
   <point>(1,2)</point>
   <point>(3,4)</point>
-  <linesegment><ref>_point1</ref><ref>_point2</ref></linesegment>
+  <linesegment><copy tname="_point1" /><copy tname="_point2" /></linesegment>
 
   <point>(-5,2)
-    <attractTo><ref>_linesegment1</ref></attractTo>
+    <attractTo><copy tname="_linesegment1" /></attractTo>
   </point>
   </graph>
   `}, "*");
@@ -1195,7 +1195,7 @@ describe('LineSegment Tag Tests', function () {
 
   })
 
-  it('ref endpoints of line segment', () => {
+  it('copy endpoints of line segment', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1204,11 +1204,11 @@ describe('LineSegment Tag Tests', function () {
   <linesegment>(1,2),(3,4)</linesegment>
   </graph>
   <graph>
-  <ref prop="endpoint1" name="point3">_linesegment1</ref>
-  <ref prop="endpoint2" name="point4">_linesegment1</ref>
+  <copy prop="endpoint1" name="point3" tname="_linesegment1" />
+  <copy prop="endpoint2" name="point4" tname="_linesegment1" />
   </graph>
   <graph>
-  <ref prop="endpoints" name="points56">_linesegment1</ref>
+  <copy prop="endpoints" name="points56" tname="_linesegment1" />
   </graph>
   `}, "*");
     });
@@ -1244,7 +1244,7 @@ describe('LineSegment Tag Tests', function () {
         expect(point6.stateValues.xs[1].tree).eq(p2y)
       })
 
-      cy.log('move first individually reffed endpoint');
+      cy.log('move first individually copied endpoint');
       cy.window().then((win) => {
         let p1x = -2;
         let p1y = -5;
@@ -1265,7 +1265,7 @@ describe('LineSegment Tag Tests', function () {
         expect(point6.stateValues.xs[1].tree).eq(p2y)
       })
 
-      cy.log('move second individually reffed endpoint');
+      cy.log('move second individually copied endpoint');
       cy.window().then((win) => {
         let p2x = 8;
         let p2y = -1;
@@ -1286,7 +1286,7 @@ describe('LineSegment Tag Tests', function () {
         expect(point6.stateValues.xs[1].tree).eq(p2y)
       })
 
-      cy.log('move second array-reffed endpoint');
+      cy.log('move second array-copied endpoint');
       cy.window().then((win) => {
         let p2x = -6;
         let p2y = 4;
@@ -1307,7 +1307,7 @@ describe('LineSegment Tag Tests', function () {
         expect(point6.stateValues.xs[1].tree).eq(p2y)
       })
 
-      cy.log('move first array-reffed endpoint');
+      cy.log('move first array-copied endpoint');
       cy.window().then((win) => {
         let p1x = 0;
         let p1y = 7;
@@ -1377,7 +1377,7 @@ describe('LineSegment Tag Tests', function () {
 
   })
 
-  it('new linesegment from reffed endpoints of line segment', () => {
+  it('new linesegment from copied endpoints of line segment', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1387,7 +1387,7 @@ describe('LineSegment Tag Tests', function () {
   </graph>
   <graph>
   <linesegment>
-    <ref prop="endpoints" name="points34">_linesegment1</ref>
+    <copy prop="endpoints" name="points34" tname="_linesegment1" />
   </linesegment>
   </graph>
   `}, "*");
@@ -1531,23 +1531,23 @@ describe('LineSegment Tag Tests', function () {
   <linesegment>
     <point>(1,2)</point>
     <point>
-      (<ref prop="y">_point1</ref>, <ref prop="x">_point1</ref>)
+      (<copy prop="y" tname="_point1" />, <copy prop="x" tname="_point1" />)
     </point>
   </linesegment> 
   <point name="x1">
-    <x><extract prop="x"><ref prop="endpoint1">_linesegment1</ref></extract></x>
+    <x><extract prop="x"><copy prop="endpoint1" tname="_linesegment1" /></extract></x>
     <y fixed>3</y>
   </point>
   <point name="x2">
-    <x><extract prop="x"><ref prop="endpoint2">_linesegment1</ref></extract></x>
+    <x><extract prop="x"><copy prop="endpoint2" tname="_linesegment1" /></extract></x>
     <y fixed>4</y>
   </point>
   <point name="y1">
-    <y><extract prop="y"><ref prop="endpoint1">_linesegment1</ref></extract></y>
+    <y><extract prop="y"><copy prop="endpoint1" tname="_linesegment1" /></extract></y>
     <x fixed>3</x>
   </point>
   <point name="y2">
-    <y><extract prop="y"><ref prop="endpoint2">_linesegment1</ref></extract></y>
+    <y><extract prop="y"><copy prop="endpoint2" tname="_linesegment1" /></extract></y>
     <x fixed>4</x>
   </point>
 </graph>
@@ -1636,19 +1636,19 @@ describe('LineSegment Tag Tests', function () {
   <graph>
   <linesegment>
     <endpoints>
-    <ref prop="endpoint2">_linesegment2</ref>
+    <copy prop="endpoint2" tname="_linesegment2" />
     <point>(1,0)</point>
     </endpoints>
   </linesegment>
   <linesegment>
     <endpoints hide="false">
-    <ref prop="endpoint2">_linesegment3</ref>
+    <copy prop="endpoint2" tname="_linesegment3" />
     <point>(3,2)</point>
     </endpoints>
   </linesegment>
   <linesegment>
     <endpoints hide="false">
-    <ref prop="endpoint2">_linesegment1</ref>
+    <copy prop="endpoint2" tname="_linesegment1" />
     <point>(-1,4)</point>
     </endpoints>
   </linesegment>

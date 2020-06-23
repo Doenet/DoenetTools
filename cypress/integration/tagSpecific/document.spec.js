@@ -12,12 +12,12 @@ describe('Document Tests', function () {
             <p>this point will appear on graph</p>
             <mathinput prefill="2"></mathinput>
             <mathinput prefill="2"></mathinput>
-            <variable>x=<ref prop="value">_mathinput1</ref></variable>
+            <variable>x=<copy prop="value" tname="_mathinput1" /></variable>
             <spreadsheet>
-              <cell colnum="A" rownum="1"><ref prop="value">_mathinput1</ref></cell>
-              <cell colnum="B" rownum="1"><ref prop="value">_mathinput2</ref></cell>
+              <cell colnum="A" rownum="1"><copy prop="value" tname="_mathinput1" /></cell>
+              <cell colnum="B" rownum="1"><copy prop="value" tname="_mathinput2" /></cell>
             </spreadsheet>
-            <graph><circle><point>(<ref prop="value">_mathinput1</ref>,<ref prop="value">_mathinput2</ref>)</point></circle></graph>
+            <graph><circle><point>(<copy prop="value" tname="_mathinput1" />,<copy prop="value" tname="_mathinput2" />)</point></circle></graph>
         </document>
     
   `}, "*");

@@ -381,7 +381,7 @@ export default class BezierCurve extends DoenetRenderer {
     }
 
     if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
-      this.props.board.itemsRenderedLowQuality[this._key] = this.curveJXG;
+      this.props.board.itemsRenderedLowQuality[this.componentName] = this.curveJXG;
     }
 
 

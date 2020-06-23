@@ -158,7 +158,7 @@ export default class Xref extends InlineComponent {
     if (this.state.refTargetChild !== undefined && this.state.refTargetChild.unresolvedState.refTarget) {
       this.unresolvedState.refTarget = true;
       this.unresolvedDependencies = { [this.state.refTargetChild.componentName]: true };
-      this.state.refTargetName = this.state.refTargetChild.state.refTargetName;
+      this.state.targetName = this.state.refTargetChild.state.targetName;
       return;
     }
 
@@ -181,7 +181,7 @@ export default class Xref extends InlineComponent {
         component: this.state.refTargetChild, variable: "refTarget"
       })) {
         this.state.refTarget = this.state.refTargetChild.state.refTarget;
-        this.state.refTargetName = this.state.refTargetChild.state.refTargetName;
+        this.state.targetName = this.state.refTargetChild.state.targetName;
         delete this.unresolvedState.refTarget;
         delete this.unresolvedDependencies;
 
@@ -242,10 +242,10 @@ export default class Xref extends InlineComponent {
       return;
     }
 
-    if (this.state.refTargetName) {
+    if (this.state.targetName) {
       this.renderer = new this.availableRenderers.link({
         key: this.componentName,
-        anchor: this.state.refTargetName,
+        anchor: this.state.targetName,
         linktext: this.state.linktext,
       });
     } else {
@@ -260,9 +260,9 @@ export default class Xref extends InlineComponent {
   }
 
   updateRenderer() {
-    if (this.state.refTargetName) {
+    if (this.state.targetName) {
       this.renderer.updateLink({
-        anchor: this.state.refTargetName,
+        anchor: this.state.targetName,
         linktext: this.state.linktext,
       });
     } else {

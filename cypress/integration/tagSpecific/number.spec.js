@@ -11,7 +11,7 @@ describe('Number Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <text>a</text>
-      <ref>_number1</ref>
+      <copy tname="_number1" />
       <number>1+1</number>
     ` }, "*");
     })
@@ -20,7 +20,7 @@ describe('Number Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let number0 = components['/_ref1'].replacements[0];
+      let number0 = components['/_copy1'].replacements[0];
       let number0Anchor = '#' + number0.componentName;
 
       cy.log('Test value displayed in browser')
@@ -41,7 +41,7 @@ describe('Number Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <text>a</text>
-      <ref>_number1</ref>
+      <copy tname="_number1" />
       <number>x+1</number>
       ` }, "*");
     })
@@ -50,7 +50,7 @@ describe('Number Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let number0 = components['/_ref1'].replacements[0];
+      let number0 = components['/_copy1'].replacements[0];
       let number0Anchor = '#' + number0.componentName;
 
       cy.log('Test value displayed in browser')
@@ -91,8 +91,7 @@ describe('Number Tag Tests', function () {
     })
   });
 
-  // at present, don't allow math in number
-  it.skip('math in number', () => {
+  it('math in number', () => {
     cy.window().then((win) => {
       win.postMessage({ doenetML: `
       <text>a</text>
@@ -119,7 +118,7 @@ describe('Number Tag Tests', function () {
       win.postMessage({ doenetML: `
       <text>a</text>
       <number>log(0.5/0.3)</number>, 
-      <math><ref>_number1</ref></math>
+      <math><copy tname="_number1" /></math>
       ` }, "*");
     })
 

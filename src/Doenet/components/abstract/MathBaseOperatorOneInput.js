@@ -5,31 +5,19 @@ export default class MathOperatorOneInput extends MathComponent {
   static componentType = "_mathoperatoroneinput";
   static rendererType = "math";
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-
-    let exactlyOneFunction = childLogic.newLeaf({
-      name: "exactlyOneFunction",
-      componentType: 'function',
-      number: 1,
-    });
-
-    childLogic.newOperator({
-      name: "mathXorFunction",
-      operator: "xor",
-      propositions: [childLogic.baseLogic, exactlyOneFunction],
-      setAsBase: true,
-    })
-
-    return childLogic;
-
-  }
-
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    let constructor = this;
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { mathOperator: x => me.fromAst('\uff3f') } })
+    }
+
+    stateVariableDefinitions.reverseMathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { reverseMathOperator: null } })
+    }
 
     // rename unnormalizedValue to unnormalizedValuePreOperator
     renameStateVariable({
@@ -45,36 +33,30 @@ export default class MathOperatorOneInput extends MathComponent {
           dependencyType: "stateVariable",
           variableName: "unnormalizedValuePreOperator"
         },
-        functionChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneFunction",
-          variableNames: ["formula", "variable"]
-        },
-        variable: {
+        mathOperator: {
           dependencyType: "stateVariable",
-          variableName: "variable",
-          variableOptional: true,
+          variableName: "mathOperator"
+        },
+        reverseMathOperator: {
+          dependencyType: "stateVariable",
+          variableName: "mathOperator"
         }
       }),
       definition: function ({ dependencyValues }) {
 
-        // overwrite value and variable if have a function
-        if (dependencyValues.functionChild.length === 1) {
-          dependencyValues.value = dependencyValues.functionChild[0].stateValues.formula;
-          dependencyValues.variable = dependencyValues.functionChild[0].stateValues.variable;
-        }
         return {
           newValues: {
-            unnormalizedValue: constructor.applyMathOperator(dependencyValues)
+            unnormalizedValue: dependencyValues.mathOperator(
+              dependencyValues.value
+            )
           }
         }
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
-        if (constructor.reverseMathOperator && dependencyValues.functionChild.length === 0) {
-          let newValue = constructor.reverseMathOperator({
-            desiredValue: desiredStateVariableValues.unnormalizedValue,
-            dependencyValues
-          })
+        if (dependencyValues.reverseMathOperator) {
+          let newValue = dependencyValues.reverseMathOperator(
+            desiredStateVariableValues.unnormalizedValue
+          )
           return {
             success: true,
             instructions: [{
@@ -102,12 +84,16 @@ export default class MathOperatorOneInput extends MathComponent {
         canBeModifiedPreOperator: {
           dependencyType: "stateVariable",
           variableName: "canBeModifiedPreOperator"
+        },
+        reverseMathOperator: {
+          dependencyType: "stateVariable",
+          variableName: "mathOperator"
         }
       }),
       definition: function ({ dependencyValues }) {
         let canBeModified = dependencyValues.canBeModifiedPreOperator;
 
-        if (!constructor.reverseMathOperator) {
+        if (!dependencyValues.reverseMathOperator) {
           canBeModified = false;
         }
 

@@ -7,9 +7,13 @@ export default class Function extends InlineComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.variable = { default: me.fromAst("x"), propagateToDescendants: true };
     properties.xscale = { default: 1, propagateToDescendants: true };
     properties.yscale = { default: 1, propagateToDescendants: true };
+    // include properties of graphical components
+    // for case when function is adapted into functionCurve
+    properties.label = { default: "", forRenderer: true };
+    properties.showLabel = { default: true, forRenderer: true };
+    properties.layer = { default: 0, forRenderer: true };
     return properties;
   }
 
@@ -109,23 +113,45 @@ export default class Function extends InlineComponent {
       operator: "or",
       propositions: [atLeastOneMaximum, atLeastOneMinimum, atLeastOneExtremum, atLeastOneThrough],
       isSugar: true,
-      logicToWaitOnSugar: ["atMostOneFunction"],
+      logicToWaitOnSugar: ["exactlyOneFunction"],
       replacementFunction: addInterpolatedFunction,
     })
 
-    let atMostOneFunction = childLogic.newLeaf({
-      name: "atMostOneFunction",
+    let exactlyOneFunction = childLogic.newLeaf({
+      name: "exactlyOneFunction",
       componentType: "function",
-      comparison: 'atMost',
+      comparison: 'exactly',
+      number: 1,
+    })
+
+    let noFunctions = childLogic.newLeaf({
+      name: "noFunctions",
+      componentType: "function",
+      comparison: 'exactly',
+      number: 0,
+    })
+
+    let functionFormulaXorSugar = childLogic.newOperator({
+      name: "functionFormulaXorSugar",
+      operator: 'xor',
+      propositions: [ exactlyOneFunction, exactlyOneFormula, throughCriteria, stringsAndMaths, noFunctions],
+    })
+
+
+    let atMostOneVariable = childLogic.newLeaf({
+      name: "atMostOneVariable",
+      componentType: "variable",
+      comparison: "atMost",
       number: 1,
     })
 
     childLogic.newOperator({
-      name: "FormulaCriteriaXorSugar",
-      operator: 'xor',
-      propositions: [exactlyOneFormula, throughCriteria, stringsAndMaths, atMostOneFunction],
+      name: "formulaWithVariable",
+      operator: "and",
+      propositions: [atMostOneVariable, functionFormulaXorSugar],
       setAsBase: true,
     })
+
 
     return childLogic;
   }
@@ -199,6 +225,40 @@ export default class Function extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.variable = {
+      public: true,
+      componentType: "variable",
+      defaultValue: me.fromAst("x"),
+      returnDependencies: () => ({
+        variableChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneVariable",
+          variableNames: ["value"],
+        },
+        functionChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneFunction",
+          variableNames: ["variable"],
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.functionChild.length === 1) {
+          if(dependencyValues.variableChild.length === 1) {
+            console.warn("Variable for function is ignored when it has a function child")
+          }
+          return { newValues: { variable: dependencyValues.functionChild[0].stateValues.variable } }
+        } else if (dependencyValues.variableChild.length === 1) {
+          return { newValues: { variable: dependencyValues.variableChild[0].stateValues.value } }
+        } else {
+          return {
+            useEssentialOrDefaultValue: {
+              variable: { variablesToCheck: ["variable"] }
+            }
+          }
+        }
+      }
+    }
+
     stateVariableDefinitions.formula = {
       public: true,
       componentType: "formula",
@@ -211,7 +271,7 @@ export default class Function extends InlineComponent {
         },
         functionChild: {
           dependencyType: "childStateVariables",
-          childLogicName: "atMostOneFunction",
+          childLogicName: "exactlyOneFunction",
           variableNames: ["formula"],
         }
       }),
@@ -254,7 +314,7 @@ export default class Function extends InlineComponent {
         },
         functionChild: {
           dependencyType: "childStateVariables",
-          childLogicName: "atMostOneFunction",
+          childLogicName: "exactlyOneFunction",
           variableNames: ["f"],
         }
       }),
@@ -290,7 +350,7 @@ export default class Function extends InlineComponent {
         },
         functionChild: {
           dependencyType: "childStateVariables",
-          childLogicName: "atMostOneFunction",
+          childLogicName: "exactlyOneFunction",
           variableNames: ["numericalf"],
         }
       }),
@@ -360,13 +420,13 @@ export default class Function extends InlineComponent {
         if (arrayKey === undefined) {
           dependencies.functionChild = {
             dependencyType: "childStateVariables",
-            childLogicName: "atMostOneFunction",
+            childLogicName: "exactlyOneFunction",
             variableNames: ["minima"],
           }
         } else {
           dependencies.functionChild = {
             dependencyType: "childStateVariables",
-            childLogicName: "atMostOneFunction",
+            childLogicName: "exactlyOneFunction",
             variableNames: ["minimum" + (arrayKey + 1)],
           }
         }
@@ -445,7 +505,10 @@ export default class Function extends InlineComponent {
 
         let freshByKey = freshnessInfo.minima.freshByKey;
 
-        if (dependencyValues.functionChild.length === 1) {
+        // check for presence of functionChild
+        // as derived classes may have changed the dependencies
+        // to eliminate functionChildDependency
+        if (dependencyValues.functionChild && dependencyValues.functionChild.length === 1) {
 
           // need arrayKey only if have function child
           let arrayKey;
@@ -896,13 +959,13 @@ export default class Function extends InlineComponent {
         if (arrayKey === undefined) {
           dependencies.functionChild = {
             dependencyType: "childStateVariables",
-            childLogicName: "atMostOneFunction",
+            childLogicName: "exactlyOneFunction",
             variableNames: ["maxima"],
           }
         } else {
           dependencies.functionChild = {
             dependencyType: "childStateVariables",
-            childLogicName: "atMostOneFunction",
+            childLogicName: "exactlyOneFunction",
             variableNames: ["maximum" + (arrayKey + 1)],
           }
         }
@@ -981,7 +1044,10 @@ export default class Function extends InlineComponent {
       definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
         let freshByKey = freshnessInfo.maxima.freshByKey;
 
-        if (dependencyValues.functionChild.length === 1) {
+        // check for presence of functionChild
+        // as derived classes may have changed the dependencies
+        // to eliminate functionChildDependency
+        if (dependencyValues.functionChild && dependencyValues.functionChild.length === 1) {
 
           // need arrayKey only if have function child
           let arrayKey;
@@ -1408,7 +1474,7 @@ export default class Function extends InlineComponent {
       returnDependencies: () => ({
         functionChild: {
           dependencyType: "childIdentity",
-          childLogicName: "atMostOneFunction"
+          childLogicName: "exactlyOneFunction"
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -1457,7 +1523,7 @@ export default class Function extends InlineComponent {
             return {
               functionChild: {
                 dependencyType: "childStateVariables",
-                childLogicName: "atMostOneFunction",
+                childLogicName: "exactlyOneFunction",
                 variableNames: ["extrema"],
               },
             }
@@ -1465,7 +1531,7 @@ export default class Function extends InlineComponent {
             return {
               functionChild: {
                 dependencyType: "childStateVariables",
-                childLogicName: "atMostOneFunction",
+                childLogicName: "exactlyOneFunction",
                 variableNames: ["extremum" + (arrayKey + 1)],
               },
             }

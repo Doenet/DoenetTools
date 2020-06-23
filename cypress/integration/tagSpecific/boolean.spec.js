@@ -6,12 +6,12 @@ beforeEach(() => {
 
   })
 
-  it('boolean based on if',() => {
+  it('boolean based on when',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <mathinput />
 
     <text>
-      <hide><if><ref prop="value">_mathinput1</ref>=3</if></hide>
+      <hide><when><copy prop="value" tname="_mathinput1" />=3</when></hide>
       Hello there!
     </text>
     `},"*");

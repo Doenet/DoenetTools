@@ -10,16 +10,16 @@ beforeEach(() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p><booleanlist hide="true">false, true, false</booleanlist></p>
 
-    <p><ref hide="false">_booleanlist1</ref></p>
+    <p><copy hide="false" tname="_booleanlist1" /></p>
 
     <p><booleanlist>
       <boolean>true</boolean>
-      <ref>_booleanlist1</ref>
+      <copy tname="_booleanlist1" />
       <boolean>false</boolean>
-      <ref>_ref1</ref>
+      <copy tname="_copy1" />
     </booleanlist></p>
 
-    <p><ref maximumnumber="6">_booleanlist2</ref></p>
+    <p><copy maximumnumber="6" tname="_booleanlist2" /></p>
     `},"*");
     });
   

@@ -1,18 +1,18 @@
 import BaseComponent from './abstract/BaseComponent';
 
-export class Subsref extends BaseComponent {
+export class copyFromSubs extends BaseComponent {
   constructor(){
-    throw Error("subsref tag can only be included in a template");
+    throw Error("copyFromSubs tag can only be included in a template");
   }  
-  static componentType = "subsref";
+  static componentType = "copyFromSubs";
 
 }
 
-export class Subsindex extends BaseComponent {
+export class indexFromSubs extends BaseComponent {
   constructor(){
-    throw Error("subsindex tag can only be included in a template");
+    throw Error("indexFromSubs tag can only be included in a template");
   }  
-  static componentType = "subsindex";
+  static componentType = "indexFromSubs";
 
 }
 

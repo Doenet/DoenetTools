@@ -414,22 +414,22 @@ describe('Mathlist Tag Tests', function () {
       <math>a+a</math>
       <math simplify="none">b+b</math>
       <math simplify="full">c+c</math>
-      <ref>dd</ref>
-      <ref simplify="none">dd</ref>
-      <ref simplify="full">dd</ref>
-      <ref>ee</ref>
-      <ref simplify="none">ee</ref>
-      <ref simplify="full">ee</ref>
-      <ref>ff</ref>
-      <ref simplify="none">ff</ref>
-      <ref simplify="full">ff</ref>
+      <copy tname="dd" />
+      <copy simplify="none" tname="dd" />
+      <copy simplify="full" tname="dd" />
+      <copy tname="ee" />
+      <copy simplify="none" tname="ee" />
+      <copy simplify="full" tname="ee" />
+      <copy tname="ff" />
+      <copy simplify="none" tname="ff" />
+      <copy simplify="full" tname="ff" />
     </mathlist>
     <p>
       <math name="dd">d+d</math>
       <math name="ee" simplify="none">e+e</math>
       <math name="ff" simplify="full">f+f</math>
     </p>
-    <p><textinput><ref prop="simplify">_mathlist1</ref></textinput></p>
+    <p><textinput><copy prop="simplify" tname="_mathlist1" /></textinput></p>
     ` }, "*");
     });
 

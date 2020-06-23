@@ -90,11 +90,41 @@ export default class FunctionCurve extends Curve {
         newValues: {
           nearestPoint: function (variables) {
 
+            // first find nearest point when treating a function
+            // (or an inverse function)
+            // which finds a the nearest point vertically
+            // (or horizontally)
+            // assuming the function is defined at that point
+            
+            let x1AsFunction, x2AsFunction;
+            if (dependencyValues.flipFunction) {
+              x2AsFunction = variables.x2.evaluate_to_constant();
+              x1AsFunction = dependencyValues.f(x2AsFunction);
+            } else {
+              x1AsFunction = variables.x1.evaluate_to_constant();
+              x2AsFunction = dependencyValues.f(x1AsFunction);
+            }
+
+            
+            // next, find the nearest point over all
+
             let x1 = variables.x1.evaluate_to_constant();
             let x2 = variables.x2.evaluate_to_constant();
 
             if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
-              return {};
+              if (Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction)) {
+                result = {
+                  x1: x1AsFunction,
+                  x2: x2Asx1AsFunction
+                }
+                if (variables.x3 !== undefined) {
+                  result.x3 = 0;
+                }
+                return result;
+              } else {
+                return {};
+              }
+
             }
 
             let minfunc = function (t) {
@@ -155,6 +185,28 @@ export default class FunctionCurve extends Curve {
             let x2AtMin = dependencyValues.f(x1AtMin)
             if (dependencyValues.flipFunction) {
               [x1AtMin, x2AtMin] = [x2AtMin, x1AtMin]
+            }
+
+
+            // choose the nearest point treating as a function
+            // if that point exists and isn't 10 times further
+            // that the actual nearest point
+            if (Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction)) {
+              let funD2 = Math.pow(x1AsFunction-x1,2) + Math.pow(x2AsFunction-x2,2);
+              let d2 = Math.pow(x1AtMin - x1, 2) + Math.pow(x2AtMin-x2, 2);
+
+              // 100 is 10 times distance, as working with squared distance
+              if(funD2 < 100*d2) {
+                result = {
+                  x1: x1AsFunction,
+                  x2: x2AsFunction
+                }
+                if (variables.x3 !== undefined) {
+                  result.x3 = 0;
+                }
+                return result;
+              }
+
             }
 
             result = {

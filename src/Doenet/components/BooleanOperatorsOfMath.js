@@ -3,11 +3,12 @@ import BooleanBaseOperatorOfMath from './abstract/BooleanBaseOperatorOfMath';
 export class IsInteger extends BooleanBaseOperatorOfMath {
   static componentType = "isinteger";
 
-  applyBooleanOperator() {
-    if(this.state.nMaths !== 1) {
-      throw Error("IsInteger requires exactly one math child");
+  static applyBooleanOperator(values) {
+    if(values.length !== 1) {
+      console.warn("IsInteger requires exactly one math child");
+      return null;
     }
-    let numericValue = this.state.mathChildren[0].state.value.evaluate_to_constant();
+    let numericValue = values[0].evaluate_to_constant();
 
     if(!Number.isFinite(numericValue)) {
       return false;
