@@ -135,9 +135,14 @@ export class Derivative extends FunctionBaseOperator {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions({ numerics });
 
-    stateVariableDefinitions.operatorBasedOnFormula = {
+    stateVariableDefinitions.operatorBasedOnFormulaIfAvailable = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { operatorBasedOnFormula: true } })
+      definition: () => ({ newValues: { operatorBasedOnFormulaIfAvailable: true } })
+    }
+
+    stateVariableDefinitions.operatorComposesWithOriginal = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { operatorComposesWithOriginal: false } })
     }
 
     stateVariableDefinitions.formulaOperator = {
@@ -154,6 +159,39 @@ export class Derivative extends FunctionBaseOperator {
           }
         }
       })
+    }
+
+    stateVariableDefinitions.numericFunctionOperator = {
+      returnDependencies: () => ({
+
+        functionChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneFunction",
+          variableNames: ["returnDerivativesOfNumericalf"],
+          variablesOptional: true,
+        },
+      }),
+      additionalStateVariablesDefined: ["returnDerivativesOfNumericalf"],
+      definition: function ({ dependencyValues }) {
+
+        if (dependencyValues.functionChild.length === 0
+          || !dependencyValues.functionChild[0].stateValues.returnDerivativesOfNumericalf
+        ) {
+          return {
+            newValues: {
+              numericFunctionOperator: x => NaN,
+              returnDerivativesOfNumericalf: null,
+            }
+          }
+        }
+
+        return {
+          newValues: {
+            numericFunctionOperator: dependencyValues.functionChild[0].stateValues.returnDerivativesOfNumericalf(1),
+            returnDerivativesOfNumericalf: (i = 1) => dependencyValues.functionChild[0].stateValues.returnDerivativesOfNumericalf(i + 1)
+          }
+        }
+      }
     }
 
     return stateVariableDefinitions;

@@ -268,7 +268,7 @@ describe('Function Operator Tag Tests', function () {
       expect(components["/_point1"].stateValues.xs[1].tree).closeTo(y1, 1E-12);
       expect(components["/_point2"].stateValues.xs[0].tree).closeTo(x2, 1E-12);
       expect(components["/_point2"].stateValues.xs[1].tree).closeTo(y2, 1E-12);
-      
+
     })
 
     cy.window().then((win) => {
@@ -277,8 +277,8 @@ describe('Function Operator Tag Tests', function () {
       let x1 = -3, y1 = Math.sin(-2);
       let x2 = 5, y2 = Math.cos(6);
 
-      components["/_point1"].movePoint({x: x1, y: y1})
-      components["/_point2"].movePoint({x: x2, y: y2})
+      components["/_point1"].movePoint({ x: x1, y: y1 })
+      components["/_point2"].movePoint({ x: x2, y: y2 })
 
       expect(components["/f"].stateValues.formula.toString()).eq('sin(x + 1)');
       expect(components["/g"].stateValues.formula.toString()).eq('cos(x + 1)');
@@ -286,7 +286,7 @@ describe('Function Operator Tag Tests', function () {
       expect(components["/_point1"].stateValues.xs[1].tree).closeTo(y1, 1E-12);
       expect(components["/_point2"].stateValues.xs[0].tree).closeTo(x2, 1E-12);
       expect(components["/_point2"].stateValues.xs[1].tree).closeTo(y2, 1E-12);
-      
+
     })
 
 
@@ -306,8 +306,8 @@ describe('Function Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let x1 = -3, y1 = 2*Math.sin(Math.PI*-3 + Math.E);
-      let x2 = 5, y2 = 2*Math.PI*Math.cos(Math.PI*5+Math.E);
+      let x1 = -3, y1 = 2 * Math.sin(Math.PI * -3 + Math.E);
+      let x2 = 5, y2 = 2 * Math.PI * Math.cos(Math.PI * 5 + Math.E);
 
       expect(components["/f"].stateValues.formula.toString()).eq('2 sin(e + π q)');
       expect(components["/g"].stateValues.formula.toString()).eq('2 π cos(e + π q)');
@@ -315,17 +315,17 @@ describe('Function Operator Tag Tests', function () {
       expect(components["/_point1"].stateValues.xs[1].tree).closeTo(y1, 1E-12);
       expect(components["/_point2"].stateValues.xs[0].tree).closeTo(x2, 1E-12);
       expect(components["/_point2"].stateValues.xs[1].tree).closeTo(y2, 1E-12);
-      
+
     })
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let x1 = 9, y1 = 2*Math.sin(Math.PI*9 + Math.E);
-      let x2 = -7, y2 = 2*Math.PI*Math.cos(Math.PI*-7+Math.E);
+      let x1 = 9, y1 = 2 * Math.sin(Math.PI * 9 + Math.E);
+      let x2 = -7, y2 = 2 * Math.PI * Math.cos(Math.PI * -7 + Math.E);
 
-      components["/_point1"].movePoint({x: x1, y: y1})
-      components["/_point2"].movePoint({x: x2, y: y2})
+      components["/_point1"].movePoint({ x: x1, y: y1 })
+      components["/_point2"].movePoint({ x: x2, y: y2 })
 
       expect(components["/f"].stateValues.formula.toString()).eq('2 sin(e + π q)');
       expect(components["/g"].stateValues.formula.toString()).eq('2 π cos(e + π q)');
@@ -333,7 +333,7 @@ describe('Function Operator Tag Tests', function () {
       expect(components["/_point1"].stateValues.xs[1].tree).closeTo(y1, 1E-12);
       expect(components["/_point2"].stateValues.xs[0].tree).closeTo(x2, 1E-12);
       expect(components["/_point2"].stateValues.xs[1].tree).closeTo(y2, 1E-12);
-      
+
     })
 
 
@@ -405,6 +405,97 @@ describe('Function Operator Tag Tests', function () {
       expect(text.trim()).equal("f′(x)=cos(x)")
     });
 
+  })
+
+  it('derivatives of interpolated function', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <graph>
+        <function>
+          <minimum>(3,4)</minimum>
+        </function>
+        <derivative><copy tname="_function1"/></derivative>
+        <derivative><copy tname="_derivative1"/></derivative>
+        <derivative><copy tname="_derivative2"/></derivative>
+        <derivative><copy tname="_derivative3"/></derivative>
+        <derivative><copy tname="_derivative4"/></derivative>
+        <derivative><copy tname="_derivative5"/></derivative>
+      </graph>
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      for (let x = -10; x <= 10; x += 0.5) {
+        expect(components["/_function1"].stateValues.numericalf(x)).eq((x - 3) ** 2 + 4);
+        expect(components["/_derivative1"].stateValues.numericalf(x)).eq(2 * (x - 3));
+        expect(components["/_derivative2"].stateValues.numericalf(x)).eq(2);
+        expect(components["/_derivative3"].stateValues.numericalf(x)).eq(0);
+        expect(components["/_derivative4"].stateValues.numericalf(x)).eq(0);
+        expect(components["/_derivative5"].stateValues.numericalf(x)).eq(0);
+        expect(components["/_derivative6"].stateValues.numericalf(x)).eq(0);
+
+      }
+    })
+  })
+
+  it('derivatives of interpolated function 2', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <graph>
+        <function>
+          <minimum>(3,4)</minimum>
+          <through>(-1,5),(4,2)</through>
+          <maximum>(1,0)</maximum>
+        </function>
+        <derivative stylenumber="2"><copy tname="_function1"/></derivative>
+        <derivative stylenumber="3"><copy tname="_derivative1"/></derivative>
+        <derivative stylenumber="4"><copy tname="_derivative2"/></derivative>
+        <derivative stylenumber="5"><copy tname="_derivative3"/></derivative>
+      </graph>
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let dx = 0.0001;
+
+      // make sure we don't get within dx of a grid point
+      for (let x = -10.02412412; x <= 10; x += 0.5) {
+
+        let f0 = components["/_function1"].stateValues.numericalf(x);
+        let f1 = components["/_function1"].stateValues.numericalf(x + dx);
+        let fp05 = components["/_derivative1"].stateValues.numericalf(x + dx / 2);
+        expect(fp05).closeTo((f1 - f0) / dx, 1E-6)
+
+        let fpn05 = components["/_derivative1"].stateValues.numericalf(x - dx / 2);
+        let fpp0 = components["/_derivative2"].stateValues.numericalf(x);
+        expect(fpp0).closeTo((fp05 - fpn05) / dx, 1E-6)
+
+        let fpp1 = components["/_derivative2"].stateValues.numericalf(x + dx);
+        let fppp05 = components["/_derivative3"].stateValues.numericalf(x + dx / 2);
+        expect(fppp05).closeTo((fpp1 - fpp0) / dx, 1E-6)
+
+        let fpppn05 = components["/_derivative3"].stateValues.numericalf(x - dx / 2);
+        let fpppp0 = components["/_derivative4"].stateValues.numericalf(x);
+        expect(fpppp0).closeTo((fppp05 - fpppn05) / dx, 1E-6)
+
+      }
+    })
   })
 
 

@@ -97,15 +97,20 @@ export default class FunctionOperator extends Function {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions({ numerics });
 
-    stateVariableDefinitions.operatorBasedOnFormula = {
+    stateVariableDefinitions.operatorBasedOnFormulaIfAvailable = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { operatorBasedOnFormula: false } })
+      definition: () => ({ newValues: { operatorBasedOnFormulaIfAvailable: false } })
     }
 
     stateVariableDefinitions.formula.returnDependencies = () => ({})
     stateVariableDefinitions.formula.definition = () => ({
       newValues: { formula: me.fromAst('\uff3f') }
     })
+
+    stateVariableDefinitions.operatorComposesWithOriginal = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { operatorComposesWithOriginal: true } })
+    }
 
     stateVariableDefinitions.numericFunctionOperator = {
       returnDependencies: () => ({}),
@@ -125,11 +130,12 @@ export default class FunctionOperator extends Function {
     stateVariableDefinitions.formula = {
       public: true,
       componentType: "formula",
-      // stateVariablesDeterminingDependencies: ["operatorBasedOnFormula"],
+      additionalStateVariablesDefined: ["operatorBasedOnFormula"],
+      // stateVariablesDeterminingDependencies: ["operatorBasedOnFormulaIfAvailable"],
       returnDependencies: () => ({
-        operatorBasedOnFormula: {
+        operatorBasedOnFormulaIfAvailable: {
           dependencyType: "stateVariable",
-          variableName: "operatorBasedOnFormula"
+          variableName: "operatorBasedOnFormulaIfAvailable"
         },
         functionChild: {
           dependencyType: "childStateVariables",
@@ -143,15 +149,26 @@ export default class FunctionOperator extends Function {
       }),
       definition: function ({ dependencyValues }) {
 
-        if (!dependencyValues.operatorBasedOnFormula || dependencyValues.functionChild.length === 0) {
-          return { newValues: { formula: me.fromAst("\uff3f") } }
+        console.log(dependencyValues)
+
+        if (!dependencyValues.operatorBasedOnFormulaIfAvailable
+          || dependencyValues.functionChild.length === 0
+          || dependencyValues.functionChild[0].stateValues.formula.tree === "\uff3f"
+        ) {
+          return {
+            newValues: {
+              formula: me.fromAst("\uff3f"),
+              operatorBasedOnFormula: false
+            }
+          }
         }
 
         return {
           newValues: {
             formula: dependencyValues.formulaOperator(
               dependencyValues.functionChild[0].stateValues.formula
-            )
+            ),
+            operatorBasedOnFormula: true,
           }
         }
       }
@@ -180,6 +197,10 @@ export default class FunctionOperator extends Function {
         numericFunctionOperator: {
           dependencyType: "stateVariable",
           variableName: "numericFunctionOperator"
+        },
+        operatorComposesWithOriginal: {
+          dependencyType: "stateVariable",
+          variableName: "operatorComposesWithOriginal"
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -202,12 +223,22 @@ export default class FunctionOperator extends Function {
             }
           }
         } else {
-          return {
-            newValues: {
-              numericalf: function (x) {
-                return dependencyValues.numericFunctionOperator(
-                  dependencyValues.functionChild[0].stateValues.numericalf(x)
-                )
+          if (dependencyValues.operatorComposesWithOriginal) {
+            return {
+              newValues: {
+                numericalf: function (x) {
+                  return dependencyValues.numericFunctionOperator(
+                    dependencyValues.functionChild[0].stateValues.numericalf(x)
+                  )
+                }
+              }
+            }
+          } else {
+            return {
+              newValues: {
+                numericalf: function (x) {
+                  return dependencyValues.numericFunctionOperator(x)
+                }
               }
             }
           }
@@ -238,6 +269,10 @@ export default class FunctionOperator extends Function {
         functionOperator: {
           dependencyType: "stateVariable",
           variableName: "functionOperator"
+        },
+        operatorComposesWithOriginal: {
+          dependencyType: "stateVariable",
+          variableName: "operatorComposesWithOriginal"
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -256,13 +291,22 @@ export default class FunctionOperator extends Function {
             }
           }
         } else {
-
-          return {
-            newValues: {
-              f: function (x) {
-                return dependencyValues.functionOperator(
-                  dependencyValues.functionChild[0].stateValues.f(x)
-                )
+          if (dependencyValues.operatorComposesWithOriginal) {
+            return {
+              newValues: {
+                f: function (x) {
+                  return dependencyValues.functionOperator(
+                    dependencyValues.functionChild[0].stateValues.f(x)
+                  )
+                }
+              }
+            }
+          } else {
+            return {
+              newValues: {
+                f: function (x) {
+                  return dependencyValues.functionOperator(x)
+                }
               }
             }
           }
@@ -276,7 +320,7 @@ export default class FunctionOperator extends Function {
     // should depend on a function child
     stateVariableDefinitions.functionChild = {
       returnDependencies: () => ({}),
-      definition: () =>({ newValues: { functionChild: null } })
+      definition: () => ({ newValues: { functionChild: null } })
     }
 
     // remove function child dependency from minima
