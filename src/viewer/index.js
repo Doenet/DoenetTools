@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import DoenetViewerWindow from '../React/DoenetViewerWindow';
+import DoenetViewerWindow from '../Tools/DoenetViewerWindow';
 
   //  const 
 

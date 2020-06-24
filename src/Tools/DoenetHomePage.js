@@ -270,6 +270,9 @@ class DoenetHomePage extends Component {
                      research using the content, and discovering the most effective content based on the research results. </p>
 
               <p style={{ textAlign: "left" }}>The Doenet platform is just getting started.  We are excited to introduce early versions of two projects: DoenetML, a markup language for authoring interactive online activities, and DoenetAPI, a library for connecting web pages to the Doenet data layer, enabling tracking of student data across web pages and multiuser interactives.</p>
+            
+              {/* <p style={{ textAlign: "left" }}>For more background and information on the Doenet project, see <a style={{ color: "#6d4445" }} target="_blank" href="https://www.mathvalues.org/masterblog/reimagining-online-mathematics">this MAA DUE Point article</a>.</p> */}
+              <p style={{ textAlign: "left" }}>For more background and information on the Doenet project, see <a style={{ color: "#6d4445" }} href="https://www.mathvalues.org/masterblog/reimagining-online-mathematics">this MAA DUE Point article</a>.</p>
             </div>
           </div>
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import DoenetDocs from '../React/DoenetDocs';
+import DoenetDocs from '../Tools/DoenetDocs';
 
 ReactDOM.render(
   <DoenetDocs/>
