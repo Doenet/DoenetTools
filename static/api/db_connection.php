@@ -22,6 +22,9 @@ if ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == 'localhost:
   $database = "doenet_local";
   $dbhost = "127.0.0.1";
 }
+if ($_SERVER['HTTP_HOST'] == 'localhost:3000'){
+  $password = "root";
+}
 
 $conn = mysqli_connect($dbhost, $username, $password, $database);
 // Check connection
