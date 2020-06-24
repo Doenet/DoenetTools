@@ -263,7 +263,7 @@ class DoenetGuestEditor extends Component {
           Ignored
         </ToolLayoutPanel>
         <ToolLayoutPanel panelHeaderControls={[doenetViewerMenu]} panelName="Doenet Interactive">
-          {doenetViewer}
+        <div style={{display:'flex', flexDirection:'column'}}> {doenetViewer}</div>
         </ToolLayoutPanel>
         <ToolLayoutPanel panelHeaderControls={[textEditorMenu]} panelName="DoenetML Code">
           <div style={{ width: "100%", height: "calc(100vh - 42px)" }} >

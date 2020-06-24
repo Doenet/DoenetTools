@@ -387,8 +387,8 @@ describe('Curve Tag Tests', function () {
     <mathinput prefill="2"/>
     <graph>
     <curve>
-    x = <math>t</math><ref prop="value">_mathinput1</ref>+1,
-    y = <math>t^3</math>-<ref prop="value">_mathinput1</ref>
+    x = <math>t</math><copy prop="value" tname="_mathinput1" />+1,
+    y = <math>t^3</math>-<copy prop="value" tname="_mathinput1" />
     </curve>
     </graph>
     `}, "*");
@@ -447,13 +447,13 @@ describe('Curve Tag Tests', function () {
     <mathinput prefill="2"/>
     <graph>
     <curve variables="u,v" parameter="s">
-    <parmin><ref prop="value">_mathinput1</ref></parmin>
-    <parmax><ref prop="value">_mathinput2</ref></parmax>
+    <parmin><copy prop="value" tname="_mathinput1" /></parmin>
+    <parmax><copy prop="value" tname="_mathinput2" /></parmax>
     u=s^3, v=sin(2s)
     </curve>
     
     <point>(7,1)
-    <constrainTo><ref>_curve1</ref></constrainTo>
+    <constrainTo><copy tname="_curve1" /></constrainTo>
     </point>
     
     </graph>
@@ -557,8 +557,8 @@ describe('Curve Tag Tests', function () {
     <mathinput prefill="2"/>
     <graph>
     <parametrizedcurve>
-    <function variable="t"><math>t</math><ref prop="value">_mathinput1</ref>+1</function>
-    <function variable="t"><math>t^3</math>-<ref prop="value">_mathinput1</ref></function>
+    <function variable="t"><math>t</math><copy prop="value" tname="_mathinput1" />+1</function>
+    <function variable="t"><math>t^3</math>-<copy prop="value" tname="_mathinput1" /></function>
     </parametrizedcurve>
     </graph>
     `}, "*");
@@ -603,14 +603,14 @@ describe('Curve Tag Tests', function () {
     <mathinput prefill="2"/>
     <graph>
     <parametrizedcurve>
-    <parmin><ref prop="value">_mathinput1</ref></parmin>
-    <parmax><ref prop="value">_mathinput2</ref></parmax>
+    <parmin><copy prop="value" tname="_mathinput1" /></parmin>
+    <parmax><copy prop="value" tname="_mathinput2" /></parmax>
     <function variable="s">s^3</function>
     <function variable="s">sin(2s)</function>
     </parametrizedcurve>
     
     <point>(7,1)
-    <constrainTo><ref>_parametrizedcurve1</ref></constrainTo>
+    <constrainTo><copy tname="_parametrizedcurve1" /></constrainTo>
     </point>
     
     </graph>

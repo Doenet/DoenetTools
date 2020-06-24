@@ -266,32 +266,35 @@ export default class BezierCurve extends Curve {
           if (arrayKey === undefined) {
             let throughPoints = dependencyValues.throughChild[0].stateValues.points;
 
-            let overwriteArray = changes.throughChild.componentIdentitiesChanged;
+            if (changes.throughChild) {
 
-            if (changes.throughChild.valuesChanged[0].points.changed.changedEntireArray) {
-              overwriteArray = true;
-            }
+              let overwriteArray = changes.throughChild.componentIdentitiesChanged;
 
-            if (overwriteArray) {
-              // send array to indicate that should overwrite entire array
-              for (let key in throughPoints) {
-                freshByKeyPoints[key] = true;
-                freshByKeyNumeric[key] = true;
+              if (changes.throughChild.valuesChanged[0].points.changed.changedEntireArray) {
+                overwriteArray = true;
               }
 
-              let newPointValues = [];
-              let newPointsAreNumeric = [];
+              if (overwriteArray) {
+                // send array to indicate that should overwrite entire array
+                for (let key in throughPoints) {
+                  freshByKeyPoints[key] = true;
+                  freshByKeyNumeric[key] = true;
+                }
 
-              for (let coords of throughPoints) {
-                let { coordsNumeric, numericEntries } = getNumericalCoords(coords)
-                newPointValues.push(coordsNumeric);
-                newPointsAreNumeric.push(numericEntries);
-              }
+                let newPointValues = [];
+                let newPointsAreNumeric = [];
 
-              return {
-                newValues: {
-                  throughPoints: newPointValues,
-                  throughPointsAreNumeric: newPointsAreNumeric
+                for (let coords of throughPoints) {
+                  let { coordsNumeric, numericEntries } = getNumericalCoords(coords)
+                  newPointValues.push(coordsNumeric);
+                  newPointsAreNumeric.push(numericEntries);
+                }
+
+                return {
+                  newValues: {
+                    throughPoints: newPointValues,
+                    throughPointsAreNumeric: newPointsAreNumeric
+                  }
                 }
               }
             }

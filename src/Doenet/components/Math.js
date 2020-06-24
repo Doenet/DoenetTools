@@ -987,7 +987,9 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
   let childrenToSkip = [];
   if (arrayEntriesNotAffected && stateValues.mathChildrenByArrayComponent) {
     for (let ind of arrayEntriesNotAffected) {
-      childrenToSkip.push(...stateValues.mathChildrenByArrayComponent[ind])
+      if (stateValues.mathChildrenByArrayComponent[ind]) {
+        childrenToSkip.push(...stateValues.mathChildrenByArrayComponent[ind])
+      }
     }
   }
 

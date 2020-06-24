@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import DropItem from "./TreeView/components/drop-item";
 import DragItem from "./TreeView/components/drag-item";
 import { formatTimestamp } from './chooser/utility';
+import ChooserConstants from './chooser/ChooserConstants';
 
 
 class DoenetBranchBrowser extends Component {
@@ -30,12 +31,14 @@ class DoenetBranchBrowser extends Component {
       directoryStack: props.directoryData,
       selectedItems: props.selectedItems,
       selectedItemsType: props.selectedItemsType,
+      currentDraggedOverFolder: null,
+      currentDraggedOverBreadcrumb: null,
       sortBy: "title",
       sortOrderAsc: "ASC",
     }
 
     // handle null props
-    this.hideAddRemoveButtons = this.disableEditing = this.props.addContentToFolder === null
+    this.disableEditing = this.props.addContentToFolder === null
                      || this.props.removeContentFromFolder === null;
 
     this.handleAddContentToFolder = this.handleAddContentToFolder.bind(this);
@@ -60,6 +63,9 @@ class DoenetBranchBrowser extends Component {
     this.openEditUrlForm = this.openEditUrlForm.bind(this);
     this.onDragStartCb = this.onDragStartCb.bind(this);
     this.onDragEndCb = this.onDragEndCb.bind(this);
+    this.onFolderDropCb = this.onFolderDropCb.bind(this);
+    this.onFolderDropEnterCb = this.onFolderDropEnterCb.bind(this);
+    this.onBreadcrumbDropEnterCb = this.onBreadcrumbDropEnterCb.bind(this);
   }
 
   getAllSelectedItems() {
@@ -130,16 +136,22 @@ class DoenetBranchBrowser extends Component {
     // build directory list
     // always add current drive/course as first item
     directoryList.push(
-      <div 
-      onClick={() => this.jumpToDirectory("")} 
-      key="breadcrumbDrive"
-      data-cy="breadcrumbbase">
-        <label>
-          {this.props.selectedDrive === "Courses" ? 
-            this.props.allCourseInfo[this.props.selectedCourse].courseCode 
-            : this.props.selectedDrive}
-        </label>
-      </div>
+      <DropItem 
+        id={"root"} 
+        onDrop={() => {this.onFolderDropCb("root")}} 
+        onDropEnter={() => {this.onBreadcrumbDropEnterCb("root")}}>
+        <div 
+          onClick={() => this.jumpToDirectory("")} 
+          key="breadcrumbDrive"
+          className={`${"root" == this.state.currentDraggedOverBreadcrumb ? "draggedOverBreadcrumb" : ""} breadcrumbWrapper`}
+          data-cy="breadcrumbbase">
+          <label>
+            {this.props.selectedDrive === "Courses" ? 
+              this.props.allCourseInfo[this.props.selectedCourse].courseCode 
+              : this.props.selectedDrive}
+          </label>
+        </div>
+      </DropItem>
     );
 
     // add items in directoryStack if any
@@ -147,12 +159,19 @@ class DoenetBranchBrowser extends Component {
       let folderTitle = this.props.allFolderInfo[folderId].title;
 
       directoryList.push(
-        <div 
-        onClick={() => this.jumpToDirectory(folderId)} 
-        key={"breadcrumb"+folderId}
-        data-cy={"breadcrumb"+folderId}>
-          <label>{folderTitle}</label>
-        </div>
+        <DropItem 
+        id={folderId} 
+        onDrop={() => {this.onFolderDropCb(folderId)}} 
+        onDropEnter={() => {this.onBreadcrumbDropEnterCb(folderId)}}>
+          <div 
+          onClick={() => this.jumpToDirectory(folderId)} 
+          key={"breadcrumb"+folderId}
+          className={`${folderId == this.state.currentDraggedOverBreadcrumb ? "draggedOverBreadcrumb" : ""} breadcrumbWrapper`}
+          data-cy={"breadcrumb"+folderId}>
+            <label>{folderTitle}</label>
+          </div>
+        </DropItem>
+        
       );
     });
 
@@ -182,34 +201,8 @@ class DoenetBranchBrowser extends Component {
       let isRepo = this.props.allFolderInfo[folderId].isRepo;
       let isPublic = this.props.allFolderInfo[folderId].isPublic;
       let isShared = this.props.allFolderInfo[this.props.allFolderInfo[folderId].rootId].isRepo;
-      let classes = this.state.selectedItems.includes(folderId) ?
+      let classes = this.state.selectedItems.includes(folderId) || folderId == this.state.currentDraggedOverFolder ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
-      
-      let showRemoveItemIcon = false;
-      let showAddItemIcon = true;
-      if (this.props.selectedDrive === "Content") {
-        // disable remove content in base dir when in mycontent
-        let notInBaseDirOfContent = this.state.directoryStack.length !== 0;
-        showRemoveItemIcon = !this.hideAddRemoveButtons && 
-                              notInBaseDirOfContent &&
-                              this.state.selectedItems.length !== 0 &&
-                              this.state.selectedItems.includes(folderId);
-
-        showAddItemIcon = !this.hideAddRemoveButtons &&
-                          this.state.selectedItems.length !== 0 &&
-                          !this.state.selectedItems.includes(folderId) &&
-                          !this.state.selectedItems.includes(this.state.directoryStack[this.state.directoryStack.length - 1]);
-
-      } else if (this.props.selectedDrive === "Courses") {
-        // disable remove content when not in base dir
-        let inBaseDir = this.state.directoryStack.length === 0;
-        showRemoveItemIcon = !this.hideAddRemoveButtons &&
-                              inBaseDir &&
-                              this.state.selectedItems.length !== 0 &&
-                              this.state.selectedItems.includes(folderId);
-        // restrict content editing in courses
-        showAddItemIcon = false;
-      }
 
 
       this.folderItems.push(
@@ -230,12 +223,15 @@ class DoenetBranchBrowser extends Component {
           key={"folder" + folderId}
           tableIndex={this.tableIndex++}
           handleAddContentToFolder={this.handleAddContentToFolder}
-          showAddItemIcon={showAddItemIcon}
-          showRemoveItemIcon={showRemoveItemIcon}
           handleRemoveContent={this.props.selectedDrive === "Content" ? 
                               this.handleRemoveContentFromCurrentFolder :
                               this.handleRemoveContentFromCourse}
-          renameFolder={this.props.renameFolder}/>
+          renameFolder={this.props.renameFolder}
+          onDragStart={this.onDragStartCb}
+          onDragEnd={this.onDragEndCb}
+          onDropEnter={this.onFolderDropEnterCb}
+          onDrop={this.onFolderDropCb}
+          />
       );
     }
   }
@@ -260,24 +256,6 @@ class DoenetBranchBrowser extends Component {
       let isPublic = this.props.allContentInfo[branchId].isPublic;
       let classes = this.state.selectedItems.includes(branchId) ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
-      
-      let showRemoveItemIcon = false;
-      if (this.props.selectedDrive === "Content") {
-        // disable remove content in base dir when in mycontent
-        let notInBaseDirOfContent = this.state.directoryStack.length !== 0;
-        showRemoveItemIcon = !this.hideAddRemoveButtons && 
-                              notInBaseDirOfContent &&
-                              this.state.selectedItems.length !== 0 &&
-                              this.state.selectedItems.includes(branchId);
-
-      } else if (this.props.selectedDrive === "Courses") {
-        // disable remove content when not in base dir
-        let inBaseDir = this.state.directoryStack.length === 0;
-        showRemoveItemIcon = !this.hideAddRemoveButtons &&
-                              inBaseDir &&
-                              this.state.selectedItems.length !== 0 &&
-                              this.state.selectedItems.includes(branchId);
-      }
 
       // create table row items to be rendered in chooser
       this.contentItems.push(
@@ -293,7 +271,6 @@ class DoenetBranchBrowser extends Component {
         isPublic={isPublic}
         key={"contentItem" + branchId}
         tableIndex={this.tableIndex++}
-        showRemoveItemIcon={showRemoveItemIcon}
         handleRemoveContent={this.props.selectedDrive === "Content" ? 
                             this.handleRemoveContentFromCurrentFolder :
                             this.handleRemoveContentFromCourse}
@@ -307,7 +284,6 @@ class DoenetBranchBrowser extends Component {
   buildUrlItems(){
     this.urlItems = [];
     this.urlList = this.props.urlList;
-    console.log(this.urlList)
     // show items in current directory
     if (this.state.directoryStack.length !== 0) {
       let folderId = this.peekDirectoryStack();
@@ -326,24 +302,6 @@ class DoenetBranchBrowser extends Component {
       let isPublic = this.props.allUrlInfo[urlId].isPublic;
       let classes = this.state.selectedItems.includes(urlId) ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
-      
-      let showRemoveItemIcon = false;
-      if (this.props.selectedDrive === "Content") {
-        // disable remove content in base dir when in mycontent
-        let notInBaseDirOfContent = this.state.directoryStack.length !== 0;
-        showRemoveItemIcon = !this.hideAddRemoveButtons && 
-                              notInBaseDirOfContent &&
-                              this.state.selectedItems.length !== 0 &&
-                              this.state.selectedItems.includes(urlId);
-
-      } else if (this.props.selectedDrive === "Courses") {
-        // disable remove content when not in base dir
-        let inBaseDir = this.state.directoryStack.length === 0;
-        showRemoveItemIcon = !this.hideAddRemoveButtons &&
-                              inBaseDir &&
-                              this.state.selectedItems.length !== 0 &&
-                              this.state.selectedItems.includes(urlId);
-      }
 
       // create table row items to be rendered in chooser
       this.urlItems.push(
@@ -360,11 +318,12 @@ class DoenetBranchBrowser extends Component {
         isPublic={isPublic}
         key={"urlItem" + urlId}
         tableIndex={this.tableIndex++}
-        showRemoveItemIcon={showRemoveItemIcon}
         handleRemoveContent={this.props.selectedDrive === "Content" ? 
                             this.handleRemoveContentFromCurrentFolder :
-                            this.handleRemoveContentFromCourse}/>);
-        
+                            this.handleRemoveContentFromCourse}
+        onDragStart={this.onDragStartCb}
+        onDragEnd={this.onDragEndCb}
+        onDragOver={this.props.onDraggableDragOver}/>);
     }
   }
 
@@ -649,7 +608,7 @@ class DoenetBranchBrowser extends Component {
     }
   }
 
-  onDragStartCb(draggedId, draggedType) {
+  onDragStartCb({draggedId, draggedType, tableIndex}) {
     this.props.onDragStart && 
       this.props.onDragStart({
         draggedId: draggedId, 
@@ -657,6 +616,10 @@ class DoenetBranchBrowser extends Component {
         sourceContainerId: this.props.containerId, 
         parentsInfo: this.props.allFolderInfo, 
         leavesInfo: this.props.allContentInfo });
+
+    if (this.state.selectedItems.indexOf(draggedId) < 0) {
+      this.handleContentItemClick(draggedId, draggedType, tableIndex);
+    }    
   }
 
   onDragEndCb() {
@@ -665,6 +628,32 @@ class DoenetBranchBrowser extends Component {
         containerId: this.props.containerId, 
         parentsInfo: this.props.allFolderInfo, 
         leavesInfo: this.props.allContentInfo });
+    this.setState({
+      currentDraggedOverFolder: null,    
+      currentDraggedOverBreadcrumb: null,
+    })
+  }
+
+  onFolderDropCb(folderId) {
+    this.props.onFolderDrop && 
+      this.props.onFolderDrop({
+        containerId: this.props.containerId, 
+        droppedId: folderId
+      });
+  }
+  
+  onFolderDropEnterCb(folderId) {
+    this.setState({
+      currentDraggedOverFolder: folderId,
+      currentDraggedOverBreadcrumb: null
+    });
+  }
+
+  onBreadcrumbDropEnterCb(folderId) {
+    this.setState({
+      currentDraggedOverBreadcrumb: folderId,
+      currentDraggedOverFolder: null,
+    });
   }
 
   render() {
@@ -711,17 +700,23 @@ class DoenetBranchBrowser extends Component {
                     </th>
                   </tr>
                   {this.state.directoryStack.length !== 0 &&
-                  <tr
-                  className="browserDataRow"
-                  data-cy="upOneDirectory"
-                  onDoubleClick={this.upOneDirectory}>
-                    <td className="browserItemName">
-                      <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
-                      <span>{"..."}</span>
-                    </td>
-                    <td className="draftDate"></td>
-                    <td className="publishDate"></td>
-                  </tr>}
+                  <DropItem 
+                    id={ChooserConstants.PREVIOUS_DIR_ID} 
+                    onDrop={() => this.onFolderDropCb(ChooserConstants.PREVIOUS_DIR_ID)} 
+                    onDropEnter={() => this.onFolderDropEnterCb(ChooserConstants.PREVIOUS_DIR_ID)}>
+                    <tr
+                    className={`${this.state.currentDraggedOverFolder == ChooserConstants.PREVIOUS_DIR_ID ? "browserSelectedRow" : "" } browserDataRow`}
+                    data-cy="upOneDirectory"
+                    onDoubleClick={this.upOneDirectory}>
+                      <td className="browserItemName">
+                        <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>
+                        <span>{"..."}</span>
+                      </td>
+                      <td className="draftDate"></td>
+                      <td className="publishDate"></td>  
+                    </tr>
+                  </DropItem>
+                  }
                   {this.folderList.length == 0 && this.contentList.length == 0 && this.urlList.length == 0 &&
                     <div id="browserEmptyMessage"><span>Create new files or folders using the New button</span></div>}
                   {this.folderItems}
@@ -737,7 +732,7 @@ class DoenetBranchBrowser extends Component {
 }
 
 const File = ({ branchId, classes, onClick, onDoubleClick, title, publishDate,
-  draftDate, isShared, isPublic, tableIndex, showRemoveItemIcon, handleRemoveContent,
+  draftDate, isShared, isPublic, tableIndex, handleRemoveContent,
   onDragStart, onDragOver, onDragEnd }) => {
 
   const onDraggableDragOverCb = (listId) => {
@@ -745,7 +740,7 @@ const File = ({ branchId, classes, onClick, onDoubleClick, title, publishDate,
   }
 
   const onDragStartCb = (draggedId) => {
-    onDragStart(draggedId, "content");
+    onDragStart({draggedId: draggedId, draggedType: "content", tableIndex: tableIndex});
   }
 
   return(
@@ -767,12 +762,6 @@ const File = ({ branchId, classes, onClick, onDoubleClick, title, publishDate,
         </td>
         <td className="publishDate">
           <div style={{"position":"relative"}}>
-            {showRemoveItemIcon && 
-            <div className="removeContentButtonWrapper">
-              <FontAwesomeIcon icon={faArrowRight} className="removeContentButton" 
-              onClick={() => handleRemoveContent(branchId)}/>
-              <div className="removeContentButtonInfo"><span>Move out folder</span></div>
-            </div>}
             <span>{publishDate}</span>
           </div>          
         </td>
@@ -782,42 +771,43 @@ const File = ({ branchId, classes, onClick, onDoubleClick, title, publishDate,
   );
 }
 
-class Url extends React.Component {
-  constructor(props) {
-    super(props);
-  }
+const Url = ({ urlId, classes, onClick, onDoubleClick, title, publishDate,
+  isShared, isPublic, tableIndex, handleRemoveContent,
+  onDragStart, onDragOver, onDragEnd }) => {
 
-  render() {
-
+    const onDraggableDragOverCb = (listId) => {
+      onDragOver(listId, "url")
+    }
+  
+    const onDragStartCb = (draggedId) => {
+      onDragStart({draggedId: draggedId, draggedType: "url", tableIndex: tableIndex});
+    }
+  
     return(
+      <DragItem id={urlId} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
       <tr
-      className={this.props.classes}
-      onClick={() => this.props.onClick(this.props.urlId, "url", this.props.tableIndex)}
-      onDoubleClick={() => this.props.onDoubleClick(this.props.urlId)}
-      data-cy={this.props.urlId}>
+      className={classes}
+      onClick={() => onClick(urlId, "url", tableIndex)}
+      onDoubleClick={() => onDoubleClick(urlId)}
+      data-cy={urlId}>
         <td className="browserItemName">
-          {this.props.isShared && this.props.isPublic ? 
+          {isShared && isPublic ? 
             <FontAwesomeIcon icon={faLink} style={{"fontSize":"18px", "color":"#3aac90", "margin": "0px 15px"}}/> :
             <FontAwesomeIcon icon={faLink} style={{"fontSize":"18px", "color":"#3D6EC9", "margin": "0px 15px"}}/>}
-          <span>{this.props.title}</span>
+          <span>{title}</span>
         </td>
         <td className="draftDate">
           <span>-</span>
         </td>
         <td className="publishDate">
           <div style={{"position":"relative"}}>
-            {this.props.showRemoveItemIcon && 
-            <div className="removeContentButtonWrapper">
-              <FontAwesomeIcon icon={faArrowRight} className="removeContentButton" 
-              onClick={() => this.props.handleRemoveContent(this.props.urlId)}/>
-              <div className="removeContentButtonInfo"><span>Move out folder</span></div>
-            </div>}
-            <span>{this.props.publishDate}</span>
+            <span>{publishDate}</span>
           </div>          
         </td>
       </tr>
+      </DragItem>
     );
-  }
+   
 }
 
 class Folder extends React.Component {
@@ -852,6 +842,14 @@ class Folder extends React.Component {
     } 
   }
 
+  onDragStartCb = (draggedId) => {
+    this.props.onDragStart({draggedId: draggedId, draggedType: "folder", tableIndex: this.props.tableIndex});
+  }
+
+  onDropCb = () => {
+    this.props.onDrop(this.props.folderId);
+  }
+
   render() {
     let folderIcon = <FontAwesomeIcon icon={faFolder} style={{"fontSize":"18px", "color":"#737373", "margin": "0px 15px"}}/>;
     if (this.props.isRepo) {
@@ -863,43 +861,37 @@ class Folder extends React.Component {
     }
 
     return(
-      <tr
-      className={this.props.classes}
-      onClick={() => this.props.onClick(this.props.folderId, "folder", this.props.tableIndex)}
-      onDoubleClick={() => this.props.onDoubleClick(this.props.folderId)}
-      data-cy={this.props.folderId}>
-        <td className="browserItemName">
-          <div style={{"position":"relative"}}>
-            {this.props.showAddItemIcon && 
-            <div className="addContentButtonWrapper">
-              <FontAwesomeIcon icon={faArrowRight} className="addContentButton" 
-              onClick={() => this.props.handleAddContentToFolder(this.props.folderId)}/>
-              <div className="addContentButtonInfo"><span>Move to Folder</span></div>
-            </div>}
-            {folderIcon}
-            <span
-            contentEditable="true"
-            onKeyDown={(e) => {this.handleKeyPress(e)}}
-            onBlur={(e) => this.handleTitleChange(e)}
-            suppressContentEditableWarning={true}
-            >{this.state.title}</span>
-          </div>          
-        </td>
-        <td className="draftDate">
-          <span>{this.props.draftDate}</span>
-        </td>
-        <td className="publishDate">
-          <div style={{"position":"relative"}}>
-            {this.props.showRemoveItemIcon && 
-            <div className="removeContentButtonWrapper">
-              <FontAwesomeIcon icon={faArrowRight} className="removeContentButton" 
-              onClick={() => this.props.handleRemoveContent(this.props.folderId)}/>
-              <div className="removeContentButtonInfo"><span>Move out folder</span></div>
-            </div>}
-            <span>{this.props.publishDate}</span>
-          </div>          
-        </td>
-      </tr>
+      <DragItem id={this.props.folderId} onDragStart={this.onDragStartCb} onDragEnd={this.props.onDragEnd}>
+        <DropItem id={this.props.folderId} 
+          onDrop={this.onDropCb} 
+          onDropEnter={() => this.props.onDropEnter(this.props.folderId)}>
+          <tr
+          className={this.props.classes}
+          onClick={() => this.props.onClick(this.props.folderId, "folder", this.props.tableIndex)}
+          onDoubleClick={() => this.props.onDoubleClick(this.props.folderId)}
+          data-cy={this.props.folderId}>
+            <td className="browserItemName">
+              <div style={{"position":"relative"}}>
+                {folderIcon}
+                <span
+                contentEditable="true"
+                onKeyDown={(e) => {this.handleKeyPress(e)}}
+                onBlur={(e) => this.handleTitleChange(e)}
+                suppressContentEditableWarning={true}
+                >{this.state.title}</span>
+              </div>          
+            </td>
+            <td className="draftDate">
+              <span>{this.props.draftDate}</span>
+            </td>
+            <td className="publishDate">
+              <div style={{"position":"relative"}}>
+                <span>{this.props.publishDate}</span>
+              </div>          
+            </td>
+          </tr>
+        </DropItem>
+      </DragItem>
     );
   }
 }

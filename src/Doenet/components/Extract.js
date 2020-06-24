@@ -3,6 +3,8 @@ import CompositeComponent from './abstract/CompositeComponent';
 export default class Extract extends CompositeComponent {
   static componentType = "extract";
 
+  static useReplacementsWhenCopyProp = true;
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -204,6 +206,17 @@ export default class Extract extends CompositeComponent {
       }
     }
 
+    stateVariableDefinitions.replacementClassesForProp = {
+      returnDependencies: () => ({
+        replacementClasses: {
+          dependencyType: "stateVariable",
+          variableName: "replacementClasses"
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { replacementClassesForProp: dependencyValues.replacementClasses }
+      })
+    }
 
     stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({
@@ -230,6 +243,8 @@ export default class Extract extends CompositeComponent {
         "propVariableObjs"
       ],
       returnDependencies: function ({ stateValues }) {
+        // console.log('dependencies for needsreplace')
+        // console.log(stateValues)
         let dependencies = {};
 
         if (stateValues.propVariableObjs === null) {
@@ -359,7 +374,7 @@ export default class Extract extends CompositeComponent {
           downstreamDependencies: {
             [sourceName]: [{
               dependencyType: "referenceShadow",
-              refComponentName: component.componentName,
+              compositeName: component.componentName,
               propVariable: arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey),
               // arrayStateVariable: propVariableObj.varName,
               // arrayKey
@@ -387,7 +402,7 @@ export default class Extract extends CompositeComponent {
           downstreamDependencies: {
             [sourceName]: [{
               dependencyType: "referenceShadow",
-              refComponentName: component.componentName,
+              compositeName: component.componentName,
               propVariable: arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey),
               // propVariable: propVariableObj.varName,
               // arrayStateVariable: propVariableObj.arrayVarName,
@@ -404,7 +419,7 @@ export default class Extract extends CompositeComponent {
           downstreamDependencies: {
             [sourceName]: [{
               dependencyType: "referenceShadow",
-              refComponentName: component.componentName,
+              compositeName: component.componentName,
               propVariable: propVariableObj.varName,
             }]
           }

@@ -25,8 +25,6 @@
   display: block;
   width: 100%;
   max-height: 77vh;
-  padding-right: 15px;
-  margin-right: 5px;
   padding-bottom: 10%;
   overflow-y: scroll;
 }
@@ -336,11 +334,19 @@ tbody::-webkit-scrollbar-thumb {
   margin: 0;
 }
 
-.breadcrumbItem {
-  font-size: 18px;
+.breadcrumbWrapper {
   margin: 2px 0;
   padding: 4px 8px 4px;
+}
+
+.breadcrumbItem {
+  font-size: 18px;
   color: #8a8a8a;
+}
+
+.draggedOverBreadcrumb {
+  background-color: #e6efff;
+  color: #2675ff;
 }
 
 .breadcrumbItem:hover {

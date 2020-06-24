@@ -16,7 +16,12 @@ export default class Answer extends InlineComponent {
     let properties = super.createPropertiesObject(args);
     properties.weight = { default: 1 };
     properties.inline = { default: false, propagateToDescendants: true };
-    properties.type = { default: "math", propagateToDescendants: true };
+    properties.type = {
+      default: "math",
+      propagateToDescendants: true,
+      toLowerCase: true,
+      validValues: ["math", "text"]
+    };
     properties.splitIntoOptions = { default: false, propagateToDescendants: true };
     properties.fixedOrder = { default: false, propagateToDescendants: true };
     properties.size = { default: 10, propagateToDescendants: true };
@@ -43,20 +48,15 @@ export default class Answer extends InlineComponent {
       // answer where only child is a string (other than activeChildren from properties)
       // create two activeChildren for the answer:
       // <[defaultType]input/>
-      // <award><when><ref prop="value">[theinput]</ref>=<[type]>[originalString]</[type]></when></award>
+      // <award><when><copy prop="value" tname="[theinput]"/">=<[type]>[originalString]</[type]></when></award>
 
       let inputType, typeUsed;
-      if (dependencyValues.type === "math") {
-        inputType = "mathinput";
-        typeUsed = "math";
-      } else if (dependencyValues.type === "text") {
+      if (dependencyValues.type === "text") {
         inputType = "textinput";
         typeUsed = "text";
       } else {
-        console.warn(`Invalid type ${dependencyValues.type} for answer, defaulting to math`);
         inputType = "mathinput";
         typeUsed = "math";
-        // return { success: false };
       }
 
       let toDelete = [];
@@ -81,7 +81,7 @@ export default class Answer extends InlineComponent {
         });
 
         let breakResults = breakFunction({ dependencyValues })
-        
+
         if (breakResults.success) {
           childrenForEquals = breakResults.newChildren;
           toDelete = breakResults.toDelete;
@@ -92,10 +92,12 @@ export default class Answer extends InlineComponent {
 
       let whenChildren = [
         {
-          componentType: 'ref', children: [
-            { componentType: 'reftarget', state: { refTargetName: componentName } },
-            { componentType: 'prop', state: { variableName: "value" } }
-          ]
+          componentType: 'copy',
+          children: [
+            { componentType: 'tname', state: { targetName: componentName } },
+            { componentType: 'prop', state: { variableName: "immediateValue" } }
+          ],
+          state: { isResponse: true }
         },
         { componentType: 'string', state: { value: '=' } },
         childrenForEquals[0]
@@ -105,8 +107,8 @@ export default class Answer extends InlineComponent {
         whenChildren.push(...[
           { componentType: 'string', state: { value: ' or ' } },
           {
-            componentType: 'ref', children: [
-              { componentType: 'reftarget', state: { refTargetName: componentName } },
+            componentType: 'copy', children: [
+              { componentType: 'tname', state: { targetName: componentName } },
               { componentType: 'prop', state: { variableName: "value" } }
             ]
           },
@@ -164,7 +166,7 @@ export default class Answer extends InlineComponent {
           variableNames: ["value"]
         }
       }),
-      logicToWaitOnSugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
+      logicToWaitOnSugar: ["atLeastZeroCompleteAwards", "anyInlineComponents"],
       replacementFunction: replaceFromOneString,
     });
 
@@ -173,7 +175,7 @@ export default class Answer extends InlineComponent {
       // answer where only child is a math (other than activeChildren from properties)
       // create two activeChildren for the answer:
       // <mathinput/>
-      // <award><when><ref prop="value">[themathinput]</ref>=[originalMath]</when></award>
+      // <award><when><copy prop="value" tname="[themathinput]"/>=[originalMath]</when></award>
 
       let componentName = createUniqueName("mathinput", idRng)
 
@@ -197,10 +199,12 @@ export default class Answer extends InlineComponent {
               {
                 componentType: 'when', children: [
                   {
-                    componentType: 'ref', children: [
-                      { componentType: 'reftarget', state: { refTargetName: componentName } },
-                      { componentType: 'prop', state: { variableName: "value" } }
-                    ]
+                    componentType: 'copy',
+                    children: [
+                      { componentType: 'tname', state: { targetName: componentName } },
+                      { componentType: 'prop', state: { variableName: "immediateValue" } }
+                    ],
+                    state: { isResponse: true }
                   },
                   { componentType: 'string', state: { value: '=' } },
                   {
@@ -226,7 +230,7 @@ export default class Answer extends InlineComponent {
           variableName: "size"
         }
       }),
-      logicToWaitOnSugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
+      logicToWaitOnSugar: ["atLeastZeroCompleteAwards", "anyInlineComponents"],
       replacementFunction: replaceFromOneMath,
     });
 
@@ -235,7 +239,7 @@ export default class Answer extends InlineComponent {
       // answer where only child is a text (other than activeChildren from properties)
       // create two activeChildren for the answer:
       // <textinput/>
-      // <award><when><ref prop="value">[thetextinput]</ref>=[originaltext]</when></award>
+      // <award><when><copy prop="value" tname="[thetextinput]"/>=[originaltext]</when></award>
 
       let componentName = createUniqueName("textinput", idRng)
 
@@ -259,10 +263,12 @@ export default class Answer extends InlineComponent {
               {
                 componentType: 'when', children: [
                   {
-                    componentType: 'ref', children: [
-                      { componentType: 'reftarget', state: { refTargetName: componentName } },
-                      { componentType: 'prop', state: { variableName: "value" } }
-                    ]
+                    componentType: 'copy',
+                    children: [
+                      { componentType: 'tname', state: { targetName: componentName } },
+                      { componentType: 'prop', state: { variableName: "immediateValue" } }
+                    ],
+                    state: { isResponse: true }
                   },
                   { componentType: 'string', state: { value: '=' } },
                   {
@@ -288,7 +294,7 @@ export default class Answer extends InlineComponent {
           variableName: "size"
         }
       }),
-      logicToWaitOnSugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
+      logicToWaitOnSugar: ["atLeastZeroCompleteAwards", "anyInlineComponents"],
 
       replacementFunction: replaceFromOneText,
     });
@@ -300,7 +306,7 @@ export default class Answer extends InlineComponent {
       // and for each choice
       // create an award of the form
       // <award><credit>[creditfromchoice]</credit>
-      //   <when><ref prop="selectedindex">[thechoiceinput]</ref>=[indexofchoice]</when>
+      //   <when><copy prop="selectedindex" tname="[thechoiceinput]"/>=[indexofchoice]</when>
       // </award>
       // also determine inline based on inline property of answer
 
@@ -315,6 +321,7 @@ export default class Answer extends InlineComponent {
         componentType: "choiceinput",
         doenetAttributes: { componentName: componentName },
         children: choiceComponents,
+        state: { isResponse: true }
       };
 
       return {
@@ -341,8 +348,7 @@ export default class Answer extends InlineComponent {
       // answer where only activeChildren (other than from properties) are incomplete awards
       // (meaning awards with a <string> child rather than an <when> child)
       // create an input and replace the <string> child of each award with
-      // <when><ref prop="value">[theinput]</ref>=<defaultType>[originalString]</type></when>
-
+      // <when><copy prop="value" tname="[theinput]"/>=<defaultType>[originalString]</type></when>
 
       // if all award have that aren't strings have same incomplete type,
       // use that type
@@ -400,7 +406,7 @@ export default class Answer extends InlineComponent {
       let childChanges = {};
       // note: use dependency value incomplete Awards
       // rather than activeChildrenMatch so have access to state variables
-      for (let award of dependencyValues.incompleteAwards) {
+      for (let [ind, award] of dependencyValues.incompleteAwards.entries()) {
         newChildren.push({
           createdComponent: true,
           componentName: award.componentName
@@ -428,16 +434,16 @@ export default class Answer extends InlineComponent {
               childrenToComponentFunction,
               dependencyNameWithChildren: "childForIncomplete"
             });
-    
+
 
             // since break function is expecting a dependencyValue with childForIncomplete
             // we create a dependencyValues object with that structure
-            let breakResults = breakFunction({ 
+            let breakResults = breakFunction({
               dependencyValues: {
                 childForIncomplete: [dependencyValues.incompleteAwards[0].stateValues.childForIncomplete]
-              } 
+              }
             })
-            
+
 
             if (breakResults.success) {
               childrenForEquals = breakResults.newChildren;
@@ -447,12 +453,18 @@ export default class Answer extends InlineComponent {
           }
         }
 
+        // since all awards refer to the same input,
+        // have the copy be a response for just the first award
+        let isResponse = ind === 0;
+
         let whenChildren = [
           {
-            componentType: 'ref', children: [
-              { componentType: 'reftarget', state: { refTargetName: componentName } },
-              { componentType: 'prop', state: { variableName: "value" } }
-            ]
+            componentType: 'copy',
+            children: [
+              { componentType: 'tname', state: { targetName: componentName } },
+              { componentType: 'prop', state: { variableName: "immediateValue" } }
+            ],
+            state: { isResponse }
           },
           { componentType: 'string', state: { value: '=' } },
           childrenForEquals[0]
@@ -462,8 +474,8 @@ export default class Answer extends InlineComponent {
           whenChildren.push(...[
             { componentType: 'string', state: { value: ' or ' } },
             {
-              componentType: 'ref', children: [
-                { componentType: 'reftarget', state: { refTargetName: componentName } },
+              componentType: 'copy', children: [
+                { componentType: 'tname', state: { targetName: componentName } },
                 { componentType: 'prop', state: { variableName: "value" } }
               ]
             },
@@ -516,7 +528,7 @@ export default class Answer extends InlineComponent {
           variableNames: ["incompleteType", "childForIncomplete", "splitIntoOptions"]
         }
       }),
-      logicToWaitOnSugar: ["atLeastOneCompleteAward", "anyInlineComponents"],
+      logicToWaitOnSugar: ["atLeastZeroCompleteAwards", "anyInlineComponents"],
       replacementFunction: replaceFromIncompleteAwards,
       condition: awardIsIncomplete,
     });
@@ -528,84 +540,42 @@ export default class Answer extends InlineComponent {
       return (child.stateValues.incomplete !== true);
     }
 
-    let atLeastOneCompleteAward = childLogic.newLeaf({
-      name: "atLeastOneCompleteAward",
+    let atLeastZeroCompleteAwards = childLogic.newLeaf({
+      name: "atLeastZeroCompleteAwards",
       componentType: 'award',
       comparison: 'atLeast',
-      number: 1,
+      number: 0,
       condition: awardIsComplete,
     });
 
     let incompleteXorCompleteAwards = childLogic.newOperator({
       name: "incompleteXorCompleteAwards",
       operator: 'xor',
-      propositions: [atLeastOneIncompleteAward, atLeastOneCompleteAward]
+      propositions: [atLeastOneIncompleteAward, atLeastZeroCompleteAwards]
     });
 
-    let anyBlockComponents = childLogic.newLeaf({
-      name: "anyBlockComponents",
-      componentType: '_block',
-      comparison: 'atLeast',
-      number: 0,
+    let atMostOneInput = childLogic.newLeaf({
+      name: "atMostOneInput",
+      componentType: '_input',
+      comparison: 'atMost',
+      number: 1,
     });
 
-    let anyInlineComponents = childLogic.newLeaf({
-      name: "anyInlineComponents",
-      componentType: '_inline',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let anyBlockOrInlineComponents = childLogic.newOperator({
-      name: "anyBlockOrInlineComponents",
+    let awardsAndInput = childLogic.newOperator({
+      name: "awardsAndInput",
       operator: 'and',
-      propositions: [anyBlockComponents, anyInlineComponents]
-    });
-
-    let awardsWithOptionalComponents = childLogic.newOperator({
-      name: "awardsWithOptionalComponents",
-      operator: 'and',
-      propositions: [incompleteXorCompleteAwards, anyBlockOrInlineComponents]
-    });
-
-    let anyBlockComponentsForNoAward = childLogic.newLeaf({
-      name: "anyBlockComponentsForNoAward",
-      componentType: '_block',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let anyInlineComponentsForNoAward = childLogic.newLeaf({
-      name: "anyInlineComponentsForNoAward",
-      componentType: '_inline',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let noAward = childLogic.newLeaf({
-      name: "noAward",
-      componentType: 'award',
-      comparison: 'exactly',
-      number: 0,
-      allowSpillover: false,
-    });
-
-    let anyBlockOrInlineComponentsWithNoAward = childLogic.newOperator({
-      name: "anyBlockOrInlineComponentsWithNoAward",
-      operator: 'and',
-      propositions: [noAward, anyBlockComponentsForNoAward, anyInlineComponentsForNoAward]
+      propositions: [incompleteXorCompleteAwards, atMostOneInput]
     });
 
     childLogic.newOperator({
       name: "completeXorSugared",
       operator: 'xor',
       propositions: [
-        awardsWithOptionalComponents,
+        awardsAndInput,
         exactlyOneString,
         exactlyOneMath,
         exactlyOneText,
         atLeastOneChoice,
-        anyBlockOrInlineComponentsWithNoAward
       ],
       setAsBase: true,
     });
@@ -617,23 +587,46 @@ export default class Answer extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.inputDescendants = {
+    stateVariableDefinitions.inputChild = {
+      forRenderer: true,
       returnDependencies: () => ({
-        type: {
-          dependencyType: "stateVariable",
-          variableName: "type"
-        },
-        inputDescendants: {
-          dependencyType: "descendantStateVariables",
-          componentTypes: ["_input"],
-          variableNames: ["componentType", "value", "values",
-            "selectedIndices", "creditAchievedIfSubmit"],
-          variablesOptional: true,
+        inputChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "atMostOneInput"
         },
       }),
       definition: function ({ dependencyValues }) {
+        if (dependencyValues.inputChild.length === 1) {
+          return { newValues: { inputChild: dependencyValues.inputChild[0] } }
+        } else {
+          return { newValues: { inputChild: null } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.responseComponents = {
+      returnDependencies: () => ({
+        awardChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastZeroCompleteAwards",
+          variableNames: ["responseComponents"]
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        let responseComponents = [];
+        if (dependencyValues.awardChildren.length === 0) {
+          if (dependencyValues.inputChild) {
+            responseComponents.push(dependencyValues.inputChild)
+          }
+        } else {
+          for (let awardChild of dependencyValues.awardChildren) {
+            responseComponents.push(...awardChild.stateValues.responseComponents)
+          }
+        }
         return {
-          newValues: { inputDescendants: dependencyValues.inputDescendants }
+          newValues: {
+            responseComponents
+          }
         }
       }
     }
@@ -644,34 +637,52 @@ export default class Answer extends InlineComponent {
       entryPrefixes: ["currentResponse"],
       defaultEntryValue: '\uFF3F',
       returnDependencies: () => ({
-        inputDescendants: {
+        responseComponents: {
           dependencyType: "stateVariable",
-          variableName: "inputDescendants"
+          variableName: "responseComponents"
+        },
+        inputChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneInput",
+          variableNames: ["value", "componentType", "values"],
+          variablesOptional: "true",
         },
       }),
       definition: function ({ dependencyValues, arrayKeys }) {
 
-        let componentType = dependencyValues.inputDescendants.map(x => x.stateValues.componentType);
-
-        let currentResponses = {};
+        let componentType = dependencyValues.responseComponents.map(x => x.componentType);
+        let componentsForResponses = dependencyValues.responseComponents;
+        
+        if(dependencyValues.responseComponents.length === 0 && dependencyValues.inputChild.length === 1) {
+          let inputChild = dependencyValues.inputChild[0];
+          componentType = [inputChild.stateValues.componentType];
+          componentsForResponses = [inputChild];
+        }
 
         let arrayKey;
         if (arrayKeys) {
           arrayKey = arrayKeys[0];
         }
 
+        let currentResponses;
+        if(arrayKey === undefined) {
+          currentResponses = [];
+        } else {
+          currentResponses = {};
+        }
+
         let numberValuesSoFar = 0;
         let matchedArrayKey = false;
 
-        for (let [inputNumber, inputDescendant] of dependencyValues.inputDescendants.entries()) {
+        for (let [responseNumber, responseComponent] of componentsForResponses.entries()) {
 
           let values;
           // if have a values state variable that is an array
           // then each component is considered a response
-          if (Array.isArray(inputDescendant.stateValues.values)) {
-            values = inputDescendant.stateValues.values
+          if (Array.isArray(responseComponent.stateValues.values)) {
+            values = responseComponent.stateValues.values
           } else {
-            values = [inputDescendant.stateValues.value];
+            values = [responseComponent.stateValues.value];
           }
 
           for (let [ind, value] of values.entries()) {
@@ -679,7 +690,7 @@ export default class Answer extends InlineComponent {
             if (arrayKey === valueKey || arrayKey === undefined) {
               currentResponses[valueKey] = value;
               if (arrayKey !== undefined) {
-                componentType = componentType[inputNumber];
+                componentType = componentType[responseNumber];
                 matchedArrayKey = true;
               }
             }
@@ -710,18 +721,29 @@ export default class Answer extends InlineComponent {
       isArray: true,
       entryPrefixes: ["submittedResponse"],
       defaultEntryValue: '\uFF3F',
+      essential: true,
       returnDependencies: () => ({
-        inputDescendants: {
-          dependencyType: "descendantStateVariables",
-          componentTypes: ["_input"],
-          variableNames: ["componentType"],
+        responseComponents: {
+          dependencyType: "stateVariable",
+          variableName: "responseComponents",
+        },
+        inputChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneInput",
+          variableNames: ["value", "componentType", "values"],
+          variablesOptional: "true",
         },
       }),
       definition: function ({ dependencyValues, arrayKeys, freshnessInfo }) {
 
         let freshByKey = freshnessInfo.submittedResponses.freshByKey;
 
-        let componentType = dependencyValues.inputDescendants.map(x => x.stateValues.componentType);
+        let componentType = dependencyValues.responseComponents.map(x => x.componentType);
+        
+        if(dependencyValues.responseComponents.length === 0 && dependencyValues.inputChild.length === 1) {
+          let inputChild = dependencyValues.inputChild[0];
+          componentType = [inputChild.stateValues.componentType];
+        }
 
         let essentialSubmittedResponses = {};
 
@@ -763,18 +785,12 @@ export default class Answer extends InlineComponent {
         }
       },
       inverseDefinition: function ({ desiredStateVariableValues }) {
-        let instructions = [];
-
-        for (let [ind, value] of desiredStateVariableValues.submittedResponses.entries()) {
-          instructions.push({
-            setStateVariable: "submittedResponses",
-            arrayKey: ind,
-            value
-          })
-        }
         return {
           success: true,
-          instructions
+          instructions: [{
+            setStateVariable: "submittedResponses",
+            value: [...desiredStateVariableValues.submittedResponses]
+          }]
         };
       }
     }
@@ -787,9 +803,9 @@ export default class Answer extends InlineComponent {
     stateVariableDefinitions.delegateCheckWork = {
       forRenderer: true,
       returnDependencies: () => ({
-        inputDescendants: {
+        inputChild: {
           dependencyType: "stateVariable",
-          variableName: "inputDescendants"
+          variableName: "inputChild"
         },
         forceFullCheckworkButton: {
           dependencyType: "stateVariable",
@@ -797,7 +813,7 @@ export default class Answer extends InlineComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        let delegateCheckWork = dependencyValues.inputDescendants.length === 1 &&
+        let delegateCheckWork = dependencyValues.inputChild &&
           !dependencyValues.forceFullCheckworkButton;
         return { newValues: { delegateCheckWork } };
       }
@@ -808,12 +824,14 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({
         awardChildren: {
           dependencyType: "childStateVariables",
-          childLogicName: "atLeastOneCompleteAward",
+          childLogicName: "atLeastZeroCompleteAwards",
           variableNames: ["credit", "creditAchieved", "fractionSatisfied"]
         },
-        inputDescendants: {
-          dependencyType: "stateVariable",
-          variableName: "inputDescendants"
+        inputChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneInput",
+          variableNames: ["creditAchievedIfSubmit"],
+          variablesOptional: true,
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -822,12 +840,12 @@ export default class Answer extends InlineComponent {
         let awardUsed = "";
 
         if (dependencyValues.awardChildren.length === 0) {
-          if (dependencyValues.inputDescendants.length === 1) {
-            let inputDescendant = dependencyValues.inputDescendants[0];
-            // if inputDescendant has a state variable creditAchievedIfSubmit
+          if (dependencyValues.inputChild.length === 1) {
+            let inputCredit = dependencyValues.inputChild[0].stateValues.creditAchievedIfSubmit;
+            // if input has a state variable creditAchievedIfSubmit
             // that is a positive number, use that value
-            if (inputDescendant.stateValues.creditAchievedIfSubmit > 0) {
-              creditAchieved = inputDescendant.stateValues.creditAchievedIfSubmit;
+            if (inputCredit > 0) {
+              creditAchieved = inputCredit;
             }
           }
         } else {
@@ -978,10 +996,10 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({
         awardChildren: {
           dependencyType: "childStateVariables",
-          childLogicName: "atLeastOneCompleteAward",
+          childLogicName: "atLeastZeroCompleteAwards",
           variableNames: ["feedbacks"]
         },
-        inputDescendants: {
+        responseComponents: {
           dependencyType: "descendantStateVariables",
           componentTypes: ["_input"],
           variableNames: ["feedbacks"],
@@ -994,9 +1012,9 @@ export default class Answer extends InlineComponent {
         for (let award of dependencyValues.awardChildren) {
           feedbacks.push(...award.stateValues.feedbacks);
         }
-        for (let inputDescendant of dependencyValues.inputDescendants) {
-          if (Array.isArray(inputDescendant.stateValues.feedbacks)) {
-            feedbacks.push(...inputDescendant.stateValues.feedbacks)
+        for (let responseComponent of dependencyValues.responseComponents) {
+          if (Array.isArray(responseComponent.stateValues.feedbacks)) {
+            feedbacks.push(...responseComponent.stateValues.feedbacks)
           }
         }
         return {
@@ -1016,20 +1034,13 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
-        blockOrInlineChildren: {
+        inputChild: {
           dependencyType: "childIdentity",
-          childLogicName: "anyBlockOrInlineComponents"
-        },
-        anyBlockOrInlineComponentsWithNoAward: {
-          dependencyType: "childIdentity",
-          childLogicName: "anyBlockOrInlineComponentsWithNoAward"
+          childLogicName: "atMostOneInput"
         },
       }),
       definition: function ({ dependencyValues }) {
-        let childrenToRender = [
-          ...dependencyValues.blockOrInlineChildren.map(x => x.componentName),
-          ...dependencyValues.anyBlockOrInlineComponentsWithNoAward.map(x => x.componentName)
-        ]
+        let childrenToRender = dependencyValues.inputChild.map(x => x.componentName);
         return {
           newValues: { childrenToRender }
         }
@@ -1065,42 +1076,38 @@ export default class Answer extends InlineComponent {
       value: true
     }];
 
-    // request to update the submittedvalue of each input
-    // and also gather submitted value into own submittedResponses array
-    let submittedResponses = [];
+    // // request to update the submittedvalue of each input
+    // // and also gather submitted value into own submittedResponses array
+    // let submittedResponses = [];
 
-    // if have a single input descendant,
-    // then will set its creditAchieved state variable
-    let creditAchievedForInput = 0;
-    if (this.stateValues.inputDescendants.length === 1) {
-      creditAchievedForInput = creditAchieved;
-    }
 
-    for (let input of this.stateValues.inputDescendants) {
+    if (this.stateValues.inputChild) {
+      // if have a single input descendant,
+      // then will set its creditAchieved state variable
+
       instructions.push({
         updateType: "updateValue",
-        componentName: input.componentName,
+        componentName: this.stateValues.inputChild.componentName,
         stateVariable: "creditAchieved",
-        value: creditAchievedForInput,
+        value: creditAchieved,
       });
 
-      if (input.componentType === "choiceinput") {
-        instructions.push({
-          updateType: "updateValue",
-          componentName: input.componentName,
-          stateVariable: "submittedIndices",
-          value: input.stateValues.selectedIndices
-        })
-        submittedResponses.push(...input.stateValues.values);
-      } else {
-        instructions.push({
-          updateType: "updateValue",
-          componentName: input.componentName,
-          stateVariable: "submittedValue",
-          value: input.stateValues.value,
-        });
-        submittedResponses.push(input.stateValues.value);
-      }
+
+      // if (this.stateValues.inputChild.componentType === "choiceinput") {
+      //   instructions.push({
+      //     updateType: "updateValue",
+      //     componentName: this.stateValues.inputChild.componentName,
+      //     stateVariable: "submittedIndices",
+      //     value: this.stateValues.inputChild.stateValues.selectedIndices
+      //   })
+      // } else {
+      //   instructions.push({
+      //     updateType: "updateValue",
+      //     componentName: this.stateValues.inputChild.componentName,
+      //     stateVariable: "submittedValue",
+      //     value: this.stateValues.inputChild.stateValues.value,
+      //   });
+      // }
     }
 
     // add submitted responses to instruction for answer
@@ -1108,7 +1115,7 @@ export default class Answer extends InlineComponent {
       updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "submittedResponses",
-      value: submittedResponses
+      value: this.stateValues.currentResponses
     })
 
     instructions.push({

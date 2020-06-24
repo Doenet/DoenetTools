@@ -339,7 +339,7 @@ body{
   width: 225px;
   height: auto;
   top: 50px;
-  z-index:1;
+  z-index:999;
   right: -75px;
   background: #fff;
   border: 1px solid #ccc;
@@ -536,7 +536,7 @@ body{
     width: 160px;
     top: 50px;
     right: -55px;
-    z-index: 1;
+    z-index: 999;
     height: auto;
     background: #fff;
     border: 1px solid #ccc;

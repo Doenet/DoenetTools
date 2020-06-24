@@ -9,9 +9,7 @@ export default ({ children, heading, id, onDrop, onDropLeave, onDropEnter, onDro
     ref: dropRef,
     onDropEnter: () => onDropEnter(id),
     onDrop: onDrop,
-    onDropLeave: () => {  
-      onDropLeave(id)
-    },
+    // onDropLeave: () => { onDropleave && onDropLeave(id)},
     onDropExit: onDropExit
   });
   return (

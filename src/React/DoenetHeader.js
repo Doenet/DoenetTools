@@ -9,6 +9,7 @@ import styled from "styled-components";
 
 // import { animated, useSpring } from 'react-spring';
 import Menu from './menu.js'
+import MenuDropDown from '../imports/MenuDropDown.js';
 // import IndexedDB from '../services/IndexedDB';
 // import axios from 'axios';
 // import ConstrainToAngles from '../Doenet/components/ConstrainToAngles';
@@ -326,13 +327,14 @@ class DoenetHeader extends Component {
             <span>{this.props.headingTitle}</span>
           </div>}
           {!this.props.guestUser && <div className="headingToolbar">
-            {isMultipleRoles && <Menu showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} />}
-            {isSingleRole && <div style={{
-              border:'1px solid #e2e2e2',
-              display: "flex",
+            {/* {isMultipleRoles && <Menu showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} />} */}
+             {isMultipleRoles && <MenuDropDown offsetPos={-20} showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} placeholder={"Select Course"} />}
+            {isSingleRole && <button style={{
+              // display: "flex",
               alignItems: "center",
-              padding: "10px",
-               borderRadius: "5px"}}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</div>}
+              // padding: "10px",
+               borderRadius: "5px"
+               }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
             {toolBox}
             {!this.state.myProfile.profilePicture && <div id="userButton-anonymous" onClick={() => { location.href = "/Profile"; }}>
               <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
@@ -360,13 +362,13 @@ class DoenetHeader extends Component {
           </div>}
             {!this.props.guestUser && 
           <div className="extended-header">
-          {isMultipleRoles && <Menu showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} />}
-            {isSingleRole && <div style={{
-              border:'1px solid #e2e2e2',
-              display: "flex",
+          {isMultipleRoles && <MenuDropDown showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} />}
+          {isSingleRole && <button style={{
+              // display: "flex",
               alignItems: "center",
-              padding: "10px",
-               borderRadius: "5px"}}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</div>}
+              // padding: "10px",
+               borderRadius: "5px"
+               }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
             {toolBox}
             {!this.state.myProfile.profilePicture &&
               <div id="userButton-anonymous-phone" onClick={() => { location.href = "/Profile"; }}>
