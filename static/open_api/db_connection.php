@@ -24,7 +24,6 @@ if ($_SERVER['HTTP_HOST'] == 'localhost:3000'){
   $password = "root";
 }
 
-echo "$dbhost, $username, $password, $database";
 $conn = mysqli_connect($dbhost, $username, $password, $database);
 // Check connection
 if (!$conn) {
