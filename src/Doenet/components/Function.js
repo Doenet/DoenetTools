@@ -134,7 +134,7 @@ export default class Function extends InlineComponent {
     let functionFormulaXorSugar = childLogic.newOperator({
       name: "functionFormulaXorSugar",
       operator: 'xor',
-      propositions: [ exactlyOneFunction, exactlyOneFormula, throughCriteria, stringsAndMaths, noFunctions],
+      propositions: [exactlyOneFunction, exactlyOneFormula, throughCriteria, stringsAndMaths, noFunctions],
     })
 
 
@@ -243,7 +243,7 @@ export default class Function extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.functionChild.length === 1) {
-          if(dependencyValues.variableChild.length === 1) {
+          if (dependencyValues.variableChild.length === 1) {
             console.warn("Variable for function is ignored when it has a function child")
           }
           return { newValues: { variable: dependencyValues.functionChild[0].stateValues.variable } }
@@ -2058,7 +2058,27 @@ export default class Function extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.returnDerivativesOfNumericalf = {
+      returnDependencies: () => ({
+        functionChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneFunction",
+          variableNames: ["returnDerivativesOfNumericalf"],
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.functionChild.length === 1 &&
+          dependencyValues.functionChild[0].stateValues.returnDerivativesOfNumericalf
+        ) {
+          return {
+            newValues: { returnDerivativesOfNumericalf: dependencyValues.functionChild[0].stateValues.returnDerivativesOfNumericalf }
+          }
+        } else {
+          return { newValues: { returnDerivativesOfNumericalf: null } }
+        }
+      }
 
+    }
 
     return stateVariableDefinitions;
 
