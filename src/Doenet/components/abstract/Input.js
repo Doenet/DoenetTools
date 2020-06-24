@@ -74,27 +74,27 @@ export default class Input extends InlineComponent {
 
     }
 
-
-    stateVariableDefinitions.disabled = {
-      forRenderer: true,
-      returnDependencies: () => ({
-        collaborateGroups: {
-          dependencyType: "stateVariable",
-          variableName: "collaborateGroups"
-        },
-        collaboration: {
-          dependencyType: "flag",
-          flagName: "collaboration"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        let disabled = false;
-        if (dependencyValues.collaborateGroups) {
-          disabled = !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
-        }
-        return { newValues: { disabled } }
-      }
-    }
+    //TODO: disabled is now in basecomponent - how to make it work with collaborateGroups
+    // stateVariableDefinitions.disabled = {
+    //   forRenderer: true,
+    //   returnDependencies: () => ({
+    //     collaborateGroups: {
+    //       dependencyType: "stateVariable",
+    //       variableName: "collaborateGroups"
+    //     },
+    //     collaboration: {
+    //       dependencyType: "flag",
+    //       flagName: "collaboration"
+    //     }
+    //   }),
+    //   definition: function ({ dependencyValues }) {
+    //     let disabled = false;
+    //     if (dependencyValues.collaborateGroups) {
+    //       disabled = !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
+    //     }
+    //     return { newValues: { disabled } }
+    //   }
+    // }
 
 
     stateVariableDefinitions.valueHasBeenValidated = {
