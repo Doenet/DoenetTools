@@ -168,6 +168,7 @@ export default class BaseComponent {
 
     return {
       hide: { default: false, forRenderer: true },
+      disabled: { default: false, forRenderer: true, propagateToDescendants: true },
       modifyIndirectly: { default: true, propagateToProps: true },
       fixed: { default: false },
       styleNumber: { default: 1, propagateToDescendants: true },
@@ -211,7 +212,7 @@ export default class BaseComponent {
       propertyNames, numerics,
     });
 
-    if(!newDefinitions) {
+    if (!newDefinitions) {
       throw Error(`Error in state variable definitions of ${this.componentType}: returnStateVariableDefinitions did not return anything`)
     }
 
