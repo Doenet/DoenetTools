@@ -111,8 +111,7 @@ function nearestValue(refval, points){
 
 export default function Slider(props) {
   let [name, SVs, actions] = useDoenetRender(props);
-  //console.log(SVs.index);
-  
+  //console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
 
   const containerRef = useRef(null);
 
@@ -134,6 +133,19 @@ export default function Slider(props) {
           setOffsetLeft(rect.left);
       }
   }, []);
+
+  useEffect(() => {
+      //console.log("ran");
+      if(!isMouseDown){
+        setThumbValue(SVs.value);
+        setIndex(SVs.index);
+        if(!(SVs.sliderType === "text")){
+            setThumbXPos((SVs.value - startValue)*divisionWidth);
+        }else{
+            setThumbXPos((SVs.index)*divisionWidth);
+        }
+      }
+  }, [SVs.index]);
 
   if(SVs.hide){
     return null;
@@ -264,21 +276,6 @@ function handlePrevious(e) {
 }
   
   return (
-    // <SliderContainer labeled = {(SVs.showControls||SVs.label)} noTicked = {SVs.showTicks === false} ref = {containerRef}>
-    // <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
-    //     {SVs.label? <StyledValueLabel>{SVs.items[index]}</StyledValueLabel> : null}
-    //     {SVs.showControls? <>
-    //     <button style = {{float: "right", userSelect: "none"}} onClick = {handleNext} disabled>Next</button>
-    //     <button style = {{float: "right", userSelect: "none"}} onClick = {handlePrevious} disabled>Prev</button>
-    //     </> : null}
-    // </div>
-    // <SubContainer2>
-    //     <StyledSlider width = {`${500}px`} >
-    //     <StyledThumb disabled style={{left: `${-3}px`}}/>
-    //     {(SVs.showTicks === false) ? null : ((SVs.sliderType === "text") ? generateTextLabels(SVs.items, divisionWidth) : generateNumericLabels(SVs.items, divisionWidth, startValue))}
-    //     </StyledSlider>
-    // </SubContainer2>
-    // </SliderContainer>
     <SliderContainer  ref = {containerRef} labeled = {(SVs.showControls||SVs.label)} noTicked = {SVs.showTicks === false}>
         <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
             {SVs.label? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
