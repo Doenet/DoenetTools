@@ -16,13 +16,15 @@ $database = $ini_array["database"];
 
 if ($_SERVER['HTTP_HOST'] == 'localhost'){
   $database = "doenet_local";
-  $dbhost = "127.0.0.1";
+  $dbhost = "mysql";
 }
 
 if ($_SERVER['HTTP_HOST'] == 'localhost:3000'){
+  $dbhost = "127.0.0.1";
   $password = "root";
 }
 
+echo "$dbhost, $username, $password, $database";
 $conn = mysqli_connect($dbhost, $username, $password, $database);
 // Check connection
 if (!$conn) {

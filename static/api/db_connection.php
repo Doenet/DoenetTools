@@ -18,11 +18,13 @@ $username = $ini_array["username"];
 $password = $ini_array["password"];
 $database = $ini_array["database"];
 
-if ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == 'localhost:3000'){
+if ($_SERVER['HTTP_HOST'] == 'localhost'){
   $database = "doenet_local";
-  $dbhost = "127.0.0.1";
+  $dbhost = "mysql";
 }
+
 if ($_SERVER['HTTP_HOST'] == 'localhost:3000'){
+  $dbhost = "127.0.0.1";
   $password = "root";
 }
 
