@@ -2,7 +2,7 @@
   "name": "doenet-core",
   "version": "0.4.0",
   "dependencies": {
-    "@blueprintjs/datetime": "^3.18.2",
+    "@blueprintjs/datetime": "^3.18.3",
     "@fortawesome/fontawesome-svg-core": "^1.2.29",
     "@fortawesome/free-regular-svg-icons": "^5.13.1",
     "@fortawesome/free-solid-svg-icons": "^5.13.1",

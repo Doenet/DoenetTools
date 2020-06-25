@@ -1,5 +1,5 @@
 import React from 'react';
-import Doenet from '../../React/Doenet';
+import Doenet from '../../Tools/Doenet';
 
 export default class BaseRenderer {
   constructor({ key } = {}) {

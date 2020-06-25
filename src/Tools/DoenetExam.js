@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import DoenetViewer from '../React/DoenetViewer';
+import DoenetViewer from '../Tools/DoenetViewer';
 import axios from 'axios';
 import MersenneTwister from 'mersenne-twister';
 import './exam.css';

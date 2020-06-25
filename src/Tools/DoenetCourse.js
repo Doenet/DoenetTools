@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import DoenetViewer from '../React/DoenetViewer';
+import DoenetViewer from '../Tools/DoenetViewer';
 import axios from 'axios';
 import './course.css';
 import nanoid from 'nanoid';
 import query from '../queryParamFuncs';
-import DoenetBox from '../React/DoenetBox';
+import DoenetBox from '../Tools/DoenetBox';
 import { faWindowClose, faEdit, faArrowLeft, faPlus, faUserSecret } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ToolLayout from "./ToolLayout/ToolLayout";

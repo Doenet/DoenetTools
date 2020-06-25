@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import DoenetEditor from "../React/DoenetEditor";
+import DoenetEditor from "../Tools/DoenetEditor";
 
     ReactDOM.render(
       <DoenetEditor />

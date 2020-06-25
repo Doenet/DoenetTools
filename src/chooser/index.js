@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import DoenetChooser from '../React/DoenetChooser';
-import ChooserManager from '../React/chooser/ChooserManager';
+import DoenetChooser from '../Tools/DoenetChooser';
+import ChooserManager from '../Tools/chooser/ChooserManager';
 
     ReactDOM.render(
       <DoenetChooser/>

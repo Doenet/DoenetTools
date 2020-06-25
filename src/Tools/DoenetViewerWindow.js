@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import DoenetViewer from '../React/DoenetViewer';
+import DoenetViewer from '../Tools/DoenetViewer';
 import ErrorBoundary from './ErrorBoundary';
 
 class DoenetViewerWindow extends Component {

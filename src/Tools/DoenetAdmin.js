@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import DoenetViewer from '../React/DoenetViewer';
-import DoenetBox from '../React/DoenetBox';
+import DoenetViewer from '../Tools/DoenetViewer';
+import DoenetBox from '../Tools/DoenetBox';
 import axios from 'axios';
 import MersenneTwister from 'mersenne-twister';
 import './admin.css';
