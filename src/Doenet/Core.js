@@ -2679,9 +2679,9 @@ export default class Core {
 
     let additionalPropertiesFromStateVariables = {};
 
-    if(redefineDependencies.propVariable) {
+    if (redefineDependencies.propVariable) {
       let propStateVariableInTarget = targetComponent.state[redefineDependencies.propVariable];
-      if(propStateVariableInTarget && propStateVariableInTarget.stateVariablesPrescribingAdditionalProperties) {
+      if (propStateVariableInTarget && propStateVariableInTarget.stateVariablesPrescribingAdditionalProperties) {
         additionalPropertiesFromStateVariables = propStateVariableInTarget.stateVariablesPrescribingAdditionalProperties
       }
     }
@@ -2718,7 +2718,7 @@ export default class Core {
         };
       }
 
-      if(additionalPropertiesFromStateVariables[property]) {
+      if (additionalPropertiesFromStateVariables[property]) {
         thisDependencies.targetVariable = {
           dependencyType: "componentStateVariable",
           componentIdentity: {
@@ -3044,6 +3044,9 @@ export default class Core {
         // stateVariablesDeterminingDependencies
         delete stateDef.stateVariablesDeterminingDependencies;
       }
+
+      let copyComponentType = stateDef.public && stateDef.componentType === undefined;
+
       stateDef.returnDependencies = function (args) {
         let dependencies = {};
         if (foundReadyToExpand) {
@@ -3074,20 +3077,35 @@ export default class Core {
             variableName: varName,
           };
         }
+        if (copyComponentType) {
+          dependencies.targetVariableComponentType = {
+            dependencyType: "componentStateVariableComponentType",
+            componentIdentity: {
+              componentName: targetComponent.componentName,
+              componentType: targetComponent.componentType
+            },
+            variableName: varName,
+          }
+        }
         return dependencies;
       };
       stateDef.definition = function ({ dependencyValues }) {
-        if ("targetVariable" in dependencyValues) {
-          return {
-            newValues: { [varName]: dependencyValues.targetVariable },
-            alwaysShadow: [varName]
-          };
-        } else {
-          return {
-            newValues: { [varName]: dependencyValues },
-            alwaysShadow: [varName]
-          };
+        let result = {
+          alwaysShadow: [varName]
         }
+        if ("targetVariableComponentType" in dependencyValues) {
+          result.setComponentType = {
+            [varName]: dependencyValues.targetVariableComponentType
+          }
+        }
+        if ("targetVariable" in dependencyValues) {
+          result.newValues = { [varName]: dependencyValues.targetVariable }
+        } else {
+          let varNewValues = Object.assign({}, dependencyValues);
+          delete varNewValues.targetVariableComponentType;
+          result.newValues = { [varName]: varNewValues };
+        }
+        return result;
 
       };
       stateDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues }) {
@@ -5325,10 +5343,10 @@ export default class Core {
           let arrayComponentTypeIsArray = Array.isArray(arrayComponentType)
           for (let arrayEntryName of component.state[varName].arrayEntryNames) {
             // TODO: address multidimensional arrays
-            if(arrayComponentTypeIsArray ) {
+            if (arrayComponentTypeIsArray) {
               let arrayKeys = component.state[arrayEntryName].arrayKeys;
               let componentType = [];
-              for(let arrayKey of arrayKeys) {
+              for (let arrayKey of arrayKeys) {
                 let ind = component.state[varName].keyToIndex(arrayKey);
                 componentType.push(arrayComponentType[ind])
               }
@@ -5975,11 +5993,11 @@ export default class Core {
           // if still don't hvae record of change, create new change object
           // (Should only be needed when have array entry variables,
           // where original change was recorded in array)
-          if(!upValuesChanged) {
-            if(!component.state[varName].isArrayEntry) {
+          if (!upValuesChanged) {
+            if (!component.state[varName].isArrayEntry) {
               throw Error(`Something is wrong, as a variable ${varName} of ${component.componentName} actually changed, but wasn't marked with a potential change`)
             }
-            upValuesChanged = upValuesChangedSub[varName] = {changed: {}}
+            upValuesChanged = upValuesChangedSub[varName] = { changed: {} }
           }
 
           if (component.state[varName] && component.state[varName].isArray) {

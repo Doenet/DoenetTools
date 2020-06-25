@@ -232,7 +232,7 @@ export default class Slider extends BaseComponent {
     stateVariableDefinitions.value = {
       forRenderer: true,
       public: true,
-      componentType: "text",
+      essential: true,
       returnDependencies: () => ({
         sliderType: {
           dependencyType: "stateVariable",
@@ -250,7 +250,6 @@ export default class Slider extends BaseComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues: { value: dependencyValues.items[dependencyValues.index] },
-          makeEssential: ["value"],
           setComponentType: { value: dependencyValues.sliderType },
         }
       },
@@ -298,25 +297,25 @@ export default class Slider extends BaseComponent {
       }
     }
 
-    stateVariableDefinitions.disabled = {
-      forRenderer: true,
-      returnDependencies: () => ({
-        // collaborateGroups: {
-        //   dependencyType: "stateVariable",
-        //   variableName: "collaborateGroups"
-        // },
-        // collaboration: {
-        //   dependencyType: "flag",
-        //   flagName: "collaboration"
-        // }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          // disabled: !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
-          disabled: false
-        }
-      })
-    }
+    // stateVariableDefinitions.disabled = {
+    //   forRenderer: true,
+    //   returnDependencies: () => ({
+    //     // collaborateGroups: {
+    //     //   dependencyType: "stateVariable",
+    //     //   variableName: "collaborateGroups"
+    //     // },
+    //     // collaboration: {
+    //     //   dependencyType: "flag",
+    //     //   flagName: "collaboration"
+    //     // }
+    //   }),
+    //   definition: ({ dependencyValues }) => ({
+    //     newValues: {
+    //       // disabled: !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
+    //       disabled: false
+    //     }
+    //   })
+    // }
 
     return stateVariableDefinitions;
   }
