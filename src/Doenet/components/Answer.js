@@ -769,13 +769,6 @@ export default class Answer extends InlineComponent {
 
         }
 
-        if (arrayKey !== undefined) {
-          if (arrayKey in componentType) {
-            componentType = componentType[arrayKey];
-          } else {
-            componentType = [];
-          }
-        }
 
         return {
           useEssentialOrDefaultValue: {

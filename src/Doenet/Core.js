@@ -5301,8 +5301,22 @@ export default class Core {
       for (let varName in result.setComponentType) {
         component.state[varName].componentType = result.setComponentType[varName];
         if (component.state[varName].isArray && component.state[varName].arrayEntryNames) {
+          let arrayComponentType = result.setComponentType[varName];
+          let arrayComponentTypeIsArray = Array.isArray(arrayComponentType)
           for (let arrayEntryName of component.state[varName].arrayEntryNames) {
-            component.state[arrayEntryName].componentType = result.setComponentType[varName];
+            // TODO: address multidimensional arrays
+            if(arrayComponentTypeIsArray ) {
+              let arrayKeys = component.state[arrayEntryName].arrayKeys;
+              let componentType = [];
+              for(let arrayKey of arrayKeys) {
+                let ind = component.state[varName].keyToIndex(arrayKey);
+                componentType.push(arrayComponentType[ind])
+              }
+              component.state[arrayEntryName].componentType = componentType;
+            } else {
+              component.state[arrayEntryName].componentType = arrayComponentType;
+
+            }
           }
         }
       }
@@ -5936,6 +5950,16 @@ export default class Core {
                 }
               }
             }
+          }
+
+          // if still don't hvae record of change, create new change object
+          // (Should only be needed when have array entry variables,
+          // where original change was recorded in array)
+          if(!upValuesChanged) {
+            if(!component.state[varName].isArrayEntry) {
+              throw Error(`Something is wrong, as a variable ${varName} of ${component.componentName} actually changed, but wasn't marked with a potential change`)
+            }
+            upValuesChanged = upValuesChangedSub[varName] = {changed: {}}
           }
 
           if (component.state[varName] && component.state[varName].isArray) {
