@@ -682,8 +682,8 @@ export class FixedOrder extends BooleanComponent {
   static rendererType = "boolean";
 }
 
-export class Href extends TextComponent {
-  static componentType = "href";
+export class Uri extends TextComponent {
+  static componentType = "uri";
   static rendererType = "text";
 }
 

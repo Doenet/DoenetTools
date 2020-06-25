@@ -33,7 +33,7 @@ import Tname from './components/Tname';
 import Prop from './components/Prop';
 import Extract from './components/Extract';
 import Collect from './components/Collect';
-import Xref from './components/Xref';
+import Ref from './components/Ref';
 import Point from './components/Point';
 import Coords from './components/Coords';
 import Line from './components/Line';
@@ -120,7 +120,6 @@ import Offsets from './components/Offsets';
 import DiscreteInfiniteSet from './components/DiscreteInfiniteSet';
 import Image from './components/Image';
 import Video from './components/Video';
-import Url from './components/Url';
 import Meta from './components/Meta';
 import Hint from './components/Hint';
 import Solution from './components/Solution';
@@ -189,7 +188,7 @@ const componentTypeArray = [
   Prop,
   Extract,
   Collect,
-  Xref,
+  Ref,
   Point, Coords,
   Line, LineSegment, Polyline,
   Polygon,
@@ -250,7 +249,6 @@ const componentTypeArray = [
   DiscreteInfiniteSet,
   Image,
   Video,
-  Url,
   Meta,
   Hint, Solution,
   IntComma,
