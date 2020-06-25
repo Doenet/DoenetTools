@@ -2677,6 +2677,15 @@ export default class Core {
     let compositeComponent = this._components[redefineDependencies.compositeName];
     let targetComponent = this._components[redefineDependencies.targetName];
 
+    let additionalPropertiesFromStateVariables = {};
+
+    if(redefineDependencies.propVariable) {
+      let propStateVariableInTarget = targetComponent.state[redefineDependencies.propVariable];
+      if(propStateVariableInTarget && propStateVariableInTarget.stateVariablesPrescribingAdditionalProperties) {
+        additionalPropertiesFromStateVariables = propStateVariableInTarget.stateVariablesPrescribingAdditionalProperties
+      }
+    }
+
     // properties depend first on compositeComponent (if exists in compositeComponent),
     // then on targetComponent (if not copying a prop and property exists in targetComponent)
     for (let property in childLogic.properties) {
@@ -2707,6 +2716,17 @@ export default class Core {
           },
           variableName: property,
         };
+      }
+
+      if(additionalPropertiesFromStateVariables[property]) {
+        thisDependencies.targetVariable = {
+          dependencyType: "componentStateVariable",
+          componentIdentity: {
+            componentName: targetComponent.componentName,
+            componentType: targetComponent.componentType
+          },
+          variableName: additionalPropertiesFromStateVariables[property]
+        }
       }
 
       if (property in ancestorProps) {
