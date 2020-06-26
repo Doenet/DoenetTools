@@ -106,16 +106,16 @@ describe('ref Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/section1_title').should('have.text', 'Section 1')
 
-    cy.get('#\\/section1\\/tofour').click();
+    cy.get('#\\/section1\\/toFour').click();
     cy.url().should('include', '#/section4')
 
-    cy.get('#\\/section4\\/toone').click();
+    cy.get('#\\/section4\\/toOne').click();
     cy.url().should('include', '#/section1')
 
-    cy.get('#\\/section1\\/tothreeii').click();
+    cy.get('#\\/section1\\/toThreeii').click();
     cy.url().should('include', '#/section3/_p2')
 
-    cy.get('#\\/section4\\/totwoe').click();
+    cy.get('#\\/section4\\/toTwoe').click();
     cy.url().should('include', '#/section2/_p5')
 
 

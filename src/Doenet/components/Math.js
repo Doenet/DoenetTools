@@ -157,7 +157,7 @@ export default class MathComponent extends InlineComponent {
           variableName: "valueShadow"
         },
       }),
-      set: convertValueToMathExpression, // TODO: implement
+      set: convertValueToMathExpression,
       defaultValue: me.fromAst('\uff3f'),  // long underscore
       definition: calculateMathValue,
       inverseDefinition: invertMath,

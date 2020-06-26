@@ -76,7 +76,6 @@ import Map from './components/Map';
 import Substitutions from './components/Substitutions';
 import CopyFromSubs from './components/CopyFromSubs';
 import IndexFromSubs from './components/IndexFromSubs';
-import FromMapAncestor from './components/FromMapAncestor';
 import Slider from './components/Slider';
 import Markers from './components/Markers';
 import Constraints from './components/Constraints';
@@ -220,7 +219,7 @@ const componentTypeArray = [
   Table,
   Markers,
   Panel,
-  Map, Substitutions, CopyFromSubs, IndexFromSubs, FromMapAncestor,
+  Map, Substitutions, CopyFromSubs, IndexFromSubs,
   Constraints,
   ConstrainToGrid,
   AttractToGrid,
