@@ -2677,6 +2677,15 @@ export default class Core {
     let compositeComponent = this._components[redefineDependencies.compositeName];
     let targetComponent = this._components[redefineDependencies.targetName];
 
+    let additionalPropertiesFromStateVariables = {};
+
+    if (redefineDependencies.propVariable) {
+      let propStateVariableInTarget = targetComponent.state[redefineDependencies.propVariable];
+      if (propStateVariableInTarget && propStateVariableInTarget.stateVariablesPrescribingAdditionalProperties) {
+        additionalPropertiesFromStateVariables = propStateVariableInTarget.stateVariablesPrescribingAdditionalProperties
+      }
+    }
+
     // properties depend first on compositeComponent (if exists in compositeComponent),
     // then on targetComponent (if not copying a prop and property exists in targetComponent)
     for (let property in childLogic.properties) {
@@ -2707,6 +2716,17 @@ export default class Core {
           },
           variableName: property,
         };
+      }
+
+      if (additionalPropertiesFromStateVariables[property]) {
+        thisDependencies.targetVariable = {
+          dependencyType: "componentStateVariable",
+          componentIdentity: {
+            componentName: targetComponent.componentName,
+            componentType: targetComponent.componentType
+          },
+          variableName: additionalPropertiesFromStateVariables[property]
+        }
       }
 
       if (property in ancestorProps) {
@@ -3024,6 +3044,9 @@ export default class Core {
         // stateVariablesDeterminingDependencies
         delete stateDef.stateVariablesDeterminingDependencies;
       }
+
+      let copyComponentType = stateDef.public && stateDef.componentType === undefined;
+
       stateDef.returnDependencies = function (args) {
         let dependencies = {};
         if (foundReadyToExpand) {
@@ -3054,20 +3077,35 @@ export default class Core {
             variableName: varName,
           };
         }
+        if (copyComponentType) {
+          dependencies.targetVariableComponentType = {
+            dependencyType: "componentStateVariableComponentType",
+            componentIdentity: {
+              componentName: targetComponent.componentName,
+              componentType: targetComponent.componentType
+            },
+            variableName: varName,
+          }
+        }
         return dependencies;
       };
       stateDef.definition = function ({ dependencyValues }) {
-        if ("targetVariable" in dependencyValues) {
-          return {
-            newValues: { [varName]: dependencyValues.targetVariable },
-            alwaysShadow: [varName]
-          };
-        } else {
-          return {
-            newValues: { [varName]: dependencyValues },
-            alwaysShadow: [varName]
-          };
+        let result = {
+          alwaysShadow: [varName]
         }
+        if ("targetVariableComponentType" in dependencyValues) {
+          result.setComponentType = {
+            [varName]: dependencyValues.targetVariableComponentType
+          }
+        }
+        if ("targetVariable" in dependencyValues) {
+          result.newValues = { [varName]: dependencyValues.targetVariable }
+        } else {
+          let varNewValues = Object.assign({}, dependencyValues);
+          delete varNewValues.targetVariableComponentType;
+          result.newValues = { [varName]: varNewValues };
+        }
+        return result;
 
       };
       stateDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues }) {
@@ -5301,8 +5339,22 @@ export default class Core {
       for (let varName in result.setComponentType) {
         component.state[varName].componentType = result.setComponentType[varName];
         if (component.state[varName].isArray && component.state[varName].arrayEntryNames) {
+          let arrayComponentType = result.setComponentType[varName];
+          let arrayComponentTypeIsArray = Array.isArray(arrayComponentType)
           for (let arrayEntryName of component.state[varName].arrayEntryNames) {
-            component.state[arrayEntryName].componentType = result.setComponentType[varName];
+            // TODO: address multidimensional arrays
+            if (arrayComponentTypeIsArray) {
+              let arrayKeys = component.state[arrayEntryName].arrayKeys;
+              let componentType = [];
+              for (let arrayKey of arrayKeys) {
+                let ind = component.state[varName].keyToIndex(arrayKey);
+                componentType.push(arrayComponentType[ind])
+              }
+              component.state[arrayEntryName].componentType = componentType;
+            } else {
+              component.state[arrayEntryName].componentType = arrayComponentType;
+
+            }
           }
         }
       }
@@ -5936,6 +5988,16 @@ export default class Core {
                 }
               }
             }
+          }
+
+          // if still don't hvae record of change, create new change object
+          // (Should only be needed when have array entry variables,
+          // where original change was recorded in array)
+          if (!upValuesChanged) {
+            if (!component.state[varName].isArrayEntry) {
+              throw Error(`Something is wrong, as a variable ${varName} of ${component.componentName} actually changed, but wasn't marked with a potential change`)
+            }
+            upValuesChanged = upValuesChangedSub[varName] = { changed: {} }
           }
 
           if (component.state[varName] && component.state[varName].isArray) {

@@ -9,7 +9,7 @@ export default class SectioningComponent extends BlockComponent {
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.title = { default: "", componentType: "text", forRenderer: true };
-    properties.aggregatescores = { default: false };
+    properties.aggregateScores = { default: false };
     properties.weight = { default: 1 };
     // properties.possiblepoints = {default: undefined};
     // properties.aggregatebypoints = {default: false};
@@ -32,22 +32,122 @@ export default class SectioningComponent extends BlockComponent {
     return childLogic;
   }
 
-  // TODO: component has not yet been completely converted
-  // Just added some state variables so basic function works
-
 
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.containerTag = {
+      forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { containerTag: "section" } })
+    }
+
+    stateVariableDefinitions.level = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { level: 1 } })
     }
 
     stateVariableDefinitions.viewedSolution = {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { viewedSolution: false } })
+    }
+
+    stateVariableDefinitions.scoredDescendants = {
+      returnDependencies: () => ({
+        scoredDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: ["_sectioningcomponent", "answer"],
+          variableNames: [
+            "scoredDescendants",
+            "aggregateScores",
+            "creditAchieved",
+            "weight"
+          ],
+          recurseToMatchedChildren: false,
+          variablesOptional: true
+        }
+      }),
+      definition({ dependencyValues }) {
+        let scoredDescendants = [];
+        for (let descendant of dependencyValues.scoredDescendants) {
+          if (descendant.stateValues.aggregateScores ||
+            descendant.stateValues.scoredDescendants === undefined
+          ) {
+            scoredDescendants.push(descendant)
+          } else {
+            scoredDescendants.push(...descendant.stateValues.scoredDescendants)
+          }
+        }
+
+        return { newValues: { scoredDescendants } }
+
+      }
+    }
+
+    stateVariableDefinitions.displayDigitsForCreditAchieved = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { displayDigitsForCreditAchieved: 3 } })
+    }
+
+    stateVariableDefinitions.creditAchieved = {
+      public: true,
+      componentType: "number",
+      defaultValue: 0,
+      stateVariablesPrescribingAdditionalProperties: {
+        displayDigits: "displayDigitsForCreditAchieved",
+      },
+      additionalStateVariablesDefined: [{
+        variableName: "percentCreditAchieved",
+        public: true,
+        componentType: "number",
+        stateVariablesPrescribingAdditionalProperties: {
+          displayDigits: "displayDigitsForCreditAchieved",
+        }
+      }],
+      stateVariablesDeterminingDependencies: ["aggregateScores"],
+      returnDependencies({ stateValues }) {
+        let dependencies = {
+          aggregateScores: {
+            dependencyType: "stateVariable",
+            variableName: "aggregateScores"
+          }
+        }
+        if (stateValues.aggregateScores) {
+          dependencies.scoredDescendants = {
+            dependencyType: "stateVariable",
+            variableName: "scoredDescendants"
+          }
+        }
+
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+
+        if (!dependencyValues.aggregateScores) {
+          return {
+            newValues: {
+              creditAchieved: 0,
+              percentCreditAchieved: 0
+            }
+          }
+        }
+
+        let creditSum = 0;
+        let totalWeight = 0;
+
+        for (let component of dependencyValues.scoredDescendants) {
+          let weight = component.stateValues.weight;
+          creditSum += component.stateValues.creditAchieved * weight;
+          totalWeight += weight;
+        }
+        let creditAchieved = creditSum / totalWeight;
+        let percentCreditAchieved = creditAchieved * 100;
+
+        return { newValues: { creditAchieved, percentCreditAchieved } }
+
+      }
     }
 
     stateVariableDefinitions.childrenToRender = {
@@ -71,24 +171,6 @@ export default class SectioningComponent extends BlockComponent {
 
   updateState(args = {}) {
     if (args.init) {
-      this.makePublicStateVariable({
-        variableName: "creditAchieved",
-        componentType: "number",
-        additionalProperties: {
-          displaydigits: 3,
-        }
-      });
-      this.makePublicStateVariable({
-        variableName: "percentcreditachieved",
-        componentType: "number",
-        additionalProperties: {
-          displaydigits: 3,
-        }
-      });
-      // this.makePublicStateVariable({
-      //   variableName: "pointsachieved",
-      //   componentType: "number"
-      // });
 
       if (!this._state.creditAchieved.essential) {
         this.state.creditAchieved = 0;
@@ -107,49 +189,6 @@ export default class SectioningComponent extends BlockComponent {
       this._state.viewedSolution.essential = true;
 
     }
-
-    super.updateState(args);
-
-
-    this.state.level = 1;
-    this.state.containerTag = "section";
-
-    if (this.state.aggregatescores) {
-      this.calculatecreditachieved();
-    }
-  }
-
-  calculatecreditachieved() {
-    // if(this.state.aggregatebypoints) {
-    //   let pointsachieved = 0;
-    //   let totalPoints = 0;
-    //   for(let component of this.descendantsFound.scoredComponent) {
-    //     let possiblePoints = component.state.possiblepoints;
-    //     if(possiblePoints === undefined) {
-    //       possiblePoints = component.state.weight;
-    //     }
-    //     totalPoints += possiblePoints;
-    //     pointsachieved += possiblePoints * component.state.creditAchieved;
-    //   }
-    //   this.state.creditAchieved = pointsachieved/totalPoints;
-    //   this.state.possiblepoints = totalPoints;
-
-    // }else {
-    let creditSum = 0;
-    let totalWeight = 0;
-
-    for (let component of this.descendantsFound.scoredComponents) {
-      let weight = component.state.weight;
-      creditSum += component.state.creditAchieved * weight;
-      totalWeight += weight;
-    }
-    this.state.creditAchieved = creditSum / totalWeight;
-    this.state.percentcreditachieved = this.state.creditAchieved * 100;
-    // }
-
-    // if(this.state.possiblePoints !== undefined) {
-    //   this.state.pointsachieved = this.state.creditAchieved * this.state.possiblePoints;
-    // }
   }
 
   initializeRenderer() {
