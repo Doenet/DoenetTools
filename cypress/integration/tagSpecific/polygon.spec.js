@@ -5,7 +5,7 @@ describe('Polygon Tag Tests', function () {
 
   })
 
-  it('Polygon with sugared reffed points', () => {
+  it('Polygon with sugared copied points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -16,10 +16,10 @@ describe('Polygon Tag Tests', function () {
     <point>(5,2)</point>
     <point>(-3,4)</point>
     <polygon>
-      <ref>_point1</ref>
-      <ref>_point2</ref>
-      <ref>_point3</ref>
-      <ref>_point4</ref>
+      <copy tname="_point1" />
+      <copy tname="_point2" />
+      <copy tname="_point3" />
+      <copy tname="_point4" />
     </polygon>
   </graph>
   `}, "*");
@@ -84,7 +84,7 @@ describe('Polygon Tag Tests', function () {
     })
   })
 
-  it('Polygon vertices and reffed points', () => {
+  it('Polygon vertices and copied points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -95,10 +95,10 @@ describe('Polygon Tag Tests', function () {
     <point>(5,2)</point>
     <point>(-3,4)</point>
     <polygon><vertices>
-      <ref>_point1</ref>
-      <ref>_point2</ref>
-      <ref>_point3</ref>
-      <ref>_point4</ref>
+      <copy tname="_point1" />
+      <copy tname="_point2" />
+      <copy tname="_point3" />
+      <copy tname="_point4" />
     </vertices></polygon>
   </graph>
   `}, "*");
@@ -170,7 +170,7 @@ describe('Polygon Tag Tests', function () {
   <math>-1</math>
   <graph>
     <polygon>
-      (3,5), (-4,<ref>_math1</ref>),(5,2),(-3,4)
+      (3,5), (-4,<copy tname="_math1" />),(5,2),(-3,4)
     </polygon>
   </graph>
   `}, "*");
@@ -242,7 +242,7 @@ describe('Polygon Tag Tests', function () {
   <math>-1</math>
   <graph>
     <polygon><vertices>
-      (3,5), (-4,<ref>_math1</ref>),(5,2),(-3,4)
+      (3,5), (-4,<copy tname="_math1" />),(5,2),(-3,4)
     </vertices></polygon>
   </graph>
   `}, "*");
@@ -306,7 +306,7 @@ describe('Polygon Tag Tests', function () {
     })
   })
 
-  it('dynamic polygon, initially zero, reffed', () => {
+  it('dynamic polygon, initially zero, copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -317,14 +317,14 @@ describe('Polygon Tag Tests', function () {
     <map>
       <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
-        <count><ref prop="value">count</ref></count>
+        <count><copy prop="value" tname="count" /></count>
       </sequence></substitutions>
     </map>
     </vertices></polygon>
   </graph>
   
   <graph>
-  <ref name="polygon2">_polygon1</ref>
+  <copy name="polygon2" tname="_polygon1" />
   </graph>
   `}, "*");
     });
@@ -444,14 +444,14 @@ describe('Polygon Tag Tests', function () {
     <map>
       <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
-        <count><ref prop="value">count</ref></count>
+        <count><copy prop="value" tname="count" /></count>
       </sequence></substitutions>
     </map>
     </vertices></polygon>
   </graph>
   
   <graph>
-  <ref name="polygon2">_polygon1</ref>
+  <copy name="polygon2" tname="_polygon1" />
   </graph>
   `}, "*");
     });
@@ -501,7 +501,7 @@ describe('Polygon Tag Tests', function () {
 
   })
 
-  it('dynamic polygon with sugared vertices, initially zero, reffed', () => {
+  it('dynamic polygon with sugared vertices, initially zero, copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -512,14 +512,14 @@ describe('Polygon Tag Tests', function () {
     <map>
       <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
-        <count><ref prop="value">count</ref></count>
+        <count><copy prop="value" tname="count" /></count>
       </sequence></substitutions>
     </map>
     </polygon>
   </graph>
   
   <graph>
-  <ref name="polygon2">_polygon1</ref>
+  <copy name="polygon2" tname="_polygon1" />
   </graph>
   `}, "*");
     });
@@ -641,14 +641,14 @@ describe('Polygon Tag Tests', function () {
     <map>
       <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
-        <count><ref prop="value">count</ref></count>
+        <count><copy prop="value" tname="count" /></count>
       </sequence></substitutions>
     </map>
     </polygon>
   </graph>
   
   <graph>
-  <ref name="polygon2">_polygon1</ref>
+  <copy name="polygon2" tname="_polygon1" />
   </graph>
   `}, "*");
     });
@@ -699,7 +699,7 @@ describe('Polygon Tag Tests', function () {
 
   })
 
-  it('dynamic polygon with sugared vertices from reffed map, initially zero, reffed', () => {
+  it('dynamic polygon with sugared vertices from copied map, initially zero, copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -710,16 +710,16 @@ describe('Polygon Tag Tests', function () {
   <map>
     <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
     <substitutions><sequence from="0">
-      <count><ref prop="value">count</ref></count>
+      <count><copy prop="value" tname="count" /></count>
     </sequence></substitutions>
   </map>
   <polygon>
-    <ref>_map1</ref>
+    <copy tname="_map1" />
   </polygon>
   </graph>
   
   <graph>
-  <ref name="polygon2">_polygon1</ref>
+  <copy name="polygon2" tname="_polygon1" />
   </graph>
   `}, "*");
     });
@@ -838,16 +838,16 @@ describe('Polygon Tag Tests', function () {
   <map>
     <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
     <substitutions><sequence from="0">
-      <count><ref prop="value">count</ref></count>
+      <count><copy prop="value" tname="count" /></count>
     </sequence></substitutions>
   </map>
   <polygon>
-    <ref>_map1</ref>
+    <copy tname="_map1" />
   </polygon>
   </graph>
   
   <graph>
-  <ref name="polygon2">_polygon1</ref>
+  <copy name="polygon2" tname="_polygon1" />
   </graph>
   `}, "*");
     });
@@ -907,14 +907,14 @@ describe('Polygon Tag Tests', function () {
   <polygon>
     <point>(1,2)</point>
     <point>(-1,5)</point>
-    <point>(<ref prop="value">_mathinput1</ref>,7)</point>
+    <point>(<copy prop="value" tname="_mathinput1" />,7)</point>
     <point>(3,-5)</point>
     <point>(-4,-3)</point>
   </polygon>
   </graph>
   
   <graph>
-  <ref name="polygon2">_polygon1</ref>
+  <copy name="polygon2" tname="_polygon1" />
   </graph>  
   `}, "*");
     });
@@ -976,7 +976,7 @@ describe('Polygon Tag Tests', function () {
   </graph>
   
   <graph>
-  <ref name="polygon2">_polygon1</ref>
+  <copy name="polygon2" tname="_polygon1" />
   </graph>
   `}, "*");
     });
@@ -1106,7 +1106,7 @@ describe('Polygon Tag Tests', function () {
   </graph>
   
   <graph>
-  <ref name="polygon2">_polygon1</ref>
+  <copy name="polygon2" tname="_polygon1" />
   </graph>
   `}, "*");
     });
@@ -1237,7 +1237,7 @@ describe('Polygon Tag Tests', function () {
     })
   })
 
-  it('ref vertices of polygon', () => {
+  it('copy vertices of polygon', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1246,13 +1246,13 @@ describe('Polygon Tag Tests', function () {
   <polygon>(-3,-1),(1,2),(3,4),(6,-2)</polygon>
   </graph>
   <graph>
-  <ref name="v1" prop="vertex1">_polygon1</ref>
-  <ref name="v2" prop="vertex2">_polygon1</ref>
-  <ref name="v3" prop="vertex3">_polygon1</ref>
-  <ref name="v4" prop="vertex4">_polygon1</ref>
+  <copy name="v1" prop="vertex1" tname="_polygon1" />
+  <copy name="v2" prop="vertex2" tname="_polygon1" />
+  <copy name="v3" prop="vertex3" tname="_polygon1" />
+  <copy name="v4" prop="vertex4" tname="_polygon1" />
   </graph>
   <graph>
-  <ref name="vs" prop="vertices">_polygon1</ref>
+  <copy name="vs" prop="vertices" tname="_polygon1" />
   </graph>
   `}, "*");
     });
@@ -1285,7 +1285,7 @@ describe('Polygon Tag Tests', function () {
         }
       })
 
-      cy.log('move individually reffed vertices');
+      cy.log('move individually copied vertices');
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let ps = [[-5, 3], [-2, 7], [0, -8], [9, -6]];
@@ -1303,7 +1303,7 @@ describe('Polygon Tag Tests', function () {
 
       })
 
-      cy.log('move array-reffed vertices');
+      cy.log('move array-copied vertices');
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let ps = [[-7, -1], [-3, 5], [2, 4], [6, 0]];
@@ -1323,7 +1323,7 @@ describe('Polygon Tag Tests', function () {
     })
   })
 
-  it('new polygon from reffed vertices of polygon', () => {
+  it('new polygon from copied vertices of polygon', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1333,7 +1333,7 @@ describe('Polygon Tag Tests', function () {
   </graph>
   <graph>
   <polygon>
-    <ref prop="vertices">_polygon1</ref>
+    <copy prop="vertices" tname="_polygon1" />
   </polygon>
   </graph>
   `}, "*");
@@ -1463,13 +1463,13 @@ describe('Polygon Tag Tests', function () {
       <map>
         <template>
           <point>(<extract prop="x"><copyFromSubs fixed="false"/></extract>+
-            <ref prop="value" modifyIndirectly="false">../transx</ref>,
+            <copy prop="value" modifyIndirectly="false" tname="../transx" />,
            <extract prop="y"><copyFromSubs fixed="false" /></extract>+
-           <ref prop="value" modifyIndirectly="false">../transy</ref>)
+           <copy prop="value" modifyIndirectly="false" tname="../transy" />)
           </point>
         </template>
         <substitutions>
-          <ref prop="vertices" name="vs">_polygon1</ref>
+          <copy prop="vertices" name="vs" tname="_polygon1" />
         </substitutions>
       </map>
     </polygon>
@@ -1607,8 +1607,8 @@ describe('Polygon Tag Tests', function () {
       <point name="B">(3,4)</point>
       <point name="C">(-5,6)</point>
       <point name="D">
-        <x><ref fixed prop="x">A</ref>+<ref fixed prop="x">C</ref>-<ref prop="x">B</ref></x>
-        <y><ref fixed prop="y">A</ref>+<ref fixed prop="y">C</ref>-<ref prop="y">B</ref></y>
+        <x><copy fixed prop="x" tname="A" />+<copy fixed prop="x" tname="C" />-<copy prop="x" tname="B" /></x>
+        <y><copy fixed prop="y" tname="A" />+<copy fixed prop="y" tname="C" />-<copy prop="y" tname="B" /></y>
       </point>
     </polygon>
     </graph>
@@ -1683,7 +1683,7 @@ describe('Polygon Tag Tests', function () {
   })
 
 
-  it('new polygon from reffed vertices, some flipped', () => {
+  it('new polygon from copied vertices, some flipped', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1693,15 +1693,15 @@ describe('Polygon Tag Tests', function () {
   </graph>
   <graph>
   <polygon>
-    <ref prop="vertex1">_polygon1</ref>
+    <copy prop="vertex1" tname="_polygon1" />
     <point>
-      (<extract prop="y"><ref prop="vertex2">_polygon1</ref></extract>,
-      <extract prop="x"><ref prop="vertex2">_polygon1</ref></extract>)
+      (<extract prop="y"><copy prop="vertex2" tname="_polygon1" /></extract>,
+      <extract prop="x"><copy prop="vertex2" tname="_polygon1" /></extract>)
     </point>
-    <ref prop="vertex3">_polygon1</ref>
+    <copy prop="vertex3" tname="_polygon1" />
     <point>
-      <x><extract prop="y"><ref prop="vertex4">_polygon1</ref></extract></x>
-      <y><extract prop="x"><ref prop="vertex4">_polygon1</ref></extract></y>
+      <x><extract prop="y"><copy prop="vertex4" tname="_polygon1" /></extract></x>
+      <y><extract prop="x"><copy prop="vertex4" tname="_polygon1" /></extract></y>
     </point>
   </polygon>
   </graph>
@@ -1775,8 +1775,8 @@ describe('Polygon Tag Tests', function () {
     <point name="B">(3,4)</point>
     <point name="C">(-5,6)</point>
     <point name="D">
-      <x><ref fixed prop="x">C</ref>+<ref fixed prop="x">B</ref>-<ref prop="x">A</ref></x>
-      <y><ref fixed prop="y">C</ref>+<ref fixed prop="y">B</ref>-<ref prop="y">A</ref></y>
+      <x><copy fixed prop="x" tname="C" />+<copy fixed prop="x" tname="B" />-<copy prop="x" tname="A" /></x>
+      <y><copy fixed prop="y" tname="C" />+<copy fixed prop="y" tname="B" />-<copy prop="y" tname="A" /></y>
     </point>
   </polygon>
   </graph>
@@ -1849,7 +1849,7 @@ describe('Polygon Tag Tests', function () {
 
   })
 
-  it('fourth vertex depends on internal ref of first vertex', () => {
+  it('fourth vertex depends on internal copy of first vertex', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1860,7 +1860,7 @@ describe('Polygon Tag Tests', function () {
   <point>(1,2)</point>
   <point>(3,4)</point>
   <point>(-5,6)</point>
-  <ref prop="vertex1">_polygon1</ref>
+  <copy prop="vertex1" tname="_polygon1" />
   </vertices>
   </polygon>
   </graph>
@@ -1873,6 +1873,7 @@ describe('Polygon Tag Tests', function () {
     let C = [-5, 6];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
+      expect(components['/_polygon1'].stateValues.nVertices).eq(4)
       expect(components['/_polygon1'].stateValues.vertices[0].tree).eqls(['vector', ...A]);
       expect(components['/_polygon1'].stateValues.vertices[1].tree).eqls(['vector', ...B]);
       expect(components['/_polygon1'].stateValues.vertices[2].tree).eqls(['vector', ...C]);
@@ -1928,7 +1929,7 @@ describe('Polygon Tag Tests', function () {
 
   })
 
-  it('first vertex depends on internal ref of fourth vertex', () => {
+  it('first vertex depends on internal copy of fourth vertex', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1936,7 +1937,7 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon>
   <vertices>
-  <ref prop="vertex4" includeUndefinedArrayEntries>_polygon1</ref>
+  <copy prop="vertex4" includeUndefinedArrayEntries tname="_polygon1" />
   <point>(3,4)</point>
   <point>(-5,6)</point>
   <point>(1,2)</point>
@@ -1953,6 +1954,7 @@ describe('Polygon Tag Tests', function () {
     let C = [-5, 6];
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
+      expect(components['/_polygon1'].stateValues.nVertices).eq(4)
       expect(components['/_polygon1'].stateValues.vertices[0].tree).eqls(['vector', ...A]);
       expect(components['/_polygon1'].stateValues.vertices[1].tree).eqls(['vector', ...B]);
       expect(components['/_polygon1'].stateValues.vertices[2].tree).eqls(['vector', ...C]);
@@ -2016,12 +2018,12 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon>
   <vertices>
-  <ref prop="vertex4">_polygon1</ref>
+  <copy prop="vertex4" tname="_polygon1" />
   <point>(3,4)</point>
   <point>(-5,6)</point>
   <point>(1,2)</point>
   <point>
-    <x><extract prop="x"><ref prop="vertex1">_polygon1</ref></extract>+1</x>
+    <x><extract prop="x"><copy prop="vertex1" tname="_polygon1" /></extract>+1</x>
     <y>2</y>
   </point>
   </vertices>
@@ -2122,13 +2124,13 @@ describe('Polygon Tag Tests', function () {
   <graph>
   <polygon>
   <vertices>
-    <ref prop="vertex4">_polygon1</ref>
+    <copy prop="vertex4" tname="_polygon1" />
     <point>(1,2)</point>
     <point>(3,4)</point>
-    <ref prop="vertex7">_polygon1</ref>
+    <copy prop="vertex7" tname="_polygon1" />
     <point>(5,7)</point>
     <point>(-5,7)</point>
-    <ref prop="vertex10" includeUndefinedArrayEntries>_polygon1</ref>
+    <copy prop="vertex10" includeUndefinedArrayEntries tname="_polygon1" />
     <point>(3,1)</point>
     <point>(5,0)</point>
     <point>(-5,-1)</point>
@@ -2345,20 +2347,20 @@ describe('Polygon Tag Tests', function () {
   <polygon>
   <vertices>
     <point>
-      <x><extract prop="x"><ref prop="vertex4">_polygon1</ref></extract>+1</x>
-      <y><extract prop="y"><ref prop="vertex4">_polygon1</ref></extract>+1</y>
+      <x><extract prop="x"><copy prop="vertex4" tname="_polygon1" /></extract>+1</x>
+      <y><extract prop="y"><copy prop="vertex4" tname="_polygon1" /></extract>+1</y>
     </point>
     <point>(1,2)</point>
     <point>(3,4)</point>
     <point>
-      <x><extract prop="x"><ref prop="vertex7">_polygon1</ref></extract>+1</x>
-      <y><extract prop="y"><ref prop="vertex7">_polygon1</ref></extract>+1</y>
+      <x><extract prop="x"><copy prop="vertex7" tname="_polygon1" /></extract>+1</x>
+      <y><extract prop="y"><copy prop="vertex7" tname="_polygon1" /></extract>+1</y>
     </point>
     <point>(5,7)</point>
     <point>(-5,7)</point>
     <point>
-      <x><extract prop="x"><ref prop="vertex10">_polygon1</ref></extract>+1</x>
-      <y><extract prop="y"><ref prop="vertex10">_polygon1</ref></extract>+1</y>
+      <x><extract prop="x"><copy prop="vertex10" tname="_polygon1" /></extract>+1</x>
+      <y><extract prop="y"><copy prop="vertex10" tname="_polygon1" /></extract>+1</y>
     </point>
     <point>(3,1)</point>
     <point>(5,0)</point>
@@ -2595,7 +2597,7 @@ describe('Polygon Tag Tests', function () {
       (3,5), (-4,-1),(5,2)
     </polygon>
     <point>
-      <attractTo><ref>_polygon1</ref></attractTo>
+      <attractTo><copy tname="_polygon1" /></attractTo>
       (7,8)
     </point>
   </graph>
@@ -2829,7 +2831,7 @@ describe('Polygon Tag Tests', function () {
       (3,5), (-4,-1),(5,2)
     </polygon>
     <point>
-      <constrainTo><ref>_polygon1</ref></constrainTo>
+      <constrainTo><copy tname="_polygon1" /></constrainTo>
       (7,8)
     </point>
   </graph>

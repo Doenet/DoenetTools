@@ -16,10 +16,10 @@ describe('Polyline Tag Tests', function () {
     <point>(5,2)</point>
     <point>(-3,4)</point>
     <polyline>
-      <ref>_point1</ref>
-      <ref>_point2</ref>
-      <ref>_point3</ref>
-      <ref>_point4</ref>
+      <copy tname="_point1" />
+      <copy tname="_point2" />
+      <copy tname="_point3" />
+      <copy tname="_point4" />
     </polyline>
   </graph>
   `}, "*");
@@ -95,10 +95,10 @@ describe('Polyline Tag Tests', function () {
     <point>(5,2)</point>
     <point>(-3,4)</point>
     <polyline><vertices>
-      <ref>_point1</ref>
-      <ref>_point2</ref>
-      <ref>_point3</ref>
-      <ref>_point4</ref>
+      <copy tname="_point1" />
+      <copy tname="_point2" />
+      <copy tname="_point3" />
+      <copy tname="_point4" />
     </vertices></polyline>
   </graph>
   `}, "*");
@@ -170,7 +170,7 @@ describe('Polyline Tag Tests', function () {
   <math>-1</math>
   <graph>
     <polyline>
-      (3,5), (-4,<ref>_math1</ref>),(5,2),(-3,4)
+      (3,5), (-4,<copy tname="_math1" />),(5,2),(-3,4)
     </polyline>
   </graph>
   `}, "*");
@@ -242,7 +242,7 @@ describe('Polyline Tag Tests', function () {
   <math>-1</math>
   <graph>
     <polyline><vertices>
-      (3,5), (-4,<ref>_math1</ref>),(5,2),(-3,4)
+      (3,5), (-4,<copy tname="_math1" />),(5,2),(-3,4)
     </vertices></polyline>
   </graph>
   `}, "*");
@@ -317,14 +317,14 @@ describe('Polyline Tag Tests', function () {
     <map>
       <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
-        <count><ref prop="value">count</ref></count>
+        <count><copy prop="value" tname="count" /></count>
       </sequence></substitutions>
     </map>
     </vertices></polyline>
   </graph>
   
   <graph>
-  <ref name="polyline2">_polyline1</ref>
+  <copy name="polyline2" tname="_polyline1" />
   </graph>
   `}, "*");
     });
@@ -444,14 +444,14 @@ describe('Polyline Tag Tests', function () {
     <map>
       <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
-        <count><ref prop="value">count</ref></count>
+        <count><copy prop="value" tname="count" /></count>
       </sequence></substitutions>
     </map>
     </vertices></polyline>
   </graph>
   
   <graph>
-  <ref name="polyline2">_polyline1</ref>
+  <copy name="polyline2" tname="_polyline1" />
   </graph>
   `}, "*");
     });
@@ -512,14 +512,14 @@ describe('Polyline Tag Tests', function () {
     <map>
       <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
-        <count><ref prop="value">count</ref></count>
+        <count><copy prop="value" tname="count" /></count>
       </sequence></substitutions>
     </map>
     </polyline>
   </graph>
   
   <graph>
-  <ref name="polyline2">_polyline1</ref>
+  <copy name="polyline2" tname="_polyline1" />
   </graph>
   `}, "*");
     });
@@ -641,14 +641,14 @@ describe('Polyline Tag Tests', function () {
     <map>
       <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
       <substitutions><sequence from="0">
-        <count><ref prop="value">count</ref></count>
+        <count><copy prop="value" tname="count" /></count>
       </sequence></substitutions>
     </map>
     </polyline>
   </graph>
   
   <graph>
-  <ref name="polyline2">_polyline1</ref>
+  <copy name="polyline2" tname="_polyline1" />
   </graph>
   `}, "*");
     });
@@ -710,16 +710,16 @@ describe('Polyline Tag Tests', function () {
   <map>
     <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
     <substitutions><sequence from="0">
-      <count><ref prop="value">count</ref></count>
+      <count><copy prop="value" tname="count" /></count>
     </sequence></substitutions>
   </map>
   <polyline>
-    <ref>_map1</ref>
+    <copy tname="_map1" />
   </polyline>
   </graph>
   
   <graph>
-  <ref name="polyline2">_polyline1</ref>
+  <copy name="polyline2" tname="_polyline1" />
   </graph>
   `}, "*");
     });
@@ -838,16 +838,16 @@ describe('Polyline Tag Tests', function () {
   <map>
     <template><point>(<copyFromSubs/>, 5sin(<copyFromSubs/>))</point></template>
     <substitutions><sequence from="0">
-      <count><ref prop="value">count</ref></count>
+      <count><copy prop="value" tname="count" /></count>
     </sequence></substitutions>
   </map>
   <polyline>
-    <ref>_map1</ref>
+    <copy tname="_map1" />
   </polyline>
   </graph>
   
   <graph>
-  <ref name="polyline2">_polyline1</ref>
+  <copy name="polyline2" tname="_polyline1" />
   </graph>
   `}, "*");
     });
@@ -907,14 +907,14 @@ describe('Polyline Tag Tests', function () {
   <polyline>
     <point>(1,2)</point>
     <point>(-1,5)</point>
-    <point>(<ref prop="value">_mathinput1</ref>,7)</point>
+    <point>(<copy prop="value" tname="_mathinput1" />,7)</point>
     <point>(3,-5)</point>
     <point>(-4,-3)</point>
   </polyline>
   </graph>
   
   <graph>
-  <ref name="polyline2">_polyline1</ref>
+  <copy name="polyline2" tname="_polyline1" />
   </graph>  
   `}, "*");
     });
@@ -976,7 +976,7 @@ describe('Polyline Tag Tests', function () {
   </graph>
   
   <graph>
-  <ref name="polyline2">_polyline1</ref>
+  <copy name="polyline2" tname="_polyline1" />
   </graph>
   `}, "*");
     });
@@ -1106,7 +1106,7 @@ describe('Polyline Tag Tests', function () {
   </graph>
   
   <graph>
-  <ref name="polyline2">_polyline1</ref>
+  <copy name="polyline2" tname="_polyline1" />
   </graph>
   `}, "*");
     });
@@ -1246,13 +1246,13 @@ describe('Polyline Tag Tests', function () {
   <polyline>(-3,-1),(1,2),(3,4),(6,-2)</polyline>
   </graph>
   <graph>
-  <ref name="v1" prop="vertex1">_polyline1</ref>
-  <ref name="v2" prop="vertex2">_polyline1</ref>
-  <ref name="v3" prop="vertex3">_polyline1</ref>
-  <ref name="v4" prop="vertex4">_polyline1</ref>
+  <copy name="v1" prop="vertex1" tname="_polyline1" />
+  <copy name="v2" prop="vertex2" tname="_polyline1" />
+  <copy name="v3" prop="vertex3" tname="_polyline1" />
+  <copy name="v4" prop="vertex4" tname="_polyline1" />
   </graph>
   <graph>
-  <ref name="vs" prop="vertices">_polyline1</ref>
+  <copy name="vs" prop="vertices" tname="_polyline1" />
   </graph>
   `}, "*");
     });
@@ -1333,7 +1333,7 @@ describe('Polyline Tag Tests', function () {
   </graph>
   <graph>
   <polyline>
-    <ref prop="vertices">_polyline1</ref>
+    <copy prop="vertices" tname="_polyline1" />
   </polyline>
   </graph>
   `}, "*");
@@ -1458,15 +1458,15 @@ describe('Polyline Tag Tests', function () {
   </graph>
   <graph>
   <polyline>
-    <ref prop="vertex1">_polyline1</ref>
+    <copy prop="vertex1" tname="_polyline1" />
     <point>
-      (<extract prop="y"><ref prop="vertex2">_polyline1</ref></extract>,
-      <extract prop="x"><ref prop="vertex2">_polyline1</ref></extract>)
+      (<extract prop="y"><copy prop="vertex2" tname="_polyline1" /></extract>,
+      <extract prop="x"><copy prop="vertex2" tname="_polyline1" /></extract>)
     </point>
-    <ref prop="vertex3">_polyline1</ref>
+    <copy prop="vertex3" tname="_polyline1" />
     <point>
-      <x><extract prop="y"><ref prop="vertex4">_polyline1</ref></extract></x>
-      <y><extract prop="x"><ref prop="vertex4">_polyline1</ref></extract></y>
+      <x><extract prop="y"><copy prop="vertex4" tname="_polyline1" /></extract></x>
+      <y><extract prop="x"><copy prop="vertex4" tname="_polyline1" /></extract></y>
     </point>
   </polyline>
   </graph>
@@ -1540,8 +1540,8 @@ describe('Polyline Tag Tests', function () {
     <point name="B">(3,4)</point>
     <point name="C">(-5,6)</point>
     <point name="D">
-      <x><ref fixed prop="x">C</ref>+<ref fixed prop="x">B</ref>-<ref prop="x">A</ref></x>
-      <y><ref fixed prop="y">C</ref>+<ref fixed prop="y">B</ref>-<ref prop="y">A</ref></y>
+      <x><copy fixed prop="x" tname="C" />+<copy fixed prop="x" tname="B" />-<copy prop="x" tname="A" /></x>
+      <y><copy fixed prop="y" tname="C" />+<copy fixed prop="y" tname="B" />-<copy prop="y" tname="A" /></y>
     </point>
   </polyline>
   </graph>
@@ -1625,7 +1625,7 @@ describe('Polyline Tag Tests', function () {
   <point>(1,2)</point>
   <point>(3,4)</point>
   <point>(-5,6)</point>
-  <ref prop="vertex1">_polyline1</ref>
+  <copy prop="vertex1" tname="_polyline1" />
   </vertices>
   </polyline>
   </graph>
@@ -1701,7 +1701,7 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <polyline>
   <vertices>
-  <ref prop="vertex4" includeUndefinedArrayEntries>_polyline1</ref>
+  <copy prop="vertex4" includeUndefinedArrayEntries tname="_polyline1" />
   <point>(3,4)</point>
   <point>(-5,6)</point>
   <point>(1,2)</point>
@@ -1781,12 +1781,12 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <polyline>
   <vertices>
-  <ref prop="vertex4">_polyline1</ref>
+  <copy prop="vertex4" tname="_polyline1" />
   <point>(3,4)</point>
   <point>(-5,6)</point>
   <point>(1,2)</point>
   <point>
-    <x><extract prop="x"><ref prop="vertex1">_polyline1</ref></extract>+1</x>
+    <x><extract prop="x"><copy prop="vertex1" tname="_polyline1" /></extract>+1</x>
     <y>2</y>
   </point>
   </vertices>
@@ -1887,13 +1887,13 @@ describe('Polyline Tag Tests', function () {
   <graph>
   <polyline>
   <vertices>
-    <ref prop="vertex4">_polyline1</ref>
+    <copy prop="vertex4" tname="_polyline1" />
     <point>(1,2)</point>
     <point>(3,4)</point>
-    <ref prop="vertex7">_polyline1</ref>
+    <copy prop="vertex7" tname="_polyline1" />
     <point>(5,7)</point>
     <point>(-5,7)</point>
-    <ref prop="vertex10" includeUndefinedArrayEntries>_polyline1</ref>
+    <copy prop="vertex10" includeUndefinedArrayEntries tname="_polyline1" />
     <point>(3,1)</point>
     <point>(5,0)</point>
     <point>(-5,-1)</point>
@@ -2110,20 +2110,20 @@ describe('Polyline Tag Tests', function () {
   <polyline>
   <vertices>
     <point>
-      <x><extract prop="x"><ref prop="vertex4">_polyline1</ref></extract>+1</x>
-      <y><extract prop="y"><ref prop="vertex4">_polyline1</ref></extract>+1</y>
+      <x><extract prop="x"><copy prop="vertex4" tname="_polyline1" /></extract>+1</x>
+      <y><extract prop="y"><copy prop="vertex4" tname="_polyline1" /></extract>+1</y>
     </point>
     <point>(1,2)</point>
     <point>(3,4)</point>
     <point>
-      <x><extract prop="x"><ref prop="vertex7">_polyline1</ref></extract>+1</x>
-      <y><extract prop="y"><ref prop="vertex7">_polyline1</ref></extract>+1</y>
+      <x><extract prop="x"><copy prop="vertex7" tname="_polyline1" /></extract>+1</x>
+      <y><extract prop="y"><copy prop="vertex7" tname="_polyline1" /></extract>+1</y>
     </point>
     <point>(5,7)</point>
     <point>(-5,7)</point>
     <point>
-      <x><extract prop="x"><ref prop="vertex10">_polyline1</ref></extract>+1</x>
-      <y><extract prop="y"><ref prop="vertex10">_polyline1</ref></extract>+1</y>
+      <x><extract prop="x"><copy prop="vertex10" tname="_polyline1" /></extract>+1</x>
+      <y><extract prop="y"><copy prop="vertex10" tname="_polyline1" /></extract>+1</y>
     </point>
     <point>(3,1)</point>
     <point>(5,0)</point>
@@ -2360,7 +2360,7 @@ describe('Polyline Tag Tests', function () {
       (3,5), (-4,-1),(5,2)
     </polyline>
     <point>
-      <attractTo><ref>_polyline1</ref></attractTo>
+      <attractTo><copy tname="_polyline1" /></attractTo>
       (7,8)
     </point>
   </graph>
@@ -2595,7 +2595,7 @@ describe('Polyline Tag Tests', function () {
       (3,5), (-4,-1),(5,2)
     </polyline>
     <point>
-      <constrainTo><ref>_polyline1</ref></constrainTo>
+      <constrainTo><copy tname="_polyline1" /></constrainTo>
       (7,8)
     </point>
   </graph>
