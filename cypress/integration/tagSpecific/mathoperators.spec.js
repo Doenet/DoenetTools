@@ -607,9 +607,9 @@ describe('Math Operator Tag Tests', function () {
       <p><convertSetToList><copy tname="_math2" /></convertSetToList></p>
       <p><convertSetToList><copy tname="_math3" /></convertSetToList></p>
 
-      <p><copy name="r1" tname="_convertSetToList1" /></p>
-      <p><copy name="r2" tname="_convertSetToList2" /></p>
-      <p><copy name="r3" tname="_convertSetToList3" /></p>
+      <p><copy name="r1" tname="_convertsettolist1" /></p>
+      <p><copy name="r2" tname="_convertsettolist2" /></p>
+      <p><copy name="r3" tname="_convertsettolist3" /></p>
 
 
       `}, "*");
@@ -692,7 +692,7 @@ describe('Math Operator Tag Tests', function () {
       </p>
 
       <p><convertSetToList><math>{<copy tname="m" />,<copy tname="n" />,<copy tname="p" />, <copy tname="m" />}</math></convertSetToList></p>
-      <p><copy name="csl2" tname="_convertSetToList1" /></p>
+      <p><copy name="csl2" tname="_convertsettolist1" /></p>
 
       <p><copy name="n2" tname="n3" />
       <copy name="n" tname="num1" />

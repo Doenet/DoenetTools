@@ -131,7 +131,7 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select name="s1" assignnames="X1, y1, z1" numberToSelect="3">
+    <select name="s1" assignnames="x1, y1, z1" numberToSelect="3">
       <math>u</math>
       <math>v</math>
       <math>w</math>
@@ -139,7 +139,7 @@ describe('Select Tag Tests', function () {
       <math>y</math>
       <math>z</math>
     </select>
-    <select name="s2" assignnames="x2, Y2, z2" numberToSelect="3">
+    <select name="s2" assignnames="x2, y2, z2" numberToSelect="3">
       <math>u</math>
       <math>v</math>
       <math>w</math>
@@ -147,7 +147,7 @@ describe('Select Tag Tests', function () {
       <math>y</math>
       <math>z</math>
     </select>
-    <select name="s3" assignnames="x3, y3, Z3" numberToSelect="3">
+    <select name="s3" assignnames="x3, y3, z3" numberToSelect="3">
       <math>u</math>
       <math>v</math>
       <math>w</math>
@@ -155,7 +155,7 @@ describe('Select Tag Tests', function () {
       <math>y</math>
       <math>z</math>
     </select>
-    <select name="s4" assignnames="X4, Y4, z4" numberToSelect="3">
+    <select name="s4" assignnames="x4, y4, z4" numberToSelect="3">
       <math>u</math>
       <math>v</math>
       <math>w</math>
@@ -163,7 +163,7 @@ describe('Select Tag Tests', function () {
       <math>y</math>
       <math>z</math>
     </select>
-    <select name="s5" assignnames="x5, Y5, Z5" numberToSelect="3">
+    <select name="s5" assignnames="x5, y5, z5" numberToSelect="3">
       <math>u</math>
       <math>v</math>
       <math>w</math>
@@ -200,7 +200,7 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <aslist>
-    <select name="s1" assignnames="X1, y1, z1">
+    <select name="s1" assignnames="x1, y1, z1">
       <numberToSelect><copy tname="n" /></numberToSelect>
       <math>u</math>
       <math>v</math>
@@ -209,7 +209,7 @@ describe('Select Tag Tests', function () {
       <math>y</math>
       <math>z</math>
     </select>
-    <select name="s2" assignnames="x2, Y2, z2">
+    <select name="s2" assignnames="x2, y2, z2">
       <numberToSelect><copy tname="n" /></numberToSelect>
       <math>u</math>
       <math>v</math>
@@ -218,7 +218,7 @@ describe('Select Tag Tests', function () {
       <math>y</math>
       <math>z</math>
     </select>
-    <select name="s3" assignnames="x3, y3, Z3">
+    <select name="s3" assignnames="x3, y3, z3">
       <numberToSelect><copy tname="n" /></numberToSelect>
       <math>u</math>
       <math>v</math>
@@ -227,7 +227,7 @@ describe('Select Tag Tests', function () {
       <math>y</math>
       <math>z</math>
     </select>
-    <select name="s4" assignnames="X4, Y4, z4">
+    <select name="s4" assignnames="x4, y4, z4">
       <numberToSelect><copy tname="n" /></numberToSelect>
       <math>u</math>
       <math>v</math>
@@ -236,7 +236,7 @@ describe('Select Tag Tests', function () {
       <math>y</math>
       <math>z</math>
     </select>
-    <select name="s5" assignnames="x5, Y5, Z5">
+    <select name="s5" assignnames="x5, y5, z5">
       <numberToSelect><copy tname="n" /></numberToSelect>
       <math>u</math>
       <math>v</math>
@@ -2890,14 +2890,14 @@ describe('Select Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p><aslist>
-    <select name="s1" assignnames="X1, y1, z1" withReplacement>
+    <select name="s1" assignnames="x1, y1, z1" withReplacement>
       <numberToSelect><copy prop="numberToSelect" tname="s2" /></numberToSelect>
       <math>x</math><math>y</math><math>z</math>
     </select>
   </aslist></p>
   
   <p><aslist>
-    <select name="s2" assignnames="X2, y2, z2">
+    <select name="s2" assignnames="x2, y2, z2">
       <numberToSelect><copy tname="n" /></numberToSelect>
       <withReplacement><copy prop="withReplacement" tname="s1" /></withReplacement>
       <math>u</math><math>v</math><math>w</math>
@@ -2905,7 +2905,7 @@ describe('Select Tag Tests', function () {
   </aslist></p>
   
   <p><copy name="x1a" tname="x1" />, <copy name="y1a" tname="y1" />, <copy name="z1a" tname="z1" /></p>
-  <p><copy name="x2a" tname="X2" />, <copy name="y2a" tname="Y2" />, <copy name="z2a" tname="Z2" /></p>
+  <p><copy name="x2a" tname="x2" />, <copy name="y2a" tname="y2" />, <copy name="z2a" tname="z2" /></p>
   
   <p> 
     <copy name="n2" tname="n3" />
@@ -2960,14 +2960,14 @@ describe('Select Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p><aslist>
-    <select name="s1" assignnames="X1, y1, z1" withReplacement>
+    <select name="s1" assignnames="x1, y1, z1" withReplacement>
       <numberToSelect><copy prop="numberToSelect" tname="s2b" /></numberToSelect>
       <math>x</math><math>y</math><math>z</math>
     </select>
   </aslist></p>
 
   <p><aslist>
-    <select name="s2" assignnames="X2, y2, z2">
+    <select name="s2" assignnames="x2, y2, z2">
       <numberToSelect><copy tname="n" /></numberToSelect>
       <withReplacement><copy prop="withReplacement" tname="s1b" /></withReplacement>
       <math>u</math><math>v</math><math>w</math>
@@ -2980,7 +2980,7 @@ describe('Select Tag Tests', function () {
   <p><aslist><copy name="s2b" tname="s2a" /></aslist></p>
 
   <p><copy name="x1a" tname="x1" />, <copy name="y1a" tname="y1" />, <copy name="z1a" tname="z1" /></p>
-  <p><copy name="x2a" tname="X2" />, <copy name="y2a" tname="Y2" />, <copy name="z2a" tname="Z2" /></p>
+  <p><copy name="x2a" tname="x2" />, <copy name="y2a" tname="y2" />, <copy name="z2a" tname="z2" /></p>
   
   <p> 
     <copy name="n2" tname="n3" />

@@ -245,7 +245,11 @@ export default class NumberComponent extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { math: me.fromAst(dependencyValues.value) } };
+        if (Number.isNaN(dependencyValues.value)) {
+          return { newValues: { math: me.fromAst('\uff3f') } };
+        } else {
+          return { newValues: { math: me.fromAst(dependencyValues.value) } };
+        }
       },
       inverseDefinition: function ({ desiredStateVariableValues }) {
 
@@ -317,41 +321,5 @@ export default class NumberComponent extends InlineComponent {
 
 
   adapters = ["math", "text"];
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    if (this.stateValues.renderMode === "text") {
-      this.renderer = new this.availableRenderers.text({
-        key: this.componentName,
-        text: this.stateValues.text,
-      });
-    } else {
-      this.renderer = new this.availableRenderers.math({
-        key: this.componentName,
-        mathLatex: this.stateValues.text,
-        renderMode: this.stateValues.renderMode,
-      });
-    }
-  }
-
-  updateRenderer() {
-    if (this.stateValues.renderMode === "text") {
-      if (!(this.renderer instanceof this.availableRenderers.text)) {
-        delete this.renderer;
-        this.initializeRenderer();
-      } else {
-        this.renderer.updateText(this.stateValues.text);
-      }
-    } else if (!(this.renderer instanceof this.availableRenderers.math)) {
-      delete this.renderer;
-      this.initializeRenderer();
-    } else {
-      this.renderer.updateMathLatex(this.stateValues.text);
-    }
-  }
 
 }
