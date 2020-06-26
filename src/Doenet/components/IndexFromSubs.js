@@ -7,22 +7,9 @@ export default class IndexFromSubs extends CompositeComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.fromMapAncestor = { default: 0 };
+    properties.fromSubstitutions = { default: 1 };
+    properties.fromMapAncestor = { default: 1 };
     return properties;
-  }
-
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
-
-    childLogic.newLeaf({
-      name: "atMostOneString",
-      componentType: 'string',
-      comparison: 'atMost',
-      number: 1,
-      setAsBase: true,
-    });
-
-    return childLogic;
   }
 
 
@@ -30,29 +17,8 @@ export default class IndexFromSubs extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.substitutionsNumber = {
-      returnDependencies: () => ({
-        stringChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atMostOneString",
-          variableNames: ["value"],
-        },
-      }),
-      defaultValue: 1,
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.stringChild.length === 0) {
-          return { useEssentialOrDefaultValue: { substitutionsNumber: { variablesToCheck: ["substitutionsNumber"] } } }
-        }
-        let number = Number(dependencyValues.stringChild[0].stateValues.value);
-        if (Number.isNaN(number)) {
-          number = 1;
-        }
-        return { newValues: { substitutionsNumber: number } };
-      }
-    }
-
     stateVariableDefinitions.index = {
-      stateVariablesDeterminingDependencies: ["fromMapAncestor", "substitutionsNumber"],
+      stateVariablesDeterminingDependencies: ["fromMapAncestor", "fromSubstitutions"],
       returnDependencies: function ({ stateValues, sharedParameters }) {
         let substitutionsChildIndices = sharedParameters.substitutionsChildIndices;
 
@@ -60,14 +26,14 @@ export default class IndexFromSubs extends CompositeComponent {
           throw Error(`indexfromsubs can only be inside a map template.`);
         }
 
-        let level = substitutionsChildIndices.length - 1 - stateValues.fromMapAncestor;
+        let level = substitutionsChildIndices.length - stateValues.fromMapAncestor;
         let childIndices = substitutionsChildIndices[level];
         if (childIndices === undefined) {
           throw Error(`Invalid value of indexfromsubs fromMapAncestor: ${stateValues.fromMapAncestor}`);
         }
-        let childIndex = childIndices[stateValues.substitutionsNumber - 1];
+        let childIndex = childIndices[stateValues.fromSubstitutions - 1];
         if (childIndex === undefined) {
-          throw Error(`Invalid substitutionsNumber of indexfromsubs: ${stateValues.substitutionsNumber}`);
+          throw Error(`Invalid fromSubstitutions of indexfromsubs: ${stateValues.fromSubstitutions}`);
         };
 
         return {

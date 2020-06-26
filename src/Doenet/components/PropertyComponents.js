@@ -682,8 +682,8 @@ export class FixedOrder extends BooleanComponent {
   static rendererType = "boolean";
 }
 
-export class Href extends TextComponent {
-  static componentType = "href";
+export class Uri extends TextComponent {
+  static componentType = "uri";
   static rendererType = "text";
 }
 
@@ -880,4 +880,14 @@ export class Periodic extends BooleanComponent {
 export class IsResponse extends BooleanComponent {
   static componentType = "isResponse";
   static rendererType = "boolean";
+}
+
+export class FromSubstitutions extends NumberComponent {
+  static componentType = "fromSubstitutions";
+  static rendererType = "number";
+}
+
+export class FromMapAncestor extends NumberComponent {
+  static componentType = "fromMapAncestor";
+  static rendererType = "number";
 }

@@ -2406,7 +2406,7 @@ export default class Core {
               success: true,
               instructions: [{
                 setDependency: childLogicName,
-                desiredValue: [desiredStateVariableValues[property]],
+                desiredValue: desiredStateVariableValues[property],
                 childIndex: 0,
                 variableIndex: 0,
               }]
@@ -2531,7 +2531,7 @@ export default class Core {
               success: true,
               instructions: [{
                 setDependency: childLogicName,
-                desiredValue: [desiredStateVariableValues[property]],
+                desiredValue: desiredStateVariableValues[property],
                 childIndex: 0,
                 variableIndex: 0,
               }]
@@ -2657,9 +2657,23 @@ export default class Core {
         variableName: redefineDependencies.adapterVariable,
       },
     });
-    stateDef.definition = function ({ dependencyValues }) {
-      return { newValues: { [primaryStateVariableForDefinition]: dependencyValues.adapterTargetVariable } };
-    };
+    if (stateDef.set) {
+      stateDef.definition = function ({ dependencyValues }) {
+        return {
+          newValues: {
+            [primaryStateVariableForDefinition]: stateDef.set(dependencyValues.adapterTargetVariable),
+          },
+        };
+      };
+    } else {
+      stateDef.definition = function ({ dependencyValues }) {
+        return {
+          newValues: {
+            [primaryStateVariableForDefinition]: dependencyValues.adapterTargetVariable,
+          },
+        };
+      };
+    }
     stateDef.inverseDefinition = function ({ desiredStateVariableValues }) {
       return {
         success: true,
