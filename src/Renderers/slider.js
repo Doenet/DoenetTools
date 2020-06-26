@@ -151,7 +151,7 @@ export default function Slider(props) {
     return null;
   }
 
-  if(props.disabled) {
+  if(SVs.disabled) {
     return (
         <SliderContainer labeled = {(SVs.showControls||SVs.label)} noTicked = {SVs.showTicks === false} ref = {containerRef}>
             <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
