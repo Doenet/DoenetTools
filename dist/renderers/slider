@@ -336,7 +336,7 @@ function Slider(props) {
       _useDoenetRender2 = _slicedToArray(_useDoenetRender, 3),
       name = _useDoenetRender2[0],
       SVs = _useDoenetRender2[1],
-      actions = _useDoenetRender2[2]; //console.log(SVs.index);
+      actions = _useDoenetRender2[2]; //console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
 
 
   var containerRef = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(null);
@@ -391,12 +391,25 @@ function Slider(props) {
       setOffsetLeft(rect.left);
     }
   }, []);
+  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
+    //console.log("ran");
+    if (!isMouseDown) {
+      setThumbValue(SVs.value);
+      setIndex(SVs.index);
+
+      if (!(SVs.sliderType === "text")) {
+        setThumbXPos((SVs.value - startValue) * divisionWidth);
+      } else {
+        setThumbXPos(SVs.index * divisionWidth);
+      }
+    }
+  }, [SVs.index]);
 
   if (SVs.hide) {
     return null;
   }
 
-  if (props.disabled) {
+  if (SVs.disabled) {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(SliderContainer, {
       labeled: SVs.showControls || SVs.label,
       noTicked: SVs.showTicks === false,
@@ -537,62 +550,44 @@ function Slider(props) {
     setIndex(index - 1);
   }
 
-  return (
-    /*#__PURE__*/
-    // <SliderContainer labeled = {(SVs.showControls||SVs.label)} noTicked = {SVs.showTicks === false} ref = {containerRef}>
-    // <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
-    //     {SVs.label? <StyledValueLabel>{SVs.items[index]}</StyledValueLabel> : null}
-    //     {SVs.showControls? <>
-    //     <button style = {{float: "right", userSelect: "none"}} onClick = {handleNext} disabled>Next</button>
-    //     <button style = {{float: "right", userSelect: "none"}} onClick = {handlePrevious} disabled>Prev</button>
-    //     </> : null}
-    // </div>
-    // <SubContainer2>
-    //     <StyledSlider width = {`${500}px`} >
-    //     <StyledThumb disabled style={{left: `${-3}px`}}/>
-    //     {(SVs.showTicks === false) ? null : ((SVs.sliderType === "text") ? generateTextLabels(SVs.items, divisionWidth) : generateNumericLabels(SVs.items, divisionWidth, startValue))}
-    //     </StyledSlider>
-    // </SubContainer2>
-    // </SliderContainer>
-    react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(SliderContainer, {
-      ref: containerRef,
-      labeled: SVs.showControls || SVs.label,
-      noTicked: SVs.showTicks === false
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(SliderContainer, {
+    ref: containerRef,
+    labeled: SVs.showControls || SVs.label,
+    noTicked: SVs.showTicks === false
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    style: {
+      height: SVs.showControls || SVs.label ? "20px" : "0px"
+    }
+  }, SVs.label ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledValueLabel, null, SVs.label) : null, SVs.showControls ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    style: {
+      "float": "right",
+      userSelect: "none"
+    },
+    onClick: handleNext
+  }, "Next"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    style: {
+      "float": "right",
+      userSelect: "none"
+    },
+    onClick: handlePrevious
+  }, "Prev")) : null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(SubContainer2, {
+    onMouseDown: handleDragEnter,
+    onMouseUp: handleDragExit,
+    onMouseMove: handleDragThrough,
+    onMouseLeave: handleDragExit
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledSlider, {
+    width: "".concat(500, "px")
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2__["Spring"], {
+    to: {
+      x: thumbXPos
+    }
+  }, function (props) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledThumb, {
       style: {
-        height: SVs.showControls || SVs.label ? "20px" : "0px"
+        left: "".concat(props.x - 3, "px")
       }
-    }, SVs.label ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledValueLabel, null, SVs.label) : null, SVs.showControls ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-      style: {
-        "float": "right",
-        userSelect: "none"
-      },
-      onClick: handleNext
-    }, "Next"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
-      style: {
-        "float": "right",
-        userSelect: "none"
-      },
-      onClick: handlePrevious
-    }, "Prev")) : null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(SubContainer2, {
-      onMouseDown: handleDragEnter,
-      onMouseUp: handleDragExit,
-      onMouseMove: handleDragThrough,
-      onMouseLeave: handleDragExit
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledSlider, {
-      width: "".concat(500, "px")
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2__["Spring"], {
-      to: {
-        x: thumbXPos
-      }
-    }, function (props) {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledThumb, {
-        style: {
-          left: "".concat(props.x - 3, "px")
-        }
-      });
-    }), SVs.showTicks === false ? null : SVs.sliderType === "text" ? generateTextLabels(SVs.items, divisionWidth) : generateNumericLabels(SVs.items, divisionWidth, startValue))))
-  );
+    });
+  }), SVs.showTicks === false ? null : SVs.sliderType === "text" ? generateTextLabels(SVs.items, divisionWidth) : generateNumericLabels(SVs.items, divisionWidth, startValue))));
 } // let [name, SVs, actions] = useDoenetRender(props);
 //   // let [handlePos,setHandlePos] = useState(100);
 //   if (SVs.hide) {
