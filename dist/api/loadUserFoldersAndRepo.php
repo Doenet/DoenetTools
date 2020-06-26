@@ -64,8 +64,8 @@ if ($result->num_rows > 0){
 $folder_info_arr["root"] = array(
   "title" => "root",
   "publishDate" => "",
-  "parentId" => "",
-  "rootId" => "",
+  "parentId" => "root",
+  "rootId" => "root",
   "type" => "folder",
   "childContent" => array(),
   "childUrls" => array(),

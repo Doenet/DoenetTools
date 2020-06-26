@@ -23,6 +23,11 @@ export class Hide extends BooleanComponent {
   static rendererType = "boolean";
 }
 
+export class Disabled extends BooleanComponent {
+  static componentType = "disabled";
+  static rendererType = "boolean";
+}
+
 export class Draggable extends BooleanComponent {
   static componentType = "draggable";
   static rendererType = "boolean";

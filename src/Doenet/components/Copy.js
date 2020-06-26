@@ -300,7 +300,7 @@ export default class Copy extends CompositeComponent {
           effectiveTargetClasses = [];
         } else {
           effectiveTargetClasses = dependencyValues.targetReplacementClassesForProp;
-          if(!effectiveTargetClasses) {
+          if (!effectiveTargetClasses) {
             effectiveTargetClasses = [];
           }
         }
@@ -383,7 +383,7 @@ export default class Copy extends CompositeComponent {
         // Also, get actual statevariable for arrays so that can determine their size
         if (stateValues.propVariableObjs !== null) {
           for (let [ind, propVariableObj] of stateValues.propVariableObjs.entries()) {
-            if (stateValues.componentIdentitiesForProp  && stateValues.componentIdentitiesForProp[ind]) {
+            if (stateValues.componentIdentitiesForProp && stateValues.componentIdentitiesForProp[ind]) {
               if (!propVariableObj.componentType) {
                 dependencies[`replacementComponentType${ind}`] = {
                   dependencyType: "componentStateVariableComponentType",
@@ -438,12 +438,18 @@ export default class Copy extends CompositeComponent {
           let componentType = propVariableObj.componentType;
           if (!componentType) {
             componentType = dependencyValues[`replacementComponentType${ind}`];
-            if(!componentType) {
+            if (!componentType) {
               continue;
             }
           }
 
           if (Array.isArray(componentType)) {
+
+            // remove undefined
+            // (Could have undefined if, for example, have unsatisfied
+            // childlogic for a component.  Just skip such entries here
+            // so that can get to the error message describing child logic)
+            componentType = componentType.filter(x => x);
             replacementClasses.push(...componentType.map(x =>
               componentInfoObjects.allComponentClasses[x])
             );
@@ -452,7 +458,7 @@ export default class Copy extends CompositeComponent {
             )
           } else if (propVariableObj.isArray) {
             // TODO: what about multi-dimensional arrays?
-            if(dependencyValues[`targetArray${ind}`] === undefined) {
+            if (dependencyValues[`targetArray${ind}`] === undefined) {
               continue;
             }
             let arrayLength = dependencyValues[`targetArray${ind}`].length;
@@ -461,10 +467,8 @@ export default class Copy extends CompositeComponent {
             componentType = Array(arrayLength).fill(componentType);
             potentialReplacementClasses.push(componentClass)
           } else if (propVariableObj.isArrayEntry) {
+
             // TODO: what about multi-dimensional arrays?
-            if(dependencyValues[`targetArray${ind}`] === undefined) {
-              continue;
-            }
             let arrayLength = 1;
             let targetArrayEntry = dependencyValues[`targetArray${ind}`];
             if (Array.isArray(targetArrayEntry)) {
@@ -553,7 +557,7 @@ export default class Copy extends CompositeComponent {
           replacementClassesForProp = dependencyValues.targetReplacementClassesForProp
         } else {
           replacementClassesForProp = dependencyValues.replacementClasses;
-          if(!replacementClassesForProp) {
+          if (!replacementClassesForProp) {
             replacementClassesForProp = [];
           }
         }
