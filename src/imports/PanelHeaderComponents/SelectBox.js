@@ -1,9 +1,10 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import "./selectbox.css";
 
 class SelectBox extends Component {
+
   state = {
-    items: this.props.items || [],
+    items: [...this.props.items],
     showItems: false,
     selectedItem: null
   };
@@ -21,12 +22,25 @@ class SelectBox extends Component {
     });
   };
 
+  filter = ev => {
+    let items = [...this.props.items];
+    console.log(items);
+    if(!!ev && !!ev.target && !!ev.target.value) {
+      items.map(i=> {
+        let match = i.children.filter(c=> c.label.indexOf(ev.target.value) > -1);
+        i.children = match;
+        return i;
+      });
+    }
+    this.setState(items);
+  }
+
   render() {
     return (
       <div className="select-box-box">
         <div className="select-box-container">
           <div className="select-box-selected-item">
-            {this.state.selectedItem ? this.state.selectedItem.value : <input type="text"></input>}
+            {this.state.selectedItem ? this.state.selectedItem.value : <input type="text" onChange={this.filter.bind(this)}></input>}
           </div>
           <div className="select-box-arrow" onClick={this.dropDown}>
             <span
@@ -34,7 +48,7 @@ class SelectBox extends Component {
                 this.state.showItems
                   ? "select-box-arrow-up"
                   : "select-box-arrow-down"
-              }`}
+                }`}
             />
           </div>
 
@@ -43,13 +57,17 @@ class SelectBox extends Component {
             className={"select-box-items"}
           >
             {this.state.items.map(item => (
-              <div
-                key={item.id}
-                onClick={() => this.selectItem(item)}
-                className={this.state.selectedItem === item ? "selected" : ""}
-              >
-                {item.value}
-              </div>
+              <>
+                <div>{item.parent.title}</div>
+                {item.children.map(child => (
+                  <div
+                    key={child.value}
+                  // onClick={() => this.selectItem(child)}
+                  // className={this.state.selectedItem === item ? "selected" : ""}
+                  >
+                    {child.label}
+                  </div>))}
+              </>
             ))}
           </div>
         </div>
