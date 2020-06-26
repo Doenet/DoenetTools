@@ -1,0 +1,195 @@
+describe('ref Tag Tests', function () {
+
+  beforeEach(() => {
+    cy.visit('/test')
+
+  })
+
+  it('ref to sections', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <section newnamespace name="section1">
+      <title>Section 1</title>
+      <p>Paragraph one</p>
+      <p>Paragraph two</p>
+      <p>Paragraph three</p>
+      <p>Paragraph four</p>
+      <p>Paragraph five</p>
+      <p>Paragraph six</p>
+      <p>Paragraph seven</p>
+      <p>Paragraph eight</p>
+      <p>Goto:
+      <ref name="toTwo" tname="/section2">Section 2</ref>,
+      <ref name="toThree" tname="/section3">Section 3</ref>
+      <ref name="toFour" tname="/section4">Section 4</ref>
+      <ref name="toThreeii" tname="/section3/_p2">Second paragraph of Section 3</ref>
+      </p>
+
+    </section>
+
+    <section newnamespace name="section2">
+      <title>Section 2</title>
+      <p>Paragraph a</p>
+      <p>Paragraph b</p>
+      <p>Paragraph c</p>
+      <p>Paragraph d</p>
+      <p>Paragraph e</p>
+      <p>Paragraph f</p>
+      <p>Paragraph g</p>
+      <p>Paragraph h</p>
+      <p>Goto:
+      <ref name="toOne" tname="/section1">Section 1</ref>,
+      <ref name="toThree" tname="/section3">Section 3</ref>
+      <ref name="toFour" tname="/section4">Section 4</ref>
+      </p>
+    </section>
+
+    <section newnamespace name="section3">
+      <title>Section 3</title>
+      <p>Paragraph i</p>
+      <p>Paragraph ii</p>
+      <p>Paragraph iii</p>
+      <p>Paragraph iv</p>
+      <p>Paragraph v</p>
+      <p>Paragraph vi</p>
+      <p>Paragraph vii</p>
+      <p>Paragraph viii</p>
+      <p>Goto:
+      <ref name="toOne" tname="/section1">Section 1</ref>
+      <ref name="toTwo" tname="/section2">Section 2</ref>,
+      <ref name="toFour" tname="/section4">Section 4</ref>
+      </p>
+    </section>
+
+    <section newnamespace name="section4">
+      <title>Section 4</title>
+      <p>Paragraph A</p>
+      <p>Paragraph B</p>
+      <p>Paragraph C</p>
+      <p>Paragraph D</p>
+      <p>Paragraph E</p>
+      <p>Paragraph F</p>
+      <p>Paragraph G</p>
+      <p>Paragraph H</p>
+      <p>Goto:
+      <ref tname="/section1">Section 1</ref>,
+      <ref name="toOne" tname="/section1">Section 1</ref>,
+      <ref name="toTwo" tname="/section2">Section 2</ref>,
+      <ref name="toThree" tname="/section3">Section 3</ref>
+      <ref name="toTwoe" tname="/section2/_p5">Fifth paragraph of Section 3</ref>
+      </p>
+    </section>
+
+    <section newnamespace name="section5">
+    <title>Section 5</title>
+    <p>Paragraph I</p>
+    <p>Paragraph II</p>
+    <p>Paragraph III</p>
+    <p>Paragraph IV</p>
+    <p>Paragraph V</p>
+    <p>Paragraph VI</p>
+    <p>Paragraph VII</p>
+    <p>Paragraph VII</p>
+    <p>Goto:
+    <ref tname="/section1">Section 1</ref>,
+    <ref name="toOne" tname="/section1">Section 1</ref>,
+    <ref name="toTwo" tname="/section2">Section 2</ref>,
+    <ref name="toThree" tname="/section3">Section 3</ref>
+    <ref name="toTwoe" tname="/section2/_p5">Fifth paragarph of Section 3</ref>
+    </p>
+  </section>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/section1_title').should('have.text', 'Section 1')
+
+    cy.get('#\\/section1\\/toFour').click();
+    cy.url().should('include', '#/section4')
+
+    cy.get('#\\/section4\\/toOne').click();
+    cy.url().should('include', '#/section1')
+
+    cy.get('#\\/section1\\/toThreeii').click();
+    cy.url().should('include', '#/section3/_p2')
+
+    cy.get('#\\/section4\\/toTwoe').click();
+    cy.url().should('include', '#/section2/_p5')
+
+
+  });
+
+
+
+  it('simple url', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p>A link to <ref uri="http://doenet.org">Doenet</ref>.</p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', 'A link to Doenet.')
+
+    cy.get('#\\/_ref1').should('have.text', 'Doenet').invoke('attr', 'href')
+      .then((href) => expect(href).eq("http://doenet.org"));
+
+  })
+
+
+  it('url with no link text', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p>A link to <ref uri="http://doenet.org"/>.</p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', 'A link to http://doenet.org.')
+
+    cy.get('#\\/_ref1').should('have.text', 'http://doenet.org').invoke('attr', 'href')
+      .then((href) => expect(href).eq("http://doenet.org"));
+
+  })
+
+
+  it('referencing refs', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p>A link to <ref uri="http://doenet.org">Doenet</ref>.</p>
+  <p>Repeat url: <copy tname="_ref1" />.</p>
+  <p>The link address is: <copy prop="uri" tname="_ref1" />.</p>
+  <p>The text linked is: <copy prop="linktext" tname="_ref1" />.</p>
+  <p>Recreate from pieces: <ref>
+     <uri><copy prop="uri" tname="_ref1" /></uri><copy prop="linktext" tname="_ref1" /></ref>.</p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', 'A link to Doenet.')
+
+
+    cy.get('#\\/_ref1').should('have.text', 'Doenet').invoke('attr', 'href')
+      .then((href) => expect(href).eq("http://doenet.org"));
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      cy.get('#' + components["/_copy1"].replacements[0].componentName)
+        .should('have.text', 'Doenet').invoke('attr', 'href')
+        .then((href) => expect(href).eq("http://doenet.org"));
+    })
+
+    cy.get('#\\/_p3').should('have.text', 'The link address is: http://doenet.org.')
+
+    cy.get('#\\/_p4').should('have.text', 'The text linked is: Doenet.')
+
+    cy.get('#\\/_p5').should('have.text', 'Recreate from pieces: Doenet.')
+
+    cy.get('#\\/_ref2').should('have.text', 'Doenet').invoke('attr', 'href')
+      .then((href) => expect(href).eq("http://doenet.org"));
+
+  })
+
+});

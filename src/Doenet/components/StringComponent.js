@@ -17,28 +17,41 @@ export default class StringComponent extends InlineComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.value = {
-      additionalStateVariablesDefined: [{
-        variableName: "text",
-        public: true,
-        componentType: "text"
-      }],
       returnDependencies: () => ({}),
       defaultValue: "",
       forRenderer: true,
-      definition: function () {
-        return {
-          useEssentialOrDefaultValue: {
-            value: { variablesToCheck: "value" },
-            text: { variablesToCheck: "value" }
-          }
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          value: { variablesToCheck: "value" },
         }
-      },
-      inverseDefinition: function ({ desiredStateVariableValues }) {
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
             setStateVariable: "value",
             value: desiredStateVariableValues.value
+          }]
+        };
+      }
+    }
+
+    stateVariableDefinitions.text = {
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { newValues: { text: dependencyValues.value } }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "value",
+            desiredValue: desiredStateVariableValues.text
           }]
         };
       }

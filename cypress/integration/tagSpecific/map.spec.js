@@ -148,8 +148,8 @@ describe('Map Tag Tests', function () {
     <aslist>
     <map behavior="parallel">
       <template>
-        <math>(<copyFromSubs/>, <copyFromSubs>2</copyFromSubs>, <copyFromSubs>3</copyFromSubs>)</math>
-        <math>(<indexFromSubs/>, <indexFromSubs>2</indexFromSubs>, <indexFromSubs>3</indexFromSubs>)</math>
+        <math>(<copyFromSubs/>, <copyFromSubs fromSubstitutions="2" />, <copyFromSubs fromSubstitutions="3" />)</math>
+        <math>(<indexFromSubs/>, <indexFromSubs fromSubstitutions="2" />, <indexFromSubs fromSubstitutions="3" />)</math>
       </template>
       <substitutions><sequence from="1" to="5"/></substitutions>
       <substitutions><sequence from="21" to="23"/></substitutions>
@@ -207,8 +207,8 @@ describe('Map Tag Tests', function () {
     <text>a</text>
     <map behavior="combination">
       <template>
-        <math>(<copyFromSubs/>, <copyFromSubs>2</copyFromSubs>, <copyFromSubs>3</copyFromSubs>)</math>
-        <math>(<indexFromSubs/>, <indexFromSubs>2</indexFromSubs>, <indexFromSubs>3</indexFromSubs>)</math>
+        <math>(<copyFromSubs/>, <copyFromSubs fromSubstitutions="2" />, <copyFromSubs fromSubstitutions="3" />)</math>
+        <math>(<indexFromSubs/>, <indexFromSubs fromSubstitutions="2" />, <indexFromSubs fromSubstitutions="3" />)</math>
       </template>
       <substitutions><sequence from="1" to="3"/></substitutions>
       <substitutions><sequence from="21" to="23" step="2"/></substitutions>
@@ -339,8 +339,8 @@ describe('Map Tag Tests', function () {
       <template>
         <map>
           <template>
-            <math simplify><copyFromSubs/>+<copyFromSubs fromMapAncestor /></math>
-            <math simplify><indexFromSubs/>+2<indexFromSubs fromMapAncestor /></math>
+            <math simplify><copyFromSubs/>+<copyFromSubs fromMapAncestor="2" /></math>
+            <math simplify><indexFromSubs/>+2<indexFromSubs fromMapAncestor="2" /></math>
           </template>
           <substitutions><sequence from="1" to="2"/></substitutions>
         </map>
@@ -410,8 +410,8 @@ describe('Map Tag Tests', function () {
           <template>
             <map>
               <template>
-                <point><coords>(<copyFromSubs/>+<copyFromSubs fromMapAncestor="2"/>, <copyFromSubs fromMapAncestor="1"/>)</coords></point>
-                <point><coords>(<indexFromSubs/>+2*<indexFromSubs fromMapAncestor="2"/>, <indexFromSubs fromMapAncestor="1"/>)</coords></point>
+                <point><coords>(<copyFromSubs/>+<copyFromSubs fromMapAncestor="3"/>, <copyFromSubs fromMapAncestor="2"/>)</coords></point>
+                <point><coords>(<indexFromSubs/>+2*<indexFromSubs fromMapAncestor="3"/>, <indexFromSubs fromMapAncestor="2"/>)</coords></point>
               </template>
               <substitutions><sequence from="1" to="2"/></substitutions>
             </map>
@@ -524,7 +524,7 @@ describe('Map Tag Tests', function () {
           <template>
             <map assignnamespaces="u,v">
               <template>
-                <point name="A"><coords>(<copyFromSubs/>+<copyFromSubs fromMapAncestor="2"/>, <copyFromSubs fromMapAncestor/>)</coords></point>
+                <point name="A"><coords>(<copyFromSubs/>+<copyFromSubs fromMapAncestor="3"/>, <copyFromSubs fromMapAncestor="2"/>)</coords></point>
               </template>
               <substitutions><sequence from="1" to="2"/></substitutions>
             </map>
@@ -537,12 +537,12 @@ describe('Map Tag Tests', function () {
     </map>
     <copy prop="coords" tname="/u/u/u/A" />
     <copy prop="coords" tname="/u/u/v/A" />
-    <copy prop="coords" tname="/U/v/u/A" />
-    <copy prop="coords" tname="/u/V/v/A" />
-    <copy prop="coords" tname="/v/u/U/A" />
-    <copy prop="coords" tname="/v/u/v/a" />
-    <copy prop="coords" tname="/V/v/U/A" />
-    <copy prop="coords" tname="/V/V/v/a" />
+    <copy prop="coords" tname="/u/v/u/A" />
+    <copy prop="coords" tname="/u/v/v/A" />
+    <copy prop="coords" tname="/v/u/u/A" />
+    <copy prop="coords" tname="/v/u/v/A" />
+    <copy prop="coords" tname="/v/v/u/A" />
+    <copy prop="coords" tname="/v/v/v/A" />
     `}, "*");
     });
 
@@ -598,22 +598,22 @@ describe('Map Tag Tests', function () {
 
         expect(components['/u/_graph1'].stateValues.graphicalDescendants.length).eq(4);
         expect(components['/v/_graph1'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/u/u/u/a'].stateValues.xs[0].tree).eq(-9);
-        expect(components['/u/u/u/a'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/u/u/v/a'].stateValues.xs[0].tree).eq(-8);
-        expect(components['/u/u/v/a'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/u/v/u/a'].stateValues.xs[0].tree).eq(-9);
-        expect(components['/u/v/u/a'].stateValues.xs[1].tree).eq(5);
-        expect(components['/u/v/v/a'].stateValues.xs[0].tree).eq(-8);
-        expect(components['/u/v/v/a'].stateValues.xs[1].tree).eq(5);
-        expect(components['/v/u/u/a'].stateValues.xs[0].tree).eq(6);
-        expect(components['/v/u/u/a'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/v/u/v/a'].stateValues.xs[0].tree).eq(7);
-        expect(components['/v/u/v/a'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/v/v/u/a'].stateValues.xs[0].tree).eq(6);
-        expect(components['/v/v/u/a'].stateValues.xs[1].tree).eq(5);
-        expect(components['/v/v/v/a'].stateValues.xs[0].tree).eq(7);
-        expect(components['/v/v/v/a'].stateValues.xs[1].tree).eq(5);
+        expect(components['/u/u/u/A'].stateValues.xs[0].tree).eq(-9);
+        expect(components['/u/u/u/A'].stateValues.xs[1].tree).eq(-5);
+        expect(components['/u/u/v/A'].stateValues.xs[0].tree).eq(-8);
+        expect(components['/u/u/v/A'].stateValues.xs[1].tree).eq(-5);
+        expect(components['/u/v/u/A'].stateValues.xs[0].tree).eq(-9);
+        expect(components['/u/v/u/A'].stateValues.xs[1].tree).eq(5);
+        expect(components['/u/v/v/A'].stateValues.xs[0].tree).eq(-8);
+        expect(components['/u/v/v/A'].stateValues.xs[1].tree).eq(5);
+        expect(components['/v/u/u/A'].stateValues.xs[0].tree).eq(6);
+        expect(components['/v/u/u/A'].stateValues.xs[1].tree).eq(-5);
+        expect(components['/v/u/v/A'].stateValues.xs[0].tree).eq(7);
+        expect(components['/v/u/v/A'].stateValues.xs[1].tree).eq(-5);
+        expect(components['/v/v/u/A'].stateValues.xs[0].tree).eq(6);
+        expect(components['/v/v/u/A'].stateValues.xs[1].tree).eq(5);
+        expect(components['/v/v/v/A'].stateValues.xs[0].tree).eq(7);
+        expect(components['/v/v/v/A'].stateValues.xs[1].tree).eq(5);
       })
     })
   });
@@ -627,7 +627,7 @@ describe('Map Tag Tests', function () {
     <template>
     <graph>
       <map behavior="combination">
-        <template><point><coords>(<copyFromSubs/>+<copyFromSubs fromMapAncestor/>, <copyFromSubs>2</copyFromSubs>)</coords></point></template>
+        <template><point><coords>(<copyFromSubs/>+<copyFromSubs fromMapAncestor="2" />, <copyFromSubs fromSubstitutions="2" />)</coords></point></template>
         <substitutions><sequence from="1" to="2"/></substitutions>
         <substitutions><sequence from="-5" to="5" step="10"/></substitutions>
       </map>
@@ -952,7 +952,7 @@ describe('Map Tag Tests', function () {
     <grapH Name="hi" newNamespace >
     <map assignnamespaces="q, c,s">
       <template>
-        <point><coords>(<copyFromSubs/>, <copyFromSubs>2</copyFromSubs>)</coords></point>
+        <point><coords>(<copyFromSubs/>, <copyFromSubs fromSubstitutions="2" />)</coords></point>
       </template>
       <substitutions><sequence from="1" to="2"/></substitutions>
       <substitutions><sequence from="-3" to="-2"/></substitutions>
@@ -1003,13 +1003,13 @@ describe('Map Tag Tests', function () {
     })
   });
 
-  it('map copieding copyFromSubs of other map', () => {
+  it('map coping copyFromSubs of other map', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <map assignnamespaces="u,v,w">
-      <template><math>(<copyFromSubs/>, <copy tname="../e/_copyFromSubs1" />)</math></template>
+      <template><math>(<copyFromSubs/>, <copy tname="../e/_copyfromsubs1" />)</math></template>
       <substitutions><sequence from="1" to="3"/></substitutions>
     </map>
     <map assignnamespaces="c,d,e">
@@ -1107,7 +1107,7 @@ describe('Map Tag Tests', function () {
     <template>
      <map>
        <template>
-         <math>(<copyFromSubs/>, <copyFromSubs fromMapAncestor/>)</math>
+         <math>(<copyFromSubs/>, <copyFromSubs fromMapAncestor="2"/>)</math>
        </template>
        <substitutions><sequence from="1"><to><copyFromSubs/></to></sequence></substitutions>
      </map>
@@ -1211,7 +1211,7 @@ describe('Map Tag Tests', function () {
 
 
       cy.log('make sequence length 1');
-      cy.get(cesc('#/sequencecount_input')).clear().type('1{enter}');
+      cy.get(cesc('#/sequenceCount_input')).clear().type('1{enter}');
 
       cy.window().then(() => {
 
@@ -1250,7 +1250,7 @@ describe('Map Tag Tests', function () {
       })
 
       cy.log('make sequence length 0 again');
-      cy.get(cesc('#/sequencecount_input')).clear().type('0{enter}');
+      cy.get(cesc('#/sequenceCount_input')).clear().type('0{enter}');
 
       cy.get(cesc('#/_p1')).invoke('text').then((text) => {
         expect(text.trim()).equal('');
@@ -1272,7 +1272,7 @@ describe('Map Tag Tests', function () {
       });
 
       cy.log('make sequence length 2');
-      cy.get(cesc('#/sequencecount_input')).clear().type('2{enter}');
+      cy.get(cesc('#/sequenceCount_input')).clear().type('2{enter}');
 
       cy.window().then(() => {
 
@@ -1329,8 +1329,8 @@ describe('Map Tag Tests', function () {
       });
 
       cy.log('change limits');
-      cy.get(cesc('#/sequencefrom_input')).clear().type('3{enter}');
-      cy.get(cesc('#/sequenceto_input')).clear().type('5{enter}');
+      cy.get(cesc('#/sequenceFrom_input')).clear().type('3{enter}');
+      cy.get(cesc('#/sequenceTo_input')).clear().type('5{enter}');
 
 
       cy.window().then(() => {
@@ -1387,7 +1387,7 @@ describe('Map Tag Tests', function () {
       });
 
       cy.log('make sequence length 0 again');
-      cy.get(cesc('#/sequencecount_input')).clear().type('0{enter}');
+      cy.get(cesc('#/sequenceCount_input')).clear().type('0{enter}');
 
       cy.get(cesc('#/_p1')).invoke('text').then((text) => {
         expect(text.trim()).equal('');
@@ -1409,7 +1409,7 @@ describe('Map Tag Tests', function () {
       });
 
       cy.log('make sequence length 3');
-      cy.get(cesc('#/sequencecount_input')).clear().type('3{enter}');
+      cy.get(cesc('#/sequenceCount_input')).clear().type('3{enter}');
 
       cy.window().then(() => {
 
@@ -1775,7 +1775,7 @@ describe('Map Tag Tests', function () {
     })
 
     cy.log('make sequence length 1');
-    cy.get(cesc('#/sequencecount_input')).clear().type('1{enter}');
+    cy.get(cesc('#/sequenceCount_input')).clear().type('1{enter}');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1807,7 +1807,7 @@ describe('Map Tag Tests', function () {
     })
 
     cy.log('make sequence length 0 again');
-    cy.get(cesc('#/sequencecount_input')).clear().type('0{enter}');
+    cy.get(cesc('#/sequenceCount_input')).clear().type('0{enter}');
 
     cy.get(cesc('#/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('');
@@ -1823,7 +1823,7 @@ describe('Map Tag Tests', function () {
 
 
     cy.log('make sequence length 2');
-    cy.get(cesc('#/sequencecount_input')).clear().type('2{enter}');
+    cy.get(cesc('#/sequenceCount_input')).clear().type('2{enter}');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1872,8 +1872,8 @@ describe('Map Tag Tests', function () {
     })
 
     cy.log('change limits');
-    cy.get(cesc('#/sequencefrom_input')).clear().type('3{enter}');
-    cy.get(cesc('#/sequenceto_input')).clear().type('5{enter}');
+    cy.get(cesc('#/sequenceFrom_input')).clear().type('3{enter}');
+    cy.get(cesc('#/sequenceTo_input')).clear().type('5{enter}');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1921,7 +1921,7 @@ describe('Map Tag Tests', function () {
     })
 
     cy.log('make sequence length 0 again');
-    cy.get(cesc('#/sequencecount_input')).clear().type('0{enter}');
+    cy.get(cesc('#/sequenceCount_input')).clear().type('0{enter}');
 
     cy.get(cesc('#/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('');
@@ -1936,7 +1936,7 @@ describe('Map Tag Tests', function () {
     })
 
     cy.log('make sequence length 3');
-    cy.get(cesc('#/sequencecount_input')).clear().type('3{enter}');
+    cy.get(cesc('#/sequenceCount_input')).clear().type('3{enter}');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);

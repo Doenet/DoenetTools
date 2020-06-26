@@ -77,11 +77,11 @@ describe('Copy Tag Tests', function () {
       expect(components['/r6'].replacements[0].replacements[0].stateValues.modifyIndirectly).eq(false);
       expect(components['/r7'].replacements[0].replacements[0].replacements[0].stateValues.modifyIndirectly).eq(false);
 
-      expect(components['/a'].stateValues.label).eq("A");
-      expect(components['/a2'].replacements[0].stateValues.label).eq("A");
-      expect(components['/b'].replacements[0].stateValues.label).eq("B");
-      expect(components['/c'].replacements[0].replacements[0].stateValues.label).eq("C");
-      expect(components['/c2'].replacements[0].replacements[0].replacements[0].stateValues.label).eq("C");
+      expect(components['/A'].stateValues.label).eq("A");
+      expect(components['/A2'].replacements[0].stateValues.label).eq("A");
+      expect(components['/B'].replacements[0].stateValues.label).eq("B");
+      expect(components['/C'].replacements[0].replacements[0].stateValues.label).eq("C");
+      expect(components['/C2'].replacements[0].replacements[0].replacements[0].stateValues.label).eq("C");
 
     })
   });
@@ -142,14 +142,14 @@ describe('Copy Tag Tests', function () {
       expect(components['/frmt3'].replacements[0].replacements[0].stateValues.value).eq("text");
       expect(components['/frmt3'].replacements[0].replacements[0].stateValues.hide).eq(true);
 
-      expect(components['/a'].stateValues.label).eq("A");
-      expect(components['/ca'].replacements[0].stateValues.value.tree).eqls(["vector", 1, 2]);
+      expect(components['/A'].stateValues.label).eq("A");
+      expect(components['/cA'].replacements[0].stateValues.value.tree).eqls(["vector", 1, 2]);
       expect(components['/l'].replacements[0].stateValues.value).eq("\\left( 1, 2 \\right)");
       expect(components['/l'].replacements[0].stateValues.modifyIndirectly).eq(true);
       expect(components['/lmr'].replacements[0].stateValues.value).eq("\\left( 1, 2 \\right)");
       expect(components['/lmr'].replacements[0].stateValues.modifyIndirectly).eq(false);
-      expect(components['/a2'].replacements[0].stateValues.label).eq("A");
-      expect(components['/ca2'].replacements[0].stateValues.value.tree).eqls(["vector", 1, 2]);
+      expect(components['/A2'].replacements[0].stateValues.label).eq("A");
+      expect(components['/cA2'].replacements[0].stateValues.value.tree).eqls(["vector", 1, 2]);
       expect(components['/l2'].replacements[0].stateValues.value).eq("\\left( 1, 2 \\right)");
 
     })
