@@ -54,6 +54,14 @@ export const ParentNode = memo(({ hide = false, children, title, type, itemIcon,
 
   if (hide) {
     return <React.Fragment>
+      <ListItem onMouseEnter={() => setCurrentHovered(id)} onMouseLeave={() => setCurrentHovered(null)}>
+        <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}> 
+          <div>
+            { SearchComponent }
+          </div>        
+          <div>{ controlButtons }</div>
+        </div>
+      </ListItem>
       <Frame>
       <DropItem id={id} onDrop={onDrop} onDropEnter={onDropEnter} onDropLeave={onDropLeave} >
           {children[0].length == 0 && children[1].length == 0 && <div style={{height: "20px"}} />}
@@ -68,10 +76,10 @@ export const ParentNode = memo(({ hide = false, children, title, type, itemIcon,
       <ListItem onMouseEnter={() => setCurrentHovered(id)} onMouseLeave={() => setCurrentHovered(null)} onClick={() => setOpen(!isOpen)}>
         <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}> 
           <div>
-            {expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }} />}
+            { expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }}/> }
             { itemIcon }
             <Title style={styles["title"]}>{title}</Title>
-          </div>        
+          </div>
           <div>{ controlButtons }</div>
         </div>
       </ListItem>
