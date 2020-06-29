@@ -159,7 +159,6 @@ export const TreeView = ({
 }) => {
   const [currentDraggedOverContainerId, setCurrentDraggedOverContainerId] = useState(null);
   const [filterText, setFilterText] = useState("");
-  const [filterSection, setFilterSection] = useState("all");
   const [currentSearchingFolder, setCurrentSearchingFolder] = useState(null);
   const [currentHovered, setCurrentHovered] = useState(null);
 
@@ -207,6 +206,7 @@ export const TreeView = ({
     if (folderId == currentHovered || folderId == currentSearchingFolder) {
       const onClickCb = (e) => {
         setCurrentSearchingFolder(currentSearchingFolder == folderId ? null : folderId);
+        setFilterText("");
         e.stopPropagation();
       }
 
