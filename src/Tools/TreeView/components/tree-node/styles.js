@@ -41,6 +41,7 @@ const Global = createGlobalStyle`
 const Frame = styled('div')`
   display: inline-block;
   position: relative;
+  width: 100%;
   padding: 2px 10px 2px 0px;
   text-overflow: ellipsis;
   white-space: nowrap;

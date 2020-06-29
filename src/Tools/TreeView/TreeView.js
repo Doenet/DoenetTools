@@ -3,8 +3,9 @@ import { LeafNode, ParentNode } from "./components/tree-node/TreeNode"
 import "./index.css";
 import SpinningLoader from '../SpinningLoader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileAlt, faFolder, faLink} from '@fortawesome/free-solid-svg-icons';
+import { faSearch} from '@fortawesome/free-solid-svg-icons';
 import ChooserConstants from "../chooser/ChooserConstants";
+import styled from 'styled-components'
 
 /*
 
@@ -141,6 +142,7 @@ export const TreeView = ({
   parentsInfo={}, 
   childrenInfo={}, 
   hideRoot=false,
+  disableSearch=false,
   treeNodeIcons={},
   specialNodes=new Set(),
 	treeStyles={},
@@ -156,6 +158,11 @@ export const TreeView = ({
   onDropLeave
 }) => {
   const [currentDraggedOverContainerId, setCurrentDraggedOverContainerId] = useState(null);
+  const [filterText, setFilterText] = useState("");
+  const [currentSearchingFolder, setCurrentSearchingFolder] = useState(null);
+  const [currentHovered, setCurrentHovered] = useState(null);
+
+
   // handle dragEnd
   useEffect(() => {
 		if (currentDraggedObject.id == null) setCurrentDraggedOverContainerId(null);
@@ -192,7 +199,32 @@ export const TreeView = ({
 	
 	const onLeafNodeClickCb = (nodeId) => {
 		onLeafNodeClick && onLeafNodeClick(nodeId);
-	}
+  }
+
+  const buildControlButtons = (folderId) => {
+    if (disableSearch) return;
+    if (folderId == currentHovered || folderId == currentSearchingFolder) {
+      const onClickCb = (e) => {
+        setCurrentSearchingFolder(currentSearchingFolder == folderId ? null : folderId);
+        setFilterText("");
+        e.stopPropagation();
+      }
+
+      return <button style={{ height: '19px', padding: '1px' }} onClick={onClickCb}>
+        <FontAwesomeIcon icon={faSearch} style={{ fontSize: "12px"}}/>
+      </button>;
+    }
+  }
+
+  const buildSearchComponent = (folderId) => {
+    if (folderId == currentSearchingFolder) { 
+      const onSearchInputChange = (value) => {
+        setFilterText(value);
+      }
+
+      return <Search onInputChange={onSearchInputChange}/>
+    }
+  }
   
   if (loading){
     return <div style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
@@ -200,12 +232,45 @@ export const TreeView = ({
     </div>
   }
 
+  // filter data
+  let filteredParentsInfo = JSON.parse(JSON.stringify(parentsInfo))
+  if (filterText != "") {
+    let childFolders = filteredParentsInfo[currentSearchingFolder].childFolders;
+    let childContent = filteredParentsInfo[currentSearchingFolder].childContent;
+    let childUrls = filteredParentsInfo[currentSearchingFolder].childUrls;
+
+    filteredParentsInfo[currentSearchingFolder].childFolders = childFolders.filter((childId) => {
+      return parentsInfo[childId]["title"].includes(filterText);
+    })
+    filteredParentsInfo[currentSearchingFolder].childContent = childContent.filter((childId) => {
+      return childrenInfo[childId]["title"].includes(filterText);
+    })
+    filteredParentsInfo[currentSearchingFolder].childUrls = childUrls.filter((childId) => {
+      return childrenInfo[childId]["title"].includes(filterText);
+    })
+  }
+  
+  // generate section list
+  const sectionList = []
+  Object.keys(parentsInfo).forEach(parentId => {
+    if (parentId !== "root") {
+      let section = {
+        id: parentId,
+        text: parentsInfo[parentId]["title"]
+      }
+      sectionList.push(section);
+    }    
+  });
+  // set root to "All" and reorder to top
+  let root = {id: "root", text: "All"};
+  sectionList.unshift(root);
+
   return (
-    <>
+    <div style={{display: "flex", flexDirection: "column"}}>
     { buildTreeStructure({ 
         parentHeadingId: "root", 
         parentNodeHeadingId: "root",
-        parentsInfo: parentsInfo,
+        parentsInfo: filteredParentsInfo,
         childrenInfo: childrenInfo, 
         hideRoot: hideRoot, 
         treeNodeIcons: treeNodeIcons, 
@@ -217,17 +282,22 @@ export const TreeView = ({
         onDraggableDragOver: onDraggableDragOverCb, 
         onDrop: onDropCb, 
         onDropEnter: onDropEnterCb, 
-        onDropLeave: onDropLeaveCb, 
+        onDropLeave: onDropLeaveCb,
         currentDraggedObject: currentDraggedObject,
-        currentDraggedOverContainerId: currentDraggedOverContainerId })
+        currentDraggedOverContainerId: currentDraggedOverContainerId,
+        currentSearchingFolder: currentSearchingFolder,
+        buildControlButtons: buildControlButtons,
+        buildSearchComponent: buildSearchComponent,
+        setCurrentHovered: setCurrentHovered,
+       })
     }
-    </>
+    </div>
   );
 }
 
 function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, hideRoot, treeNodeIcons, treeStyles,
   specialNodes, onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
-   currentDraggedOverContainerId, onLeafNodeClick }) {
+   currentDraggedOverContainerId, onLeafNodeClick, currentSearchingFolder, buildControlButtons, buildSearchComponent, setCurrentHovered }) {
      
   const getBaseItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
     const icon = currentItemId == "root" ? "" : treeNodeIcons(itemType);
@@ -295,7 +365,11 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
     onDraggableDragOver={onDraggableDragOver}
     currentDraggedId={currentDraggedObject.id}
     currentDraggedType={currentDraggedObject.type}
-    styles={ itemStyle }> 
+    styles={ itemStyle }
+    SearchComponent={buildSearchComponent(parentHeadingId)}
+    controlButtons={buildControlButtons(parentHeadingId)}
+    setCurrentHovered={setCurrentHovered}
+    > 
       { // iterate through children headings to generate tree recursively
       parentsInfo[parentHeadingId]["childFolders"].map(parentId => {
         return buildTreeStructure({ 
@@ -315,7 +389,12 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           onDropEnter: onDropEnter, 
           onDropLeave: onDropLeave,
           currentDraggedObject: currentDraggedObject,
-          currentDraggedOverContainerId: currentDraggedOverContainerId});
+          currentDraggedOverContainerId: currentDraggedOverContainerId,
+          currentSearchingFolder: currentSearchingFolder,
+          buildControlButtons: buildControlButtons,
+          buildSearchComponent: buildSearchComponent,
+          setCurrentHovered: setCurrentHovered,
+        });
       })}
       { // iterate through children assigments to generate tree recursively
       childrenList.map((childId, index) => {
@@ -344,3 +423,51 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
 
   return subTree;
 }
+
+export const Search = ({selectOptions=[], selected, onSelectChange, onInputChange}) => {
+
+  const handleInputChange = (e) => {
+    onInputChange(e.target.value);
+  };
+
+  const handleSelectchange = (e) => {
+    onSelectChange(e.target.value)
+  }
+
+  return (
+    <form style={{display: "flex", alignItems: "center", textAlign: "left"}}>
+      {/* <SearchSelect id="section" value={selected} onChange={handleSelectchange}>
+        { selectOptions.map((option) => {
+            return <option key={`option-${option.id}`} value={option.id}>{option.text}</option>
+          })
+        }
+      </SearchSelect> */}
+      <SearchInput onChange={handleInputChange} placeholder="Search here..."/>
+    </form>
+  );
+};
+
+const SearchInput = styled('input')`
+  width: 90%;
+  box-sizing: border-box;
+  border: 1px solid #C2C2C2;
+  color: #616161;
+	border-radius: 1px;
+  padding: 4px;
+  outline: none;
+  line-height: 1.3;
+`
+
+const SearchSelect = styled('select')`
+  display: inline-block;
+  color: #fff;
+  height: 27px;
+  line-height: 1.3;
+  max-width: 300px; 
+  box-sizing: border-box;
+  margin: 0;
+  border: 0;
+  box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+  outline: none;
+  background-color: #00a075;
+`
