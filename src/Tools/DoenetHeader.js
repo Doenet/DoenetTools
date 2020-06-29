@@ -10,6 +10,8 @@ import styled from "styled-components";
 // import { animated, useSpring } from 'react-spring';
 import Menu from './menu.js'
 import MenuDropDown from '../imports/MenuDropDown.js';
+import { CookiesProvider, withCookies, Cookies } from 'react-cookie';
+import { instanceOf } from 'prop-types';
 // import IndexedDB from '../services/IndexedDB';
 // import axios from 'axios';
 // import ConstrainToAngles from '../Doenet/components/ConstrainToAngles';
@@ -45,7 +47,7 @@ const ExtendedHeader = styled.div`
     }
      
     &.off {
-      margin-top: ${props => '-'+props.extendedMarginOffTop+'px'};
+      margin-top: ${props => '-' + props.extendedMarginOffTop + 'px'};
       opacity: 0;
       margin-bottom: 50px;
     }
@@ -55,10 +57,14 @@ const ExtendedHeader = styled.div`
 `;
 
 
-class DoenetHeader extends Component {
+class DoenetHeaderChild extends Component {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+  };
 
   constructor(props) {
     super(props);
+
     this.state = {
       menuVisble: false,
       showToolbox: false,
@@ -155,9 +161,9 @@ class DoenetHeader extends Component {
         myProfile: props.headerChangesFromLayout
       });
     }
-    if(props.headerRoleFromLayout){
+    if (props.headerRoleFromLayout) {
       this.setState({
-        myRoles:props.headerRoleFromLayout
+        myRoles: props.headerRoleFromLayout
       });
     }
   }
@@ -166,17 +172,38 @@ class DoenetHeader extends Component {
   }
 
   loadMyProfile() {
-    axios
-      .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
-      .then(resp => {
-        // console.dir(resp.data);
-        this.setState({
-          myProfile: resp.data
-        });
-        this.rolesToChoose(resp.data);
+    const { cookies } = this.props;
 
-      })
-      .catch(err => console.error(err.response.toString()));
+
+    const profile = cookies.get('profile');
+    console.log(profile)
+    if (profile) {
+      //Already have profile in a cookie
+      console.log("Already have profile")
+      this.setState({
+        myProfile: profile
+      });
+    } else {
+      //NOT SIGNED IN!!!!  TODO: Handle Signed out mode
+      console.log('Not signed in')
+      //Need profile information so get it from the server
+      // axios
+      //   .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
+      //   .then(resp => {
+      //     // console.dir(resp.data);
+      //     // cookies.set('profile', "mytest")
+      //     cookies.set('profile', resp.data)
+
+      //     this.setState({
+      //       myProfile: resp.data
+      //     });
+      //     this.rolesToChoose(resp.data);
+
+      //   })
+      //   .catch(err => console.error(err.response.toString()));
+    }
+
+
   }
 
   componentWillUnmount() {
@@ -254,7 +281,6 @@ class DoenetHeader extends Component {
 
   }
 
-
   toogleToolbox = () => {
     if (!this.state.showToolbox) {
       document.addEventListener('click', this.toogleToolbox, false);
@@ -307,7 +333,7 @@ class DoenetHeader extends Component {
                 )}
               </div>
               : ''}
-              {!this.state.myProfile.toolAccess.length && <p>Loading..!</p>}
+            {!this.state.myProfile.toolAccess.length && <p>Loading..!</p>}
           </Toolbox>}
       </div>
     const isMultipleRoles = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? Object.keys(this.state.myRoles.permissionRoles).length > 1 : false;
@@ -319,22 +345,22 @@ class DoenetHeader extends Component {
             <FontAwesomeIcon id='headerPlayBtn-icon' fontSize='16px' icon={this.state.sliderVisible ? faCaretDown : faCaretRight} />
           </div>
           <div className="toolName">
-            <img id="doenetLogo" onClick={() => { location.href = "/"; }} src={doenetImage} height='40px' />
+            <img id="doenetLogo" onClick={() => { location.href = "/dashboard"; }} src={doenetImage} height='40px' />
             <span>{this.props.toolName}</span>
           </div>
 
-         {this.props.headingTitle && <div className="headingTitle">
+          {this.props.headingTitle && <div className="headingTitle">
             <span>{this.props.headingTitle}</span>
           </div>}
           {!this.props.guestUser && <div className="headingToolbar">
             {/* {isMultipleRoles && <Menu showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} />} */}
-             {isMultipleRoles && <MenuDropDown offsetPos={-20} showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} placeholder={"Select Course"} />}
+            {isMultipleRoles && <MenuDropDown offsetPos={-20} showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} placeholder={"Select Course"} />}
             {isSingleRole && <button style={{
               // display: "flex",
               alignItems: "center",
               // padding: "10px",
-               borderRadius: "5px"
-               }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
+              borderRadius: "5px"
+            }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
             {toolBox}
             {!this.state.myProfile.profilePicture && <div id="userButton-anonymous" onClick={() => { location.href = "/Profile"; }}>
               <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
@@ -360,31 +386,31 @@ class DoenetHeader extends Component {
               <span>{this.props.headingTitle}</span>
             </div>
           </div>}
-            {!this.props.guestUser && 
-          <div className="extended-header">
-          {isMultipleRoles && <MenuDropDown showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} />}
-          {isSingleRole && <button style={{
-              // display: "flex",
-              alignItems: "center",
-              // padding: "10px",
-               borderRadius: "5px"
-               }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
-            {toolBox}
-            {!this.state.myProfile.profilePicture &&
-              <div id="userButton-anonymous-phone" onClick={() => { location.href = "/Profile"; }}>
-                <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
-              </div>
-            }
-            {this.state.myProfile.profilePicture &&
-              <div id="userButton-phone" onClick={() => { location.href = "/Profile"; }}>
-                <ProfilePicture
-                  pic={this.state.myProfile.profilePicture}
-                  name="changeProfilePicture"
-                  id="changeProfilePicture"
-                >
-                </ProfilePicture>
-              </div>}
-          </div>}
+          {!this.props.guestUser &&
+            <div className="extended-header">
+              {isMultipleRoles && <MenuDropDown showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} />}
+              {isSingleRole && <button style={{
+                // display: "flex",
+                alignItems: "center",
+                // padding: "10px",
+                borderRadius: "5px"
+              }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
+              {toolBox}
+              {!this.state.myProfile.profilePicture &&
+                <div id="userButton-anonymous-phone" onClick={() => { location.href = "/Profile"; }}>
+                  <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
+                </div>
+              }
+              {this.state.myProfile.profilePicture &&
+                <div id="userButton-phone" onClick={() => { location.href = "/Profile"; }}>
+                  <ProfilePicture
+                    pic={this.state.myProfile.profilePicture}
+                    name="changeProfilePicture"
+                    id="changeProfilePicture"
+                  >
+                  </ProfilePicture>
+                </div>}
+            </div>}
         </ExtendedHeader>
       </React.Fragment>
     );
@@ -400,4 +426,12 @@ const Toolbox = ({ toogleToolbox, children }) => {
   );
 }
 
-export default DoenetHeader;
+const DoenetHeaderCookies = withCookies(DoenetHeaderChild);
+
+export default function DoenetHeader(props) {
+  return (
+    <CookiesProvider>
+      <DoenetHeaderCookies {...props} />
+    </CookiesProvider>
+  );
+}

@@ -1,7 +1,6 @@
 import React, { useState, useRef} from "react";
 import axios from "axios";
 axios.defaults.withCredentials = true;
-// import DoenetHeader from "./DoenetHeader";
 import styled from "styled-components";
 import ToolLayout from './ToolLayout/ToolLayout';
 import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel';
