@@ -14,7 +14,7 @@ button{
   flex-direction: column;
   min-height: 1vh;
   overflow: hidden;
-
+  width: 100%;
 }
 
 .middlepanel{
