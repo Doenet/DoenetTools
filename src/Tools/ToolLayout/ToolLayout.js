@@ -4,6 +4,8 @@ import PlacementContext from './PlacementContext';
 import DoenetHeader from "../DoenetHeader";
 import './toollayout.css';
 import "../../imports/doenet.css";
+import { useCookies } from 'react-cookie';
+
 
 //This component deals with resizing and resizers
 
@@ -25,6 +27,26 @@ const widthToDevice = () => {
 };
 
 export default function ToolLayout(props) {
+  const [cookiePassword,setCookiePassword] = useCookies('cookiePassword');
+  const [cookieEmail,setCookieEmail] = useCookies('cookieEmail');
+
+  useEffect(()=>{
+    //Fires each time you change the tool
+    if (cookiePassword.cookiePassword && cookieEmail.cookieEmail){
+      console.log("Signed in!!!!!!!!!!")
+    }else if (location.hostname === "localhost"){
+      //Autosign in
+      // console.log("LOCAL HOST Automatic SIGN IN!!!!!!!!")
+      // setCookiePassword('cookiePassword',"123456",{path:"/"});
+      // setCookieEmail('cookieEmail', "devuser@example.com",{path:"/"})
+    }
+
+    return ()=>{
+      console.log("SIGN OUT!");
+      
+    }
+  },[]);
+
   var w = window.innerWidth;
   let leftW;
   let rightW;
