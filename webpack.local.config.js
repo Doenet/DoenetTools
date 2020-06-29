@@ -82,64 +82,64 @@ module.exports = {
       chunks: ['index.js'],
       template: "./src/index.html",
       filename: "./index.html",
-      // favicon: "",
+      favicon: "./src/Tools/favicon.ico",
     }),
     // new HtmlWebPackPlugin({
     //   chunks: ['admin/index.js'],
     //   template: "./src/admin/index.html",
     //   filename: "./admin/index.html",
-    //   // favicon: "",
+    //   favicon: "./src/Tools/favicon.ico",
     // }),
     new HtmlWebPackPlugin({
       chunks: ["chooser/index.js"],
       template: "./src/chooser/index.html",
-      filename: "./chooser/index.html"
-      // favicon: "",
+      filename: "./chooser/index.html",
+      favicon: "./src/Tools/favicon.ico",
     }),
     new HtmlWebPackPlugin({
       chunks: ["course/index.js"],
       template: "./src/course/index.html",
-      filename: "./course/index.html"
-      // favicon: "",
+      filename: "./course/index.html",
+      favicon: "./src/Tools/favicon.ico",
     }),
     new HtmlWebPackPlugin({
       chunks: ['dashboard/index.js'],
       template: "./src/dashboard/index.html",
       filename: "./dashboard/index.html",
-      // favicon: "",
+      favicon: "./src/Tools/favicon.ico",
     }),
     new HtmlWebPackPlugin({
       chunks: ['docs/index.js'],
       template: "./src/docs/index.html",
       filename: "./docs/index.html",
-      // favicon: "",
+      favicon: "./src/Tools/favicon.ico",
     }),
     new HtmlWebPackPlugin({
       chunks: ['editor/index.js'],
       template: "./src/editor/index.html",
       filename: "./editor/index.html",
-      // favicon: "",
+      favicon: "./src/Tools/favicon.ico",
     }),
 
     // new HtmlWebPackPlugin({
     //   chunks: ["exam/index.js"],
     //   template: "./src/exam/index.html",
     //   filename: "./exam/index.html"
-    //   // favicon: "",
+    //   favicon: "./src/Tools/favicon.ico",
     // }),
     // Gradebook
     new HtmlWebPackPlugin({
       chunks: ['gradebook/index.js'],
       template: "./src/gradebook/index.html",
       filename: "./gradebook/index.html",
-      // favicon: "",
+      favicon: "./src/Tools/favicon.ico",
     }),
        // Guest Editor
        new HtmlWebPackPlugin({
         chunks: ['guesteditor/index.js'],
         template: "./src/guesteditor/index.html",
         filename: "./guesteditor/index.html",
-        // favicon: "",
+        favicon: "./src/Tools/favicon.ico",
       }),
     new HtmlWebPackPlugin({
       chunks: ['gradebook/index.js'],
@@ -156,7 +156,7 @@ module.exports = {
     //   chunks: ["page/index.js"],
     //   template: "./src/page/index.html",
     //   filename: "./page/index.html"
-    //   // favicon: "",
+    //   favicon: "./src/Tools/favicon.ico",
     // }),
     new HtmlWebPackPlugin({
       chunks: ["profile/index.js"],
@@ -166,27 +166,27 @@ module.exports = {
     new HtmlWebPackPlugin({
       chunks: ["test/index.js"],
       template: "./src/test/index.html",
-      filename: "./test/index.html"
-      // favicon: "",
+      filename: "./test/index.html",
+      favicon: "./src/Tools/favicon.ico",
     }),
     new HtmlWebPackPlugin({
       chunks: ["signin/index.js"],
       template: "./src/signin/index.html",
-      filename: "./signin/index.html"
-      // favicon: "",
+      filename: "./signin/index.html",
+      favicon: "./src/Tools/favicon.ico",
     }),
     // new HtmlWebPackPlugin({
     //   chunks: ["viewer/index.js"],
     //   template: "./src/viewer/index.html",
     //   filename: "./viewer/index.html"
-    //   // favicon: "",
+    //   favicon: "./src/Tools/favicon.ico",
     // }),
     //exampletool
     new HtmlWebPackPlugin({
       chunks: ["exampletool/index.js"],
       template: "./src/exampletool/index.html",
-      filename: "./exampletool/index.html"
-      // favicon: "",
+      filename: "./exampletool/index.html",
+      favicon: "./src/Tools/favicon.ico",
     }),
     
     new MiniCssExtractPlugin({

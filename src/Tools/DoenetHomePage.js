@@ -252,7 +252,7 @@ class DoenetHomePage extends Component {
     // Try it out section.  indexedDB Stored Editor - one doc . Documentation
     return (
       <React.Fragment>
-        <ToolLayout toolName="Home Page" 
+        <ToolLayout toolName="Announcements" 
           leftPanelWidth="0"
           rightPanelWidth="0">
         <ToolLayoutPanel>
