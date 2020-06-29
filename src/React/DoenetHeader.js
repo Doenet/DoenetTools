@@ -29,6 +29,7 @@ const ProfilePicture = styled.button`
   justify-content: center;
   align-items: center;
   border-radius: 50%;
+  border-style:none;
   
 `;
 const ExtendedHeader = styled.div`

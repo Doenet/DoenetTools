@@ -64,6 +64,7 @@ let ProfilePicture = styled.button`
   margin: auto;
   border-radius: 50%;
   user-select: none;
+  border-style:none;
   &:hover, &:focus {
     background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
       url("/profile_pictures/${props => props.pic}.jpg");
