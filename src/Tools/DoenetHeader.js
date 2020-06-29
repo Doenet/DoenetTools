@@ -172,36 +172,39 @@ class DoenetHeaderChild extends Component {
   }
 
   loadMyProfile() {
-    const { cookies } = this.props;
+    // const { cookies } = this.props;
 
 
-    const profile = cookies.get('profile');
-    console.log(profile)
-    if (profile) {
-      //Already have profile in a cookie
-      console.log("Already have profile")
-      this.setState({
-        myProfile: profile
-      });
-    } else {
-      //NOT SIGNED IN!!!!  TODO: Handle Signed out mode
-      console.log('Not signed in')
-      //Need profile information so get it from the server
-      // axios
-      //   .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
-      //   .then(resp => {
-      //     // console.dir(resp.data);
-      //     // cookies.set('profile', "mytest")
-      //     cookies.set('profile', resp.data)
+    // const profile = cookies.get('profile');
+    // console.log(profile)
+    // if (profile) {
+    //   //Already have profile in a cookie
+    //   console.log("Already have profile")
+    //   this.setState({
+    //     myProfile: profile
+    //   });
+    // } else {
+    //   //NOT SIGNED IN!!!!  TODO: Handle Signed out mode
+    //   console.log('Not signed in')
+  
+    // }
 
-      //     this.setState({
-      //       myProfile: resp.data
-      //     });
-      //     this.rolesToChoose(resp.data);
+        //Need profile information so get it from the server
+      axios
+        .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
+        .then(resp => {
+          // console.dir(resp.data);
+          // cookies.set('profile', "mytest")
+          // cookies.set('profile', resp.data)
 
-      //   })
-      //   .catch(err => console.error(err.response.toString()));
-    }
+          this.setState({
+            myProfile: resp.data
+          });
+          this.rolesToChoose(resp.data);
+
+        })
+        .catch(err => console.error(err));
+        // .catch(err => console.error(err.response.toString()));
 
 
   }
