@@ -23,16 +23,16 @@ class SelectBox extends Component {
   };
 
   filter = ev => {
-    let items = [...this.props.items];
+    let items = JSON.parse(JSON.stringify(this.props.items));
     console.log(items);
     if(!!ev && !!ev.target && !!ev.target.value) {
       items.map(i=> {
-        let match = i.children.filter(c=> c.label.indexOf(ev.target.value) > -1);
+        let match = i.children.filter(c=> c.label.toLowerCase().indexOf((ev.target.value).toLowerCase()) > -1);
         i.children = match;
         return i;
       });
     }
-    this.setState(items);
+    this.setState({items});
   }
 
   render() {
