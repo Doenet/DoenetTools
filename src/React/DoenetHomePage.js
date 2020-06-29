@@ -19,6 +19,8 @@ import { faSearch as Search } from '@fortawesome/free-solid-svg-icons';
 
 import logo from '../media/Doenet_Logo_Frontpage.png';
 
+import ToolLayout from "./ToolLayout/ToolLayout";
+import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 
 
 
@@ -252,7 +254,8 @@ class DoenetHomePage extends Component {
     // Discussions page zoom hangout discussions@doenet.org
     // Try it out section.  indexedDB Stored Editor - one doc . Documentation
     return (
-      <React.Fragment>
+      <ToolLayout toolName="Announcements" >
+      <ToolLayoutPanel >
         <div className="homepage-stripes-container">
 
           <div className="heading-banner">
@@ -356,7 +359,8 @@ class DoenetHomePage extends Component {
             </div>
           </div>
         </div>
-      </React.Fragment>);
+      </ToolLayoutPanel>
+      </ToolLayout>);
   }
 }
 
