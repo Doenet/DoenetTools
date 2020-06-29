@@ -16,6 +16,7 @@ const Container = styled.div`
   height:calc(100vh - 50px);
   overflow:hidden;
   z-index:0;
+  width:100%;
 `;
 
 const widthToDevice = () => {
@@ -27,39 +28,66 @@ const widthToDevice = () => {
 };
 
 export default function ToolLayout(props) {
+  let anonymousUserProfile = {
+    accessAllowed: "0",
+    adminAccessAllowed: "0",
+    bio: "",
+    email: "",
+    firstName: "",
+    lastName: "",
+    profilePicture: "anonymous",
+    roleCommunityTA: "0",
+    roleCourseDesigner: "0",
+    roleInstructor: "0",
+    roleLiveDataCommunity: "0",
+    roleStudent: "1",
+    roleWatchdog: "0",
+    studentId: null,
+    toolAccess: ["Chooser", "Documentation", "Profile"],
+    trackingConsent: "1",
+    username: "anonymous",
+  }
   const [cookieProfile, setCookieProfile] = useCookies('Profile');
-  const [profile, setProfile] = useState({});
+  const [profile, setProfile] = useState(anonymousUserProfile);
 
   useEffect(() => {
+
+    
     //Fires each time you change the tool
     console.log("cookieProfile", cookieProfile)
     if (Object.keys(cookieProfile).length > 0) {
       setProfile(cookieProfile);
     }
     else if (location.hostname !== "localhost") {
-      setProfile({signedIn:false});
+      setProfile(anonymousUserProfile);
 
     } else {
       //Start Signed In when local host development
       //To Start Signed Out Clear the Cookies and comment the next line out
-      setCookieProfile("Profile", {signedIn:true})
-      setProfile({signedIn:true});
+      // let devUserProfile = {
+      //   accessAllowed: "1",
+      //   adminAccessAllowed: "1",
+      //   bio: "Hello, my name is Dev User. I appear in many databases. I like to think I'm very important. c:",
+      //   email: "devuser@example.com",
+      //   firstName: "Dev",
+      //   lastName: "User",
+      //   profilePicture: "emu",
+      //   roleCommunityTA: "0",
+      //   roleCourseDesigner: "0",
+      //   roleInstructor: "1",
+      //   roleLiveDataCommunity: "0",
+      //   roleStudent: "1",
+      //   roleWatchdog: "0",
+      //   studentId: null,
+      //   toolAccess: ["Chooser", "Course", "Profile", "Documentation", "Gradebook"],
+      //   trackingConsent: "1",
+      //   username: "devuser",
+      // }
+      // setCookieProfile("Profile", devUserProfile)
+      // setProfile(devUserProfile);
 
     }
-    // if (cookiePassword.cookiePassword && cookieEmail.cookieEmail){
-    //   console.log("Signed in!!!!!!!!!!")
-    // }
-    // else if (location.hostname === "localhost"){
-    //   //Autosign in
-    //   // console.log("LOCAL HOST Automatic SIGN IN!!!!!!!!")
-    //   // setCookiePassword('cookiePassword',"123456",{path:"/"});
-    //   // setCookieEmail('cookieEmail', "devuser@example.com",{path:"/"})
-    // }
-
-    // return ()=>{
-    //   console.log("SIGN OUT!");
-
-    // }
+  
   }, []);
 
   var w = window.innerWidth;

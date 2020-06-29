@@ -251,12 +251,10 @@ class DoenetHomePage extends Component {
     // Discussions page zoom hangout discussions@doenet.org
     // Try it out section.  indexedDB Stored Editor - one doc . Documentation
     return (
-      <React.Fragment>
         <ToolLayout toolName="Announcements" 
           leftPanelWidth="0"
           rightPanelWidth="0">
         <ToolLayoutPanel>
-          <div>
         <div className="homepage-stripes-container">
 
           <div className="heading-banner">
@@ -378,10 +376,9 @@ class DoenetHomePage extends Component {
             </div>
           </div>
         </div>
-        </div>
         </ToolLayoutPanel>
         </ToolLayout>
-      </React.Fragment>);
+      );
   }
 }
 

@@ -1,4 +1,4 @@
-import React, { useState, useRef} from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 axios.defaults.withCredentials = true;
 import styled from "styled-components";
@@ -26,7 +26,7 @@ let SpanAll = styled.div`
 `;
 
 let WidthEnforcer = styled.div`
-  min-width: 1500px;
+  // min-width: 1500px;
   margin: auto;
 `;
 
@@ -162,6 +162,7 @@ let PageHeader = styled.h1`
   grid-row: 1 / 2;
   grid-column: 1 / -1;
 `;
+
 let SectionHeader = styled.h2`
   margin-top: 2em;
   margin-bottom: 2em;
@@ -186,8 +187,28 @@ export default function DoenetProfile(props) {
     axios
       .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
       .then(resp => {
-        // console.dir(resp.data);
-        setMyProfile(resp.data);
+        console.log("profile")
+        console.dir(resp.data);
+        // setMyProfile(resp.data);
+        setMyProfile({
+          accessAllowed: "0",
+          adminAccessAllowed: "0",
+          bio: "",
+          email: "",
+          firstName: "",
+          lastName: "",
+          profilePicture: "anonymous",
+          roleCommunityTA: "0",
+          roleCourseDesigner: "0",
+          roleInstructor: "0",
+          roleLiveDataCommunity: "0",
+          roleStudent: "1",
+          roleWatchdog: "0",
+          studentId: null,
+          toolAccess: ["Chooser", "Documentation", "Profile"],
+          trackingConsent: "1",
+          username: "anonymous",
+        });
       })
       .catch(err => console.error(err.response.toString()));
   }
@@ -228,7 +249,7 @@ export default function DoenetProfile(props) {
         .then(resp => {
           // console.log(`updated profile with ${f}: ${v}`);
           // console.dir(resp.data)
-          setMyProfile(resp.data); 
+          setMyProfile(resp.data);
           // because the states of all the inputs are controlled by themselves (the value/children prop is only used to initialize the element, not for updates), this will not cause a malignant race condition. This is at the loss of recieving updates when the profile is changed externally.
         })
         .catch(err => console.error(err.response.toString()));
@@ -331,7 +352,7 @@ export default function DoenetProfile(props) {
 
   return (
     <>
-      <ToolLayout toolName="Profile" headerChangesFromLayout={myProfile} 
+      <ToolLayout toolName="Profile" headerChangesFromLayout={myProfile}
       // ref={toolLayoutRef}
       >
         <ToolLayoutPanel>

@@ -63,7 +63,6 @@ class DoenetHeader extends Component {
       menuVisble: false,
       showToolbox: false,
       sliderVisible: false,
-      myProfile: {},
       myRoles: {}
     }
 
@@ -94,7 +93,6 @@ class DoenetHeader extends Component {
 
     this.selectPermission = null
     this.currentCourseId = ""
-    // const {this.props.rights.arrayIds,this.props.rights.courseInfo,defaultId,permissions} = this.props.rights
     if (this.props.rights) {
       this.currentCourseId = this.props.rights.defaultId
     }
@@ -104,13 +102,11 @@ class DoenetHeader extends Component {
     if (this.props.rights && this.props.rights.arrayIds != []) {
       this.props.rights.arrayIds.map((id, index) => {
         this.options.push(<option key={this.updateNumber++} value={id}>{this.props.rights.courseInfo[id]['courseName']}</option>)
-        // this.options.push(<option value={id} selected={defaultId===id?true:false}>{this.props.rights.courseInfo[id]['courseName']}</option>)
       })
     } else {
       this.options.push(<option key={this.updateNumber++}>No courses</option>)
     }
 
-    // console.log(this.options)
     this.select = (<select
       value={this.props.rights ? this.props.rights.defaultId : undefined}
       className="select"
@@ -125,7 +121,6 @@ class DoenetHeader extends Component {
             this.instructorRights = true
           }
         }
-        // this.makePermissionList()
         this.props.rights.parentFunction(e.target.value);
         this.forceUpdate()
       }}>
@@ -133,7 +128,6 @@ class DoenetHeader extends Component {
     </select>)
 
 
-    // this.headingTitle = this.props.this.props.rights.courseInfo[this.currentCourseId]['courseName']
     this.toolTitleToLinkMap = {
       "Chooser": "/chooser/",
       "Course": "/course/",
@@ -142,10 +136,6 @@ class DoenetHeader extends Component {
       // "Profile": "/profile/",
     }
 
-  }
-
-  componentDidMount() {
-    this.loadMyProfile();
   }
 
   componentWillReceiveProps(props) {
@@ -165,19 +155,19 @@ class DoenetHeader extends Component {
   rolesToChoose(data) {
   }
 
-  loadMyProfile() {
-    axios
-      .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
-      .then(resp => {
-        // console.dir(resp.data);
-        this.setState({
-          myProfile: resp.data
-        });
-        this.rolesToChoose(resp.data);
+  // loadMyProfile() {
+    // axios
+    //   .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
+    //   .then(resp => {
+    //     // console.dir(resp.data);
+    //     this.setState({
+    //       myProfile: resp.data
+    //     });
+    //     this.rolesToChoose(resp.data);
 
-      })
-      .catch(err => console.error(err.response.toString()));
-  }
+    //   })
+    //   .catch(err => console.error(err.response.toString()));
+  // }
 
   componentWillUnmount() {
     this.select = undefined
@@ -204,56 +194,6 @@ class DoenetHeader extends Component {
     }
 
   }
-
-  makePermissionList({ menuBarAnimation }) {
-
-    /*this.selectPermission=(
-      <select 
-      value={!this.rightToEdit?"Student":"Instructor"}
-      onChange={(e)=>{
-
-          if (e.target.value==="Student"){
-            this.rightToEdit=false
-          }
-          if (e.target.value==="Instructor"){
-            this.rightToEdit=true
-          }
-          this.props.rights.permissionCallBack(e.target.value);
-          this.forceUpdate()
-
-        
-      }}>
-      {this.rightToView?(<option key={this.updateNumber++} value="Student">Student</option>):null}
-      {(<option key={this.updateNumber++} value="Instructor">Instructor</option>)}
-        
-
-        </select>  
-    )
-  }
-  else {
-    this.selectPermission=(
-      <span onChange={(e)=>{
-        {
-          if (e.target.value==="Student"){
-            this.rightToEdit=false
-          }
-          if (e.target.value==="Instructor"){
-            this.rightToEdit=true
-          }
-          this.props.rights.permissionCallBack(e.target.value);
-          this.forceUpdate()
-        }
-      }}>
-      {this.rightToView?(<option key={this.updateNumber++}  value="Student">Student</option>):null}
-        
-        </span>  
-    )
-
-  }*/
-
-
-  }
-
 
   toogleToolbox = () => {
     if (!this.state.showToolbox) {
@@ -298,9 +238,8 @@ class DoenetHeader extends Component {
                   let currentUrl = window.location.href;
                   const navLinkClassName = currentUrl.includes(this.toolTitleToLinkMap[toolName]) ?
                     "selectedToolboxNavLink" : "toolboxNavLink";
-                  const toolBoxItemsHidden = this.state.myProfile.toolAccess.indexOf(toolName) < 0;
                   return (
-                    !toolBoxItemsHidden && <div className={navLinkClassName} key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolName}>
+                     <div className={navLinkClassName} key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolName}>
                       <a href={this.toolTitleToLinkMap[toolName]}>{toolName}</a>
                     </div>
                   )
@@ -308,7 +247,6 @@ class DoenetHeader extends Component {
                 )}
               </div>
               : ''}
-              {!this.state.myProfile.toolAccess.length && <p>Loading..!</p>}
           </Toolbox>}
       </div>
     const isMultipleRoles = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? Object.keys(this.state.myRoles.permissionRoles).length > 1 : false;
@@ -337,20 +275,22 @@ class DoenetHeader extends Component {
                borderRadius: "5px"
                }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
             {toolBox}
-            {!this.state.myProfile.profilePicture && <div id="userButton-anonymous" onClick={() => { location.href = "/Profile"; }}>
-              <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
-            </div>
-            }
-            {this.state.myProfile.profilePicture && <div id="userButton-registered" onClick={() => { location.href = "/Profile"; }}>
+            <MenuDropDown   itemsToShow={[]} placeholder={<ProfilePicture
+                pic={this.props.profile.profilePicture}
+                name="changeProfilePicture"
+                id="changeProfilePicture"
+              >
+              </ProfilePicture>} />
+            {/* {this.props.profile.profilePicture && <div id="userButton-registered" onClick={() => { location.href = "/Profile"; }}>
               <ProfilePicture
-                pic={this.state.myProfile.profilePicture}
+                pic={this.props.profile.profilePicture}
                 name="changeProfilePicture"
                 id="changeProfilePicture"
               >
               </ProfilePicture>
             </div>
 
-            }
+            } */}
           </div>}
 
         </div>
@@ -371,15 +311,10 @@ class DoenetHeader extends Component {
                borderRadius: "5px"
                }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
             {toolBox}
-            {!this.state.myProfile.profilePicture &&
-              <div id="userButton-anonymous-phone" onClick={() => { location.href = "/Profile"; }}>
-                <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
-              </div>
-            }
-            {this.state.myProfile.profilePicture &&
+            {this.props.profile.profilePicture &&
               <div id="userButton-phone" onClick={() => { location.href = "/Profile"; }}>
                 <ProfilePicture
-                  pic={this.state.myProfile.profilePicture}
+                  pic={this.props.profile.profilePicture}
                   name="changeProfilePicture"
                   id="changeProfilePicture"
                 >
