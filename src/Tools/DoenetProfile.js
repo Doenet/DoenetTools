@@ -9,6 +9,7 @@ import "../imports/doenet.css";
 import Textinput from "../imports/Textinput";
 import Switch from "../imports/Switch";
 import { useTransition, animated } from "react-spring";
+import { useCookies } from 'react-cookie';
 
 /*
  * SECTION
@@ -181,42 +182,82 @@ export default function DoenetProfile(props) {
   };
   // const toolLayoutRef = useRef();
 
-  const [myProfile, setMyProfile] = useState(undefined); // initialize to a value that indicates that `myProfile` is not yet loaded, this prevents phoning home for profile info every re-render
+  const [myProfile, setCookieProfile] = useCookies('Profile');
+  const [cookieTracking, setCookieTracking] = useCookies('TrackingConsent');
 
-  function loadMyProfile() {
-    axios
-      .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
-      .then(resp => {
-        console.log("profile")
-        console.dir(resp.data);
-        // setMyProfile(resp.data);
-        setMyProfile({
-          accessAllowed: "0",
-          adminAccessAllowed: "0",
-          bio: "",
-          email: "",
-          firstName: "",
-          lastName: "",
-          profilePicture: "anonymous",
-          roleCommunityTA: "0",
-          roleCourseDesigner: "0",
-          roleInstructor: "0",
-          roleLiveDataCommunity: "0",
-          roleStudent: "1",
-          roleWatchdog: "0",
-          studentId: null,
-          toolAccess: ["Chooser", "Documentation", "Profile"],
-          trackingConsent: "1",
-          username: "anonymous",
-        });
-      })
-      .catch(err => console.error(err.response.toString()));
+  if (!Object.keys(cookieTracking).includes("TrackingConsent")) {
+    setCookieTracking("TrackingConsent",true);
   }
 
-  if (myProfile === undefined) {
-    loadMyProfile();
-    return <p>loading</p>;
+console.log("cookieTracking.TrackingConsent",cookieTracking.TrackingConsent)
+  
+  if (!Object.keys(cookieTracking).includes("Profile")) {
+    //Not signed in
+    return (
+    <ToolLayout toolName="Profile" headerChangesFromLayout={myProfile.Profile}>
+      <SpanAll>
+              <SectionHeader>Tracking</SectionHeader>
+              <StyledSwitch
+                id="trackingconsent"
+                onChange={e =>
+                  setCookieTracking("TrackingConsent", e.target.checked)
+                } // updates immediately
+                checked={cookieTracking.TrackingConsent}
+              >
+                I consent to the use of tracking technologies.
+          </StyledSwitch>
+              <p>
+                "I consent to the tracking of my progress and my activity on
+                educational websites which participate in Doenet; my data will be
+                used to provide my instructor with my grades on course assignments,
+                and anonymous data may be provided to content authors to improve the
+                educational effectiveness."
+            <br />
+                <br />
+                <em>
+                  Revoking your consent may impact your ability to recieve credit
+                  for coursework.
+            </em>
+              </p>
+            </SpanAll>
+    </ToolLayout>
+    )
+
   }
+  // function loadMyProfile() {
+  //   axios
+  //     .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
+  //     .then(resp => {
+  //       console.log("profile")
+  //       console.dir(resp.data);
+  //       // setMyProfile(resp.data);
+  //       setMyProfile({
+  //         accessAllowed: "0",
+  //         adminAccessAllowed: "0",
+  //         bio: "",
+  //         email: "",
+  //         firstName: "",
+  //         lastName: "",
+  //         profilePicture: "anonymous",
+  //         roleCommunityTA: "0",
+  //         roleCourseDesigner: "0",
+  //         roleInstructor: "0",
+  //         roleLiveDataCommunity: "0",
+  //         roleStudent: "1",
+  //         roleWatchdog: "0",
+  //         studentId: null,
+  //         toolAccess: ["Chooser", "Documentation", "Profile"],
+  //         trackingConsent: "1",
+  //         username: "anonymous",
+  //       });
+  //     })
+  //     .catch(err => console.error(err.response.toString()));
+  // }
+
+  // if (myProfile === undefined) {
+  //   loadMyProfile();
+  //   return <p>loading</p>;
+  // }
 
   /*
    * SECTION
@@ -344,22 +385,27 @@ export default function DoenetProfile(props) {
    * Return
    */
 
-  let toolAccess = <p>{myProfile.toolAccess.join(", ")}</p>
+   console.log("myProfile",myProfile)
+
+  let toolAccess = <p>{myProfile.Profile.toolAccess.join(", ")}</p>
   // console.log(myProfile.toolAccess.length);
-  if (myProfile.toolAccess.length === 0) {
+  if (myProfile.Profile.toolAccess.length === 0) {
     toolAccess = <p>You have no access to tools.</p>
   }
 
   return (
     <>
-      <ToolLayout toolName="Profile" headerChangesFromLayout={myProfile}
+      <ToolLayout toolName="Profile" headerChangesFromLayout={myProfile.Profile}
       // ref={toolLayoutRef}
       >
+                <ToolLayoutPanel>
+                  test
+</ToolLayoutPanel>
         <ToolLayoutPanel>
           <ProfileContainer id="content">
-            <PageHeader>{myProfile.username}'s Profile</PageHeader>
+            <PageHeader>{myProfile.Profile.username}'s Profile</PageHeader>
             <ProfilePicture
-              pic={myProfile.profilePicture}
+              pic={myProfile.Profile.profilePicture}
               onClick={e => changeModalVisibility(e, "visible")}
               name="changeProfilePicture"
               id="changeProfilePicture"
@@ -373,21 +419,21 @@ export default function DoenetProfile(props) {
               label="First Name"
               onChange={e => updateMyProfile("firstName", e.target.value)} // uses non-spammy updating
             >
-              {myProfile.firstName}
+              {myProfile.Profile.firstName}
             </Textinput>
             <Textinput
               id="lastName"
               label="Last Name"
               onChange={e => updateMyProfile("lastName", e.target.value)} // uses non-spammy updating
             >
-              {myProfile.lastName}
+              {myProfile.Profile.lastName}
             </Textinput>
             <WideTextinput
               id="email"
               label="Email Address"
               onChange={e => updateMyProfile("email", e.target.value)} // uses non-spammy updating
             >
-              {myProfile.email}
+              {myProfile.Profile.email}
             </WideTextinput>
             <WideTextinput
               id="bio"
@@ -398,7 +444,7 @@ export default function DoenetProfile(props) {
               rows="6"
               resize="none"
             >
-              {myProfile.bio}
+              {myProfile.Profile.bio}
             </WideTextinput>
 
             <SpanAll>
@@ -406,9 +452,9 @@ export default function DoenetProfile(props) {
               <StyledSwitch
                 id="trackingconsent"
                 onChange={e =>
-                  updateMyProfile("trackingConsent", e.target.checked, true)
+                  setCookieTracking("TrackingConsent", e.target.checked)
                 } // updates immediately
-                checked={Number(myProfile.trackingConsent)}
+                checked={cookieTracking.TrackingConsent}
               >
                 I consent to the use of tracking technologies.
           </StyledSwitch>
@@ -436,7 +482,7 @@ export default function DoenetProfile(props) {
                   updateMyProfile("roleStudent", e.target.checked, true)
                 }
                 } // updates immediately
-                checked={Number(myProfile.roleStudent)}
+                checked={Number(myProfile.Profile.roleStudent)}
               >
                 Student
           </StyledSwitch>
@@ -445,7 +491,7 @@ export default function DoenetProfile(props) {
                 onChange={e =>
                   updateMyProfile("roleInstructor", e.target.checked, true)
                 } // updates immediately
-                checked={Number(myProfile.roleInstructor)}
+                checked={Number(myProfile.Profile.roleInstructor)}
               >
                 Instructor
           </StyledSwitch>
@@ -454,7 +500,7 @@ export default function DoenetProfile(props) {
                 onChange={
                   e => updateMyProfile("roleCourseDesigner", e.target.checked, true) // updates immediately
                 }
-                checked={Number(myProfile.roleCourseDesigner)}
+                checked={Number(myProfile.Profile.roleCourseDesigner)}
               >
                 Course Designer
           </StyledSwitch>
@@ -463,7 +509,7 @@ export default function DoenetProfile(props) {
             onChange={e =>
               updateMyProfile("roleWatchdog", e.target.checked, true)
             } // updates immediately
-            checked={Number(myProfile.roleWatchdog)}
+            checked={Number(myProfile.Profile.roleWatchdog)}
           >
             Watchdog
           </StyledSwitch>
@@ -472,7 +518,7 @@ export default function DoenetProfile(props) {
             onChange={e =>
               updateMyProfile("roleCommunityTA", e.target.checked, true)
             } // updates immediately
-            checked={Number(myProfile.roleCommunityTA)}
+            checked={Number(myProfile.Profile.roleCommunityTA)}
           >
             Community TA
           </StyledSwitch>
@@ -482,7 +528,7 @@ export default function DoenetProfile(props) {
               e =>
                 updateMyProfile("roleLiveDataCommunity", e.target.checked, true) // updates immediately
             }
-            checked={Number(myProfile.roleLiveDataCommunity)}
+            checked={Number(myProfile.Profile.roleLiveDataCommunity)}
           >
             Live Data Community
           </StyledSwitch> */}
@@ -494,14 +540,6 @@ export default function DoenetProfile(props) {
           </ProfileContainer>
         </ToolLayoutPanel>
       </ToolLayout>
-
-
-      {/* <DoenetHeader
-        toolName="Profile"
-        // headingTitle="Edit My Profile"
-        willProvideProfile={true}
-        profile={myProfile}
-      ></DoenetHeader>  */}
 
     </>
   );

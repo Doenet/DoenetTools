@@ -275,6 +275,8 @@ class DoenetHeader extends Component {
                borderRadius: "5px"
                }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
             {toolBox}
+            <MenuDropDown offsetPos={-20} showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} placeholder={"Select Course"} />
+          
             <MenuDropDown   itemsToShow={[]} placeholder={<ProfilePicture
                 pic={this.props.profile.profilePicture}
                 name="changeProfilePicture"

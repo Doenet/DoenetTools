@@ -66,7 +66,16 @@ const DropDownContentItem = styled.div`
     max-width:250px;
 
 `
-const MenuDropDown = ({ currentTool, showThisRole = "", itemsToShow = {}, menuIcon, width, grayTheseOut = [], offsetPos = 0, menuWidth, placeholder = "Select Value" }) => {
+
+const MenuDropDown = ({ 
+    currentTool, showThisRole = "", 
+    itemsToShow = {}, 
+    menuIcon, 
+    width, 
+    grayTheseOut = [], 
+    offsetPos = 0, 
+    menuWidth, 
+    placeholder = "Select Value" }) => {
     const [MenuWidth, setMenuWidth] = useState(menuWidth);
     const [currentItemDisplay, setCurrentItemDisplay] = useState(Object.keys(itemsToShow).length > 0 && !!showThisRole ? itemsToShow[showThisRole] : {});
 

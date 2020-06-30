@@ -48,15 +48,15 @@ export default function ToolLayout(props) {
     username: "anonymous",
   }
   const [cookieProfile, setCookieProfile] = useCookies('Profile');
+
   const [profile, setProfile] = useState(anonymousUserProfile);
 
   useEffect(() => {
-
-    
     //Fires each time you change the tool
+
     console.log("cookieProfile", cookieProfile)
-    if (Object.keys(cookieProfile).length > 0) {
-      setProfile(cookieProfile);
+    if (Object.keys(cookieProfile).includes("Profile")) {
+      setProfile(cookieProfile.Profile);
     }
     else if (location.hostname !== "localhost") {
       setProfile(anonymousUserProfile);
@@ -64,30 +64,30 @@ export default function ToolLayout(props) {
     } else {
       //Start Signed In when local host development
       //To Start Signed Out Clear the Cookies and comment the next line out
-      // let devUserProfile = {
-      //   accessAllowed: "1",
-      //   adminAccessAllowed: "1",
-      //   bio: "Hello, my name is Dev User. I appear in many databases. I like to think I'm very important. c:",
-      //   email: "devuser@example.com",
-      //   firstName: "Dev",
-      //   lastName: "User",
-      //   profilePicture: "emu",
-      //   roleCommunityTA: "0",
-      //   roleCourseDesigner: "0",
-      //   roleInstructor: "1",
-      //   roleLiveDataCommunity: "0",
-      //   roleStudent: "1",
-      //   roleWatchdog: "0",
-      //   studentId: null,
-      //   toolAccess: ["Chooser", "Course", "Profile", "Documentation", "Gradebook"],
-      //   trackingConsent: "1",
-      //   username: "devuser",
-      // }
-      // setCookieProfile("Profile", devUserProfile)
-      // setProfile(devUserProfile);
+      let devUserProfile = {
+        accessAllowed: "1",
+        adminAccessAllowed: "1",
+        bio: "Hello, my name is Dev User. I appear in many databases. I like to think I'm very important. c:",
+        email: "devuser@example.com",
+        firstName: "Dev",
+        lastName: "User",
+        profilePicture: "emu",
+        roleCommunityTA: "0",
+        roleCourseDesigner: "0",
+        roleInstructor: "1",
+        roleLiveDataCommunity: "0",
+        roleStudent: "1",
+        roleWatchdog: "0",
+        studentId: null,
+        toolAccess: ["Chooser", "Course", "Profile", "Documentation", "Gradebook"],
+        trackingConsent: "1",
+        username: "devuser",
+      }
+      setCookieProfile("Profile", devUserProfile)
+      setProfile(devUserProfile);
 
     }
-  
+
   }, []);
 
   var w = window.innerWidth;
