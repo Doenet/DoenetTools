@@ -18,10 +18,10 @@ module.exports = {
     "exam/index.js": "./src/exam/index.js",
     "gradebook/index.js": "./src/gradebook/index.js",
     "guesteditor/index.js": "./src/guesteditor/index.js",
-    "page/index.js": "./src/page/index.js",
-    "profile/index.js": "./src/profile/index.js",
-    "viewer/index.js": "./src/viewer/index.js",
-    "exampletool/index.js": "./src/exampletool/index.js",
+    // "page/index.js": "./src/page/index.js",
+    "accountsettings/index.js": "./src/accountsettings/index.js",
+    // "viewer/index.js": "./src/viewer/index.js",
+    // "exampletool/index.js": "./src/exampletool/index.js",
 
   },
 
@@ -144,16 +144,16 @@ module.exports = {
       filename: "./gradebook/attempt/index.html"
     }),
     // /Gradebook
+    // new HtmlWebPackPlugin({
+    //   chunks: ["page/index.js"],
+    //   template: "./src/page/index.html",
+    //   filename: "./page/index.html"
+    //   // favicon: "",
+    // }),
     new HtmlWebPackPlugin({
-      chunks: ["page/index.js"],
-      template: "./src/page/index.html",
-      filename: "./page/index.html"
-      // favicon: "",
-    }),
-    new HtmlWebPackPlugin({
-      chunks: ["profile/index.js"],
-      template: "./src/profile/index.html",
-      filename: "./profile/index.html"
+      chunks: ["accountsettings/index.js"],
+      template: "./src/accountsettings/index.html",
+      filename: "./accountsettings/index.html"
     }),
     new HtmlWebPackPlugin({
       chunks: ["test/index.js"],
@@ -161,19 +161,19 @@ module.exports = {
       filename: "./test/index.html"
       // favicon: "",
     }),
-    new HtmlWebPackPlugin({
-      chunks: ["viewer/index.js"],
-      template: "./src/viewer/index.html",
-      filename: "./viewer/index.html"
-      // favicon: "",
-    }),
+    // new HtmlWebPackPlugin({
+    //   chunks: ["viewer/index.js"],
+    //   template: "./src/viewer/index.html",
+    //   filename: "./viewer/index.html"
+    //   // favicon: "",
+    // }),
     //exampletool
-    new HtmlWebPackPlugin({
-      chunks: ["exampletool/index.js"],
-      template: "./src/exampletool/index.html",
-      filename: "./exampletool/index.html"
-      // favicon: "",
-    }),
+    // new HtmlWebPackPlugin({
+    //   chunks: ["exampletool/index.js"],
+    //   template: "./src/exampletool/index.html",
+    //   filename: "./exampletool/index.html"
+    //   // favicon: "",
+    // }),
     
     new MiniCssExtractPlugin({
       filename: "[name].css",
