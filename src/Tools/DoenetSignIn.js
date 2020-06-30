@@ -8,12 +8,12 @@ export default function DoenetSignIn(props) {
   let [stayLoggedIn, setStayLoggedIn] = useState(false);
   let [submittedEmail, setSubmittedEmail] = useState(false);
   let [signedIn, setSignedIn] = useState(false);
-  const [cookiePassword,setCookiePassword] = useCookies('cookiePassword');
-  const [cookieEmail,setCookieEmail] = useCookies('cookieEmail');
+  const [jwt,setJwt] = useCookies('jwt');
+  const [profile,setProfile] = useCookies('Profile');
 
 
-  if (cookiePassword.cookiePassword && cookieEmail.cookieEmail){
-    location.href = "/profile";
+  if (Object.keys(jwt).includes("JWT")){
+    location.href = "/dashboard";
   }
 
   let validEmail = false;
@@ -27,12 +27,13 @@ export default function DoenetSignIn(props) {
   }
 
   if (signedIn){
-    location.href = "/profile";
+    setProfile('JWT', {token:"put token here"}, {path:"/"})
+    location.href = "/accountsettings";
   }
 
 
   if (submittedEmail){
-      setCookieEmail('cookieEmail', {email},{path:"/"})
+    setProfile('Profile', {email}, {path:"/"})
       
       return (
       <>

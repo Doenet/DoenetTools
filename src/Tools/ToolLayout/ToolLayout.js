@@ -48,6 +48,11 @@ export default function ToolLayout(props) {
     username: "anonymous",
   }
   const [cookieProfile, setCookieProfile] = useCookies('Profile');
+  const [jwt, setjwt] = useCookies('JWT');
+  let signedIn = false;
+  if (Object.keys(jwt).includes("JWT")){
+    signedIn = true;
+  }
 
   const [profile, setProfile] = useState(anonymousUserProfile);
 
@@ -369,6 +374,7 @@ export default function ToolLayout(props) {
     <>
       <DoenetHeader
         profile={profile}
+        signedIn={signedIn}
         toolName={props.toolName}
         headingTitle={props.headingTitle}
         headerRoleFromLayout={props.headerRoleFromLayout}

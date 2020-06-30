@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import DoenetSignIn from '../Tools/DoenetSignIn';
+import DoenetSignOut from '../Tools/DoenetSignOut';
 
     ReactDOM.render(
-      <DoenetSignIn/>
+      <DoenetSignOut/>
   ,document.getElementById('root'));

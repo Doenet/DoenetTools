@@ -148,6 +148,12 @@ class DoenetHeader extends Component {
         link: "/signin/",
       }
     }
+    if (props.signedIn){
+      this.profileMenuMap.SignOut = {
+        showText: "Sign out",
+        link: "/signout/",
+      }
+    }
 
   }
 
@@ -229,6 +235,7 @@ class DoenetHeader extends Component {
 
 
   render() {
+    console.log("header signedIn",this.props.signedIn);
     console.log("header render",this.props.profile)
     const sliderClass = this.state.sliderVisible ? 'on' : 'off';
     if (!!this.refs.extendedHeader) {

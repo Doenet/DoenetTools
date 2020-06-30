@@ -22,6 +22,7 @@ module.exports = {
     // "page/index.js": "./src/page/index.js",
     "accountsettings/index.js": "./src/accountsettings/index.js",
     "signin/index.js": "./src/signin/index.js",
+    "signout/index.js": "./src/signout/index.js",
     "test/index.js": "./src/test/index.js",
     // "viewer/index.js": "./src/viewer/index.js",
     "exampletool/index.js": "./src/exampletool/index.js",
@@ -176,6 +177,12 @@ module.exports = {
       chunks: ["signin/index.js"],
       template: "./src/signin/index.html",
       filename: "./signin/index.html",
+      favicon: "./src/Tools/favicon.ico",
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ["signout/index.js"],
+      template: "./src/signout/index.html",
+      filename: "./signout/index.html",
       favicon: "./src/Tools/favicon.ico",
     }),
     // new HtmlWebPackPlugin({
