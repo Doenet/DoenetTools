@@ -14,23 +14,7 @@ import MenuDropDown from '../imports/MenuDropDown.js';
 // import axios from 'axios';
 // import ConstrainToAngles from '../Doenet/components/ConstrainToAngles';
 
-const ProfilePicture = styled.button`
-  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url("/profile_pictures/${props => props.pic}.jpg");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  transition: 300ms;
-  color: #333333;
-  width:40px;
-  height:40px;
-  display: inline;
-  color: rgba(0, 0, 0, 0);
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  
-`;
+
 const ExtendedHeader = styled.div`
   display: none;
   width: 100%;
@@ -94,7 +78,7 @@ class DoenetHeader extends Component {
     this.selectPermission = null
     this.currentCourseId = ""
     if (this.props.rights) {
-      this.currentCourseId = this.props.rights.defaultId
+      this.currentCourseId = this.props.rights.defaultId 
     }
 
 
@@ -134,6 +118,35 @@ class DoenetHeader extends Component {
       "Documentation": "/docs/",
       "Gradebook": "/gradebook/",
       // "Profile": "/profile/",
+    }
+
+    this.menuToolBoxItems = {
+      "Chooser": {
+        showText: "Chooser",
+        link: "/chooser/"
+      },
+      "Course": {
+        showText: "Course",
+        link: "/course/"
+      },
+      "Documentation": {
+        showText: "Documentation",
+        link: "/docs/"
+      },
+      "Gradebook": {
+        showText: "Gradebook",
+        link: "/gradebook/"
+      }
+    };
+    this.profileMenuMap = {
+      "Account": {
+        showText: "Account Settings",
+        link: "/accountsettings/"
+      },
+      "SignOut": {
+        showText: "Sign in",
+        link: "/signin/",
+      }
     }
 
   }
@@ -222,33 +235,37 @@ class DoenetHeader extends Component {
       this.headerSectionCount = this.refs.extendedHeader.children.length;
     }
     const extendedMarginOffTop = (this.headerSectionCount + 1) * 50;
-    let toolBox = {};
+    // let toolBox = {};
 
 
-    toolBox = this.toolTitleToLinkMap &&
+    // toolBox = this.toolTitleToLinkMap &&
 
-      <div className="toolboxContainer" data-cy="toolboxButton" onClick={this.toogleToolbox}>
+    //   <div className="toolboxContainer" data-cy="toolboxButton" onClick={this.toogleToolbox}>
 
-        <FontAwesomeIcon id="toolboxButton" icon={faTh} />
-        {this.state.showToolbox &&
-          <Toolbox show={this.state.showToolbox} toogleToolbox={this.toogleToolbox}>
-            {Object.keys(this.toolTitleToLinkMap).length > 0 ?
-              <div>
-                {Object.keys(this.toolTitleToLinkMap).sort().map((toolName, index) => {
-                  let currentUrl = window.location.href;
-                  const navLinkClassName = currentUrl.includes(this.toolTitleToLinkMap[toolName]) ?
-                    "selectedToolboxNavLink" : "toolboxNavLink";
-                  return (
-                     <div className={navLinkClassName} key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolName}>
-                      <a href={this.toolTitleToLinkMap[toolName]}>{toolName}</a>
-                    </div>
-                  )
-                }
-                )}
-              </div>
-              : ''}
-          </Toolbox>}
-      </div>
+    //     <FontAwesomeIcon id="toolboxButton" icon={faTh} />
+    //     {this.state.showToolbox &&
+    //       <Toolbox show={this.state.showToolbox} toogleToolbox={this.toogleToolbox}>
+    //         {Object.keys(this.toolTitleToLinkMap).length > 0 ?
+    //           <div>
+    //             {Object.keys(this.toolTitleToLinkMap).sort().map((toolName, index) => {
+    //               let currentUrl = window.location.href;
+    //               const navLinkClassName = currentUrl.includes(this.toolTitleToLinkMap[toolName]) ?
+    //                 "selectedToolboxNavLink" : "toolboxNavLink";
+    //               return (
+    //                  <div className={navLinkClassName} key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolName}>
+    //                   <a href={this.toolTitleToLinkMap[toolName]}>{toolName}</a>
+    //                 </div>
+    //               )
+    //             }
+    //             )}
+    //           </div>
+    //           : ''}
+    //       </Toolbox>}
+    //   </div>
+
+    const menuToolBox = <MenuDropDown menuIcon ={faTh} offset={-20} showThisRole={''} itemsToShow={this.menuToolBoxItems} />;
+   const profileMenu = <MenuDropDown picture={this.props.profile.profilePicture} offset={-20} showThisRole={''} itemsToShow={this.profileMenuMap} />;
+
     const isMultipleRoles = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? Object.keys(this.state.myRoles.permissionRoles).length > 1 : false;
     const isSingleRole = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? Object.keys(this.state.myRoles.permissionRoles).length === 1 : false;
     return (
@@ -274,26 +291,15 @@ class DoenetHeader extends Component {
               // padding: "10px",
                borderRadius: "5px"
                }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
-            {toolBox}
-            <MenuDropDown offsetPos={-20} showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} placeholder={"Select Course"} />
+            {/* {toolBox} */}
+            {menuToolBox}
+            {profileMenu}
+           {/* <MenuDropDown offsetPos={-20} showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} placeholder={"Select Course"} /> */}
           
-            <MenuDropDown   itemsToShow={[]} placeholder={<ProfilePicture
-                pic={this.props.profile.profilePicture}
-                name="changeProfilePicture"
-                id="changeProfilePicture"
-              >
-              </ProfilePicture>} />
-            {/* {this.props.profile.profilePicture && <div id="userButton-registered" onClick={() => { location.href = "/Profile"; }}>
-              <ProfilePicture
-                pic={this.props.profile.profilePicture}
-                name="changeProfilePicture"
-                id="changeProfilePicture"
-              >
-              </ProfilePicture>
-            </div>
-
-            } */}
+           
+           
           </div>}
+
 
         </div>
 
@@ -312,16 +318,11 @@ class DoenetHeader extends Component {
               // padding: "10px",
                borderRadius: "5px"
                }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
-            {toolBox}
-            {this.props.profile.profilePicture &&
-              <div id="userButton-phone" onClick={() => { location.href = "/Profile"; }}>
-                <ProfilePicture
-                  pic={this.props.profile.profilePicture}
-                  name="changeProfilePicture"
-                  id="changeProfilePicture"
-                >
-                </ProfilePicture>
-              </div>}
+            {/* {toolBox} */}
+            {menuToolBox}
+            
+            {profileMenu}
+
           </div>}
         </ExtendedHeader>
       </React.Fragment>

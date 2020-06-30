@@ -20,7 +20,7 @@ module.exports = {
     "gradebook/index.js": "./src/gradebook/index.js",
     "guesteditor/index.js": "./src/guesteditor/index.js",
     // "page/index.js": "./src/page/index.js",
-    "profile/index.js": "./src/profile/index.js",
+    "accountsettings/index.js": "./src/accountsettings/index.js",
     "signin/index.js": "./src/signin/index.js",
     "test/index.js": "./src/test/index.js",
     // "viewer/index.js": "./src/viewer/index.js",
@@ -144,12 +144,14 @@ module.exports = {
     new HtmlWebPackPlugin({
       chunks: ['gradebook/index.js'],
       template: "./src/gradebook/assignment/index.html",
-      filename: "./gradebook/assignment/index.html"
+      filename: "./gradebook/assignment/index.html",
+      favicon: "./src/Tools/favicon.ico",
     }),
     new HtmlWebPackPlugin({
       chunks: ['gradebook/index.js'],
       template: "./src/gradebook/attempt/index.html",
-      filename: "./gradebook/attempt/index.html"
+      filename: "./gradebook/attempt/index.html",
+      favicon: "./src/Tools/favicon.ico",
     }),
     // // /Gradebook
     // new HtmlWebPackPlugin({
@@ -159,9 +161,10 @@ module.exports = {
     //   favicon: "./src/Tools/favicon.ico",
     // }),
     new HtmlWebPackPlugin({
-      chunks: ["profile/index.js"],
-      template: "./src/profile/index.html",
-      filename: "./profile/index.html"
+      chunks: ["accountsettings/index.js"],
+      template: "./src/accountsettings/index.html",
+      filename: "./accountsettings/index.html",
+      favicon: "./src/Tools/favicon.ico",
     }),
     new HtmlWebPackPlugin({
       chunks: ["test/index.js"],

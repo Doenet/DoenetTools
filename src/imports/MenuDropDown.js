@@ -11,25 +11,28 @@ const DropDown = styled.div`
     padding: 0px;
     font-size: 16px;
     border-radius:20px;
+    position:relative;
 `
 const Icon = styled.div`
-    display: flex;
-    flex-direction: row;
-    font-size: 13px;
-    text-align: center;
-    width: 250px;
-    border-radius: 4px;
-    cursor: pointer;
-    background-color: none;
-    padding: 7px 5px;
-    padding-left:55px;
-    color:#333333;
-    text-transform: none;
-    font-weight: 700;
-    border: 0.5px solid;
-    border-color: #333333;
-    transition: 300ms;
-    margin: 0px 10px;
+font-size:19px;
+padding:15px;
+    // display: flex;
+    // flex-direction: row;
+    // font-size: 13px;
+    // text-align: center;
+    // width: 250px;
+    // border-radius: 4px;
+    // cursor: pointer;
+    // background-color: none;
+    // padding: 7px 5px;
+    // padding-left:55px;
+    // color:#333333;
+    // text-transform: none;
+    // font-weight: 700;
+    // border: 0.5px solid;
+    // border-color: #333333;
+    // transition: 300ms;
+    // margin: 0px 10px;
 `
 const MenuController = styled.button`
     margin:0;
@@ -43,19 +46,24 @@ const MenuController = styled.button`
 const DropDownContent = styled.div`
     opacity:1;
     display: ${props => props.open ? 'block' : 'none'};
-    position: fixed;
+    // position: fixed;
     background-color: white;
     min-width: 200px;
     border:1px solid #E2E2E2;
     z-index: 9999;
     color:black;
+
+    position:absolute;
+    top:30px;
+    left:-70px;
+
 `
 const DropDownContentItem = styled.div`
     padding: 5px 5px;
     background-color: ${props => props.selected ? 'rgb(58, 172, 144)' : 'transperant'};
     color: ${props => props.selected ? 'white' : 'black'};
     justify-content: center;
-    min-height: 22px;
+    min-height: 40px;
     align-items: center;
     display:flex;
     &:hover {
@@ -67,11 +75,33 @@ const DropDownContentItem = styled.div`
 
 `
 
+const ProfilePicture = styled.button`
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+    url("/profile_pictures/${props => props.pic}.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  transition: 300ms;
+  color: #333333;
+  width:40px;
+  height:40px;
+  display: inline;
+  color: rgba(0, 0, 0, 0);
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  border-style:none;
+  
+`;
+
+
+
 const MenuDropDown = ({ 
     currentTool, showThisRole = "", 
     itemsToShow = {}, 
     menuIcon, 
     width, 
+    picture,
     grayTheseOut = [], 
     offsetPos = 0, 
     menuWidth, 
@@ -102,54 +132,66 @@ const MenuDropDown = ({
         }
     }
 
+
+
+    let menuBase = (
+        <button
+            style={{
+                color: "black",
+                margin: "0",
+                height: "20px",
+                fontSize: "14px",
+                cursor: "pointer",
+                display: "block",
+            }}
+        >
+            {!!Object.keys(currentItemDisplay).length ? <div
+                style={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: "100px",
+                    display: "inline-block"
+                }}>
+                {currentItemDisplay.showText}
+            </div> : <div
+                style={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: "100px",
+                    display: "inline-block"
+                }}>
+                    {placeholder}
+                </div>}
+            <FontAwesomeIcon
+                icon={faChevronDown}
+                style={{
+                    verticalAlign: "1px",
+                    marginLeft: "5px"
+                }}
+                size={'sm'} />
+        </button>)
+
+        if (menuIcon){
+            menuBase = <Icon>
+            <FontAwesomeIcon icon={menuIcon} size={'lg'} />
+        </Icon>
+        }else if (picture) {
+
+            menuBase = <ProfilePicture
+                  pic={picture}
+                  name="changeProfilePicture"
+                  id="changeProfilePicture"
+                >
+                </ProfilePicture>
+
+        }
+
     return (
         <DropDown ref={node}>
             <div>
-                {menuIcon ?
-                    (
-                        <Icon>
-                            <FontAwesomeIcon icon={menuIcon} size={'lg'} />
-                        </Icon>
-                    )
-                    :
-                    (
-                        <button
-                            style={{
-                                color: "black",
-                                margin: "0",
-                                height: "20px",
-                                fontSize: "14px",
-                                cursor: "pointer",
-                                display: "block",
-                            }}
-                        >
-                            {!!Object.keys(currentItemDisplay).length ? <div
-                                style={{
-                                    whiteSpace: "nowrap",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    maxWidth: "100px",
-                                    display: "inline-block"
-                                }}>
-                                {currentItemDisplay.showText}
-                            </div> : <div
-                                style={{
-                                    whiteSpace: "nowrap",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    maxWidth: "100px",
-                                    display: "inline-block"
-                                }}>
-                                    {placeholder}
-                                </div>}
-                            <FontAwesomeIcon
-                                icon={faChevronDown}
-                                style={{
-                                    verticalAlign: "1px",
-                                    marginLeft: "5px"
-                                }}
-                                size={'sm'} />
-                        </button>)}
+                {menuBase}
             </div>
 
             <DropDownContent open={show}>
@@ -167,7 +209,8 @@ const MenuDropDown = ({
                             }
                         }}
                         selected={currentItemDisplay && currentItemDisplay.showText === itemsToShow[item]['showText']}>
-                        {itemsToShow[item]['showText']}
+                        {!!itemsToShow[item].link ? <a href={itemsToShow[item].link}>
+                            {itemsToShow[item]['showText']}</a> : itemsToShow[item]['showText']}
                     </DropDownContentItem>
                     ))}
             </DropDownContent>

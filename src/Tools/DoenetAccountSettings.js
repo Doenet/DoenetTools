@@ -4,7 +4,7 @@ axios.defaults.withCredentials = true;
 import styled from "styled-components";
 import ToolLayout from './ToolLayout/ToolLayout';
 import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel';
-import "../profile/profile.css";
+import "../accountsettings/profile.css";
 import "../imports/doenet.css";
 import Textinput from "../imports/Textinput";
 import Switch from "../imports/Switch";
@@ -194,7 +194,7 @@ console.log("cookieTracking.TrackingConsent",cookieTracking.TrackingConsent)
   if (!Object.keys(cookieTracking).includes("Profile")) {
     //Not signed in
     return (
-    <ToolLayout toolName="Profile" headerChangesFromLayout={myProfile.Profile}>
+    <ToolLayout toolName="Account Settings" headerChangesFromLayout={myProfile.Profile}>
       <SpanAll>
               <SectionHeader>Tracking</SectionHeader>
               <StyledSwitch
@@ -395,7 +395,7 @@ console.log("cookieTracking.TrackingConsent",cookieTracking.TrackingConsent)
 
   return (
     <>
-      <ToolLayout toolName="Profile" headerChangesFromLayout={myProfile.Profile}
+      <ToolLayout toolName="Account Settings" headerChangesFromLayout={myProfile.Profile}
       // ref={toolLayoutRef}
       >
                 <ToolLayoutPanel>
