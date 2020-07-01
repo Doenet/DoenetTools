@@ -11,25 +11,11 @@ const DropDown = styled.div`
     padding: 0px;
     font-size: 16px;
     border-radius:20px;
+    position: relative;
 `
 const Icon = styled.div`
-    display: flex;
-    flex-direction: row;
-    font-size: 13px;
-    text-align: center;
-    width: 250px;
-    border-radius: 4px;
-    cursor: pointer;
-    background-color: none;
-    padding: 7px 5px;
-    padding-left:55px;
-    color:#333333;
-    text-transform: none;
-    font-weight: 700;
-    border: 0.5px solid;
-    border-color: #333333;
-    transition: 300ms;
-    margin: 0px 10px;
+   font-size: 19px;
+   padding: 15px;
 `
 const MenuController = styled.button`
     margin:0;
@@ -43,19 +29,23 @@ const MenuController = styled.button`
 const DropDownContent = styled.div`
     opacity:1;
     display: ${props => props.open ? 'block' : 'none'};
-    position: fixed;
+    // position: fixed;
     background-color: white;
     min-width: 200px;
     border:1px solid #E2E2E2;
     z-index: 9999;
     color:black;
+
+    position:absolute;
+    top:20px;
+    left:-70px;
 `
 const DropDownContentItem = styled.div`
     padding: 5px 5px;
     background-color: ${props => props.selected ? 'rgb(58, 172, 144)' : 'transperant'};
     color: ${props => props.selected ? 'white' : 'black'};
     justify-content: center;
-    min-height: 22px;
+    min-height: 40px;
     align-items: center;
     display:flex;
     &:hover {
@@ -158,7 +148,8 @@ const MenuDropDown = ({ currentTool, showThisRole = "", itemsToShow = {}, menuIc
                             }
                         }}
                         selected={currentItemDisplay && currentItemDisplay.showText === itemsToShow[item]['showText']}>
-                        {itemsToShow[item]['showText']}
+                        {!!itemsToShow[item].link ? <a href={itemsToShow[item].link}>
+                            {itemsToShow[item]['showText']}</a> : itemsToShow[item]['showText']}
                     </DropDownContentItem>
                     ))}
             </DropDownContent>
