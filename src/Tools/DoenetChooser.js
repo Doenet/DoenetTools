@@ -1789,7 +1789,27 @@ class DoenetChooser extends Component {
           onDragEnd={this.onTreeDragEnd}
           onDraggableDragOver={this.onTreeDraggableDragOver} 
           onDropEnter={this.onTreeDropEnter}
-          onDrop={this.onTreeDrop} />
+          onDrop={this.onTreeDrop} 
+          specialNodes={this.tempSet}
+          treeStyles={{
+            specialChildNode: {
+              "title": { color: "#2675ff" },
+              "frame": { background: "#e6efff" },
+            },
+            specialParentNode: {
+              "title": { color: "#2675ff", background: "#e6efff", marginLeft: "5px", borderRadius: "0 50px 50px 0" },
+            }
+          }}
+          onParentNodeClick={(id, type) => {
+            this.setState({selectedItems: [id], selectedItemsType: [type]})
+            this.tempSet = new Set([id]);
+            this.forceUpdate()
+            // select current node (display info in InfoPanel)
+          }}
+          onParentNodeDoubleClick={(id) => {
+            // openSubtree
+          }}
+          />
         </div>
 
       this.customizedTree = <div className="tree" style={{ paddingLeft: "1em", marginLeft: "4em" }}>
@@ -2035,7 +2055,8 @@ const TreeIcons = (iconName) => {
       fontSize: "16px", 
       color: "#737373",
       position: "relative",
-      top: "2px"
+      top: "2px",
+      marginRight: "8px",
     }}
   />;
   const RepoIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
@@ -2043,19 +2064,22 @@ const TreeIcons = (iconName) => {
       fontSize: "16px", 
       color: "#3aac90", 
       position: "relative",
-      top: "2px"
+      top: "2px",
+      marginRight: "8px",
     }}
   />;
   const ContentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt}
     style={{
       fontSize: "16px", 
       color: "#3D6EC9", 
+      marginRight: "8px",
     }}
   />;
   const UrlIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faLink}
     style={{
       fontSize: "16px", 
       color: "#a7a7a7", 
+      marginRight: "8px",
     }}
   />;
   const HeadingIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
@@ -2063,13 +2087,15 @@ const TreeIcons = (iconName) => {
       fontSize: "16px", 
       color: "#a7a7a7", 
       position: "relative",
-      top: "2px"
+      top: "2px",
+      marginRight: "8px",
     }}
   />;
   const AssignmentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt} 
     style={{
       fontSize: "16px", 
       color: "#a7a7a7", 
+      marginRight: "8px",
     }}
   />;
 

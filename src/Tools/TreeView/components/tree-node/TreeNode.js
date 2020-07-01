@@ -100,9 +100,9 @@ export const ParentNode = memo(({
             <span onClick={() => setOpen(!isOpen)}>
               { expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }}/> }
             </span>            
-            <div style={{display: "inline-block", width: "100%"}} onClick={() => onClick(id)} onDoubleClick={() => onDoubleClick(id)}>
+            <div style={{display: "inline-block", width: "94%", ...styles["title"]}} onClick={() => onClick(id, type)} onDoubleClick={() => onDoubleClick(id)}>
               { itemIcon }
-              <Title style={styles["title"]}>{title}</Title>
+              <Title>{title}</Title>
             </div>
           </div>
           <div>{ controlButtons }</div>
@@ -133,9 +133,9 @@ export const LeafNode = memo(({ id, title, type, itemIcon, styles, onDragStart, 
   return (
     <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
       <Frame style={styles["frame"]} onClick={() => onClick(id)}>
-        <ListItem>
+        <ListItem style={styles["title"]}>
           { itemIcon }
-          <Title style={styles["title"]}>{title}</Title>
+          <Title>{title}</Title>
         </ListItem>
       </Frame>
     </DragItem>    
