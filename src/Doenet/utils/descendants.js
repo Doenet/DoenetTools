@@ -11,8 +11,8 @@ export function gatherDescendants({ ancestor, descendantClasses,
   if (useReplacementsForComposites && ancestor instanceof compositeClass) {
     if (init) {
       // if not init, parent will also be checked.
-      // since replacements will be children of parent
-      // so don't need to gather them here
+      // Since replacements will be children of parent,
+      // don't need to gather them here
       childrenToCheck.push(...replacementsForComposites({ composite: ancestor, compositeClass }))
     }
 

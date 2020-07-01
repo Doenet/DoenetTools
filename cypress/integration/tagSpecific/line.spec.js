@@ -1621,11 +1621,11 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let A = components['/a'].replacements[0];
-      let B = components['/b'].replacements[0];
+      let A = components['/A'].replacements[0];
+      let B = components['/B'].replacements[0];
       let l2 = components["/l2"].replacements[0];
-      let A2 = components["/a2"].replacements[0];
-      let B2 = components["/b2"].replacements[0];
+      let A2 = components["/A2"].replacements[0];
+      let B2 = components["/B2"].replacements[0];
       let l3 = components["/g3"].replacements[0].activeChildren[0]
       let A3 = components["/g3"].replacements[0].activeChildren[1]
       let B3 = components["/g3"].replacements[0].activeChildren[2]
@@ -1875,11 +1875,11 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let A = components['/a'].replacements[0];
-      let B = components['/b'].replacements[0];
+      let A = components['/A'].replacements[0];
+      let B = components['/B'].replacements[0];
       let l2 = components["/l2"].replacements[0];
-      let A2 = components["/a2"].replacements[0];
-      let B2 = components["/b2"].replacements[0];
+      let A2 = components["/A2"].replacements[0];
+      let B2 = components["/B2"].replacements[0];
       let l3 = components["/g3"].replacements[0].activeChildren[0]
       let A3 = components["/g3"].replacements[0].activeChildren[1]
       let B3 = components["/g3"].replacements[0].activeChildren[2]
@@ -2129,11 +2129,11 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let A = components['/a'].replacements[0];
-      let B = components['/b'].replacements[0];
+      let A = components['/A'].replacements[0];
+      let B = components['/B'].replacements[0];
       let l2 = components["/l2"].replacements[0];
-      let A2 = components["/a2"].replacements[0];
-      let B2 = components["/b2"].replacements[0];
+      let A2 = components["/A2"].replacements[0];
+      let B2 = components["/B2"].replacements[0];
       let l3 = components["/g3"].replacements[0].activeChildren[0]
       let A3 = components["/g3"].replacements[0].activeChildren[1]
       let B3 = components["/g3"].replacements[0].activeChildren[2]
@@ -2384,11 +2384,11 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let A = components['/a'].replacements[0];
-      let B = components['/b'].replacements[0];
+      let A = components['/A'].replacements[0];
+      let B = components['/B'].replacements[0];
       let l2 = components["/l2"].replacements[0];
-      let A2 = components["/a2"].replacements[0];
-      let B2 = components["/b2"].replacements[0];
+      let A2 = components["/A2"].replacements[0];
+      let B2 = components["/B2"].replacements[0];
       let l3 = components["/g3"].replacements[0].activeChildren[0]
       let A3 = components["/g3"].replacements[0].activeChildren[1]
       let B3 = components["/g3"].replacements[0].activeChildren[2]
@@ -2639,11 +2639,11 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let A = components['/a'].replacements[0];
-      let B = components['/b'].replacements[0];
+      let A = components['/A'].replacements[0];
+      let B = components['/B'].replacements[0];
       let l2 = components["/l2"].replacements[0];
-      let A2 = components["/a2"].replacements[0];
-      let B2 = components["/b2"].replacements[0];
+      let A2 = components["/A2"].replacements[0];
+      let B2 = components["/B2"].replacements[0];
       let l3 = components["/g3"].replacements[0].activeChildren[0]
       let A3 = components["/g3"].replacements[0].activeChildren[1]
       let B3 = components["/g3"].replacements[0].activeChildren[2]
@@ -3785,11 +3785,11 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let A = components['/a'].replacements[0];
-      let B = components['/b'].replacements[0];
+      let A = components['/A'].replacements[0];
+      let B = components['/B'].replacements[0];
       let l2 = components["/l2"].replacements[0];
-      let A2 = components["/a2"].replacements[0];
-      let B2 = components["/b2"].replacements[0];
+      let A2 = components["/A2"].replacements[0];
+      let B2 = components["/B2"].replacements[0];
       let l3 = components["/g3"].replacements[0].activeChildren[0]
       let A3 = components["/g3"].replacements[0].activeChildren[1]
       let B3 = components["/g3"].replacements[0].activeChildren[2]

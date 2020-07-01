@@ -425,8 +425,7 @@ describe('Function curve Tag Tests', function () {
       components['/_point1'].movePoint({ x: 1.5, y: -1.5 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
-      expect(y).closeTo(-1.5, 0.1);
-      expect(x).greaterThan(1.5);
+      expect(x).eq(1.5);
       expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
     })
 
@@ -435,10 +434,7 @@ describe('Function curve Tag Tests', function () {
       components['/_point1'].movePoint({ x: 0.1, y: -10 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
-      let vertexx = Math.sqrt(10) / 2;
-      let vertexy = Math.pow(vertexx, 4) - 5 * Math.pow(vertexx, 2);
-      expect(x).closeTo(vertexx, 0.1);
-      expect(y).closeTo(vertexy, 0.1);
+      expect(x).eq(0.1);
       expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
     })
 
@@ -447,10 +443,7 @@ describe('Function curve Tag Tests', function () {
       components['/_point1'].movePoint({ x: -0.1, y: -10 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
-      let vertexx = -Math.sqrt(10) / 2;
-      let vertexy = Math.pow(vertexx, 4) - 5 * Math.pow(vertexx, 2);
-      expect(x).closeTo(vertexx, 0.1);
-      expect(y).closeTo(vertexy, 0.1);
+      expect(x).eq(-0.1);
       expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
     })
 
@@ -493,8 +486,7 @@ describe('Function curve Tag Tests', function () {
       components['/_point1'].movePoint({ y: 1.5, x: -1.5 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
-      expect(x).closeTo(-1.5, 0.1);
-      expect(y).greaterThan(1.5);
+      expect(y).eq(1.5);
       expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
     })
 
@@ -503,10 +495,7 @@ describe('Function curve Tag Tests', function () {
       components['/_point1'].movePoint({ y: 0.1, x: -10 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
-      let vertexx = Math.sqrt(10) / 2;
-      let vertexy = Math.pow(vertexx, 4) - 5 * Math.pow(vertexx, 2);
-      expect(y).closeTo(vertexx, 0.1);
-      expect(x).closeTo(vertexy, 0.1);
+      expect(y).eq(0.1);
       expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
     })
 
@@ -515,10 +504,7 @@ describe('Function curve Tag Tests', function () {
       components['/_point1'].movePoint({ y: -0.1, x: -10 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
-      let vertexx = -Math.sqrt(10) / 2;
-      let vertexy = Math.pow(vertexx, 4) - 5 * Math.pow(vertexx, 2);
-      expect(y).closeTo(vertexx, 0.1);
-      expect(x).closeTo(vertexy, 0.1);
+      expect(y).eq(-0.1);
       expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
     })
 
@@ -559,8 +545,7 @@ describe('Function curve Tag Tests', function () {
       components['/_point1'].movePoint({ x: 1.5, y: -1.5 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
-      expect(y).closeTo(-1.5, 0.1);
-      expect(x).greaterThan(1.5);
+      expect(x).eq(1.5);
       expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
     })
 
@@ -569,10 +554,7 @@ describe('Function curve Tag Tests', function () {
       components['/_point1'].movePoint({ x: 0.1, y: -10 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
-      let vertexx = Math.sqrt(10) / 2;
-      let vertexy = Math.pow(vertexx, 4) - 5 * Math.pow(vertexx, 2);
-      expect(x).closeTo(vertexx, 0.1);
-      expect(y).closeTo(vertexy, 0.1);
+      expect(x).eq(0.1);
       expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
     })
 
@@ -581,10 +563,7 @@ describe('Function curve Tag Tests', function () {
       components['/_point1'].movePoint({ x: -0.1, y: -10 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
-      let vertexx = -Math.sqrt(10) / 2;
-      let vertexy = Math.pow(vertexx, 4) - 5 * Math.pow(vertexx, 2);
-      expect(x).closeTo(vertexx, 0.1);
-      expect(y).closeTo(vertexy, 0.1);
+      expect(x).eq(-0.1);
       expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
     })
 
@@ -625,8 +604,7 @@ describe('Function curve Tag Tests', function () {
       components['/_point1'].movePoint({ y: 1.5, x: -1.5 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
-      expect(x).closeTo(-1.5, 0.1);
-      expect(y).greaterThan(1.5);
+      expect(y).eq(1.5);
       expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
     })
 
@@ -635,10 +613,7 @@ describe('Function curve Tag Tests', function () {
       components['/_point1'].movePoint({ y: 0.1, x: -10 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
-      let vertexx = Math.sqrt(10) / 2;
-      let vertexy = Math.pow(vertexx, 4) - 5 * Math.pow(vertexx, 2);
-      expect(y).closeTo(vertexx, 0.1);
-      expect(x).closeTo(vertexy, 0.1);
+      expect(y).eq(0.1);
       expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
     })
 
@@ -647,10 +622,7 @@ describe('Function curve Tag Tests', function () {
       components['/_point1'].movePoint({ y: -0.1, x: -10 })
       let x = components['/_point1'].stateValues.xs[0].tree;
       let y = components['/_point1'].stateValues.xs[1].tree;
-      let vertexx = -Math.sqrt(10) / 2;
-      let vertexy = Math.pow(vertexx, 4) - 5 * Math.pow(vertexx, 2);
-      expect(y).closeTo(vertexx, 0.1);
-      expect(x).closeTo(vertexy, 0.1);
+      expect(y).eq(-0.1);
       expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
     })
 

@@ -121,6 +121,9 @@ export default class Prop extends BaseComponent {
               if (stateVarDescrip[varName].isArray) {
                 matchedObj.isArray = true;
               }
+              if(stateVarDescrip[varName].containsComponentNamesToCopy) {
+                matchedObj.containsComponentNamesToCopy = true;
+              }
               componentType = stateVarDescrip[varName].componentType;
               break;
             }
@@ -141,6 +144,9 @@ export default class Prop extends BaseComponent {
                   matchedObj = { varName: targetVarName };
                   if (targetDescription.isArray) {
                     matchedObj.isArray = true;
+                  }
+                  if(targetDescription.containsComponentNamesToCopy) {
+                    matchedObj.containsComponentNamesToCopy = true;
                   }
                 } else {
                   propToMatch = targetVarName.toLowerCase();
@@ -165,6 +171,9 @@ export default class Prop extends BaseComponent {
                     arrayEntryPrefix: prefix,
                     varEnding,
                   };
+                  if(stateVarDescrip[arrayVarName].containsComponentNamesToCopy) {
+                    matchedObj.containsComponentNamesToCopy = true;
+                  }
                   componentType = stateVarDescrip[arrayVarName].componentType;
                   break;
                 }

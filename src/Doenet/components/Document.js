@@ -3,6 +3,7 @@ import { getVariantsForDescendants } from '../utils/variants';
 
 export default class Document extends BaseComponent {
   static componentType = "document";
+  static rendererType = "section";
 
   static createsVariants = true;
 
@@ -10,7 +11,7 @@ export default class Document extends BaseComponent {
 
   static createPropertiesObject() {
     return {
-      title: { default: "", componentType: "text" },
+      title: { default: "", componentType: "text", forRenderer: true },
       feedbackDefinitions: {
         get default() { return returnDefaultFeedbackDefinitions() },
         propagateToDescendants: true,
@@ -53,10 +54,92 @@ export default class Document extends BaseComponent {
   }
 
 
-
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.level = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { level: 0 } })
+    }
+
+
+    stateVariableDefinitions.scoredDescendants = {
+      returnDependencies: () => ({
+        scoredDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: ["_sectioningcomponent", "answer"],
+          variableNames: [
+            "scoredDescendants",
+            "aggregateScores",
+            "creditAchieved",
+            "weight"
+          ],
+          recurseToMatchedChildren: false,
+          variablesOptional: true
+        }
+      }),
+      definition({ dependencyValues }) {
+        let scoredDescendants = [];
+        for (let descendant of dependencyValues.scoredDescendants) {
+          if (descendant.stateValues.aggregateScores ||
+            descendant.stateValues.scoredDescendants === undefined
+          ) {
+            scoredDescendants.push(descendant)
+          } else {
+            scoredDescendants.push(...descendant.stateValues.scoredDescendants)
+          }
+        }
+
+        return { newValues: { scoredDescendants } }
+
+      }
+    }
+
+    stateVariableDefinitions.displayDigitsForCreditAchieved = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { displayDigitsForCreditAchieved: 3 } })
+    }
+
+    stateVariableDefinitions.creditAchieved = {
+      public: true,
+      componentType: "number",
+      defaultValue: 0,
+      stateVariablesPrescribingAdditionalProperties: {
+        displayDigits: "displayDigitsForCreditAchieved",
+      },
+      additionalStateVariablesDefined: [{
+        variableName: "percentCreditAchieved",
+        public: true,
+        componentType: "number",
+        stateVariablesPrescribingAdditionalProperties: {
+          displayDigits: "displayDigitsForCreditAchieved",
+        }
+      }],
+      returnDependencies: () => ({
+        scoredDescendants: {
+          dependencyType: "stateVariable",
+          variableName: "scoredDescendants"
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        let creditSum = 0;
+        let totalWeight = 0;
+
+        for (let component of dependencyValues.scoredDescendants) {
+          let weight = component.stateValues.weight;
+          creditSum += component.stateValues.creditAchieved * weight;
+          totalWeight += weight;
+        }
+        let creditAchieved = creditSum / totalWeight;
+        let percentCreditAchieved = creditAchieved * 100;
+
+        return { newValues: { creditAchieved, percentCreditAchieved } }
+
+      }
+    }
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({

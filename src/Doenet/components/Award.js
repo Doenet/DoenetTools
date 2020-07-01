@@ -2,6 +2,7 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class Award extends BaseComponent {
   static componentType = "award";
+  static rendererType = undefined;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);

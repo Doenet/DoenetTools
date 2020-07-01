@@ -3,6 +3,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { resolve } = require('path');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
 
@@ -10,8 +11,8 @@ module.exports = {
   entry: {
     "index.js": "./src/index.js",
     "admin/index.js": "./src/admin/index.js",
-    "course/index.js": "./src/course/index.js",
     "chooser/index.js":"./src/chooser/index.js",
+    "course/index.js": "./src/course/index.js",
     "docs/index.js": "./src/docs/index.js",
     "editor/index.js": "./src/editor/index.js",
     "exam/index.js": "./src/exam/index.js",
@@ -27,6 +28,7 @@ module.exports = {
   output: {
     path: resolve(__dirname, 'dist'),
     filename: '[name]',
+    publicPath: '/',
   },
 
   module: {
@@ -64,10 +66,15 @@ module.exports = {
             } 
           },
         ],
+      },
+      {
+        test: /\.ttf$/,
+        use: ['file-loader']
       }
     ]
   },
   plugins: [
+    new MonacoWebpackPlugin(),
     new HtmlWebPackPlugin({
       chunks: ['index.js'],
       template: "./src/index.html",
@@ -92,6 +99,7 @@ module.exports = {
       filename: "./course/index.html"
       // favicon: "",
     }),
+    
     new HtmlWebPackPlugin({
       chunks: ['docs/index.js'],
       template: "./src/docs/index.html",
@@ -118,21 +126,15 @@ module.exports = {
       filename: "./gradebook/index.html",
       // favicon: "",
     }),
-    // /Gradebook
-    new HtmlWebPackPlugin({
-      chunks: ["page/index.js"],
-      template: "./src/page/index.html",
-      filename: "./page/index.html"
-      // favicon: "",
-    }),
-      // /GuestEditor
-      new HtmlWebPackPlugin({
-        chunks: ["guesteditor/index.js"],
+       // Guest Editor
+       new HtmlWebPackPlugin({
+        chunks: ['guesteditor/index.js'],
         template: "./src/guesteditor/index.html",
-        filename: "./guesteditor/index.html"
+        filename: "./guesteditor/index.html",
         // favicon: "",
       }),
     new HtmlWebPackPlugin({
+      chunks: ['gradebook/index.js'],
       template: "./src/gradebook/assignment/index.html",
       filename: "./gradebook/assignment/index.html"
     }),
@@ -154,16 +156,33 @@ module.exports = {
       filename: "./profile/index.html"
     }),
     new HtmlWebPackPlugin({
+      chunks: ["test/index.js"],
+      template: "./src/test/index.html",
+      filename: "./test/index.html"
+      // favicon: "",
+    }),
+    new HtmlWebPackPlugin({
       chunks: ["viewer/index.js"],
       template: "./src/viewer/index.html",
       filename: "./viewer/index.html"
       // favicon: "",
     }),
+    //exampletool
+    new HtmlWebPackPlugin({
+      chunks: ["exampletool/index.js"],
+      template: "./src/exampletool/index.html",
+      filename: "./exampletool/index.html"
+      // favicon: "",
+    }),
+    
     new MiniCssExtractPlugin({
       filename: "[name].css",
       // filename: "main.css",
       chunkFilename: "[id].css"
     }),
+    new CopyWebpackPlugin([
+      { from: 'cypress_php' }
+    ]),
     new CopyWebpackPlugin([
       { from: 'static' }
     ])
@@ -171,5 +190,6 @@ module.exports = {
   devServer: {
     port: 3000,
     // openPage: "protected",
-  }
+  },
+  // devtool: 'source-map'
 };

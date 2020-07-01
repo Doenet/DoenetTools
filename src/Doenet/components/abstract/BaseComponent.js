@@ -168,6 +168,7 @@ export default class BaseComponent {
 
     return {
       hide: { default: false, forRenderer: true },
+      disabled: { default: false, forRenderer: true, propagateToDescendants: true },
       modifyIndirectly: { default: true, propagateToProps: true },
       fixed: { default: false },
       styleNumber: { default: 1, propagateToDescendants: true },
@@ -211,7 +212,7 @@ export default class BaseComponent {
       propertyNames, numerics,
     });
 
-    if(!newDefinitions) {
+    if (!newDefinitions) {
       throw Error(`Error in state variable definitions of ${this.componentType}: returnStateVariableDefinitions did not return anything`)
     }
 
@@ -307,7 +308,6 @@ export default class BaseComponent {
 
     let stateDef = this.returnNormalizedStateVariableDefinitions({ propertyNames: Object.keys(stateVariableDescriptions) });
 
-
     for (let varName in stateDef) {
       let theStateDef = stateDef[varName];
       if (theStateDef.isAlias) {
@@ -318,6 +318,7 @@ export default class BaseComponent {
         stateVariableDescriptions[varName] = {
           componentType: theStateDef.componentType,
           public: theStateDef.public,
+          containsComponentNamesToCopy: theStateDef.containsComponentNamesToCopy,
         };
         if (theStateDef.isArray) {
           stateVariableDescriptions[varName].isArray = true;

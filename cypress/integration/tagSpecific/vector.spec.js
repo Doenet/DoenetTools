@@ -3071,7 +3071,7 @@ describe('Vector Tag Tests', function () {
     })
   })
 
-  it('reffed vectors', () => {
+  it('copied vectors', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -3467,7 +3467,7 @@ describe('Vector Tag Tests', function () {
 
   })
 
-  it('reffed vectors and displacements', () => {
+  it('copied vectors and displacements', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -7064,7 +7064,7 @@ describe('Vector Tag Tests', function () {
 
   })
 
-  it('ref two components of vector', () => {
+  it('copy two components of vector', () => {
     // checking bug where second component wasn't updating
     cy.window().then((win) => {
       win.postMessage({
@@ -7131,7 +7131,7 @@ describe('Vector Tag Tests', function () {
       let dy2 = 4 - b2;
 
       cy.get('#\\/a_input').clear().type(`${a2}`);
-      cy.get('#\\/b_input').clear().type(`${b2}`);
+      cy.get('#\\/b_input').clear().type(`${b2}`).blur();
 
       cy.get('#\\/a_input').should('have.value', `${a2}`);
       cy.get('#\\/b_input').should('have.value', `${b2}`);
