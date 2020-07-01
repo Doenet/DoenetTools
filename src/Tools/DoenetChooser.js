@@ -1832,17 +1832,20 @@ class DoenetChooser extends Component {
           specialParentNode: {
             "frame": { background: "#a7a7a7" },
           },
-          expanderIcon: <FontAwesomeIcon icon={faPlus} style={{paddingRight: "8px"}}/>
+          expanderIcon: <FontAwesomeIcon icon={faPlus}/>
         }}
         onLeafNodeClick={(nodeId) => {
-          if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
-          else this.tempSet.add(nodeId); 
+          this.tempSet.clear();
+          this.tempSet.add(nodeId); 
           this.forceUpdate()
         }}
         onParentNodeClick={(nodeId) => {
-          if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
-          else this.tempSet.add(nodeId); 
+          this.tempSet.clear();
+          this.tempSet.add(nodeId); 
           this.forceUpdate()
+        }}
+        onParentNodeDoubleClick={(nodeId) => {
+          console.log(`${nodeId} double clicked!`)
         }}
         />
       </div>

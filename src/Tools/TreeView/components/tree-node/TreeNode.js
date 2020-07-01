@@ -28,9 +28,30 @@ const TreeNode = memo(({ children, title, style, defaultOpen = false }) => {
   )
 })
 
-export const ParentNode = memo(({ hide = false, children, title, type, itemIcon, onClick, expanderIcon, styles, defaultOpen = false, id, 
-  onDrop, onDraggableDragOver, onDragStart, onDragEnd, onDropEnter, onDropLeave, setCurrentHovered, draggedOver, currentDraggedId, currentDraggedType, 
-  controlButtons = null , SearchComponent }) => {
+export const ParentNode = memo(({ 
+  id, 
+  hide = false, 
+  children, 
+  title, 
+  type, 
+  itemIcon, 
+  onClick, 
+  onDoubleClick,
+  expanderIcon, 
+  styles, 
+  defaultOpen = false, 
+  onDrop, 
+  onDraggableDragOver, 
+  onDragStart, 
+  onDragEnd, 
+  onDropEnter, 
+  onDropLeave, 
+  setCurrentHovered, 
+  draggedOver, 
+  currentDraggedId, 
+  currentDraggedType, 
+  controlButtons = null , 
+  SearchComponent }) => {
   const [isOpen, setOpen] = useState(defaultOpen)
   const previous = usePrevious(isOpen)
   const [bind, { height: viewHeight }] = useMeasure()
@@ -76,8 +97,10 @@ export const ParentNode = memo(({ hide = false, children, title, type, itemIcon,
       <ListItem onMouseEnter={() => setCurrentHovered(id)} onMouseLeave={() => setCurrentHovered(null)}>
         <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}> 
           <div style={{width: "100%"}}>
-            { expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }} onClick={() => setOpen(!isOpen)}/> }
-            <div style={{display: "inline-block", width: "100%"}} onClick={() => onClick(id)}>
+            <span onClick={() => setOpen(!isOpen)}>
+              { expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }}/> }
+            </span>            
+            <div style={{display: "inline-block", width: "100%"}} onClick={() => onClick(id)} onDoubleClick={() => onDoubleClick(id)}>
               { itemIcon }
               <Title style={styles["title"]}>{title}</Title>
             </div>

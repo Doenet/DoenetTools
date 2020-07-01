@@ -148,6 +148,7 @@ export const TreeView = ({
 	treeStyles={},
 	onLeafNodeClick=(()=>{}),
 	onParentNodeClick=(()=>{}),
+	onParentNodeDoubleClick=(()=>{}),
   containerId, 
   containerType, 
   currentDraggedObject={}, 
@@ -275,6 +276,7 @@ export const TreeView = ({
 				treeStyles: treeStyles,
 				onLeafNodeClick: onLeafNodeClick,
 				onParentNodeClick: onParentNodeClick,
+        onParentNodeDoubleClick: onParentNodeDoubleClick,
         onDragStart: onDragStartCb, 
         onDragEnd: onDragEndCb, 
         onDraggableDragOver: onDraggableDragOverCb, 
@@ -295,7 +297,7 @@ export const TreeView = ({
 
 function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, hideRoot, treeNodeIcons, treeStyles,
   specialNodes, onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
-   currentDraggedOverContainerId, onParentNodeClick, onLeafNodeClick, currentSearchingFolder, buildControlButtons, buildSearchComponent, setCurrentHovered }) {
+   currentDraggedOverContainerId, onParentNodeClick, onParentNodeDoubleClick, onLeafNodeClick, currentSearchingFolder, buildControlButtons, buildSearchComponent, setCurrentHovered }) {
      
   const getBaseItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
     const icon = currentItemId == "root" ? "" : treeNodeIcons(itemType);
@@ -355,6 +357,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
     itemIcon={baseItemStyleAndIcon.icon}
     expanderIcon={treeStyles["expanderIcon"]}
     onClick={onParentNodeClick}
+    onDoubleClick={onParentNodeDoubleClick}
     onDrop={onDrop} 
     onDropEnter={onDropEnter}
     onDropLeave={onDropLeave}
@@ -381,6 +384,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           specialNodes: specialNodes,
           treeStyles: treeStyles,
           onParentNodeClick: onParentNodeClick,
+          onParentNodeDoubleClick: onParentNodeDoubleClick,
 					onLeafNodeClick: onLeafNodeClick,
           onDragStart: onDragStart, 
           onDragEnd: onDragEnd, 
