@@ -39,7 +39,7 @@ class SelectBox extends Component {
     return (
       <div className="select-box-box">
         <div className="select-box-container">
-          <div className="select-box-selected-item">
+          <div className="select-box-selected-item" onClick={this.dropDown}>
             {this.state.selectedItem ? this.state.selectedItem.value : <input type="text" onChange={this.filter.bind(this)}></input>}
           </div>
           <div className="select-box-arrow" onClick={this.dropDown}>
