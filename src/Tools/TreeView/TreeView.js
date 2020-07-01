@@ -146,7 +146,8 @@ export const TreeView = ({
   treeNodeIcons={},
   specialNodes=new Set(),
 	treeStyles={},
-	onLeafNodeClick,
+	onLeafNodeClick=(()=>{}),
+	onParentNodeClick=(()=>{}),
   containerId, 
   containerType, 
   currentDraggedObject={}, 
@@ -196,10 +197,6 @@ export const TreeView = ({
       // onDropLeave && onDropLeave(id, containerId, containerType);
     }
 	}
-	
-	const onLeafNodeClickCb = (nodeId) => {
-		onLeafNodeClick && onLeafNodeClick(nodeId);
-  }
 
   const buildControlButtons = (folderId) => {
     if (disableSearch) return;
@@ -276,7 +273,8 @@ export const TreeView = ({
         treeNodeIcons: treeNodeIcons, 
         specialNodes: specialNodes,
 				treeStyles: treeStyles,
-				onLeafNodeClick: onLeafNodeClickCb,
+				onLeafNodeClick: onLeafNodeClick,
+				onParentNodeClick: onParentNodeClick,
         onDragStart: onDragStartCb, 
         onDragEnd: onDragEndCb, 
         onDraggableDragOver: onDraggableDragOverCb, 
@@ -297,7 +295,7 @@ export const TreeView = ({
 
 function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, hideRoot, treeNodeIcons, treeStyles,
   specialNodes, onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
-   currentDraggedOverContainerId, onLeafNodeClick, currentSearchingFolder, buildControlButtons, buildSearchComponent, setCurrentHovered }) {
+   currentDraggedOverContainerId, onParentNodeClick, onLeafNodeClick, currentSearchingFolder, buildControlButtons, buildSearchComponent, setCurrentHovered }) {
      
   const getBaseItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
     const icon = currentItemId == "root" ? "" : treeNodeIcons(itemType);
@@ -356,6 +354,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
     defaultOpen={parentHeadingId == "root"}
     itemIcon={baseItemStyleAndIcon.icon}
     expanderIcon={treeStyles["expanderIcon"]}
+    onClick={onParentNodeClick}
     onDrop={onDrop} 
     onDropEnter={onDropEnter}
     onDropLeave={onDropLeave}
@@ -380,7 +379,8 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           hideRoot: hideRoot,
           treeNodeIcons: treeNodeIcons,
           specialNodes: specialNodes,
-					treeStyles: treeStyles,
+          treeStyles: treeStyles,
+          onParentNodeClick: onParentNodeClick,
 					onLeafNodeClick: onLeafNodeClick,
           onDragStart: onDragStart, 
           onDragEnd: onDragEnd, 

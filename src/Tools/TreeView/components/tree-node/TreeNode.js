@@ -28,7 +28,7 @@ const TreeNode = memo(({ children, title, style, defaultOpen = false }) => {
   )
 })
 
-export const ParentNode = memo(({ hide = false, children, title, type, itemIcon, expanderIcon, styles, defaultOpen = false, id, 
+export const ParentNode = memo(({ hide = false, children, title, type, itemIcon, onClick, expanderIcon, styles, defaultOpen = false, id, 
   onDrop, onDraggableDragOver, onDragStart, onDragEnd, onDropEnter, onDropLeave, setCurrentHovered, draggedOver, currentDraggedId, currentDraggedType, 
   controlButtons = null , SearchComponent }) => {
   const [isOpen, setOpen] = useState(defaultOpen)
@@ -75,12 +75,12 @@ export const ParentNode = memo(({ hide = false, children, title, type, itemIcon,
     <Frame style={styles["frame"]}>
       <ListItem onMouseEnter={() => setCurrentHovered(id)} onMouseLeave={() => setCurrentHovered(null)}>
         <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}> 
-          <div>
+          <div style={{width: "100%"}}>
             { expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }} onClick={() => setOpen(!isOpen)}/> }
-            <span onClick={() => console.log("Here")}>
+            <div style={{display: "inline-block", width: "100%"}} onClick={() => onClick(id)}>
               { itemIcon }
               <Title style={styles["title"]}>{title}</Title>
-            </span>
+            </div>
           </div>
           <div>{ controlButtons }</div>
         </div>
