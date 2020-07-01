@@ -2022,13 +2022,17 @@ const TreeIcons = (iconName) => {
   const FolderIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
     style={{
       fontSize: "16px", 
-      color: "#737373", 
+      color: "#737373",
+      position: "relative",
+      top: "2px"
     }}
   />;
   const RepoIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
     style={{
       fontSize: "16px", 
       color: "#3aac90", 
+      position: "relative",
+      top: "2px"
     }}
   />;
   const ContentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt}
@@ -2047,6 +2051,8 @@ const TreeIcons = (iconName) => {
     style={{
       fontSize: "16px", 
       color: "#a7a7a7", 
+      position: "relative",
+      top: "2px"
     }}
   />;
   const AssignmentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt} 

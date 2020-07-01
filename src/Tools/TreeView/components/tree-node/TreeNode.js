@@ -73,12 +73,14 @@ export const ParentNode = memo(({ hide = false, children, title, type, itemIcon,
 
   return(<DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
     <Frame style={styles["frame"]}>
-      <ListItem onMouseEnter={() => setCurrentHovered(id)} onMouseLeave={() => setCurrentHovered(null)} onClick={() => setOpen(!isOpen)}>
+      <ListItem onMouseEnter={() => setCurrentHovered(id)} onMouseLeave={() => setCurrentHovered(null)}>
         <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}> 
           <div>
-            { expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }}/> }
-            { itemIcon }
-            <Title style={styles["title"]}>{title}</Title>
+            { expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }} onClick={() => setOpen(!isOpen)}/> }
+            <span onClick={() => console.log("Here")}>
+              { itemIcon }
+              <Title style={styles["title"]}>{title}</Title>
+            </span>
           </div>
           <div>{ controlButtons }</div>
         </div>
