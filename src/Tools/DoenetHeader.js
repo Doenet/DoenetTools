@@ -14,24 +14,7 @@ import MenuDropDown from '../imports/MenuDropDown.js';
 // import axios from 'axios';
 // import ConstrainToAngles from '../Doenet/components/ConstrainToAngles';
 
-const ProfilePicture = styled.button`
-  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url("/profile_pictures/${props => props.pic}.jpg");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  transition: 300ms;
-  color: #333333;
-  width:40px;
-  height:40px;
-  display: inline;
-  color: rgba(0, 0, 0, 0);
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  border-style:none;
-  
-`;
+
 const ExtendedHeader = styled.div`
   display: none;
   width: 100%;
@@ -64,7 +47,6 @@ class DoenetHeader extends Component {
       menuVisble: false,
       showToolbox: false,
       sliderVisible: false,
-      myProfile: {},
       myRoles: {}
     }
 
@@ -95,9 +77,8 @@ class DoenetHeader extends Component {
 
     this.selectPermission = null
     this.currentCourseId = ""
-    // const {this.props.rights.arrayIds,this.props.rights.courseInfo,defaultId,permissions} = this.props.rights
     if (this.props.rights) {
-      this.currentCourseId = this.props.rights.defaultId
+      this.currentCourseId = this.props.rights.defaultId 
     }
 
 
@@ -105,13 +86,11 @@ class DoenetHeader extends Component {
     if (this.props.rights && this.props.rights.arrayIds != []) {
       this.props.rights.arrayIds.map((id, index) => {
         this.options.push(<option key={this.updateNumber++} value={id}>{this.props.rights.courseInfo[id]['courseName']}</option>)
-        // this.options.push(<option value={id} selected={defaultId===id?true:false}>{this.props.rights.courseInfo[id]['courseName']}</option>)
       })
     } else {
       this.options.push(<option key={this.updateNumber++}>No courses</option>)
     }
 
-    // console.log(this.options)
     this.select = (<select
       value={this.props.rights ? this.props.rights.defaultId : undefined}
       className="select"
@@ -126,7 +105,6 @@ class DoenetHeader extends Component {
             this.instructorRights = true
           }
         }
-        // this.makePermissionList()
         this.props.rights.parentFunction(e.target.value);
         this.forceUpdate()
       }}>
@@ -134,14 +112,14 @@ class DoenetHeader extends Component {
     </select>)
 
 
-    // this.headingTitle = this.props.this.props.rights.courseInfo[this.currentCourseId]['courseName']
     this.toolTitleToLinkMap = {
       "Chooser": "/chooser/",
       "Course": "/course/",
       "Documentation": "/docs/",
       "Gradebook": "/gradebook/",
       // "Profile": "/profile/",
-    };
+    }
+
     this.menuToolBoxItems = {
       "Chooser": {
         showText: "Chooser",
@@ -162,18 +140,21 @@ class DoenetHeader extends Component {
     };
     this.profileMenuMap = {
       "Account": {
-        showText: "My Account",
-        link: "/profile/"
+        showText: "Account Settings",
+        link: "/accountsettings/"
       },
       "SignOut": {
         showText: "Sign in",
         link: "/signin/",
       }
     }
-  }
+    if (props.signedIn){
+      this.profileMenuMap.SignOut = {
+        showText: "Sign out",
+        link: "/signout/",
+      }
+    }
 
-  componentDidMount() {
-    this.loadMyProfile();
   }
 
   componentWillReceiveProps(props) {
@@ -193,19 +174,19 @@ class DoenetHeader extends Component {
   rolesToChoose(data) {
   }
 
-  loadMyProfile() {
-    axios
-      .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
-      .then(resp => {
-        // console.dir(resp.data);
-        this.setState({
-          myProfile: resp.data
-        });
-        this.rolesToChoose(resp.data);
+  // loadMyProfile() {
+    // axios
+    //   .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
+    //   .then(resp => {
+    //     // console.dir(resp.data);
+    //     this.setState({
+    //       myProfile: resp.data
+    //     });
+    //     this.rolesToChoose(resp.data);
 
-      })
-      .catch(err => console.error(err.response.toString()));
-  }
+    //   })
+    //   .catch(err => console.error(err.response.toString()));
+  // }
 
   componentWillUnmount() {
     this.select = undefined
@@ -233,56 +214,6 @@ class DoenetHeader extends Component {
 
   }
 
-  makePermissionList({ menuBarAnimation }) {
-
-    /*this.selectPermission=(
-      <select 
-      value={!this.rightToEdit?"Student":"Instructor"}
-      onChange={(e)=>{
-
-          if (e.target.value==="Student"){
-            this.rightToEdit=false
-          }
-          if (e.target.value==="Instructor"){
-            this.rightToEdit=true
-          }
-          this.props.rights.permissionCallBack(e.target.value);
-          this.forceUpdate()
-
-        
-      }}>
-      {this.rightToView?(<option key={this.updateNumber++} value="Student">Student</option>):null}
-      {(<option key={this.updateNumber++} value="Instructor">Instructor</option>)}
-        
-
-        </select>  
-    )
-  }
-  else {
-    this.selectPermission=(
-      <span onChange={(e)=>{
-        {
-          if (e.target.value==="Student"){
-            this.rightToEdit=false
-          }
-          if (e.target.value==="Instructor"){
-            this.rightToEdit=true
-          }
-          this.props.rights.permissionCallBack(e.target.value);
-          this.forceUpdate()
-        }
-      }}>
-      {this.rightToView?(<option key={this.updateNumber++}  value="Student">Student</option>):null}
-        
-        </span>  
-    )
-
-  }*/
-
-
-  }
-
-
   toogleToolbox = () => {
     if (!this.state.showToolbox) {
       document.addEventListener('click', this.toogleToolbox, false);
@@ -304,40 +235,45 @@ class DoenetHeader extends Component {
 
 
   render() {
+    console.log("header signedIn",this.props.signedIn);
+    console.log("header render",this.props.profile)
     const sliderClass = this.state.sliderVisible ? 'on' : 'off';
     if (!!this.refs.extendedHeader) {
       this.headerSectionCount = this.refs.extendedHeader.children.length;
     }
     const extendedMarginOffTop = (this.headerSectionCount + 1) * 50;
-    let toolBox = {};
+    // let toolBox = {};
 
 
-    toolBox = this.toolTitleToLinkMap &&
-        <div className="toolboxContainer" data-cy="toolboxButton" onClick={this.toogleToolbox}>
+    // toolBox = this.toolTitleToLinkMap &&
 
-          <FontAwesomeIcon id="toolboxButton" icon={faTh} />
-          {this.state.showToolbox &&
-            <Toolbox show={this.state.showToolbox} toogleToolbox={this.toogleToolbox}>
-              {Object.keys(this.toolTitleToLinkMap).length > 0 ?
-                <div>
-                  {Object.keys(this.toolTitleToLinkMap).sort().map((toolName, index) => {
-                    let currentUrl = window.location.href;
-                    const navLinkClassName = currentUrl.includes(this.toolTitleToLinkMap[toolName]) ?
-                      "selectedToolboxNavLink" : "toolboxNavLink";
-                    const toolBoxItemsHidden = this.state.myProfile.toolAccess.indexOf(toolName) < 0;
-                    return (
-                      !toolBoxItemsHidden && <div className={navLinkClassName} key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolName}>
-                        <a href={this.toolTitleToLinkMap[toolName]}>{toolName}</a>
-                      </div>
-                    )
-                  }
-                  )}
-                </div>
-                : ''}
-              {!this.state.myProfile.toolAccess.length && <p>Loading..!</p>}
-            </Toolbox>}
-        </div>
-    const menuToolBox = <MenuDropDown menuIcon= {faTh} offsetPos={-20} showThisRole={''} itemsToShow={this.menuToolBoxItems} />;
+    //   <div className="toolboxContainer" data-cy="toolboxButton" onClick={this.toogleToolbox}>
+
+    //     <FontAwesomeIcon id="toolboxButton" icon={faTh} />
+    //     {this.state.showToolbox &&
+    //       <Toolbox show={this.state.showToolbox} toogleToolbox={this.toogleToolbox}>
+    //         {Object.keys(this.toolTitleToLinkMap).length > 0 ?
+    //           <div>
+    //             {Object.keys(this.toolTitleToLinkMap).sort().map((toolName, index) => {
+    //               let currentUrl = window.location.href;
+    //               const navLinkClassName = currentUrl.includes(this.toolTitleToLinkMap[toolName]) ?
+    //                 "selectedToolboxNavLink" : "toolboxNavLink";
+    //               return (
+    //                  <div className={navLinkClassName} key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolName}>
+    //                   <a href={this.toolTitleToLinkMap[toolName]}>{toolName}</a>
+    //                 </div>
+    //               )
+    //             }
+    //             )}
+    //           </div>
+    //           : ''}
+    //       </Toolbox>}
+    //   </div>
+
+    const menuToolBox = <MenuDropDown menuIcon ={faTh} offset={-20} showThisRole={this.props.toolName} itemsToShow={this.menuToolBoxItems} />;
+   const profileMenu = <MenuDropDown 
+   picture={this.props.profile.profilePicture} 
+   offset={-20} showThisRole={''} itemsToShow={this.profileMenuMap} />;
 
     const isMultipleRoles = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? Object.keys(this.state.myRoles.permissionRoles).length > 1 : false;
     const isSingleRole = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? Object.keys(this.state.myRoles.permissionRoles).length === 1 : false;
@@ -359,29 +295,21 @@ class DoenetHeader extends Component {
             {/* {isMultipleRoles && <Menu showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} />} */}
              {isMultipleRoles && <MenuDropDown offsetPos={-20} showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} placeholder={"Select Course"} />}
             {isSingleRole && <button style={{
+              // display: "flex",
               alignItems: "center",
+              // padding: "10px",
                borderRadius: "5px"
                }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
+            {/* {toolBox} */}
             {menuToolBox}
-            {/* {!this.state.myProfile.profilePicture && <div id="userButton-anonymous" onClick={() => { location.href = "/Profile"; }}>
-              <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
-            </div>
-            } */}
+            {profileMenu}
+           {/* <MenuDropDown offsetPos={-20} showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} placeholder={"Select Course"} /> */}
+          
            
-            {/* {this.state.myProfile.profilePicture && <div id="userButton-registered" 
-            onClick={() => { location.href = "/Profile"; }}
-            >
-              <ProfilePicture
-                pic={this.state.myProfile.profilePicture}
-                name="changeProfilePicture"
-                id="changeProfilePicture"
-              >
-              </ProfilePicture>
-            </div>
-
-            }*/}
-          <MenuDropDown menuIcon={faUser} offsetPos={-20} showThisRole={''} itemsToShow={this.profileMenuMap} />
+           
           </div>}
+
+
         </div>
 
         <ExtendedHeader className={sliderClass} ref='extendedHeader' extendedMarginOffTop={extendedMarginOffTop}>
@@ -401,22 +329,9 @@ class DoenetHeader extends Component {
                }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
             {/* {toolBox} */}
             {menuToolBox}
-            <MenuDropDown menuIcon={faUser} offsetPos={-20} showThisRole={''} itemsToShow={this.profileMenuMap} />
+            
+            {profileMenu}
 
-            {/* {!this.state.myProfile.profilePicture &&
-              <div id="userButton-anonymous-phone" onClick={() => { location.href = "/Profile"; }}>
-                <FontAwesomeIcon id="userButtonIcon" icon={faUser} />
-              </div>
-            }
-            {this.state.myProfile.profilePicture &&
-              <div id="userButton-phone" onClick={() => { location.href = "/Profile"; }}>
-                <ProfilePicture
-                  pic={this.state.myProfile.profilePicture}
-                  name="changeProfilePicture"
-                  id="changeProfilePicture"
-                >
-                </ProfilePicture>
-              </div>} */}
           </div>}
         </ExtendedHeader>
       </React.Fragment>

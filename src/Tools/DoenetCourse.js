@@ -3383,7 +3383,9 @@ class DoenetCourse extends Component {
 
       <ToolLayout
         headerRoleFromLayout={this.state.headerRoleFromLayout}
-         toolName="Course" headingTitle={currentCourseName}>
+         toolName="Course"
+         headingTitle={currentCourseName}
+         >
             <ToolLayoutPanel
               key={"TLP01" + this.updateNumber++}
               panelName="context"
