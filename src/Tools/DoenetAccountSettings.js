@@ -188,7 +188,7 @@ export default function DoenetProfile(props) {
   console.log("myProfile1", myProfile)
 
   if (!Object.keys(tracking).includes("TrackingConsent")) {
-    setTracking("TrackingConsent", true);
+    setTracking("TrackingConsent", true, {path:"/"});
   }
 
   if (!Object.keys(jwt).includes("JWT")) {
