@@ -624,7 +624,7 @@ class DoenetCourse extends Component {
     super(props);
     this.selectedCourseId = 0;
     this.parentUpdateDownloadPermission = true
-    this.permissionRoles = {}
+    this.permissionRoles = [];
     this.rightToEdit = false
     this.rightToView = false
     // this.instructorRights = false
@@ -653,7 +653,7 @@ class DoenetCourse extends Component {
     this.timeLimit = null;
     this.numberOfAttemptsAllowed = 0;
     this.assignmentsIndexAndDoenetML = {}
-    this.coursesToChoose = {}
+    this.coursesToChoose = [];
     this.allElementsCopy = {}
     this.listOfOptions = ["None", "Gateway", "Problem Sets", "Projects", "Exams", "Participation"]
 
@@ -733,7 +733,7 @@ class DoenetCourse extends Component {
       errorInfo: null,
       dataLoaded: false,
       headerRoleFromLayout: {
-        permissionRoles: {},
+        permissionRoles: [],
         currentRole: 'N/A',
 
       }
@@ -844,9 +844,8 @@ class DoenetCourse extends Component {
   }
 
   getCurrentRole(roles) {
-    const keys = Object.keys(roles);
-    if (!!keys.length) {
-      return roles[keys[0]].showText;
+    if (!!roles.length) {
+      return roles[0].id;
     } else {
       return 'N/A';
     }
@@ -879,12 +878,12 @@ class DoenetCourse extends Component {
           this.alreadyHasCourseInfo = true;
           this.courseInfo = resp.data.courseInfo;
           this.courseIdsArray = resp.data.courseIds;
-          this.coursesToChoose = {};
+          this.coursesToChoose = [];
           this.courseIdsArray.map((id) => {
-            this.coursesToChoose[id] = {
-              showText: this.courseInfo[id]['courseName'],
+            this.coursesToChoose.push({
+              id,
+              label: this.courseInfo[id]['courseName'],
               callBackFunction: (e) => { // changing
-
                 this.updateNumber += 1
                 this.alreadyHasCourseInfo = false
                 this.alreadyLoadAssignment = []
@@ -896,8 +895,8 @@ class DoenetCourse extends Component {
                 this.overview_branchId = ""
                 this.syllabus_branchId = ""
 
-                this.currentCourseId = e;
-                this.selectedCourseId = e;
+                this.currentCourseId = e.id;
+                this.selectedCourseId = e.id;
                 this.roleInstructor= this.coursesPermissions['courseInfo'][this.currentCourseId]['roleInstructor'];
                 this.roleStudent= this.coursesPermissions['courseInfo'][this.currentCourseId]['roleStudent'];
                 
@@ -912,7 +911,7 @@ class DoenetCourse extends Component {
                 this.usingDefaultCourseId = false;
                 this.alreadyLoadAllCourses = false;
               }
-            }
+            })
           })
 
           if (this.usingDefaultCourseId) {
@@ -933,19 +932,20 @@ class DoenetCourse extends Component {
             }
           }
 
-          this.permissionRoles = {};
+          this.permissionRoles = [];
           if (this.roleInstructor === "1") {
-            this.permissionRoles['Instructor'] = {
-              showText: "Instructor",
+            this.permissionRoles.push({
+              id: 'Instructor',
+              label: 'Instructor',
               callBackFunction: (e) => { this.permissionCallBack({ e: e }) }
-            }
+            })
           }
           if (this.roleStudent === "1") {
-            this.permissionRoles['Student'] = {
-              showText: "Student",
+            this.permissionRoles.push({
+              id: 'Student',
+              label: 'Student',
               callBackFunction: (e) => { this.permissionCallBack({ e: e }) }
-            }
-
+            })
           }
           this.setState({
             headerRoleFromLayout: {
@@ -3333,12 +3333,12 @@ class DoenetCourse extends Component {
       }
       // making courses to choose
       if (this.courseIdsArray != []) {
-        this.coursesToChoose = {}
+        this.coursesToChoose = [];
         this.courseIdsArray.map((id) => {
-          this.coursesToChoose[id] = {
-            showText: this.courseInfo[id]['courseName'],
+          this.coursesToChoose.push({
+            id,
+            label: this.courseInfo[id]['courseName'],
             callBackFunction: (e) => { // changing
-
               this.updateNumber += 1
               this.alreadyHasCourseInfo = false
               this.alreadyLoadAssignment = []
@@ -3354,8 +3354,8 @@ class DoenetCourse extends Component {
               this.syllabus_link = null
               this.grade_link = null
               this.assignment_link = null
-              this.currentCourseId = e;
-              this.selectedCourseId = e;
+              this.currentCourseId = e.id;
+              this.selectedCourseId = e.id;
 
               this.roleInstructor = this.coursesPermissions['courseInfo'][this.currentCourseId]['roleInstructor'];
               this.roleStudent = this.coursesPermissions['courseInfo'][this.currentCourseId]['roleStudent'];
@@ -3373,7 +3373,7 @@ class DoenetCourse extends Component {
               this.alreadyLoadAllCourses = false;
               this.forceUpdate()
             }
-          }
+          })
         })
       }
   const currentCourseName = this.selectedCourseId && this.courseInfo ? (this.courseInfo[this.selectedCourseId]['courseName']) : "";
@@ -3383,7 +3383,9 @@ class DoenetCourse extends Component {
 
       <ToolLayout
         headerRoleFromLayout={this.state.headerRoleFromLayout}
-         toolName="Course" headingTitle={currentCourseName}>
+         toolName="Course"
+         headingTitle={currentCourseName}
+         >
             <ToolLayoutPanel
               key={"TLP01" + this.updateNumber++}
               panelName="context"
@@ -3391,10 +3393,11 @@ class DoenetCourse extends Component {
                 (this.coursesToChoose ?
                   <MenuDropDown
                     currentTool={"something"}
+                    appendToBody={true}
                     width={"200px"}
                     key={"menu00" + (this.updateNumber++)}
-                    showThisRole={this.selectedCourseId}
-                    itemsToShow={this.coursesToChoose}
+                    showThisMenuText={this.selectedCourseId}
+                    options={this.coursesToChoose}
                     offsetPos={-20}
                     // menuWidth={"200px"}
                     placeholder={"Select Course"}

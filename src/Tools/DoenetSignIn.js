@@ -7,7 +7,7 @@ export default function DoenetSignIn(props) {
   let [nineCode, setNineCode] = useState("");
   let [stayLoggedIn, setStayLoggedIn] = useState(false);
   let [submittedEmail, setSubmittedEmail] = useState(false);
-  let [signedIn, setSignedIn] = useState(false);
+  let [isSignedIn, setIsSignedIn] = useState(false);
   const [jwt,setJwt] = useCookies('jwt');
   const [profile,setProfile] = useCookies('Profile');
 
@@ -26,7 +26,7 @@ export default function DoenetSignIn(props) {
     validCode = true;
   }
 
-  if (signedIn){
+  if (isSignedIn){
     setProfile('JWT', {token:"put token here"}, {path:"/"})
     location.href = "/accountsettings";
   }
@@ -48,7 +48,7 @@ export default function DoenetSignIn(props) {
       <h2 style={{textAlign: "center"}}>Email Sent!</h2>
       <div><p>Check your email for a code to complete sign in.</p></div>
       <p><label>Code (9 digit code): <input type="text" value={nineCode} onChange={(e)=>{setNineCode(e.target.value)}}/></label></p>
-      <button disabled={!validCode} style={{  }} onClick={()=>setSignedIn(true)}>Sign In</button>
+      <button disabled={!validCode} style={{  }} onClick={()=>setIsSignedIn(true)}>Sign In</button>
       </div>
       </>
     )

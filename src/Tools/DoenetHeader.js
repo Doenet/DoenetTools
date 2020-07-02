@@ -29,7 +29,7 @@ const ExtendedHeader = styled.div`
     }
      
     &.off {
-      margin-top: ${props => '-'+props.extendedMarginOffTop+'px'};
+      margin-top: ${props => '-' + props.extendedMarginOffTop + 'px'};
       opacity: 0;
       margin-bottom: 50px;
     }
@@ -78,7 +78,7 @@ class DoenetHeader extends Component {
     this.selectPermission = null
     this.currentCourseId = ""
     if (this.props.rights) {
-      this.currentCourseId = this.props.rights.defaultId 
+      this.currentCourseId = this.props.rights.defaultId
     }
 
 
@@ -120,39 +120,46 @@ class DoenetHeader extends Component {
       // "Profile": "/profile/",
     }
 
-    this.menuToolBoxItems = {
-      "Chooser": {
-        showText: "Chooser",
+    this.menuToolBoxItems = [
+      {
+        id: "Chooser",
+        label: "Chooser",
         link: "/chooser/"
       },
-      "Course": {
-        showText: "Course",
+      {
+        id: "Course",
+        label: "Course",
         link: "/course/"
       },
-      "Documentation": {
-        showText: "Documentation",
+      {
+        id: "Documentation",
+        label: "Documentation",
         link: "/docs/"
       },
-      "Gradebook": {
-        showText: "Gradebook",
+      {
+        id: "Gradebook",
+        label: "Gradebook",
         link: "/gradebook/"
-      }
-    };
-    this.profileMenuMap = {
-      "Account": {
-        showText: "Account Settings",
+      }];
+    this.profileMenuMap = [
+  
+      {
+        id: "Account",
+        label: "Account settings",
         link: "/accountsettings/"
-      },
-      "SignOut": {
-        showText: "Sign in",
-        link: "/signin/",
-      }
-    }
-    if (props.signedIn){
-      this.profileMenuMap.SignOut = {
-        showText: "Sign out",
+      }];
+    if (props.isSignedIn) {
+      this.profileMenuMap.push({
+        id: "SignOut",
+        label: "Sign out",
         link: "/signout/",
-      }
+      });
+    } else {
+      this.profileMenuMap.push({
+        id: "SignIn",
+        label: "Sign in",
+        link: "/signin/",
+      });
     }
 
   }
@@ -164,9 +171,9 @@ class DoenetHeader extends Component {
         myProfile: props.headerChangesFromLayout
       });
     }
-    if(props.headerRoleFromLayout){
+    if (props.headerRoleFromLayout) {
       this.setState({
-        myRoles:props.headerRoleFromLayout
+        myRoles: props.headerRoleFromLayout
       });
     }
   }
@@ -175,17 +182,17 @@ class DoenetHeader extends Component {
   }
 
   // loadMyProfile() {
-    // axios
-    //   .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
-    //   .then(resp => {
-    //     // console.dir(resp.data);
-    //     this.setState({
-    //       myProfile: resp.data
-    //     });
-    //     this.rolesToChoose(resp.data);
+  // axios
+  //   .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
+  //   .then(resp => {
+  //     // console.dir(resp.data);
+  //     this.setState({
+  //       myProfile: resp.data
+  //     });
+  //     this.rolesToChoose(resp.data);
 
-    //   })
-    //   .catch(err => console.error(err.response.toString()));
+  //   })
+  //   .catch(err => console.error(err.response.toString()));
   // }
 
   componentWillUnmount() {
@@ -235,8 +242,8 @@ class DoenetHeader extends Component {
 
 
   render() {
-    console.log("header signedIn",this.props.signedIn);
-    console.log("header render",this.props.profile)
+    console.log("header isSignedIn", this.props.isSignedIn);
+    console.log("header render", this.props.profile)
     const sliderClass = this.state.sliderVisible ? 'on' : 'off';
     if (!!this.refs.extendedHeader) {
       this.headerSectionCount = this.refs.extendedHeader.children.length;
@@ -269,9 +276,10 @@ class DoenetHeader extends Component {
     //           : ''}
     //       </Toolbox>}
     //   </div>
-
-    const menuToolBox = <MenuDropDown menuIcon ={faTh} offset={-20} showThisRole={''} itemsToShow={this.menuToolBoxItems} />;
-   const profileMenu = <MenuDropDown picture={this.props.profile.profilePicture} offset={-20} showThisRole={''} itemsToShow={this.profileMenuMap} />;
+    const menuToolBox = <MenuDropDown position={'left'} menuIcon={faTh} offset={-20} showThisMenuText={this.props.toolName} options={this.menuToolBoxItems} />;
+    const profileMenu = <MenuDropDown position={'left'}
+      picture={this.props.profile.profilePicture}
+      offset={-20} showThisMenuText={''} options={this.profileMenuMap} />;
 
     const isMultipleRoles = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? Object.keys(this.state.myRoles.permissionRoles).length > 1 : false;
     const isSingleRole = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? Object.keys(this.state.myRoles.permissionRoles).length === 1 : false;
@@ -286,25 +294,25 @@ class DoenetHeader extends Component {
             <span>{this.props.toolName}</span>
           </div>
 
-         {this.props.headingTitle && <div className="headingTitle">
+          {this.props.headingTitle && <div className="headingTitle">
             <span>{this.props.headingTitle}</span>
           </div>}
           {!this.props.guestUser && <div className="headingToolbar">
             {/* {isMultipleRoles && <Menu showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} />} */}
-             {isMultipleRoles && <MenuDropDown offsetPos={-20} showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} placeholder={"Select Course"} />}
+            {isMultipleRoles && <MenuDropDown offsetPos={-20} showThisMenuText={'Instructor'} options={this.state.myRoles.permissionRoles} placeholder={"Select Course"} />}
             {isSingleRole && <button style={{
               // display: "flex",
               alignItems: "center",
               // padding: "10px",
-               borderRadius: "5px"
-               }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
+              borderRadius: "5px"
+            }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
             {/* {toolBox} */}
             {menuToolBox}
             {profileMenu}
-           {/* <MenuDropDown offsetPos={-20} showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} placeholder={"Select Course"} /> */}
-          
-           
-           
+            {/* <MenuDropDown offsetPos={-20} showThisMenuText={'Instructor'} options={this.state.myRoles.permissionRoles} placeholder={"Select Course"} /> */}
+
+
+
           </div>}
 
 
@@ -316,21 +324,21 @@ class DoenetHeader extends Component {
               <span>{this.props.headingTitle}</span>
             </div>
           </div>}
-            {!this.props.guestUser && 
-          <div className="extended-header">
-          {isMultipleRoles && <MenuDropDown showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} />}
-          {isSingleRole && <button style={{
-              // display: "flex",
-              alignItems: "center",
-              // padding: "10px",
-               borderRadius: "5px"
-               }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
-            {/* {toolBox} */}
-            {menuToolBox}
-            
-            {profileMenu}
+          {!this.props.guestUser &&
+            <div className="extended-header">
+              {isMultipleRoles && <MenuDropDown showThisMenuText={'Instructor'} options={this.state.myRoles.permissionRoles} />}
+              {isSingleRole && <button style={{
+                // display: "flex",
+                alignItems: "center",
+                // padding: "10px",
+                borderRadius: "5px"
+              }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
+              {/* {toolBox} */}
+              {menuToolBox}
 
-          </div>}
+              {profileMenu}
+
+            </div>}
         </ExtendedHeader>
       </React.Fragment>
     );
