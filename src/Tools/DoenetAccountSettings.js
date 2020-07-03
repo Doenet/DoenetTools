@@ -200,7 +200,7 @@ export default function DoenetProfile(props) {
           <StyledSwitch
             id="trackingconsent"
             onChange={e =>
-              setTracking("TrackingConsent", e.target.checked)
+              setTracking("TrackingConsent", e.target.checked, {path:"/"})
             } // updates immediately
             checked={tracking.TrackingConsent}
           >
@@ -508,7 +508,7 @@ export default function DoenetProfile(props) {
                   <StyledSwitch
                     id="trackingconsent"
                     onChange={e =>
-                      setTracking("TrackingConsent", e.target.checked)
+                      setTracking("TrackingConsent", e.target.checked,{path:"/"})
                     } // updates immediately
                     checked={tracking.TrackingConsent}
                   >
