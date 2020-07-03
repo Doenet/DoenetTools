@@ -1723,8 +1723,6 @@ class DoenetChooser extends Component {
         if (this.userFolderInfo[folderId].parentId == "root") this.userFolderInfo["root"]["childFolders"].push(folderId);
       })
     }
-    console.log(this.folderInfo)
-    console.log(this.state.selectedItemsType)
 
 
     this.buildCourseList();
