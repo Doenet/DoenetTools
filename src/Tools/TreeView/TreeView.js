@@ -144,6 +144,7 @@ export const TreeView = ({
   hideRoot=false,
   disableSearch=false,
   treeNodeIcons={},
+  directoryData=[],
   specialNodes=new Set(),
 	treeStyles={},
 	onLeafNodeClick=(()=>{}),
@@ -273,6 +274,7 @@ export const TreeView = ({
         hideRoot: hideRoot, 
         treeNodeIcons: treeNodeIcons, 
         specialNodes: specialNodes,
+        directoryData: directoryData,
 				treeStyles: treeStyles,
 				onLeafNodeClick: onLeafNodeClick,
 				onParentNodeClick: onParentNodeClick,
@@ -297,7 +299,8 @@ export const TreeView = ({
 
 function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, hideRoot, treeNodeIcons, treeStyles,
   specialNodes, onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
-   currentDraggedOverContainerId, onParentNodeClick, onParentNodeDoubleClick, onLeafNodeClick, currentSearchingFolder, buildControlButtons, buildSearchComponent, setCurrentHovered }) {
+   currentDraggedOverContainerId, onParentNodeClick, onParentNodeDoubleClick, onLeafNodeClick, currentSearchingFolder, 
+   buildControlButtons, buildSearchComponent, setCurrentHovered, directoryData }) {
      
   const getBaseItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
     if (itemType == "folder") itemType = parentsInfo[currentItemId].isRepo ? "repo" : "folder";
@@ -348,13 +351,19 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
   // if user-defined styles undefined, fallback to default style
   itemStyle = itemStyle || {"title" :Object.assign({marginLeft: '5px', color: "rgba(0,0,0,0.8)"},  baseItemStyleAndIcon.style)};
 
+  let defaultOpen = parentHeadingId == "root";
+  if (directoryData.length != 0 && directoryData[0] == parentHeadingId) {
+    directoryData.shift();
+    defaultOpen = true;
+  }
+
   let subTree = <ParentNode 
     id={parentHeadingId}
     key={parentHeadingId} 
     title={parentsInfo[parentHeadingId]["title"]}
     type={itemType}
     hide={hideRoot && parentHeadingId == "root"}
-    defaultOpen={parentHeadingId == "root" || specialNodes.has(parentHeadingId)}
+    defaultOpen={defaultOpen}
     itemIcon={baseItemStyleAndIcon.icon}
     expanderIcon={treeStyles["expanderIcon"]}
     onClick={parentHeadingId != "root" ? onParentNodeClick : ()=>{}}
@@ -383,6 +392,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           hideRoot: hideRoot,
           treeNodeIcons: treeNodeIcons,
           specialNodes: specialNodes,
+          directoryData: directoryData,
           treeStyles: treeStyles,
           onParentNodeClick: onParentNodeClick,
           onParentNodeDoubleClick: onParentNodeDoubleClick,

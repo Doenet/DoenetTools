@@ -1724,7 +1724,6 @@ class DoenetChooser extends Component {
       })
     }
 
-
     this.buildCourseList();
     this.buildLeftNavPanel();
     this.buildTopToolbar();
@@ -1789,7 +1788,8 @@ class DoenetChooser extends Component {
           onDragEnd={this.onTreeDragEnd}
           onDraggableDragOver={this.onTreeDraggableDragOver} 
           onDropEnter={this.onTreeDropEnter}
-          onDrop={this.onTreeDrop} 
+          onDrop={this.onTreeDrop}
+          directoryData={[...this.state.directoryStack]}
           specialNodes={this.tempSet}
           treeStyles={{
             specialChildNode: {
