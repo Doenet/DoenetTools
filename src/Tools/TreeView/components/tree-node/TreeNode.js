@@ -132,7 +132,7 @@ export const LeafNode = memo(({ id, title, type, itemIcon, styles, onDragStart, 
 
   return (
     <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
-      <Frame style={styles["frame"]} onClick={() => onClick(id)}>
+      <Frame style={styles["frame"]} onClick={() => onClick(id, type)}>
         <ListItem style={styles["title"]}>
           { itemIcon }
           <Title>{title}</Title>

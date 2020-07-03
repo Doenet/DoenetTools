@@ -300,6 +300,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
    currentDraggedOverContainerId, onParentNodeClick, onParentNodeDoubleClick, onLeafNodeClick, currentSearchingFolder, buildControlButtons, buildSearchComponent, setCurrentHovered }) {
      
   const getBaseItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
+    if (itemType == "folder") itemType = parentsInfo[currentItemId].isRepo ? "repo" : "folder";
     const icon = currentItemId == "root" ? "" : treeNodeIcons(itemType);
     let itemDragged = currentDraggedObject.id == currentItemId;
     let isShadow = itemDragged && 
@@ -356,9 +357,9 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
     defaultOpen={parentHeadingId == "root"}
     itemIcon={baseItemStyleAndIcon.icon}
     expanderIcon={treeStyles["expanderIcon"]}
-    onClick={onParentNodeClick}
-    onDoubleClick={onParentNodeDoubleClick}
-    onDrop={onDrop} 
+    onClick={parentHeadingId != "root" ? onParentNodeClick : ()=>{}}
+    onDoubleClick={parentHeadingId != "root" ? onParentNodeDoubleClick : ()=>{}}
+    onDrop={onDrop}
     onDropEnter={onDropEnter}
     onDropLeave={onDropLeave}
     draggedOver={parentHeadingId == currentDraggedOverContainerId}

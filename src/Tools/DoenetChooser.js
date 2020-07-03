@@ -1656,7 +1656,7 @@ class DoenetChooser extends Component {
     }
     // remove droppedId, repos from (draggedIds, draggedTypes)
     for (let i = 0; i < draggedItems.id.length; i++) {
-      if (draggedItems.id[i] == droppedId || draggedItems.type == "repo") {
+      if (draggedItems.id[i] == droppedId || (draggedItems.type == "folder" && draggedItems.dataObject.isRepo)) {
         draggedItems.id.splice(i, 1);
         draggedItems.type.splice(i, 1);
       }
@@ -1723,6 +1723,8 @@ class DoenetChooser extends Component {
         if (this.userFolderInfo[folderId].parentId == "root") this.userFolderInfo["root"]["childFolders"].push(folderId);
       })
     }
+    console.log(this.folderInfo)
+    console.log(this.state.selectedItemsType)
 
 
     this.buildCourseList();
@@ -1794,17 +1796,21 @@ class DoenetChooser extends Component {
           treeStyles={{
             specialChildNode: {
               "title": { color: "#2675ff" },
-              "frame": { background: "#e6efff" },
+              "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
             },
             specialParentNode: {
-              "title": { color: "#2675ff", background: "#e6efff", marginLeft: "5px", borderRadius: "0 50px 50px 0" },
+              "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
             }
+          }}
+          onLeafNodeClick={(id, type) => {
+            this.setState({selectedItems: [id], selectedItemsType: [type]})
+            this.tempSet = new Set([id]);
+            this.forceUpdate()
           }}
           onParentNodeClick={(id, type) => {
             this.setState({selectedItems: [id], selectedItemsType: [type]})
             this.tempSet = new Set([id]);
             this.forceUpdate()
-            // select current node (display info in InfoPanel)
           }}
           onParentNodeDoubleClick={(id) => {
             // openSubtree
@@ -2699,7 +2705,7 @@ class InfoPanel extends Component {
       // if file selected, show selectedFile/Folder info
       selectedItemId = this.props.selectedItems[this.props.selectedItems.length - 1];
       selectedItemType = this.props.selectedItemsType[this.props.selectedItemsType.length - 1];
-
+      console.log()
       // get title
       if (selectedItemType === "folder") {
         itemTitle = this.props.allFolderInfo[selectedItemId].title;

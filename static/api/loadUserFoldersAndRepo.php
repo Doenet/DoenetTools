@@ -50,7 +50,7 @@ if ($result->num_rows > 0){
           "publishDate" => $row["creationDate"],
           "parentId" => $row["parentId"],
           "rootId" => $row["rootId"] == NULL ? $row["folderId"] : $row["rootId"],
-          "type" => ($row["isRepo"] == 1)? "repo": "folder",
+          "type" => "folder",
           "childContent" => array(),
           "childUrls" => array(),
           "childFolders" => array(),
