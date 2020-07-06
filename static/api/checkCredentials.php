@@ -35,7 +35,7 @@ if ($row['minutes'] > 10){
     $sql = "SELECT signInCode AS nineCode FROM user WHERE email='$emailaddress'";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
-    var_dump($row);
+
     if ($row["nineCode"] != $nineCode){
         $response_arr = array(
         "success" => 0,
@@ -45,27 +45,39 @@ if ($row['minutes'] > 10){
         //Valid code and not expired
         //Test if it's a new account
 
-        //** if new account */
-
+        $sql = "SELECT screenName FROM user WHERE email='$emailaddress'";
+        $result = $conn->query($sql);
+        $row = $result->fetch_assoc();
+        
+        //Only new accounts won't have a screen name
+        if ($row["screenName"] === null){
         // New Account!
-// $response_arr = array(
-// "success" => 1,
-// "existed" => 0,
-// );
+        $response_arr = array(
+        "success" => 1,
+        "existed" => 0,
+        );
 
-// Make a new profile
-// Random screen name
-// Random profile picture
+        // Make a new profile
+        // Random screen name
+        $screen_names = include 'screenNames.php';
+        $randomNumber = rand(0,(count($screen_names) - 1));
+        $screen_name = $screen_names[$randomNumber];
+
+        // Random profile picture
+        $profile_pics = include 'profilePics.php';
+        $randomNumber = rand(0,(count($profile_pics) - 1));
+        $profile_pic = $profile_pics[$randomNumber];
+        // Store screen name and profile picture
+        $sql = "UPDATE user SET screenName='$screen_name',profilePicture='$profile_pic' WHERE email='$emailaddress' ";
+        $result = $conn->query($sql);
+    }
+
+
 
     }
     
 
 }
-
-
-
-
-
 
 
 
