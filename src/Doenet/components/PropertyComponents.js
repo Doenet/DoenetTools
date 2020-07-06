@@ -692,6 +692,11 @@ export class Youtube extends TextComponent {
   static rendererType = "text";
 }
 
+export class Geogebra extends TextComponent {
+  static componentType = "geogebra";
+  static rendererType = "text";
+}
+
 export class SplitIntoOptions extends BooleanComponent {
   static componentType = "splitintooptions";
   static rendererType = "boolean";
