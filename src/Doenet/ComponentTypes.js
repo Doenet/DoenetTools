@@ -119,6 +119,7 @@ import Offsets from './components/Offsets';
 import DiscreteInfiniteSet from './components/DiscreteInfiniteSet';
 import Image from './components/Image';
 import Video from './components/Video';
+import Embed from './components/Embed';
 import Meta from './components/Meta';
 import Hint from './components/Hint';
 import Solution from './components/Solution';
@@ -248,6 +249,7 @@ const componentTypeArray = [
   DiscreteInfiniteSet,
   Image,
   Video,
+  Embed,
   Meta,
   Hint, Solution,
   IntComma,
