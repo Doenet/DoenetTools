@@ -1053,6 +1053,7 @@ class DoenetChooser extends Component {
       selectedItems: selectedItems,
       selectedItemsType: selectedItemsType,
     })
+    this.tempSet = new Set([selectedItems[selectedItems.length - 1]]);
   }
 
   updateDirectoryStack(directoryStack) {
@@ -2014,7 +2015,7 @@ class DoenetChooser extends Component {
             </SplitLayoutPanel>
           </ToolLayoutPanel>
 
-          <ToolLayoutPanel panelName="Info Panel" >
+          <ToolLayoutPanel panelName="Info Panel">
              <InfoPanel
               selectedItems={this.state.selectedItems}
               selectedItemsType={this.state.selectedItemsType}
@@ -2698,7 +2699,14 @@ class InfoPanel extends Component {
         itemTitle = "Content";
       }
 
-      this.buildInfoPanelDriveDetails();
+      // this.buildInfoPanelDriveDetails();
+      this.infoPanel = <React.Fragment>
+        <div className="infoPanel">
+          <div style={{display: "flex", alignItems: "center", justifyContent: "center", height: "100%"}}>
+            <span style={{fontSize: "16px", color: "rgb(191, 191, 191)"}}>Select item to view info</span>
+          </div>
+        </div>
+      </React.Fragment>
     } else {
       // if file selected, show selectedFile/Folder info
       selectedItemId = this.props.selectedItems[this.props.selectedItems.length - 1];
@@ -2718,23 +2726,22 @@ class InfoPanel extends Component {
       }
 
       this.buildInfoPanelItemDetails(selectedItemId, selectedItemType);  
+      this.infoPanel = <React.Fragment>
+        <div className="infoPanel">
+          <div className="infoPanelTitle">
+            <div className="infoPanelItemIcon">{itemIcon}</div>
+            <span>{ itemTitle }</span>
+          </div>
+          <div className="infoPanelPreview">
+            {/* <span>Preview</span> */}
+            <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"100px", "color":"#bfbfbf"}}/>
+          </div>
+          <div className="infoPanelDetails">
+            {this.infoPanelDetails}
+          </div>
+        </div>
+      </React.Fragment>
     }
-    
-    this.infoPanel = <React.Fragment>
-      <div className="infoPanel">
-        <div className="infoPanelTitle">
-          <div className="infoPanelItemIcon">{itemIcon}</div>
-          <span>{ itemTitle }</span>
-        </div>
-        <div className="infoPanelPreview">
-          <span>Preview</span>
-          <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"100px", "color":"#bfbfbf"}}/>
-        </div>
-        <div className="infoPanelDetails">
-          {this.infoPanelDetails}
-        </div>
-      </div>
-    </React.Fragment>
   }
 
   buildInfoPanelDriveDetails() {
