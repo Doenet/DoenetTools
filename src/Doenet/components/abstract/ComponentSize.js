@@ -58,6 +58,8 @@ export default class ComponentSize extends BaseComponent {
     let componentType = this.componentType;
 
     stateVariableDefinitions.value = {
+      public: true,
+      componentType: "number",
       additionalStateVariablesDefined: ["isAbsolute"],
       returnDependencies: () => ({
         componentSizeChild: {
@@ -129,7 +131,7 @@ export default class ComponentSize extends BaseComponent {
             // <width>100pixel</width>
             // <width>50%</width>
 
-            let result = dependencyValues.stringChild[0].stateValues.value.trim().match(/^(\d+)\s*(.*)$/);
+            let result = dependencyValues.stringChild[0].stateValues.value.trim().match(/^(-?[\d.]+)\s*(.*)$/);
             if (result === null) {
               console.warn(componentType + " must begin with a number.");
               return { newValues: { value: null, isAbsolute: true } };
@@ -181,6 +183,82 @@ export default class ComponentSize extends BaseComponent {
 
         }
 
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (dependencyValues.stringChild.length === 0) {
+          if (dependencyValues.numberChild.length === 0) {
+            if (dependencyValues.componentSizeChild.length === 0) {
+
+              return {
+                success: true,
+                instructions: [{
+                  setStateVariable: "value",
+                  value: desiredStateVariableValues.value
+                }]
+              }
+            } else {
+              //only componentSize child
+
+              return {
+                success: true,
+                instructions: [{
+                  setDependency: "componentSizeChild",
+                  desiredValue: desiredStateVariableValues.value,
+                  childIndex: 0,
+                  variableIndex: 0
+                }]
+              }
+            }
+          } else {
+            //only number child
+
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "numberChild",
+                desiredValue: desiredStateVariableValues.value,
+                childIndex: 0,
+                variableIndex: 0
+              }]
+            }
+          }
+        } else {
+          //string child
+
+          if (dependencyValues.numberChild.length === 1) {
+            //string and number child
+
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "numberChild",
+                desiredValue: desiredStateVariableValues.value,
+                childIndex: 0,
+                variableIndex: 0
+              }, {
+                setDependency: "stringChild",
+                desiredValue: "px",
+                childIndex: 0,
+                variableIndex: 0
+              }]
+            }
+
+          } else {
+            //only string child
+
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "stringChild",
+                desiredValue: desiredStateVariableValues.value + "px",
+                childIndex: 0,
+                variableIndex: 0
+              }]
+            }
+          }
+
+
+        }
       }
     }
 

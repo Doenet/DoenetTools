@@ -16,6 +16,7 @@ export default class Point extends GraphicalComponent {
   // Instead have a array state variable of maths for each component
   // and use wrapping components to create points from those
   static primaryStateVariableForDefinition = "coordsShadow";
+  static stateVariableForPropertyValue = "coords";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
