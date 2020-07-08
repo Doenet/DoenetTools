@@ -35,7 +35,7 @@ class DoenetDocs extends Component {
     })
     return(
       <React.Fragment>
-        <DoenetHeader toolName="Documentation" headingTitle={""} />
+        <DoenetHeader toolName="Documentation" profile={{}} headingTitle={""} />
        
         <div className="docs-container">
           <div className="side-panel">
