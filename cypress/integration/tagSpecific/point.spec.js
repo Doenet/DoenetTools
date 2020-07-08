@@ -3473,7 +3473,6 @@ describe('Point Tag Tests', function () {
 
   })
 
-
   it('update point with constraints', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -3596,6 +3595,2109 @@ describe('Point Tag Tests', function () {
       expect(components['/_point4'].stateValues.xs[1].tree).eq(y);
 
     });
+  })
+
+  it('change point dimensions', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Specify point coordinates: <mathinput name="originalCoords" /></p>
+
+    <p>The point: <point><copy prop="value" tname="originalCoords"/></point></p>
+    <p>The point copied: <copy name="point2" tname="_point1"/></p>
+    <p>The point copied again: <copy name="point3" tname="point2"/></p>
+    
+    <p>From point 1</p>
+    <p>Number of dimensions: <copy name="nDimensions1" prop="nDimensions" tname="_point1" /></p>
+    <p name="p1x">x-coordinate: <copy name="point1x1" prop="x1" tname="_point1"/></p>
+    <p name="p1y">y-coordinate: <copy name="point1x2" prop="x2" tname="_point1"/></p>
+    <p name="p1z">z-coordinate: <copy name="point1x3" prop="x3" tname="_point1"/></p>
+    <p name="p1all">All individual coordinates: <aslist><copy name="point1xs" prop="xs" tname="_point1"/></aslist></p>
+    <p>Coordinates: <copy name="coords1" prop="coords" tname="_point1"/></p>
+    
+    <p>From point 2</p>
+    <p>Number of dimensions: <copy name="nDimensions2" prop="nDimensions" tname="point2" /></p>
+    <p name="p2x">x-coordinate: <copy name="point2x1" prop="x1" tname="point2"/></p>
+    <p name="p2y">y-coordinate: <copy name="point2x2" prop="x2" tname="point2"/></p>
+    <p name="p2z">z-coordinate: <copy name="point2x3" prop="x3" tname="point2"/></p>
+    <p name="p2all">All individual coordinates: <aslist><copy name="point2xs" prop="xs" tname="point2"/></aslist></p>
+    <p>Coordinates: <copy name="coords2" prop="coords" tname="point2"/></p>
+    
+    <p>From point 3</p>
+    <p>Number of dimensions: <copy name="nDimensions3" prop="nDimensions" tname="point3" /></p>
+    <p name="p3x">x-coordinate: <copy name="point3x1" prop="x1" tname="point3"/></p>
+    <p name="p3y">y-coordinate: <copy name="point3x2" prop="x2" tname="point3"/></p>
+    <p name="p3z">z-coordinate: <copy name="point3x3" prop="x3" tname="point3"/></p>
+    <p name="p3all">All individual coordinates: <aslist><copy name="point3xs" prop="xs" tname="point3"/></aslist></p>
+    <p>Coordinates: <copy name="coords3" prop="coords" tname="point3"/></p>
+   
+    <p>For point 1</p>
+    <p>Change coords: <mathinput name="coords1b"><copy prop="coords" tname="_point1"/></mathinput></p>
+    <p>Change x-coordinate: <mathinput name="point1x1b"><copy prop="x1" tname="_point1"/></mathinput></p>
+    <p>Change y-coordinate: <mathinput name="point1x2b"><copy prop="x2" tname="_point1" includeUndefinedArrayEntries/></mathinput></p>
+    <p>Change z-coordinate: <mathinput name="point1x3b"><copy prop="x3" tname="_point1" includeUndefinedArrayEntries/></mathinput></p>    
+
+    <p>For point 2</p>
+    <p>Change coords: <mathinput name="coords2b"><copy prop="coords" tname="point2"/></mathinput></p>
+    <p>Change x-coordinate: <mathinput name="point2x1b"><copy prop="x1" tname="point2"/></mathinput></p>
+    <p>Change y-coordinate: <mathinput name="point2x2b"><copy prop="x2" tname="point2" includeUndefinedArrayEntries/></mathinput></p>
+    <p>Change z-coordinate: <mathinput name="point2x3b"><copy prop="x3" tname="point2" includeUndefinedArrayEntries/></mathinput></p>    
+    
+    <p>For point 3</p>
+    <p>Change coords: <mathinput name="coords3b"><copy prop="coords" tname="point3"/></mathinput></p>
+    <p>Change x-coordinate: <mathinput name="point3x1b"><copy prop="x1" tname="point3"/></mathinput></p>
+    <p>Change y-coordinate: <mathinput name="point3x2b"><copy prop="x2" tname="point3" includeUndefinedArrayEntries/></mathinput></p>
+    <p>Change z-coordinate: <mathinput name="point3x3b"><copy prop="x3" tname="point3" includeUndefinedArrayEntries/></mathinput></p>    
+    
+  `}, "*");
+    });
+
+    cy.get("#\\/_text1").should('have.text', 'a'); // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let point1Anchor = '#' + components["/_point1"].adapterUsed.componentName;
+      let point2 = components["/point2"].replacements[0];
+      let point2Anchor = '#' + point2.adapterUsed.componentName;
+      let point3 = components["/point3"].replacements[0].replacements[0];
+      let point3Anchor = '#' + point3.adapterUsed.componentName;
+      let nDimensions1Anchor = "#" + components["/nDimensions1"].replacements[0].componentName;
+      let nDimensions2Anchor = "#" + components["/nDimensions2"].replacements[0].componentName;
+      let nDimensions3Anchor = "#" + components["/nDimensions3"].replacements[0].componentName;
+      let point1x1Anchor = "#" + components["/point1x1"].replacements[0].componentName;
+      let point2x1Anchor = "#" + components["/point2x1"].replacements[0].componentName;
+      let point3x1Anchor = "#" + components["/point3x1"].replacements[0].componentName;
+      let coords1Anchor = "#" + components["/coords1"].replacements[0].componentName;
+      let coords2Anchor = "#" + components["/coords2"].replacements[0].componentName;
+      let coords3Anchor = "#" + components["/coords3"].replacements[0].componentName;
+
+      cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get(nDimensions1Anchor).should('have.text', '1');
+      cy.get(nDimensions2Anchor).should('have.text', '1');
+      cy.get(nDimensions3Anchor).should('have.text', '1');
+      cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get("#\\/p1y").should('have.text', 'y-coordinate: ')
+      cy.get("#\\/p2y").should('have.text', 'y-coordinate: ')
+      cy.get("#\\/p3y").should('have.text', 'y-coordinate: ')
+      cy.get("#\\/p1z").should('have.text', 'z-coordinate: ')
+      cy.get("#\\/p2z").should('have.text', 'z-coordinate: ')
+      cy.get("#\\/p3z").should('have.text', 'z-coordinate: ')
+
+      cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+
+      cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+
+      cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+
+      cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+
+      cy.get("#\\/coords1b_input").should('have.value', '')
+      cy.get("#\\/coords2b_input").should('have.value', '')
+      cy.get("#\\/coords3b_input").should('have.value', '')
+      cy.get("#\\/point1x1b_input").should('have.value', '')
+      cy.get("#\\/point2x1b_input").should('have.value', '')
+      cy.get("#\\/point3x1b_input").should('have.value', '')
+      cy.get("#\\/point1x2b_input").should('have.value', '')
+      cy.get("#\\/point2x2b_input").should('have.value', '')
+      cy.get("#\\/point3x2b_input").should('have.value', '')
+      cy.get("#\\/point1x3b_input").should('have.value', '')
+      cy.get("#\\/point2x3b_input").should('have.value', '')
+      cy.get("#\\/point3x3b_input").should('have.value', '')
+
+      cy.window().then((win) => {
+
+        expect(components['/_point1'].stateValues.nDimensions).eq(1);
+        expect(components['/_point1'].stateValues.xs.length).eq(1);
+        expect(components['/_point1'].stateValues.xs[0].tree).eq('＿');
+        expect(components['/_point1'].stateValues.x1.tree).eq('＿');
+        expect(components['/_point1'].stateValues.x2).eq(undefined);
+        expect(components['/_point1'].stateValues.x3).eq(undefined);
+        expect(point2.stateValues.nDimensions).eq(1);
+        expect(point2.stateValues.xs.length).eq(1);
+        expect(point2.stateValues.xs[0].tree).eq('＿');
+        expect(point2.stateValues.x1.tree).eq('＿');
+        expect(point2.stateValues.x2).eq(undefined);
+        expect(point2.stateValues.x3).eq(undefined);
+        expect(point3.stateValues.nDimensions).eq(1);
+        expect(point3.stateValues.xs.length).eq(1);
+        expect(point3.stateValues.xs[0].tree).eq('＿');
+        expect(point3.stateValues.x1.tree).eq('＿');
+        expect(point3.stateValues.x2).eq(undefined);
+        expect(point3.stateValues.x3).eq(undefined);
+
+      });
+
+      cy.log('Create 2D point')
+      cy.get('#\\/originalCoords_input').type('(a,b){enter}')
+
+      cy.window().then((win) => {
+
+        let point1x2Anchor = "#" + components["/point1x2"].replacements[0].componentName;
+        let point2x2Anchor = "#" + components["/point2x2"].replacements[0].componentName;
+        let point3x2Anchor = "#" + components["/point3x2"].replacements[0].componentName;
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '2');
+        cy.get(nDimensions2Anchor).should('have.text', '2');
+        cy.get(nDimensions3Anchor).should('have.text', '2');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get(point2x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/p1z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p2z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p3z").should('have.text', 'z-coordinate: ')
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', '( a, b )')
+        cy.get("#\\/coords2b_input").should('have.value', '( a, b )')
+        cy.get("#\\/coords3b_input").should('have.value', '( a, b )')
+        cy.get("#\\/point1x1b_input").should('have.value', 'a')
+        cy.get("#\\/point2x1b_input").should('have.value', 'a')
+        cy.get("#\\/point3x1b_input").should('have.value', 'a')
+        cy.get("#\\/point1x2b_input").should('have.value', 'b')
+        cy.get("#\\/point2x2b_input").should('have.value', 'b')
+        cy.get("#\\/point3x2b_input").should('have.value', 'b')
+        cy.get("#\\/point1x3b_input").should('have.value', '')
+        cy.get("#\\/point2x3b_input").should('have.value', '')
+        cy.get("#\\/point3x3b_input").should('have.value', '')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(2);
+          expect(components['/_point1'].stateValues.xs.length).eq(2);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('a');
+          expect(components['/_point1'].stateValues.xs[1].tree).eq('b');
+          expect(components['/_point1'].stateValues.x1.tree).eq('a');
+          expect(components['/_point1'].stateValues.x2.tree).eq('b');
+          expect(components['/_point1'].stateValues.x3).eq(undefined);
+          expect(point2.stateValues.nDimensions).eq(2);
+          expect(point2.stateValues.xs.length).eq(2);
+          expect(point2.stateValues.xs[0].tree).eq('a');
+          expect(point2.stateValues.xs[1].tree).eq('b');
+          expect(point2.stateValues.x1.tree).eq('a');
+          expect(point2.stateValues.x2.tree).eq('b');
+          expect(point2.stateValues.x3).eq(undefined);
+          expect(point3.stateValues.nDimensions).eq(2);
+          expect(point3.stateValues.xs.length).eq(2);
+          expect(point3.stateValues.xs[0].tree).eq('a');
+          expect(point3.stateValues.xs[1].tree).eq('b');
+          expect(point3.stateValues.x1.tree).eq('a');
+          expect(point3.stateValues.x2.tree).eq('b');
+          expect(point3.stateValues.x3).eq(undefined);
+
+        });
+
+      })
+
+
+      cy.log('Back to 1D point')
+      cy.get('#\\/originalCoords_input').clear().type('q{enter}')
+
+      cy.window().then((win) => {
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '1');
+        cy.get(nDimensions2Anchor).should('have.text', '1');
+        cy.get(nDimensions3Anchor).should('have.text', '1');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+
+        cy.get("#\\/p1y").should('have.text', 'y-coordinate: ')
+        cy.get("#\\/p2y").should('have.text', 'y-coordinate: ')
+        cy.get("#\\/p3y").should('have.text', 'y-coordinate: ')
+
+        cy.get("#\\/p1z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p2z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p3z").should('have.text', 'z-coordinate: ')
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).should('not.exist')
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).should('not.exist')
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).should('not.exist')
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', 'q')
+        cy.get("#\\/coords2b_input").should('have.value', 'q')
+        cy.get("#\\/coords3b_input").should('have.value', 'q')
+        cy.get("#\\/point1x1b_input").should('have.value', 'q')
+        cy.get("#\\/point2x1b_input").should('have.value', 'q')
+        cy.get("#\\/point3x1b_input").should('have.value', 'q')
+        cy.get("#\\/point1x2b_input").should('have.value', '')
+        cy.get("#\\/point2x2b_input").should('have.value', '')
+        cy.get("#\\/point3x2b_input").should('have.value', '')
+        cy.get("#\\/point1x3b_input").should('have.value', '')
+        cy.get("#\\/point2x3b_input").should('have.value', '')
+        cy.get("#\\/point3x3b_input").should('have.value', '')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(1);
+          expect(components['/_point1'].stateValues.xs.length).eq(1);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('q');
+          expect(components['/_point1'].stateValues.x1.tree).eq('q');
+          expect(components['/_point1'].stateValues.x2).eq(undefined);
+          expect(components['/_point1'].stateValues.x3).eq(undefined);
+          expect(point2.stateValues.nDimensions).eq(1);
+          expect(point2.stateValues.xs.length).eq(1);
+          expect(point2.stateValues.xs[0].tree).eq('q');
+          expect(point2.stateValues.x1.tree).eq('q');
+          expect(point2.stateValues.x2).eq(undefined);
+          expect(point2.stateValues.x3).eq(undefined);
+          expect(point3.stateValues.nDimensions).eq(1);
+          expect(point3.stateValues.xs.length).eq(1);
+          expect(point3.stateValues.xs[0].tree).eq('q');
+          expect(point3.stateValues.x1.tree).eq('q');
+          expect(point3.stateValues.x2).eq(undefined);
+          expect(point3.stateValues.x3).eq(undefined);
+
+        });
+
+      })
+
+
+      cy.log('Create 3D point')
+      cy.get('#\\/originalCoords_input').clear().type('(2x,u/v,w^2){enter}')
+
+      cy.window().then((win) => {
+
+        let point1x2Anchor = "#" + components["/point1x2"].replacements[0].componentName;
+        let point2x2Anchor = "#" + components["/point2x2"].replacements[0].componentName;
+        let point3x2Anchor = "#" + components["/point3x2"].replacements[0].componentName;
+        let point1x3Anchor = "#" + components["/point1x3"].replacements[0].componentName;
+        let point2x3Anchor = "#" + components["/point2x3"].replacements[0].componentName;
+        let point3x3Anchor = "#" + components["/point3x3"].replacements[0].componentName;
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(2x,uv,w2)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(2x,uv,w2)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(2x,uv,w2)')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '3');
+        cy.get(nDimensions2Anchor).should('have.text', '3');
+        cy.get(nDimensions3Anchor).should('have.text', '3');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x')
+        })
+        cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('uv')
+        })
+        cy.get(point2x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('uv')
+        })
+        cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('uv')
+        })
+        cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('w2')
+        })
+        cy.get(point2x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('w2')
+        })
+        cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('w2')
+        })
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('uv')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('w2')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('uv')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('w2')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('uv')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('w2')
+        })
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(2x,uv,w2)')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(2x,uv,w2)')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(2x,uv,w2)')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', '( 2 x, u/v, w^2 )')
+        cy.get("#\\/coords2b_input").should('have.value', '( 2 x, u/v, w^2 )')
+        cy.get("#\\/coords3b_input").should('have.value', '( 2 x, u/v, w^2 )')
+        cy.get("#\\/point1x1b_input").should('have.value', '2 x')
+        cy.get("#\\/point2x1b_input").should('have.value', '2 x')
+        cy.get("#\\/point3x1b_input").should('have.value', '2 x')
+        cy.get("#\\/point1x2b_input").should('have.value', 'u/v')
+        cy.get("#\\/point2x2b_input").should('have.value', 'u/v')
+        cy.get("#\\/point3x2b_input").should('have.value', 'u/v')
+        cy.get("#\\/point1x3b_input").should('have.value', 'w^2')
+        cy.get("#\\/point2x3b_input").should('have.value', 'w^2')
+        cy.get("#\\/point3x3b_input").should('have.value', 'w^2')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(3);
+          expect(components['/_point1'].stateValues.xs.length).eq(3);
+          expect(components['/_point1'].stateValues.xs[0].tree).eqls(["*", 2, "x"]);
+          expect(components['/_point1'].stateValues.xs[1].tree).eqls(["/", "u", "v"]);
+          expect(components['/_point1'].stateValues.xs[2].tree).eqls(["^", "w", 2]);
+          expect(components['/_point1'].stateValues.x1.tree).eqls(["*", 2, "x"]);;
+          expect(components['/_point1'].stateValues.x2.tree).eqls(["/", "u", "v"]);
+          expect(components['/_point1'].stateValues.x3.tree).eqls(["^", "w", 2]);
+          expect(point2.stateValues.nDimensions).eq(3);
+          expect(point2.stateValues.xs.length).eq(3);
+          expect(point2.stateValues.xs[0].tree).eqls(["*", 2, "x"]);
+          expect(point2.stateValues.xs[1].tree).eqls(["/", "u", "v"]);
+          expect(point2.stateValues.xs[2].tree).eqls(["^", "w", 2]);
+          expect(point2.stateValues.x1.tree).eqls(["*", 2, "x"]);
+          expect(point2.stateValues.x2.tree).eqls(["/", "u", "v"]);
+          expect(point2.stateValues.x3.tree).eqls(["^", "w", 2]);
+          expect(point3.stateValues.nDimensions).eq(3);
+          expect(point3.stateValues.xs.length).eq(3);
+          expect(point3.stateValues.xs[0].tree).eqls(["*", 2, "x"]);
+          expect(point3.stateValues.xs[1].tree).eqls(["/", "u", "v"]);
+          expect(point3.stateValues.xs[2].tree).eqls(["^", "w", 2]);
+          expect(point3.stateValues.x1.tree).eqls(["*", 2, "x"]);
+          expect(point3.stateValues.x2.tree).eqls(["/", "u", "v"]);
+          expect(point3.stateValues.x3.tree).eqls(["^", "w", 2]);
+
+        });
+
+
+        cy.log('change the coordinates from point 1 coords')
+        cy.get("#\\/coords1b_input").clear().type('(7,8,9){enter}')
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(7,8,9)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(7,8,9)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(7,8,9)')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '3');
+        cy.get(nDimensions2Anchor).should('have.text', '3');
+        cy.get(nDimensions3Anchor).should('have.text', '3');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('7')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('7')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('7')
+        })
+        cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('8')
+        })
+        cy.get(point2x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('8')
+        })
+        cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('8')
+        })
+        cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('9')
+        })
+        cy.get(point2x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('9')
+        })
+        cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('9')
+        })
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('7')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('8')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('9')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('7')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('8')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('9')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('7')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('8')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('9')
+        })
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(7,8,9)')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(7,8,9)')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(7,8,9)')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', '( 7, 8, 9 )')
+        cy.get("#\\/coords2b_input").should('have.value', '( 7, 8, 9 )')
+        cy.get("#\\/coords3b_input").should('have.value', '( 7, 8, 9 )')
+        cy.get("#\\/point1x1b_input").should('have.value', '7')
+        cy.get("#\\/point2x1b_input").should('have.value', '7')
+        cy.get("#\\/point3x1b_input").should('have.value', '7')
+        cy.get("#\\/point1x2b_input").should('have.value', '8')
+        cy.get("#\\/point2x2b_input").should('have.value', '8')
+        cy.get("#\\/point3x2b_input").should('have.value', '8')
+        cy.get("#\\/point1x3b_input").should('have.value', '9')
+        cy.get("#\\/point2x3b_input").should('have.value', '9')
+        cy.get("#\\/point3x3b_input").should('have.value', '9')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(3);
+          expect(components['/_point1'].stateValues.xs.length).eq(3);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq(7);
+          expect(components['/_point1'].stateValues.xs[1].tree).eq(8);
+          expect(components['/_point1'].stateValues.xs[2].tree).eq(9);
+          expect(components['/_point1'].stateValues.x1.tree).eq(7);;
+          expect(components['/_point1'].stateValues.x2.tree).eq(8);
+          expect(components['/_point1'].stateValues.x3.tree).eq(9);
+          expect(point2.stateValues.nDimensions).eq(3);
+          expect(point2.stateValues.xs.length).eq(3);
+          expect(point2.stateValues.xs[0].tree).eq(7);
+          expect(point2.stateValues.xs[1].tree).eq(8);
+          expect(point2.stateValues.xs[2].tree).eq(9);
+          expect(point2.stateValues.x1.tree).eq(7);
+          expect(point2.stateValues.x2.tree).eq(8);
+          expect(point2.stateValues.x3.tree).eq(9);
+          expect(point3.stateValues.nDimensions).eq(3);
+          expect(point3.stateValues.xs.length).eq(3);
+          expect(point3.stateValues.xs[0].tree).eq(7);
+          expect(point3.stateValues.xs[1].tree).eq(8);
+          expect(point3.stateValues.xs[2].tree).eq(9);
+          expect(point3.stateValues.x1.tree).eq(7);
+          expect(point3.stateValues.x2.tree).eq(8);
+          expect(point3.stateValues.x3.tree).eq(9);
+
+        });
+
+
+        cy.log('change the coordinates from point 2 coords')
+        cy.get("#\\/coords2b_input").clear().type('(i,j,k){enter}')
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(i,j,k)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(i,j,k)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(i,j,k)')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '3');
+        cy.get(nDimensions2Anchor).should('have.text', '3');
+        cy.get(nDimensions3Anchor).should('have.text', '3');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('i')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('i')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('i')
+        })
+        cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('j')
+        })
+        cy.get(point2x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('j')
+        })
+        cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('j')
+        })
+        cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('k')
+        })
+        cy.get(point2x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('k')
+        })
+        cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('k')
+        })
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('i')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('j')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('k')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('i')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('j')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('k')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('i')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('j')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('k')
+        })
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(i,j,k)')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(i,j,k)')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(i,j,k)')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', '( i, j, k )')
+        cy.get("#\\/coords2b_input").should('have.value', '( i, j, k )')
+        cy.get("#\\/coords3b_input").should('have.value', '( i, j, k )')
+        cy.get("#\\/point1x1b_input").should('have.value', 'i')
+        cy.get("#\\/point2x1b_input").should('have.value', 'i')
+        cy.get("#\\/point3x1b_input").should('have.value', 'i')
+        cy.get("#\\/point1x2b_input").should('have.value', 'j')
+        cy.get("#\\/point2x2b_input").should('have.value', 'j')
+        cy.get("#\\/point3x2b_input").should('have.value', 'j')
+        cy.get("#\\/point1x3b_input").should('have.value', 'k')
+        cy.get("#\\/point2x3b_input").should('have.value', 'k')
+        cy.get("#\\/point3x3b_input").should('have.value', 'k')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(3);
+          expect(components['/_point1'].stateValues.xs.length).eq(3);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('i');
+          expect(components['/_point1'].stateValues.xs[1].tree).eq('j');
+          expect(components['/_point1'].stateValues.xs[2].tree).eq('k');
+          expect(components['/_point1'].stateValues.x1.tree).eq('i');;
+          expect(components['/_point1'].stateValues.x2.tree).eq('j');
+          expect(components['/_point1'].stateValues.x3.tree).eq('k');
+          expect(point2.stateValues.nDimensions).eq(3);
+          expect(point2.stateValues.xs.length).eq(3);
+          expect(point2.stateValues.xs[0].tree).eq('i');
+          expect(point2.stateValues.xs[1].tree).eq('j');
+          expect(point2.stateValues.xs[2].tree).eq('k');
+          expect(point2.stateValues.x1.tree).eq('i');
+          expect(point2.stateValues.x2.tree).eq('j');
+          expect(point2.stateValues.x3.tree).eq('k');
+          expect(point3.stateValues.nDimensions).eq(3);
+          expect(point3.stateValues.xs.length).eq(3);
+          expect(point3.stateValues.xs[0].tree).eq('i');
+          expect(point3.stateValues.xs[1].tree).eq('j');
+          expect(point3.stateValues.xs[2].tree).eq('k');
+          expect(point3.stateValues.x1.tree).eq('i');
+          expect(point3.stateValues.x2.tree).eq('j');
+          expect(point3.stateValues.x3.tree).eq('k');
+
+        });
+
+
+
+        cy.log('change the coordinates from point 3 coords')
+        cy.get("#\\/coords3b_input").clear().type('(l,m,n){enter}')
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(l,m,n)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(l,m,n)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(l,m,n)')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '3');
+        cy.get(nDimensions2Anchor).should('have.text', '3');
+        cy.get(nDimensions3Anchor).should('have.text', '3');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('l')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('l')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('l')
+        })
+        cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('m')
+        })
+        cy.get(point2x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('m')
+        })
+        cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('m')
+        })
+        cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('n')
+        })
+        cy.get(point2x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('n')
+        })
+        cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('n')
+        })
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('l')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('m')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('n')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('l')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('m')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('n')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('l')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('m')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('n')
+        })
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(l,m,n)')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(l,m,n)')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(l,m,n)')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', '( l, m, n )')
+        cy.get("#\\/coords2b_input").should('have.value', '( l, m, n )')
+        cy.get("#\\/coords3b_input").should('have.value', '( l, m, n )')
+        cy.get("#\\/point1x1b_input").should('have.value', 'l')
+        cy.get("#\\/point2x1b_input").should('have.value', 'l')
+        cy.get("#\\/point3x1b_input").should('have.value', 'l')
+        cy.get("#\\/point1x2b_input").should('have.value', 'm')
+        cy.get("#\\/point2x2b_input").should('have.value', 'm')
+        cy.get("#\\/point3x2b_input").should('have.value', 'm')
+        cy.get("#\\/point1x3b_input").should('have.value', 'n')
+        cy.get("#\\/point2x3b_input").should('have.value', 'n')
+        cy.get("#\\/point3x3b_input").should('have.value', 'n')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(3);
+          expect(components['/_point1'].stateValues.xs.length).eq(3);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('l');
+          expect(components['/_point1'].stateValues.xs[1].tree).eq('m');
+          expect(components['/_point1'].stateValues.xs[2].tree).eq('n');
+          expect(components['/_point1'].stateValues.x1.tree).eq('l');;
+          expect(components['/_point1'].stateValues.x2.tree).eq('m');
+          expect(components['/_point1'].stateValues.x3.tree).eq('n');
+          expect(point2.stateValues.nDimensions).eq(3);
+          expect(point2.stateValues.xs.length).eq(3);
+          expect(point2.stateValues.xs[0].tree).eq('l');
+          expect(point2.stateValues.xs[1].tree).eq('m');
+          expect(point2.stateValues.xs[2].tree).eq('n');
+          expect(point2.stateValues.x1.tree).eq('l');
+          expect(point2.stateValues.x2.tree).eq('m');
+          expect(point2.stateValues.x3.tree).eq('n');
+          expect(point3.stateValues.nDimensions).eq(3);
+          expect(point3.stateValues.xs.length).eq(3);
+          expect(point3.stateValues.xs[0].tree).eq('l');
+          expect(point3.stateValues.xs[1].tree).eq('m');
+          expect(point3.stateValues.xs[2].tree).eq('n');
+          expect(point3.stateValues.x1.tree).eq('l');
+          expect(point3.stateValues.x2.tree).eq('m');
+          expect(point3.stateValues.x3.tree).eq('n');
+
+        });
+
+
+
+        cy.log('change the coordinates from point 1 individual components')
+        cy.get("#\\/point1x1b_input").clear().type('r{enter}')
+        cy.get("#\\/point1x2b_input").clear().type('s{enter}')
+        cy.get("#\\/point1x3b_input").clear().type('t{enter}')
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(r,s,t)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(r,s,t)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(r,s,t)')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '3');
+        cy.get(nDimensions2Anchor).should('have.text', '3');
+        cy.get(nDimensions3Anchor).should('have.text', '3');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get(point2x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get(point2x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(r,s,t)')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(r,s,t)')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(r,s,t)')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', '( r, s, t )')
+        cy.get("#\\/coords2b_input").should('have.value', '( r, s, t )')
+        cy.get("#\\/coords3b_input").should('have.value', '( r, s, t )')
+        cy.get("#\\/point1x1b_input").should('have.value', 'r')
+        cy.get("#\\/point2x1b_input").should('have.value', 'r')
+        cy.get("#\\/point3x1b_input").should('have.value', 'r')
+        cy.get("#\\/point1x2b_input").should('have.value', 's')
+        cy.get("#\\/point2x2b_input").should('have.value', 's')
+        cy.get("#\\/point3x2b_input").should('have.value', 's')
+        cy.get("#\\/point1x3b_input").should('have.value', 't')
+        cy.get("#\\/point2x3b_input").should('have.value', 't')
+        cy.get("#\\/point3x3b_input").should('have.value', 't')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(3);
+          expect(components['/_point1'].stateValues.xs.length).eq(3);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('r');
+          expect(components['/_point1'].stateValues.xs[1].tree).eq('s');
+          expect(components['/_point1'].stateValues.xs[2].tree).eq('t');
+          expect(components['/_point1'].stateValues.x1.tree).eq('r');;
+          expect(components['/_point1'].stateValues.x2.tree).eq('s');
+          expect(components['/_point1'].stateValues.x3.tree).eq('t');
+          expect(point2.stateValues.nDimensions).eq(3);
+          expect(point2.stateValues.xs.length).eq(3);
+          expect(point2.stateValues.xs[0].tree).eq('r');
+          expect(point2.stateValues.xs[1].tree).eq('s');
+          expect(point2.stateValues.xs[2].tree).eq('t');
+          expect(point2.stateValues.x1.tree).eq('r');
+          expect(point2.stateValues.x2.tree).eq('s');
+          expect(point2.stateValues.x3.tree).eq('t');
+          expect(point3.stateValues.nDimensions).eq(3);
+          expect(point3.stateValues.xs.length).eq(3);
+          expect(point3.stateValues.xs[0].tree).eq('r');
+          expect(point3.stateValues.xs[1].tree).eq('s');
+          expect(point3.stateValues.xs[2].tree).eq('t');
+          expect(point3.stateValues.x1.tree).eq('r');
+          expect(point3.stateValues.x2.tree).eq('s');
+          expect(point3.stateValues.x3.tree).eq('t');
+
+        });
+
+
+
+        cy.log('change the coordinates from point 2 individual components')
+        cy.get("#\\/point2x1b_input").clear().type('f{enter}')
+        cy.get("#\\/point2x2b_input").clear().type('g{enter}')
+        cy.get("#\\/point2x3b_input").clear().type('h{enter}')
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(f,g,h)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(f,g,h)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(f,g,h)')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '3');
+        cy.get(nDimensions2Anchor).should('have.text', '3');
+        cy.get(nDimensions3Anchor).should('have.text', '3');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('f')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('f')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('f')
+        })
+        cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get(point2x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get(point2x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('f')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('f')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('f')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(f,g,h)')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(f,g,h)')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(f,g,h)')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', '( f, g, h )')
+        cy.get("#\\/coords2b_input").should('have.value', '( f, g, h )')
+        cy.get("#\\/coords3b_input").should('have.value', '( f, g, h )')
+        cy.get("#\\/point1x1b_input").should('have.value', 'f')
+        cy.get("#\\/point2x1b_input").should('have.value', 'f')
+        cy.get("#\\/point3x1b_input").should('have.value', 'f')
+        cy.get("#\\/point1x2b_input").should('have.value', 'g')
+        cy.get("#\\/point2x2b_input").should('have.value', 'g')
+        cy.get("#\\/point3x2b_input").should('have.value', 'g')
+        cy.get("#\\/point1x3b_input").should('have.value', 'h')
+        cy.get("#\\/point2x3b_input").should('have.value', 'h')
+        cy.get("#\\/point3x3b_input").should('have.value', 'h')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(3);
+          expect(components['/_point1'].stateValues.xs.length).eq(3);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('f');
+          expect(components['/_point1'].stateValues.xs[1].tree).eq('g');
+          expect(components['/_point1'].stateValues.xs[2].tree).eq('h');
+          expect(components['/_point1'].stateValues.x1.tree).eq('f');;
+          expect(components['/_point1'].stateValues.x2.tree).eq('g');
+          expect(components['/_point1'].stateValues.x3.tree).eq('h');
+          expect(point2.stateValues.nDimensions).eq(3);
+          expect(point2.stateValues.xs.length).eq(3);
+          expect(point2.stateValues.xs[0].tree).eq('f');
+          expect(point2.stateValues.xs[1].tree).eq('g');
+          expect(point2.stateValues.xs[2].tree).eq('h');
+          expect(point2.stateValues.x1.tree).eq('f');
+          expect(point2.stateValues.x2.tree).eq('g');
+          expect(point2.stateValues.x3.tree).eq('h');
+          expect(point3.stateValues.nDimensions).eq(3);
+          expect(point3.stateValues.xs.length).eq(3);
+          expect(point3.stateValues.xs[0].tree).eq('f');
+          expect(point3.stateValues.xs[1].tree).eq('g');
+          expect(point3.stateValues.xs[2].tree).eq('h');
+          expect(point3.stateValues.x1.tree).eq('f');
+          expect(point3.stateValues.x2.tree).eq('g');
+          expect(point3.stateValues.x3.tree).eq('h');
+
+        });
+
+
+
+        cy.log('change the coordinates from point 3 individual components')
+        cy.get("#\\/point3x1b_input").clear().type('x{enter}')
+        cy.get("#\\/point3x2b_input").clear().type('y{enter}')
+        cy.get("#\\/point3x3b_input").clear().type('z{enter}')
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(x,y,z)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(x,y,z)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(x,y,z)')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '3');
+        cy.get(nDimensions2Anchor).should('have.text', '3');
+        cy.get(nDimensions3Anchor).should('have.text', '3');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        })
+        cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        })
+        cy.get(point2x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        })
+        cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        })
+        cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(point2x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(x,y,z)')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(x,y,z)')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(x,y,z)')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', '( x, y, z )')
+        cy.get("#\\/coords2b_input").should('have.value', '( x, y, z )')
+        cy.get("#\\/coords3b_input").should('have.value', '( x, y, z )')
+        cy.get("#\\/point1x1b_input").should('have.value', 'x')
+        cy.get("#\\/point2x1b_input").should('have.value', 'x')
+        cy.get("#\\/point3x1b_input").should('have.value', 'x')
+        cy.get("#\\/point1x2b_input").should('have.value', 'y')
+        cy.get("#\\/point2x2b_input").should('have.value', 'y')
+        cy.get("#\\/point3x2b_input").should('have.value', 'y')
+        cy.get("#\\/point1x3b_input").should('have.value', 'z')
+        cy.get("#\\/point2x3b_input").should('have.value', 'z')
+        cy.get("#\\/point3x3b_input").should('have.value', 'z')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(3);
+          expect(components['/_point1'].stateValues.xs.length).eq(3);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('x');
+          expect(components['/_point1'].stateValues.xs[1].tree).eq('y');
+          expect(components['/_point1'].stateValues.xs[2].tree).eq('z');
+          expect(components['/_point1'].stateValues.x1.tree).eq('x');;
+          expect(components['/_point1'].stateValues.x2.tree).eq('y');
+          expect(components['/_point1'].stateValues.x3.tree).eq('z');
+          expect(point2.stateValues.nDimensions).eq(3);
+          expect(point2.stateValues.xs.length).eq(3);
+          expect(point2.stateValues.xs[0].tree).eq('x');
+          expect(point2.stateValues.xs[1].tree).eq('y');
+          expect(point2.stateValues.xs[2].tree).eq('z');
+          expect(point2.stateValues.x1.tree).eq('x');
+          expect(point2.stateValues.x2.tree).eq('y');
+          expect(point2.stateValues.x3.tree).eq('z');
+          expect(point3.stateValues.nDimensions).eq(3);
+          expect(point3.stateValues.xs.length).eq(3);
+          expect(point3.stateValues.xs[0].tree).eq('x');
+          expect(point3.stateValues.xs[1].tree).eq('y');
+          expect(point3.stateValues.xs[2].tree).eq('z');
+          expect(point3.stateValues.x1.tree).eq('x');
+          expect(point3.stateValues.x2.tree).eq('y');
+          expect(point3.stateValues.x3.tree).eq('z');
+
+        });
+
+
+
+        cy.log(`can't decrease dimension from inverse direction 1`)
+        cy.get("#\\/coords1b_input").clear().type('(u,v){enter}')
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(u,v,z)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(u,v,z)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(u,v,z)')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '3');
+        cy.get(nDimensions2Anchor).should('have.text', '3');
+        cy.get(nDimensions3Anchor).should('have.text', '3');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('u')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('u')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('u')
+        })
+        cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('v')
+        })
+        cy.get(point2x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('v')
+        })
+        cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('v')
+        })
+        cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(point2x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('u')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('v')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('u')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('v')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('u')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('v')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(u,v,z)')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(u,v,z)')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(u,v,z)')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', '( u, v, z )')
+        cy.get("#\\/coords2b_input").should('have.value', '( u, v, z )')
+        cy.get("#\\/coords3b_input").should('have.value', '( u, v, z )')
+        cy.get("#\\/point1x1b_input").should('have.value', 'u')
+        cy.get("#\\/point2x1b_input").should('have.value', 'u')
+        cy.get("#\\/point3x1b_input").should('have.value', 'u')
+        cy.get("#\\/point1x2b_input").should('have.value', 'v')
+        cy.get("#\\/point2x2b_input").should('have.value', 'v')
+        cy.get("#\\/point3x2b_input").should('have.value', 'v')
+        cy.get("#\\/point1x3b_input").should('have.value', 'z')
+        cy.get("#\\/point2x3b_input").should('have.value', 'z')
+        cy.get("#\\/point3x3b_input").should('have.value', 'z')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(3);
+          expect(components['/_point1'].stateValues.xs.length).eq(3);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('u');
+          expect(components['/_point1'].stateValues.xs[1].tree).eq('v');
+          expect(components['/_point1'].stateValues.xs[2].tree).eq('z');
+          expect(components['/_point1'].stateValues.x1.tree).eq('u');;
+          expect(components['/_point1'].stateValues.x2.tree).eq('v');
+          expect(components['/_point1'].stateValues.x3.tree).eq('z');
+          expect(point2.stateValues.nDimensions).eq(3);
+          expect(point2.stateValues.xs.length).eq(3);
+          expect(point2.stateValues.xs[0].tree).eq('u');
+          expect(point2.stateValues.xs[1].tree).eq('v');
+          expect(point2.stateValues.xs[2].tree).eq('z');
+          expect(point2.stateValues.x1.tree).eq('u');
+          expect(point2.stateValues.x2.tree).eq('v');
+          expect(point2.stateValues.x3.tree).eq('z');
+          expect(point3.stateValues.nDimensions).eq(3);
+          expect(point3.stateValues.xs.length).eq(3);
+          expect(point3.stateValues.xs[0].tree).eq('u');
+          expect(point3.stateValues.xs[1].tree).eq('v');
+          expect(point3.stateValues.xs[2].tree).eq('z');
+          expect(point3.stateValues.x1.tree).eq('u');
+          expect(point3.stateValues.x2.tree).eq('v');
+          expect(point3.stateValues.x3.tree).eq('z');
+
+        });
+
+
+
+        cy.log(`can't decrease dimension from inverse direction 2`)
+        cy.get("#\\/coords2b_input").clear().type('(s,t){enter}')
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(s,t,z)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(s,t,z)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(s,t,z)')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '3');
+        cy.get(nDimensions2Anchor).should('have.text', '3');
+        cy.get(nDimensions3Anchor).should('have.text', '3');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get(point2x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(point2x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(s,t,z)')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(s,t,z)')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(s,t,z)')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', '( s, t, z )')
+        cy.get("#\\/coords2b_input").should('have.value', '( s, t, z )')
+        cy.get("#\\/coords3b_input").should('have.value', '( s, t, z )')
+        cy.get("#\\/point1x1b_input").should('have.value', 's')
+        cy.get("#\\/point2x1b_input").should('have.value', 's')
+        cy.get("#\\/point3x1b_input").should('have.value', 's')
+        cy.get("#\\/point1x2b_input").should('have.value', 't')
+        cy.get("#\\/point2x2b_input").should('have.value', 't')
+        cy.get("#\\/point3x2b_input").should('have.value', 't')
+        cy.get("#\\/point1x3b_input").should('have.value', 'z')
+        cy.get("#\\/point2x3b_input").should('have.value', 'z')
+        cy.get("#\\/point3x3b_input").should('have.value', 'z')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(3);
+          expect(components['/_point1'].stateValues.xs.length).eq(3);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('s');
+          expect(components['/_point1'].stateValues.xs[1].tree).eq('t');
+          expect(components['/_point1'].stateValues.xs[2].tree).eq('z');
+          expect(components['/_point1'].stateValues.x1.tree).eq('s');;
+          expect(components['/_point1'].stateValues.x2.tree).eq('t');
+          expect(components['/_point1'].stateValues.x3.tree).eq('z');
+          expect(point2.stateValues.nDimensions).eq(3);
+          expect(point2.stateValues.xs.length).eq(3);
+          expect(point2.stateValues.xs[0].tree).eq('s');
+          expect(point2.stateValues.xs[1].tree).eq('t');
+          expect(point2.stateValues.xs[2].tree).eq('z');
+          expect(point2.stateValues.x1.tree).eq('s');
+          expect(point2.stateValues.x2.tree).eq('t');
+          expect(point2.stateValues.x3.tree).eq('z');
+          expect(point3.stateValues.nDimensions).eq(3);
+          expect(point3.stateValues.xs.length).eq(3);
+          expect(point3.stateValues.xs[0].tree).eq('s');
+          expect(point3.stateValues.xs[1].tree).eq('t');
+          expect(point3.stateValues.xs[2].tree).eq('z');
+          expect(point3.stateValues.x1.tree).eq('s');
+          expect(point3.stateValues.x2.tree).eq('t');
+          expect(point3.stateValues.x3.tree).eq('z');
+
+        });
+
+
+        cy.log(`can't decrease dimension from inverse direction 3`)
+        cy.get("#\\/coords3b_input").clear().type('(q,r){enter}')
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(q,r,z)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(q,r,z)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(q,r,z)')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '3');
+        cy.get(nDimensions2Anchor).should('have.text', '3');
+        cy.get(nDimensions3Anchor).should('have.text', '3');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get(point2x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(point2x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(q,r,z)')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(q,r,z)')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(q,r,z)')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', '( q, r, z )')
+        cy.get("#\\/coords2b_input").should('have.value', '( q, r, z )')
+        cy.get("#\\/coords3b_input").should('have.value', '( q, r, z )')
+        cy.get("#\\/point1x1b_input").should('have.value', 'q')
+        cy.get("#\\/point2x1b_input").should('have.value', 'q')
+        cy.get("#\\/point3x1b_input").should('have.value', 'q')
+        cy.get("#\\/point1x2b_input").should('have.value', 'r')
+        cy.get("#\\/point2x2b_input").should('have.value', 'r')
+        cy.get("#\\/point3x2b_input").should('have.value', 'r')
+        cy.get("#\\/point1x3b_input").should('have.value', 'z')
+        cy.get("#\\/point2x3b_input").should('have.value', 'z')
+        cy.get("#\\/point3x3b_input").should('have.value', 'z')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(3);
+          expect(components['/_point1'].stateValues.xs.length).eq(3);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('q');
+          expect(components['/_point1'].stateValues.xs[1].tree).eq('r');
+          expect(components['/_point1'].stateValues.xs[2].tree).eq('z');
+          expect(components['/_point1'].stateValues.x1.tree).eq('q');;
+          expect(components['/_point1'].stateValues.x2.tree).eq('r');
+          expect(components['/_point1'].stateValues.x3.tree).eq('z');
+          expect(point2.stateValues.nDimensions).eq(3);
+          expect(point2.stateValues.xs.length).eq(3);
+          expect(point2.stateValues.xs[0].tree).eq('q');
+          expect(point2.stateValues.xs[1].tree).eq('r');
+          expect(point2.stateValues.xs[2].tree).eq('z');
+          expect(point2.stateValues.x1.tree).eq('q');
+          expect(point2.stateValues.x2.tree).eq('r');
+          expect(point2.stateValues.x3.tree).eq('z');
+          expect(point3.stateValues.nDimensions).eq(3);
+          expect(point3.stateValues.xs.length).eq(3);
+          expect(point3.stateValues.xs[0].tree).eq('q');
+          expect(point3.stateValues.xs[1].tree).eq('r');
+          expect(point3.stateValues.xs[2].tree).eq('z');
+          expect(point3.stateValues.x1.tree).eq('q');
+          expect(point3.stateValues.x2.tree).eq('r');
+          expect(point3.stateValues.x3.tree).eq('z');
+
+        });
+
+
+
+      })
+
+
+
+      cy.log('Back to 2D point')
+      cy.get('#\\/originalCoords_input').clear().type('(p,q){enter}')
+
+      cy.window().then((win) => {
+
+        let point1x2Anchor = "#" + components["/point1x2"].replacements[0].componentName;
+        let point2x2Anchor = "#" + components["/point2x2"].replacements[0].componentName;
+        let point3x2Anchor = "#" + components["/point3x2"].replacements[0].componentName;
+
+
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(p,q)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(p,q)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(p,q)')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '2');
+        cy.get(nDimensions2Anchor).should('have.text', '2');
+        cy.get(nDimensions3Anchor).should('have.text', '2');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('p')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('p')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('p')
+        })
+        cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(point2x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/p1z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p2z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p3z").should('have.text', 'z-coordinate: ')
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('p')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('p')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('p')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(p,q)')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(p,q)')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(p,q)')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', '( p, q )')
+        cy.get("#\\/coords2b_input").should('have.value', '( p, q )')
+        cy.get("#\\/coords3b_input").should('have.value', '( p, q )')
+        cy.get("#\\/point1x1b_input").should('have.value', 'p')
+        cy.get("#\\/point2x1b_input").should('have.value', 'p')
+        cy.get("#\\/point3x1b_input").should('have.value', 'p')
+        cy.get("#\\/point1x2b_input").should('have.value', 'q')
+        cy.get("#\\/point2x2b_input").should('have.value', 'q')
+        cy.get("#\\/point3x2b_input").should('have.value', 'q')
+        cy.get("#\\/point1x3b_input").should('have.value', '')
+        cy.get("#\\/point2x3b_input").should('have.value', '')
+        cy.get("#\\/point3x3b_input").should('have.value', '')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(2);
+          expect(components['/_point1'].stateValues.xs.length).eq(2);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('p');
+          expect(components['/_point1'].stateValues.xs[1].tree).eq('q');
+          expect(components['/_point1'].stateValues.x1.tree).eq('p');
+          expect(components['/_point1'].stateValues.x2.tree).eq('q');
+          expect(components['/_point1'].stateValues.x3).eq(undefined);
+          expect(point2.stateValues.nDimensions).eq(2);
+          expect(point2.stateValues.xs.length).eq(2);
+          expect(point2.stateValues.xs[0].tree).eq('p');
+          expect(point2.stateValues.xs[1].tree).eq('q');
+          expect(point2.stateValues.x1.tree).eq('p');
+          expect(point2.stateValues.x2.tree).eq('q');
+          expect(point2.stateValues.x3).eq(undefined);
+          expect(point3.stateValues.nDimensions).eq(2);
+          expect(point3.stateValues.xs.length).eq(2);
+          expect(point3.stateValues.xs[0].tree).eq('p');
+          expect(point3.stateValues.xs[1].tree).eq('q');
+          expect(point3.stateValues.x1.tree).eq('p');
+          expect(point3.stateValues.x2.tree).eq('q');
+          expect(point3.stateValues.x3).eq(undefined);
+
+        });
+
+
+        cy.log(`can't increase dimension from inverse direction 1`)
+        cy.get("#\\/coords1b_input").clear().type('(a,b,c){enter}')
+
+        
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '2');
+        cy.get(nDimensions2Anchor).should('have.text', '2');
+        cy.get(nDimensions3Anchor).should('have.text', '2');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get(point2x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/p1z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p2z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p3z").should('have.text', 'z-coordinate: ')
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', '( a, b )')
+        cy.get("#\\/coords2b_input").should('have.value', '( a, b )')
+        cy.get("#\\/coords3b_input").should('have.value', '( a, b )')
+        cy.get("#\\/point1x1b_input").should('have.value', 'a')
+        cy.get("#\\/point2x1b_input").should('have.value', 'a')
+        cy.get("#\\/point3x1b_input").should('have.value', 'a')
+        cy.get("#\\/point1x2b_input").should('have.value', 'b')
+        cy.get("#\\/point2x2b_input").should('have.value', 'b')
+        cy.get("#\\/point3x2b_input").should('have.value', 'b')
+        cy.get("#\\/point1x3b_input").should('have.value', '')
+        cy.get("#\\/point2x3b_input").should('have.value', '')
+        cy.get("#\\/point3x3b_input").should('have.value', '')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(2);
+          expect(components['/_point1'].stateValues.xs.length).eq(2);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('a');
+          expect(components['/_point1'].stateValues.xs[1].tree).eq('b');
+          expect(components['/_point1'].stateValues.x1.tree).eq('a');
+          expect(components['/_point1'].stateValues.x2.tree).eq('b');
+          expect(components['/_point1'].stateValues.x3).eq(undefined);
+          expect(point2.stateValues.nDimensions).eq(2);
+          expect(point2.stateValues.xs.length).eq(2);
+          expect(point2.stateValues.xs[0].tree).eq('a');
+          expect(point2.stateValues.xs[1].tree).eq('b');
+          expect(point2.stateValues.x1.tree).eq('a');
+          expect(point2.stateValues.x2.tree).eq('b');
+          expect(point2.stateValues.x3).eq(undefined);
+          expect(point3.stateValues.nDimensions).eq(2);
+          expect(point3.stateValues.xs.length).eq(2);
+          expect(point3.stateValues.xs[0].tree).eq('a');
+          expect(point3.stateValues.xs[1].tree).eq('b');
+          expect(point3.stateValues.x1.tree).eq('a');
+          expect(point3.stateValues.x2.tree).eq('b');
+          expect(point3.stateValues.x3).eq(undefined);
+
+        });
+
+
+
+        cy.log(`can't increase dimension from inverse direction 2`)
+        cy.get("#\\/coords2b_input").clear().type('(d,e,f){enter}')
+
+        
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(d,e)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(d,e)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(d,e)')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '2');
+        cy.get(nDimensions2Anchor).should('have.text', '2');
+        cy.get(nDimensions3Anchor).should('have.text', '2');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('d')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('d')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('d')
+        })
+        cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('e')
+        })
+        cy.get(point2x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('e')
+        })
+        cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('e')
+        })
+        cy.get("#\\/p1z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p2z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p3z").should('have.text', 'z-coordinate: ')
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('d')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('e')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('d')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('e')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('d')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('e')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(d,e)')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(d,e)')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(d,e)')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', '( d, e )')
+        cy.get("#\\/coords2b_input").should('have.value', '( d, e )')
+        cy.get("#\\/coords3b_input").should('have.value', '( d, e )')
+        cy.get("#\\/point1x1b_input").should('have.value', 'd')
+        cy.get("#\\/point2x1b_input").should('have.value', 'd')
+        cy.get("#\\/point3x1b_input").should('have.value', 'd')
+        cy.get("#\\/point1x2b_input").should('have.value', 'e')
+        cy.get("#\\/point2x2b_input").should('have.value', 'e')
+        cy.get("#\\/point3x2b_input").should('have.value', 'e')
+        cy.get("#\\/point1x3b_input").should('have.value', '')
+        cy.get("#\\/point2x3b_input").should('have.value', '')
+        cy.get("#\\/point3x3b_input").should('have.value', '')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(2);
+          expect(components['/_point1'].stateValues.xs.length).eq(2);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('d');
+          expect(components['/_point1'].stateValues.xs[1].tree).eq('e');
+          expect(components['/_point1'].stateValues.x1.tree).eq('d');
+          expect(components['/_point1'].stateValues.x2.tree).eq('e');
+          expect(components['/_point1'].stateValues.x3).eq(undefined);
+          expect(point2.stateValues.nDimensions).eq(2);
+          expect(point2.stateValues.xs.length).eq(2);
+          expect(point2.stateValues.xs[0].tree).eq('d');
+          expect(point2.stateValues.xs[1].tree).eq('e');
+          expect(point2.stateValues.x1.tree).eq('d');
+          expect(point2.stateValues.x2.tree).eq('e');
+          expect(point2.stateValues.x3).eq(undefined);
+          expect(point3.stateValues.nDimensions).eq(2);
+          expect(point3.stateValues.xs.length).eq(2);
+          expect(point3.stateValues.xs[0].tree).eq('d');
+          expect(point3.stateValues.xs[1].tree).eq('e');
+          expect(point3.stateValues.x1.tree).eq('d');
+          expect(point3.stateValues.x2.tree).eq('e');
+          expect(point3.stateValues.x3).eq(undefined);
+
+        });
+
+
+        cy.log(`can't increase dimension from inverse direction 3`)
+        cy.get("#\\/coords3b_input").clear().type('(g,h,i){enter}')
+
+        
+        cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(g,h)')
+        })
+        cy.get(point2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(g,h)')
+        })
+        cy.get(point3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(g,h)')
+        })
+        cy.get(nDimensions1Anchor).should('have.text', '2');
+        cy.get(nDimensions2Anchor).should('have.text', '2');
+        cy.get(nDimensions3Anchor).should('have.text', '2');
+        cy.get(point1x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get(point2x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get(point2x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get("#\\/p1z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p2z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p3z").should('have.text', 'z-coordinate: ')
+
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get("#\\/p1all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get("#\\/p2all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get("#\\/p3all").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(g,h)')
+        })
+        cy.get(coords2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(g,h)')
+        })
+        cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(g,h)')
+        })
+
+        cy.get("#\\/coords1b_input").should('have.value', '( g, h )')
+        cy.get("#\\/coords2b_input").should('have.value', '( g, h )')
+        cy.get("#\\/coords3b_input").should('have.value', '( g, h )')
+        cy.get("#\\/point1x1b_input").should('have.value', 'g')
+        cy.get("#\\/point2x1b_input").should('have.value', 'g')
+        cy.get("#\\/point3x1b_input").should('have.value', 'g')
+        cy.get("#\\/point1x2b_input").should('have.value', 'h')
+        cy.get("#\\/point2x2b_input").should('have.value', 'h')
+        cy.get("#\\/point3x2b_input").should('have.value', 'h')
+        cy.get("#\\/point1x3b_input").should('have.value', '')
+        cy.get("#\\/point2x3b_input").should('have.value', '')
+        cy.get("#\\/point3x3b_input").should('have.value', '')
+
+        cy.window().then((win) => {
+
+          expect(components['/_point1'].stateValues.nDimensions).eq(2);
+          expect(components['/_point1'].stateValues.xs.length).eq(2);
+          expect(components['/_point1'].stateValues.xs[0].tree).eq('g');
+          expect(components['/_point1'].stateValues.xs[1].tree).eq('h');
+          expect(components['/_point1'].stateValues.x1.tree).eq('g');
+          expect(components['/_point1'].stateValues.x2.tree).eq('h');
+          expect(components['/_point1'].stateValues.x3).eq(undefined);
+          expect(point2.stateValues.nDimensions).eq(2);
+          expect(point2.stateValues.xs.length).eq(2);
+          expect(point2.stateValues.xs[0].tree).eq('g');
+          expect(point2.stateValues.xs[1].tree).eq('h');
+          expect(point2.stateValues.x1.tree).eq('g');
+          expect(point2.stateValues.x2.tree).eq('h');
+          expect(point2.stateValues.x3).eq(undefined);
+          expect(point3.stateValues.nDimensions).eq(2);
+          expect(point3.stateValues.xs.length).eq(2);
+          expect(point3.stateValues.xs[0].tree).eq('g');
+          expect(point3.stateValues.xs[1].tree).eq('h');
+          expect(point3.stateValues.x1.tree).eq('g');
+          expect(point3.stateValues.x2.tree).eq('h');
+          expect(point3.stateValues.x3).eq(undefined);
+
+        });
+
+
+
+      })
+
+
+
+
+    })
   })
 
 })

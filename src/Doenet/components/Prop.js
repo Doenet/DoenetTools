@@ -114,17 +114,27 @@ export default class Prop extends BaseComponent {
 
           // need a case insensitive match to variable name
           let variableNames = Object.keys(stateVarDescrip);
-          let matchedObj = null, componentType = null;
+          let matchedObj = null;
+          let componentType = null;
           for (let varName of variableNames) {
             if (variableName === varName.toLowerCase()) {
               matchedObj = { varName };
-              if (stateVarDescrip[varName].isArray) {
+              let theDescrip = stateVarDescrip[varName];
+              if (theDescrip.isArray) {
                 matchedObj.isArray = true;
+                matchedObj.nDimensions = theDescrip.nDimensions;
               }
-              if(stateVarDescrip[varName].containsComponentNamesToCopy) {
+              if (theDescrip.containsComponentNamesToCopy) {
                 matchedObj.containsComponentNamesToCopy = true;
               }
-              componentType = stateVarDescrip[varName].componentType;
+              if (theDescrip.wrappingComponents) {
+                matchedObj.wrappingComponents = theDescrip.wrappingComponents;
+                // wrapping component supercedes componentType if provided
+                componentType = theDescrip.wrappingComponents[theDescrip.nDimensions - 1]
+              }
+              if (!componentType) {
+                componentType = theDescrip.componentType;
+              }
               break;
             }
           }
@@ -140,13 +150,21 @@ export default class Prop extends BaseComponent {
                 let targetVarName = publicStateVariablesInfo.aliases[aliasName];
                 let targetDescription = stateVarDescrip[targetVarName];
                 if (targetDescription && targetDescription.public) {
-                  componentType = targetDescription.componentType;
                   matchedObj = { varName: targetVarName };
                   if (targetDescription.isArray) {
                     matchedObj.isArray = true;
+                    matchedObj.nDimensions = targetDescription.nDimensions;
                   }
-                  if(targetDescription.containsComponentNamesToCopy) {
+                  if (targetDescription.containsComponentNamesToCopy) {
                     matchedObj.containsComponentNamesToCopy = true;
+                  }
+                  if (targetDescription.wrappingComponents) {
+                    matchedObj.wrappingComponents = targetDescription.wrappingComponents;
+                    // wrapping component supercedes componentType if provided
+                    componentType = targetDescription.wrappingComponents[targetDescription.nDimensions - 1]
+                  }
+                  if (!componentType) {
+                    componentType = targetDescription.componentType;
                   }
                 } else {
                   propToMatch = targetVarName.toLowerCase();
@@ -161,7 +179,8 @@ export default class Prop extends BaseComponent {
               // match with longest first, so get maximal match
               for (let prefix of arrayEntryPrefixesLongestToShortest) {
                 if (propToMatch.substring(0, prefix.length) === prefix.toLowerCase()) {
-                  let arrayVarName = publicStateVariablesInfo.arrayEntryPrefixes[prefix].arrayVariableName;
+                  let arrayEntryDescription = publicStateVariablesInfo.arrayEntryPrefixes[prefix];
+                  let arrayVarName = arrayEntryDescription.arrayVariableName;
                   let varEnding = propToMatch.substring(prefix.length);
                   let varName = prefix + varEnding;
                   matchedObj = {
@@ -170,11 +189,20 @@ export default class Prop extends BaseComponent {
                     arrayVarName,
                     arrayEntryPrefix: prefix,
                     varEnding,
+                    nDimensions: arrayEntryDescription.nDimensions,
                   };
-                  if(stateVarDescrip[arrayVarName].containsComponentNamesToCopy) {
+                  if (stateVarDescrip[arrayVarName].containsComponentNamesToCopy) {
                     matchedObj.containsComponentNamesToCopy = true;
                   }
-                  componentType = stateVarDescrip[arrayVarName].componentType;
+
+                  if (arrayEntryDescription.wrappingComponents) {
+                    matchedObj.wrappingComponents = arrayEntryDescription.wrappingComponents;
+                    // wrapping component supercedes componentType if provided
+                    componentType = arrayEntryDescription.wrappingComponents[arrayEntryDescription.nDimensions - 1]
+                  }
+                  if (!componentType) {
+                    componentType = stateVarDescrip[arrayVarName].componentType;
+                  }
                   break;
                 }
               }
