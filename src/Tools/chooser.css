@@ -561,7 +561,7 @@ input[type=number]::-webkit-outer-spin-button {
   margin-top: 15px;
 }
 
-.tree-colum {
+.tree-column {
   display: flex;
   flex-direction: column;
   justify-content: left;

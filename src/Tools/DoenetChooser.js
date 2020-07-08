@@ -2055,7 +2055,6 @@ class DoenetChooser extends Component {
         */}
       </div>
 
-
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
           loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
@@ -2149,16 +2148,28 @@ class DoenetChooser extends Component {
     let courses = [];
     for (let key in this.courseInfo) {
       courses.push({
-        label: this.courseInfo[key].courseName,
-        value: this.courseInfo[key].courseCode
+        label: this.courseInfo[key].title,
+        value: this.courseInfo[key].courseCode,
+        icon:  faDotCircle
       })
     }
+
+    let content = [];
+      for (let key in this.userFolderInfo) {
+        if(key !== 'root' && this.userFolderInfo[key].parentId === 'root') {
+          content.push({
+            label: this.userFolderInfo[key].title,
+            value: key,
+            icon: faFolderOpen
+          })
+        }
+      }
     const dropdownData = [
       {
         parent: {
           title: 'Content'
         },
-        children: []
+        children: content
       },
       {
         parent: {

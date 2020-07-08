@@ -24,7 +24,6 @@ class SelectBox extends Component {
 
   filter = ev => {
     let items = JSON.parse(JSON.stringify(this.props.items));
-    console.log(items);
     if(!!ev && !!ev.target && !!ev.target.value) {
       items.map(i=> {
         let match = i.children.filter(c=> c.label.toLowerCase().indexOf((ev.target.value).toLowerCase()) > -1);
@@ -36,6 +35,7 @@ class SelectBox extends Component {
   }
 
   render() {
+    const noResults = !this.state.items.filter(i=>!!i.children.length).length;
     return (
       <div className="select-box-box">
         <div className="select-box-container">
@@ -58,17 +58,20 @@ class SelectBox extends Component {
           >
             {this.state.items.map(item => (
               <>
-                <div>{item.parent.title}</div>
+                {!!item.children.length && <div className="parent">{item.parent.title}</div>}
                 {item.children.map(child => (
-                  <div
-                    key={child.value}
-                  // onClick={() => this.selectItem(child)}
-                  // className={this.state.selectedItem === item ? "selected" : ""}
-                  >
-                    {child.label}
-                  </div>))}
+                  <div className="child-container">
+                    {!!child.icon && <FontAwesomeIcon icon={child.icon} style={{ paddingRight: "8px", fontSize: "15px"}}/>}
+                    <div
+                      key={child.value}
+                    >
+                      {child.label}
+                    </div>
+                  </div>
+                  ))}
               </>
             ))}
+            {noResults && <div className="parent">No match found</div>}
           </div>
         </div>
       </div>
