@@ -6741,4 +6741,181 @@ describe('Answer Tag Tests', function () {
 
   });
 
+  it('answer based on math and text', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <p>Enter a number larger than one <mathinput/></p>
+        <p>Say hello: <textinput/></p>
+        
+        <answer name="a"> 
+         <award matchpartial><when>
+         <copy prop="value" tname="_mathinput1" isResponse /> > 1 
+          and
+          <copy prop="value" tname="_textinput1" isResponse/> = hello
+          </when></award>
+        </answer>
+        
+        <p>Your math answer is <copy name="sr1" prop="submittedResponse" tname="a"/></p>
+        <p>Your text answer is <copy name="sr2" prop="submittedResponse2" tname="a"/></p>
+        <p>Credit for your answers <copy name="ca" prop="creditAchieved" tname="a"/></p>
+ `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_p1').should('have.text', 'Enter a number larger than one ')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let sr1Anchor = '#' + components['/sr1'].replacements[0].componentName;
+      let sr2Anchor = '#' + components['/sr2'].replacements[0].componentName;
+      let caAnchor = '#' + components['/ca'].replacements[0].componentName;
+
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr2Anchor).should('have.text', '＿')
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.get('#\\/_mathinput1_input').clear().type(`2{enter}`);
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr2Anchor).should('have.text', '＿')
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.get('#\\/a_submit').click();
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      });
+      cy.get(sr2Anchor).should('have.text', '')
+      cy.get(caAnchor).should('have.text', '0.5')
+
+      cy.get('#\\/_textinput1_input').clear().type(`hello{enter}`);
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      });
+      cy.get(sr2Anchor).should('have.text', '')
+      cy.get(caAnchor).should('have.text', '0.5')
+
+      cy.get('#\\/a_submit').click();
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      });
+      cy.get(sr2Anchor).should('have.text', 'hello')
+      cy.get(caAnchor).should('have.text', '1')
+
+      cy.get('#\\/_mathinput1_input').clear().type(`0{enter}`);
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      });
+      cy.get(sr2Anchor).should('have.text', 'hello')
+      cy.get(caAnchor).should('have.text', '1')
+
+      cy.get('#\\/a_submit').click();
+
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('0')
+      });
+      cy.get(sr2Anchor).should('have.text', 'hello')
+      cy.get(caAnchor).should('have.text', '0.5')
+
+
+    })
+  });
+
+  it('answer with submitted response based on point', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <p>Criterion: <mathinput prefill="1" /></p>
+        <p>Move point so that its x-coordinate is larger than <copy prop="value" tname="_mathinput1" />.</p>
+        
+        <graph>
+          <point>(0,0)</point>
+        </graph>
+
+        <answer name="a"> 
+          <award><when>
+            <copy prop="value" tname="_mathinput1"/> < <copy prop="x" tname="_point1" isResponse />
+          </when></award>
+        </answer>
+        
+        <p>Your answer: <copy name="sr" prop="submittedResponse" tname="a"/></p>
+        <p>Credit for your answer <copy name="ca" prop="creditAchieved" tname="a"/></p>
+ `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_p1').should('have.text', 'Criterion: ')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let srAnchor = '#' + components['/sr'].replacements[0].componentName;
+      let caAnchor = '#' + components['/ca'].replacements[0].componentName;
+      let point = components["/_point1"];
+
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.get('#\\/a_submit').click();
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('0')
+      });
+      cy.get(caAnchor).should('have.text', '0');
+
+      cy.window().then((win) => {
+        point.movePoint({ x: 3, y: -3 });
+
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('0')
+        });
+        cy.get(caAnchor).should('have.text', '0')
+
+        cy.get('#\\/a_submit').click();
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3')
+        });
+        cy.get(caAnchor).should('have.text', '1');
+
+        cy.get('#\\/_mathinput1_input').clear().type(`4{enter}`);
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3')
+        });
+        cy.get(caAnchor).should('have.text', '1')
+  
+        cy.get('#\\/a_submit').click();
+  
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3')
+        });
+        cy.get(caAnchor).should('have.text', '0')
+  
+      });
+
+
+      cy.window().then((win) => {
+        point.movePoint({ x: 8, y: 9 });
+
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3')
+        });
+        cy.get(caAnchor).should('have.text', '0')
+
+        cy.get('#\\/a_submit').click();
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('8')
+        });
+        cy.get(caAnchor).should('have.text', '1');
+
+      });
+
+
+    })
+  });
+
+
+
 })

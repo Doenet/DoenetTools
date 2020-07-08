@@ -393,9 +393,9 @@ export function createComponentsFromProps(serializedState, standardComponentClas
 }
 
 
-function lowercaseDeep(arr1) {
-  return arr1.map(val => Array.isArray(val) ? lowercaseDeep(val) : val.toLowerCase());
-}
+// function lowercaseDeep(arr1) {
+//   return arr1.map(val => Array.isArray(val) ? lowercaseDeep(val) : val.toLowerCase());
+// }
 
 // from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat
 function flattenDeep(arr1) {
@@ -555,13 +555,11 @@ export function createComponentNames({ serializedState, namespaceStack = [],
         if (prescribedName !== undefined) {
 
           if (!prescribedNameFromDoenetAttributes) {
-            // change it to lowerCase
-            prescribedName = prescribedName.toLowerCase();
 
-            if (!(/[a-z]/.test(prescribedName.substring(0, 1)))) {
+            if (!(/[a-zA-Z]/.test(prescribedName.substring(0, 1)))) {
               throw Error("Component name must begin with a letter");
             }
-            if (!(/^[a-z0-9_-]+$/.test(prescribedName))) {
+            if (!(/^[a-zA-Z0-9_-]+$/.test(prescribedName))) {
               throw Error("Component name can contain only letters, numbers, hypens, and underscores");
             }
           }
@@ -579,17 +577,15 @@ export function createComponentNames({ serializedState, namespaceStack = [],
           }
 
           // assignNames was specified
-          // change it to lower case
-          assignNames = lowercaseDeep(assignNames);
           // put in doenetAttributes as assignNames array
           doenetAttributes.assignNames = assignNames;
 
           let flattedNames = flattenDeep(assignNames);
           for (let name of flattedNames) {
-            if (!(/[a-z]/.test(name.substring(0, 1)))) {
+            if (!(/[a-zA-Z]/.test(name.substring(0, 1)))) {
               throw Error("All assigned names must begin with a letter");
             }
-            if (!(/^[a-z0-9_-]+$/.test(name))) {
+            if (!(/^[a-zA-Z0-9_-]+$/.test(name))) {
               throw Error("Assigned names can contain only letters, numbers, hyphens, and underscores");
             }
           }
@@ -600,16 +596,14 @@ export function createComponentNames({ serializedState, namespaceStack = [],
         }
         if (assignNamespaces !== undefined) {
           // assignNamespaces was specified
-          // change it to lower case
-          assignNamespaces = assignNamespaces.map(x => x.toLowerCase());
           // put in doenetAttributes as assignNamespaces array
           doenetAttributes.assignNamespaces = assignNamespaces;
 
           for (let name of assignNamespaces) {
-            if (!(/[a-z]/.test(name.substring(0, 1)))) {
+            if (!(/[a-zA-Z]/.test(name.substring(0, 1)))) {
               throw Error("All assigned namespaces must begin with a letter");
             }
-            if (!(/^[a-z0-9_-]+$/.test(name))) {
+            if (!(/^[a-zA-Z0-9_-]+$/.test(name))) {
               throw Error("Assigned namespaces can contain only letters, numbers, hypens, and underscores");
             }
           }
@@ -787,13 +781,12 @@ export function createComponentNames({ serializedState, namespaceStack = [],
 
               }
               if (childName !== undefined && !prescribedChildNameFromDoenetAttributes) {
-                childName = childName.toLowerCase();
                 child.doenetAttributes.prescribedName = childName;
 
-                if (!(/[a-z]/.test(childName.substring(0, 1)))) {
+                if (!(/[a-zA-Z]/.test(childName.substring(0, 1)))) {
                   throw Error("Component name must begin with a letter");
                 }
-                if (!(/^[a-z0-9_-]+$/.test(childName))) {
+                if (!(/^[a-zA-Z0-9_-]+$/.test(childName))) {
                   throw Error("Component name can contain only letters, numbers, hyphens, and underscores");
                 }
 
@@ -1005,7 +998,7 @@ function convertComponentTarget({ allComponentClasses, componentType,
           if (/__/.test(target)) {
             throw Error("Invalid reference target: " + target);
           }
-          originalTarget = target.toLowerCase();
+          originalTarget = target;
         }
       }
     }

@@ -31,7 +31,7 @@ describe('Number Operator Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
 
-      cy.get('#\\/meanprime').should('have.text', '4.25')
+      cy.get('#\\/meanPrime').should('have.text', '4.25')
       cy.get(mean2Anchor).should('have.text', '4.25')
       cy.get(mean3Anchor).should('have.text', 'Mean of first primes: 4.25')
       cy.get('#\\/mean100').should('have.text', '50.5')
@@ -40,7 +40,7 @@ describe('Number Operator Tag Tests', function () {
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
-        expect(components['/meanprime'].stateValues.value).eq(4.25);
+        expect(components['/meanPrime'].stateValues.value).eq(4.25);
         expect(components['/_copy1'].replacements[0].stateValues.value).eq(4.25);
         expect(components['/_copy2'].replacements[0].activeChildren[1].stateValues.value).eq(4.25);
         expect(components['/mean100'].stateValues.value).eq(50.5);
@@ -76,7 +76,7 @@ describe('Number Operator Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
 
-      cy.get('#\\/varianceprime').should('have.text', '3.6875')
+      cy.get('#\\/variancePrime').should('have.text', '3.6875')
       cy.get(variance2Anchor).should('have.text', '3.6875')
       cy.get(variance3Anchor).should('have.text', 'Variance of first primes: 3.6875')
       cy.get('#\\/variance100').should('have.text', '833.25')
@@ -86,7 +86,7 @@ describe('Number Operator Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/varianceprime'].stateValues.value).closeTo(59 / 16, 1E-12);
+        expect(components['/variancePrime'].stateValues.value).closeTo(59 / 16, 1E-12);
         expect(components['/_copy1'].replacements[0].stateValues.value).closeTo(59 / 16, 1E-12);
         expect(components['/_copy2'].replacements[0].activeChildren[1].stateValues.value).closeTo(59 / 16, 1E-12);
         expect(components['/variance100'].stateValues.value).closeTo((100 ** 2 - 1) / 12, 1E-12);
@@ -122,7 +122,7 @@ describe('Number Operator Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
 
-      cy.get('#\\/varianceprime').invoke('text').then((text) => {
+      cy.get('#\\/variancePrime').invoke('text').then((text) => {
         expect(Number(text)).closeTo(59 / 12, 1E-6);
         let textNum = text;
         cy.get(variance2Anchor).should('have.text', textNum)
@@ -138,7 +138,7 @@ describe('Number Operator Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/varianceprime'].stateValues.value).closeTo(59 / 12, 1E-12);
+        expect(components['/variancePrime'].stateValues.value).closeTo(59 / 12, 1E-12);
         expect(components['/_copy1'].replacements[0].stateValues.value).closeTo(59 / 12, 1E-12);
         expect(components['/_copy2'].replacements[0].activeChildren[1].stateValues.value).closeTo(59 / 12, 1E-12);
         expect(components['/variance100'].stateValues.value).closeTo((100 ** 2 - 1) / 12 * 100 / 99, 1E-12);
@@ -174,7 +174,7 @@ describe('Number Operator Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
 
-      cy.get('#\\/standarddeviationprime').invoke('text').then((text) => {
+      cy.get('#\\/standarddeviationPrime').invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.sqrt(59 / 16), 1E-6);
         let textNum = text;
         cy.get(standarddeviation2Anchor).should('have.text', textNum)
@@ -191,7 +191,7 @@ describe('Number Operator Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/standarddeviationprime'].stateValues.value).closeTo(Math.sqrt(59 / 16), 1E-12);
+        expect(components['/standarddeviationPrime'].stateValues.value).closeTo(Math.sqrt(59 / 16), 1E-12);
         expect(components['/_copy1'].replacements[0].stateValues.value).closeTo(Math.sqrt(59 / 16), 1E-12);
         expect(components['/_copy2'].replacements[0].activeChildren[1].stateValues.value).closeTo(Math.sqrt(59 / 16), 1E-12);
         expect(components['/standarddeviation100'].stateValues.value).closeTo(Math.sqrt((100 ** 2 - 1) / 12), 1E-12);
@@ -228,7 +228,7 @@ describe('Number Operator Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
 
-      cy.get('#\\/standarddeviationprime').invoke('text').then((text) => {
+      cy.get('#\\/standarddeviationPrime').invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.sqrt(59 / 12), 1E-6);
         let textNum = text;
         cy.get(standarddeviation2Anchor).should('have.text', textNum)
@@ -244,7 +244,7 @@ describe('Number Operator Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/standarddeviationprime'].stateValues.value).closeTo(Math.sqrt(59 / 12), 1E-12);
+        expect(components['/standarddeviationPrime'].stateValues.value).closeTo(Math.sqrt(59 / 12), 1E-12);
         expect(components['/_copy1'].replacements[0].stateValues.value).closeTo(Math.sqrt(59 / 12), 1E-12);
         expect(components['/_copy2'].replacements[0].activeChildren[1].stateValues.value).closeTo(Math.sqrt(59 / 12), 1E-12);
         expect(components['/standarddeviation100'].stateValues.value).closeTo(Math.sqrt((100 ** 2 - 1) / 12 * 100 / 99), 1E-12);
@@ -281,7 +281,7 @@ describe('Number Operator Tag Tests', function () {
 
       cy.log('Test value displayed in browser')
 
-      cy.get('#\\/countprime').should('have.text', '4')
+      cy.get('#\\/countPrime').should('have.text', '4')
       cy.get(count2Anchor).should('have.text', '4')
       cy.get(count3Anchor).should('have.text', 'Count of first primes: 4')
       cy.get('#\\/count100').should('have.text', '100')
@@ -291,7 +291,7 @@ describe('Number Operator Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/countprime'].stateValues.value).eq(4);
+        expect(components['/countPrime'].stateValues.value).eq(4);
         expect(components['/_copy1'].replacements[0].stateValues.value).eq(4);
         expect(components['/_copy2'].replacements[0].activeChildren[1].stateValues.value).eq(4);
         expect(components['/count100'].stateValues.value).eq(100);

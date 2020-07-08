@@ -33,7 +33,7 @@ import Tname from './components/Tname';
 import Prop from './components/Prop';
 import Extract from './components/Extract';
 import Collect from './components/Collect';
-import Xref from './components/Xref';
+import Ref from './components/Ref';
 import Point from './components/Point';
 import Coords from './components/Coords';
 import Line from './components/Line';
@@ -76,7 +76,6 @@ import Map from './components/Map';
 import Substitutions from './components/Substitutions';
 import CopyFromSubs from './components/CopyFromSubs';
 import IndexFromSubs from './components/IndexFromSubs';
-import FromMapAncestor from './components/FromMapAncestor';
 import Slider from './components/Slider';
 import Markers from './components/Markers';
 import Constraints from './components/Constraints';
@@ -120,7 +119,7 @@ import Offsets from './components/Offsets';
 import DiscreteInfiniteSet from './components/DiscreteInfiniteSet';
 import Image from './components/Image';
 import Video from './components/Video';
-import Url from './components/Url';
+import Embed from './components/Embed';
 import Meta from './components/Meta';
 import Hint from './components/Hint';
 import Solution from './components/Solution';
@@ -189,7 +188,7 @@ const componentTypeArray = [
   Prop,
   Extract,
   Collect,
-  Xref,
+  Ref,
   Point, Coords,
   Line, LineSegment, Polyline,
   Polygon,
@@ -221,7 +220,7 @@ const componentTypeArray = [
   Table,
   Markers,
   Panel,
-  Map, Substitutions, CopyFromSubs, IndexFromSubs, FromMapAncestor,
+  Map, Substitutions, CopyFromSubs, IndexFromSubs,
   Constraints,
   ConstrainToGrid,
   AttractToGrid,
@@ -250,7 +249,7 @@ const componentTypeArray = [
   DiscreteInfiniteSet,
   Image,
   Video,
-  Url,
+  Embed,
   Meta,
   Hint, Solution,
   IntComma,

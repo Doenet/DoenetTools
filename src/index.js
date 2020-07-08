@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import DoenetHomePage from "./React/DoenetHomePage";
+import DoenetHomePage from "./Tools/DoenetHomePage";
 
     ReactDOM.render(
       <DoenetHomePage />

@@ -23,6 +23,11 @@ export class Hide extends BooleanComponent {
   static rendererType = "boolean";
 }
 
+export class Disabled extends BooleanComponent {
+  static componentType = "disabled";
+  static rendererType = "boolean";
+}
+
 export class Draggable extends BooleanComponent {
   static componentType = "draggable";
   static rendererType = "boolean";
@@ -241,13 +246,13 @@ export class Step extends MathComponent {
   static rendererType = "math";
 }
 
-export class NumRows extends Integer {
-  static componentType = "numrows";
+export class MinNumRows extends Integer {
+  static componentType = "minNumRows";
   static rendererType = "number";
 }
 
-export class NumColumns extends Integer {
-  static componentType = "numcolumns";
+export class MinNumColumns extends Integer {
+  static componentType = "minNumColumns";
   static rendererType = "number";
 }
 
@@ -677,13 +682,18 @@ export class FixedOrder extends BooleanComponent {
   static rendererType = "boolean";
 }
 
-export class Href extends TextComponent {
-  static componentType = "href";
+export class Uri extends TextComponent {
+  static componentType = "uri";
   static rendererType = "text";
 }
 
 export class Youtube extends TextComponent {
   static componentType = "youtube";
+  static rendererType = "text";
+}
+
+export class Geogebra extends TextComponent {
+  static componentType = "geogebra";
   static rendererType = "text";
 }
 
@@ -875,4 +885,14 @@ export class Periodic extends BooleanComponent {
 export class IsResponse extends BooleanComponent {
   static componentType = "isResponse";
   static rendererType = "boolean";
+}
+
+export class FromSubstitutions extends NumberComponent {
+  static componentType = "fromSubstitutions";
+  static rendererType = "number";
+}
+
+export class FromMapAncestor extends NumberComponent {
+  static componentType = "fromMapAncestor";
+  static rendererType = "number";
 }

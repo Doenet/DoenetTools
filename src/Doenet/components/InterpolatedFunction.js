@@ -428,14 +428,14 @@ export default class InterpolatedFunction extends Function {
               return NaN;
             }
 
-            if (x < xs[0]) {
+            if (x <= xs[0]) {
               // Extrapolate
               x -= xs[0];
               let c = coeffs[0];
               return (((c[3] * x + c[2]) * x + c[1]) * x + c[0]);
             }
 
-            if (x > xs[xs.length - 1]) {
+            if (x >= xs[xs.length - 1]) {
               let i = xs.length - 2;
               // Extrapolate
               x -= xs[i];
@@ -460,6 +460,111 @@ export default class InterpolatedFunction extends Function {
             let c = coeffs[i];
             return (((c[3] * x + c[2]) * x + c[1]) * x + c[0]);
 
+          }
+        }
+      })
+    }
+
+
+    stateVariableDefinitions.returnDerivativesOfNumericalf = {
+      returnDependencies: () => ({
+        xs: {
+          dependencyType: "stateVariable",
+          variableName: "xs"
+        },
+        coeffs: {
+          dependencyType: "stateVariable",
+          variableName: "coeffs"
+        },
+        interpolationPoints: {
+          dependencyType: "stateVariable",
+          variableName: "interpolationPoints"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          returnDerivativesOfNumericalf: function (order = 1) {
+
+            if (order > 3) {
+              return x => 0
+            }
+
+            if (order < 1 || !Number.isInteger(order)) {
+              return x => NaN
+            }
+
+            return function (x) {
+
+              if (isNaN(x)) {
+                return NaN;
+              }
+
+              let xs = dependencyValues.xs;
+              let coeffs = dependencyValues.coeffs;
+
+              if (xs === null) {
+                return NaN;
+              }
+
+              if (x <= xs[0]) {
+                // Extrapolate
+                x -= xs[0];
+                let c = coeffs[0];
+                if (order === 1) {
+                  return (3 * c[3] * x + 2 * c[2]) * x + c[1];
+                } else if (order === 2) {
+                  return 6 * c[3] * x + 2 * c[2];
+                } else {
+                  return 6 * c[3]
+                }
+              }
+
+              if (x >= xs[xs.length - 1]) {
+                let i = xs.length - 2;
+                // Extrapolate
+                x -= xs[i];
+                let c = coeffs[i];
+                if (order === 1) {
+                  return (3 * c[3] * x + 2 * c[2]) * x + c[1];
+                } else if (order === 2) {
+                  return 6 * c[3] * x + 2 * c[2];
+                } else {
+                  return 6 * c[3]
+                }
+              }
+
+              // Search for the interval x is in,
+              // returning the corresponding y if x is one of the original xs
+              var low = 0, mid, high = xs.length - 1;
+              while (low <= high) {
+                mid = Math.floor(0.5 * (low + high));
+                let xHere = xs[mid];
+                if (xHere < x) { low = mid + 1; }
+                else if (xHere > x) { high = mid - 1; }
+                else {
+                  // at a grid point
+                  if (order === 1) {
+                    return coeffs[mid][1]
+                  } else if (order === 2) {
+                    return 2 * coeffs[mid][2];
+                  } else {
+                    return 6 * coeffs[mid][3];
+                  }
+                }
+              }
+              let i = Math.max(0, high);
+
+              // Interpolate
+              x -= xs[i];
+              let c = coeffs[i];
+              if (order === 1) {
+                return (3 * c[3] * x + 2 * c[2]) * x + c[1];
+              } else if (order === 2) {
+                return 6 * c[3] * x + 2 * c[2];
+              } else {
+                return 6 * c[3]
+              }
+            }
           }
         }
       })
