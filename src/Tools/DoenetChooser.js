@@ -1053,6 +1053,7 @@ class DoenetChooser extends Component {
       selectedItems: selectedItems,
       selectedItemsType: selectedItemsType,
     })
+    this.tempSet = new Set([selectedItems[selectedItems.length - 1]]);
   }
 
   updateDirectoryStack(directoryStack) {
@@ -1656,7 +1657,7 @@ class DoenetChooser extends Component {
     }
     // remove droppedId, repos from (draggedIds, draggedTypes)
     for (let i = 0; i < draggedItems.id.length; i++) {
-      if (draggedItems.id[i] == droppedId || draggedItems.type == "repo") {
+      if (draggedItems.id[i] == droppedId || (draggedItems.type == "folder" && draggedItems.dataObject.isRepo)) {
         draggedItems.id.splice(i, 1);
         draggedItems.type.splice(i, 1);
       }
@@ -1724,7 +1725,6 @@ class DoenetChooser extends Component {
       })
     }
 
-
     this.buildCourseList();
     this.buildLeftNavPanel();
     this.buildTopToolbar();
@@ -1789,7 +1789,32 @@ class DoenetChooser extends Component {
           onDragEnd={this.onTreeDragEnd}
           onDraggableDragOver={this.onTreeDraggableDragOver} 
           onDropEnter={this.onTreeDropEnter}
-          onDrop={this.onTreeDrop} />
+          onDrop={this.onTreeDrop}
+          directoryData={[...this.state.directoryStack]}
+          specialNodes={this.tempSet}
+          treeStyles={{
+            specialChildNode: {
+              "title": { color: "#2675ff" },
+              "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
+            },
+            specialParentNode: {
+              "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
+            }
+          }}
+          onLeafNodeClick={(id, type) => {
+            this.setState({selectedItems: [id], selectedItemsType: [type]})
+            this.tempSet = new Set([id]);
+            this.forceUpdate()
+          }}
+          onParentNodeClick={(id, type) => {
+            this.setState({selectedItems: [id], selectedItemsType: [type]})
+            this.tempSet = new Set([id]);
+            this.forceUpdate()
+          }}
+          onParentNodeDoubleClick={(id) => {
+            // openSubtree
+          }}
+          />
         </div>
 
       this.customizedTree = <div className="tree" style={{ paddingLeft: "1em", marginLeft: "4em" }}>
@@ -1829,12 +1854,23 @@ class DoenetChooser extends Component {
           specialChildNode: {
             "frame": { background: "#a7a7a7" },
           },
-          expanderIcon: <FontAwesomeIcon icon={faPlus} style={{paddingRight: "8px"}}/>
+          specialParentNode: {
+            "frame": { background: "#a7a7a7" },
+          },
+          expanderIcon: <FontAwesomeIcon icon={faPlus}/>
         }}
         onLeafNodeClick={(nodeId) => {
-          if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
-          else this.tempSet.add(nodeId); 
+          this.tempSet.clear();
+          this.tempSet.add(nodeId); 
           this.forceUpdate()
+        }}
+        onParentNodeClick={(nodeId) => {
+          this.tempSet.clear();
+          this.tempSet.add(nodeId); 
+          this.forceUpdate()
+        }}
+        onParentNodeDoubleClick={(nodeId) => {
+          console.log(`${nodeId} double clicked!`)
         }}
         />
       </div>
@@ -1979,7 +2015,7 @@ class DoenetChooser extends Component {
             </SplitLayoutPanel>
           </ToolLayoutPanel>
 
-          <ToolLayoutPanel panelName="Info Panel" >
+          <ToolLayoutPanel panelName="Info Panel">
              <InfoPanel
               selectedItems={this.state.selectedItems}
               selectedItemsType={this.state.selectedItemsType}
@@ -2022,37 +2058,49 @@ const TreeIcons = (iconName) => {
   const FolderIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
     style={{
       fontSize: "16px", 
-      color: "#737373", 
+      color: "#737373",
+      position: "relative",
+      top: "2px",
+      marginRight: "8px",
     }}
   />;
   const RepoIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
     style={{
       fontSize: "16px", 
       color: "#3aac90", 
+      position: "relative",
+      top: "2px",
+      marginRight: "8px",
     }}
   />;
   const ContentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt}
     style={{
       fontSize: "16px", 
       color: "#3D6EC9", 
+      marginRight: "8px",
     }}
   />;
   const UrlIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faLink}
     style={{
       fontSize: "16px", 
       color: "#a7a7a7", 
+      marginRight: "8px",
     }}
   />;
   const HeadingIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
     style={{
       fontSize: "16px", 
       color: "#a7a7a7", 
+      position: "relative",
+      top: "2px",
+      marginRight: "8px",
     }}
   />;
   const AssignmentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt} 
     style={{
       fontSize: "16px", 
       color: "#a7a7a7", 
+      marginRight: "8px",
     }}
   />;
 
@@ -2651,12 +2699,19 @@ class InfoPanel extends Component {
         itemTitle = "Content";
       }
 
-      this.buildInfoPanelDriveDetails();
+      // this.buildInfoPanelDriveDetails();
+      this.infoPanel = <React.Fragment>
+        <div className="infoPanel">
+          <div style={{display: "flex", alignItems: "center", justifyContent: "center", height: "100%"}}>
+            <span style={{fontSize: "16px", color: "rgb(191, 191, 191)"}}>Select item to view info</span>
+          </div>
+        </div>
+      </React.Fragment>
     } else {
       // if file selected, show selectedFile/Folder info
       selectedItemId = this.props.selectedItems[this.props.selectedItems.length - 1];
       selectedItemType = this.props.selectedItemsType[this.props.selectedItemsType.length - 1];
-
+      console.log()
       // get title
       if (selectedItemType === "folder") {
         itemTitle = this.props.allFolderInfo[selectedItemId].title;
@@ -2671,23 +2726,22 @@ class InfoPanel extends Component {
       }
 
       this.buildInfoPanelItemDetails(selectedItemId, selectedItemType);  
+      this.infoPanel = <React.Fragment>
+        <div className="infoPanel">
+          <div className="infoPanelTitle">
+            <div className="infoPanelItemIcon">{itemIcon}</div>
+            <span>{ itemTitle }</span>
+          </div>
+          <div className="infoPanelPreview">
+            {/* <span>Preview</span> */}
+            <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"100px", "color":"#bfbfbf"}}/>
+          </div>
+          <div className="infoPanelDetails">
+            {this.infoPanelDetails}
+          </div>
+        </div>
+      </React.Fragment>
     }
-    
-    this.infoPanel = <React.Fragment>
-      <div className="infoPanel">
-        <div className="infoPanelTitle">
-          <div className="infoPanelItemIcon">{itemIcon}</div>
-          <span>{ itemTitle }</span>
-        </div>
-        <div className="infoPanelPreview">
-          <span>Preview</span>
-          <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"100px", "color":"#bfbfbf"}}/>
-        </div>
-        <div className="infoPanelDetails">
-          {this.infoPanelDetails}
-        </div>
-      </div>
-    </React.Fragment>
   }
 
   buildInfoPanelDriveDetails() {
