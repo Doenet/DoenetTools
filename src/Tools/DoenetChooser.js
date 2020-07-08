@@ -1064,6 +1064,7 @@ class DoenetChooser extends Component {
       selectedItems: selectedItems,
       selectedItemsType: selectedItemsType,
     })
+    this.tempSet = new Set([selectedItems[selectedItems.length - 1]]);
   }
 
   updateDirectoryStack(directoryStack) {
@@ -1667,7 +1668,7 @@ class DoenetChooser extends Component {
     }
     // remove droppedId, repos from (draggedIds, draggedTypes)
     for (let i = 0; i < draggedItems.id.length; i++) {
-      if (draggedItems.id[i] == droppedId || draggedItems.type == "repo") {
+      if (draggedItems.id[i] == droppedId || (draggedItems.type == "folder" && draggedItems.dataObject.isRepo)) {
         draggedItems.id.splice(i, 1);
         draggedItems.type.splice(i, 1);
       }
@@ -1735,7 +1736,6 @@ class DoenetChooser extends Component {
         if (this.userFolderInfo[folderId].parentId == "root") this.userFolderInfo["root"]["childFolders"].push(folderId);
       })
     }
-
 
     this.buildCourseList();
     this.buildLeftNavPanel();
@@ -1806,8 +1806,8 @@ class DoenetChooser extends Component {
           onDragEnd={this.onTreeDragEnd}
           onDraggableDragOver={this.onTreeDraggableDragOver}
           onDropEnter={this.onTreeDropEnter}
-          onDrop={this.onTreeDrop} />
-      </div>
+      //     onDrop={this.onTreeDrop} />
+      // </div>
       // let contentParentInfo = {...this.userFolderInfo["root"]};
       // contentParentInfo['rootId']= "root";
       // contentParentInfo['type']= "folder";
@@ -1872,17 +1872,55 @@ class DoenetChooser extends Component {
       //   copyUserContentInfo[key].parentId = copyUserContentInfo[key].parentId === "root" ? "content" : copyUserContentInfo[key].parentId;
       //   copyUserContentInfo[key].rootId = copyUserContentInfo[key].rootId === "root" ? "content" : copyUserContentInfo[key].rootId;
       // }
-      let customizedContentTreeParentInfo = JSON.parse(JSON.stringify(treeParentsInfo));
-      let customizedContentTreeChildrenInfo = JSON.parse(JSON.stringify(treeChildrenInfo));
-      customizedContentTreeParentInfo.root.title = "Content";
+      // let customizedContentTreeParentInfo = JSON.parse(JSON.stringify(treeParentsInfo));
+      // let customizedContentTreeChildrenInfo = JSON.parse(JSON.stringify(treeChildrenInfo));
+      // customizedContentTreeParentInfo.root.title = "Content";
 
-      for (let key in customizedContentTreeParentInfo) {
-        if(key !== 'root') {
-          customizedContentTreeParentInfo[key].childContent = [];
-          // customizedContentTreeParentInfo[key].childFolders = [];
-          customizedContentTreeParentInfo[key].childUrls = [];
-        }
-      }
+      // for (let key in customizedContentTreeParentInfo) {
+      //   if(key !== 'root') {
+      //     customizedContentTreeParentInfo[key].childContent = [];
+      //     // customizedContentTreeParentInfo[key].childFolders = [];
+      //     customizedContentTreeParentInfo[key].childUrls = [];
+      //   }
+      // }
+          onDrop={this.onTreeDrop}
+          directoryData={[...this.state.directoryStack]}
+          specialNodes={this.tempSet}
+          treeStyles={{
+            specialChildNode: {
+              "title": { color: "#2675ff" },
+              "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
+            },
+            specialParentNode: {
+              "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
+            }
+          }}
+          onLeafNodeClick={(id, type) => {
+            this.setState({selectedItems: [id], selectedItemsType: [type]})
+            this.tempSet = new Set([id]);
+            this.forceUpdate()
+          }}
+          onParentNodeClick={(id, type) => {
+            this.setState({selectedItems: [id], selectedItemsType: [type]})
+            this.tempSet = new Set([id]);
+            this.forceUpdate()
+          }}
+          onParentNodeDoubleClick={(id) => {
+            // openSubtree
+          }}
+          />
+        </div>
+              let customizedContentTreeParentInfo = JSON.parse(JSON.stringify(treeParentsInfo));
+              let customizedContentTreeChildrenInfo = JSON.parse(JSON.stringify(treeChildrenInfo));
+              customizedContentTreeParentInfo.root.title = "Content";
+        
+              for (let key in customizedContentTreeParentInfo) {
+                if(key !== 'root') {
+                  customizedContentTreeParentInfo[key].childContent = [];
+                  // customizedContentTreeParentInfo[key].childFolders = [];
+                  customizedContentTreeParentInfo[key].childUrls = [];
+                }
+              }
 
 
       let customizedCoursesTreeParentInfo = {
@@ -1987,20 +2025,49 @@ class DoenetChooser extends Component {
               "title": {
                 color: "rgba(33,11,124)",
               },
-              // "frame": { border: "1px #a4a4a4 solid" },
+              "frame": { border: "1px #a4a4a4 solid" },
             },
             specialChildNode: {
-              // "frame": { background: "#a7a7a7" },
+              "frame": { background: "#a7a7a7" },
+            },
+            specialParentNode: {
+              "frame": { background: "#a7a7a7" },
             },
             expanderIcon: <FontAwesomeIcon icon={faFolderOpen} style={{ paddingRight: "8px" }} />
           }}
-          onLeafNodeClick={(nodeId) => {
-            if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
-            else this.tempSet.add(nodeId);
-            this.forceUpdate();
-            // debugger;
-            this.selectDrive("Courses", nodeId)
-          }}
+          ////////////////
+          // Current change before custom click in treeview
+          ////////////
+          // onLeafNodeClick={(nodeId) => {
+          //   if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
+          //   else this.tempSet.add(nodeId);
+          //   this.forceUpdate();
+          //   // debugger;
+          //   this.selectDrive("Courses", nodeId)
+          // }}
+          //   "frame": { border: "1px #a4a4a4 solid" },
+          // },
+          // specialChildNode: {
+          //   "frame": { background: "#a7a7a7" },
+          // },
+          // specialParentNode: {
+          //   "frame": { background: "#a7a7a7" },
+          // },
+          // expanderIcon: <FontAwesomeIcon icon={faPlus}/>
+        // }}
+        onLeafNodeClick={(nodeId) => {
+          this.tempSet.clear();
+          this.tempSet.add(nodeId); 
+          this.forceUpdate()
+        }}
+        onParentNodeClick={(nodeId) => {
+          this.tempSet.clear();
+          this.tempSet.add(nodeId); 
+          this.forceUpdate()
+        }}
+        onParentNodeDoubleClick={(nodeId) => {
+          console.log(`${nodeId} double clicked!`)
+        }}
         />
         
         {/* <TreeView
@@ -2239,8 +2306,8 @@ class DoenetChooser extends Component {
               </Switch>
             </Router>
 
-          <ToolLayoutPanel panelName="Info Panel" >
-            <InfoPanel
+          <ToolLayoutPanel panelName="Info Panel">
+             <InfoPanel
               selectedItems={this.state.selectedItems}
               selectedItemsType={this.state.selectedItemsType}
               selectedDrive={this.state.selectedDrive}
@@ -2282,38 +2349,50 @@ const MainPanel = ({ panelId, initialContainer, activeContainer, containersData,
 const TreeIcons = (iconName) => {
   const FolderIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
     style={{
-      fontSize: "16px",
+      fontSize: "16px", 
       color: "#737373",
+      position: "relative",
+      top: "2px",
+      marginRight: "8px",
     }}
   />;
   const RepoIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
     style={{
-      fontSize: "16px",
-      color: "#3aac90",
+      fontSize: "16px", 
+      color: "#3aac90", 
+      position: "relative",
+      top: "2px",
+      marginRight: "8px",
     }}
   />;
   const ContentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt}
     style={{
-      fontSize: "16px",
-      color: "#3D6EC9",
+      fontSize: "16px", 
+      color: "#3D6EC9", 
+      marginRight: "8px",
     }}
   />;
   const UrlIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faLink}
     style={{
-      fontSize: "16px",
-      color: "#a7a7a7",
+      fontSize: "16px", 
+      color: "#a7a7a7", 
+      marginRight: "8px",
     }}
   />;
   const HeadingIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
     style={{
-      fontSize: "16px",
-      color: "#a7a7a7",
+      fontSize: "16px", 
+      color: "#a7a7a7", 
+      position: "relative",
+      top: "2px",
+      marginRight: "8px",
     }}
   />;
   const AssignmentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt}
     style={{
-      fontSize: "16px",
-      color: "#a7a7a7",
+      fontSize: "16px", 
+      color: "#a7a7a7", 
+      marginRight: "8px",
     }}
   />;
 
@@ -2912,12 +2991,19 @@ class InfoPanel extends Component {
         itemTitle = "Content";
       }
 
-      this.buildInfoPanelDriveDetails();
+      // this.buildInfoPanelDriveDetails();
+      this.infoPanel = <React.Fragment>
+        <div className="infoPanel">
+          <div style={{display: "flex", alignItems: "center", justifyContent: "center", height: "100%"}}>
+            <span style={{fontSize: "16px", color: "rgb(191, 191, 191)"}}>Select item to view info</span>
+          </div>
+        </div>
+      </React.Fragment>
     } else {
       // if file selected, show selectedFile/Folder info
       selectedItemId = this.props.selectedItems[this.props.selectedItems.length - 1];
       selectedItemType = this.props.selectedItemsType[this.props.selectedItemsType.length - 1];
-
+      console.log()
       // get title
       if (selectedItemType === "folder") {
         itemTitle = this.props.allFolderInfo[selectedItemId].title;
@@ -2931,24 +3017,23 @@ class InfoPanel extends Component {
         itemIcon = <FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "18px", "color": "#3D6EC9" }} />;
       }
 
-      this.buildInfoPanelItemDetails(selectedItemId, selectedItemType);
+      this.buildInfoPanelItemDetails(selectedItemId, selectedItemType);  
+      this.infoPanel = <React.Fragment>
+        <div className="infoPanel">
+          <div className="infoPanelTitle">
+            <div className="infoPanelItemIcon">{itemIcon}</div>
+            <span>{ itemTitle }</span>
+          </div>
+          <div className="infoPanelPreview">
+            {/* <span>Preview</span> */}
+            <FontAwesomeIcon icon={faFileAlt} style={{"fontSize":"100px", "color":"#bfbfbf"}}/>
+          </div>
+          <div className="infoPanelDetails">
+            {this.infoPanelDetails}
+          </div>
+        </div>
+      </React.Fragment>
     }
-
-    this.infoPanel = <React.Fragment>
-      <div className="infoPanel">
-        <div className="infoPanelTitle">
-          <div className="infoPanelItemIcon">{itemIcon}</div>
-          <span>{itemTitle}</span>
-        </div>
-        <div className="infoPanelPreview">
-          <span>Preview</span>
-          <FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "100px", "color": "#bfbfbf" }} />
-        </div>
-        <div className="infoPanelDetails">
-          {this.infoPanelDetails}
-        </div>
-      </div>
-    </React.Fragment>
   }
 
   buildInfoPanelDriveDetails() {
