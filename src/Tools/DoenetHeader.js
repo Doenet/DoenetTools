@@ -288,7 +288,7 @@ class DoenetHeader extends Component {
             <FontAwesomeIcon id='headerPlayBtn-icon' fontSize='16px' icon={this.state.sliderVisible ? faCaretDown : faCaretRight} />
           </div>
           <div className="toolName">
-            <img id="doenetLogo" onClick={() => { location.href = "/"; }} src={doenetImage} height='40px' />
+            <img id="doenetLogo" onClick={() => { location.href = "/dashboard"; }} src={doenetImage} height='40px' />
             <span>{this.props.toolName}</span>
           </div>
 
