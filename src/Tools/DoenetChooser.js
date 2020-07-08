@@ -2025,7 +2025,7 @@ class DoenetChooser extends Component {
               "title": {
                 color: "rgba(33,11,124)",
               },
-              "frame": { border: "1px #a4a4a4 solid" },
+              // "frame": { border: "1px #a4a4a4 solid" },
             },
             specialChildNode: {
               "frame": { background: "#a7a7a7" },

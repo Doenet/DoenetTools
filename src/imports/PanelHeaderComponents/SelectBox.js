@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./selectbox.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class SelectBox extends Component {
 
