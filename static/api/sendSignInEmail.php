@@ -28,7 +28,7 @@ if ($result->num_rows > 0){
 $result = $conn->query($sql);
 
 //SEND EMAIL WITH CODE HERE
-
+mail($emailaddress,"Doenet Signin","You're code is: $randomNumber");
 
 // set response code - 200 OK
 http_response_code(200);

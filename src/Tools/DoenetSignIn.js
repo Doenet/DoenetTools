@@ -10,43 +10,51 @@ export default function DoenetSignIn(props) {
   let [stayLoggedIn, setStayLoggedIn] = useState(false);
 
   let [signInStage, setSignInStage] = useState("beginning");
-  let [isSentEmail,setIsSentEmail] = useState(false);
+  let [isSentEmail, setIsSentEmail] = useState(false);
   let [codeSuccess, setCodeSuccess] = useState(false);
   let [reason, setReason] = useState("");
   let [existed, setExisted] = useState(false);
 
-  const [jwt,setJwt] = useCookies('jwt');
-  const [profile,setProfile] = useCookies('Profile');
+  const [jwt, setJwt] = useCookies('jwt');
+  const [profile, setProfile] = useCookies('Profile');
 
   const emailRef = useRef(null);
   const codeRef = useRef(null);
 
   let validEmail = false;
-  if ((/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))){
+  if ((/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
     validEmail = true;
   }
 
   let validCode = false;
-  if ((/^\d{9}$/.test(nineCode))){
+  if ((/^\d{9}$/.test(nineCode))) {
     validCode = true;
   }
 
+  //Collect browser name, machine os 
+  // var OSName = "Unknown OS";
+  // if (navigator.appVersion.indexOf("Win") != -1) OSName = "Windows";
+  // if (navigator.appVersion.indexOf("Mac") != -1) OSName = "MacOS";
+  // if (navigator.appVersion.indexOf("X11") != -1) OSName = "UNIX";
+  // if (navigator.appVersion.indexOf("Linux") != -1) OSName = "Linux";
+  // console.log(OSName)
 
-  useEffect(()=>{
-    if (codeRef.current !== null && !validCode){
+
+  useEffect(() => {
+    if (codeRef.current !== null && !validCode) {
       codeRef.current.focus();
-    }else if (emailRef.current !== null && !validEmail) {
+    } else if (emailRef.current !== null && !validEmail) {
       emailRef.current.focus();
     }
   });
 
-  if (Object.keys(jwt).includes("JWT")){
+  if (Object.keys(jwt).includes("JWT")) {
     location.href = "/dashboard";
   }
 
- 
 
-  if (signInStage === "check code"){
+
+  if (signInStage === "check code") {
     //Ask Server for data which matches email address
     const phpUrl = '/api/checkCredentials.php';
     const data = {
@@ -75,22 +83,22 @@ export default function DoenetSignIn(props) {
           transform: "translate(-50%, -50%)",
           margin: "20",
         }}>
-      <h2 style={{textAlign: "center"}}>Signing in...</h2>
+        <h2 style={{ textAlign: "center" }}>Signing in...</h2>
 
       </div>
     )
   }
 
-  if (signInStage === "resolve server code check response"){
-    if (codeSuccess){
-      setProfile('JWT', {token:"put token here"}, {path:"/"})
-      setProfile('Profile', {email}, {path:"/"})
+  if (signInStage === "resolve server code check response") {
+    if (codeSuccess) {
+      setProfile('JWT', { token: "put token here" }, { path: "/" })
+      setProfile('Profile', { email, nineCode }, { path: "/" })
     }
-    if (codeSuccess && existed){
+    if (codeSuccess && existed) {
       location.href = "/dashboard";
-    }else if (codeSuccess && !existed){
+    } else if (codeSuccess && !existed) {
       location.href = "/accountsettings";
-    }else if (reason === "Code expired"){
+    } else if (reason === "Code expired") {
       return (
         <div style={
           {
@@ -100,23 +108,23 @@ export default function DoenetSignIn(props) {
             transform: "translate(-50%, -50%)",
             margin: "20",
           }}>
-        <h2 style={{textAlign: "center"}}>Code Expired</h2>
-        <button onClick={()=>{location.href = '/signin'}}>Restart Signin</button>
-  
+          <h2 style={{ textAlign: "center" }}>Code Expired</h2>
+          <button onClick={() => { location.href = '/signin' }}>Restart Signin</button>
+
         </div>
       )
     }
-    
+
   }
 
-  function submitCode(){
+  function submitCode() {
     setReason("");
     setSignInStage("check code");
   }
 
-  if (signInStage === "enter code" || reason === "Invalid Code"){
+  if (signInStage === "enter code" || reason === "Invalid Code") {
 
-    if (!isSentEmail){
+    if (!isSentEmail) {
       const phpUrl = '/api/sendSignInEmail.php';
       const data = {
         emailaddress: email,
@@ -131,14 +139,14 @@ export default function DoenetSignIn(props) {
         .catch(error => { this.setState({ error: error }) });
       setIsSentEmail(true);
     }
-    
 
-      let heading = <h2 style={{textAlign: "center"}}>Email Sent!</h2>
-      if (reason === "Invalid Code"){
-        heading = <h2 style={{textAlign: "center"}}>Invalid Code. Try again.</h2>
-      }
 
-      return (
+    let heading = <h2 style={{ textAlign: "center" }}>Email Sent!</h2>
+    if (reason === "Invalid Code") {
+      heading = <h2 style={{ textAlign: "center" }}>Invalid Code. Try again.</h2>
+    }
+
+    return (
       <div style={
         {
           position: "absolute",
@@ -147,22 +155,22 @@ export default function DoenetSignIn(props) {
           transform: "translate(-50%, -50%)",
           margin: "20",
         }}>
-      {heading}
-      <div><p>Check your email for a code to complete sign in.</p></div>
-      <p><label>Code (9 digit code): <input type="text" 
-      ref={codeRef} 
-      value={nineCode} 
-      onKeyDown={(e)=>{
-        if (e.key === 'Enter' && validCode) {submitCode()}
-      }}
-      onChange={(e)=>{setNineCode(e.target.value)}}/></label></p>
-      <button disabled={!validCode} style={{  }} onClick={()=>submitCode()}>Sign In</button>
+        {heading}
+        <div><p>Check your email for a code to complete sign in.</p></div>
+        <p><label>Code (9 digit code): <input type="text"
+          ref={codeRef}
+          value={nineCode}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && validCode) { submitCode() }
+          }}
+          onChange={(e) => { setNineCode(e.target.value) }} /></label></p>
+        <button disabled={!validCode} style={{}} onClick={() => submitCode()}>Sign In</button>
       </div>
     )
   }
 
 
-  if (signInStage === "beginning"){
+  if (signInStage === "beginning") {
     return (
       <div style={
         {
@@ -178,20 +186,20 @@ export default function DoenetSignIn(props) {
 
         <img style={{ width: "250px", height: "250px" }} src={logo} />
         <div>
-          <p><label>Email Address: <input type="text" 
-          label="Email Address"
-          ref={emailRef}
-          value={email} 
-          onKeyDown={(e)=>{
-            if (e.key === 'Enter' && validEmail) {setSignInStage("enter code")}
-          }}
-          onChange={(e)=>{setEmail(e.target.value)}}/></label></p>
-          <p><input type="checkbox" checked={stayLoggedIn} onChange={(e)=>{setStayLoggedIn(e.target.checked)}}
+          <p><label>Email Address: <input type="text"
+            label="Email Address"
+            ref={emailRef}
+            value={email}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && validEmail) { setSignInStage("enter code") }
+            }}
+            onChange={(e) => { setEmail(e.target.value) }} /></label></p>
+          <p><input type="checkbox" checked={stayLoggedIn} onChange={(e) => { setStayLoggedIn(e.target.checked) }}
           /> Stay Logged In</p>
-          <button disabled={!validEmail} style={{ float: "right" }} onClick={()=>setSignInStage("enter code")}>Send Email</button></div>
+          <button disabled={!validEmail} style={{ float: "right" }} onClick={() => setSignInStage("enter code")}>Send Email</button></div>
       </div>
-  );
-        }
+    );
+  }
 
   return (
     <div style={
@@ -206,12 +214,12 @@ export default function DoenetSignIn(props) {
         margin: "20",
       }}>
 
-<h2 style={{textAlign: "center"}}>Loading...</h2>
+      <h2 style={{ textAlign: "center" }}>Loading...</h2>
 
     </div>
-);
-  
+  );
 
-  
+
+
 }
 

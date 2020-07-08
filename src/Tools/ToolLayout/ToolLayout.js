@@ -5,6 +5,7 @@ import DoenetHeader from "../DoenetHeader";
 import './toollayout.css';
 import "../../imports/doenet.css";
 import { useCookies } from 'react-cookie';
+import axios from "axios";
 
 
 //This component deals with resizing and resizers
@@ -50,21 +51,51 @@ export default function ToolLayout(props) {
   const [cookieProfile, setCookieProfile] = useCookies('Profile');
   const [jwt, setjwt] = useCookies('JWT');
   let isSignedIn = false;
-  if (Object.keys(jwt).includes("JWT")){
+  if (Object.keys(jwt).includes("JWT")) {
     isSignedIn = true;
   }
 
-  const [profile, setProfile] = useState(anonymousUserProfile);
+  let currentProfile = anonymousUserProfile;
+
+  if (Object.keys(cookieProfile).includes("Profile")) {
+currentProfile = cookieProfile.Profile;
+  }
+
+  const [profile, setProfile] = useState(currentProfile);
 
   useEffect(() => {
     //Fires each time you change the tool
 
-    console.log("cookieProfile", cookieProfile)
     if (Object.keys(cookieProfile).includes("Profile")) {
-      setProfile(cookieProfile.Profile);
+
+      if (Object.keys(cookieProfile.Profile).length < 3) {
+        //Need to load profile from database 
+        //Ask Server for data which matches email address
+        const phpUrl = '/api/loadProfile.php';
+        const data = {
+          emailaddress: cookieProfile.Profile.email,
+          nineCode: cookieProfile.Profile.nineCode
+        }
+        const payload = {
+          params: data
+        }
+        axios.get(phpUrl, payload)
+          .then(resp => {
+            console.log('resp', resp);
+            if (resp.data.success === "1") {
+              let profile = resp.data.profile;
+              profile['nineCode'] = cookieProfile.Profile.nineCode;
+              console.log("profile-->", profile)
+              setCookieProfile("Profile",profile,{path:"/"});
+              setProfile(profile);
+            }
+          })
+          .catch(error => { this.setState({ error: error }) });
+        return (<h1>Loading...</h1>)
+      }
     }
     else if (location.hostname !== "localhost") {
-      setProfile(anonymousUserProfile);
+      setProfile(currentProfile);
 
     } else {
       //Start Signed In when local host development

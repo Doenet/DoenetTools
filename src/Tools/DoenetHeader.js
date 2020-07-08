@@ -242,8 +242,6 @@ class DoenetHeader extends Component {
 
 
   render() {
-    console.log("header isSignedIn", this.props.isSignedIn);
-    console.log("header render", this.props.profile)
     const sliderClass = this.state.sliderVisible ? 'on' : 'off';
     if (!!this.refs.extendedHeader) {
       this.headerSectionCount = this.refs.extendedHeader.children.length;
