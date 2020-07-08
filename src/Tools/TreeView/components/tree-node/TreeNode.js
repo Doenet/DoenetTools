@@ -8,29 +8,30 @@ import DropItem from "../drop-item";
 import DragItem from "../drag-item";
 import { Search } from "../../TreeView";
 
-const TreeNode = memo(({ children, title, style, defaultOpen = false }) => {
-  const [isOpen, setOpen] = useState(defaultOpen)
-  const previous = usePrevious(isOpen)
-  const [bind, { height: viewHeight }] = useMeasure()
-  const { height, opacity, transform } = useSpring({
-    from: { height: 0, opacity: 0, transform: 'translate3d(20px,0,0)' },
-    to: { height: isOpen ? viewHeight  : 0, opacity: isOpen ? 1 : 0, transform: `translate3d(${isOpen ? 0 : 20}px,0,0)` }
-  })
-  const Icon = Icons[`${children ? (isOpen ? 'Minus' : 'Plus') : 'Close'} SquareO`]
-  return (
-    <Frame>
-      <Icon style={{ ...toggle, opacity: children ? 1 : 0.3 }} onClick={() => setOpen(!isOpen)} />
-      <Title style={style}>{title}</Title>
-      <Content style={{ opacity, height: isOpen && previous === isOpen ? 'auto' : height }}>
-        <a.div style={{ transform }} {...bind} children={children} />
-      </Content>
-    </Frame>
-  )
-})
-
-export const ParentNode = memo(({ hide = false, children, title, type, itemIcon, expanderIcon, styles, defaultOpen = false, id, 
-  onDrop, onDraggableDragOver, onDragStart, onDragEnd, onDropEnter, onDropLeave, setCurrentHovered, draggedOver, currentDraggedId, currentDraggedType, 
-  controlButtons = null , SearchComponent }) => {
+export const ParentNode = memo(({ 
+  id, 
+  hide = false, 
+  children, 
+  title, 
+  type, 
+  itemIcon, 
+  onClick, 
+  onDoubleClick,
+  expanderIcon, 
+  styles, 
+  defaultOpen = false, 
+  onDrop, 
+  onDraggableDragOver, 
+  onDragStart, 
+  onDragEnd, 
+  onDropEnter, 
+  onDropLeave, 
+  setCurrentHovered, 
+  draggedOver, 
+  currentDraggedId, 
+  currentDraggedType, 
+  controlButtons = null , 
+  SearchComponent }) => {
   const [isOpen, setOpen] = useState(defaultOpen)
   const previous = usePrevious(isOpen)
   const [bind, { height: viewHeight }] = useMeasure()
@@ -40,16 +41,21 @@ export const ParentNode = memo(({ hide = false, children, title, type, itemIcon,
   })
   const Icon = Icons[`${isOpen ? 'ArrowDown0' : 'ArrowRight0'}`]
 
-  const onDraggableDragOverCb = (listId) => {
-    if (listId !== currentDraggedId) {
+  const onDraggableDragOverCb = (id) => {
+    if (id !== currentDraggedId) {
       setOpen(true)
     };
-    onDraggableDragOver(listId, type)
+    onDraggableDragOver && onDraggableDragOver(id, type)
   }
 
-  const onDragStartCb = (listId) => {
+  const onDragStartCb = (id) => {
     setOpen(false);
-    onDragStart(listId, type)
+    onDragStart && onDragStart(id, type)
+  }
+
+  const onDoubleClickCb = (id, type) => {
+    setOpen(!isOpen);
+    onDoubleClick && onDoubleClick(id, type);
   }
 
   if (hide) {
@@ -73,12 +79,16 @@ export const ParentNode = memo(({ hide = false, children, title, type, itemIcon,
 
   return(<DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
     <Frame style={styles["frame"]}>
-      <ListItem onMouseEnter={() => setCurrentHovered(id)} onMouseLeave={() => setCurrentHovered(null)} onClick={() => setOpen(!isOpen)}>
+      <ListItem onMouseEnter={() => setCurrentHovered(id)} onMouseLeave={() => setCurrentHovered(null)}>
         <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}> 
-          <div>
-            { expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }}/> }
-            { itemIcon }
-            <Title style={styles["title"]}>{title}</Title>
+          <div style={{width: "100%"}}>
+            <span onClick={() => setOpen(!isOpen)}>
+              { expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }}/> }
+            </span>            
+            <div style={{display: "inline-block", width: "94%", ...styles["title"]}} onClick={() => onClick(id, type)} onDoubleClick={() => onDoubleClickCb(id, type)}>
+              { itemIcon }
+              <Title>{title}</Title>
+            </div>
           </div>
           <div>{ controlButtons }</div>
         </div>
@@ -97,8 +107,8 @@ export const ParentNode = memo(({ hide = false, children, title, type, itemIcon,
 
 export const LeafNode = memo(({ id, title, type, itemIcon, styles, onDragStart, onDragOver, onDragEnd, onClick }) => {
 
-  const onDraggableDragOverCb = (listId) => {
-    onDragOver(listId, type)
+  const onDraggableDragOverCb = (id) => {
+    onDragOver(id, type)
   }
 
   const onDragStartCb = (draggedId) => {
@@ -107,10 +117,10 @@ export const LeafNode = memo(({ id, title, type, itemIcon, styles, onDragStart, 
 
   return (
     <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
-      <Frame style={styles["frame"]} onClick={() => onClick(id)}>
-        <ListItem>
+      <Frame style={styles["frame"]} onClick={() => onClick(id, type)}>
+        <ListItem style={styles["title"]}>
           { itemIcon }
-          <Title style={styles["title"]}>{title}</Title>
+          <Title>{title}</Title>
         </ListItem>
       </Frame>
     </DragItem>    

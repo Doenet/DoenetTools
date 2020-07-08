@@ -246,13 +246,13 @@ export class Step extends MathComponent {
   static rendererType = "math";
 }
 
-export class NumRows extends Integer {
-  static componentType = "numrows";
+export class MinNumRows extends Integer {
+  static componentType = "minNumRows";
   static rendererType = "number";
 }
 
-export class NumColumns extends Integer {
-  static componentType = "numcolumns";
+export class MinNumColumns extends Integer {
+  static componentType = "minNumColumns";
   static rendererType = "number";
 }
 
@@ -689,6 +689,11 @@ export class Uri extends TextComponent {
 
 export class Youtube extends TextComponent {
   static componentType = "youtube";
+  static rendererType = "text";
+}
+
+export class Geogebra extends TextComponent {
+  static componentType = "geogebra";
   static rendererType = "text";
 }
 
