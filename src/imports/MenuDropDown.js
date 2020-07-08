@@ -13,27 +13,6 @@ const DropDown = styled.div`
     border-radius:20px;
     position:relative;
 `
-const Icon = styled.div`
-font-size:19px;
-padding:15px;
-    // display: flex;
-    // flex-direction: row;
-    // font-size: 13px;
-    // text-align: center;
-    // width: 250px;
-    // border-radius: 4px;
-    // cursor: pointer;
-    // background-color: none;
-    // padding: 7px 5px;
-    // padding-left:55px;
-    // color:#333333;
-    // text-transform: none;
-    // font-weight: 700;
-    // border: 0.5px solid;
-    // border-color: #333333;
-    // transition: 300ms;
-    // margin: 0px 10px;
-`
 const MenuController = styled.button`
     margin:0;
     background-color: #6de5ff;
@@ -48,71 +27,69 @@ const DropDownContent = styled.div`
     display: ${props => props.open ? 'block' : 'none'};
     // position: fixed;
     background-color: white;
-    min-width: 200px;
+    // min-width: 200px;
+    // max-width:500px;
+    width:300px;
     border:1px solid #E2E2E2;
     z-index: 9999;
     color:black;
-    position:absolute;
-    top:30px;
-    left:-70px;
+    position:${props => props.appendToBody ? 'fixed' : 'absolute'};
+    left: ${props => props.position === 'right' ? 0 : 'unset'};
+    right: ${props => props.position === 'left' ? 0 : 'unset'};
+    top: ${props => props.position === 'right' ? '35px' : 'unset'};
+
 `
 const DropDownContentItem = styled.div`
-    padding: 5px 5px;
+    
     background-color: ${props => props.selected ? 'rgb(58, 172, 144)' : 'transperant'};
     color: ${props => props.selected ? 'white' : 'black'};
-    justify-content: center;
-    min-height: 40px;
-    align-items: center;
-    display:flex;
+    
     &:hover {
         // color: ${props => props.selected ? 'white' : 'blue'};
         background-color: ${props => props.selected ? 'rgb(58, 172, 144)' : 'lightgray'};
     }
     cursor: default;
-    max-width:250px;
- 
-    a {
-        width: 190px;
-        padding: 20px 0px;
-        text-decoration: none !important;
-        background-color: transperant;
-        color: ${props => props.selected ? 'white' : 'black'};    
-    }
+    max-width:350px;
 `
 
-const ProfilePicture = styled.button`
-  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url("/profile_pictures/${props => props.pic}.jpg");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  transition: 300ms;
-  color: #333333;
-  width:40px;
-  height:40px;
-  display: inline;
-  color: rgba(0, 0, 0, 0);
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  border-style:none;
-  
-`;
+const DropdownLabelLink =  styled.div`
+    padding: 5px 5px;
+    min-height: 40px;
+    justify-content: center;
+    align-items: center;
+    display:flex;
+        a {
+            width: 190px;
+            padding: 20px 0px;
+            text-decoration: none !important;
+            background-color: transperant;
+            color: ${props => props.selected ? 'white' : 'black'};    
+        }
+`
 
+const DropdownCustomOption =  styled.div`
+    justify-content: center;
+    align-items: center;
+    display:flex;
+`
 
-
-const MenuDropDown = ({ 
-    currentTool, showThisRole = "", 
-    itemsToShow = {}, 
-    menuIcon, 
-    width, 
+const MenuDropDown = ({
+    currentTool,
+    showThisMenuText = "",
+    options = [],
+    menuBase,
+    width,
     picture,
-    grayTheseOut = [], 
-    offsetPos = 0, 
-    menuWidth, 
+    grayTheseOut = [],
+    offsetPos = 0,
+    appendToBody = false,
+    position = 'right',
+    menuWidth,
     placeholder = "Select Value" }) => {
     const [MenuWidth, setMenuWidth] = useState(menuWidth);
-    const [currentItemDisplay, setCurrentItemDisplay] = useState(Object.keys(itemsToShow).length > 0 && !!showThisRole ? itemsToShow[showThisRole] : {});
+    let defaultValue = !!options.length && !!showThisMenuText && options.filter(o => o.label === showThisMenuText)[0];
+    if (!defaultValue) { defaultValue = []; }
+    const [currentItemDisplay, setCurrentItemDisplay] = useState(defaultValue);
 
     let updateNumber = 0;
     const node = useRef();
@@ -137,61 +114,61 @@ const MenuDropDown = ({
         }
     }
 
-
-
-    let menuBase = (
-        <button
-            style={{
-                color: "black",
-                margin: "0",
-                height: "20px",
-                fontSize: "14px",
-                cursor: "pointer",
-                display: "block",
-            }}
-        >
-            {!!Object.keys(currentItemDisplay).length ? <div
+    if (!menuBase) {
+        menuBase = (
+            <button
                 style={{
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    maxWidth: "100px",
-                    display: "inline-block"
-                }}>
-                {currentItemDisplay.showText}
-            </div> : <div
-                style={{
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    maxWidth: "100px",
-                    display: "inline-block"
-                }}>
-                    {placeholder}
-                </div>}
-            <FontAwesomeIcon
-                icon={faChevronDown}
-                style={{
-                    verticalAlign: "1px",
-                    marginLeft: "5px"
+                    color: "black",
+                    margin: "0",
+                    height: "20px",
+                    fontSize: "14px",
+                    cursor: "pointer",
+                    display: "block",
                 }}
-                size={'sm'} />
-        </button>)
+            >
+                {!!Object.keys(currentItemDisplay).length ? <div
+                    style={{
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        maxWidth: "100px",
+                        display: "inline-block"
+                    }}>
+                    {currentItemDisplay.label}
+                </div> : <div
+                    style={{
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        maxWidth: "100px",
+                        display: "inline-block"
+                    }}>
+                        {placeholder}
+                    </div>}
+                <FontAwesomeIcon
+                    icon={faChevronDown}
+                    style={{
+                        verticalAlign: "1px",
+                        marginLeft: "5px"
+                    }}
+                    size={'sm'} />
+            </button>)
+    }
 
-        if (menuIcon){
-            menuBase = <Icon>
-            <FontAwesomeIcon icon={menuIcon} size={'lg'} />
-             </Icon>
-        }else if (picture) {
 
-            menuBase = <ProfilePicture
-                  pic={picture}
-                  name="changeProfilePicture"
-                  id="changeProfilePicture"
-                >
-                </ProfilePicture>
+    // if (menuIcon) {
+    //     menuBase = <Icon>
+    //         <FontAwesomeIcon icon={menuIcon} size={'lg'} />
+    //     </Icon>
+    // } else if (picture) {
 
-        }
+    //     menuBase = <ProfilePicture
+    //         pic={picture}
+    //         name="changeProfilePicture"
+    //         id="changeProfilePicture"
+    //     >
+    //     </ProfilePicture>
+    // }
 
     return (
         <DropDown ref={node}>
@@ -199,23 +176,29 @@ const MenuDropDown = ({
                 {menuBase}
             </div>
 
-            <DropDownContent open={show}>
-                {Object.keys(itemsToShow).map((item, i) =>
+            <DropDownContent open={show} appendToBody={appendToBody} position={position}>
+                {options.map((o, i) =>
                     (<DropDownContentItem
                         key={i}
                         onClick={() => {
-                            if (itemsToShow[item]['url']) {
-                                window.location.href = itemsToShow[item]['url']
+                            if (o['url']) {
+                                window.location.href = o['url']
                             } else {
-                                setCurrentItemDisplay(itemsToShow[item]);
-                                if (itemsToShow[item]["callBackFunction"]) {
-                                    itemsToShow[item]["callBackFunction"](item)
+                                setCurrentItemDisplay(o);
+                                if (o["callBackFunction"]) {
+                                    o["callBackFunction"](o)
                                 }
                             }
                         }}
-                        selected={currentItemDisplay && currentItemDisplay.showText === itemsToShow[item]['showText']}>
-                        {!!itemsToShow[item].link ? <a href={itemsToShow[item].link}>
-                            {itemsToShow[item]['showText']}</a> : itemsToShow[item]['showText']}
+                        selected={currentItemDisplay && currentItemDisplay.id === o['id']}>
+                        <DropdownCustomOption>
+                        {!!o['optionElem'] && o['optionElem']}
+                        </DropdownCustomOption>
+                        <DropdownLabelLink 
+                        selected={currentItemDisplay && currentItemDisplay.id === o['id']}>
+                            {!!o.link ? <a href={o.link}>
+                        {o['label']}</a> : o['label']}
+                        </DropdownLabelLink>
                     </DropDownContentItem>
                     ))}
             </DropDownContent>

@@ -477,13 +477,6 @@ export default function DoenetProfile(props) {
       </ToolLayout>
 
 
-      {/* <DoenetHeader
-        toolName="Profile"
-        // headingTitle="Edit My Profile"
-        willProvideProfile={true}
-        profile={myProfile}
-      ></DoenetHeader>  */}
-
     </>
   );
 

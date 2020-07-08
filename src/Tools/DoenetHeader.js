@@ -29,13 +29,54 @@ const ExtendedHeader = styled.div`
     }
      
     &.off {
-      margin-top: ${props => '-'+props.extendedMarginOffTop+'px'};
+      margin-top: ${props => '-' + props.extendedMarginOffTop + 'px'};
       opacity: 0;
       margin-bottom: 50px;
     }
   }
-
    
+`;
+
+const Icon = styled.div`
+font-size:19px;
+padding:15px;
+`;
+
+const ProfilePicture = styled.button`
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+    url("/profile_pictures/${props => props.pic}.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  transition: 300ms;
+  color: #333333;
+  width:45px;
+  height:45px;
+  display: inline;
+  color: rgba(0, 0, 0, 0);
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  border-style:none;
+  
+`;
+const ProfilePictureLrg = styled.div`
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+    url("/profile_pictures/${props => props.pic}.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  transition: 300ms;
+  color: #333333;
+  width:100px;
+  height:100px;
+  display: block;
+  color: rgba(0, 0, 0, 0);
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  border-style:none;
+  
 `;
 
 
@@ -120,40 +161,57 @@ class DoenetHeader extends Component {
       // "Profile": "/profile/",
     }
 
-    this.menuToolBoxItems = {
-      "Chooser": {
-        showText: "Chooser",
+    this.menuToolBoxItems = [
+      {
+        id: "Chooser",
+        label: "Chooser",
         link: "/chooser/"
       },
-      "Course": {
-        showText: "Course",
+      {
+        id: "Course",
+        label: "Course",
         link: "/course/"
       },
-      "Documentation": {
-        showText: "Documentation",
+      {
+        id: "Documentation",
+        label: "Documentation",
         link: "/docs/"
       },
-      "Gradebook": {
-        showText: "Gradebook",
+      {
+        id: "Gradebook",
+        label: "Gradebook",
         link: "/gradebook/"
-      }
-    };
-    this.profileMenuMap = {
-      "Account": {
-        showText: "Account Settings",
-        link: "/accountsettings/"
+      }];
+
+    this.profileMenuMap = [
+      {
+        optionElem: <ProfilePictureLrg pic={this.props.profile.profilePicture}  name="changeProfilePicture" id="changeProfilePicture" 
+        />,
+        id:'profile',
+        label: "@screenName"
       },
-      "SignOut": {
-        showText: "Sign in",
-        link: "/signin/",
-      }
-    }
-    if (props.signedIn){
-      this.profileMenuMap.SignOut = {
-        showText: "Sign out",
+   
+
+      {
+        id: "Account",
+        label: "Account Settings",
+        link: "/accountsettings/"
+      }];
+    if (props.isSignedIn) {
+      this.profileMenuMap.push({
+        id: "SignOut",
+        label: "Sign out",
         link: "/signout/",
-      }
+      });
+    } else {
+      this.profileMenuMap.push({
+        id: "SignIn",
+        label: "Sign in",
+        link: "/signin/",
+      });
     }
+
+
 
   }
 
@@ -164,9 +222,9 @@ class DoenetHeader extends Component {
         myProfile: props.headerChangesFromLayout
       });
     }
-    if(props.headerRoleFromLayout){
+    if (props.headerRoleFromLayout) {
       this.setState({
-        myRoles:props.headerRoleFromLayout
+        myRoles: props.headerRoleFromLayout
       });
     }
   }
@@ -175,17 +233,17 @@ class DoenetHeader extends Component {
   }
 
   // loadMyProfile() {
-    // axios
-    //   .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
-    //   .then(resp => {
-    //     // console.dir(resp.data);
-    //     this.setState({
-    //       myProfile: resp.data
-    //     });
-    //     this.rolesToChoose(resp.data);
+  // axios
+  //   .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
+  //   .then(resp => {
+  //     // console.dir(resp.data);
+  //     this.setState({
+  //       myProfile: resp.data
+  //     });
+  //     this.rolesToChoose(resp.data);
 
-    //   })
-    //   .catch(err => console.error(err.response.toString()));
+  //   })
+  //   .catch(err => console.error(err.response.toString()));
   // }
 
   componentWillUnmount() {
@@ -235,48 +293,20 @@ class DoenetHeader extends Component {
 
 
   render() {
-    console.log("header signedIn",this.props.signedIn);
-    console.log("header render",this.props.profile)
+    // console.log("header isSignedIn", this.props.isSignedIn);
+    // console.log("header render", this.props.profile)
     const sliderClass = this.state.sliderVisible ? 'on' : 'off';
     if (!!this.refs.extendedHeader) {
       this.headerSectionCount = this.refs.extendedHeader.children.length;
     }
     const extendedMarginOffTop = (this.headerSectionCount + 1) * 50;
-    // let toolBox = {};
-
-
-    // toolBox = this.toolTitleToLinkMap &&
-
-    //   <div className="toolboxContainer" data-cy="toolboxButton" onClick={this.toogleToolbox}>
-
-    //     <FontAwesomeIcon id="toolboxButton" icon={faTh} />
-    //     {this.state.showToolbox &&
-    //       <Toolbox show={this.state.showToolbox} toogleToolbox={this.toogleToolbox}>
-    //         {Object.keys(this.toolTitleToLinkMap).length > 0 ?
-    //           <div>
-    //             {Object.keys(this.toolTitleToLinkMap).sort().map((toolName, index) => {
-    //               let currentUrl = window.location.href;
-    //               const navLinkClassName = currentUrl.includes(this.toolTitleToLinkMap[toolName]) ?
-    //                 "selectedToolboxNavLink" : "toolboxNavLink";
-    //               return (
-    //                  <div className={navLinkClassName} key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolName}>
-    //                   <a href={this.toolTitleToLinkMap[toolName]}>{toolName}</a>
-    //                 </div>
-    //               )
-    //             }
-    //             )}
-    //           </div>
-    //           : ''}
-    //       </Toolbox>}
-    //   </div>
-
-    const menuToolBox = <MenuDropDown menuIcon ={faTh} offset={-20} showThisRole={this.props.toolName} itemsToShow={this.menuToolBoxItems} />;
-   const profileMenu = <MenuDropDown 
-   picture={this.props.profile.profilePicture} 
-   offset={-20} showThisRole={''} itemsToShow={this.profileMenuMap} />;
-
-    const isMultipleRoles = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? Object.keys(this.state.myRoles.permissionRoles).length > 1 : false;
-    const isSingleRole = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? Object.keys(this.state.myRoles.permissionRoles).length === 1 : false;
+    
+    const menuIcon = <Icon><FontAwesomeIcon icon={faTh} size={'lg'} /></Icon>;
+    const profilePicture = <ProfilePicture position={'left'} pic={this.props.profile.profilePicture} name="changeProfilePicture" id="changeProfilePicture" />;
+    const menuToolBox = <MenuDropDown position={'left'} menuBase={menuIcon} offset={-20} showThisMenuText={this.props.toolName} options={this.menuToolBoxItems} />;
+    const profileMenu = <MenuDropDown position={'left'} menuBase={profilePicture} offset={-20} showThisMenuText={this.props.toolName} options={this.profileMenuMap} />;
+    const isMultipleRoles = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? this.state.myRoles.permissionRoles.length > 1 : false;
+    const isSingleRole = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? this.state.myRoles.permissionRoles.length === 1 : false;
     return (
       <React.Fragment>
         <div className="headingContainer">
@@ -288,25 +318,20 @@ class DoenetHeader extends Component {
             <span>{this.props.toolName}</span>
           </div>
 
-         {this.props.headingTitle && <div className="headingTitle">
+          {this.props.headingTitle && <div className="headingTitle">
             <span>{this.props.headingTitle}</span>
           </div>}
           {!this.props.guestUser && <div className="headingToolbar">
-            {/* {isMultipleRoles && <Menu showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} />} */}
-             {isMultipleRoles && <MenuDropDown offsetPos={-20} showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} placeholder={"Select Course"} />}
+            {isMultipleRoles && <MenuDropDown position={'left'} offsetPos={-20} showThisMenuText={'Instructor'} options={this.state.myRoles.permissionRoles} placeholder={"Select Course"} />}
             {isSingleRole && <button style={{
-              // display: "flex",
               alignItems: "center",
-              // padding: "10px",
-               borderRadius: "5px"
-               }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
-            {/* {toolBox} */}
+              borderRadius: "5px",
+            }}>{this.state.myRoles.permissionRoles[0].label}</button>}
             {menuToolBox}
             {profileMenu}
-           {/* <MenuDropDown offsetPos={-20} showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} placeholder={"Select Course"} /> */}
-          
-           
-           
+
+
+
           </div>}
 
 
@@ -318,21 +343,17 @@ class DoenetHeader extends Component {
               <span>{this.props.headingTitle}</span>
             </div>
           </div>}
-            {!this.props.guestUser && 
-          <div className="extended-header">
-          {isMultipleRoles && <MenuDropDown showThisRole={'Instructor'} itemsToShow={this.state.myRoles.permissionRoles} />}
-          {isSingleRole && <button style={{
-              // display: "flex",
-              alignItems: "center",
-              // padding: "10px",
-               borderRadius: "5px"
-               }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
-            {/* {toolBox} */}
-            {menuToolBox}
-            
-            {profileMenu}
+          {!this.props.guestUser &&
+            <div className="extended-header">
+              {isMultipleRoles && <MenuDropDown position={'right'} showThisMenuText={'Instructor'} options={this.state.myRoles.permissionRoles} />}
+              {isSingleRole && <button style={{
+                alignItems: "center",
+                borderRadius: "5px",
+              }}>{this.state.myRoles.permissionRoles[Object.keys(this.state.myRoles.permissionRoles)[0]].showText}</button>}
+              {menuToolBox}
+              {profileMenu}
 
-          </div>}
+            </div>}
         </ExtendedHeader>
       </React.Fragment>
     );
