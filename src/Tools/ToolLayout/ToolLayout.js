@@ -64,6 +64,8 @@ export default function ToolLayout(props) {
   const [profile, setProfile] = useState(currentProfile);
   
 
+
+
   useEffect(() => {
     //Fires each time you change the tool
 
@@ -71,6 +73,7 @@ export default function ToolLayout(props) {
 
       if (Object.keys(cookieProfile.Profile).length < 3) {
         //Need to load profile from database 
+        console.log("HERE!!!")
         //Ask Server for data which matches email address
         const phpUrl = '/api/loadProfile.php';
         const data = {
@@ -91,7 +94,6 @@ export default function ToolLayout(props) {
             }
           })
           .catch(error => { this.setState({ error: error }) });
-        return (<h1>Loading...</h1>)
       }
     }
     else if (location.hostname !== "localhost") {
@@ -125,6 +127,13 @@ export default function ToolLayout(props) {
     }
 
   }, []);
+
+  if (Object.keys(cookieProfile).includes("Profile")) {
+
+    if (Object.keys(cookieProfile.Profile).length < 3) {
+      return (<h1>Loading...</h1>)
+    }
+  }
 
   var w = window.innerWidth;
   let leftW;

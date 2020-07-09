@@ -39,6 +39,7 @@ let ProfilePicture = styled.button`
   align-items: center;
   margin-left: 100px;
   border-radius: 50%;
+  border-style:none;
   user-select: none;
   &:hover, &:focus {
     background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
@@ -112,6 +113,7 @@ let ModalPic = styled.button`
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  border-style: none;
   user-select: none;
   &:hover {
     background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
@@ -205,7 +207,7 @@ export default function DoenetProfile(props) {
       roleStudent: "1",
       roleWatchdog: "0",
       studentId: null,
-      toolAccess: ["Chooser", "Documentation", "Profile"],
+      toolAccess: ["Chooser", "Documentation"],
       trackingConsent: "1",
       username: "anonymous",
     }
@@ -271,9 +273,9 @@ export default function DoenetProfile(props) {
 
   function defineToolAccess(profile){
     let roleToToolAccess = {
-      "roleStudent": ["Chooser", "Course", "Profile"],
-      "roleInstructor": ["Chooser", "Course", "Documentation", "Gradebook", "Profile"],
-      "roleCourseDesigner": ["Chooser", "Course", "Documentation", "Profile"],
+      "roleStudent": ["Chooser", "Course"],
+      "roleInstructor": ["Chooser", "Course", "Documentation", "Gradebook"],
+      "roleCourseDesigner": ["Chooser", "Course", "Documentation"],
     }
     let toolAccess = [];
 
@@ -311,7 +313,7 @@ export default function DoenetProfile(props) {
           alt={`${value} profile picture`}
           onClick={e => {
             updateMyProfile("profilePicture", value, true); // updates immediately
-            setMyProfile(prev => prev = { ...prev, "profilePicture": value }); // use the previous state to create a state where profilePicture is value
+            // setMyProfile(prev => prev = { ...prev, "profilePicture": value }); // use the previous state to create a state where profilePicture is value
             changeModalVisibility(e, "hidden");
           }}
         >

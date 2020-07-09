@@ -114,6 +114,7 @@ class DoenetHeader extends Component {
 
     
     this.populateMenuToolbox(props.profile.toolAccess)
+    this.profilePicture = this.props.profile.profilePicture;
 
     this.profileMenuMap = [
       {
@@ -138,6 +139,7 @@ class DoenetHeader extends Component {
   }
 
   populateMenuToolbox(tools){
+    console.log("tools",tools)
     const toolObjs = {
       "chooser": {
         id: "Chooser",
@@ -173,17 +175,11 @@ class DoenetHeader extends Component {
   }
 
   componentWillReceiveProps(props) {
-    // console.log(props.headerChangesFromLayout);
-    if (props.headerChangesFromLayout) {
-      this.setState({
-        myProfile: props.headerChangesFromLayout
-      });
+    if (props.headerChangesFromLayout){
+      this.populateMenuToolbox(props.headerChangesFromLayout.toolAccess);
+      this.profilePicture = props.headerChangesFromLayout.profilePicture;
     }
-    if (props.headerRoleFromLayout) {
-      this.setState({
-        myRoles: props.headerRoleFromLayout
-      });
-    }
+ 
   }
 
   rolesToChoose(data) {
@@ -245,7 +241,7 @@ class DoenetHeader extends Component {
     
     const menuToolBox = <MenuDropDown position={'left'} menuIcon={faTh} offset={-20} showThisMenuText={this.props.toolName} options={this.menuToolBoxItems} />;
     const profileMenu = <MenuDropDown position={'left'}
-      picture={this.props.profile.profilePicture}
+      picture={this.profilePicture}
       offset={-20} showThisMenuText={''} options={this.profileMenuMap} />;
 
     const isMultipleRoles = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? Object.keys(this.state.myRoles.permissionRoles).length > 1 : false;
