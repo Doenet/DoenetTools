@@ -148,7 +148,6 @@ export default function DoenetProfile(props) {
     currentProfile = cookieProfile.Profile;
   }
   const [profile, setProfile] = useState(currentProfile);
-  console.log("profile", profile)
 
   if (!Object.keys(tracking).includes("TrackingConsent")) {
     setTracking("TrackingConsent", true, { path: "/" });

@@ -44,7 +44,7 @@ export default function ToolLayout(props) {
     roleStudent: "1",
     roleWatchdog: "0",
     studentId: null,
-    toolAccess: ["Chooser", "Documentation", "Profile"],
+    toolAccess: ["Chooser", "Documentation"],
     trackingConsent: "1",
     username: "anonymous",
   }
@@ -58,10 +58,11 @@ export default function ToolLayout(props) {
   let currentProfile = anonymousUserProfile;
 
   if (Object.keys(cookieProfile).includes("Profile")) {
-currentProfile = cookieProfile.Profile;
+    currentProfile = cookieProfile.Profile;
   }
 
   const [profile, setProfile] = useState(currentProfile);
+  
 
   useEffect(() => {
     //Fires each time you change the tool
@@ -81,11 +82,10 @@ currentProfile = cookieProfile.Profile;
         }
         axios.get(phpUrl, payload)
           .then(resp => {
-            console.log('resp', resp);
+            // console.log('resp', resp);
             if (resp.data.success === "1") {
               let profile = resp.data.profile;
               profile['nineCode'] = cookieProfile.Profile.nineCode;
-              console.log("profile-->", profile)
               setCookieProfile("Profile",profile,{path:"/"});
               setProfile(profile);
             }

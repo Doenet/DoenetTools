@@ -43,6 +43,7 @@ class DoenetHeader extends Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
       menuVisble: false,
       showToolbox: false,
@@ -111,38 +112,10 @@ class DoenetHeader extends Component {
       {this.options}
     </select>)
 
+    
+    this.populateMenuToolbox(props.profile.toolAccess)
 
-    this.toolTitleToLinkMap = {
-      "Chooser": "/chooser/",
-      "Course": "/course/",
-      "Documentation": "/docs/",
-      "Gradebook": "/gradebook/",
-      // "Profile": "/profile/",
-    }
-
-    this.menuToolBoxItems = [
-      {
-        id: "Chooser",
-        label: "Chooser",
-        link: "/chooser/"
-      },
-      {
-        id: "Course",
-        label: "Course",
-        link: "/course/"
-      },
-      {
-        id: "Documentation",
-        label: "Documentation",
-        link: "/docs/"
-      },
-      {
-        id: "Gradebook",
-        label: "Gradebook",
-        link: "/gradebook/"
-      }];
     this.profileMenuMap = [
-  
       {
         id: "Account",
         label: "Account settings",
@@ -164,6 +137,41 @@ class DoenetHeader extends Component {
 
   }
 
+  populateMenuToolbox(tools){
+    const toolObjs = {
+      "chooser": {
+        id: "Chooser",
+        label: "Chooser",
+        link: "/chooser/"
+      },
+      "course":{
+        id: "Course",
+        label: "Course",
+        link: "/course/"
+      },
+      "documentation": {
+        id: "Documentation",
+        label: "Documentation",
+        link: "/docs/"
+      },
+      "gradebook":{
+        id: "Gradebook",
+        label: "Gradebook",
+        link: "/gradebook/"
+      },
+      "dashboard":{
+        id: "Dashboard",
+        label: "Dashboard",
+        link: "/dashboard/"
+      }
+    }
+
+    this.menuToolBoxItems = [];
+    for (let tool of tools){
+      this.menuToolBoxItems.push(toolObjs[tool.toLowerCase()]);
+    }
+  }
+
   componentWillReceiveProps(props) {
     // console.log(props.headerChangesFromLayout);
     if (props.headerChangesFromLayout) {
@@ -181,19 +189,6 @@ class DoenetHeader extends Component {
   rolesToChoose(data) {
   }
 
-  // loadMyProfile() {
-  // axios
-  //   .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
-  //   .then(resp => {
-  //     // console.dir(resp.data);
-  //     this.setState({
-  //       myProfile: resp.data
-  //     });
-  //     this.rolesToChoose(resp.data);
-
-  //   })
-  //   .catch(err => console.error(err.response.toString()));
-  // }
 
   componentWillUnmount() {
     this.select = undefined
@@ -247,33 +242,7 @@ class DoenetHeader extends Component {
       this.headerSectionCount = this.refs.extendedHeader.children.length;
     }
     const extendedMarginOffTop = (this.headerSectionCount + 1) * 50;
-    // let toolBox = {};
-
-
-    // toolBox = this.toolTitleToLinkMap &&
-
-    //   <div className="toolboxContainer" data-cy="toolboxButton" onClick={this.toogleToolbox}>
-
-    //     <FontAwesomeIcon id="toolboxButton" icon={faTh} />
-    //     {this.state.showToolbox &&
-    //       <Toolbox show={this.state.showToolbox} toogleToolbox={this.toogleToolbox}>
-    //         {Object.keys(this.toolTitleToLinkMap).length > 0 ?
-    //           <div>
-    //             {Object.keys(this.toolTitleToLinkMap).sort().map((toolName, index) => {
-    //               let currentUrl = window.location.href;
-    //               const navLinkClassName = currentUrl.includes(this.toolTitleToLinkMap[toolName]) ?
-    //                 "selectedToolboxNavLink" : "toolboxNavLink";
-    //               return (
-    //                  <div className={navLinkClassName} key={"toolboxNavLink" + index} data-cy={"toolboxNavLinkTo" + toolName}>
-    //                   <a href={this.toolTitleToLinkMap[toolName]}>{toolName}</a>
-    //                 </div>
-    //               )
-    //             }
-    //             )}
-    //           </div>
-    //           : ''}
-    //       </Toolbox>}
-    //   </div>
+    
     const menuToolBox = <MenuDropDown position={'left'} menuIcon={faTh} offset={-20} showThisMenuText={this.props.toolName} options={this.menuToolBoxItems} />;
     const profileMenu = <MenuDropDown position={'left'}
       picture={this.props.profile.profilePicture}
@@ -343,13 +312,5 @@ class DoenetHeader extends Component {
   }
 }
 
-const Toolbox = ({ toogleToolbox, children }) => {
-
-  return (
-    <section className="toolbox" data-cy="toolbox">
-      {children}
-    </section>
-  );
-}
 
 export default DoenetHeader;

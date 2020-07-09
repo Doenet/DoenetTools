@@ -37,12 +37,12 @@ if ($result->num_rows > 0){
         "roleLiveDataCommunity" => $row['roleLiveDataCommunity'],
 );
 $roleAccessList = array(
-    "roleStudent" => array("Chooser", "Course", "Profile"),
-    "roleInstructor" => array("Chooser", "Course", "Documentation", "Gradebook", "Profile"),
-    "roleCourseDesigner" => array("Chooser", "Course", "Documentation", "Profile"),
-    "roleWatchdog" => array(/*???*/"Profile"),
-    "roleCommunityTA" => array(/*???*/"Profile"),
-    "roleLiveDataCommunity" => array(/*???*/"Profile")
+    "roleStudent" => array("Chooser", "Course"),
+    "roleInstructor" => array("Chooser", "Course", "Documentation", "Gradebook"),
+    "roleCourseDesigner" => array("Chooser", "Course", "Documentation"),
+    "roleWatchdog" => array(/*???*/),
+    "roleCommunityTA" => array(/*???*/),
+    "roleLiveDataCommunity" => array(/*???*/)
   );
   
   $toolAccessList = [];
