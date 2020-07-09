@@ -156,20 +156,6 @@ const MenuDropDown = ({
     }
 
 
-    // if (menuIcon) {
-    //     menuBase = <Icon>
-    //         <FontAwesomeIcon icon={menuIcon} size={'lg'} />
-    //     </Icon>
-    // } else if (picture) {
-
-    //     menuBase = <ProfilePicture
-    //         pic={picture}
-    //         name="changeProfilePicture"
-    //         id="changeProfilePicture"
-    //     >
-    //     </ProfilePicture>
-    // }
-
     return (
         <DropDown ref={node}>
             <div>

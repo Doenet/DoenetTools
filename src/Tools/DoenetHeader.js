@@ -84,6 +84,7 @@ class DoenetHeader extends Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
       menuVisble: false,
       showToolbox: false,
@@ -152,13 +153,28 @@ class DoenetHeader extends Component {
       {this.options}
     </select>)
 
+    
+    this.populateMenuToolbox(props.profile.toolAccess)
+    this.profilePicture = this.props.profile.profilePicture;
 
-    this.toolTitleToLinkMap = {
-      "Chooser": "/chooser/",
-      "Course": "/course/",
-      "Documentation": "/docs/",
-      "Gradebook": "/gradebook/",
-      // "Profile": "/profile/",
+    this.profileMenuMap = [
+      {
+        id: "Account",
+        label: "Account settings",
+        link: "/accountsettings/"
+      }];
+    if (props.isSignedIn) {
+      this.profileMenuMap.push({
+        id: "SignOut",
+        label: "Sign out",
+        link: "/signout/",
+      });
+    } else {
+      this.profileMenuMap.push({
+        id: "SignIn",
+        label: "Sign in",
+        link: "/signin/",
+      });
     }
 
     this.menuToolBoxItems = [
@@ -210,41 +226,56 @@ class DoenetHeader extends Component {
         link: "/signin/",
       });
     }
+  }
 
 
-
+  populateMenuToolbox(tools){
+    console.log("tools",tools)
+    const toolObjs = {
+      "chooser": {
+        id: "Chooser",
+        label: "Chooser",
+        link: "/chooser/"
+      },
+      "course":{
+        id: "Course",
+        label: "Course",
+        link: "/course/"
+      },
+      "documentation": {
+        id: "Documentation",
+        label: "Documentation",
+        link: "/docs/"
+      },
+      "gradebook":{
+        id: "Gradebook",
+        label: "Gradebook",
+        link: "/gradebook/"
+      },
+      "dashboard":{
+        id: "Dashboard",
+        label: "Dashboard",
+        link: "/dashboard/"
+      }
+    }
+  
+    this.menuToolBoxItems = [];
+    for (let tool of tools){
+      this.menuToolBoxItems.push(toolObjs[tool.toLowerCase()]);
+    }
   }
 
   componentWillReceiveProps(props) {
-    // console.log(props.headerChangesFromLayout);
-    if (props.headerChangesFromLayout) {
-      this.setState({
-        myProfile: props.headerChangesFromLayout
-      });
+    if (props.headerChangesFromLayout){
+      this.populateMenuToolbox(props.headerChangesFromLayout.toolAccess);
+      this.profilePicture = props.headerChangesFromLayout.profilePicture;
     }
-    if (props.headerRoleFromLayout) {
-      this.setState({
-        myRoles: props.headerRoleFromLayout
-      });
-    }
+ 
   }
 
   rolesToChoose(data) {
   }
 
-  // loadMyProfile() {
-  // axios
-  //   .get(`/api/loadMyProfile.php?timestamp=${new Date().getTime()}`) // added timestamp to eliminate browser caching
-  //   .then(resp => {
-  //     // console.dir(resp.data);
-  //     this.setState({
-  //       myProfile: resp.data
-  //     });
-  //     this.rolesToChoose(resp.data);
-
-  //   })
-  //   .catch(err => console.error(err.response.toString()));
-  // }
 
   componentWillUnmount() {
     this.select = undefined
@@ -302,7 +333,7 @@ class DoenetHeader extends Component {
     const extendedMarginOffTop = (this.headerSectionCount + 1) * 50;
     
     const menuIcon = <Icon><FontAwesomeIcon icon={faTh} size={'lg'} /></Icon>;
-    const profilePicture = <ProfilePicture position={'left'} pic={this.props.profile.profilePicture} name="changeProfilePicture" id="changeProfilePicture" />;
+    const profilePicture = <ProfilePicture position={'left'} pic={this.profilePicture} name="changeProfilePicture" id="changeProfilePicture" />;
     const menuToolBox = <MenuDropDown position={'left'} menuBase={menuIcon} offset={-20} showThisMenuText={this.props.toolName} options={this.menuToolBoxItems} />;
     const profileMenu = <MenuDropDown position={'left'} menuBase={profilePicture} offset={-20} showThisMenuText={this.props.toolName} options={this.profileMenuMap} />;
     const isMultipleRoles = !!this.state.myRoles && !!this.state.myRoles.permissionRoles ? this.state.myRoles.permissionRoles.length > 1 : false;
@@ -314,7 +345,7 @@ class DoenetHeader extends Component {
             <FontAwesomeIcon id='headerPlayBtn-icon' fontSize='16px' icon={this.state.sliderVisible ? faCaretDown : faCaretRight} />
           </div>
           <div className="toolName">
-            <img id="doenetLogo" onClick={() => { location.href = "/"; }} src={doenetImage} height='40px' />
+            <img id="doenetLogo" onClick={() => { location.href = "/dashboard"; }} src={doenetImage} height='40px' />
             <span>{this.props.toolName}</span>
           </div>
 
@@ -358,15 +389,8 @@ class DoenetHeader extends Component {
       </React.Fragment>
     );
   }
-}
 
-const Toolbox = ({ toogleToolbox, children }) => {
-
-  return (
-    <section className="toolbox" data-cy="toolbox">
-      {children}
-    </section>
-  );
+  
 }
 
 export default DoenetHeader;
