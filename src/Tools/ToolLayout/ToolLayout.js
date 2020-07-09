@@ -62,7 +62,7 @@ export default function ToolLayout(props) {
   }
 
   const [profile, setProfile] = useState(currentProfile);
-  
+
 
 
 
@@ -73,7 +73,6 @@ export default function ToolLayout(props) {
 
       if (Object.keys(cookieProfile.Profile).length < 3) {
         //Need to load profile from database 
-        console.log("HERE!!!")
         //Ask Server for data which matches email address
         const phpUrl = '/api/loadProfile.php';
         const data = {
@@ -89,7 +88,7 @@ export default function ToolLayout(props) {
             if (resp.data.success === "1") {
               let profile = resp.data.profile;
               profile['nineCode'] = cookieProfile.Profile.nineCode;
-              setCookieProfile("Profile",profile,{path:"/"});
+              setCookieProfile("Profile", profile, { path: "/" });
               setProfile(profile);
             }
           })
@@ -128,12 +127,8 @@ export default function ToolLayout(props) {
 
   }, []);
 
-  if (Object.keys(cookieProfile).includes("Profile")) {
 
-    if (Object.keys(cookieProfile.Profile).length < 3) {
-      return (<h1>Loading...</h1>)
-    }
-  }
+ 
 
   var w = window.innerWidth;
   let leftW;
@@ -410,6 +405,13 @@ export default function ToolLayout(props) {
 
   }
   const footerClass = props.children.length > 1 ? 'footer-on' : 'footer-off';
+
+  
+  //Show loading if profile is only email and code
+  if (Object.keys(profile).length < 3) {
+    return (<h1>Loading...</h1>)
+  }
+
   return (
     <>
       <DoenetHeader

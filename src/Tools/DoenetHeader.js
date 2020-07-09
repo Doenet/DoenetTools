@@ -139,7 +139,6 @@ class DoenetHeader extends Component {
   }
 
   populateMenuToolbox(tools){
-    console.log("tools",tools)
     const toolObjs = {
       "chooser": {
         id: "Chooser",
