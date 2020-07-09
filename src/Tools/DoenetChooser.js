@@ -1679,6 +1679,16 @@ class DoenetChooser extends Component {
     this.setState({splitPanelLayout: !this.state.splitPanelLayout});
   }
 
+  getPathToFolder = (folderId) => {
+    let pathToFolder = [folderId];
+    let currentParentId = this.folderInfo[folderId].parentId;
+    while (currentParentId != "root") {
+      pathToFolder.unshift(currentParentId);
+      currentParentId = this.folderInfo[currentParentId].parentId;
+    }
+    return pathToFolder;
+  }
+
   render(){
 
     if (!this.courses_loaded || !this.assignments_and_headings_loaded){
@@ -1807,8 +1817,16 @@ class DoenetChooser extends Component {
             this.forceUpdate()
           }}
           onParentNodeClick={(id, type) => {
-            this.setState({selectedItems: [id], selectedItemsType: [type]})
+            // get path to item
+            let pathToSelectedFolder = this.getPathToFolder(id);
+            // select item and switch to directory            
+            this.setState({
+              selectedItems: [id], 
+              selectedItemsType: [type],
+              directoryStack: pathToSelectedFolder
+            })
             this.tempSet = new Set([id]);
+            this.setState({})
             this.forceUpdate()
           }}
           onParentNodeDoubleClick={(id) => {
@@ -2801,6 +2819,7 @@ class InfoPanel extends Component {
   }
 
   buildInfoPanelItemDetails(selectedItemId, selectedItemType) {
+    console.log(selectedItemId)
     this.infoPanelDetails = [];
     let itemDetails = {};
     if (selectedItemType === "folder") {
@@ -2959,7 +2978,6 @@ class InfoPanel extends Component {
         "Versions" : versions,
         // "Related content" : relatedContent,
       };
-      console.log(this.props.allContentInfo[selectedItemId].rootId);
       let isShared = this.props.allContentInfo[selectedItemId].rootId == "root" ? false :
         this.props.allFolderInfo[this.props.allContentInfo[selectedItemId].rootId].isRepo;
 
