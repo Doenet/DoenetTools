@@ -143,16 +143,19 @@ export default function DoenetProfile(props) {
   };
 
   const [cookieProfile, setCookieProfile] = useCookies('Profile');
-  const [tracking, setTracking] = useCookies('TrackingConsent');
+  const [trackingCookie, setTrackingCookie] = useCookies('TrackingConsent');
   const [jwt, setJwt] = useCookies('jwt');
+
   let currentProfile = {};
   if (cookieProfile.Profile) {
     currentProfile = cookieProfile.Profile;
   }
   const [profile, setProfile] = useState(currentProfile);
-
-  if (!Object.keys(tracking).includes("TrackingConsent")) {
-    setTracking("TrackingConsent", true, { path: "/" });
+  const [tracking, setTracking] = useState(trackingCookie.TrackingConsent);
+  if (tracking === undefined){
+    // console.log("tracking undefined")
+    setTrackingCookie("TrackingConsent", true, { path: "/" });
+    setTracking(true);
   }
 
   if (!Object.keys(jwt).includes("JWT")) {
@@ -163,10 +166,13 @@ export default function DoenetProfile(props) {
           <SectionHeader>Tracking</SectionHeader>
           <StyledSwitch
             id="trackingconsent"
-            onChange={e =>
-              setTracking("TrackingConsent", e.target.checked, { path: "/" })
+            onChange={e => {
+              setTrackingCookie("TrackingConsent", e.target.checked, { path: "/" })
+              setTracking(e.target.checked);
+            }
+              
             } // updates immediately
-            checked={tracking.TrackingConsent}
+            checked={tracking}
           >
             I consent to the use of tracking technologies.
           </StyledSwitch>
@@ -236,39 +242,37 @@ export default function DoenetProfile(props) {
   }
 
   function saveProfileToDB(immediate = false) {
-    if (saveTimerRunning || immediate) {
       const url = '/api/saveProfile.php'
       const data = {
         ...profile
       }
       axios.post(url, data)
         .then(function (resp) {
-          // console.log("resp.data", resp.data);
+          console.log("resp.data", resp.data);
         })
         .catch(function (error) {
-          this.setState({ error: error });
+          console.warn(error)
+          // this.setState({ error: error });
 
         })
-    }
 
-    setSaveTimerRunning(false);
+    
   }
 
   function updateMyProfile(field, value, immediate = false) {
-
-    profile[field] = value;
+      profile[field] = value;
     profile["toolAccess"] = defineToolAccess(profile);
     setCookieProfile("Profile", profile, { path: "/" });
     if (immediate) {
-      saveProfileToDB(immediate);
+      saveProfileToDB();
     }
     if (!saveTimerRunning) {
-      setTimeout(function () { saveProfileToDB() }, 1000)
+      setSaveTimerRunning(true);
+      setTimeout(function () { 
+      setSaveTimerRunning(false);
+      saveProfileToDB() 
+      }, 1000)
     }
-
-
-    setSaveTimerRunning(true);
-
   }
 
   function defineToolAccess(profile){
@@ -281,14 +285,13 @@ export default function DoenetProfile(props) {
 
     for (let [key,val] of Object.entries(profile)){
       if (roleToToolAccess[key] && (val + 0) === 1){
-        console.log(`${key} ${val}`);
+        // console.log(`${key} ${val}`);
         toolAccess.push(...roleToToolAccess[key]);
       }
     }
     let set = new Set(toolAccess)
     return [...set];
   }
-
 
   function ProfilePicModal(props) {
     let pics = [
@@ -406,10 +409,11 @@ export default function DoenetProfile(props) {
           <StyledSwitch
             id="trackingConsent"
             onChange={e => {
-              setTracking("TrackingConsent", e.target.checked, { path: "/" });
+              setTrackingCookie("TrackingConsent", e.target.checked, { path: "/" });
+              setTracking(e.target.checked);
               updateMyProfile("trackingConsent", e.target.checked + 0,true)
             }} // updates immediately
-            checked={tracking.TrackingConsent}
+            checked={tracking}
           >
             I consent to the use of tracking technologies.
   </StyledSwitch>

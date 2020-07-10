@@ -50,6 +50,8 @@ export default function ToolLayout(props) {
   }
   const [cookieProfile, setCookieProfile] = useCookies('Profile');
   const [jwt, setjwt] = useCookies('JWT');
+  const [trackingConsent, setTrackingConsent] = useCookies('TrackingConsent');
+
   let isSignedIn = false;
   if (Object.keys(jwt).includes("JWT")) {
     isSignedIn = true;
@@ -60,10 +62,11 @@ export default function ToolLayout(props) {
   if (Object.keys(cookieProfile).includes("Profile")) {
     currentProfile = cookieProfile.Profile;
   }
+  if (Object.keys(trackingConsent).includes("TrackingConsent")) {
+    currentProfile.trackingConsent = trackingConsent.TrackingConsent;
+  }
 
   const [profile, setProfile] = useState(currentProfile);
-
-
 
 
   useEffect(() => {

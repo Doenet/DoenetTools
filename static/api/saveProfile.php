@@ -7,6 +7,7 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 $_POST = json_decode(file_get_contents("php://input"),true);
+var_dump($_POST);
 $email =  mysqli_real_escape_string($conn,$_POST["email"]);
 $nineCode =  mysqli_real_escape_string($conn,$_POST["nineCode"]);
 $screenName =  mysqli_real_escape_string($conn,$_POST["screenName"]);
@@ -17,6 +18,10 @@ $trackingConsent =  mysqli_real_escape_string($conn,$_POST["trackingConsent"]);
 $roleStudent =  mysqli_real_escape_string($conn,$_POST["roleStudent"]);
 $roleInstructor =  mysqli_real_escape_string($conn,$_POST["roleInstructor"]);
 $roleCourseDesigner =  mysqli_real_escape_string($conn,$_POST["roleCourseDesigner"]);
+
+if ($roleStudent == true){$roleStudent = "1";}else{$roleStudent = "0";}
+if ($roleInstructor == true){$roleInstructor = "1";}else{$roleInstructor = "0";}
+if ($roleCourseDesigner == true){$roleCourseDesigner = "1";}else{$roleCourseDesigner = "0";}
 
 $sql = "UPDATE user
         SET screenName = '$screenName', 

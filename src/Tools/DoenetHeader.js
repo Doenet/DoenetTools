@@ -112,9 +112,14 @@ class DoenetHeader extends Component {
       {this.options}
     </select>)
 
+    if (props.profile.toolAccess){
+      this.populateMenuToolbox(props.profile.toolAccess)
+      this.profilePicture = this.props.profile.profilePicture;
+    }else{
+      this.populateMenuToolbox([]);
+      this.profilePicture = "anonymous";
+    }
     
-    this.populateMenuToolbox(props.profile.toolAccess)
-    this.profilePicture = this.props.profile.profilePicture;
 
     this.profileMenuMap = [
       {
@@ -174,7 +179,7 @@ class DoenetHeader extends Component {
   }
 
   componentWillReceiveProps(props) {
-    if (props.headerChangesFromLayout){
+    if (props.headerChangesFromLayout && props.headerChangesFromLayout.toolAccess){
       this.populateMenuToolbox(props.headerChangesFromLayout.toolAccess);
       this.profilePicture = props.headerChangesFromLayout.profilePicture;
     }
