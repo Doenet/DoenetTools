@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 $_POST = json_decode(file_get_contents("php://input"),true);
-var_dump($_POST);
+// var_dump($_POST);
 $email =  mysqli_real_escape_string($conn,$_POST["email"]);
 $nineCode =  mysqli_real_escape_string($conn,$_POST["nineCode"]);
 $screenName =  mysqli_real_escape_string($conn,$_POST["screenName"]);
@@ -33,7 +33,7 @@ $sql = "UPDATE user
         roleInstructor = '$roleInstructor', 
         roleCourseDesigner = '$roleCourseDesigner'
         WHERE email = '$email' AND signInCode = '$nineCode'";
-echo $sql;
+// echo $sql;
 $result = $conn->query($sql);
 $response_arr = array("success" => "1");
 

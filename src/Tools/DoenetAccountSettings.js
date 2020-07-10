@@ -248,7 +248,7 @@ export default function DoenetProfile(props) {
       }
       axios.post(url, data)
         .then(function (resp) {
-          console.log("resp.data", resp.data);
+          // console.log("resp.data", resp.data);
         })
         .catch(function (error) {
           console.warn(error)
@@ -277,19 +277,20 @@ export default function DoenetProfile(props) {
 
   function defineToolAccess(profile){
     let roleToToolAccess = {
-      "roleStudent": ["Chooser", "Course"],
-      "roleInstructor": ["Chooser", "Course", "Documentation", "Gradebook"],
-      "roleCourseDesigner": ["Chooser", "Course", "Documentation"],
+      "roleStudent": ["Chooser", "Course", "Dashboard"],
+      "roleInstructor": ["Chooser", "Course", "Documentation", "Gradebook", "Dashboard"],
+      "roleCourseDesigner": ["Chooser", "Course", "Documentation", "Dashboard"],
     }
     let toolAccess = [];
 
-    for (let [key,val] of Object.entries(profile)){
-      if (roleToToolAccess[key] && (val + 0) === 1){
-        // console.log(`${key} ${val}`);
+        for (let [key,val] of Object.entries(profile)){
+        
+        if (roleToToolAccess[key] && (Number(val) + 0) === 1){
         toolAccess.push(...roleToToolAccess[key]);
       }
     }
     let set = new Set(toolAccess)
+
     return [...set];
   }
 

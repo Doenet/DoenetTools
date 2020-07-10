@@ -31,15 +31,6 @@ export default function DoenetSignIn(props) {
     validCode = true;
   }
 
-  //Collect browser name, machine os 
-  // var OSName = "Unknown OS";
-  // if (navigator.appVersion.indexOf("Win") != -1) OSName = "Windows";
-  // if (navigator.appVersion.indexOf("Mac") != -1) OSName = "MacOS";
-  // if (navigator.appVersion.indexOf("X11") != -1) OSName = "UNIX";
-  // if (navigator.appVersion.indexOf("Linux") != -1) OSName = "Linux";
-  // console.log(OSName)
-
-
   useEffect(() => {
     if (codeRef.current !== null && !validCode) {
       codeRef.current.focus();
@@ -91,7 +82,7 @@ export default function DoenetSignIn(props) {
 
   if (signInStage === "resolve server code check response") {
     if (codeSuccess) {
-      setProfile('JWT', { token: "put token here" }, { path: "/" })
+      setJwt('JWT', { token: "put token here" }, { path: "/" })
       setProfile('Profile', { email, nineCode }, { path: "/" })
     }
     if (codeSuccess && existed) {

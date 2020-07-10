@@ -68,7 +68,6 @@ export default function ToolLayout(props) {
 
   const [profile, setProfile] = useState(currentProfile);
 
-
   useEffect(() => {
     //Fires each time you change the tool
 
@@ -87,7 +86,6 @@ export default function ToolLayout(props) {
         }
         axios.get(phpUrl, payload)
           .then(resp => {
-            // console.log('resp', resp);
             if (resp.data.success === "1") {
               let profile = resp.data.profile;
               profile['nineCode'] = cookieProfile.Profile.nineCode;

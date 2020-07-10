@@ -19,7 +19,6 @@ $response_arr = array("success" => "0");
 
 
 if ($result->num_rows > 0){
-    
 
     $row = $result->fetch_assoc();
     $profile = array(
@@ -37,9 +36,9 @@ if ($result->num_rows > 0){
         "roleLiveDataCommunity" => $row['roleLiveDataCommunity'],
 );
 $roleAccessList = array(
-    "roleStudent" => array("Chooser", "Course"),
-    "roleInstructor" => array("Chooser", "Course", "Documentation", "Gradebook"),
-    "roleCourseDesigner" => array("Chooser", "Course", "Documentation"),
+    "roleStudent" => array("Chooser", "Course", "Dashboard"),
+    "roleInstructor" => array("Chooser", "Course", "Documentation", "Gradebook", "Dashboard"),
+    "roleCourseDesigner" => array("Chooser", "Course", "Documentation", "Dashboard"),
     "roleWatchdog" => array(/*???*/),
     "roleCommunityTA" => array(/*???*/),
     "roleLiveDataCommunity" => array(/*???*/)
@@ -48,8 +47,8 @@ $roleAccessList = array(
   $toolAccessList = [];
 
     foreach ($profile as $key => $value) {
-       if ($roleAccessList[$key] != NULL){
-        $toolAccessList = array_values(array_unique(array_merge($toolAccessList, $roleAccessList[$key])));
+       if ($roleAccessList[$key] != NULL && $value == 1){
+      $toolAccessList = array_values(array_unique(array_merge($toolAccessList, $roleAccessList[$key])));
        }
     }
 
