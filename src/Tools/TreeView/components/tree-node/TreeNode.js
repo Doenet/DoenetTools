@@ -85,7 +85,7 @@ export const ParentNode = memo(({
             <span onClick={() => setOpen(!isOpen)}>
               { expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }}/> }
             </span>            
-            <div style={{display: "inline-block", width: "94%", ...styles["title"]}} onClick={() => onClick(id, type)} onDoubleClick={() => onDoubleClickCb(id, type)}>
+            <div style={{display: "inline-block", width: "100%", ...styles["title"]}} onClick={() => onClick(id, type)} onDoubleClick={() => onDoubleClickCb(id, type)}>
               { itemIcon }
               <Title>{title}</Title>
             </div>

@@ -1698,7 +1698,6 @@ class DoenetChooser extends Component {
     }
     // return <DoenetAssignmentTree treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
       // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
-
     let assignmentsTree = <div className="tree" style={{padding: "5em 2em"}}>
       <TreeView
         containerId={"aI8sK4vmEhC5sdeSP3vNW"}
@@ -2122,6 +2121,7 @@ const TreeIcons = (iconName) => {
       position: "relative",
       top: "2px",
       marginRight: "8px",
+      
     }}
   />;
   const AssignmentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt} 
