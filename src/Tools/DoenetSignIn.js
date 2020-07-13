@@ -58,8 +58,12 @@ export default function DoenetSignIn(props) {
     axios.get(phpUrl, payload)
       .then(resp => {
         // console.log('resp',resp);
+
         setSignInStage("resolve server code check response");
         setCodeSuccess(resp.data.success);
+        if (resp.data.success){
+        setJwt('JWT', { token: resp.data.jwt }, { path: "/" })
+        }
         setReason(resp.data.reason);
         setExisted(resp.data.existed);
       })
@@ -82,7 +86,6 @@ export default function DoenetSignIn(props) {
 
   if (signInStage === "resolve server code check response") {
     if (codeSuccess) {
-      setJwt('JWT', { token: "put token here" }, { path: "/" })
       setProfile('Profile', { email, nineCode }, { path: "/" })
     }
     if (codeSuccess && existed) {

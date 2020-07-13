@@ -7,12 +7,11 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
-$emailaddress =  mysqli_real_escape_string($conn,$_REQUEST["emailaddress"]);  
-$nineCode =  mysqli_real_escape_string($conn,$_REQUEST["nineCode"]);  
+$emailaddress = include "userEmail.php";
 
 $sql = "SELECT screenName, email, lastName, firstName, profilePicture, trackingConsent, roleStudent, roleInstructor, roleCourseDesigner, roleWatchdog, roleCommunityTA, roleLiveDataCommunity
         FROM user
-        WHERE email = '$emailaddress' AND signInCode = '$nineCode'";
+        WHERE email = '$emailaddress'";
 
 $result = $conn->query($sql);
 $response_arr = array("success" => "0");

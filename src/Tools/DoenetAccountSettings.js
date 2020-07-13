@@ -201,7 +201,6 @@ export default function DoenetProfile(props) {
     let anonymousUserProfile = {
       accessAllowed: "0",
       adminAccessAllowed: "0",
-      bio: "",
       email: "",
       firstName: "",
       lastName: "",
@@ -222,8 +221,7 @@ export default function DoenetProfile(props) {
     //Ask Server for data which matches email address
     const phpUrl = '/api/loadProfile.php';
     const data = {
-      emailaddress: cookieProfile.Profile.email,
-      nineCode: cookieProfile.Profile.nineCode
+      jwt: jwt.JWT.token,
     }
     const payload = {
       params: data

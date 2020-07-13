@@ -7,8 +7,18 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
+use \Firebase\JWT\JWT;
+require_once "/var/www/html/vendor/autoload.php";
+
+$key = "super_secret_key";
+
+
 $emailaddress =  mysqli_real_escape_string($conn,$_REQUEST["emailaddress"]);  
 $nineCode =  mysqli_real_escape_string($conn,$_REQUEST["nineCode"]);  
+$payload = array(
+    "email" => $emailaddress
+);
+$jwt = JWT::encode($payload, $key);
 
 //Check if expired
 $sql = "SELECT TIMESTAMPDIFF(MINUTE, timestampOfSignInCode, NOW()) AS minutes 
@@ -22,6 +32,7 @@ $row = $result->fetch_assoc();
 $response_arr = array(
 "success" => 1,
 "existed" => 1,
+"jwt" => $jwt,
 );
 
 //Check if it took longer than 10 minutes to enter the code
@@ -55,6 +66,7 @@ if ($row['minutes'] > 10){
         $response_arr = array(
         "success" => 1,
         "existed" => 0,
+        "jwt" => $jwt,
         );
 
         // Make a new profile

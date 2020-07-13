@@ -32,7 +32,6 @@ export default function ToolLayout(props) {
   let anonymousUserProfile = {
     accessAllowed: "0",
     adminAccessAllowed: "0",
-    bio: "",
     email: "",
     firstName: "",
     lastName: "",
@@ -71,15 +70,16 @@ export default function ToolLayout(props) {
   useEffect(() => {
     //Fires each time you change the tool
 
+
     if (Object.keys(cookieProfile).includes("Profile")) {
 
       if (Object.keys(cookieProfile.Profile).length < 3) {
+        console.log("Loading Profile from Tool Layout")
         //Need to load profile from database 
         //Ask Server for data which matches email address
         const phpUrl = '/api/loadProfile.php';
         const data = {
-          emailaddress: cookieProfile.Profile.email,
-          nineCode: cookieProfile.Profile.nineCode
+          jwt: jwt.JWT.token,
         }
         const payload = {
           params: data
@@ -88,7 +88,6 @@ export default function ToolLayout(props) {
           .then(resp => {
             if (resp.data.success === "1") {
               let profile = resp.data.profile;
-              profile['nineCode'] = cookieProfile.Profile.nineCode;
               setCookieProfile("Profile", profile, { path: "/" });
               setProfile(profile);
             }
@@ -105,7 +104,6 @@ export default function ToolLayout(props) {
       // let devUserProfile = {
       //   accessAllowed: "1",
       //   adminAccessAllowed: "1",
-      //   bio: "Hello, my name is Dev User. I appear in many databases. I like to think I'm very important. c:",
       //   email: "devuser@example.com",
       //   firstName: "Dev",
       //   lastName: "User",
