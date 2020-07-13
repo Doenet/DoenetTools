@@ -50,8 +50,8 @@ body{
 .search-input {
   width: 90%;
   height: 1.5rem;
-  margin: 1rem auto;
-  padding: 1rem;
+  /* margin: 1rem auto; */
+  /* padding: 1rem; */
   color: #333333;
   border: 1px solid #c1c1c1; 
   font-size: 1.2rem;
@@ -78,12 +78,12 @@ body{
   text-align: left;
   color: #2e3138;
   text-decoration: none;
-  padding: 10px 25px;
+  /* padding: 10px 25px; */
   border: none;
   position: relative;
   width: 100%;
   font-weight: 400;
-  overflow: hidden;
+  overflow-x: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   outline: none;
@@ -103,12 +103,12 @@ body{
   font-size: 1.2em;
   text-align: left;
   text-decoration: none;
-  padding: 10px 25px;
+  /* padding: 10px 25px; */
   border: none;
   position: relative;
   width: 100%;
   font-weight: 400;
-  overflow: hidden;
+  overflow-x: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   outline: none;
@@ -119,10 +119,10 @@ body{
 .docs-content {
   position: absolute;
   width: 70%;
-  left: 30%;
+  /* left: 30%; */
   /* margin-left: 30%; */
   padding: 0em 3em 1em 3em;
-  z-index: -1;
+  /* z-index: -1; */
 }
 
 .docs-content-heading {
@@ -151,11 +151,11 @@ body{
   text-align: left;
   color: #2e3138;
   text-decoration: none;
-  padding: 10px 25px;
+  /* padding: 10px 25px; */
   border: none;
   position: relative;
   font-weight: 400;
-  overflow: auto;
+  /* overflow: auto; */
   white-space: normal;
   outline: none;
 }
