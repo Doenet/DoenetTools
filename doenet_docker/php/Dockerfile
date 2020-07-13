@@ -1,9 +1,37 @@
-FROM php:7.4-fpm-alpine
-RUN apk update; \
-    apk upgrade;
+# FROM php:7.4-fpm-alpine
+FROM php:7.4.1-fpm
+# COPY --from=composer /usr/bin/composer /usr/bin/composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+# RUN apk update; \
+#     apk upgrade;
 RUN docker-php-ext-install mysqli
-# php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-# php -r "if (hash_file('sha384', 'composer-setup.php') === 'e5325b19b381bfd88ce90a5ddb7823406b2a38cff6bb704b0acc289a09c8128d4a8ce2bbafcd1fcbdc38666422fe2806') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-# php composer-setup.php
-# php -r "unlink('composer-setup.php');"
+
+# Use Composer to install PHP-JWT Firebase
+RUN  apt-get update -y && \
+     apt-get upgrade -y && \
+     apt-get dist-upgrade -y && \
+     apt-get -y autoremove && \
+     apt-get clean
+RUN apt-get install -y p7zip \
+    p7zip-full \
+    unace \
+    zip \
+    unzip \
+    xz-utils \
+    sharutils \
+    uudeview \
+    mpack \
+    arj \
+    cabextract \
+    file-roller \
+    && rm -rf /var/lib/apt/lists/*
+RUN composer require firebase/php-jwt
+
+#Test for php-jwt
+# COPY example.php /var/www/html/example.php
+
+# Alternative install of php-jwt
+# COPY composer.json /var/www/html/composer.json
+# RUN composer install --no-dev
+
 EXPOSE 9000
