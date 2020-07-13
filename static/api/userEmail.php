@@ -1,6 +1,6 @@
 <?PHP
 
-$key = "super_secret_key";
+$key = $ini_array['key'];
 use \Firebase\JWT\JWT;
 require_once "/var/www/html/vendor/autoload.php";
 $jwt =  mysqli_real_escape_string($conn,$_REQUEST["jwt"]);  
