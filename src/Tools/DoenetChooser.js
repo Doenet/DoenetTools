@@ -7,7 +7,8 @@ import "./chooser.css";
 import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown, 
-  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, faLink, faRedoAlt, faAlignJustify,faStream, faColumns}
+  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, 
+  faLink, faRedoAlt, faAlignJustify,faStream, faColumns, faInfoCircle}
   from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
@@ -46,8 +47,7 @@ class DoenetChooser extends Component {
       directoryStack: [],
       currentDraggedObject: {id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null},
       panelsCollection: {"first": {values:["browser", "tree"], activeContainer: "browser"}},
-      splitPanelLayout: false
-
+      splitPanelLayout: false,
     };
 
     this.containerCache = {};
@@ -1696,7 +1696,6 @@ class DoenetChooser extends Component {
                 <SpinningLoader/>
              </div>
     }
-    
     // return <DoenetAssignmentTree treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
       // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
 
@@ -1812,6 +1811,16 @@ class DoenetChooser extends Component {
             }
           }}
           onLeafNodeClick={(id, type) => {
+            // get path to item
+            const dataSource = this.getDataSource(treeContainerId, treeContainerType);
+            const itemParentId = dataSource[type][id]["parentId"];
+            const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId);
+            // select item and switch to directory            
+            this.setState({
+              selectedItems: [id], 
+              selectedItemsType: [type],
+              directoryStack: pathToSelectedFolder
+            })
             this.setState({selectedItems: [id], selectedItemsType: [type]})
             this.tempSet = new Set([id]);
             this.forceUpdate()
@@ -2002,7 +2011,8 @@ class DoenetChooser extends Component {
         <ToolLayout
           toolName="Chooser"
           leftPanelWidth="235"
-          rightPanelWidth="365">
+          rightPanelWidth="365"
+          >
 
           <ToolLayoutPanel
             panelName="Navigation Panel"
@@ -2720,8 +2730,9 @@ class InfoPanel extends Component {
       // this.buildInfoPanelDriveDetails();
       this.infoPanel = <React.Fragment>
         <div className="infoPanel">
-          <div style={{display: "flex", alignItems: "center", justifyContent: "center", height: "100%"}}>
-            <span style={{fontSize: "16px", color: "rgb(191, 191, 191)"}}>Select item to view info</span>
+          <div style={{display: "flex", alignItems: "center", height: "100%", flexDirection: "column"}}>
+            <FontAwesomeIcon icon={faInfoCircle} style={{fontSize:"95px", color: "rgb(165, 165, 165)", padding: "1rem"}}/>
+            <span style={{fontSize: "13px", color: "rgb(124, 124, 124)"}}>Select a files or folder to view its details</span>
           </div>
         </div>
       </React.Fragment>
