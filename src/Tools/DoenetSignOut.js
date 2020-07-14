@@ -1,11 +1,31 @@
 import React, { useState } from "react";
 import logo from '../media/Doenet_Logo_Frontpage.png';
 import { useCookies } from 'react-cookie';
+import axios from "axios";
 
 export default function DoenetSignOut(props) {
 
   const [jwt,setJwt,removeCookie] = useCookies('jwt');
   const [signedOutAttempts, setSignedOutAttempts] = useState(0);
+
+  const phpUrl = '/api/signOut.php';
+        const data = {
+          jwt: jwt.JWT.token,
+        }
+        const payload = {
+          params: data
+        }
+        axios.get(phpUrl, payload)
+          .then(resp => {
+            // console.log(resp.data)
+            // if (resp.data.success === "1") {
+            //   let profile = resp.data.profile;
+            //   setCookieProfile("Profile", profile, { path: "/" });
+            //   setProfile(profile);
+            // }
+          })
+          .catch(error => { this.setState({ error: error }) });
+
 
   const vanillaCookies = document.cookie.split(';');
 
@@ -87,9 +107,5 @@ export default function DoenetSignOut(props) {
     </>
   );
 
- 
-
-
- 
 }
 

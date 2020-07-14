@@ -131,7 +131,7 @@ export default function DoenetSignIn(props) {
       }
       axios.get(phpUrl, payload)
         .then(resp => {
-          console.log("resp.data.deviceName",resp.data.deviceName)
+          // console.log("resp.data.deviceName",resp.data.deviceName)
           // if (!Object.keys(deviceNameCookie).includes("Device")) {
             setDeviceName(resp.data.deviceName);
             setDeviceNameCookie('Device', resp.data.deviceName, { path: "/" });

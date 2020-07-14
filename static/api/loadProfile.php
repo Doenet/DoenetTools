@@ -7,7 +7,8 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
-$emailaddress = include "userEmail.php";
+$jwtArray = include "jwtArray.php";
+$emailaddress = $jwtArray['email'];
 
 $sql = "SELECT screenName, email, lastName, firstName, profilePicture, trackingConsent, roleStudent, roleInstructor, roleCourseDesigner, roleWatchdog, roleCommunityTA, roleLiveDataCommunity
         FROM user
