@@ -12,6 +12,7 @@ export default function DoenetSignOut(props) {
   removeCookie('JWT',{path:"/"})
   removeCookie('Profile',{path:"/"})
   removeCookie('TrackingConsent',{path:"/"})
+  removeCookie('Device',{path:"/"})
 
   if (vanillaCookies.length === 1 && vanillaCookies[0] === ""){
     return (

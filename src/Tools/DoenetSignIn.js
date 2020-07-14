@@ -14,9 +14,11 @@ export default function DoenetSignIn(props) {
   let [codeSuccess, setCodeSuccess] = useState(false);
   let [reason, setReason] = useState("");
   let [existed, setExisted] = useState(false);
+  let [deviceName, setDeviceName] = useState("");
 
   const [jwt, setJwt] = useCookies('jwt');
   const [profile, setProfile] = useCookies('Profile');
+  const [deviceNameCookie, setDeviceNameCookie] = useCookies('Device');
 
   const emailRef = useRef(null);
   const codeRef = useRef(null);
@@ -50,7 +52,8 @@ export default function DoenetSignIn(props) {
     const phpUrl = '/api/checkCredentials.php';
     const data = {
       emailaddress: email,
-      nineCode: nineCode
+      nineCode: nineCode,
+      deviceName: deviceName,
     }
     const payload = {
       params: data
@@ -128,7 +131,12 @@ export default function DoenetSignIn(props) {
       }
       axios.get(phpUrl, payload)
         .then(resp => {
-          //Ignore response
+          console.log("resp.data.deviceName",resp.data.deviceName)
+          // if (!Object.keys(deviceNameCookie).includes("Device")) {
+            setDeviceName(resp.data.deviceName);
+            setDeviceNameCookie('Device', resp.data.deviceName, { path: "/" });
+          // }
+          
         })
         .catch(error => { this.setState({ error: error }) });
       setIsSentEmail(true);
@@ -150,6 +158,7 @@ export default function DoenetSignIn(props) {
           margin: "20",
         }}>
         {heading}
+        <div style={{weight: "bold"}}>Device Name: {deviceName}</div>
         <div><p>Check your email for a code to complete sign in.</p></div>
         <p><label>Code (9 digit code): <input type="text"
           ref={codeRef}
@@ -165,6 +174,7 @@ export default function DoenetSignIn(props) {
 
 
   if (signInStage === "beginning") {
+
     return (
       <div style={
         {

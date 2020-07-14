@@ -145,6 +145,8 @@ export default function DoenetProfile(props) {
   const [cookieProfile, setCookieProfile] = useCookies('Profile');
   const [trackingCookie, setTrackingCookie] = useCookies('TrackingConsent');
   const [jwt, setJwt] = useCookies('jwt');
+  const [deviceNameCookie, setDeviceNameCookie] = useCookies('Device');
+
 
   let currentProfile = {};
   if (cookieProfile.Profile) {
@@ -381,6 +383,7 @@ export default function DoenetProfile(props) {
           >
             {profile.screenName}
           </Textinput>
+          Device Name: {deviceNameCookie.Device}
           <SectionHeader>Private</SectionHeader>
 
           <Textinput
