@@ -1,83 +1,94 @@
-import React, { Component } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 import "./selectbox.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-class SelectBox extends Component {
+function SelectBox({ items }) {
+  const node = useRef();
+  const [item, setItem] = useState(items);
+  const [value, setValue] = useState(null);
+  const [showItems, setShowItems] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
-  state = {
-    items: [...this.props.items],
-    showItems: false,
-    selectedItem: null
+  useEffect(() => {
+    document.addEventListener('click', handleClick, false);
+    return () => {
+      document.removeEventListener('click', handleClick, false);
+    };
+  });
+
+  const handleClick = e => {
+    if (node.current.contains(e.target)) {
+      setShowItems(!showItems)
+    } else {
+      setShowItems(false)
+    }
+  }
+
+  const dropDown = () => {
+    setShowItems(!showItems);
   };
 
-  dropDown = () => {
-    this.setState(prevState => ({
-      showItems: !prevState.showItems
-    }));
+  const selectChild = (child, parent) => {
+    setValue(child.label);
+    child.callback(child, parent);
   };
 
-  selectItem = item => {
-    this.setState({
-      selectedItem: item,
-      showItems: false
-    });
-  };
-
-  filter = ev => {
-    let items = JSON.parse(JSON.stringify(this.props.items));
-    if(!!ev && !!ev.target && !!ev.target.value) {
-      items.map(i=> {
-        let match = i.children.filter(c=> c.label.toLowerCase().indexOf((ev.target.value).toLowerCase()) > -1);
+  const filter = ev => {
+    let itemsCopy = JSON.parse(JSON.stringify(items));
+    setValue(ev.target.value);
+    if (!!ev && !!ev.target && !!ev.target.value) {
+      itemsCopy.map(i => {
+        let match = i.children.filter(c => c.label.toLowerCase().indexOf((ev.target.value).toLowerCase()) > -1);
         i.children = match;
         return i;
       });
     }
-    this.setState({items});
+    setItem(itemsCopy);
   }
 
-  render() {
-    const noResults = !this.state.items.filter(i=>!!i.children.length).length;
-    return (
-      <div className="select-box-box">
-        <div className="select-box-container">
-          <div className="select-box-selected-item" onClick={this.dropDown}>
-            {this.state.selectedItem ? this.state.selectedItem.value : <input type="text" onChange={this.filter.bind(this)}></input>}
-          </div>
-          <div className="select-box-arrow" onClick={this.dropDown}>
-            <span
-              className={`${
-                this.state.showItems
-                  ? "select-box-arrow-up"
-                  : "select-box-arrow-down"
-                }`}
-            />
-          </div>
+  const noResults = !item.filter(i => !!i.children.length).length;
+  
+  return (
+    <div className="select-box-box" ref={node}>
+      <div className="select-box-container">
+        <div className="select-box-selected-item">
+          <input type="text" value={value} onChange={filter.bind(this)}></input>
+        </div>
+        <div className="select-box-arrow">
+          <span
+            className={`${
+              showItems
+                ? "select-box-arrow-up"
+                : "select-box-arrow-down"
+              }`}
+          />
+        </div>
 
-          <div
-            style={{ display: this.state.showItems ? "block" : "none" }}
-            className={"select-box-items"}
-          >
-            {this.state.items.map(item => (
-              <>
-                {!!item.children.length && <div className="parent">{item.parent.title}</div>}
-                {item.children.map(child => (
-                  <div className="child-container">
-                    {!!child.icon && <FontAwesomeIcon icon={child.icon} style={{ paddingRight: "8px", fontSize: "15px"}}/>}
-                    <div
-                      key={child.value}
-                    >
-                      {child.label}
-                    </div>
+        <div
+          style={{ display: showItems ? "block" : "none" }}
+          className={"select-box-items"}
+        >
+          {item.map(i => (
+            <>
+              {!!i.children.length && <div className="parent">{i.parent.title}</div>}
+              {i.children.map(child => (
+                <div className="child-container">
+                  {/* {!!child.icon && <FontAwesomeIcon icon={child.icon} style={{ paddingRight: "8px", fontSize: "15px"}}/>} */}
+                  <div
+                    key={child.value}
+                    onClick={selectChild.bind(this, child, i)}
+                  >
+                    {child.label}
                   </div>
-                  ))}
-              </>
-            ))}
-            {noResults && <div className="parent">No match found</div>}
-          </div>
+                </div>
+              ))}
+            </>
+          ))}
+          {noResults && <div className="parent">No match found</div>}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default SelectBox;

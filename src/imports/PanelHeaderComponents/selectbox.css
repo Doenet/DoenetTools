@@ -59,7 +59,12 @@
 }
 
 .child-container {
-  padding: 0px 16px;
+  padding: 5px 16px;
+  cursor: pointer;
+}
+
+.child-container:hover {
+  background-color: lightgray;
 }
 
 .child-icon {
