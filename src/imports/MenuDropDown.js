@@ -40,34 +40,48 @@ const DropDownContent = styled.div`
 
 `
 const DropDownContentItem = styled.div`
-    
-    background-color: ${props => props.selected ? 'rgb(58, 172, 144)' : 'transperant'};
-    color: ${props => props.selected ? 'white' : 'black'};
-    
-    &:hover {
-        // color: ${props => props.selected ? 'white' : 'blue'};
-        background-color: ${props => props.selected ? 'rgb(58, 172, 144)' : 'lightgray'};
-    }
     cursor: default;
     max-width:350px;
+    // border-bottom:1px solid #e2e2e2;
 `
 
-const DropdownLabelLink =  styled.div`
+const DropdownLabelLink = styled.div`
+    padding: 5px 5px;
+    min-height: 40px;
+    justify-content: center;
+    align-items: center;
+    background-color: ${props => props.selected ? 'rgb(58, 172, 144)' : 'transperant'};
+    display:flex;
+    color: ${props => props.selected ? 'white' : 'black'};
+    &:hover {
+        background-color: ${props => props.selected ? 'rgb(58, 172, 144)' : 'lightgray'};
+    }
+    a {
+        width: 190px;
+        padding: 20px 0px;
+        text-decoration: none !important;
+        background-color: transperant;
+        color: ${props => props.selected ? 'white' : 'black'};    
+    }
+`
+const DropdownCustomLabelLink = styled.div`
     padding: 5px 5px;
     min-height: 40px;
     justify-content: center;
     align-items: center;
     display:flex;
-        a {
-            width: 190px;
-            padding: 20px 0px;
-            text-decoration: none !important;
-            background-color: transperant;
-            color: ${props => props.selected ? 'white' : 'black'};    
-        }
+    color: 'black';
+    border-bottom:1px solid #E2E2E2;
+    a {
+        width: 190px;
+        padding: 20px 0px;
+        text-decoration: none !important;
+        background-color: transperant;
+        color: 'black';    
+    }
 `
 
-const DropdownCustomOption =  styled.div`
+const DropdownCustomOption = styled.div`
     justify-content: center;
     align-items: center;
     display:flex;
@@ -175,16 +189,20 @@ const MenuDropDown = ({
                                     o["callBackFunction"](o)
                                 }
                             }
-                        }}
-                        selected={currentItemDisplay && currentItemDisplay.id === o['id']}>
-                        <DropdownCustomOption>
-                        {!!o['optionElem'] && o['optionElem']}
-                        </DropdownCustomOption>
-                        <DropdownLabelLink 
-                        selected={currentItemDisplay && currentItemDisplay.id === o['id']}>
-                            {!!o.link ? <a href={o.link}>
-                        {o['label']}</a> : o['label']}
-                        </DropdownLabelLink>
+                        }}>
+                        {!!o['optionElem'] ?
+                            <><DropdownCustomOption>
+                                {o['optionElem']}
+                            </DropdownCustomOption>
+                                <DropdownCustomLabelLink>
+                                    {!!o.link ? <a href={o.link}>
+                                        {o['label']}</a> : o['label']}
+                                </DropdownCustomLabelLink></> :
+                            <DropdownLabelLink
+                                selected={currentItemDisplay && currentItemDisplay.id === o['id']}>
+                                {!!o.link ? <a href={o.link}>
+                                    {o['label']}</a> : o['label']}
+                            </DropdownLabelLink>}
                     </DropDownContentItem>
                     ))}
             </DropDownContent>

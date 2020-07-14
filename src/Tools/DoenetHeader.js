@@ -70,6 +70,7 @@ const ProfilePictureLrg = styled.div`
   color: #333333;
   width:100px;
   height:100px;
+  margin-top:10px;
   display: block;
   color: rgba(0, 0, 0, 0);
   justify-content: center;
@@ -157,25 +158,26 @@ class DoenetHeader extends Component {
     this.populateMenuToolbox(props.profile.toolAccess)
     this.profilePicture = this.props.profile.profilePicture;
 
-    this.profileMenuMap = [
-      {
-        id: "Account",
-        label: "Account settings",
-        link: "/accountsettings/"
-      }];
-    if (props.isSignedIn) {
-      this.profileMenuMap.push({
-        id: "SignOut",
-        label: "Sign out",
-        link: "/signout/",
-      });
-    } else {
-      this.profileMenuMap.push({
-        id: "SignIn",
-        label: "Sign in",
-        link: "/signin/",
-      });
-    }
+
+    // this.profileMenuMap = [
+    //   {
+    //     id: "Account",
+    //     label: "Account settings",
+    //     link: "/accountsettings/"
+    //   }];
+    // if (props.isSignedIn) {
+    //   this.profileMenuMap.push({
+    //     id: "SignOut",
+    //     label: "Sign out",
+    //     link: "/signout/",
+    //   });
+    // } else {
+    //   this.profileMenuMap.push({
+    //     id: "SignIn",
+    //     label: "Sign in",
+    //     link: "/signin/",
+    //   });
+    // }
 
     this.menuToolBoxItems = [
       {
@@ -198,13 +200,13 @@ class DoenetHeader extends Component {
         label: "Gradebook",
         link: "/gradebook/"
       }];
+      console.log(this.props.profile)
 
     this.profileMenuMap = [
       {
-        optionElem: <ProfilePictureLrg pic={this.props.profile.profilePicture}  name="changeProfilePicture" id="changeProfilePicture" 
-        />,
+        optionElem: <ProfilePictureLrg pic={this.profilePicture} name="changeProfilePicture" id="changeProfilePicture"   />,
         id:'profile',
-        label: "@screenName"
+        label: `${this.props.profile.screenName}`
       },
    
 
