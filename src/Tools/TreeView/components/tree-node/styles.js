@@ -42,6 +42,7 @@ const Frame = styled('div')`
   display: inline-block;
   position: relative;
   width: 100%;
+  min-width: 235px;
   padding: 2px 19px 2px 0px;
   text-overflow: ellipsis;
   white-space: nowrap;

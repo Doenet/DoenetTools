@@ -1696,6 +1696,7 @@ class DoenetChooser extends Component {
                 <SpinningLoader/>
              </div>
     }
+    console.log(this.folderInfo)
     // return <DoenetAssignmentTree treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
       // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
     let assignmentsTree = <div className="tree" style={{padding: "5em 2em"}}>

@@ -105,7 +105,7 @@ if ($result->num_rows > 0){
 }
 
 //Collect users who can access repos
-foreach ($repos_arr as $repoId){
+foreach ($repos_arr as $repoId) {
   $sql = "
   SELECT 
 u.firstName AS firstName,
