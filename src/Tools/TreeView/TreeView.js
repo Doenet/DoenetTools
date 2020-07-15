@@ -106,6 +106,7 @@ Example customized tree:
       return map[itemType]
   }} 
   hideRoot={true}
+  disableSearch={true}
   specialNodes={this.tempSet}
   treeStyles={{
     parentNode: {
@@ -128,6 +129,7 @@ Example customized tree:
       "frame": { background: "#a7a7a7" },
     },
     expanderIcon: <FontAwesomeIcon icon={faPlus} style={{paddingRight: "8px"}}/>
+    emptyParentExpanderIcon: <span></span>
   }}
   onLeafNodeClick={(nodeId) => {
     if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
@@ -365,7 +367,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
     hide={hideRoot && parentHeadingId == "root"}
     defaultOpen={defaultOpen}
     itemIcon={baseItemStyleAndIcon.icon}
-    expanderIcon={parentsInfo[parentHeadingId]["numChild"] == 0 ? <span></span> : treeStyles["expanderIcon"]}
+    expanderIcon={parentsInfo[parentHeadingId]["numChild"] == 0 ? treeStyles["emptyParentExpanderIcon"] : treeStyles["expanderIcon"]}
     onClick={parentHeadingId != "root" ? onParentNodeClick : ()=>{}}
     onDoubleClick={parentHeadingId != "root" ? onParentNodeDoubleClick : ()=>{}}
     onDrop={onDrop}

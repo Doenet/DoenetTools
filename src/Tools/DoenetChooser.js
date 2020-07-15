@@ -1807,7 +1807,8 @@ class DoenetChooser extends Component {
             },
             specialParentNode: {
               "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
-            }
+            },
+            emptyParentExpanderIcon: <span></span>
           }}
           onLeafNodeClick={(id, type) => {
             // get path to item
