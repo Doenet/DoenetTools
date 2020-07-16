@@ -159,8 +159,8 @@ export default function DoenetProfile(props) {
     setTrackingCookie("TrackingConsent", true, { path: "/" });
     setTracking(true);
   }
-
-  if (!Object.keys(jwt).includes("JWT")) {
+console.log(Object.keys(jwt))
+  if (!Object.keys(jwt).includes("JWT_JS")) {
     //Not signed in
     return (
       <ToolLayout toolName="Account Settings" headerChangesFromLayout={profile}>
@@ -223,13 +223,13 @@ export default function DoenetProfile(props) {
     //Ask Server for data which matches email address
     const phpUrl = '/api/loadProfile.php';
     const data = {
-      jwt: jwt.JWT.token,
     }
     const payload = {
       params: data
     }
     axios.get(phpUrl, payload)
       .then(resp => {
+        console.log("load profile resp",resp)
         if (resp.data.success === "1") {
           let tempprofile = resp.data.profile;
           tempprofile['nineCode'] = cookieProfile.Profile.nineCode;

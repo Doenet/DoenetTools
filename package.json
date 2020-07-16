@@ -48,7 +48,6 @@
     "deploy": "cd doenet_docker_deploy && docker-compose up",
     "publish_db": "cd doenet_docker && docker-compose up -d mysql && docker exec --privileged -w /var/lib/mysql doenet_docker_mysql_1 mysqldump --databases --add-drop-database --add-drop-table -u root -phelloworld doenet_local > ./volumes/db_init/db_template.sql",
     "reset_db": "docker exec -i doenet_docker_mysql_1 sh -c 'mysql -u root -phelloworld doenet_local' < ./doenet_docker/volumes/db_init/db_template.sql"
-    
   },
   "devDependencies": {
     "@babel/cli": "^7.10.3",

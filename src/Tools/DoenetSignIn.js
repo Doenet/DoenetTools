@@ -7,7 +7,7 @@ import axios from "axios";
 export default function DoenetSignIn(props) {
   let [email, setEmail] = useState("");
   let [nineCode, setNineCode] = useState("");
-  let [stayLoggedIn, setStayLoggedIn] = useState(false);
+  let [maxAge, setMaxAge] = useState(0);
 
   let [signInStage, setSignInStage] = useState("beginning");
   let [isSentEmail, setIsSentEmail] = useState(false);
@@ -60,15 +60,26 @@ export default function DoenetSignIn(props) {
     }
     axios.get(phpUrl, payload)
       .then(resp => {
-        // console.log('resp',resp);
+        console.log('resp',resp);
 
-        setSignInStage("resolve server code check response");
-        setCodeSuccess(resp.data.success);
         if (resp.data.success){
-        setJwt('JWT', { token: resp.data.jwt }, { path: "/" })
+          let newAccount = "1";
+          if (resp.data.existed){
+            newAccount = "0";
+          }
+          let stay = "0";
+          if (maxAge > 0){
+            stay = "1";
+          }
+
+          console.log(`/api/jwt.php?emailaddress=${encodeURIComponent(email)}&nineCode=${encodeURIComponent(nineCode)}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`)
+          // location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(email)}&nineCode=${encodeURIComponent(nineCode)}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`;
+        }else{
+          setSignInStage("resolve server code check response");
+          setCodeSuccess(resp.data.success);
+          setReason(resp.data.reason);
+          setExisted(resp.data.existed);
         }
-        setReason(resp.data.reason);
-        setExisted(resp.data.existed);
       })
       .catch(error => { this.setState({ error: error }) });
 
@@ -87,32 +98,32 @@ export default function DoenetSignIn(props) {
     )
   }
 
-  if (signInStage === "resolve server code check response") {
-    if (codeSuccess) {
-      setProfile('Profile', { email, nineCode }, { path: "/" })
-    }
-    if (codeSuccess && existed) {
-      location.href = "/dashboard";
-    } else if (codeSuccess && !existed) {
-      location.href = "/accountsettings";
-    } else if (reason === "Code expired") {
-      return (
-        <div style={
-          {
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            margin: "20",
-          }}>
-          <h2 style={{ textAlign: "center" }}>Code Expired</h2>
-          <button onClick={() => { location.href = '/signin' }}>Restart Signin</button>
+  // if (signInStage === "resolve server code check response") {
+  //   if (codeSuccess) {
+  //     setProfile('Profile', { email, nineCode }, { path: "/" })
+  //   }
+  //   if (codeSuccess && existed) {
+  //     location.href = "/dashboard";
+  //   } else if (codeSuccess && !existed) {
+  //     location.href = "/accountsettings";
+  //   } else if (reason === "Code expired") {
+  //     return (
+  //       <div style={
+  //         {
+  //           position: "absolute",
+  //           top: "50%",
+  //           left: "50%",
+  //           transform: "translate(-50%, -50%)",
+  //           margin: "20",
+  //         }}>
+  //         <h2 style={{ textAlign: "center" }}>Code Expired</h2>
+  //         <button onClick={() => { location.href = '/signin' }}>Restart Signin</button>
 
-        </div>
-      )
-    }
+  //       </div>
+  //     )
+  //   }
 
-  }
+  // }
 
   function submitCode() {
     setReason("");
@@ -131,19 +142,10 @@ export default function DoenetSignIn(props) {
       }
       axios.get(phpUrl, payload)
         .then(resp => {
-          // console.log("resp.data.deviceName",resp.data.deviceName)
-          // if (!Object.keys(deviceNameCookie).includes("Device")) {
             setDeviceName(resp.data.deviceName);
-            // setDeviceNameCookie('Device', resp.data.deviceName, { path: "/" });
-            setDeviceNameCookie('Device', resp.data.deviceName, { 
-              path: "/",
-              maxAge: 2147483647,
-              // secure: true,
-              // httpOnly: true,
-              // sameSite: "strict",
-            });
-          // }
-          
+            let cookieSettingsObj = { path: "/" };
+            if (maxAge > 0){cookieSettingsObj.maxAge = maxAge }
+            setDeviceNameCookie('Device', resp.data.deviceName, cookieSettingsObj);
         })
         .catch(error => { this.setState({ error: error }) });
       setIsSentEmail(true);
@@ -181,7 +183,10 @@ export default function DoenetSignIn(props) {
 
 
   if (signInStage === "beginning") {
-
+    let stay = 0;
+    if (maxAge > 0){
+      stay = 1;
+    }
     return (
       <div style={
         {
@@ -205,7 +210,14 @@ export default function DoenetSignIn(props) {
               if (e.key === 'Enter' && validEmail) { setSignInStage("enter code") }
             }}
             onChange={(e) => { setEmail(e.target.value) }} /></label></p>
-          <p><input type="checkbox" checked={stayLoggedIn} onChange={(e) => { setStayLoggedIn(e.target.checked) }}
+          <p><input type="checkbox" checked={stay} onChange={(e) => { 
+            if (e.target.checked){
+              console.log('stay')
+              setMaxAge(2147483647) 
+            }else{
+              console.log('not stay')
+              setMaxAge(0) 
+            }}}
           /> Stay Logged In</p>
           <button disabled={!validEmail} style={{ float: "right" }} onClick={() => setSignInStage("enter code")}>Send Email</button></div>
       </div>
