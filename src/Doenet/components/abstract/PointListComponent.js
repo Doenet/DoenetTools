@@ -1,6 +1,5 @@
 import BaseComponent from './BaseComponent';
 import { returnBreakStringsSugarFunction } from '../commonsugar/breakstrings';
-import me from 'math-expressions';
 
 export default class PointListComponent extends BaseComponent {
   static componentType = "_pointlistcomponent";
@@ -79,25 +78,37 @@ export default class PointListComponent extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.nPoints = {
+      returnDependencies: () => ({
+        pointChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroPoints",
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues: { nPoints: dependencyValues.pointChildren.length },
+          checkForActualChange: { nPoints: true }
+        }
+      }
+    }
+
     stateVariableDefinitions.points = {
       isArray: true,
       entryPrefixes: ["point"],
-      returnDependencies: function ({ arrayKeys }) {
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-        if (arrayKey === undefined) {
-          return {
-            pointChildren: {
-              dependencyType: "childStateVariables",
-              childLogicName: "atLeastZeroPoints",
-              variableNames: ["coords"]
-            }
-          }
-        } else {
-          return {
+      returnArraySizeDependencies: () => ({
+        nPoints: {
+          dependencyType: "stateVariable",
+          variableName: "nPoints",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nPoints];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
             pointChild: {
               dependencyType: "childStateVariables",
               childLogicName: "atLeastZeroPoints",
@@ -106,186 +117,53 @@ export default class PointListComponent extends BaseComponent {
             }
           }
         }
+
+        return { dependenciesByKey };
+
       },
-      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
-        // console.log('mark stale for pointlist points')
-        // console.log(changes);
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+
+        // console.log('array definition of points for pointlist')
+        // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
         // console.log(arrayKeys);
 
-        let freshByKey = freshnessInfo.points.freshByKey;
+        let points = {};
 
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
+        for (let arrayKey of arrayKeys) {
+          let pointChild = dependencyValuesByKey[arrayKey].pointChild[0];
+          if (pointChild) {
+            points[arrayKey] = pointChild.stateValues.coords;
+          }
         }
 
-        if (arrayKey === undefined) {
-
-          if (changes.pointChildren) {
-            if (changes.pointChildren.componentIdentitiesChanged) {
-              for (let key in freshByKey) {
-                delete freshByKey[key];
-              }
-            } else {
-              for (let key in changes.pointChildren.valuesChanged) {
-                delete freshByKey[key];
-              }
-            }
-          }
-
-          if (Object.keys(freshByKey).length === 0) {
-            // asked for entire array and it is all stale
-            return { fresh: { points: false } }
-          } else {
-            // asked for entire array, but it has some fresh elements
-            // (we don't know here how many elements points has, 
-            // so can't determine if completely fresh)
-            return { partiallyFresh: { points: true } }
-          }
-        } else {
-
-          // have arrayKey
-          // so asked for just one component
-
-          if (changes.pointChild) {
-            if (changes.pointChild.componentIdentitiesChanged) {
-              delete freshByKey[arrayKey];
-            } else {
-              if (changes.pointChild.valuesChanged[0]) {
-                delete freshByKey[arrayKey];
-              }
-            }
-          }
-
-          return { fresh: { points: freshByKey[arrayKey] === true } };
-        }
+        return { newValues: { points } }
 
       },
-      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
-
-        let freshByKey = freshnessInfo.points.freshByKey;
-
-        // console.log('definition of points for pointlist')
-        // console.log(JSON.parse(JSON.stringify(freshByKey)));
-        // console.log(JSON.parse(JSON.stringify(dependencyValues)))
-        // console.log(JSON.parse(JSON.stringify(changes)))
-        // console.log(arrayKeys);
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        if (arrayKey === undefined) {
-          if (changes.pointChildren && changes.pointChildren.componentIdentitiesChanged) {
-            // send array so that now should overwrite entire array
-            for (let key in dependencyValues.pointChildren) {
-              freshByKey[key] = true;
-            }
-
-            return {
-              newValues: {
-                points: dependencyValues.pointChildren.map(x => x.stateValues.coords),
-              }
-            }
-          }
-
-          let newPointValues = {};
-          for (let arrayKey in dependencyValues.pointChildren) {
-            if (!freshByKey[arrayKey]) {
-              freshByKey[arrayKey] = true;
-              newPointValues[arrayKey] = dependencyValues.pointChildren[arrayKey].stateValues.coords
-            }
-          }
-          return { newValues: { points: newPointValues } }
-        } else {
-
-          // have arrayKey
-
-          if (!freshByKey[arrayKey]) {
-            freshByKey[arrayKey] = true;
-            let coords;
-            if (dependencyValues.pointChild.length === 1) {
-              coords = dependencyValues.pointChild[0].stateValues.coords
-            }
-            return {
-              newValues: {
-                points: {
-                  [arrayKey]: coords
-                }
-              }
-            }
-          } else {
-            // arrayKey asked for didn't change
-            // don't need to report noChanges for array state variable
-            return {};
-          }
-        }
-      },
-      inverseDefinition: function ({ desiredStateVariableValues,
-        stateValues, arrayKeys
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        dependencyNamesByKey
       }) {
 
-        // console.log('inverse definition of points of pointlist')
+        // console.log('array inverse definition of points of pointlist')
         // console.log(desiredStateVariableValues)
         // console.log(arrayKeys);
 
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
+        let instructions = [];
+        for (let arrayKey in desiredStateVariableValues.points) {
 
-        if (arrayKey === undefined) {
-          // working with entire array
-
-          let instructions = [];
-          for (let key in desiredStateVariableValues.points) {
-            instructions.push({
-              setDependency: "pointChildren",
-              desiredValue: desiredStateVariableValues.points[key],
-              childIndex: key,
-              variableIndex: 0
-            })
-          }
-
-          return {
-            success: true,
-            instructions
-          }
-        } else {
-
-          // just have one arrayKey
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "pointChild",
-              desiredValue: desiredStateVariableValues.points[arrayKey],
-              childIndex: 0,
-              variableIndex: 0
-            }]
-          }
+          instructions.push({
+            setDependency: dependencyNamesByKey[arrayKey].pointChild,
+            desiredValue: desiredStateVariableValues.points[arrayKey],
+            childIndex: 0,
+            variableIndex: 0
+          })
 
         }
 
-      }
-    }
-
-    stateVariableDefinitions.nPoints = {
-      returnDependencies: () => ({
-        pointChildren: {
-          dependencyType: "childIdentity",
-          childLogicName: "atLeastZeroPoints",
-        }
-      }),
-      definition: function ({ dependencyValues, changes }) {
-        // console.log(`definition of nPoints`);
-        // console.log(dependencyValues);
-        // console.log(changes);
-        
         return {
-          newValues: { nPoints: dependencyValues.pointChildren.length },
-          checkForActualChange: { nPoints: true }
+          success: true,
+          instructions
         }
+
       }
     }
 

@@ -187,25 +187,74 @@ export default class ComponentListWithSelectableType extends ComponentWithSelect
       }
     }
 
+    stateVariableDefinitions.nValues = {
+      returnDependencies: () => ({
+        anythingForSelectedType: {
+          dependencyType: "childIdentity",
+          childLogicName: "anythingForSelectedType",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return { newValues: { nValues: dependencyValues.anythingForSelectedType.length } }
+      }
+    }
+
     stateVariableDefinitions.values = {
       public: true,
       isArray: true,
       entryPrefixes: ["value"],
-      returnDependencies: () => ({
-        anythingForSelectedType: {
-          dependencyType: "childStateVariables",
-          childLogicName: "anythingForSelectedType",
-          variableNames: ["value"],
-        },
-        selectedType: {
+      returnArraySizeDependencies: () => ({
+        nValues: {
           dependencyType: "stateVariable",
-          variableName: "selectedType"
-        }
+          variableName: "nValues",
+        },
       }),
-      definition: function ({ dependencyValues }) {
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nValues];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let globalDependencies = {
+          selectedType: {
+            dependencyType: "stateVariable",
+            variableName: "selectedType"
+          }
+        }
+
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            anythingForSelectedType: {
+              dependencyType: "childStateVariables",
+              childLogicName: "anythingForSelectedType",
+              variableNames: ["value"],
+              childIndices: [arrayKey]
+            },
+          }
+        }
+
+        return { globalDependencies, dependenciesByKey }
+
+      },
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+
+        // console.log(`array definition for value of component list with selectable type`)
+        // console.log(globalDependencyValues)
+        // console.log(dependencyValuesByKey);
+        // console.log(arrayKeys)
+
+        let values = {};
+
+        for (let arrayKey of arrayKeys) {
+          if (dependencyValuesByKey[arrayKey].anythingForSelectedType &&
+            dependencyValuesByKey[arrayKey].anythingForSelectedType.length === 1
+          ) {
+            values[arrayKey] = dependencyValuesByKey[arrayKey].anythingForSelectedType[0].stateValues.value
+          }
+        }
+
         return {
-          newValues: { values: dependencyValues.anythingForSelectedType.map(x => x.stateValues.value) },
-          setComponentType: { values: dependencyValues.selectedType },
+          newValues: { values },
+          setComponentType: { values: globalDependencyValues.selectedType },
         };
       }
     }

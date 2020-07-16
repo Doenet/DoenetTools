@@ -404,7 +404,6 @@ describe('Mathlist Tag Tests', function () {
     })
   })
 
-
   it('mathlist ancestor prop simplify', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -655,6 +654,134 @@ describe('Mathlist Tag Tests', function () {
 
 
     })
+  })
+
+  it('mathlist with merge math list', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathlist>
+      <mergeMathLists><copy prop="value" tname="_booleaninput1" /></mergeMathLists>
+      <math>a</math>
+      <math>b,c,d</math>
+      <math>e,f</math>
+      <math>g</math>
+    </mathlist>
+    <p>Merge math lists: <booleaninput /></p>
+
+    <p>Third math: <copy prop="math3" tname="_mathlist1" /></p>
+    <p>Fifth math: <copy prop="math5" tname="_mathlist1" /></p>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('a')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('b,c,d')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('e,f')
+    })
+    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('g')
+    })
+    cy.get('#\\/_p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('e,f')
+    })
+    cy.get('#\\/_p3').find('.mjx-mrow').should('not.exist');
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathlist1'].stateValues.maths.length).eq(4);
+      expect(components['/_mathlist1'].stateValues.maths[0].tree).eq('a');
+      expect(components['/_mathlist1'].stateValues.maths[1].tree).eqls(['list', 'b', 'c','d']);
+      expect(components['/_mathlist1'].stateValues.maths[2].tree).eqls(['list','e', 'f']);
+      expect(components['/_mathlist1'].stateValues.maths[3].tree).eq('g');
+      expect(components['/_mathlist1'].stateValues.math3.tree).eqls(['list','e', 'f']);
+      expect(components['/_mathlist1'].stateValues.math5).eq(undefined);
+
+    })
+
+    cy.log('merge math lists')
+    cy.get('#\\/_booleaninput1_input').click();
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('a')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('b,c,d')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('e,f')
+    })
+    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('g')
+    })
+    cy.get('#\\/_p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('c')
+    })
+    cy.get('#\\/_p3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('e')
+    })
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathlist1'].stateValues.maths.length).eq(7);
+      expect(components['/_mathlist1'].stateValues.maths[0].tree).eq('a');
+      expect(components['/_mathlist1'].stateValues.maths[1].tree).eq('b');
+      expect(components['/_mathlist1'].stateValues.maths[2].tree).eq('c');
+      expect(components['/_mathlist1'].stateValues.maths[3].tree).eq('d');
+      expect(components['/_mathlist1'].stateValues.maths[4].tree).eq('e');
+      expect(components['/_mathlist1'].stateValues.maths[5].tree).eq('f');
+      expect(components['/_mathlist1'].stateValues.maths[6].tree).eq('g');
+      expect(components['/_mathlist1'].stateValues.math3.tree).eq('c');
+      expect(components['/_mathlist1'].stateValues.math5.tree).eq('e');
+
+    })
+
+
+    cy.log('stop merging again')
+    cy.get('#\\/_booleaninput1_input').click();
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('a')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('b,c,d')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('e,f')
+    })
+    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('g')
+    })
+    cy.get('#\\/_p2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('e,f')
+    })
+    cy.get('#\\/_p3').find('.mjx-mrow').should('not.exist');
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_mathlist1'].stateValues.maths.length).eq(4);
+      expect(components['/_mathlist1'].stateValues.maths[0].tree).eq('a');
+      expect(components['/_mathlist1'].stateValues.maths[1].tree).eqls(['list', 'b', 'c','d']);
+      expect(components['/_mathlist1'].stateValues.maths[2].tree).eqls(['list','e', 'f']);
+      expect(components['/_mathlist1'].stateValues.maths[3].tree).eq('g');
+      expect(components['/_mathlist1'].stateValues.math3.tree).eqls(['list','e', 'f']);
+      expect(components['/_mathlist1'].stateValues.math5).eq(undefined);
+
+    })
+
   })
 
 

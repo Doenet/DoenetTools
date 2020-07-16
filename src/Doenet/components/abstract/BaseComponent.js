@@ -228,6 +228,9 @@ export default class BaseComponent {
       "returnDependencies", "definition",
       "inverseDefinition", "stateVariablesDeterminingDependencies",
       "isArray", "nDimensions",
+      "returnArraySizeDependencies", "returnArraySize",
+      "returnArrayDependenciesByKey", "arrayDefinitionByKey",
+      "inverseArrayDefinitionByKey",
       "markStale", "getPreviousDependencyValuesForMarkStale",
       "triggerParentChildLogicWhenResolved",
     ];

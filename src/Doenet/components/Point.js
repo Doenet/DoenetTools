@@ -1,6 +1,6 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
-import { convertValueToMathExpression } from '../utils/math';
+import { convertValueToMathExpression, mergeVectorsForInverseDefinition } from '../utils/math';
 import { deepClone } from '../utils/deepFunctions';
 
 export default class Point extends GraphicalComponent {
@@ -96,6 +96,13 @@ export default class Point extends GraphicalComponent {
       replacementFunction: addCoords,
     });
 
+
+    let exactlyOnePoint = childLogic.newLeaf({
+      name: "exactlyOnePoint",
+      componentType: "point",
+      number: 1,
+    })
+
     let noCoords = childLogic.newLeaf({
       name: "noCoords",
       componentType: 'coords',
@@ -106,7 +113,10 @@ export default class Point extends GraphicalComponent {
     let coordsXorSugar = childLogic.newOperator({
       name: "coordsXorSugar",
       operator: 'xor',
-      propositions: [coordinatesViaComponents, exactlyOneCoords, stringsAndMaths, noCoords],
+      propositions: [
+        coordinatesViaComponents, exactlyOnePoint,
+        exactlyOneCoords, stringsAndMaths, noCoords
+      ],
     });
 
 
@@ -201,18 +211,26 @@ export default class Point extends GraphicalComponent {
           coordsShadow: { variablesToCheck: ["coords", "coordsShadow"] }
         }
       }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
+      inverseDefinition: function ({ desiredStateVariableValues, stateValues, workspace }) {
+
+        let desiredCoords = mergeVectorsForInverseDefinition({
+          desiredVector: desiredStateVariableValues.coordsShadow,
+          currentVector: stateValues.coordsShadow,
+          workspace,
+          workspaceKey: "desiredCoords"
+        });
+
         return {
           success: true,
           instructions: [{
             setStateVariable: "coordsShadow",
-            value: desiredStateVariableValues.coordsShadow
+            value: desiredCoords
           }]
         };
       }
     }
 
-    // Note: if point created via a ref (with no prop) of another point
+    // Note: if point created via a copy (with no prop) of another point
     // definition of nDimensions will be overwritten to shadow nDimensions
     // of the other point
     // (based on static variable stateVariablesShadowedForReference)
@@ -240,18 +258,33 @@ export default class Point extends GraphicalComponent {
         zChild: {
           dependencyType: "childIdentity",
           childLogicName: "exactlyOneZ",
+        },
+        pointChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOnePoint",
+          variableNames: ["nDimensions"]
         }
       }),
       definition: function ({ dependencyValues, changes }) {
+        // console.log(`nDimensions definition`)
+        // console.log(dependencyValues)
 
         let basedOnCoords = false;
         let coords;
         let nDimensions;
 
+        if (dependencyValues.pointChild.length === 1) {
+          return {
+            newValues: {
+              nDimensions: dependencyValues.pointChild[0].stateValues.nDimensions
+            }
+          }
+        }
+
         if (dependencyValues.coordsChild.length === 1) {
           basedOnCoords = true;
           coords = dependencyValues.coordsChild[0].stateValues.value;
-        } else if (dependencyValues.coordsShadow !== null) {
+        } else if (dependencyValues.coordsShadow) {
           basedOnCoords = true;
           coords = dependencyValues.coordsShadow;
         }
@@ -302,6 +335,12 @@ export default class Point extends GraphicalComponent {
       definition: () => ({ newValues: { arrayEntryPrefixForConstraints: "unconstrainedX" } })
     }
 
+    stateVariableDefinitions.nDimensionsForConstraints = {
+      isAlias: true,
+      targetVariableName: "nDimensions"
+    };
+
+
     stateVariableDefinitions.unconstrainedXs = {
       isArray: true,
       entryPrefixes: ["unconstrainedX"],
@@ -330,29 +369,30 @@ export default class Point extends GraphicalComponent {
 
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            pointChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOnePoint",
+              variableNames: ["x" + (Number(arrayKey) + 1)]
+            }
+          }
           if (arrayKey === "0") {
-            dependenciesByKey[arrayKey] = {
-              componentChild: {
-                dependencyType: "childStateVariables",
-                childLogicName: "exactlyOneX",
-                variableNames: ["value"],
-              }
+            dependenciesByKey[arrayKey].componentChild = {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneX",
+              variableNames: ["value"],
             }
           } else if (arrayKey === "1") {
-            dependenciesByKey[arrayKey] = {
-              componentChild: {
-                dependencyType: "childStateVariables",
-                childLogicName: "exactlyOneY",
-                variableNames: ["value"],
-              }
+            dependenciesByKey[arrayKey].componentChild = {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneY",
+              variableNames: ["value"],
             }
           } else if (arrayKey === "2") {
-            dependenciesByKey[arrayKey] = {
-              componentChild: {
-                dependencyType: "childStateVariables",
-                childLogicName: "exactlyOneZ",
-                variableNames: ["value"],
-              }
+            dependenciesByKey[arrayKey].componentChild = {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneZ",
+              variableNames: ["value"],
             }
           }
         }
@@ -377,7 +417,7 @@ export default class Point extends GraphicalComponent {
         if (globalDependencyValues.coordsChild.length === 1) {
           basedOnCoords = true;
           coords = globalDependencyValues.coordsChild[0].stateValues.value;
-        } else if (globalDependencyValues.coordsShadow !== null) {
+        } else if (globalDependencyValues.coordsShadow) {
           basedOnCoords = true;
           coords = globalDependencyValues.coordsShadow;
         }
@@ -389,7 +429,11 @@ export default class Point extends GraphicalComponent {
             for (let arrayKey of arrayKeys) {
               let ind = Number(arrayKey);
               if (ind >= 0 || ind < coordsTree.length - 1) {
-                newXs[arrayKey] = coords.get_component(ind).simplify();
+                if (coords.tree[ind + 1] === undefined) {
+                  newXs[arrayKey] = me.fromAst("\uff3f");
+                } else {
+                  newXs[arrayKey] = coords.get_component(ind).simplify();
+                }
               }
             }
           } else {
@@ -401,9 +445,13 @@ export default class Point extends GraphicalComponent {
         } else {
 
           for (let arrayKey of arrayKeys) {
-            let componentChild = dependencyValuesByKey[arrayKey].componentChild;
-            if (componentChild) {
-              if (componentChild.length === 1) {
+
+            let pointChild = dependencyValuesByKey[arrayKey].pointChild;
+            if (pointChild && pointChild.length === 1) {
+              newXs[arrayKey] = pointChild[0].stateValues["x" + (Number(arrayKey) + 1)]
+            } else {
+              let componentChild = dependencyValuesByKey[arrayKey].componentChild;
+              if (componentChild && componentChild.length === 1) {
                 newXs[arrayKey] = componentChild[0].stateValues.value.simplify();
               } else {
                 essentialXs[arrayKey] = {
@@ -489,30 +537,38 @@ export default class Point extends GraphicalComponent {
 
           for (let arrayKey in desiredStateVariableValues.unconstrainedXs) {
 
-            if (!(Number(arrayKey) < 3)) {
-              throw Error(`Haven't implemented coords beyond 3 for inverse definition of xs in point`)
-            }
-
             if (!dependencyValuesByKey[arrayKey]) {
               continue;
             }
 
-            let dependencyChild = dependencyValuesByKey[arrayKey].componentChild;
 
-            if (dependencyChild.length === 0) {
+            let pointChild = dependencyValuesByKey[arrayKey].pointChild;
+            if (pointChild.length === 1) {
               instructions.push({
-                setStateVariable: "unconstrainedXs",
-                arrayKey,
-                value: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]),
-              });
-            } else {
-              instructions.push({
-                setDependency: dependencyNamesByKey[arrayKey].componentChild,
-                // since going through Math component, don't need to manually convert to math expression
-                desiredValue: desiredStateVariableValues.unconstrainedXs[arrayKey],
+                setDependency: dependencyNamesByKey[arrayKey].pointChild,
+                desiredValue: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]),
                 childIndex: 0,
                 variableIndex: 0,
               });
+            } else {
+
+              let dependencyChild = dependencyValuesByKey[arrayKey].componentChild;
+
+              if (dependencyChild.length === 0) {
+                instructions.push({
+                  setStateVariable: "unconstrainedXs",
+                  arrayKey,
+                  value: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]),
+                });
+              } else {
+                instructions.push({
+                  setDependency: dependencyNamesByKey[arrayKey].componentChild,
+                  // since going through Math component, don't need to manually convert to math expression
+                  desiredValue: desiredStateVariableValues.unconstrainedXs[arrayKey],
+                  childIndex: 0,
+                  variableIndex: 0,
+                });
+              }
             }
           }
 

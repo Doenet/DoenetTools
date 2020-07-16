@@ -1,5 +1,6 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
+import { returnNVariables } from '../utils/math';
 
 export default class Line extends GraphicalComponent {
   static componentType = "line";
@@ -17,14 +18,14 @@ export default class Line extends GraphicalComponent {
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.draggable = { default: true, forRenderer: true };
-    properties.variables = {
-      componentType: "math",
-      entryPrefixes: ["var"],
-      dependentStateVariables: [{
-        dependencyName: "nVariables",
-        variableName: "nDimensions"
-      }]
-    }
+    // properties.variables = {
+    //   componentType: "math",
+    //   entryPrefixes: ["var"],
+    //   dependentStateVariables: [{
+    //     dependencyName: "nVariables",
+    //     variableName: "nDimensions"
+    //   }]
+    // }
     return properties;
   }
 
@@ -268,6 +269,46 @@ export default class Line extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.variables = {
+      isArray: true,
+      public: true,
+      componentType: "variable",
+      entryPrefixes: ["var"],
+      returnArraySizeDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nDimensions];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          variablesChild: {
+            dependencyType: "childStateVariables",
+            childLogicName: "atMostOneVariables",
+            variableNames: ["variables"],
+          }
+        };
+
+        return { globalDependencies }
+      },
+      arrayDefinitionByKey({ globalDependencyValues, arraySize }) {
+        let variablesSpecified = [];
+        if (globalDependencyValues.variablesChild.length === 1) {
+          variablesSpecified = globalDependencyValues.variablesChild[0].stateValues.variables;
+        }
+
+        return {
+          newValues: {
+            variables: returnNVariables(arraySize[0], variablesSpecified)
+          }
+        }
+
+      }
+    }
+
     // we make equation child be a state variable
     // as we need a state variable to determine other dependencies
     // using stateVariablesDeterminingDependencies
@@ -293,31 +334,25 @@ export default class Line extends GraphicalComponent {
       isArray: true,
       entryPrefixes: ["point"],
       stateVariablesDeterminingDependencies: ["equationChild"],
-      returnDependencies: function ({ stateValues, arrayKeys }) {
+      returnArraySizeDependencies: () => ({}),
+      returnArraySize() {
+        return [2];
+      },
+      returnArrayDependenciesByKey({ stateValues, arrayKeys }) {
         if (stateValues.equationChild === null) {
-          let arrayKey;
-          if (arrayKeys) {
-            arrayKey = Number(arrayKeys[0]);
-          }
-          if (arrayKey === undefined) {
-            return ({
+          let dependenciesByKey = {};
+          for (let arrayKey of arrayKeys) {
+            dependenciesByKey[arrayKey] = {
               throughChild: {
                 dependencyType: "childStateVariables",
                 childLogicName: "exactlyOneThrough",
-                variableNames: ["points"]
+                variableNames: ["point" + (Number(arrayKey) + 1)]
               }
-            })
-          } else {
-            return ({
-              throughChild: {
-                dependencyType: "childStateVariables",
-                childLogicName: "exactlyOneThrough",
-                variableNames: ["point" + (arrayKey + 1)]
-              }
-            })
+            }
           }
+          return { dependenciesByKey }
         } else {
-          return ({
+          let globalDependencies = {
             coeff0: {
               dependencyType: "stateVariable",
               variableName: "coeff0"
@@ -338,221 +373,64 @@ export default class Line extends GraphicalComponent {
               dependencyType: "stateVariable",
               variableName: "lastPointsFromInverting"
             }
-          })
+          }
+          return { globalDependencies }
         }
       },
-      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
 
-        let freshByKey = freshnessInfo.points.freshByKey;
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
 
-        // console.log('markStale for line points')
-        // console.log(JSON.parse(JSON.stringify(freshByKey)));
-        // console.log(JSON.parse(JSON.stringify(changes)))
-        // console.log(arrayKeys);
+        if ("coeff0" in globalDependencyValues) {
 
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        if (changes.throughChild) {
-
-
-          if (changes.throughChild.componentIdentitiesChanged) {
-
-            // if throughChild changed
-            // then the entire points array of line is also changed
-            for (let key in freshByKey) {
-              delete freshByKey[key];
-            }
-          } else {
-
-            let valuesChanged = changes.throughChild.valuesChanged[0];
-
-            if (arrayKey === undefined) {
-
-              if (valuesChanged.points) {
-                // if have the same points from throughChild
-                // then just check if any of those points values
-                // are no longer fresh
-                let newFreshByKey = valuesChanged.points.freshnessInfo.freshByKey;
-                for (let key in freshByKey) {
-                  if (!newFreshByKey[key]) {
-                    delete freshByKey[key];
-                  }
-                }
-              }
-            } else {
-              if (valuesChanged["point" + (arrayKey + 1)]) {
-                delete freshByKey[arrayKey];
-              }
-            }
-
-          }
-        } else if (changes.coeff0) {
-          for (let key in freshByKey) {
-            delete freshByKey[key];
-          }
-
-        }
-
-        if (arrayKey === undefined) {
-          if (Object.keys(freshByKey).length === 0) {
-            // asked for entire array and it is all stale
-            return { fresh: { points: false } }
-          } else {
-            // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: { points: true } }
-          }
-        } else {
-          // asked for just one component
-          return { fresh: { points: freshByKey[arrayKey] === true } }
-        }
-
-      },
-      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
-        let freshByKey = freshnessInfo.points.freshByKey;
-
-        // console.log('definition of line points');
-        // console.log(dependencyValues)
-        // console.log(arrayKeys);
-        // console.log(JSON.parse(JSON.stringify(freshByKey)));
-        // console.log(changes)
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        if ("coeff0" in dependencyValues) {
-
-          // if both points are fresh, don't return anything
-          if (freshByKey[0] && freshByKey[1]) {
-            return {};
-          }
-
-          let result = calculatePointsFromCoeffs(dependencyValues);
+          let result = calculatePointsFromCoeffs(globalDependencyValues);
 
           if (!result.success) {
             return { newValues: { points: [] } }
           } else {
-            for (let key in result.points) {
-              freshByKey[key] = true;
-            }
             return { newValues: { points: result.points } }
           }
-        } else if (dependencyValues.throughChild.length === 1) {
-
-          if (arrayKey === undefined) {
-            let throughPoints = dependencyValues.throughChild[0].stateValues.points;
-
-            let useEssentialOrDefaultValue;
-            if (throughPoints.length < 2) {
-              freshByKey[1] = true;
-              useEssentialOrDefaultValue = {
-                points: {
-                  1: { defaultValue: me.fromAst(["vector", 0, 0]) }
-                }
-              }
-              if (throughPoints.length < 1) {
-                freshByKey[0] = true;
-                useEssentialOrDefaultValue.points[0] = { defaultValue: me.fromAst(["vector", 1, 0]) }
-              }
-            }
-
-            if (changes.throughChild && (
-              changes.throughChild.componentIdentitiesChanged ||
-              changes.throughChild.valuesChanged[0].points.changed.changedEntireArray
-            )) {
-              // send array to indicate that should overwrite entire array
-              for (let key in throughPoints) {
-                freshByKey[key] = true;
-              }
-              let result = {
-                newValues: {
-                  points: throughPoints
-                }
-              }
-              if (useEssentialOrDefaultValue) {
-                result.useEssentialOrDefaultValue = useEssentialOrDefaultValue;
-              }
-              return result
-            }
-
-            let newPointValues = {};
-            for (let key in throughPoints) {
-              if (!freshByKey[key]) {
-                freshByKey[key] = true;
-                newPointValues[key] = throughPoints[key]
-              }
-            }
-            let result = { newValues: { points: newPointValues } };
-            if (useEssentialOrDefaultValue) {
-              result.useEssentialOrDefaultValue = useEssentialOrDefaultValue;
-            }
-
-            return result
-
-          } else {
-            // have an arrayKey defined
-
-            if (!freshByKey[arrayKey]) {
-              freshByKey[arrayKey] = true;
-              let coords = dependencyValues.throughChild[0].stateValues["point" + (arrayKey + 1)];
-              if (coords === undefined) {
-                if (arrayKey === 1) {
-                  return {
-                    useEssentialOrDefaultValue: {
-                      points: {
-                        1: { defaultValue: me.fromAst(["vector", 0, 0]) }
-                      }
-                    }
-                  }
-                } else if (arrayKey === 0) {
-                  return {
-                    useEssentialOrDefaultValue: {
-                      points: {
-                        0: { defaultValue: me.fromAst(["vector", 1, 0]) }
-                      }
-                    }
-                  }
-                }
-              }
-              return {
-                newValues: {
-                  points: {
-                    [arrayKey]: coords
-                  }
-                }
-              }
-            } else {
-              // arrayKey asked for didn't change
-              // don't need to report noChanges for array state variable
-              return {};
-            }
-          }
-
         } else {
-          return {
-            useEssentialOrDefaultValue: {
-              points: {
-                0: { defaultValue: me.fromAst(["vector", 1, 0]) },
-                1: { defaultValue: me.fromAst(["vector", 0, 0]) }
+
+          let points = {};
+          let essentialPoints = {};
+
+          for (let arrayKey of arrayKeys) {
+
+            let varEnding = Number(arrayKey) + 1;
+
+            if (dependencyValuesByKey[arrayKey].throughChild.length === 1
+              && dependencyValuesByKey[arrayKey].throughChild[0].stateValues["point" + varEnding]
+            ) {
+              points[arrayKey] = dependencyValuesByKey[arrayKey].throughChild[0].stateValues["point" + varEnding];
+            } else {
+              if (arrayKey === "0") {
+                essentialPoints[0] = { defaultValue: me.fromAst(["vector", 1, 0]) }
+              } else {
+                essentialPoints[1] = { defaultValue: me.fromAst(["vector", 0, 0]) }
               }
-            },
-            makeEssential: ["points"]
+            }
           }
+
+          let result = {};
+
+          if (Object.keys(points).length > 0) {
+            result.newValues = { points }
+          }
+          if (Object.keys(essentialPoints).length > 0) {
+            result.useEssentialOrDefaultValue = { points: essentialPoints }
+          }
+          return result;
         }
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues,
-        stateValues, initialChange, arrayKeys
+      inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
+        dependencyValuesByKey, dependencyNamesByKey, initialChange, stateValues, workspace,
       }) {
 
-        // console.log(`inverseDefinition of points of line`);
+        // console.log(`inverse array definition of points of line`);
         // console.log(desiredStateVariableValues)
         // console.log(JSON.parse(JSON.stringify(stateValues)))
-        // console.log(arrayKeys);
-        // console.log(dependencyValues);
+        // console.log(dependencyValuesByKey);
+        // console.log(globalDependencyValues);
 
 
         // if not draggable, then disallow initial change 
@@ -560,101 +438,8 @@ export default class Line extends GraphicalComponent {
           return { success: false };
         }
 
-        if ("throughChild" in dependencyValues) {
 
-          let arrayKey;
-          if (arrayKeys) {
-            arrayKey = Number(arrayKeys[0]);
-          }
-
-          if (dependencyValues.throughChild.length !== 1) {
-            // no through child, so have essential points
-
-            if (arrayKey === undefined) {
-              // working with entire array
-              return {
-                success: true,
-                instructions: [{
-                  setStateVariable: "points",
-                  value: desiredStateVariableValues.points
-                }]
-              }
-            } else {
-              // have just an arrayKey
-              return {
-                success: true,
-                instructions: [{
-                  setStateVariable: "points",
-                  value: desiredStateVariableValues.points[arrayKey],
-                  arrayKey
-                }]
-              }
-            }
-          }
-
-
-          if (arrayKey === undefined) {
-            // working with entire array
-            let nThroughPoints = dependencyValues.throughChild[0].stateValues.points.length;
-
-            let pointForThroughChild = desiredStateVariableValues.points.slice(0, nThroughPoints);
-
-            let instructions = [{
-              setDependency: "throughChild",
-              desiredValue: pointForThroughChild,
-              childIndex: 0,
-              variableIndex: 0
-            }]
-
-            if (nThroughPoints < 2) {
-              instructions.push({
-                setStateVariable: "points",
-                value: desiredStateVariableValues.points[1],
-                arrayKey: 1,
-              });
-              if (nThroughPoints < 1) {
-                instructions.push({
-                  setStateVariable: "points",
-                  value: desiredStateVariableValues.points[0],
-                  arrayKey: 0,
-                });
-              }
-            }
-            return {
-              success: true,
-              instructions
-            }
-          } else {
-
-            // just have one arrayKey
-            // so child variable of throughChild is an array entry (rather than array)
-
-            let instructions;
-
-            let coords = dependencyValues.throughChild[0].stateValues["point" + (arrayKey + 1)];
-
-            if (coords === undefined) {
-              instructions = [{
-                setStateVariable: "points",
-                value: desiredStateVariableValues.points[arrayKey],
-                arrayKey
-              }]
-            } else {
-              instructions = [{
-                setDependency: "throughChild",
-                desiredValue: desiredStateVariableValues.points[arrayKey],
-                childIndex: 0,
-                variableIndex: 0,
-              }]
-            }
-
-            return {
-              success: true,
-              instructions
-            }
-
-          }
-        } else {
+        if ("coeff0" in globalDependencyValues) {
 
           // dependencies are coeffs
 
@@ -749,6 +534,67 @@ export default class Line extends GraphicalComponent {
               }
             }],
           }
+        } else {
+
+          // no coeff0, so much depend on through points
+
+          if (!workspace.desiredPointAsts) {
+            workspace.desiredPointAsts = {};
+          }
+
+          let instructions = [];
+
+          for (let arrayKey in desiredStateVariableValues.points) {
+
+            let varEnding = Number(arrayKey) + 1;
+
+            if (dependencyValuesByKey[arrayKey].throughChild.length === 1
+              && dependencyValuesByKey[arrayKey].throughChild[0].stateValues["point" + varEnding]
+            ) {
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].throughChild,
+                desiredValue: desiredStateVariableValues.points[arrayKey],
+                childIndex: 0,
+                variableIndex: 0,
+              })
+
+            } else {
+
+              let newPointAst = desiredStateVariableValues.points[arrayKey].tree;
+              if (newPointAst[0] !== "vector") {
+                console.log(`can't change line point to something that isn't a vector`);
+                continue;
+              }
+
+              let desiredPointAst;
+              if (workspace.desiredPointAsts[arrayKey]) {
+                desiredPointAst = workspace.desiredPointAsts[arrayKey].slice(0);
+              } else {
+                desiredPointAst = stateValues.points[arrayKey].tree.slice(0);
+              }
+
+              for (let [ind, value] of newPointAst.entries()) {
+                if (value !== undefined) {
+                  desiredPointAst[ind] = value;
+                }
+              }
+
+              workspace.desiredPointAsts[arrayKey] = desiredPointAst;
+
+              instructions.push({
+                setStateVariable: "points",
+                value: me.fromAst(desiredPointAst),
+                arrayKey
+              })
+            }
+          }
+
+          console.log("instructions", instructions)
+          return {
+            success: true,
+            instructions
+          }
+
         }
 
       }
@@ -1067,32 +913,56 @@ export default class Line extends GraphicalComponent {
       isArray: true,
       entryPrefixes: ["numericalPoint"],
       forRenderer: true,
-      returnDependencies: () => ({
-        points: {
-          dependencyType: "stateVariable",
-          variableName: "points"
-        },
+      returnArraySizeDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",
           variableName: "nDimensions",
         }
       }),
-      definition: function ({ dependencyValues }) {
+      returnArraySize({ dependencyValues }) {
         if (Number.isNaN(dependencyValues.nDimensions)) {
-          return { newValues: { numericalPoints: [] } }
+          return [0]
+        }
+        return [2];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let globalDependencies = {
+          nDimensions: {
+            dependencyType: "stateVariable",
+            variableName: "nDimensions",
+          }
+        }
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            point: {
+              dependencyType: "stateVariable",
+              variableName: "point" + (Number(arrayKey) + 1)
+            },
+          }
         }
 
-        let numericalPoints = [];
-        for (let point of dependencyValues.points) {
+        return { globalDependencies, dependenciesByKey }
+      },
+
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+        if (Number.isNaN(globalDependencyValues.nDimensions)) {
+          return {}
+        }
+
+        let numericalPoints = {};
+        for (let arrayKey of arrayKeys) {
+          let point = dependencyValuesByKey[arrayKey].point;
           let numericalP = [];
-          for (let ind = 0; ind < dependencyValues.nDimensions; ind++) {
+          for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
             let val = point.get_component(ind).evaluate_to_constant();
             if (!Number.isFinite(val)) {
               val = NaN;
             }
             numericalP.push(val);
           }
-          numericalPoints.push(numericalP);
+          numericalPoints[arrayKey] = numericalP;
         }
 
         return { newValues: { numericalPoints } }

@@ -128,235 +128,6 @@ export default class Polyline extends GraphicalComponent {
       }
     }
 
-    stateVariableDefinitions.vertices = {
-      public: true,
-      componentType: "point",
-      isArray: true,
-      entryPrefixes: ["vertex"],
-      returnDependencies: function ({ arrayKeys }) {
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-        if (arrayKey === undefined) {
-          return ({
-            verticesChild: {
-              dependencyType: "childStateVariables",
-              childLogicName: "exactlyOneVertices",
-              variableNames: ["points", "nPoints"]
-            }
-          })
-        } else {
-          return ({
-            verticesChild: {
-              dependencyType: "childStateVariables",
-              childLogicName: "exactlyOneVertices",
-              variableNames: ["point" + (arrayKey + 1), "nPoints"]
-            }
-          })
-        }
-
-      },
-      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
-
-        let freshByKey = freshnessInfo.vertices.freshByKey;
-
-        // console.log('markStale for polygon vertices')
-        // console.log(JSON.parse(JSON.stringify(freshByKey)));
-        // console.log(JSON.parse(JSON.stringify(changes)))
-        // console.log(arrayKeys);
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        if (changes.verticesChild) {
-
-
-          if (changes.verticesChild.componentIdentitiesChanged) {
-
-            // if verticesChild changed
-            // then the entire vertices array of polyline is also changed
-            for (let key in freshByKey) {
-              delete freshByKey[key];
-            }
-          } else {
-
-            let valuesChanged = changes.verticesChild.valuesChanged[0];
-
-            if (arrayKey === undefined) {
-
-              if (valuesChanged.points) {
-                // if have the same points from verticesChild
-                // then just check if any of those points values
-                // are no longer fresh
-                let newFreshByKey = valuesChanged.points.freshnessInfo.freshByKey;
-                for (let key in freshByKey) {
-                  if (!newFreshByKey[key]) {
-                    delete freshByKey[key];
-                  }
-                }
-              }
-            } else {
-              if (valuesChanged["point" + (arrayKey + 1)]) {
-                delete freshByKey[arrayKey];
-              }
-            }
-
-          }
-        }
-
-        if (arrayKey === undefined) {
-          if (Object.keys(freshByKey).length === 0) {
-            // asked for entire array and it is all stale
-            return { fresh: { vertices: false } }
-          } else {
-            // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: { vertices: true } }
-          }
-        } else {
-          // asked for just one component
-          return { fresh: { vertices: freshByKey[arrayKey] === true } }
-        }
-
-      },
-      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
-        let freshByKey = freshnessInfo.vertices.freshByKey;
-
-        // console.log('definition of polyline vertices');
-        // console.log(dependencyValues)
-        // console.log(arrayKeys);
-        // console.log(JSON.parse(JSON.stringify(freshByKey)));
-        // console.log(changes)
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        if (dependencyValues.verticesChild.length === 1) {
-
-          if (arrayKey === undefined) {
-            let vertexPoints = dependencyValues.verticesChild[0].stateValues.points;
-
-
-            if (changes.verticesChild.componentIdentitiesChanged ||
-              changes.verticesChild.valuesChanged[0].points.changed.changedEntireArray
-            ) {
-              // send array to indicate that should overwrite entire array
-              for (let key in vertexPoints) {
-                freshByKey[key] = true;
-              }
-              let result = {
-                newValues: {
-                  vertices: vertexPoints
-                }
-              }
-              return result
-            }
-
-            let newVertexValues = {};
-            for (let key in vertexPoints) {
-              if (!freshByKey[key]) {
-                freshByKey[key] = true;
-                newVertexValues[key] = vertexPoints[key]
-              }
-            }
-            let result = { newValues: { vertices: newVertexValues } };
-
-            return result
-
-          } else {
-            // have an arrayKey defined
-
-            if (!freshByKey[arrayKey]) {
-              freshByKey[arrayKey] = true;
-              let coords = dependencyValues.verticesChild[0].stateValues["point" + (arrayKey + 1)];
-
-              return {
-                newValues: {
-                  vertices: {
-                    [arrayKey]: coords
-                  }
-                }
-              }
-            } else {
-              // arrayKey asked for didn't change
-              // don't need to report noChanges for array state variable
-              return {};
-            }
-          }
-
-        } else {
-          return { newValues: { vertices: [] } }
-        }
-      },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues,
-        stateValues, initialChange, arrayKeys
-      }) {
-
-        // console.log(`inverseDefinition of vertices of polyline`);
-        // console.log(desiredStateVariableValues)
-        // console.log(JSON.parse(JSON.stringify(stateValues)))
-        // console.log(arrayKeys);
-        // console.log(dependencyValues);
-
-
-        // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
-          return { success: false };
-        }
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        if (dependencyValues.verticesChild.length !== 1) {
-          return { success: false }
-        }
-
-
-        if (arrayKey === undefined) {
-          // working with entire array
-          let nVertices = dependencyValues.verticesChild[0].stateValues.points.length;
-
-          // let pointForVertexChild = desiredStateVariableValues.vertices.slice(0, nVertices);
-
-          let instructions = [{
-            setDependency: "verticesChild",
-            desiredValue: desiredStateVariableValues.vertices,
-            childIndex: 0,
-            variableIndex: 0
-          }]
-
-          return {
-            success: true,
-            instructions
-          }
-        } else {
-
-          // just have one arrayKey
-          // so child variable of verticesChild is an array entry (rather than array)
-
-          let instructions = [{
-            setDependency: "verticesChild",
-            desiredValue: desiredStateVariableValues.vertices[arrayKey],
-            childIndex: 0,
-            variableIndex: 0,
-          }]
-
-          return {
-            success: true,
-            instructions
-          }
-
-        }
-
-      }
-    }
-
     stateVariableDefinitions.nVertices = {
       public: true,
       componentType: "number",
@@ -377,6 +148,94 @@ export default class Polyline extends GraphicalComponent {
 
       }
     }
+
+
+    stateVariableDefinitions.vertices = {
+      public: true,
+      componentType: "point",
+      isArray: true,
+      entryPrefixes: ["vertex"],
+      returnArraySizeDependencies: () => ({
+        nVertices: {
+          dependencyType: "stateVariable",
+          variableName: "nVertices",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nVertices];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            verticesChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneVertices",
+              variableNames: ["point" + (Number(arrayKey) + 1)]
+            }
+          }
+        }
+        return { dependenciesByKey };
+
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+
+        // console.log('array definition of polyline vertices');
+        // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
+        // console.log(arrayKeys);
+
+        let vertices = {};
+
+        for (let arrayKey of arrayKeys) {
+          if (dependencyValuesByKey[arrayKey].verticesChild &&
+            dependencyValuesByKey[arrayKey].verticesChild.length === 1
+          ) {
+            vertices[arrayKey] = dependencyValuesByKey[arrayKey].verticesChild[0].stateValues["point" + (Number(arrayKey) + 1)];
+          } else {
+            vertices[arrayKey] = me.fromAst('\uff3f')
+          }
+        }
+        return { newValues: { vertices } }
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        dependencyValuesByKey, dependencyNamesByKey,
+        initialChange, stateValues,
+      }) {
+
+        // console.log(`inverseArrayDefinition of vertices of polyline`);
+        // console.log(desiredStateVariableValues)
+        // console.log(JSON.parse(JSON.stringify(stateValues)))
+        // console.log(dependencyValuesByKey);
+
+
+        // if not draggable, then disallow initial change 
+        if (initialChange && !stateValues.draggable) {
+          return { success: false };
+        }
+
+        let instructions = [];
+        for (let arrayKey in desiredStateVariableValues.vertices) {
+          if (dependencyValuesByKey[arrayKey].verticesChild.length === 1) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].verticesChild,
+              desiredValue: desiredStateVariableValues.vertices[arrayKey],
+              childIndex: 0,
+              variableIndex: 0,
+            })
+          } else {
+            return { success: false };
+          }
+
+        }
+
+        return {
+          success: true,
+          instructions
+        }
+
+      }
+    }
+
 
     stateVariableDefinitions.nDimensions = {
       public: true,
@@ -429,32 +288,63 @@ export default class Polyline extends GraphicalComponent {
       isArray: true,
       entryPrefixes: ["numericalVertex"],
       forRenderer: true,
-      returnDependencies: () => ({
-        vertices: {
+      returnArraySizeDependencies: () => ({
+        nVertices: {
           dependencyType: "stateVariable",
-          variableName: "vertices"
+          variableName: "nVertices",
         },
         nDimensions: {
           dependencyType: "stateVariable",
           variableName: "nDimensions",
         }
       }),
-      definition: function ({ dependencyValues }) {
+      returnArraySize({ dependencyValues }) {
         if (Number.isNaN(dependencyValues.nDimensions)) {
+          return [0];
+        } else {
+          return [dependencyValues.nVertices];
+        }
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+
+        let globalDependencies = {
+          nDimensions: {
+            dependencyType: "stateVariable",
+            variableName: "nDimensions",
+          }
+        }
+
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            vertex: {
+              dependencyType: "stateVariable",
+              variableName: "vertex" + (Number(arrayKey) + 1)
+            }
+          }
+        }
+
+        return { globalDependencies, dependenciesByKey }
+      },
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+        if (Number.isNaN(globalDependencyValues.nDimensions)) {
           return { newValues: { numericalVertices: [] } }
         }
 
-        let numericalVertices = [];
-        for (let vertex of dependencyValues.vertices) {
+        let numericalVertices = {};
+
+        for (let arrayKey of arrayKeys) {
+          let vertex = dependencyValuesByKey[arrayKey].vertex;
           let numericalP = [];
-          for (let ind = 0; ind < dependencyValues.nDimensions; ind++) {
+          for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
             let val = vertex.get_component(ind).evaluate_to_constant();
             if (!Number.isFinite(val)) {
               val = NaN;
             }
             numericalP.push(val);
           }
-          numericalVertices.push(numericalP);
+          numericalVertices[arrayKey] = numericalP;
         }
 
         return { newValues: { numericalVertices } }

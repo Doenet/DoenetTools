@@ -343,6 +343,9 @@ export default class Copy extends CompositeComponent {
     // of propVariableObjs
     // Except that, if propVariableObjs doesn't have componentType specified,
     // then the componentType is determined by targetComponent state variable
+    // We also track potentialReplacementClasses, which is all possible
+    // replacementClasses this copy might return if array parameters change
+    // (needed to load potential renderers)
     stateVariableDefinitions.replacementClasses = {
       additionalStateVariablesDefined: [
         "stateVariablesRequested", "validProp",
@@ -503,7 +506,6 @@ export default class Copy extends CompositeComponent {
             potentialReplacementClasses.push(componentClass)
           } else if (propVariableObj.isArrayEntry) {
 
-            // TODO: what about multi-dimensional arrays?
             let arrayLength = 1;
             let targetArrayEntry = dependencyValues[`targetArray${ind}`];
             if (Array.isArray(targetArrayEntry)) {
@@ -1637,13 +1639,13 @@ export function replacementFromProp({ component, components, componentOrReplacem
       numReplacementsForTarget = componentType.length;
     }
 
+    let targetName = componentOrReplacementNames[targetInd];
+    let targetComponent = components[targetName];
+
     for (let ind = 0; ind < numReplacementsForTarget; ind++) {
       replacementInd++;
 
       let replacementClass = component.stateValues.replacementClasses[replacementInd];
-
-      let targetName = componentOrReplacementNames[targetInd];
-      let targetComponent = components[targetName];
 
       let componentType = replacementClass.componentType.toLowerCase();
 

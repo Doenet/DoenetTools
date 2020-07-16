@@ -20,6 +20,12 @@ export default class Line extends DoenetRenderer {
   createGraphicalObject() {
 
 
+    if (this.doenetSvData.numericalVertices.length !== this.doenetSvData.nVertices ||
+      this.doenetSvData.numericalVertices.some(x => x.length !== 2)
+    ) {
+      return;
+    }
+
     //things to be passed to JSXGraph as attributes
     this.jsxPolylineAttributes = {
       name: this.doenetSvData.label,
