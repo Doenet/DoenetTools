@@ -8,7 +8,6 @@ import ChooserConstants from "../chooser/ChooserConstants";
 import styled from 'styled-components'
 
 /*
-
   Data and fields:
     mandatory fields:
       - loading       (set to false if loaders not async)
@@ -32,7 +31,6 @@ import styled from 'styled-components'
               parentId: "root"
             }
           }
-
     optional fields:
       - hideRoot    (set to true to hide root node of tree)
       - treeNodeIcons
@@ -68,17 +66,14 @@ import styled from 'styled-components'
           }
       - parentNodeOnClick
 			- childNodeOnClickCallback
-
   Callbacks and functions:
 		**Only enable one of onClick or Drag-and-Drop feature to avoid conflicts** 
-
     onClick callback for leaf nodes, leave empty if onclick actions not needed
     - onLeafNodeClick
       - example:
         const onLeafNodeClick = (leafNodeId) => {
           console.log(`leaf node ${leafNodeId} clicked`);
         }
-
     Drag and Drop functions, leave empty if DnD is not needed:
       - containerId
       - containerType
@@ -89,7 +84,6 @@ import styled from 'styled-components'
       - onDrop
       - onDropEnter
       - onDropLeave
-
 Example customized tree:
 <TreeView
   containerId={treeContainerId}
@@ -106,6 +100,7 @@ Example customized tree:
       return map[itemType]
   }} 
   hideRoot={true}
+  disableSearch={true}
   specialNodes={this.tempSet}
   treeStyles={{
     parentNode: {
@@ -128,6 +123,7 @@ Example customized tree:
       "frame": { background: "#a7a7a7" },
     },
     expanderIcon: <FontAwesomeIcon icon={faPlus} style={{paddingRight: "8px"}}/>
+    emptyParentExpanderIcon: <span></span>
   }}
   onLeafNodeClick={(nodeId) => {
     if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
@@ -365,7 +361,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
     hide={hideRoot && parentHeadingId == "root"}
     defaultOpen={defaultOpen}
     itemIcon={baseItemStyleAndIcon.icon}
-    expanderIcon={treeStyles["expanderIcon"]}
+    expanderIcon={parentsInfo[parentHeadingId]["numChild"] == 0 ? treeStyles["emptyParentExpanderIcon"] : treeStyles["expanderIcon"]}
     onClick={parentHeadingId != "root" ? onParentNodeClick : ()=>{}}
     onDoubleClick={parentHeadingId != "root" ? onParentNodeDoubleClick : ()=>{}}
     onDrop={onDrop}
