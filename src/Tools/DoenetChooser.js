@@ -54,6 +54,9 @@ class DoenetChooser extends Component {
       showNewButtonMenu: false,
       activeSection: "chooser",
       directoryStack: [],
+      splitPanelDirectoryStack: [],
+      splitPanelSelectedItems: [],
+      splitPanelSelectedItemsType : [],
       currentDraggedObject: { id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null },
       panelsCollection: { "first": { values: ["browser", "tree"], activeContainer: "browser" } },
       splitPanelLayout: false
@@ -135,6 +138,7 @@ class DoenetChooser extends Component {
     this.switchPanelContainer = this.switchPanelContainer.bind(this);
     this.toggleSplitPanel = this.toggleSplitPanel.bind(this);
     this.goToFolder = this.goToFolder.bind(this);
+    this.splitPanelGoToFolder = this.splitPanelGoToFolder.bind(this);
 
     this.tempSet = new Set();
   }
@@ -1086,11 +1090,20 @@ class DoenetChooser extends Component {
     })
   }
 
+  splitPanelGoToFolder(id, foldersInfo) {
+    const path = this.getFolderPath(id, foldersInfo);
+    this.setState({
+      splitPanelDirectoryStack: path,
+      splitPanelSelectedItems: path,
+      splitPanelSelectedItemsType: ["folder"],
+    })
+  }
+
   handleSplitPanelDropdownCallback(child) {
     this.setState({
-      directoryStack: child.path,
-      selectedItems: child.path,
-      selectedItemsType: ["folder"],
+      splitPanelDirectoryStack: child.path,
+      splitPanelSelectedItems: child.path,
+      splitPanelSelectedItemsType: ["folder"],
     })
   }
 
@@ -1998,7 +2011,10 @@ class DoenetChooser extends Component {
             this.tempSet.clear();
             this.tempSet.add(nodeId);
             this.goToFolder(nodeId, customizedContentTreeParentInfo);
-            this.forceUpdate()
+            if(!this.state.splitPanelLayout) {
+              this.splitPanelGoToFolder(nodeId, customizedContentTreeParentInfo);
+            }
+            this.forceUpdate();
           }}
         // onParentNodeDoubleClick={(nodeId) => {
         //   console.log(`${nodeId} double clicked!`)
@@ -2116,9 +2132,9 @@ class DoenetChooser extends Component {
           addContentToRepo={this.addContentToRepo}               // optional
           removeContentFromCourse={this.removeContentFromCourse}  // optional
           removeContentFromFolder={this.removeContentFromFolder}  // optional                  
-          directoryData={this.state.directoryStack}               // optional
-          selectedItems={this.state.selectedItems}                // optional
-          selectedItemsType={this.state.selectedItemsType}        // optional
+          directoryData={this.state.splitPanelDirectoryStack}               // optional
+          selectedItems={this.state.splitPanelSelectedItems}                // optional
+          selectedItemsType={this.state.splitPanelDirectoryStacksplitPanelSelectedItemsType}        // optional
           renameFolder={this.renameFolder}                        // optional
           openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
           publicizeRepo={this.publicizeRepo}                      // optional
