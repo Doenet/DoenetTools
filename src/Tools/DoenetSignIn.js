@@ -134,7 +134,14 @@ export default function DoenetSignIn(props) {
           // console.log("resp.data.deviceName",resp.data.deviceName)
           // if (!Object.keys(deviceNameCookie).includes("Device")) {
             setDeviceName(resp.data.deviceName);
-            setDeviceNameCookie('Device', resp.data.deviceName, { path: "/" });
+            // setDeviceNameCookie('Device', resp.data.deviceName, { path: "/" });
+            setDeviceNameCookie('Device', resp.data.deviceName, { 
+              path: "/",
+              maxAge: 2147483647,
+              // secure: true,
+              // httpOnly: true,
+              // sameSite: "strict",
+            });
           // }
           
         })
