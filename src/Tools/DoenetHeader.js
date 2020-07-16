@@ -157,27 +157,7 @@ class DoenetHeader extends Component {
     
     this.populateMenuToolbox(props.profile.toolAccess)
     this.profilePicture = this.props.profile.profilePicture;
-
-
-    // this.profileMenuMap = [
-    //   {
-    //     id: "Account",
-    //     label: "Account settings",
-    //     link: "/accountsettings/"
-    //   }];
-    // if (props.isSignedIn) {
-    //   this.profileMenuMap.push({
-    //     id: "SignOut",
-    //     label: "Sign out",
-    //     link: "/signout/",
-    //   });
-    // } else {
-    //   this.profileMenuMap.push({
-    //     id: "SignIn",
-    //     label: "Sign in",
-    //     link: "/signin/",
-    //   });
-    // }
+    this.prepareProfileDropDown(this.profilePicture);
 
     this.menuToolBoxItems = [
       {
@@ -200,34 +180,7 @@ class DoenetHeader extends Component {
         label: "Gradebook",
         link: "/gradebook/"
       }];
-      console.log(this.props.profile)
-
-    this.profileMenuMap = [
-      {
-        optionElem: <ProfilePictureLrg pic={this.profilePicture} name="changeProfilePicture" id="changeProfilePicture"   />,
-        id:'profile',
-        label: `${this.props.profile.screenName}`
-      },
-   
-
-      {
-        id: "Account",
-        label: "Account Settings",
-        link: "/accountsettings/"
-      }];
-    if (props.isSignedIn) {
-      this.profileMenuMap.push({
-        id: "SignOut",
-        label: "Sign out",
-        link: "/signout/",
-      });
-    } else {
-      this.profileMenuMap.push({
-        id: "SignIn",
-        label: "Sign in",
-        link: "/signin/",
-      });
-    }
+    
   }
 
 
@@ -267,15 +220,39 @@ class DoenetHeader extends Component {
     }
   }
 
+  prepareProfileDropDown() {
+    this.profileMenuMap = [
+      {
+        optionElem: <ProfilePictureLrg pic={this.profilePicture} name="changeProfilePicture" id="changeProfilePicture"   />,
+        id:'profile',
+        label: `${this.props.profile.screenName}`
+      },
+      {
+        id: "Account",
+        label: "Account Settings",
+        link: "/accountsettings/"
+      }];
+    if (this.props.isSignedIn) {
+      this.profileMenuMap.push({
+        id: "SignOut",
+        label: "Sign out",
+        link: "/signout/",
+      });
+    } else {
+      this.profileMenuMap.push({
+        id: "SignIn",
+        label: "Sign in",
+        link: "/signin/",
+      });
+    }
+  }
+
   componentWillReceiveProps(props) {
     if (props.headerChangesFromLayout){
       this.populateMenuToolbox(props.headerChangesFromLayout.toolAccess);
       this.profilePicture = props.headerChangesFromLayout.profilePicture;
-    }
- 
+      this.prepareProfileDropDown(this.profilePicture);
   }
-
-  rolesToChoose(data) {
   }
 
 
@@ -326,8 +303,6 @@ class DoenetHeader extends Component {
 
 
   render() {
-    // console.log("header isSignedIn", this.props.isSignedIn);
-    // console.log("header render", this.props.profile)
     const sliderClass = this.state.sliderVisible ? 'on' : 'off';
     if (!!this.refs.extendedHeader) {
       this.headerSectionCount = this.refs.extendedHeader.children.length;
@@ -392,7 +367,7 @@ class DoenetHeader extends Component {
     );
   }
 
-  
+
 }
 
 export default DoenetHeader;

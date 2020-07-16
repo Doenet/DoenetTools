@@ -15,7 +15,7 @@ button{
   min-height: 1vh;
   overflow: hidden;
   width:100%;
-
+  background-image: url('../../media/doenets-monochrome.png');
 }
 
 .middlepanel{
@@ -24,6 +24,7 @@ button{
   flex-direction: column;
   min-height: 1vh;
   overflow: hidden;
+  background-color: white;
 }
 
 .rightpanel{
@@ -32,6 +33,7 @@ button{
   flex-direction: column;
   min-height: 1vh; 
   overflow: hidden;
+  background-color: white;
 }
 
 .column-resizer{
