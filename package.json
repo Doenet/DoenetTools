@@ -26,6 +26,7 @@
     "react-datetime-picker": "^2.9.0",
     "react-draggable": "3.0.5",
     "react-monaco-editor": "^0.36.0",
+    "react-router": "^5.2.0",
     "react-spring": "^8.0.27",
     "react-table": "6.10.3",
     "resize-observer-polyfill": "^1.5.1",
