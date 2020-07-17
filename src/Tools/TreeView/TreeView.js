@@ -37,7 +37,7 @@ import styled from 'styled-components'
       - hideRoot    (set to true to hide root node of tree)
       - treeNodeIcons
         - example: 
-          const Icons = (iconName) => { 
+          const Icons = ({iconName}) => { 
             map = { folder: <FontAwesomeIcon icon={faFolder}/>,
               content: <FontAwesomeIcon icon={faFileAlt}/> }
             return map[iconName]
@@ -305,8 +305,11 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
    buildControlButtons, buildSearchComponent, setCurrentHovered, directoryData }) {
      
   const getBaseItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
+    console.log(parentsInfo)
+    console.log(childrenInfo)
+    const isPublic = itemType == "folder" ? parentsInfo[currentItemId].isPublic : parentsInfo[childrenInfo[currentItemId].rootId].isPublic;
     if (itemType == "folder") itemType = parentsInfo[currentItemId].isRepo ? "repo" : "folder";
-    const icon = currentItemId == "root" ? "" : treeNodeIcons(itemType);
+    const icon = currentItemId == "root" ? "" : treeNodeIcons({iconName: itemType, isPublic: isPublic});
     let itemDragged = currentDraggedObject.id == currentItemId;
     let isShadow = itemDragged && 
       currentDraggedObject.dataObject.parentId == parentNodeHeadingId &&
@@ -351,7 +354,9 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
   // set style to user-defined styles
   let itemStyle = specialNodes.has(parentHeadingId) ? treeStyles["specialParentNode"] : treeStyles["parentNode"];
   // if user-defined styles undefined, fallback to default style
-  itemStyle = itemStyle || {"title" :Object.assign({marginLeft: '5px', color: "rgba(0,0,0,0.8)"},  baseItemStyleAndIcon.style)};
+  itemStyle = itemStyle || 
+    {"title" : Object.assign({marginLeft: parentsInfo[parentHeadingId]["numChild"] == 0 ? '2px' : '5px', color: "rgba(0,0,0,0.8)"},  
+      baseItemStyleAndIcon.style)};
 
   let defaultOpen = parentHeadingId == "root";
   if (directoryData.length != 0 && directoryData[0] == parentHeadingId) {

@@ -8,7 +8,7 @@ import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown, 
   faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, 
-  faLink, faRedoAlt, faAlignJustify,faStream, faColumns, faInfoCircle}
+  faLink, faRedoAlt, faAlignJustify,faStream, faColumns, faInfoCircle, faFolderOpen}
   from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
@@ -1715,7 +1715,14 @@ class DoenetChooser extends Component {
     // process root folder for tree rendering
     if (this.folders_loaded && this.branches_loaded && this.urls_loaded && this.userContentReloaded) {
       this.userContentReloaded = false;
-      this.userFolderInfo["root"] = {};
+      this.userFolderInfo["root"] = {
+        title: "User Content Tree",
+        childContent: [],
+        childFolders: [],
+        childUrls: [],
+        isPublic: false,
+        type: "folder",
+      };
       this.userFolderInfo["root"]["title"] = "User Content Tree"
       this.userFolderInfo["root"]["childContent"] = [];
       this.userFolderInfo["root"]["childFolders"] = [];
@@ -2064,10 +2071,6 @@ class DoenetChooser extends Component {
   }
 }
 
-
-
-
-
 const MainPanel = ({panelId, initialContainer, activeContainer, containersData}) => {
   return <div className="mainPanel">
     <SwitchableContainers initialValue={initialContainer} currentValue={activeContainer}>
@@ -2080,7 +2083,7 @@ const MainPanel = ({panelId, initialContainer, activeContainer, containersData})
   </div>;
 }
 
-const TreeIcons = (iconName) => {
+const TreeIcons = ({iconName, isPublic}) => {
   const FolderIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
     style={{
       fontSize: "16px", 
@@ -2120,7 +2123,6 @@ const TreeIcons = (iconName) => {
       position: "relative",
       top: "2px",
       marginRight: "8px",
-      
     }}
   />;
   const AssignmentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt} 
@@ -2130,16 +2132,48 @@ const TreeIcons = (iconName) => {
       marginRight: "8px",
     }}
   />;
+  const PublicRepoIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolderOpen}
+    style={{
+      fontSize: "16px", 
+      color: "#3aac90",
+      position: "relative",
+      top: "2px",
+      marginRight: "8px",
+    }}
+  />;
+  const PublicFolderIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
+    style={{
+      fontSize: "16px", 
+      color: "#3aac90",
+      position: "relative",
+      top: "2px",
+      marginRight: "8px",
+    }}
+  />;
+  const PublicUrlIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faLink}
+    style={{
+      fontSize: "16px", 
+      color: "#3aac90", 
+      marginRight: "8px",
+    }}
+  />;
+  const PublicContentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt}
+    style={{
+      fontSize: "16px", 
+      color: "#3aac90", 
+      marginRight: "8px",
+    }}
+  />;
 
   switch(iconName){
     case "folder":
-      return FolderIcon;
+      return isPublic ? PublicFolderIcon : FolderIcon;
     case "repo":
-      return RepoIcon;
+      return isPublic ? PublicRepoIcon : RepoIcon;
     case "content":
-      return ContentIcon;
+      return isPublic ? PublicContentIcon : ContentIcon;
     case "url":
-      return UrlIcon;
+      return isPublic ? PublicUrlIcon : UrlIcon;
     case "header":
       return HeadingIcon;
     case "assignment":
