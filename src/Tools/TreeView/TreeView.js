@@ -203,7 +203,7 @@ export const TreeView = ({
 	}
 
   const buildControlButtons = (folderId) => {
-    if (disableSearch) return;
+    if (disableSearch || parentsInfo[folderId]["numChild"] == 0) return;
     if (folderId == currentHovered || folderId == currentSearchingFolder) {
       const onClickCb = (e) => {
         setCurrentSearchingFolder(currentSearchingFolder == folderId ? null : folderId);
