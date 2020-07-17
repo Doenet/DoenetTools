@@ -355,7 +355,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
   let itemStyle = specialNodes.has(parentHeadingId) ? treeStyles["specialParentNode"] : treeStyles["parentNode"];
   // if user-defined styles undefined, fallback to default style
   itemStyle = itemStyle || 
-    {"title" : Object.assign({marginLeft: parentsInfo[parentHeadingId]["numChild"] == 0 ? '2px' : '5px', color: "rgba(0,0,0,0.8)"},  
+    {"title" : Object.assign({marginLeft: '5px', color: "rgba(0,0,0,0.8)"},  
       baseItemStyleAndIcon.style)};
 
   let defaultOpen = parentHeadingId == "root";

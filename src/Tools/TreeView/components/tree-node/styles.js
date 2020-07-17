@@ -65,7 +65,6 @@ const Title = styled('span')`
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  max-width: 175px;
 `
 
 const Content = styled(animated.div)`
