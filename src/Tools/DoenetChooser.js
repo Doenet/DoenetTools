@@ -1650,14 +1650,13 @@ class DoenetChooser extends Component {
   onBrowserFolderDrop ({containerId, droppedId}) {
     // handle dragging folder onto itself
     if (this.state.currentDraggedObject.id == droppedId) return;
-
     let draggedItems = {
       id: this.state.selectedItems,
       type: this.state.selectedItemsType
     }
     // remove droppedId, repos from (draggedIds, draggedTypes)
     for (let i = 0; i < draggedItems.id.length; i++) {
-      if (draggedItems.id[i] == droppedId || (draggedItems.type == "folder" && draggedItems.dataObject.isRepo)) {
+      if (draggedItems.id[i] == droppedId || (draggedItems.type == "folder" && draggedItems.isRepo)) {
         draggedItems.id.splice(i, 1);
         draggedItems.type.splice(i, 1);
       }
@@ -1666,8 +1665,6 @@ class DoenetChooser extends Component {
       // add content to previous directory
       let previousDirectoryId = this.state.directoryStack.slice(-2)[0];
       if (this.state.directoryStack.length < 2) previousDirectoryId = "root";
-      console.log(this.state.directoryStack)
-      console.log("add content to " + previousDirectoryId)
       this.addContentToFolder(draggedItems.id, draggedItems.type, previousDirectoryId);
     } else {
       // add draggedIds to folder with droppedId
