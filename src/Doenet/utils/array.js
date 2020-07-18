@@ -8,3 +8,10 @@ export function flattenLevels(arr1, levels) {
   console.log(`levels: ${levels}`)
   return arr1.reduce((acc, val) => Array.isArray(val) && levels > 1 ? acc.concat(flattenLevels(val, levels - 1)) : acc.concat(val), []);
 }
+
+export function mapDeep(arr, f, iprefix = [], origArr) {
+  if(!origArr) {
+    origArr = arr;
+  }
+  return arr.map((v, i) => Array.isArray(v) ? mapDeep(v, f, [...iprefix, i], origArr) : f(v, [...iprefix, i], origArr));
+}

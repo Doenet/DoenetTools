@@ -1,4 +1,5 @@
 import BaseComponent from './abstract/BaseComponent';
+import { mapDeep } from '../utils/array';
 
 export default class Prop extends BaseComponent {
   static componentType = "prop";
@@ -128,9 +129,16 @@ export default class Prop extends BaseComponent {
                 matchedObj.containsComponentNamesToCopy = true;
               }
               if (theDescrip.wrappingComponents) {
-                matchedObj.wrappingComponents = theDescrip.wrappingComponents;
-                // wrapping component supercedes componentType if provided
-                componentType = theDescrip.wrappingComponents[theDescrip.nDimensions - 1]
+                matchedObj.wrappingComponents = mapDeep(theDescrip.wrappingComponents.slice(0, theDescrip.nDimensions), x => x.toLowerCase());
+                // find outermost wrapping that has at least one entry
+                // which will supercede componentType if provided
+                for (let ind = matchedObj.wrappingComponents.length - 1; ind >= 0; ind--) {
+                  let wrapping = matchedObj.wrappingComponents[ind];
+                  if (wrapping && wrapping[0]) {
+                    componentType = wrapping[0];
+                    break;
+                  }
+                }
               }
               if (!componentType) {
                 componentType = theDescrip.componentType;
@@ -159,9 +167,16 @@ export default class Prop extends BaseComponent {
                     matchedObj.containsComponentNamesToCopy = true;
                   }
                   if (targetDescription.wrappingComponents) {
-                    matchedObj.wrappingComponents = targetDescription.wrappingComponents;
-                    // wrapping component supercedes componentType if provided
-                    componentType = targetDescription.wrappingComponents[targetDescription.nDimensions - 1]
+                    matchedObj.wrappingComponents = mapDeep(targetDescription.wrappingComponents.slice(0, targetDescription.nDimensions), x => x.toLowerCase());
+                    // find outermost wrapping that has at least one entry
+                    // which will supercede componentType if provided
+                    for (let ind = matchedObj.wrappingComponents.length - 1; ind >= 0; ind--) {
+                      let wrapping = matchedObj.wrappingComponents[ind];
+                      if (wrapping && wrapping[0]) {
+                        componentType = wrapping[0];
+                        break;
+                      }
+                    }
                   }
                   if (!componentType) {
                     componentType = targetDescription.componentType;
@@ -194,11 +209,17 @@ export default class Prop extends BaseComponent {
                   if (stateVarDescrip[arrayVarName].containsComponentNamesToCopy) {
                     matchedObj.containsComponentNamesToCopy = true;
                   }
-
                   if (arrayEntryDescription.wrappingComponents) {
-                    matchedObj.wrappingComponents = arrayEntryDescription.wrappingComponents;
-                    // wrapping component supercedes componentType if provided
-                    componentType = arrayEntryDescription.wrappingComponents[arrayEntryDescription.nDimensions - 1]
+                    matchedObj.wrappingComponents = mapDeep(arrayEntryDescription.wrappingComponents.slice(0, arrayEntryDescription.nDimensions), x => x.toLowerCase());
+                    // find outermost wrapping that has at least one entry
+                    // which will supercede componentType if provided
+                    for (let ind = matchedObj.wrappingComponents.length - 1; ind >= 0; ind--) {
+                      let wrapping = matchedObj.wrappingComponents[ind];
+                      if (wrapping && wrapping[0]) {
+                        componentType = wrapping[0];
+                        break;
+                      }
+                    }
                   }
                   if (!componentType) {
                     componentType = stateVarDescrip[arrayVarName].componentType;

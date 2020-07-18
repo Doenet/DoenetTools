@@ -154,14 +154,16 @@ export default class BooleanList extends InlineComponent {
 
         for (let arrayKey of arrayKeys) {
           let childIndices = [];
+          let booleanIndex = "1";
           if (stateValues.childIndexByArrayKey[arrayKey]) {
             childIndices = [stateValues.childIndexByArrayKey[arrayKey][0]];
+            booleanIndex = stateValues.childIndexByArrayKey[arrayKey][1] + 1;
           }
           dependenciesByKey[arrayKey] = {
             booleanAndBooleanlistChildren: {
               dependencyType: "childStateVariables",
               childLogicName: "booleanAndBooleanLists",
-              variableNames: ["value", "booleans"],
+              variableNames: ["value", "boolean" + booleanIndex],
               variablesOptional: true,
               childIndices,
             },
@@ -181,12 +183,11 @@ export default class BooleanList extends InlineComponent {
           let child = dependencyValuesByKey[arrayKey].booleanAndBooleanlistChildren[0];
 
           if (child) {
-            if (child.stateValues.booleans) {
-              let ind2 = globalDependencyValues.childIndexByArrayKey[arrayKey][1];
-              booleans[arrayKey] = child.stateValues.booleans[ind2];
-
-            } else {
+            if (child.stateValues.value !== undefined) {
               booleans[arrayKey] = child.stateValues.value;
+            } else {
+              let booleanIndex = globalDependencyValues.childIndexByArrayKey[arrayKey][1] + 1;
+              booleans[arrayKey] = child.stateValues["boolean" + booleanIndex];
             }
 
           }
@@ -194,6 +195,48 @@ export default class BooleanList extends InlineComponent {
         }
 
         return { newValues: { booleans } }
+
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
+        dependencyValuesByKey, dependencyNamesByKey, arraySize
+      }) {
+
+        let instructions = [];
+
+        for (let arrayKey in desiredStateVariableValues.booleans) {
+
+          if (!dependencyValuesByKey[arrayKey]) {
+            continue;
+          }
+
+          let child = dependencyValuesByKey[arrayKey].booleanAndBooleanlistChildren[0];
+
+          if (child) {
+            if (child.stateValues.value !== undefined) {
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].booleanAndBooleanlistChildren,
+                desiredValue: desiredStateVariableValues.booleans[arrayKey],
+                childIndex: 0,
+                variableIndex: 0,
+              });
+
+            } else {
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].booleanAndBooleanlistChildren,
+                desiredValue: desiredStateVariableValues.booleans[arrayKey],
+                childIndex: 0,
+                variableIndex: 1,
+              });
+
+            }
+          }
+        }
+
+        return {
+          success: true,
+          instructions
+        }
+
 
       }
     }

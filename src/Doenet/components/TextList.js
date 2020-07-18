@@ -158,14 +158,16 @@ export default class TextList extends InlineComponent {
 
         for (let arrayKey of arrayKeys) {
           let childIndices = [];
+          let textIndex = "1";
           if (stateValues.childIndexByArrayKey[arrayKey]) {
             childIndices = [stateValues.childIndexByArrayKey[arrayKey][0]];
+            textIndex = stateValues.childIndexByArrayKey[arrayKey][1] + 1;
           }
           dependenciesByKey[arrayKey] = {
             textAndTextlistChildren: {
               dependencyType: "childStateVariables",
               childLogicName: "textAndTextLists",
-              variableNames: ["value", "texts"],
+              variableNames: ["value", "text" + textIndex],
               variablesOptional: true,
               childIndices,
             },
@@ -185,12 +187,11 @@ export default class TextList extends InlineComponent {
           let child = dependencyValuesByKey[arrayKey].textAndTextlistChildren[0];
 
           if (child) {
-            if (child.stateValues.texts) {
-              let ind2 = globalDependencyValues.childIndexByArrayKey[arrayKey][1];
-              texts[arrayKey] = child.stateValues.texts[ind2];
-
-            } else {
+            if (child.stateValues.value !== undefined) {
               texts[arrayKey] = child.stateValues.value;
+            } else {
+              let textIndex = globalDependencyValues.childIndexByArrayKey[arrayKey][1] + 1;
+              texts[arrayKey] = child.stateValues["text" + textIndex];
             }
 
           }
@@ -198,6 +199,48 @@ export default class TextList extends InlineComponent {
         }
 
         return { newValues: { texts } }
+
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
+        dependencyValuesByKey, dependencyNamesByKey, arraySize
+      }) {
+
+        let instructions = [];
+
+        for (let arrayKey in desiredStateVariableValues.texts) {
+
+          if (!dependencyValuesByKey[arrayKey]) {
+            continue;
+          }
+
+          let child = dependencyValuesByKey[arrayKey].textAndTextlistChildren[0];
+
+          if (child) {
+            if (child.stateValues.value !== undefined) {
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].textAndTextlistChildren,
+                desiredValue: desiredStateVariableValues.texts[arrayKey],
+                childIndex: 0,
+                variableIndex: 0,
+              });
+
+            } else {
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].textAndTextlistChildren,
+                desiredValue: desiredStateVariableValues.texts[arrayKey],
+                childIndex: 0,
+                variableIndex: 1,
+              });
+
+            }
+          }
+        }
+
+        return {
+          success: true,
+          instructions
+        }
+
 
       }
     }

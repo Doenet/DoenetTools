@@ -12,7 +12,7 @@ import crypto from 'crypto';
 import { deepCompare, deepClone } from './utils/deepFunctions';
 import createStateProxyHandler from './StateProxyHandler';
 import { postProcessCopy } from './utils/copy';
-import { flattenDeep } from './utils/array';
+import { flattenDeep, mapDeep } from './utils/array';
 
 // string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -1075,10 +1075,23 @@ export default class Core {
           if (!updatesNeeded.unresolvedByDependent[dep.componentName][dep.stateVariable]) {
             updatesNeeded.unresolvedByDependent[dep.componentName][dep.stateVariable] = [];
           }
-          updatesNeeded.unresolvedByDependent[dep.componentName][dep.stateVariable].push({
-            componentName: component.componentName,
-            stateVariable: varName,
-          });
+
+          // since a state variable could get re-designated as unresolved
+          // while in the middle of it getting resolved,
+          // it is possible that the dependency is already in unresolvedByDependent
+          let alreadyIn = false;
+          for (let oDep of updatesNeeded.unresolvedByDependent[dep.componentName][dep.stateVariable]) {
+            if (oDep.componentName === component.componentName && oDep.stateVariable === varName) {
+              alreadyIn = true;
+              break;
+            }
+          }
+          if (!alreadyIn) {
+            updatesNeeded.unresolvedByDependent[dep.componentName][dep.stateVariable].push({
+              componentName: component.componentName,
+              stateVariable: varName,
+            });
+          }
         }
       }
     }
@@ -3102,7 +3115,7 @@ export default class Core {
         stateObj.value;
       }
       if (!stateObj.neverShadow) {
-        if (stateObj.essential || stateObj.alwaysShadow) {
+        if (stateObj.essential || stateObj.alwaysShadow || stateObj.isShadow) {
           if (!stateVariablesToShadow.includes(varName)) {
             stateVariablesToShadow.push(varName);
           }
@@ -3417,7 +3430,7 @@ export default class Core {
       // is satisfied
 
 
-      // if already hvae apply sugar state variable,
+      // if already have apply sugar state variable,
       // there is nothing more to do
       if (component.state.__apply_sugar) {
         return {};
@@ -3490,7 +3503,7 @@ export default class Core {
 
         // if already created this apply sugar state variable,
         // there is nothing more to do
-        if (component[applySugarStateVariable]) {
+        if (component.state[applySugarStateVariable]) {
           continue;
         }
 
@@ -3712,7 +3725,7 @@ export default class Core {
     stateVarObj.getPreviousDependencyValuesForMarkStale = arrayStateVarObj.getPreviousDependencyValuesForMarkStale;
 
     stateVarObj.nDimensions = arrayStateVarObj.returnEntryDimensions(arrayEntryPrefix);
-    stateVarObj.wrappingComponents = arrayStateVarObj.returnWrappingComponents(arrayEntryPrefix).map(x => x.toLowerCase());
+    stateVarObj.wrappingComponents = mapDeep(arrayStateVarObj.returnWrappingComponents(arrayEntryPrefix), x => x.toLowerCase());
     stateVarObj.entryPrefix = arrayEntryPrefix;
     stateVarObj.varEnding = stateVariable.slice(arrayEntryPrefix.length)
 
@@ -3802,6 +3815,33 @@ export default class Core {
       get: () => component.stateValues[stateVarObj.arraySizeStateVariable]
     });
 
+    // don't need separate state variable for unflattenedArrayKeys
+    // since it will be defined if arrayKeys is defined
+    // (plus it is used infrequently, so we don't need extra overhead for efficiency gain)
+    Object.defineProperty(stateVarObj, 'unflattenedArrayKeys', {
+      get: () => arrayStateVarObj.getArrayKeysFromVarName({
+        arrayEntryPrefix: stateVarObj.entryPrefix,
+        varEnding: stateVarObj.varEnding,
+        arraySize: stateVarObj.arraySize,
+        nDimensions: arrayStateVarObj.nDimensions,
+      })
+    })
+
+    Object.defineProperty(stateVarObj, 'arrayEntrySize', {
+      get: function () {
+        // assume array is rectangular, so just look at first subarray of each dimension
+        let unflattenedArrayKeys = stateVarObj.unflattenedArrayKeys;
+        let arrayEntrySize = [];
+        let subArray = [unflattenedArrayKeys];
+        for (let i = 0; i < stateVarObj.nDimensions; i++) {
+          subArray = subArray[0];
+          arrayEntrySize.push(subArray.length);
+        }
+        arrayEntrySize.reverse();   // so starts with inner dimension
+        return arrayEntrySize;
+      }
+    })
+
     if (arrayStateVarObj.stateVariablesDeterminingDependencies) {
       for (let varName of arrayStateVarObj.stateVariablesDeterminingDependencies) {
         if (!stateVarObj.stateVariablesDeterminingDependencies.includes(varName)) {
@@ -3870,9 +3910,6 @@ export default class Core {
     // - arrayVarNameFromArrayKey: returns the variable name of an array entry
     //   that contains a given array key (if there are many, just return one)
     //   This variable may not yet be created.
-    // - allVarNamesThatIncludeArrayKey: object keyed by arrayKey whose value is
-    //   an array of the variable names
-    //   of all created array entries that contain the array key
 
     stateVarObj.arrayValues = [];
 
@@ -3888,6 +3925,9 @@ export default class Core {
       }
     }
 
+    if (stateVarObj.nDimensions === undefined) {
+      stateVarObj.nDimensions = 1;
+    }
 
     if (stateVarObj.nDimensions > 1) {
       // for multiple dimensions, have to convert from arrayKey
@@ -3980,9 +4020,11 @@ export default class Core {
         // the default function for getArrayKeysFromVarName ignores the
         // array entry prefix, but is just based on the variable ending.
         // A component class's function could use arrayEntryPrefix
-        stateVarObj.getArrayKeysFromVarName = function ({ arrayEntryPrefix, varEnding, arraySize }) {
+        stateVarObj.getArrayKeysFromVarName = function ({
+          arrayEntryPrefix, varEnding, arraySize, nDimensions
+        }) {
           let indices = varEnding.split('_').map(x => Number(x) - 1)
-          if (indices.length === stateVarObj.nDimensions && indices.every(
+          if (indices.length === nDimensions && indices.every(
             (x, i) => Number.isInteger(x) && x >= 0
           )) {
             if (arraySize) {
@@ -3998,12 +4040,12 @@ export default class Core {
               return [String(indices)];
             }
           } else {
-            return;  // indicates invalid
+            return [];
           }
         };
       }
 
-      stateVarObj.getAllArrayKeys = function (arraySize) {
+      stateVarObj.getAllArrayKeys = function (arraySize, flatten = true) {
         function getAllArrayKeysSub(subArraySize) {
           if (subArraySize.length === 1) {
             // array of numbers from 0 to subArraySize[0], cast to strings
@@ -4013,7 +4055,11 @@ export default class Core {
             let subSubKeys = getAllArrayKeysSub(subArraySize.slice(1));
             let subKeys = [];
             for (let ind = 0; ind < currentSize; ind++) {
-              subKeys.push(...subSubKeys.map(x => ind + "," + x))
+              if (flatten) {
+                subKeys.push(...subSubKeys.map(x => ind + "," + x))
+              } else {
+                subKeys.push(subSubKeys.map(x => ind + "," + x))
+              }
             }
             return subKeys;
           }
@@ -4035,11 +4081,16 @@ export default class Core {
 
       stateVarObj.adjustArrayToNewArraySize = function () {
         function resizeSubArray(subArray, subArraySize) {
+
           subArray.length = subArraySize[0];
 
           if (subArraySize.length > 1) {
             let subSubArraySize = subArraySize.slice(1);
-            for (let subSubArray of subArray) {
+            for (let [ind, subSubArray] of subArray.entries()) {
+              if (!subSubArray) {
+                // add in any empty entries
+                subSubArray = subArray[ind] = [];
+              }
               resizeSubArray(subSubArray, subSubArraySize)
             }
           }
@@ -4086,7 +4137,7 @@ export default class Core {
               return [String(index)];
             }
           } else {
-            return;  // indicate invalid
+            return [];
           }
         };
       }
@@ -4140,7 +4191,7 @@ export default class Core {
       stateVarObj.returnWrappingComponents = prefix => [];
     }
 
-    stateVarObj.wrappingComponents = stateVarObj.returnWrappingComponents().map(x => x.toLowerCase());
+    stateVarObj.wrappingComponents = mapDeep(stateVarObj.returnWrappingComponents(), x => x.toLowerCase());
 
     // for array, keep track if each arrayKey is essential
     stateVarObj.essentialByArrayKey = {};
@@ -4628,9 +4679,10 @@ export default class Core {
           arrayEntryPrefix: stateVarObj.entryPrefix,
           varEnding: stateVarObj.varEnding,
           arraySize: dependencyValues.arraySize,
+          nDimensions: arrayStateVarObj.nDimensions,
         });
         return {
-          newValues: { [arrayKeysStateVar]: arrayKeys }
+          newValues: { [arrayKeysStateVar]: flattenDeep(arrayKeys) }
         }
       },
     };
@@ -7430,6 +7482,29 @@ export default class Core {
                 });
               }
 
+              // check if have any additional unresolved state variables
+              // other than dep.stateVariable, which we just set off to resolve
+              if (Object.keys(resolveResult.varsUnresolved).length > 0) {
+                let otherUnresolved = Object.assign({}, resolveResult.varsUnresolved);
+                delete otherUnresolved[dep.stateVariable];
+
+                if (Object.keys(otherUnresolved).length > 0) {
+                  this.addUnresolvedDependencies({
+                    varsUnresolved: otherUnresolved,
+                    component: depComponent,
+                    updatesNeeded
+                  });
+
+                  for (let newVarName in otherUnresolved) {
+                    // delete from resolve result, so it will end up with just
+                    // dep.stateVariable, if dep.stateVariable isn't resolved
+                    delete resolveResult.varsUnresolved[newVarName];
+                  }
+                }
+
+              }
+
+
 
               if (Object.keys(resolveResult.varsUnresolved).length === 0) {
                 // we have resolved the state variable dep.stateVariable
@@ -7495,6 +7570,14 @@ export default class Core {
                     componentVarsDeleted[cName].push(...sugarResult.componentVarsDeleted[cName])
                   }
 
+                  if (sugarResult.varsUnresolved) {
+                    this.addUnresolvedDependencies({
+                      varsUnresolved: sugarResult.varsUnresolved,
+                      component: this._components[depComponent.parentName],
+                      updatesNeeded
+                    });
+                  }
+
                   // check to see if we can update replacements of any composites
                   if (updatesNeeded.compositesToUpdateReplacements.length > 0) {
                     this.replacementChangesFromCompositesToUpdate({
@@ -7520,11 +7603,17 @@ export default class Core {
 
             // We finished processing the array of state variables that we being blocked
             // by componentName/varName
-            // Delete the records that componentName/varName is blocking any variables
 
-            delete updatesNeeded.unresolvedByDependent[componentName][varName];
-            if (Object.keys(updatesNeeded.unresolvedByDependent[componentName]).length === 0) {
-              delete updatesNeeded.unresolvedByDependent[componentName];
+            // Assuming that componentName/varName still qualifies as resolved,
+            // delete the records that componentName/varName is blocking any variables
+            if (!(componentName in updatesNeeded.unresolvedDependencies) ||
+              componentDeleted || stateVariableDeleted ||
+              !(varName in updatesNeeded.unresolvedDependencies[componentName])
+            ) {
+              delete updatesNeeded.unresolvedByDependent[componentName][varName];
+              if (Object.keys(updatesNeeded.unresolvedByDependent[componentName]).length === 0) {
+                delete updatesNeeded.unresolvedByDependent[componentName];
+              }
             }
 
           }
@@ -7743,8 +7832,11 @@ export default class Core {
 
       for (let depDescription of childDependencies) {
         let dependencyName = depDescription.dependencyName;
-        let currentDep = this.downstreamDependencies[componentName][depDescription.stateVariables[0]][dependencyName];
 
+        let currentDep;
+        if (this.downstreamDependencies[componentName][depDescription.stateVariables[0]]) {
+          currentDep = this.downstreamDependencies[componentName][depDescription.stateVariables[0]][dependencyName];
+        }
 
         if (!currentDep) {
           childDepsToDelete.push(depDescription);
@@ -7914,6 +8006,13 @@ export default class Core {
                     //unresolved dependencies upstream
                     for (let varName of depDescription.stateVariables) {
                       if (parent.state[varName].isResolved) {
+                        this.markStateVariableAndUpstreamDependentsStale({
+                          component: parent,
+                          varName,
+                          updatesNeeded,
+                          forceRecalculation: true
+                        });
+
                         parent.state[varName].isResolved = false;
                         this.resetUpstreamDependentsUnresolved({
                           component: parent,
@@ -7976,6 +8075,9 @@ export default class Core {
   }
 
   updateDescendantDependencies(parent, updatesNeeded, compositesBeingExpanded) {
+
+    // console.log(`update descendant dependencies for ${parent.componentName}`)
+
     let parentAndAncestors = [
       {
         componentName: parent.componentName,
@@ -8162,6 +8264,13 @@ export default class Core {
                       //unresolved dependencies upstream
                       for (let varName of depDescription.stateVariables) {
                         if (upstreamComponent.state[varName].isResolved) {
+                          this.markStateVariableAndUpstreamDependentsStale({
+                            component: upstreamComponent,
+                            varName,
+                            updatesNeeded,
+                            forceRecalculation: true
+                          });
+  
                           upstreamComponent.state[varName].isResolved = false;
                           this.resetUpstreamDependentsUnresolved({
                             component: upstreamComponent,
@@ -9698,7 +9807,7 @@ export default class Core {
           if (!component.state[varName].isResolved) {
             haveUnresolved = true;
             this.resetUpstreamDependentsUnresolved({
-              component: parent,
+              component,
               varName,
               updatesNeeded
             })

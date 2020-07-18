@@ -222,14 +222,16 @@ export default class MathList extends InlineComponent {
 
         for (let arrayKey of arrayKeys) {
           let childIndices = [];
+          let mathIndex = "1";
           if (stateValues.childIndexByArrayKey[arrayKey]) {
             childIndices = [stateValues.childIndexByArrayKey[arrayKey][0]];
+            mathIndex = stateValues.childIndexByArrayKey[arrayKey][1] + 1;
           }
           dependenciesByKey[arrayKey] = {
             mathAndMathlistChildren: {
               dependencyType: "childStateVariables",
               childLogicName: "mathAndMathLists",
-              variableNames: ["value", "maths"],
+              variableNames: ["value", "math" + mathIndex],
               variablesOptional: true,
               childIndices,
             },
@@ -248,11 +250,7 @@ export default class MathList extends InlineComponent {
           let child = dependencyValuesByKey[arrayKey].mathAndMathlistChildren[0];
 
           if (child) {
-            if (child.stateValues.maths) {
-              let ind2 = globalDependencyValues.childIndexByArrayKey[arrayKey][1];
-              maths[arrayKey] = child.stateValues.maths[ind2];
-
-            } else {
+            if (child.stateValues.value !== undefined) {
               let childValue = child.stateValues.value;
               if (globalDependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
                 let ind2 = globalDependencyValues.childIndexByArrayKey[arrayKey][1];
@@ -262,6 +260,11 @@ export default class MathList extends InlineComponent {
                 maths[arrayKey] = childValue;
               }
 
+            } else {
+
+              let mathIndex = globalDependencyValues.childIndexByArrayKey[arrayKey][1] + 1;
+              maths[arrayKey] = child.stateValues["math" + mathIndex];
+
             }
 
           }
@@ -269,6 +272,53 @@ export default class MathList extends InlineComponent {
         }
 
         return { newValues: { maths } }
+
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
+        dependencyValuesByKey, dependencyNamesByKey, arraySize
+      }) {
+
+        if (globalDependencyValues.mergeMathLists) {
+          console.log("Have not implemented inverse definition for math list with mergeMathLists=true");
+          return { success: false };
+        }
+
+        let instructions = [];
+
+        for (let arrayKey in desiredStateVariableValues.maths) {
+
+          if (!dependencyValuesByKey[arrayKey]) {
+            continue;
+          }
+
+          let child = dependencyValuesByKey[arrayKey].mathAndMathlistChildren[0];
+
+          if (child) {
+            if (child.stateValues.value !== undefined) {
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].mathAndMathlistChildren,
+                desiredValue: desiredStateVariableValues.maths[arrayKey],
+                childIndex: 0,
+                variableIndex: 0,
+              });
+
+            } else {
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].mathAndMathlistChildren,
+                desiredValue: desiredStateVariableValues.maths[arrayKey],
+                childIndex: 0,
+                variableIndex: 1,
+              });
+
+            }
+          }
+        }
+
+        return {
+          success: true,
+          instructions
+        }
+
 
       }
     }

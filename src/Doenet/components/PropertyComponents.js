@@ -17,6 +17,7 @@ import Variable from './Variable';
 import MathWithVariable from './abstract/MathWithVariable';
 import TextList from './TextList';
 import NumberList from './NumberList';
+import MathList from './MathList';
 
 export class Hide extends BooleanComponent {
   static componentType = "hide";
@@ -545,6 +546,11 @@ export class Y extends MathComponent {
 export class Z extends MathComponent {
   static componentType = "z";
   static rendererType = "math";
+}
+
+export class Xs extends MathList {
+  static componentType = "xs";
+  static rendererType = "aslist";
 }
 
 export class Layer extends Integer {

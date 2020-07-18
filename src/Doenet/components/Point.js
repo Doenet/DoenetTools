@@ -1,6 +1,7 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 import { convertValueToMathExpression, mergeVectorsForInverseDefinition } from '../utils/math';
+import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { deepClone } from '../utils/deepFunctions';
 
 export default class Point extends GraphicalComponent {
@@ -17,6 +18,10 @@ export default class Point extends GraphicalComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["xs", "nDimensions"] };
 
+  // Note: for point, the recommended course of action is not to have
+  // a public state variable with component type point, which would use coordsShadow
+  // Instead have a array state variable of maths for each component
+  // and use wrapping components to create points from those
   static primaryStateVariableForDefinition = "coordsShadow";
 
   static createPropertiesObject(args) {
@@ -46,6 +51,12 @@ export default class Point extends GraphicalComponent {
       number: 1,
     });
 
+    let exactlyOneXs = childLogic.newLeaf({
+      name: "exactlyOneXs",
+      componentType: "xs",
+      number: 1
+    })
+
     let coordinatesViaComponents = childLogic.newOperator({
       name: "coordinatesViaComponents",
       operator: "or",
@@ -58,19 +69,29 @@ export default class Point extends GraphicalComponent {
       number: 1,
     });
 
-    let addCoords = function ({ activeChildrenMatched }) {
-      let coordsChildren = [];
-      for (let child of activeChildrenMatched) {
-        coordsChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
-      }
-      return {
-        success: true,
-        newChildren: [{ componentType: "coords", children: coordsChildren }],
-      }
-    }
+
+    let breakIntoXsByCommas = function (args) {
+      let childrenToComponentFunction = x => ({
+        componentType: "x", children: x
+      });
+
+      let breakFunction = returnBreakStringsSugarFunction({
+        childrenToComponentFunction,
+        dependencyNameWithChildren: "stringsAndMaths",
+        stripOffOuterParentheses: true
+      })
+
+      let result = breakFunction(args);
+
+      // wrap xs around the x children
+      result.newChildren = [{
+        componentType: "xs",
+        children: result.newChildren
+      }];
+
+      return result;
+
+    };
 
     let atLeastOneString = childLogic.newLeaf({
       name: "atLeastOneString",
@@ -92,8 +113,15 @@ export default class Point extends GraphicalComponent {
       propositions: [atLeastOneString, atLeastOneMath],
       requireConsecutive: true,
       isSugar: true,
-      logicToWaitOnSugar: ["exactlyOneCoords"],
-      replacementFunction: addCoords,
+      returnSugarDependencies: () => ({
+        stringsAndMaths: {
+          dependencyType: "childStateVariables",
+          childLogicName: "stringsAndMaths",
+          variableNames: ["value"]
+        }
+      }),
+      logicToWaitOnSugar: ["exactlyOneXs"],
+      replacementFunction: breakIntoXsByCommas,
     });
 
 
@@ -114,7 +142,7 @@ export default class Point extends GraphicalComponent {
       name: "coordsXorSugar",
       operator: 'xor',
       propositions: [
-        coordinatesViaComponents, exactlyOnePoint,
+        coordinatesViaComponents, exactlyOneXs, exactlyOnePoint,
         exactlyOneCoords, stringsAndMaths, noCoords
       ],
     });
@@ -259,6 +287,11 @@ export default class Point extends GraphicalComponent {
           dependencyType: "childIdentity",
           childLogicName: "exactlyOneZ",
         },
+        xsChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneXs",
+          variableNames: ["nComponents"]
+        },
         pointChild: {
           dependencyType: "childStateVariables",
           childLogicName: "exactlyOnePoint",
@@ -273,6 +306,13 @@ export default class Point extends GraphicalComponent {
         let coords;
         let nDimensions;
 
+        if (dependencyValues.xsChild.length === 1) {
+          return {
+            newValues: {
+              nDimensions: dependencyValues.xsChild[0].stateValues.nComponents
+            }
+          }
+        }
         if (dependencyValues.pointChild.length === 1) {
           return {
             newValues: {
@@ -315,8 +355,10 @@ export default class Point extends GraphicalComponent {
             nDimensions = 3;
           } else if (dependencyValues.yChild.length === 1) {
             nDimensions = 2;
-          } else {
+          } else if (dependencyValues.xChild.length === 1) {
             nDimensions = 1;
+          } else {
+            nDimensions = 2;
           }
         }
 
@@ -344,7 +386,7 @@ export default class Point extends GraphicalComponent {
     stateVariableDefinitions.unconstrainedXs = {
       isArray: true,
       entryPrefixes: ["unconstrainedX"],
-      defaultEntryValue: me.fromAst('\uff3f'),
+      defaultEntryValue: me.fromAst(0),
       returnArraySizeDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",
@@ -369,11 +411,17 @@ export default class Point extends GraphicalComponent {
 
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
+          let varEnding = Number(arrayKey) + 1;
           dependenciesByKey[arrayKey] = {
+            xsChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneXs",
+              variableNames: ["math" + varEnding]
+            },
             pointChild: {
               dependencyType: "childStateVariables",
               childLogicName: "exactlyOnePoint",
-              variableNames: ["x" + (Number(arrayKey) + 1)]
+              variableNames: ["x" + varEnding]
             }
           }
           if (arrayKey === "0") {
@@ -445,21 +493,26 @@ export default class Point extends GraphicalComponent {
         } else {
 
           for (let arrayKey of arrayKeys) {
-
-            let pointChild = dependencyValuesByKey[arrayKey].pointChild;
-            if (pointChild && pointChild.length === 1) {
-              newXs[arrayKey] = pointChild[0].stateValues["x" + (Number(arrayKey) + 1)]
+            let varEnding = Number(arrayKey) + 1;
+            let xsChild = dependencyValuesByKey[arrayKey].xsChild;
+            if (xsChild && xsChild.length === 1) {
+              newXs[arrayKey] = xsChild[0].stateValues["math" + varEnding].simplify();
             } else {
-              let componentChild = dependencyValuesByKey[arrayKey].componentChild;
-              if (componentChild && componentChild.length === 1) {
-                newXs[arrayKey] = componentChild[0].stateValues.value.simplify();
+              let pointChild = dependencyValuesByKey[arrayKey].pointChild;
+              if (pointChild && pointChild.length === 1) {
+                newXs[arrayKey] = pointChild[0].stateValues["x" + varEnding]
               } else {
-                essentialXs[arrayKey] = {
-                  variablesToCheck: [
-                    { variableName: "xs", arrayIndex: arrayKey },
-                    { variableName: "coords", mathComponentIndex: arrayKey }
-                  ]
-                };
+                let componentChild = dependencyValuesByKey[arrayKey].componentChild;
+                if (componentChild && componentChild.length === 1) {
+                  newXs[arrayKey] = componentChild[0].stateValues.value.simplify();
+                } else {
+                  essentialXs[arrayKey] = {
+                    variablesToCheck: [
+                      { variableName: "xs", arrayIndex: arrayKey },
+                      { variableName: "coords", mathComponentIndex: arrayKey }
+                    ]
+                  };
+                }
               }
             }
           }
@@ -485,7 +538,8 @@ export default class Point extends GraphicalComponent {
 
         // console.log("invertUnconstrainedXs");
         // console.log(desiredStateVariableValues)
-        // console.log(dependencyValues);
+        // console.log(globalDependencyValues);
+        // console.log(dependencyValuesByKey);
         // console.log(stateValues);
 
         let instructions = [];
@@ -541,33 +595,42 @@ export default class Point extends GraphicalComponent {
               continue;
             }
 
-
-            let pointChild = dependencyValuesByKey[arrayKey].pointChild;
-            if (pointChild.length === 1) {
+            let xsChild = dependencyValuesByKey[arrayKey].xsChild;
+            if (xsChild && xsChild.length === 1) {
               instructions.push({
-                setDependency: dependencyNamesByKey[arrayKey].pointChild,
+                setDependency: dependencyNamesByKey[arrayKey].xsChild,
                 desiredValue: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]),
                 childIndex: 0,
                 variableIndex: 0,
               });
             } else {
 
-              let dependencyChild = dependencyValuesByKey[arrayKey].componentChild;
-
-              if (dependencyChild.length === 0) {
+              let pointChild = dependencyValuesByKey[arrayKey].pointChild;
+              if (pointChild && pointChild.length === 1) {
                 instructions.push({
-                  setStateVariable: "unconstrainedXs",
-                  arrayKey,
-                  value: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]),
-                });
-              } else {
-                instructions.push({
-                  setDependency: dependencyNamesByKey[arrayKey].componentChild,
-                  // since going through Math component, don't need to manually convert to math expression
-                  desiredValue: desiredStateVariableValues.unconstrainedXs[arrayKey],
+                  setDependency: dependencyNamesByKey[arrayKey].pointChild,
+                  desiredValue: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]),
                   childIndex: 0,
                   variableIndex: 0,
                 });
+              } else {
+
+                let componentChild = dependencyValuesByKey[arrayKey].componentChild;
+                if (componentChild && componentChild.length === 1) {
+                  instructions.push({
+                    setDependency: dependencyNamesByKey[arrayKey].componentChild,
+                    // since going through Math component, don't need to manually convert to math expression
+                    desiredValue: desiredStateVariableValues.unconstrainedXs[arrayKey],
+                    childIndex: 0,
+                    variableIndex: 0,
+                  });
+                } else {
+                  instructions.push({
+                    setStateVariable: "unconstrainedXs",
+                    arrayKey,
+                    value: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]),
+                  });
+                }
               }
             }
           }
@@ -919,10 +982,10 @@ export default class Point extends GraphicalComponent {
   movePoint({ x, y }) {
     let components = {};
     if (x !== undefined) {
-      components[0] = x;
+      components[0] = me.fromAst(x);
     }
     if (y !== undefined) {
-      components[1] = y;
+      components[1] = me.fromAst(y);
     }
     this.requestUpdate({
       updateInstructions: [{

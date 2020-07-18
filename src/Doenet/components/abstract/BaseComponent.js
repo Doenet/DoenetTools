@@ -1,6 +1,7 @@
 import ChildLogicClass from '../../ChildLogic';
 import readOnlyProxyHandler from '../../ReadOnlyProxyHandler';
 import createStateProxyHandler from '../../StateProxyHandler';
+import { mapDeep } from '../../utils/array';
 
 export default class BaseComponent {
   constructor({
@@ -326,13 +327,13 @@ export default class BaseComponent {
         if (theStateDef.isArray) {
           stateVariableDescriptions[varName].isArray = true;
           stateVariableDescriptions[varName].nDimensions = theStateDef.nDimensions === undefined ? 1 : theStateDef.nDimensions;
-          stateVariableDescriptions[varName].wrappingComponents = theStateDef.returnWrappingComponents ? theStateDef.returnWrappingComponents().map(x => x.toLowerCase()) : [];
+          stateVariableDescriptions[varName].wrappingComponents = theStateDef.returnWrappingComponents ? mapDeep(theStateDef.returnWrappingComponents(), x => x.toLowerCase()) : [];
           if (theStateDef.entryPrefixes) {
             for (let prefix of theStateDef.entryPrefixes) {
               arrayEntryPrefixes[prefix] = {
                 arrayVariableName: varName,
                 nDimensions: theStateDef.returnEntryDimensions ? theStateDef.returnEntryDimensions(prefix) : 1,
-                wrappingComponents: theStateDef.returnWrappingComponents ? theStateDef.returnWrappingComponents(prefix).map(x => x.toLowerCase()) : []
+                wrappingComponents: theStateDef.returnWrappingComponents ? mapDeep(theStateDef.returnWrappingComponents(prefix), x => x.toLowerCase()) : []
               }
             }
           }

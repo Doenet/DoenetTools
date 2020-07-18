@@ -1,4 +1,5 @@
 import CompositeComponent from './abstract/CompositeComponent';
+import { flattenDeep } from '../utils/array';
 
 export default class Extract extends CompositeComponent {
   static componentType = "extract";
@@ -422,14 +423,19 @@ export default class Extract extends CompositeComponent {
 
     let numReplacementsSoFar = 0;
 
+    workspace.propVariablesCopiedBySource = [];
+
     for (let sourceNum = 0; sourceNum < component.stateValues.sourceComponents.length; sourceNum++) {
       if (component.stateValues.sourceComponents[sourceNum] !== undefined) {
-        let sourceReplacements = this.createReplacementForSource({
+        let results = this.createReplacementForSource({
           component,
           sourceNum,
           components,
           numReplacementsSoFar
         });
+        workspace.propVariablesCopiedBySource.push(results.propVariablesCopied);
+
+        let sourceReplacements = results.serializedReplacements;
         numReplacementsBySource[sourceNum] = sourceReplacements.length;
         numReplacementsSoFar += sourceReplacements.length;
         replacements.push(...sourceReplacements);
@@ -451,6 +457,7 @@ export default class Extract extends CompositeComponent {
     // console.log(`create replacement for source ${sourceNum}, ${numReplacementsSoFar}`)
 
     let serializedReplacements = [];
+    let propVariablesCopied = [];
 
     let replacementInd = numReplacementsSoFar - 1;
     let propVariableObj = component.stateValues.propVariableObjs[sourceNum];
@@ -464,43 +471,40 @@ export default class Extract extends CompositeComponent {
     let sourceName = component.stateValues.sourceComponents[sourceNum].componentName;
     let sourceComponent = components[sourceName];
 
-    for (let ind = 0; ind < numReplacementsForSource; ind++) {
-      replacementInd++;
+    if (propVariableObj.isArray || propVariableObj.isArrayEntry) {
 
-      let replacementClass = component.stateValues.replacementClasses[replacementInd];
+      let stateVarObj = sourceComponent.state[propVariableObj.varName];
 
-      let componentType = replacementClass.componentType
+      let arrayStateVarObj, unflattenedArrayKeys;
+      if (stateVarObj.isArray) {
+        arrayStateVarObj = stateVarObj;
+        unflattenedArrayKeys = stateVarObj.getAllArrayKeys(stateVarObj.arraySize, false);
+      } else {
+        arrayStateVarObj = sourceComponent.state[stateVarObj.arrayStateVariable];
+        unflattenedArrayKeys = stateVarObj.unflattenedArrayKeys;
+      }
 
-      if (propVariableObj.isArray) {
-        let arrayStateVarObj = sourceComponent.state[propVariableObj.varName];
+      let wrappingComponents = stateVarObj.wrappingComponents;
+      let numWrappingComponents = wrappingComponents.length;
 
-        // TODO: generalize to multi-dimensional arrays
+      if (numWrappingComponents === 0) {
+        // return flattened entries
 
-        let arrayKey = arrayStateVarObj.indexToKey(ind);
-        let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
+        let flattenedArrayKeys = flattenDeep(unflattenedArrayKeys);
 
-        if (propVariableObj.containsComponentNamesToCopy) {
+        for (let ind = 0; ind < numReplacementsForSource; ind++) {
+          replacementInd++;
 
-          let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
-          let componentToCopy = components[componentNameToCopy];
+          let replacementClass = component.stateValues.replacementClasses[replacementInd];
 
-          if (componentToCopy) {
-            while (componentToCopy.replacementOf
-              && componentToCopy.replacementOf.replacements.length === 1
-            ) {
-              componentToCopy = componentToCopy.replacementOf;
-            }
+          let componentType = replacementClass.componentType.toLowerCase();
 
-            serializedReplacements.push({
-              componentType: "copy",
-              children: [{
-                componentType: "tname",
-                state: { targetName: componentToCopy.componentName },
-              }]
-            });
-          }
+          let arrayKey = flattenedArrayKeys[ind];
 
-        } else {
+          let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
+
+          propVariablesCopied.push(propVariable);
+
           serializedReplacements.push({
             componentType,
             downstreamDependencies: {
@@ -508,54 +512,176 @@ export default class Extract extends CompositeComponent {
                 dependencyType: "referenceShadow",
                 compositeName: component.componentName,
                 propVariable
-                // arrayStateVariable: propVariableObj.varName,
-                // arrayKey
               }]
             }
           })
         }
+      } else {
 
-      } else if (propVariableObj.isArrayEntry) {
+        let createReplacementPiece = function (subArrayKeys, nDimensionsLeft) {
 
-        let arrayStateVarObj = sourceComponent.state[propVariableObj.arrayVarName];
-        let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
-          varEnding: propVariableObj.varEnding,
-          arrayEntryPrefix: propVariableObj.arrayEntryPrefix,
-        });
-
-        // TODO: commented out below two conditiions to get tests to pass
-        // Check why these conditions were added in the first place.
-
-        // let entryValue = targetComponent.state[propVariableObj.varName].value;
-
-        // if (entryValue !== undefined) {
-        let arrayKey = arrayKeys[ind];
-        // if (arrayStateVarObj.getArrayValue({ arrayKey }) !== undefined) {
-
-
-        let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
-
-        if (propVariableObj.containsComponentNamesToCopy) {
-
-          let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
-          let componentToCopy = components[componentNameToCopy];
-
-          if (componentToCopy) {
-            while (componentToCopy.replacementOf
-              && componentToCopy.replacementOf.replacements.length === 1
-            ) {
-              componentToCopy = componentToCopy.replacementOf;
+          let pieces = [];
+          if (nDimensionsLeft > 1) {
+            // since nDimensionsLeft > 1, each component of subArray should be an array
+            for (let subSubArrayKeys of subArrayKeys) {
+              // recurse down to previous dimension
+              pieces.push(...createReplacementPiece(subSubArrayKeys, nDimensionsLeft - 1))
             }
 
-            serializedReplacements.push({
-              componentType: "copy",
-              children: [{
-                componentType: "tname",
-                state: { targetName: componentToCopy.componentName },
-              }]
-            });
-          } else if (component.stateValues.includeUndefinedArrayEntries) {
+          } else {
+            // down to last piece
+            for (let arrayKey of subArrayKeys) {
+              let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
+              propVariablesCopied.push(propVariable);
 
+              pieces.push({
+                componentType: arrayStateVarObj.componentType,
+                downstreamDependencies: {
+                  [sourceName]: [{
+                    dependencyType: "referenceShadow",
+                    compositeName: component.componentName,
+                    propVariable
+                  }]
+                }
+              })
+            }
+          }
+
+          // we wrap this dimension if have corresponding wrapping components
+          let wrapCs = wrappingComponents[nDimensionsLeft - 1];
+          if (wrapCs && wrapCs.length > 0) {
+            for (let ind = wrapCs.length - 1; ind >= 0; ind--) {
+              pieces = [{
+                componentType: wrapCs[ind],
+                children: pieces
+              }]
+            }
+          }
+
+          return pieces;
+
+        }
+
+        let newReplacements = createReplacementPiece(unflattenedArrayKeys, stateVarObj.nDimensions);
+
+        replacementInd += newReplacements.length;
+
+        serializedReplacements.push(...newReplacements);
+
+      }
+
+
+
+
+    } else {
+      for (let ind = 0; ind < numReplacementsForSource; ind++) {
+        replacementInd++;
+
+        let replacementClass = component.stateValues.replacementClasses[replacementInd];
+
+        let componentType = replacementClass.componentType
+
+        if (propVariableObj.isArray) {
+          let arrayStateVarObj = sourceComponent.state[propVariableObj.varName];
+
+          // TODO: generalize to multi-dimensional arrays
+
+          let arrayKey = arrayStateVarObj.indexToKey(ind);
+          let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
+
+          if (propVariableObj.containsComponentNamesToCopy) {
+
+            let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
+            let componentToCopy = components[componentNameToCopy];
+
+            if (componentToCopy) {
+              while (componentToCopy.replacementOf
+                && componentToCopy.replacementOf.replacements.length === 1
+              ) {
+                componentToCopy = componentToCopy.replacementOf;
+              }
+
+              serializedReplacements.push({
+                componentType: "copy",
+                children: [{
+                  componentType: "tname",
+                  state: { targetName: componentToCopy.componentName },
+                }]
+              });
+            }
+
+          } else {
+            serializedReplacements.push({
+              componentType,
+              downstreamDependencies: {
+                [sourceName]: [{
+                  dependencyType: "referenceShadow",
+                  compositeName: component.componentName,
+                  propVariable
+                  // arrayStateVariable: propVariableObj.varName,
+                  // arrayKey
+                }]
+              }
+            })
+          }
+
+        } else if (propVariableObj.isArrayEntry) {
+
+          let arrayStateVarObj = sourceComponent.state[propVariableObj.arrayVarName];
+          let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
+            varEnding: propVariableObj.varEnding,
+            arrayEntryPrefix: propVariableObj.arrayEntryPrefix,
+          });
+
+          // TODO: commented out below two conditiions to get tests to pass
+          // Check why these conditions were added in the first place.
+
+          // let entryValue = targetComponent.state[propVariableObj.varName].value;
+
+          // if (entryValue !== undefined) {
+          let arrayKey = arrayKeys[ind];
+          // if (arrayStateVarObj.getArrayValue({ arrayKey }) !== undefined) {
+
+
+          let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
+
+          if (propVariableObj.containsComponentNamesToCopy) {
+
+            let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
+            let componentToCopy = components[componentNameToCopy];
+
+            if (componentToCopy) {
+              while (componentToCopy.replacementOf
+                && componentToCopy.replacementOf.replacements.length === 1
+              ) {
+                componentToCopy = componentToCopy.replacementOf;
+              }
+
+              serializedReplacements.push({
+                componentType: "copy",
+                children: [{
+                  componentType: "tname",
+                  state: { targetName: componentToCopy.componentName },
+                }]
+              });
+            } else if (component.stateValues.includeUndefinedArrayEntries) {
+
+              serializedReplacements.push({
+                componentType,
+                downstreamDependencies: {
+                  [sourceName]: [{
+                    dependencyType: "referenceShadow",
+                    compositeName: component.componentName,
+                    propVariable,
+                    // propVariable: propVariableObj.varName,
+                    // arrayStateVariable: propVariableObj.arrayVarName,
+                    // arrayKey
+                  }]
+                }
+              })
+            }
+
+          } else {
             serializedReplacements.push({
               componentType,
               downstreamDependencies: {
@@ -570,65 +696,51 @@ export default class Extract extends CompositeComponent {
               }
             })
           }
+          // }
+          // }
 
         } else {
-          serializedReplacements.push({
-            componentType,
-            downstreamDependencies: {
-              [sourceName]: [{
-                dependencyType: "referenceShadow",
-                compositeName: component.componentName,
-                propVariable,
-                // propVariable: propVariableObj.varName,
-                // arrayStateVariable: propVariableObj.arrayVarName,
-                // arrayKey
-              }]
+
+          if (propVariableObj.containsComponentNamesToCopy) {
+
+            let componentNameToCopy = sourceComponent.state[propVariableObj.varName].value
+            let componentToCopy = components[componentNameToCopy];
+
+            if (componentToCopy) {
+              while (componentToCopy.replacementOf
+                && componentToCopy.replacementOf.replacements.length === 1
+              ) {
+                componentToCopy = componentToCopy.replacementOf;
+              }
+
+              serializedReplacements.push({
+                componentType: "copy",
+                children: [{
+                  componentType: "tname",
+                  state: { targetName: componentToCopy.componentName },
+                }]
+              });
             }
-          })
-        }
-        // }
-        // }
 
-      } else {
-
-        if (propVariableObj.containsComponentNamesToCopy) {
-
-          let componentNameToCopy = sourceComponent.state[propVariableObj.varName].value
-          let componentToCopy = components[componentNameToCopy];
-
-          if (componentToCopy) {
-            while (componentToCopy.replacementOf
-              && componentToCopy.replacementOf.replacements.length === 1
-            ) {
-              componentToCopy = componentToCopy.replacementOf;
-            }
+          } else {
+            propVariablesCopied.push(propVariableObj.varName);
 
             serializedReplacements.push({
-              componentType: "copy",
-              children: [{
-                componentType: "tname",
-                state: { targetName: componentToCopy.componentName },
-              }]
-            });
+              componentType,
+              downstreamDependencies: {
+                [sourceName]: [{
+                  dependencyType: "referenceShadow",
+                  compositeName: component.componentName,
+                  propVariable: propVariableObj.varName,
+                }]
+              }
+            })
           }
 
-        } else {
-          serializedReplacements.push({
-            componentType,
-            downstreamDependencies: {
-              [sourceName]: [{
-                dependencyType: "referenceShadow",
-                compositeName: component.componentName,
-                propVariable: propVariableObj.varName,
-              }]
-            }
-          })
         }
-
       }
     }
-
-    return serializedReplacements;
+    return { serializedReplacements, propVariablesCopied };
 
   }
 
@@ -647,6 +759,7 @@ export default class Extract extends CompositeComponent {
     let numReplacementsSoFar = 0;
 
     let numReplacementsBySource = [];
+    let propVariablesCopiedBySource = [];
 
     // // cumulative sum: https://stackoverflow.com/a/44081700
     // let replacementIndexBySource = [0, ...workspace.numReplacementsBySource];
@@ -671,6 +784,9 @@ export default class Extract extends CompositeComponent {
 
           numReplacementsBySource[sourceNum] = 0;
         }
+
+        propVariablesCopiedBySource.push([]);
+
         continue;
       }
 
@@ -697,6 +813,8 @@ export default class Extract extends CompositeComponent {
 
         numReplacementsBySource[sourceNum] = results.numReplacements;
 
+        propVariablesCopiedBySource.push(results.propVariablesCopied);
+
         continue;
       }
 
@@ -718,8 +836,12 @@ export default class Extract extends CompositeComponent {
 
       let changeInstruction = testReplacementChanges[testReplacementChanges.length - 1];
       let newSerializedReplacements = changeInstruction.serializedReplacements;
+      propVariablesCopiedBySource.push(results.propVariablesCopied);
 
-      if (newSerializedReplacements.length !== workspace.numReplacementsBySource[sourceNum]) {
+      if (newSerializedReplacements.length !== workspace.numReplacementsBySource[sourceNum] ||
+        propVariablesCopiedBySource[sourceNum].length !== workspace.propVariablesCopiedBySource[sourceNum].length ||
+        workspace.propVariablesCopiedBySource[sourceNum].some((v, i) => v !== propVariablesCopiedBySource[sourceNum][i])
+      ) {
         redoReplacements = true;
       } else {
         for (let ind = 0; ind < newSerializedReplacements.length; ind++) {
@@ -747,7 +869,8 @@ export default class Extract extends CompositeComponent {
 
     workspace.numReplacementsBySource = numReplacementsBySource;
     workspace.sourceNames = component.stateValues.sourceComponents.map(x => x.componentName)
-
+    workspace.propVariablesCopiedBySource = propVariablesCopiedBySource;
+    
     // console.log("replacementChanges");
     // console.log(replacementChanges);
 
@@ -788,7 +911,13 @@ export default class Extract extends CompositeComponent {
     //     replacementChanges.push(replacementInstruction);
     //   }
     // }
-    let newSerializedChildren = this.createReplacementForSource({ component, sourceNum, numReplacementsSoFar, components, workspace });
+    let results = this.createReplacementForSource({
+      component, sourceNum, numReplacementsSoFar, components, workspace
+    });
+
+    let propVariablesCopied = results.propVariablesCopied;
+
+    let newSerializedChildren = results.serializedReplacements
 
     let replacementInstruction = {
       changeType: "add",
@@ -799,7 +928,7 @@ export default class Extract extends CompositeComponent {
     };
     replacementChanges.push(replacementInstruction);
 
-    return { numReplacements: newSerializedChildren.length }
+    return { numReplacements: newSerializedChildren.length, propVariablesCopied }
   }
 
 }
