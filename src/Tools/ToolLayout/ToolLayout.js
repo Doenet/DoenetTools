@@ -47,58 +47,32 @@ export default function ToolLayout(props) {
     trackingConsent: "1",
     username: "anonymous",
   }
-  const [cookieProfile, setCookieProfile] = useCookies('Profile');
-  const [jwt, setjwt] = useCookies('JWT');
-  const [trackingConsent, setTrackingConsent] = useCookies('TrackingConsent');
+  const [jwt, setjwt] = useCookies('JWT_JS');
 
   let isSignedIn = false;
-  if (Object.keys(jwt).includes("JWT")) {
+  if (Object.keys(jwt).includes("JWT_JS")) {
     isSignedIn = true;
   }
 
-  let currentProfile = anonymousUserProfile;
-
-  if (Object.keys(cookieProfile).includes("Profile")) {
-    currentProfile = cookieProfile.Profile;
-  }
-  if (Object.keys(trackingConsent).includes("TrackingConsent")) {
-    currentProfile.trackingConsent = trackingConsent.TrackingConsent;
-  }
-
-  const [profile, setProfile] = useState(currentProfile);
+  const [profile, setProfile] = useState({});
 
   useEffect(() => {
     //Fires each time you change the tool
-
-
-    if (Object.keys(cookieProfile).includes("Profile")) {
-
-      if (Object.keys(cookieProfile.Profile).length < 3) {
-        console.log("Loading Profile from Tool Layout")
-        //Need to load profile from database 
-        //Ask Server for data which matches email address
+    //Need to load profile from database each time
         const phpUrl = '/api/loadProfile.php';
-        const data = {
-          jwt: jwt.JWT.token,
-        }
+        const data = {}
         const payload = {
           params: data
         }
         axios.get(phpUrl, payload)
           .then(resp => {
             if (resp.data.success === "1") {
-              let profile = resp.data.profile;
-              setCookieProfile("Profile", profile, { path: "/" });
-              setProfile(profile);
+              setProfile(resp.data.profile);
             }
           })
           .catch(error => { this.setState({ error: error }) });
-      }
-    }
-    else if (location.hostname !== "localhost") {
-      setProfile(currentProfile);
-
-    } else {
+        }, []); 
+   
       //Start Signed In when local host development
       //To Start Signed Out Clear the Cookies and comment the next line out
       // let devUserProfile = {
@@ -119,12 +93,11 @@ export default function ToolLayout(props) {
       //   trackingConsent: "1",
       //   username: "devuser",
       // }
-      // setCookieProfile("Profile", devUserProfile)
       // setProfile(devUserProfile);
 
-    }
+    
 
-  }, []);
+ 
 
 
  
@@ -406,8 +379,8 @@ export default function ToolLayout(props) {
   const footerClass = props.children.length > 1 ? 'footer-on' : 'footer-off';
 
   
-  //Show loading if profile is only email and code
-  if (Object.keys(profile).length < 3) {
+  //Show loading if profile if not loaded yet (loads each time)
+  if (Object.keys(profile).length < 1) {
     return (<h1>Loading...</h1>)
   }
 

@@ -142,24 +142,20 @@ export default function DoenetProfile(props) {
     if (e.target == e.currentTarget) setModal(vis);
   };
 
-  const [cookieProfile, setCookieProfile] = useCookies('Profile');
   const [trackingCookie, setTrackingCookie] = useCookies('TrackingConsent');
   const [jwt, setJwt] = useCookies('jwt');
   const [deviceNameCookie, setDeviceNameCookie] = useCookies('Device');
+  const [stayCookie, setStayCookie] = useCookies('Stay');
 
-
-  let currentProfile = {};
-  if (cookieProfile.Profile) {
-    currentProfile = cookieProfile.Profile;
-  }
-  const [profile, setProfile] = useState(currentProfile);
+  const [profile, setProfile] = useState({});
   const [tracking, setTracking] = useState(trackingCookie.TrackingConsent);
   if (tracking === undefined){
-    // console.log("tracking undefined")
-    setTrackingCookie("TrackingConsent", true, { path: "/" });
+    let cookieSettingsObj = { path: "/" };
+    if (stayCookie.Stay > 0){cookieSettingsObj.maxAge = stayCookie.Stay }
+    setTrackingCookie("TrackingConsent", true, cookieSettingsObj);
     setTracking(true);
   }
-console.log(Object.keys(jwt))
+
   if (!Object.keys(jwt).includes("JWT_JS")) {
     //Not signed in
     return (
@@ -198,7 +194,7 @@ console.log(Object.keys(jwt))
   }
 
   //Load profile from database if only email and nine code
-  if (!profile || Object.keys(profile).length < 3) {
+  if (Object.keys(profile).length < 1) {
 
     let anonymousUserProfile = {
       accessAllowed: "0",
@@ -222,19 +218,14 @@ console.log(Object.keys(jwt))
     //Need to load profile from database 
     //Ask Server for data which matches email address
     const phpUrl = '/api/loadProfile.php';
-    const data = {
-    }
+    const data = {}
     const payload = {
       params: data
     }
     axios.get(phpUrl, payload)
       .then(resp => {
-        console.log("load profile resp",resp)
         if (resp.data.success === "1") {
-          let tempprofile = resp.data.profile;
-          tempprofile['nineCode'] = cookieProfile.Profile.nineCode;
-          setCookieProfile("Profile", tempprofile, { path: "/" });
-          setProfile(tempprofile);
+          setProfile(resp.data.profile);
         }
       })
       .catch(error => { this.setState({ error: error }) });
@@ -248,7 +239,7 @@ console.log(Object.keys(jwt))
       }
       axios.post(url, data)
         .then(function (resp) {
-          // console.log("resp.data", resp.data);
+          console.log("Save Profile To DB -- resp.data", resp.data);
         })
         .catch(function (error) {
           console.warn(error)
@@ -262,15 +253,14 @@ console.log(Object.keys(jwt))
   function updateMyProfile(field, value, immediate = false) {
       profile[field] = value;
     profile["toolAccess"] = defineToolAccess(profile);
-    setCookieProfile("Profile", profile, { path: "/" });
     if (immediate) {
       saveProfileToDB();
     }
     if (!saveTimerRunning) {
       setSaveTimerRunning(true);
       setTimeout(function () { 
-      setSaveTimerRunning(false);
-      saveProfileToDB() 
+        setSaveTimerRunning(false);
+        saveProfileToDB() 
       }, 1000)
     }
   }
@@ -411,7 +401,9 @@ console.log(Object.keys(jwt))
           <StyledSwitch
             id="trackingConsent"
             onChange={e => {
-              setTrackingCookie("TrackingConsent", e.target.checked, { path: "/" });
+              let cookieSettingsObj = { path: "/" };
+              if (stayCookie.Stay > 0){cookieSettingsObj.maxAge = stayCookie.Stay }
+              setTrackingCookie("TrackingConsent", e.target.checked, cookieSettingsObj);
               setTracking(e.target.checked);
               updateMyProfile("trackingConsent", e.target.checked + 0,true)
             }} // updates immediately

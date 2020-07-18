@@ -5,12 +5,11 @@ import axios from "axios";
 
 export default function DoenetSignOut(props) {
 
-  const [jwt, setJwt, removeCookie] = useCookies('jwt');
   const [signedOutAttempts, setSignedOutAttempts] = useState(0);
+  const [stay, setstay, removeCookie] = useCookies('Stay');
 
   const phpUrl = '/api/signOut.php';
   const data = {
-    jwt: jwt.JWT.token,
   }
   const payload = {
     params: data
@@ -19,9 +18,7 @@ export default function DoenetSignOut(props) {
     .then(resp => {
       // console.log(resp.data)
       // if (resp.data.success === "1") {
-      //   let profile = resp.data.profile;
-      //   setCookieProfile("Profile", profile, { path: "/" });
-      //   setProfile(profile);
+      //   
       // }
     })
     .catch(error => { this.setState({ error: error }) });
@@ -29,9 +26,9 @@ export default function DoenetSignOut(props) {
 
   const vanillaCookies = document.cookie.split(';');
 
-  removeCookie('JWT', { path: "/" })
-  removeCookie('Profile', { path: "/" })
   removeCookie('TrackingConsent', { path: "/" })
+  removeCookie('JWT_JS', { path: "/" })
+  removeCookie('Stay', { path: "/" })
   removeCookie('Device', { path: "/" })
 
   if (vanillaCookies.length === 1 && vanillaCookies[0] === "") {

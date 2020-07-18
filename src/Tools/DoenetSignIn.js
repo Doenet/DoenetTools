@@ -11,14 +11,11 @@ export default function DoenetSignIn(props) {
 
   let [signInStage, setSignInStage] = useState("beginning");
   let [isSentEmail, setIsSentEmail] = useState(false);
-  let [codeSuccess, setCodeSuccess] = useState(false);
-  let [reason, setReason] = useState("");
-  let [existed, setExisted] = useState(false);
   let [deviceName, setDeviceName] = useState("");
 
-  const [jwt, setJwt] = useCookies('jwt');
-  const [profile, setProfile] = useCookies('Profile');
+  const [jwt, setJwt] = useCookies('JWT_JS');
   const [deviceNameCookie, setDeviceNameCookie] = useCookies('Device');
+  const [stayCookie, setStayCookie] = useCookies('Stay');
 
   const emailRef = useRef(null);
   const codeRef = useRef(null);
@@ -41,7 +38,8 @@ export default function DoenetSignIn(props) {
     }
   });
 
-  if (Object.keys(jwt).includes("JWT")) {
+  //If already signed in go to dashboard
+  if (Object.keys(jwt).includes("JWT_JS")) {
     location.href = "/dashboard";
   }
 
@@ -60,7 +58,7 @@ export default function DoenetSignIn(props) {
     }
     axios.get(phpUrl, payload)
       .then(resp => {
-        console.log('resp',resp);
+        // console.log('checkCredentials resp',resp);
 
         if (resp.data.success){
           let newAccount = "1";
@@ -72,13 +70,14 @@ export default function DoenetSignIn(props) {
             stay = "1";
           }
 
-          console.log(`/api/jwt.php?emailaddress=${encodeURIComponent(email)}&nineCode=${encodeURIComponent(nineCode)}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`)
-          // location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(email)}&nineCode=${encodeURIComponent(nineCode)}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`;
+          // console.log(`/api/jwt.php?emailaddress=${encodeURIComponent(email)}&nineCode=${encodeURIComponent(nineCode)}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`)
+          location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(email)}&nineCode=${encodeURIComponent(nineCode)}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`;
         }else{
-          setSignInStage("resolve server code check response");
-          setCodeSuccess(resp.data.success);
-          setReason(resp.data.reason);
-          setExisted(resp.data.existed);
+          if (resp.data.reason === "Code expired") {
+          setSignInStage("Code expired");
+          }else if (resp.data.reason === "Invalid Code"){
+            setSignInStage("Invalid Code");
+          }
         }
       })
       .catch(error => { this.setState({ error: error }) });
@@ -98,39 +97,26 @@ export default function DoenetSignIn(props) {
     )
   }
 
-  // if (signInStage === "resolve server code check response") {
-  //   if (codeSuccess) {
-  //     setProfile('Profile', { email, nineCode }, { path: "/" })
-  //   }
-  //   if (codeSuccess && existed) {
-  //     location.href = "/dashboard";
-  //   } else if (codeSuccess && !existed) {
-  //     location.href = "/accountsettings";
-  //   } else if (reason === "Code expired") {
-  //     return (
-  //       <div style={
-  //         {
-  //           position: "absolute",
-  //           top: "50%",
-  //           left: "50%",
-  //           transform: "translate(-50%, -50%)",
-  //           margin: "20",
-  //         }}>
-  //         <h2 style={{ textAlign: "center" }}>Code Expired</h2>
-  //         <button onClick={() => { location.href = '/signin' }}>Restart Signin</button>
+  if (signInStage === "Code expired") {
 
-  //       </div>
-  //     )
-  //   }
+      return (
+        <div style={
+          {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            margin: "20",
+          }}>
+          <h2 style={{ textAlign: "center" }}>Code Expired</h2>
+          <button onClick={() => { location.href = '/signin' }}>Restart Signin</button>
 
-  // }
+        </div>
+      )
+    }
 
-  function submitCode() {
-    setReason("");
-    setSignInStage("check code");
-  }
-
-  if (signInStage === "enter code" || reason === "Invalid Code") {
+  
+  if (signInStage === "enter code" || signInStage === "Invalid Code") {
 
     if (!isSentEmail) {
       const phpUrl = '/api/sendSignInEmail.php';
@@ -146,6 +132,7 @@ export default function DoenetSignIn(props) {
             let cookieSettingsObj = { path: "/" };
             if (maxAge > 0){cookieSettingsObj.maxAge = maxAge }
             setDeviceNameCookie('Device', resp.data.deviceName, cookieSettingsObj);
+            setStayCookie('Stay',maxAge,cookieSettingsObj);
         })
         .catch(error => { this.setState({ error: error }) });
       setIsSentEmail(true);
@@ -153,7 +140,7 @@ export default function DoenetSignIn(props) {
 
 
     let heading = <h2 style={{ textAlign: "center" }}>Email Sent!</h2>
-    if (reason === "Invalid Code") {
+    if (signInStage === "Invalid Code") {
       heading = <h2 style={{ textAlign: "center" }}>Invalid Code. Try again.</h2>
     }
 
@@ -173,10 +160,10 @@ export default function DoenetSignIn(props) {
           ref={codeRef}
           value={nineCode}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && validCode) { submitCode() }
+            if (e.key === 'Enter' && validCode) { setSignInStage("check code") }
           }}
           onChange={(e) => { setNineCode(e.target.value) }} /></label></p>
-        <button disabled={!validCode} style={{}} onClick={() => submitCode()}>Sign In</button>
+        <button disabled={!validCode} style={{}} onClick={() => setSignInStage("check code")}>Sign In</button>
       </div>
     )
   }
@@ -212,10 +199,10 @@ export default function DoenetSignIn(props) {
             onChange={(e) => { setEmail(e.target.value) }} /></label></p>
           <p><input type="checkbox" checked={stay} onChange={(e) => { 
             if (e.target.checked){
-              console.log('stay')
+              // console.log('stay')
               setMaxAge(2147483647) 
             }else{
-              console.log('not stay')
+              // console.log('not stay')
               setMaxAge(0) 
             }}}
           /> Stay Logged In</p>

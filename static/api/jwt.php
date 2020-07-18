@@ -46,7 +46,6 @@ if ($row['minutes'] > 10){
         //Valid code and not expired
         http_response_code(200);
 
-        $name = 'JWT';
         $value = $jwt;
         $expirationTime = 0;    
         if ($stay == 1){
@@ -56,11 +55,11 @@ if ($row['minutes'] > 10){
         $domain = $ini_array['dbhost']; 
         $isSecure = true;  
         if ($domain=="127.0.0.1"){
-        $domain = 'localhost'; 
+          $domain = 'localhost'; 
         $isSecure = false;  
         }
         $isHttpOnly = true;
-        setcookie($name, $value, $expirationTime, $path, $domain, $isSecure, $isHttpOnly);
+        setcookie("JWT", $value, $expirationTime, $path, $domain, $isSecure, $isHttpOnly);
         setcookie("JWT_JS", 1, $expirationTime, $path, $domain, $isSecure, 0);
         if ($newAccount == 1){
             header("Location: /accountsettings");

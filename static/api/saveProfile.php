@@ -6,10 +6,10 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+$jwtArray = include "jwtArray.php";
+$emailaddress = $jwtArray['email'];
+
 $_POST = json_decode(file_get_contents("php://input"),true);
-// var_dump($_POST);
-$email =  mysqli_real_escape_string($conn,$_POST["email"]);
-$nineCode =  mysqli_real_escape_string($conn,$_POST["nineCode"]);
 $screenName =  mysqli_real_escape_string($conn,$_POST["screenName"]);
 $firstName =  mysqli_real_escape_string($conn,$_POST["firstName"]);
 $lastName =  mysqli_real_escape_string($conn,$_POST["lastName"]);
@@ -32,17 +32,18 @@ $sql = "UPDATE user
         roleStudent = '$roleStudent', 
         roleInstructor = '$roleInstructor', 
         roleCourseDesigner = '$roleCourseDesigner'
-        WHERE email = '$email' AND signInCode = '$nineCode'";
+        WHERE email = '$emailaddress' ";
 // echo $sql;
 $result = $conn->query($sql);
-$response_arr = array("success" => "1");
 
 
 // set response code - 200 OK
 http_response_code(200);
 
+$response_arr = array("success" => "1");
+
 // make it json format
-// echo json_encode($response_arr);
+echo json_encode($response_arr);
 
 $conn->close();
 

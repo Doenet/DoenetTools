@@ -19,6 +19,16 @@ $result = $conn->query($sql);
 // set response code - 200 OK
 http_response_code(200);
 
+$domain = $ini_array['dbhost']; 
+$isSecure = true;  
+if ($domain=="127.0.0.1"){
+  $domain = 'localhost'; 
+  $isSecure = false;  
+}
+$isHttpOnly = true;
+$expirationTime = -10;
+setcookie("JWT", "", $expirationTime, "/", $domain, $isSecure, $isHttpOnly);
+
 // make it json format
 // echo json_encode($response_arr);
 
