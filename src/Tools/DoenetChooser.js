@@ -89,6 +89,7 @@ class DoenetChooser extends Component {
     this.updateNumber = 0;
 
     this.browser = React.createRef();
+    this.browserSec = React.createRef();
 
     this.handleNewDocument = this.handleNewDocument.bind(this);
     this.saveContentToServer = this.saveContentToServer.bind(this);
@@ -140,6 +141,7 @@ class DoenetChooser extends Component {
     this.toggleSplitPanel = this.toggleSplitPanel.bind(this);
     this.goToFolder = this.goToFolder.bind(this);
     this.splitPanelGoToFolder = this.splitPanelGoToFolder.bind(this);
+    this.handleSplitPanelDropdownCallback = this.handleSplitPanelDropdownCallback.bind(this);
 
     this.tempSet = new Set();
   }
@@ -1116,12 +1118,25 @@ class DoenetChooser extends Component {
     this.tempSet = new Set([selectedItems[selectedItems.length - 1]]);
   }
 
+  splitPanelUpdateSelectedItems(selectedItems, selectedItemsType) {
+    this.setState({
+      splitPanelSelectedItems: selectedItems,
+      splitPanelSelectedItemsType: selectedItemsType,
+    })
+    this.tempSet = new Set([selectedItems[selectedItems.length - 1]]);
+  }
+
   updateDirectoryStack(directoryStack) {
     this.setState({
       directoryStack: directoryStack
     })
-    // this.loadUserFoldersAndRepo();
-    // this.loadUserContentBranches();
+  }
+
+  splitPanelUpdateDirectoryStack(directoryStack) {
+    this.setState({
+      splitPanelDirectoryStack: directoryStack
+
+    })
   }
 
   getAllSelectedItems = () => {
@@ -2153,20 +2168,20 @@ class DoenetChooser extends Component {
           folderList={folderList}
           contentList={contentList}
           urlList={urlList}
-          ref={this.browser}                                      // optional
-          key={"browser" + this.updateNumber}                       // optional
+          ref={this.browserSec}                                      // optional
+          key={"browserSec" + this.updateNumber}                       // optional
           selectedDrive={this.state.selectedDrive}                // optional
           selectedCourse={this.state.selectedCourse}              // optional
           allCourseInfo={this.courseInfo}                         // optional
-          updateSelectedItems={this.updateSelectedItems}          // optional
-          updateDirectoryStack={this.updateDirectoryStack}        // optional
+          updateSelectedItems={this.splitPanelUpdateSelectedItems}          // optional
+          updateDirectoryStack={this.splitPanelUpdateDirectoryStack}        // optional
           addContentToFolder={this.addContentToFolder}            // optional
           addContentToRepo={this.addContentToRepo}               // optional
           removeContentFromCourse={this.removeContentFromCourse}  // optional
           removeContentFromFolder={this.removeContentFromFolder}  // optional                  
           directoryData={this.state.splitPanelDirectoryStack}               // optional
           selectedItems={this.state.splitPanelSelectedItems}                // optional
-          selectedItemsType={this.state.splitPanelDirectoryStacksplitPanelSelectedItemsType}        // optional
+          selectedItemsType={this.state.splitPanelSelectedItemsType}        // optional
           renameFolder={this.renameFolder}                        // optional
           openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
           publicizeRepo={this.publicizeRepo}                      // optional
@@ -2253,7 +2268,7 @@ class DoenetChooser extends Component {
         value: this.courseInfo[key].courseCode,
         icon: faDotCircle,
         path: this.getFolderPath(key, this.courseInfo),
-        callback: this.handleSplitPanelDropdownCallback.bind(this)
+        callback: this.handleSplitPanelDropdownCallback
       })
     }
 
@@ -2265,7 +2280,7 @@ class DoenetChooser extends Component {
           value: key,
           icon: faFolderOpen,
           path: this.getFolderPath(key, this.userFolderInfo),
-          callback: this.handleSplitPanelDropdownCallback.bind(this)
+          callback: this.handleSplitPanelDropdownCallback
         })
       }
     }
@@ -2319,7 +2334,7 @@ class DoenetChooser extends Component {
             initialContainer="browser"
             activeContainer={this.state.splitPanelsCollection["second"].activeContainer}
             containersData={[
-              { name: "browser", container: this.mainSection },
+              { name: "browser", container: this.splitPanelMainSection },
               { name: "tree", container: this.tree },
             ]}
             path={match.params.leftNavRoute}
@@ -2730,12 +2745,40 @@ class Accordion extends Component {
     } = this;
 
     return (
-      <AccordionSection
+      <AccordionSectionCustom
         isOpen={!!openSections[children.props.label]}
         label={children.props.label}
         onClick={onClick}>
         {children.props.children}
-      </AccordionSection>
+      </AccordionSectionCustom>
+    );
+  }
+}
+class AccordionSectionCustom extends Component {
+
+  onClick = () => {
+    this.props.onClick(this.props.label);
+  };
+
+  render() {
+    const {
+      onClick,
+      props: { isOpen, label },
+    } = this;
+
+    return (
+      <div style={{ "width": "100%", "cursor": 'pointer' }}>
+        <div onClick={onClick} data-cy="coursesAccordion" style={{color: "white"}}>
+          {isOpen ? <FontAwesomeIcon className="menuTwirlIcon" icon={faCaretDown} /> :
+            <FontAwesomeIcon className="menuTwirlIcon" icon={faCaretRight} />}
+          {label}
+        </div>
+        {isOpen && (
+          <div>
+            {this.props.children}
+          </div>
+        )}
+      </div>
     );
   }
 }

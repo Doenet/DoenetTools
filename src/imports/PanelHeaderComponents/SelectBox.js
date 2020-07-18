@@ -16,8 +16,8 @@ function SelectBox({ items }) {
     };
   });
 
-  const handleClick = e => {
-    if (node.current.contains(e.target)) {
+  const handleClick = event => {
+    if (node.current.contains(event.target)) {
       setShowItems(!showItems)
     } else {
       setShowItems(false)
