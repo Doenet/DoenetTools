@@ -7,7 +7,8 @@ import "./chooser.css";
 import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown, 
-  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, faLink, faRedoAlt, faAlignJustify,faStream, faColumns}
+  faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave, 
+  faLink, faRedoAlt, faAlignJustify,faStream, faColumns, faInfoCircle, faFolderOpen}
   from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
@@ -46,8 +47,7 @@ class DoenetChooser extends Component {
       directoryStack: [],
       currentDraggedObject: {id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null},
       panelsCollection: {"first": {values:["browser", "tree"], activeContainer: "browser"}},
-      splitPanelLayout: false
-
+      splitPanelLayout: false,
     };
 
     this.containerCache = {};
@@ -1650,14 +1650,13 @@ class DoenetChooser extends Component {
   onBrowserFolderDrop ({containerId, droppedId}) {
     // handle dragging folder onto itself
     if (this.state.currentDraggedObject.id == droppedId) return;
-
     let draggedItems = {
       id: this.state.selectedItems,
       type: this.state.selectedItemsType
     }
     // remove droppedId, repos from (draggedIds, draggedTypes)
     for (let i = 0; i < draggedItems.id.length; i++) {
-      if (draggedItems.id[i] == droppedId || (draggedItems.type == "folder" && draggedItems.dataObject.isRepo)) {
+      if (draggedItems.id[i] == droppedId || (draggedItems.type == "folder" && draggedItems.isRepo)) {
         draggedItems.id.splice(i, 1);
         draggedItems.type.splice(i, 1);
       }
@@ -1666,8 +1665,6 @@ class DoenetChooser extends Component {
       // add content to previous directory
       let previousDirectoryId = this.state.directoryStack.slice(-2)[0];
       if (this.state.directoryStack.length < 2) previousDirectoryId = "root";
-      console.log(this.state.directoryStack)
-      console.log("add content to " + previousDirectoryId)
       this.addContentToFolder(draggedItems.id, draggedItems.type, previousDirectoryId);
     } else {
       // add draggedIds to folder with droppedId
@@ -1679,6 +1676,16 @@ class DoenetChooser extends Component {
     this.setState({splitPanelLayout: !this.state.splitPanelLayout});
   }
 
+  getPathToFolder = (folderId) => {
+    let pathToFolder = [folderId];
+    let currentParentId = this.folderInfo[folderId].parentId;
+    while (currentParentId != "root") {
+      pathToFolder.unshift(currentParentId);
+      currentParentId = this.folderInfo[currentParentId].parentId;
+    }
+    return pathToFolder;
+  }
+
   render(){
 
     if (!this.courses_loaded || !this.assignments_and_headings_loaded){
@@ -1686,10 +1693,9 @@ class DoenetChooser extends Component {
                 <SpinningLoader/>
              </div>
     }
-    
+    console.log(this.folderInfo)
     // return <DoenetAssignmentTree treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
       // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
-
     let assignmentsTree = <div className="tree" style={{padding: "5em 2em"}}>
       <TreeView
         containerId={"aI8sK4vmEhC5sdeSP3vNW"}
@@ -1709,7 +1715,14 @@ class DoenetChooser extends Component {
     // process root folder for tree rendering
     if (this.folders_loaded && this.branches_loaded && this.urls_loaded && this.userContentReloaded) {
       this.userContentReloaded = false;
-      this.userFolderInfo["root"] = {};
+      this.userFolderInfo["root"] = {
+        title: "User Content Tree",
+        childContent: [],
+        childFolders: [],
+        childUrls: [],
+        isPublic: false,
+        type: "folder",
+      };
       this.userFolderInfo["root"]["title"] = "User Content Tree"
       this.userFolderInfo["root"]["childContent"] = [];
       this.userFolderInfo["root"]["childFolders"] = [];
@@ -1799,16 +1812,35 @@ class DoenetChooser extends Component {
             },
             specialParentNode: {
               "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
-            }
+            },
+            emptyParentExpanderIcon: <span></span>
           }}
           onLeafNodeClick={(id, type) => {
+            // get path to item
+            const dataSource = this.getDataSource(treeContainerId, treeContainerType);
+            const itemParentId = dataSource[type][id]["parentId"];
+            const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId);
+            // select item and switch to directory            
+            this.setState({
+              selectedItems: [id], 
+              selectedItemsType: [type],
+              directoryStack: pathToSelectedFolder
+            })
             this.setState({selectedItems: [id], selectedItemsType: [type]})
             this.tempSet = new Set([id]);
             this.forceUpdate()
           }}
           onParentNodeClick={(id, type) => {
-            this.setState({selectedItems: [id], selectedItemsType: [type]})
+            // get path to item
+            let pathToSelectedFolder = this.getPathToFolder(id);
+            // select item and switch to directory            
+            this.setState({
+              selectedItems: [id], 
+              selectedItemsType: [type],
+              directoryStack: pathToSelectedFolder
+            })
             this.tempSet = new Set([id]);
+            this.setState({})
             this.forceUpdate()
           }}
           onParentNodeDoubleClick={(id) => {
@@ -1984,7 +2016,8 @@ class DoenetChooser extends Component {
         <ToolLayout
           toolName="Chooser"
           leftPanelWidth="235"
-          rightPanelWidth="365">
+          rightPanelWidth="365"
+          >
 
           <ToolLayoutPanel
             panelName="Navigation Panel"
@@ -2038,10 +2071,6 @@ class DoenetChooser extends Component {
   }
 }
 
-
-
-
-
 const MainPanel = ({panelId, initialContainer, activeContainer, containersData}) => {
   return <div className="mainPanel">
     <SwitchableContainers initialValue={initialContainer} currentValue={activeContainer}>
@@ -2054,7 +2083,7 @@ const MainPanel = ({panelId, initialContainer, activeContainer, containersData})
   </div>;
 }
 
-const TreeIcons = (iconName) => {
+const TreeIcons = ({iconName, isPublic}) => {
   const FolderIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
     style={{
       fontSize: "16px", 
@@ -2103,16 +2132,48 @@ const TreeIcons = (iconName) => {
       marginRight: "8px",
     }}
   />;
+  const PublicRepoIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolderOpen}
+    style={{
+      fontSize: "16px", 
+      color: "#3aac90",
+      position: "relative",
+      top: "2px",
+      marginRight: "8px",
+    }}
+  />;
+  const PublicFolderIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
+    style={{
+      fontSize: "16px", 
+      color: "#3aac90",
+      position: "relative",
+      top: "2px",
+      marginRight: "8px",
+    }}
+  />;
+  const PublicUrlIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faLink}
+    style={{
+      fontSize: "16px", 
+      color: "#3aac90", 
+      marginRight: "8px",
+    }}
+  />;
+  const PublicContentIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFileAlt}
+    style={{
+      fontSize: "16px", 
+      color: "#3aac90", 
+      marginRight: "8px",
+    }}
+  />;
 
   switch(iconName){
     case "folder":
-      return FolderIcon;
+      return isPublic ? PublicFolderIcon : FolderIcon;
     case "repo":
-      return RepoIcon;
+      return isPublic ? PublicRepoIcon : RepoIcon;
     case "content":
-      return ContentIcon;
+      return isPublic ? PublicContentIcon : ContentIcon;
     case "url":
-      return UrlIcon;
+      return isPublic ? PublicUrlIcon : UrlIcon;
     case "header":
       return HeadingIcon;
     case "assignment":
@@ -2702,8 +2763,9 @@ class InfoPanel extends Component {
       // this.buildInfoPanelDriveDetails();
       this.infoPanel = <React.Fragment>
         <div className="infoPanel">
-          <div style={{display: "flex", alignItems: "center", justifyContent: "center", height: "100%"}}>
-            <span style={{fontSize: "16px", color: "rgb(191, 191, 191)"}}>Select item to view info</span>
+          <div style={{display: "flex", alignItems: "center", height: "100%", flexDirection: "column"}}>
+            <FontAwesomeIcon icon={faInfoCircle} style={{fontSize:"95px", color: "rgb(165, 165, 165)", padding: "1rem"}}/>
+            <span style={{fontSize: "13px", color: "rgb(124, 124, 124)"}}>Select a files or folder to view its details</span>
           </div>
         </div>
       </React.Fragment>
@@ -2801,6 +2863,7 @@ class InfoPanel extends Component {
   }
 
   buildInfoPanelItemDetails(selectedItemId, selectedItemType) {
+    console.log(selectedItemId)
     this.infoPanelDetails = [];
     let itemDetails = {};
     if (selectedItemType === "folder") {
@@ -2959,7 +3022,6 @@ class InfoPanel extends Component {
         "Versions" : versions,
         // "Related content" : relatedContent,
       };
-      console.log(this.props.allContentInfo[selectedItemId].rootId);
       let isShared = this.props.allContentInfo[selectedItemId].rootId == "root" ? false :
         this.props.allFolderInfo[this.props.allContentInfo[selectedItemId].rootId].isRepo;
 
