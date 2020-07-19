@@ -6,20 +6,23 @@ header("Access-Control-Allow-Credentials: true");
 //header('Content-Type: application/json');
 include "db_connection.php";
 
+$jwtArray = include "jwtArray.php";
+$emailaddress = $jwtArray['email'];
+
 $response_arr = array(
     "access"=> TRUE
 );
 
 //prerelease security
-$sql = "SELECT adminAccessAllowed FROM user WHERE username='$remoteuser'";
-$result = $conn->query($sql); 
-$row = $result->fetch_assoc();
-if ($row["adminAccessAllowed"] != 1){
-	$response_arr = array(
-		"access"=> FALSE
-    );
+// $sql = "SELECT adminAccessAllowed FROM user WHERE username='$emailaddress'";
+// $result = $conn->query($sql); 
+// $row = $result->fetch_assoc();
+// if ($row["adminAccessAllowed"] != 1){
+// 	$response_arr = array(
+// 		"access"=> FALSE
+//     );
     
-} else {
+// } else {
 
 
 $_POST = json_decode(file_get_contents("php://input"),true);
@@ -96,7 +99,7 @@ if ($publish){
     ";
     $result = $conn->query($sql); 
 }
-}
+
 
     // set response code - 200 OK
     http_response_code(200);

@@ -7,15 +7,18 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
+$jwtArray = include "jwtArray.php";
+$emailaddress = $jwtArray['email'];
+
 //prerelease security
-$sql = "SELECT accessAllowed FROM user WHERE username='$remoteuser'";
-$result = $conn->query($sql); 
-$row = $result->fetch_assoc();
-if ($row["accessAllowed"] != 1){
-	$response_arr = array(
-		"access"=> FALSE
-	);
-} else {
+// $sql = "SELECT accessAllowed FROM user WHERE username='$remoteuser'";
+// $result = $conn->query($sql); 
+// $row = $result->fetch_assoc();
+// if ($row["accessAllowed"] != 1){
+// 	$response_arr = array(
+// 		"access"=> FALSE
+// 	);
+// } else {
 
 
 $contentId =  mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
@@ -99,7 +102,7 @@ if ($contentId == "" && $branchId == ""){
 	
 	
          
-}
+
  http_response_code(200);
 
  // make it json format

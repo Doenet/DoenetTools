@@ -57,6 +57,26 @@ $roleAccessList = array(
     $response_arr = array("success" => "1",
                           "profile" => $profile);
     
+}else{
+  //Send back not signed in profile
+  $toolAccessList = array("Chooser", "Course", "Documentation");
+  $profile = array(
+    "screenName" => "Anonymous",
+    "email" => "",
+    "firstName" => "",
+    "lastName" => "",
+    "profilePicture" => "Anonymous",
+    "trackingConsent" => true,
+    "roleStudent" => "0",
+    "roleInstructor" => "0",
+    "roleCourseDesigner" => "0",
+    "roleWatchdog" => "0",
+    "roleCommunityTA" => "0",
+    "roleLiveDataCommunity" => "0"
+);
+$profile["toolAccess"] = array("Chooser", "Course", "Documentation");
+$response_arr = array("success" => "1",
+                          "profile" => $profile);
 }
 // set response code - 200 OK
 http_response_code(200);
