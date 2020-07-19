@@ -8,12 +8,12 @@
       ]
   },
   "folderSeeds" : {
-      "folderId": ["testFolderId1", "testFolderId2"],
-      "title": ["testFolder1", "testFolder2"],
-      "parentId": ["root", "testFolderId1"],
-      "rootId": ["root", "testFolderId1"],
-      "isPublic": [0, 0],
-      "isRepo": [0, 0]
+      "folderId": ["testFolderId1", "testFolderId2", "testPrivateRepoId1", "testPublicRepoId1"],
+      "title": ["testFolder1", "testFolder2", "testPrivateRepo1", "testPublicRepo1"],
+      "parentId": ["root", "testFolderId1", "root", "root"],
+      "rootId": ["root", "testFolderId1", "root", "root"],
+      "isPublic": [0, 0, 0, 1],
+      "isRepo": [0, 0, 1, 1]
 
   },
   "urlSeeds" : {
