@@ -10,6 +10,17 @@
   "folderSeeds" : {
       "folderId": ["testFolderId1", "testFolderId2"],
       "title": ["testFolder1", "testFolder2"],
-      "parentId": ["root", "testFolderId1"] 
+      "parentId": ["root", "testFolderId1"],
+      "rootId": ["root", "testFolderId1"],
+      "isPublic": [0, 0],
+      "isRepo": [0, 0]
+
+  },
+  "urlSeeds" : {
+      "urlId": ["testUrlId"],
+      "title": ["testUrl"],
+      "url": [
+        "www.doenet.org"
+      ]
   }
 }
