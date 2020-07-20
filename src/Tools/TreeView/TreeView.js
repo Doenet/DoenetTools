@@ -299,8 +299,8 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
    buildControlButtons, buildSearchComponent, setCurrentHovered, directoryData }) {
      
   const getBaseItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
-    console.log(parentsInfo)
-    console.log(childrenInfo)
+    // console.log(parentsInfo)
+    // console.log(childrenInfo)
     const isPublic = itemType == "folder" ? parentsInfo[currentItemId].isPublic : parentsInfo[childrenInfo[currentItemId].rootId].isPublic;
     if (itemType == "folder") itemType = parentsInfo[currentItemId].isRepo ? "repo" : "folder";
     const icon = currentItemId == "root" ? "" : treeNodeIcons({iconName: itemType, isPublic: isPublic});

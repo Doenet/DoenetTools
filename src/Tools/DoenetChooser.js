@@ -137,13 +137,20 @@ class DoenetChooser extends Component {
     this.onBrowserDropEnter = this.onBrowserDropEnter.bind(this);
     this.onBrowserDrop = this.onBrowserDrop.bind(this);
     this.onBrowserFolderDrop = this.onBrowserFolderDrop.bind(this);
+    this.onSplitPanelBrowserFolderDrop = this.onSplitPanelBrowserFolderDrop.bind(this);
     this.getDataSource = this.getDataSource.bind(this);
     this.switchPanelContainer = this.switchPanelContainer.bind(this);
     this.toggleSplitPanel = this.toggleSplitPanel.bind(this);
     this.goToFolder = this.goToFolder.bind(this);
     this.splitPanelGoToFolder = this.splitPanelGoToFolder.bind(this);
     this.handleSplitPanelDropdownCallback = this.handleSplitPanelDropdownCallback.bind(this);
-
+    this.splitPanelUpdateSelectedItems =this.splitPanelUpdateSelectedItems.bind(this);
+    this.splitPanelUpdateDirectoryStack = this.splitPanelUpdateDirectoryStack.bind(this);
+    this.onSplitPanelBrowserDragStart = this.onSplitPanelBrowserDragStart.bind(this);
+    this.onSplitPanelBrowserDragEnd = this.onSplitPanelBrowserDragEnd.bind(this);
+    this.onSplitPanelBrowserDropEnter = this.onSplitPanelBrowserDropEnter.bind(this);
+    this.onSplitPanelBrowserDrop = this.onSplitPanelBrowserDrop.bind(this);
+    this.onSplitPanelBrowserFolderDrop = this.onSplitPanelBrowserFolderDrop.bind(this);
     this.tempSet = new Set();
   }
 
@@ -1651,7 +1658,35 @@ class DoenetChooser extends Component {
     this.validDrop = false;
   }
 
+  onSplitPanelBrowserDragStart({ draggedId, draggedType, sourceContainerId, parentsInfo, leavesInfo }) {
+    //console.log("onDragStart")
+
+    let dataObjectSource = leavesInfo;
+    if (draggedType == "folder") dataObjectSource = parentsInfo;
+    else if (draggedType == "url") dataObjectSource = this.urlInfo;
+
+    const dataObject = dataObjectSource[draggedId];
+    const sourceParentId = dataObjectSource[draggedId].parentId;
+
+    this.setState({
+      currentDraggedObject: { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId },
+    })
+    this.containerCache = {
+      ...this.containerCache,
+      [sourceContainerId]: {
+        parents: JSON.parse(JSON.stringify(parentsInfo)),
+        leaves: JSON.parse(JSON.stringify(leavesInfo))
+      }
+    }
+    this.cachedCurrentDraggedObject = { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId };
+    this.validDrop = false;
+  }
+
   onBrowserDropEnter(listId) {
+    //console.log("onDropEnter")
+
+  }
+  onSplitPanelBrowserDropEnter(listId) {
     //console.log("onDropEnter")
 
   }
@@ -1685,7 +1720,40 @@ class DoenetChooser extends Component {
     this.cachedCurrentDraggedObject = null;
   }
 
+  onSplitPanelBrowserDragEnd({ containerId, parentsInfo, leavesInfo }) {
+    //console.log("onBrowserDragEnd")
+    let currParentsInfo = parentsInfo;
+    let currChildrenInfo = leavesInfo;
+    // dropped across containers && content -> content
+    if (this.validDrop && containerId != this.lastDroppedContainerId) {
+      // remove current dragged item from data
+      // save data
+    } else if (!this.validDrop) {
+      // dropped outsize valid dropzone, reset all data
+      currParentsInfo = this.containerCache[containerId].parents;
+      currChildrenInfo = this.containerCache[containerId].leaves;
+      const newSourceContainerId = this.state.currentDraggedObject.sourceContainerId;
+      if (newSourceContainerId != containerId) {
+        this.headingsInfo[newSourceContainerId] = this.containerCache[newSourceContainerId].parents;
+        this.assignmentsInfo[newSourceContainerId] = this.containerCache[newSourceContainerId].leaves;
+      }
+    }
+    this.folderInfo = currParentsInfo;
+    this.branchId_info = currChildrenInfo;
+    // save folderInfo and branchId_info
+
+    this.setState({
+      currentDraggedObject: { id: null, type: null, sourceContainerId: null },
+    })
+    this.containerCache = {};
+    this.cachedCurrentDraggedObject = null;
+  }
+
   onBrowserDrop(containerId, parentsInfo, leavesInfo) {
+    //console.log("onBrowserDrop")
+
+  }
+  onSplitPanelBrowserDrop(containerId, parentsInfo, leavesInfo) {
     //console.log("onBrowserDrop")
 
   }
@@ -1762,7 +1830,32 @@ class DoenetChooser extends Component {
       this.addContentToFolder(draggedItems.id, draggedItems.type, droppedId);
     }
   }
-
+  
+  onSplitPanelBrowserFolderDrop({ containerId, droppedId }) {
+    // handle dragging folder onto itself
+    if (this.state.currentDraggedObject.id == droppedId) return;
+    let draggedItems = {
+      id: this.state.selectedItems,
+      type: this.state.selectedItemsType
+    }
+    // remove droppedId, repos from (draggedIds, draggedTypes)
+    for (let i = 0; i < draggedItems.id.length; i++) {
+      if (draggedItems.id[i] == droppedId || (draggedItems.type == "folder" && draggedItems.isRepo)) {
+        draggedItems.id.splice(i, 1);
+        draggedItems.type.splice(i, 1);
+      }
+    }
+    if (droppedId == ChooserConstants.PREVIOUS_DIR_ID) {
+      // add content to previous directory
+      let previousDirectoryId = this.state.directoryStack.slice(-2)[0];
+      if (this.state.directoryStack.length < 2) previousDirectoryId = "root";
+      this.addContentToFolder(draggedItems.id, draggedItems.type, previousDirectoryId);
+    } else {
+      // add draggedIds to folder with droppedId
+      this.addContentToFolder(draggedItems.id, draggedItems.type, droppedId);
+    }
+  }
+  
   toggleSplitPanel() {
     this.setState({ splitPanelLayout: !this.state.splitPanelLayout });
   }
@@ -2074,7 +2167,9 @@ class DoenetChooser extends Component {
                   "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
                 },
                 specialParentNode: {
-                  "title": { color: "#d9eefa", background: "#e6efff", paddingLeft: "5px" },
+                  "title": { color: "gray", background: "#e6efff", paddingLeft: "5px" },
+                  "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0",borderLeft:'10px solid #0031f5' },
+
                 },
                 parentNode: {
                   "title": { color: "#d9eefa" },
@@ -2253,12 +2348,12 @@ class DoenetChooser extends Component {
           renameFolder={this.renameFolder}                        // optional
           openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
           publicizeRepo={this.publicizeRepo}                      // optional
-          onDragStart={this.onBrowserDragStart}
-          onDragEnd={this.onBrowserDragEnd}
+          onDragStart={this.onSplitPanelBrowserDragStart}
+          onDragEnd={this.onSplitPanelBrowserDragEnd}
           onDraggableDragOver={() => { }}
-          onDropEnter={this.onBrowserDropEnter}
-          onDrop={this.onBrowserDrop}
-          onFolderDrop={this.onBrowserFolderDrop}
+          onDropEnter={this.onSplitPanelBrowserDropEnter}
+          onDrop={this.onSplitPanelBrowserDrop}
+          onFolderDrop={this.onSplitPanelBrowserFolderDrop}
         />
       </React.Fragment>
     }
@@ -2864,7 +2959,7 @@ class AccordionSectionCustom extends Component {
     return (
       <div style={{ "width": "100%", "cursor": 'pointer' }}>
         <div onClick={onClick} data-cy="coursesAccordion" style={{color: "#03a1fc" }}>
-          {isOpen ? <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronDown} /> :
+          {isOpen ?  <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronDown} /> :
             <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronRight} />}
           {label}
         </div>
