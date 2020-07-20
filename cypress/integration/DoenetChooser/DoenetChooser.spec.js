@@ -1,5 +1,10 @@
 import { exportAllDeclaration } from "@babel/types";
 
+Cypress.Commands.add('dragTo', {prevSubject: "element"}, (itemId, targetId) => {
+    cy.wrap(itemId).trigger("dragstart", {force: true});
+    cy.get(targetId).trigger("drop", {force: true});
+})
+
 describe('DoenetChooser tests', function () {
 
   /*
@@ -18,7 +23,6 @@ describe('DoenetChooser tests', function () {
       })
     })
   })
-  it('chooser item click test', function() {})
   // it('chooser item click test', function() {
   //   // item should be selected when clicked
   //   cy.get('[data-cy=testContentBranchId]').click();
@@ -27,17 +31,17 @@ describe('DoenetChooser tests', function () {
 
   // it('info panel test', function() {
   //   // info panel should display selected item information
-  //   cy.get('[data-cy=testContentBranchId]').click();
-  //   cy.get('[data-cy=testContentBranchId] > .browserItemName > span').invoke('text')
-  //   .then((text1) => {
-  //     cy.get('.infoPanelTitle > span').invoke('text').then((text2) => {
-  //       expect(text1).eq(text2);
-  //     })
+  //   cy.get('[data-cy=testContentBranchId]').click();  
+  // cy.get('[data-cy=testContentBranchId] > .browserItemName > span').invoke('text')
+  // .then((itemTitle) => {
+  //   cy.get('[data-cy=infoPanelTitle] > span').invoke('text').then((infoPanelTitle) => {
+  //     expect(infoPanelTitle).eq(itemTitle);
   //   })
+  // })
 
   //   // edit button should open up editor to edit selected item when clicked
-  //   cy.get('[data-cy=editContentButton]').click();
-  //   cy.url().should('include', '/editor');
+  //   // cy.get('[data-cy="editContentButton"]').click();
+  //   // cy.url().should('include', '/editor');
   // });
 
   // it('new document button', function() {
@@ -46,12 +50,13 @@ describe('DoenetChooser tests', function () {
   //   cy.get('[data-cy=newContentMenu]').should('be.visible');
 
   //   // click on anywhere on the screen to close menu
-  //   cy.get('.infoPanelTitle').click();
+  //   cy.get('[data-cy=newContentButton]').click()
   //   cy.get('[data-cy=newContentMenu]').should('not.be.visible');
 
   //   // click on new document button
   //   cy.get('[data-cy=newContentButton]').click();
   //   cy.get('[data-cy=newDocumentButton]').click();
+  //   cy.wait(3000);
   //   cy.url().should('include', '/editor');
   // });
 
@@ -73,7 +78,7 @@ describe('DoenetChooser tests', function () {
   // it('folder navigation', function() {
   //   // double click should open up folder
   //   cy.get('[data-cy=testFolderId2]').should('not.be.visible');
-  //   cy.get('[data-cy=testFolderId1]').dblclick();
+  //   cy.get('[data-cy=testFolderId1]').dblclick({force: true});
   //   cy.get('[data-cy=breadcrumbtestFolderId1]').should('be.visible');
   //   cy.get('[data-cy=breadcrumbtestFolderId2]').should('not.be.visible');
   //   cy.get('[data-cy=testFolderId2]').dblclick();
@@ -94,30 +99,33 @@ describe('DoenetChooser tests', function () {
   //   cy.get('[data-cy=breadcrumbtestFolderId2]').should('not.be.visible');
   // });
 
-  // test broken for current chooser, should be fixed in next version
-  // it('moving folders and content', function() {
-  //   // moving content into folder
-  //   cy.get('[data-cy=testContentBranchId]').click();
-  //   cy.get('[data-cy=testFolderId1] > .browserItemName > [style="position: relative;"] > .addContentButtonWrapper').click();
-  //   cy.get('[data-cy=testContentBranchId]').should('not.be.visible');
-  //   cy.get('[data-cy=testFolderId1]').dblclick();
-  //   cy.get('[data-cy=testContentBranchId]').should('be.visible');
+  it('moving folders and content', function() {
+    // moving content into folder
+    cy.get('[data-cy=testContentBranchId]').click({force: true});
+    cy.get('[data-cy=testContentBranchId]').dragTo('[data-cy=testFolderId1]');
+    cy.get('[data-cy=testContentBranchId]').should('not.be.visible');
+    cy.get('[data-cy=testFolderId1]').dblclick({force: true});
+    cy.get('[data-cy=testContentBranchId]').should('be.visible');
 
-  //   // moving content out of folder
-  //   cy.get('[data-cy=testContentBranchId]').click();
-  //   cy.get('.removeContentButtonWrapper').click();
-  //   cy.get('[data-cy=testContentBranchId]').should('not.be.visible');
-  //   cy.get('[data-cy=upOneDirectory]').dblclick();
-  //   cy.get('[data-cy=testContentBranchId]').click();
-  //   cy.get('[data-cy=testContentBranchId] > .browserItemName').should('be.visible');
+    // moving content out of folder
+    cy.get('[data-cy=testContentBranchId]').click();
+    cy.get('[data-cy=testContentBranchId]').dragTo('[data-cy=upOneDirectory]');
+    cy.get('[data-cy=testContentBranchId]').should('not.be.visible');
+    cy.get('[data-cy=upOneDirectory]').dblclick({force: true});
+    cy.get('[data-cy=testContentBranchId]').click({force: true});
+    cy.get('[data-cy=testContentBranchId] > .browserItemName > span').invoke('text')
+    .then((itemTitle) => {
+      cy.get('[data-cy=infoPanelTitle] > span').invoke('text').then((infoPanelTitle) => {
+        expect(infoPanelTitle).eq(itemTitle);
+      })
+    })
 
-  //   // moving folder out of a folder
-  //   cy.get('[data-cy=testFolderId2]').should('not.be.visible');
-  //   cy.get('[data-cy=testFolderId1]').dblclick();
-  //   cy.get('[data-cy=testFolderId2]').click();
-  //   cy.get('.removeContentButtonWrapper').click();
-  //   cy.get('[data-cy=testFolderId2]').should('not.be.visible');
-  //   cy.get('[data-cy=upOneDirectory]').dblclick();
-  //   cy.get('[data-cy=testFolderId2]').should('be.visible');
-  // });
+    // moving folder out of a folder
+    cy.get('[data-cy=testFolderId2]').should('not.be.visible');
+    cy.get('[data-cy=testFolderId1]').dblclick({force: true});
+    cy.get('[data-cy=testFolderId2]').dragTo('[data-cy=upOneDirectory]');
+    cy.get('[data-cy=testFolderId2]').should('not.be.visible');
+    cy.get('[data-cy=upOneDirectory]').dblclick();
+    cy.get('[data-cy=testFolderId2]').should('be.visible');
+  });
 })

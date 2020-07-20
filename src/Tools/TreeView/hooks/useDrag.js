@@ -4,8 +4,6 @@ const useDrag = ({ id, effect, ref, onDragStart, onDragOver, onDragEnd }) => {
   const [dragState, updateDragState] = useState("draggable");
   const dragStartCb = ev => {
     updateDragState("dragging");
-    ev.dataTransfer.dropEffect = effect;
-    ev.dataTransfer.setData("text/plain", id);
     onDragStart && onDragStart(ev);
     ev.stopPropagation();
   };
