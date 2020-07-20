@@ -16,6 +16,7 @@ import axios from "axios";
 // general styled components
 let SpanAll = styled.div`
   grid-column: 1/-1;
+  color:white;
 `;
 
 let WidthEnforcer = styled.div`
