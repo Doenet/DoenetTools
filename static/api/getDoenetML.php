@@ -19,6 +19,7 @@ if ($branchId == ""){
 	$response_arr = array(
 		"success" => 0,
 		"doenetML" => "",
+		"reason" => "No BranchId",
 		);
 }else{
 
