@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import './docs.css';
 import componentDocs from '../../docs/complete-docs.json';
-import DoenetHeader from './DoenetHeader';
+import ToolLayout from './ToolLayout/ToolLayout.js';
+import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel.js';
 
 
 
@@ -13,6 +14,9 @@ class DoenetDocs extends Component {
       selectedComponent: null,
       searchField: ""
     };
+
+    this.onSelectComponent = this.onSelectComponent.bind(this);
+    this.onSearchChange = this.onSearchChange.bind(this);
   }
 
   onSelectComponent = (componentName) => {
@@ -33,21 +37,22 @@ class DoenetDocs extends Component {
       }
       
     })
+
+    const searchBar = [<SearchBox onSearchChange={this.onSearchChange}/>];
+
     return(
-      <React.Fragment>
-        <DoenetHeader toolName="Documentation" profile={{}} headingTitle={""} />
-       
-        <div className="docs-container">
-          <div className="side-panel">
-            <SearchBox onSearchChange={this.onSearchChange}/>
-            <Sidebar 
-              filteredComponents={filteredComponents}
-              onSelectComponent={this.onSelectComponent} 
-              selectedComponent={this.state.selectedComponent}/>
-          </div>
-          {this.state.selectedComponent && <DocsContent onSelectComponent={this.onSelectComponent} selectedComponent={this.state.selectedComponent}/>}
-        </div>
-      </React.Fragment>
+        <ToolLayout className="docs-container" toolName="Docs" headingTitle="Documentation">
+            <ToolLayoutPanel className="side-panel" key="one" panelHeaderControls={searchBar} panelName="Dicitonary">
+                <Sidebar 
+                filteredComponents={filteredComponents}
+                onSelectComponent={this.onSelectComponent} 
+                selectedComponent={this.state.selectedComponent}/>
+            </ToolLayoutPanel>
+
+            <ToolLayoutPanel key="two" headingTitle="Viewer">
+                {this.state.selectedComponent && <DocsContent onSelectComponent={this.onSelectComponent} selectedComponent={this.state.selectedComponent}/>}
+            </ToolLayoutPanel>
+        </ToolLayout>
     )
   }
 }
