@@ -11151,7 +11151,7 @@ export default class Core {
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
   }
 
-  requestUpdate({ updateInstructions, saveSerializedState }) {
+  requestUpdate({ updateInstructions, saveSerializedState, transient = false }) {
 
     let updatesNeeded = {
       componentsTouched: [],
@@ -11215,7 +11215,8 @@ export default class Core {
         contentId: this.contentId,
         sourceOfUpdate: {
           sourceInformation
-        }
+        },
+        transient,
       });
     }
 

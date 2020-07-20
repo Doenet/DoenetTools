@@ -979,7 +979,7 @@ export default class Point extends GraphicalComponent {
 
   adapters = ["coords"];
 
-  movePoint({ x, y }) {
+  movePoint({ x, y, transient }) {
     let components = {};
     if (x !== undefined) {
       components[0] = me.fromAst(x);
@@ -993,7 +993,8 @@ export default class Point extends GraphicalComponent {
         componentName: this.componentName,
         stateVariable: "xs",
         value: components,
-      }]
+      }],
+      transient
     })
 
   }
