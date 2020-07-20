@@ -56,7 +56,7 @@ class DoenetEditor extends Component {
 
       axios.get(phpUrl, payload)
         .then(resp => {
-          // console.log("editor get doenetML",resp.data)
+          console.log("editor get doenetML",resp.data)
           
           if (resp.data.access === false){
             this.setState({loading:false,accessAllowed:false});
