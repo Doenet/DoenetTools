@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown,
   faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave,
-  faLink, faRedoAlt, faAlignJustify, faStream, faColumns, faFolderOpen, faInfoCircle
+  faLink, faRedoAlt, faAlignJustify, faStream, faColumns, faFolderOpen, faInfoCircle, faChevronDown, faChevronRight
 }
   from '@fortawesome/free-solid-svg-icons';
 import IndexedDB from '../services/IndexedDB';
@@ -1938,6 +1938,65 @@ class DoenetChooser extends Component {
           }}
         />
       </div>
+     this.splitPanelTree =  <div className="tree" style={{ paddingLeft: "1em" }}>
+     <TreeView
+       containerId={treeContainerId}
+       containerType={treeContainerType}
+       loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
+       parentsInfo={treeParentsInfo}
+       childrenInfo={treeChildrenInfo}
+       treeNodeIcons={TreeIcons}
+       currentDraggedObject={this.state.currentDraggedObject}
+       onDragStart={this.onTreeDragStart}
+       onDragEnd={this.onTreeDragEnd}
+       onDraggableDragOver={this.onTreeDraggableDragOver}
+       onDropEnter={this.onTreeDropEnter}
+       onDrop={this.onTreeDrop}
+       directoryData={[...this.state.directoryStack]}
+       specialNodes={this.tempSet}
+       treeStyles={{
+         specialChildNode: {
+           "title": { color: "#2675ff" },
+           "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
+         },
+         specialParentNode: {
+           "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
+         },
+         emptyParentExpanderIcon: <span></span>
+       }}
+       onLeafNodeClick={(id, type) => {
+         // get path to item
+         const dataSource = this.getDataSource(treeContainerId, treeContainerType);
+         const itemParentId = dataSource[type][id]["parentId"];
+         const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId);
+         // select item and switch to directory            
+         this.setState({
+          splitPanelSelectedItems: [id],
+          splitPanelSelectedItemsType: [type],
+           splitPanelDirectoryStack: pathToSelectedFolder
+         })
+         this.setState({ splitPanelSelectedItems: [id], splitPanelSelectedItemsType: [type] })
+         this.tempSet = new Set([id]);
+         this.forceUpdate()
+       }}
+       onParentNodeClick={(id, type) => {
+         // get path to item
+         let pathToSelectedFolder = this.getPathToFolder(id);
+         // select item and switch to directory            
+         this.setState({
+          splitPanelSelectedItems: [id],
+          splitPanelSelectedItemsType: [type],
+          splitPanelDirectoryStack: pathToSelectedFolder
+         })
+         this.tempSet = new Set([id]);
+         this.setState({})
+         this.forceUpdate()
+       }}
+       onParentNodeDoubleClick={(id) => {
+         // openSubtree
+       }}
+     />
+   </div>
       let customizedContentTreeParentInfo = JSON.parse(JSON.stringify(treeParentsInfo));
       let customizedContentTreeChildrenInfo = JSON.parse(JSON.stringify(treeChildrenInfo));
       customizedContentTreeParentInfo.root.title = "Content";
@@ -1981,7 +2040,7 @@ class DoenetChooser extends Component {
       // console.log('customizedContentTreeParentInfo', customizedContentTreeParentInfo);
       // console.log('customizedCoursesTreeParentInfo', customizedCoursesTreeParentInfo);
       // console.log('customizedCoursesTreeChildrenInfo', customizedCoursesTreeChildrenInfo);
-      this.customizedTree = <div className="tree-column" >
+      this.customizedTree = <div className="tree-column">
         <Accordion>
           <div label="Content">
             <TreeView
@@ -2004,18 +2063,17 @@ class DoenetChooser extends Component {
               // specialNodes={this.tempSet}
               treeStyles={{
                 specialChildNode: {
-                  "title": { color: "#2675ff" },
+                  "title": { color: "#c9e2f0" },
                   "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
                 },
                 specialParentNode: {
-                  "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
+                  "title": { color: "#d9eefa", background: "#e6efff", paddingLeft: "5px" },
                 },
                 parentNode: {
-                  "title": { color: "white" },
-                  // "frame": {
-                  //   border: "1px #b3b3b3 solid",
-                  //   width: "100%"
-                  // },
+                  "title": { color: "#d9eefa" },
+                  "frame": {
+                    width: "100%",
+                  },
                   "contentContainer": {
                     border: "none",
                   }
@@ -2023,11 +2081,12 @@ class DoenetChooser extends Component {
                 childNode: {
                   "title": {
                     color: "white",
+                    // border: "1px green solid",
                   },
                   // "frame": { border: "1px #a4a4a4 solid" },
                 },
                 specialChildNode: {
-                  "frame": { background: "#a7a7a7" },
+                  "frame": { background: "#a7a7a7" ,color: "#d9eefa"},
                 },
                 // specialParentNode: {
                 //   "frame": { background: "#a7a7a7" },
@@ -2081,18 +2140,20 @@ class DoenetChooser extends Component {
               }}
               treeStyles={{
                 parentNode: {
-                  "title": { color: "white" },
-                  // "frame": {
-                  //   border: "1px #b3b3b3 solid",
-                  //   width: "100%"
-                  // },
+                  "title": { color: "#d9eefa" },
+                  "frame": {
+                    width: "100%",
+                  },
                   "contentContainer": {
                     border: "none",
                   }
                 },
                 childNode: {
                   "title": {
-                    color: "white",
+                    color: "#d9eefa",
+                    "frame": {
+                      width: "100%",
+                    },
                   },
                   // "frame": { border: "1px #a4a4a4 solid" },
                 },
@@ -2100,7 +2161,7 @@ class DoenetChooser extends Component {
                   // "frame": { background: "#a7a7a7" },
                 },
                 specialParentNode: {
-                  // "frame": { background: "#a7a7a7" },
+                  "title": { color: "#d9eefa", background: "#e6efff", paddingLeft: "5px" },
                 },
                 // expanderIcon: <FontAwesomeIcon icon={faFolderOpen} style={{ paddingRight: "8px" }} />
               }}
@@ -2335,11 +2396,10 @@ class DoenetChooser extends Component {
             activeContainer={this.state.splitPanelsCollection["second"].activeContainer}
             containersData={[
               { name: "browser", container: this.splitPanelMainSection },
-              { name: "tree", container: this.tree },
+              { name: "tree", container: this.splitPanelTree },
             ]}
             path={match.params.leftNavRoute}
           />
-          {/* {this.splitPanelMainSection} */}
         </SplitLayoutPanel>
       </ToolLayoutPanel>)
     };
@@ -2768,9 +2828,9 @@ class AccordionSectionCustom extends Component {
 
     return (
       <div style={{ "width": "100%", "cursor": 'pointer' }}>
-        <div onClick={onClick} data-cy="coursesAccordion" style={{color: "white"}}>
-          {isOpen ? <FontAwesomeIcon className="menuTwirlIcon" icon={faCaretDown} /> :
-            <FontAwesomeIcon className="menuTwirlIcon" icon={faCaretRight} />}
+        <div onClick={onClick} data-cy="coursesAccordion" style={{color: "#03a1fc" }}>
+          {isOpen ? <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronDown} /> :
+            <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronRight} />}
           {label}
         </div>
         {isOpen && (
