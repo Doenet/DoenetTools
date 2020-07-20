@@ -2164,11 +2164,11 @@ class DoenetChooser extends Component {
               treeStyles={{
                 specialChildNode: {
                   "title": { color: "#c9e2f0" },
-                  "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
+                  "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px" },
                 },
                 specialParentNode: {
                   "title": { color: "gray", background: "#e6efff", paddingLeft: "5px" },
-                  "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0",borderLeft:'10px solid #0031f5' },
+                  "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderLeft:'10px solid #0031f5' },
 
                 },
                 parentNode: {
