@@ -84,7 +84,7 @@ for ($i = 0; $i < $number_folders; $i++){
 
   $sql = "
   DELETE FROM folder_content
-  WHERE folderId = '$folderId'
+  WHERE folderId='$folderId' OR childId='$folderId'
   ";
   echo $sql;
   $result = $conn->query($sql); 
