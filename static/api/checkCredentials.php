@@ -7,13 +7,15 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
+
 $emailaddress =  mysqli_real_escape_string($conn,$_REQUEST["emailaddress"]);  
 $nineCode =  mysqli_real_escape_string($conn,$_REQUEST["nineCode"]);  
+$deviceName =  mysqli_real_escape_string($conn,$_REQUEST["deviceName"]);  
 
 //Check if expired
 $sql = "SELECT TIMESTAMPDIFF(MINUTE, timestampOfSignInCode, NOW()) AS minutes 
-FROM user 
-WHERE email='$emailaddress'";
+FROM user_device 
+WHERE email='$emailaddress' AND deviceName='$deviceName'";
 
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
@@ -32,7 +34,9 @@ if ($row['minutes'] > 10){
     );
 }else{
 
-    $sql = "SELECT signInCode AS nineCode FROM user WHERE email='$emailaddress'";
+    $sql = "SELECT signInCode AS nineCode 
+    FROM user_device 
+    WHERE email='$emailaddress' AND deviceName='$deviceName'";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
 
@@ -43,6 +47,13 @@ if ($row['minutes'] > 10){
         );
     }else{
         //Valid code and not expired
+
+        //Update signedIn on user_device table
+        $sql = "UPDATE user_device 
+        SET signedIn='1' 
+        WHERE email='$emailaddress' AND deviceName='$deviceName'";
+        $result = $conn->query($sql);
+
         //Test if it's a new account
 
         $sql = "SELECT screenName FROM user WHERE email='$emailaddress'";

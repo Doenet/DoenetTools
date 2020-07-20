@@ -154,6 +154,13 @@ class DoenetHeader extends Component {
       {this.options}
     </select>)
 
+    if (props.profile.toolAccess){
+      this.populateMenuToolbox(props.profile.toolAccess)
+      this.profilePicture = this.props.profile.profilePicture;
+    }else{
+      this.populateMenuToolbox([]);
+      this.profilePicture = "anonymous";
+    }
     
     this.populateMenuToolbox(props.profile.toolAccess)
     this.profilePicture = this.props.profile.profilePicture;
@@ -185,7 +192,6 @@ class DoenetHeader extends Component {
 
 
   populateMenuToolbox(tools){
-    console.log("tools",tools)
     const toolObjs = {
       "chooser": {
         id: "Chooser",
@@ -248,7 +254,7 @@ class DoenetHeader extends Component {
   }
 
   componentWillReceiveProps(props) {
-    if (props.headerChangesFromLayout){
+    if (props.headerChangesFromLayout && props.headerChangesFromLayout.toolAccess){
       this.populateMenuToolbox(props.headerChangesFromLayout.toolAccess);
       this.profilePicture = props.headerChangesFromLayout.profilePicture;
       this.prepareProfileDropDown(this.profilePicture);
@@ -322,7 +328,7 @@ class DoenetHeader extends Component {
             <FontAwesomeIcon id='headerPlayBtn-icon' fontSize='16px' icon={this.state.sliderVisible ? faCaretDown : faCaretRight} />
           </div>
           <div className="toolName">
-            <img id="doenetLogo" onClick={() => { location.href = "/dashboard"; }} src={doenetImage} height='40px' />
+            <img id="doenetLogo"  src={doenetImage} height='40px' />
             <span>{this.props.toolName}</span>
           </div>
 

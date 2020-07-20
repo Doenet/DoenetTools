@@ -6,9 +6,10 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+$jwtArray = include "jwtArray.php";
+$emailaddress = $jwtArray['email'];
+
 $_POST = json_decode(file_get_contents("php://input"),true);
-$email =  mysqli_real_escape_string($conn,$_POST["email"]);
-$nineCode =  mysqli_real_escape_string($conn,$_POST["nineCode"]);
 $screenName =  mysqli_real_escape_string($conn,$_POST["screenName"]);
 $firstName =  mysqli_real_escape_string($conn,$_POST["firstName"]);
 $lastName =  mysqli_real_escape_string($conn,$_POST["lastName"]);
@@ -17,6 +18,10 @@ $trackingConsent =  mysqli_real_escape_string($conn,$_POST["trackingConsent"]);
 $roleStudent =  mysqli_real_escape_string($conn,$_POST["roleStudent"]);
 $roleInstructor =  mysqli_real_escape_string($conn,$_POST["roleInstructor"]);
 $roleCourseDesigner =  mysqli_real_escape_string($conn,$_POST["roleCourseDesigner"]);
+
+if ($roleStudent == true){$roleStudent = "1";}else{$roleStudent = "0";}
+if ($roleInstructor == true){$roleInstructor = "1";}else{$roleInstructor = "0";}
+if ($roleCourseDesigner == true){$roleCourseDesigner = "1";}else{$roleCourseDesigner = "0";}
 
 $sql = "UPDATE user
         SET screenName = '$screenName', 
@@ -27,17 +32,18 @@ $sql = "UPDATE user
         roleStudent = '$roleStudent', 
         roleInstructor = '$roleInstructor', 
         roleCourseDesigner = '$roleCourseDesigner'
-        WHERE email = '$email' AND signInCode = '$nineCode'";
-echo $sql;
+        WHERE email = '$emailaddress' ";
+// echo $sql;
 $result = $conn->query($sql);
-$response_arr = array("success" => "1");
 
 
 // set response code - 200 OK
 http_response_code(200);
 
+$response_arr = array("success" => "1");
+
 // make it json format
-// echo json_encode($response_arr);
+echo json_encode($response_arr);
 
 $conn->close();
 

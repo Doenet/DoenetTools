@@ -7,16 +7,15 @@ import axios from "axios";
 export default function DoenetSignIn(props) {
   let [email, setEmail] = useState("");
   let [nineCode, setNineCode] = useState("");
-  let [stayLoggedIn, setStayLoggedIn] = useState(false);
+  let [maxAge, setMaxAge] = useState(0);
 
   let [signInStage, setSignInStage] = useState("beginning");
   let [isSentEmail, setIsSentEmail] = useState(false);
-  let [codeSuccess, setCodeSuccess] = useState(false);
-  let [reason, setReason] = useState("");
-  let [existed, setExisted] = useState(false);
+  let [deviceName, setDeviceName] = useState("");
 
-  const [jwt, setJwt] = useCookies('jwt');
-  const [profile, setProfile] = useCookies('Profile');
+  const [jwt, setJwt] = useCookies('JWT_JS');
+  const [deviceNameCookie, setDeviceNameCookie] = useCookies('Device');
+  const [stayCookie, setStayCookie] = useCookies('Stay');
 
   const emailRef = useRef(null);
   const codeRef = useRef(null);
@@ -31,15 +30,6 @@ export default function DoenetSignIn(props) {
     validCode = true;
   }
 
-  //Collect browser name, machine os 
-  // var OSName = "Unknown OS";
-  // if (navigator.appVersion.indexOf("Win") != -1) OSName = "Windows";
-  // if (navigator.appVersion.indexOf("Mac") != -1) OSName = "MacOS";
-  // if (navigator.appVersion.indexOf("X11") != -1) OSName = "UNIX";
-  // if (navigator.appVersion.indexOf("Linux") != -1) OSName = "Linux";
-  // console.log(OSName)
-
-
   useEffect(() => {
     if (codeRef.current !== null && !validCode) {
       codeRef.current.focus();
@@ -48,7 +38,8 @@ export default function DoenetSignIn(props) {
     }
   });
 
-  if (Object.keys(jwt).includes("JWT")) {
+  //If already signed in go to dashboard
+  if (Object.keys(jwt).includes("JWT_JS")) {
     location.href = "/dashboard";
   }
 
@@ -59,18 +50,35 @@ export default function DoenetSignIn(props) {
     const phpUrl = '/api/checkCredentials.php';
     const data = {
       emailaddress: email,
-      nineCode: nineCode
+      nineCode: nineCode,
+      deviceName: deviceName,
     }
     const payload = {
       params: data
     }
     axios.get(phpUrl, payload)
       .then(resp => {
-        // console.log('resp',resp);
-        setSignInStage("resolve server code check response");
-        setCodeSuccess(resp.data.success);
-        setReason(resp.data.reason);
-        setExisted(resp.data.existed);
+        // console.log('checkCredentials resp',resp);
+
+        if (resp.data.success){
+          let newAccount = "1";
+          if (resp.data.existed){
+            newAccount = "0";
+          }
+          let stay = "0";
+          if (maxAge > 0){
+            stay = "1";
+          }
+
+          // console.log(`/api/jwt.php?emailaddress=${encodeURIComponent(email)}&nineCode=${encodeURIComponent(nineCode)}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`)
+          location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(email)}&nineCode=${encodeURIComponent(nineCode)}&deviceName=${deviceName}&newAccount=${newAccount}&stay=${stay}`;
+        }else{
+          if (resp.data.reason === "Code expired") {
+          setSignInStage("Code expired");
+          }else if (resp.data.reason === "Invalid Code"){
+            setSignInStage("Invalid Code");
+          }
+        }
       })
       .catch(error => { this.setState({ error: error }) });
 
@@ -89,16 +97,8 @@ export default function DoenetSignIn(props) {
     )
   }
 
-  if (signInStage === "resolve server code check response") {
-    if (codeSuccess) {
-      setProfile('JWT', { token: "put token here" }, { path: "/" })
-      setProfile('Profile', { email, nineCode }, { path: "/" })
-    }
-    if (codeSuccess && existed) {
-      location.href = "/dashboard";
-    } else if (codeSuccess && !existed) {
-      location.href = "/accountsettings";
-    } else if (reason === "Code expired") {
+  if (signInStage === "Code expired") {
+
       return (
         <div style={
           {
@@ -115,14 +115,8 @@ export default function DoenetSignIn(props) {
       )
     }
 
-  }
-
-  function submitCode() {
-    setReason("");
-    setSignInStage("check code");
-  }
-
-  if (signInStage === "enter code" || reason === "Invalid Code") {
+  
+  if (signInStage === "enter code" || signInStage === "Invalid Code") {
 
     if (!isSentEmail) {
       const phpUrl = '/api/sendSignInEmail.php';
@@ -134,7 +128,11 @@ export default function DoenetSignIn(props) {
       }
       axios.get(phpUrl, payload)
         .then(resp => {
-          //Ignore response
+            setDeviceName(resp.data.deviceName);
+            let cookieSettingsObj = { path: "/" };
+            if (maxAge > 0){cookieSettingsObj.maxAge = maxAge }
+            setDeviceNameCookie('Device', resp.data.deviceName, cookieSettingsObj);
+            setStayCookie('Stay',maxAge,cookieSettingsObj);
         })
         .catch(error => { this.setState({ error: error }) });
       setIsSentEmail(true);
@@ -142,7 +140,7 @@ export default function DoenetSignIn(props) {
 
 
     let heading = <h2 style={{ textAlign: "center" }}>Email Sent!</h2>
-    if (reason === "Invalid Code") {
+    if (signInStage === "Invalid Code") {
       heading = <h2 style={{ textAlign: "center" }}>Invalid Code. Try again.</h2>
     }
 
@@ -156,21 +154,26 @@ export default function DoenetSignIn(props) {
           margin: "20",
         }}>
         {heading}
+        <div style={{weight: "bold"}}>Device Name: {deviceName}</div>
         <div><p>Check your email for a code to complete sign in.</p></div>
         <p><label>Code (9 digit code): <input type="text"
           ref={codeRef}
           value={nineCode}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && validCode) { submitCode() }
+            if (e.key === 'Enter' && validCode) { setSignInStage("check code") }
           }}
           onChange={(e) => { setNineCode(e.target.value) }} /></label></p>
-        <button disabled={!validCode} style={{}} onClick={() => submitCode()}>Sign In</button>
+        <button disabled={!validCode} style={{}} onClick={() => setSignInStage("check code")}>Sign In</button>
       </div>
     )
   }
 
 
   if (signInStage === "beginning") {
+    let stay = 0;
+    if (maxAge > 0){
+      stay = 1;
+    }
     return (
       <div style={
         {
@@ -194,7 +197,14 @@ export default function DoenetSignIn(props) {
               if (e.key === 'Enter' && validEmail) { setSignInStage("enter code") }
             }}
             onChange={(e) => { setEmail(e.target.value) }} /></label></p>
-          <p><input type="checkbox" checked={stayLoggedIn} onChange={(e) => { setStayLoggedIn(e.target.checked) }}
+          <p><input type="checkbox" checked={stay} onChange={(e) => { 
+            if (e.target.checked){
+              // console.log('stay')
+              setMaxAge(2147483647) 
+            }else{
+              // console.log('not stay')
+              setMaxAge(0) 
+            }}}
           /> Stay Logged In</p>
           <button disabled={!validEmail} style={{ float: "right" }} onClick={() => setSignInStage("enter code")}>Send Email</button></div>
       </div>

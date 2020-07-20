@@ -32,7 +32,6 @@ export default function ToolLayout(props) {
   let anonymousUserProfile = {
     accessAllowed: "0",
     adminAccessAllowed: "0",
-    bio: "",
     email: "",
     firstName: "",
     lastName: "",
@@ -48,64 +47,38 @@ export default function ToolLayout(props) {
     trackingConsent: "1",
     username: "anonymous",
   }
-  const [cookieProfile, setCookieProfile] = useCookies('Profile');
-  const [jwt, setjwt] = useCookies('JWT');
+  const [jwt, setjwt] = useCookies('JWT_JS');
+
   let isSignedIn = false;
-  if (Object.keys(jwt).includes("JWT")) {
+  if (Object.keys(jwt).includes("JWT_JS")) {
     isSignedIn = true;
   }
 
-  let currentProfile = anonymousUserProfile;
-
-  if (Object.keys(cookieProfile).includes("Profile")) {
-    currentProfile = cookieProfile.Profile;
-  }
-
-  const [profile, setProfile] = useState(currentProfile);
-  
-
-
+  const [profile, setProfile] = useState({});
 
   useEffect(() => {
     //Fires each time you change the tool
-
-    if (Object.keys(cookieProfile).includes("Profile")) {
-
-      if (Object.keys(cookieProfile.Profile).length < 3) {
-        //Need to load profile from database 
-        console.log("HERE!!!")
-        //Ask Server for data which matches email address
+    //Need to load profile from database each time
         const phpUrl = '/api/loadProfile.php';
-        const data = {
-          emailaddress: cookieProfile.Profile.email,
-          nineCode: cookieProfile.Profile.nineCode
-        }
+        const data = {}
         const payload = {
           params: data
         }
         axios.get(phpUrl, payload)
           .then(resp => {
-            // console.log('resp', resp);
+            console.log(resp)
             if (resp.data.success === "1") {
-              let profile = resp.data.profile;
-              profile['nineCode'] = cookieProfile.Profile.nineCode;
-              setCookieProfile("Profile",profile,{path:"/"});
-              setProfile(profile);
+              setProfile(resp.data.profile);
             }
           })
           .catch(error => { this.setState({ error: error }) });
-      }
-    }
-    else if (location.hostname !== "localhost") {
-      setProfile(currentProfile);
-
-    } else {
+        }, []); 
+   
       //Start Signed In when local host development
       //To Start Signed Out Clear the Cookies and comment the next line out
       // let devUserProfile = {
       //   accessAllowed: "1",
       //   adminAccessAllowed: "1",
-      //   bio: "Hello, my name is Dev User. I appear in many databases. I like to think I'm very important. c:",
       //   email: "devuser@example.com",
       //   firstName: "Dev",
       //   lastName: "User",
@@ -121,19 +94,14 @@ export default function ToolLayout(props) {
       //   trackingConsent: "1",
       //   username: "devuser",
       // }
-      // setCookieProfile("Profile", devUserProfile)
       // setProfile(devUserProfile);
 
-    }
+    
 
-  }, []);
+ 
 
-  if (Object.keys(cookieProfile).includes("Profile")) {
 
-    if (Object.keys(cookieProfile.Profile).length < 3) {
-      return (<h1>Loading...</h1>)
-    }
-  }
+ 
 
   var w = window.innerWidth;
   let leftW;
@@ -410,6 +378,13 @@ export default function ToolLayout(props) {
 
   }
   const footerClass = props.children.length > 1 ? 'footer-on' : 'footer-off';
+
+  
+  //Show loading if profile if not loaded yet (loads each time)
+  if (Object.keys(profile).length < 1) {
+    return (<h1>Loading...</h1>)
+  }
+
   return (
     <>
       <DoenetHeader

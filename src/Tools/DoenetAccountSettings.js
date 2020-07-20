@@ -142,20 +142,21 @@ export default function DoenetProfile(props) {
     if (e.target == e.currentTarget) setModal(vis);
   };
 
-  const [cookieProfile, setCookieProfile] = useCookies('Profile');
-  const [tracking, setTracking] = useCookies('TrackingConsent');
+  const [trackingCookie, setTrackingCookie] = useCookies('TrackingConsent');
   const [jwt, setJwt] = useCookies('jwt');
-  let currentProfile = {};
-  if (cookieProfile.Profile) {
-    currentProfile = cookieProfile.Profile;
-  }
-  const [profile, setProfile] = useState(currentProfile);
+  const [deviceNameCookie, setDeviceNameCookie] = useCookies('Device');
+  const [stayCookie, setStayCookie] = useCookies('Stay');
 
-  if (!Object.keys(tracking).includes("TrackingConsent")) {
-    setTracking("TrackingConsent", true, { path: "/" });
+  const [profile, setProfile] = useState({});
+  const [tracking, setTracking] = useState(trackingCookie.TrackingConsent);
+  if (tracking === undefined){
+    let cookieSettingsObj = { path: "/" };
+    if (stayCookie.Stay > 0){cookieSettingsObj.maxAge = stayCookie.Stay }
+    setTrackingCookie("TrackingConsent", true, cookieSettingsObj);
+    setTracking(true);
   }
 
-  if (!Object.keys(jwt).includes("JWT")) {
+  if (!Object.keys(jwt).includes("JWT_JS")) {
     //Not signed in
     return (
       <ToolLayout toolName="Account Settings" headerChangesFromLayout={profile}>
@@ -163,10 +164,13 @@ export default function DoenetProfile(props) {
           <SectionHeader>Tracking</SectionHeader>
           <StyledSwitch
             id="trackingconsent"
-            onChange={e =>
-              setTracking("TrackingConsent", e.target.checked, { path: "/" })
+            onChange={e => {
+              setTrackingCookie("TrackingConsent", e.target.checked, { path: "/" })
+              setTracking(e.target.checked);
+            }
+              
             } // updates immediately
-            checked={tracking.TrackingConsent}
+            checked={tracking}
           >
             I consent to the use of tracking technologies.
           </StyledSwitch>
@@ -190,12 +194,11 @@ export default function DoenetProfile(props) {
   }
 
   //Load profile from database if only email and nine code
-  if (!profile || Object.keys(profile).length < 3) {
+  if (Object.keys(profile).length < 1) {
 
     let anonymousUserProfile = {
       accessAllowed: "0",
       adminAccessAllowed: "0",
-      bio: "",
       email: "",
       firstName: "",
       lastName: "",
@@ -215,20 +218,14 @@ export default function DoenetProfile(props) {
     //Need to load profile from database 
     //Ask Server for data which matches email address
     const phpUrl = '/api/loadProfile.php';
-    const data = {
-      emailaddress: cookieProfile.Profile.email,
-      nineCode: cookieProfile.Profile.nineCode
-    }
+    const data = {}
     const payload = {
       params: data
     }
     axios.get(phpUrl, payload)
       .then(resp => {
         if (resp.data.success === "1") {
-          let tempprofile = resp.data.profile;
-          tempprofile['nineCode'] = cookieProfile.Profile.nineCode;
-          setCookieProfile("Profile", tempprofile, { path: "/" });
-          setProfile(tempprofile);
+          setProfile(resp.data.profile);
         }
       })
       .catch(error => { this.setState({ error: error }) });
@@ -236,59 +233,56 @@ export default function DoenetProfile(props) {
   }
 
   function saveProfileToDB(immediate = false) {
-    if (saveTimerRunning || immediate) {
       const url = '/api/saveProfile.php'
       const data = {
         ...profile
       }
       axios.post(url, data)
         .then(function (resp) {
-          // console.log("resp.data", resp.data);
+          console.log("Save Profile To DB -- resp.data", resp.data);
         })
         .catch(function (error) {
-          this.setState({ error: error });
+          console.warn(error)
+          // this.setState({ error: error });
 
         })
-    }
 
-    setSaveTimerRunning(false);
+    
   }
 
   function updateMyProfile(field, value, immediate = false) {
-
-    profile[field] = value;
+      profile[field] = value;
     profile["toolAccess"] = defineToolAccess(profile);
-    setCookieProfile("Profile", profile, { path: "/" });
     if (immediate) {
-      saveProfileToDB(immediate);
+      saveProfileToDB();
     }
     if (!saveTimerRunning) {
-      setTimeout(function () { saveProfileToDB() }, 1000)
+      setSaveTimerRunning(true);
+      setTimeout(function () { 
+        setSaveTimerRunning(false);
+        saveProfileToDB() 
+      }, 1000)
     }
-
-
-    setSaveTimerRunning(true);
-
   }
 
   function defineToolAccess(profile){
     let roleToToolAccess = {
-      "roleStudent": ["Chooser", "Course"],
-      "roleInstructor": ["Chooser", "Course", "Documentation", "Gradebook"],
-      "roleCourseDesigner": ["Chooser", "Course", "Documentation"],
+      "roleStudent": ["Chooser", "Course", "Dashboard"],
+      "roleInstructor": ["Chooser", "Course", "Documentation", "Gradebook", "Dashboard"],
+      "roleCourseDesigner": ["Chooser", "Course", "Documentation", "Dashboard"],
     }
     let toolAccess = [];
 
-    for (let [key,val] of Object.entries(profile)){
-      if (roleToToolAccess[key] && (val + 0) === 1){
-        console.log(`${key} ${val}`);
+        for (let [key,val] of Object.entries(profile)){
+        
+        if (roleToToolAccess[key] && (Number(val) + 0) === 1){
         toolAccess.push(...roleToToolAccess[key]);
       }
     }
     let set = new Set(toolAccess)
+
     return [...set];
   }
-
 
   function ProfilePicModal(props) {
     let pics = [
@@ -379,6 +373,7 @@ export default function DoenetProfile(props) {
           >
             {profile.screenName}
           </Textinput>
+          Device Name: {deviceNameCookie.Device}
           <SectionHeader>Private</SectionHeader>
 
           <Textinput
@@ -406,10 +401,13 @@ export default function DoenetProfile(props) {
           <StyledSwitch
             id="trackingConsent"
             onChange={e => {
-              setTracking("TrackingConsent", e.target.checked, { path: "/" });
+              let cookieSettingsObj = { path: "/" };
+              if (stayCookie.Stay > 0){cookieSettingsObj.maxAge = stayCookie.Stay }
+              setTrackingCookie("TrackingConsent", e.target.checked, cookieSettingsObj);
+              setTracking(e.target.checked);
               updateMyProfile("trackingConsent", e.target.checked + 0,true)
             }} // updates immediately
-            checked={tracking.TrackingConsent}
+            checked={tracking}
           >
             I consent to the use of tracking technologies.
   </StyledSwitch>
