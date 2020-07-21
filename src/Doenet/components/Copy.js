@@ -496,7 +496,7 @@ export default class Copy extends CompositeComponent {
 
               // product of array size entries after excluding the first
               // numWrappingComponents dimensions
-              arrayLength = arraySize.slice(numWrappingComponents).reduce((a, c) => a * c, 1);
+              arrayLength = arraySize.slice(0, arraySize.length - numWrappingComponents).reduce((a, c) => a * c, 1);
 
             }
 
@@ -1741,7 +1741,7 @@ export function replacementFromProp({ component, components, componentOrReplacem
 
           // we wrap this dimension if have corresponding wrapping components
           let wrapCs = wrappingComponents[nDimensionsLeft - 1];
-          if (wrapCs && wrapCs.length > 0) {
+          if (pieces.length > 0 && wrapCs && wrapCs.length > 0) {
             for (let ind = wrapCs.length - 1; ind >= 0; ind--) {
               pieces = [{
                 componentType: wrapCs[ind],

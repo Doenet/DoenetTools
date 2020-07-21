@@ -18,13 +18,27 @@ export default class FunctionCurve extends Curve {
 
     childLogic.deleteAllLogic();
 
-    childLogic.newLeaf({
+    let atMostOneFunction = childLogic.newLeaf({
       name: "atMostOneFunction",
       componentType: 'function',
       comparison: "atMost",
       number: 1,
+    });
+
+    let atMostOneVariables = childLogic.newLeaf({
+      name: "atMostOneVariables",
+      componentType: 'variables',
+      comparison: 'atMost',
+      number: 1
+    });
+
+    childLogic.newOperator({
+      name: "functionCurveLogic",
+      operator: 'and',
+      propositions: [atMostOneFunction, atMostOneVariables],
       setAsBase: true,
     });
+
 
     return childLogic;
   }

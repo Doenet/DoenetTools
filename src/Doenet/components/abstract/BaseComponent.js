@@ -304,7 +304,7 @@ export default class BaseComponent {
             }
           }
         } else {
-          console.warn(`entryPrefixes ignored for property ${varName} of ${this.componentName}`)
+          console.warn(`entryPrefixes ignored for property ${varName} of ${this.componentType}`)
         }
       }
 
