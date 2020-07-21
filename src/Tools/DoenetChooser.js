@@ -59,6 +59,7 @@ class DoenetChooser extends Component {
       splitPanelSelectedItems: [],
       splitPanelSelectedItemsType: [],
       currentDraggedObject: { id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null },
+      splitPanelCurrentDraggedObject: { id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null },
       panelsCollection: { "first": { values: ["browser", "tree"], activeContainer: "browser" } },
       splitPanelsCollection: { "second": { values: ["browser", "tree"], activeContainer: "browser" } },
       splitPanelLayout: false
@@ -804,7 +805,7 @@ class DoenetChooser extends Component {
 
     // check if moving item out of public repo 
     const itemDataInfo = getDataObjects(childType[0])["info"]
-    console.log(itemDataInfo[childIds[0]])
+    // console.log(itemDataInfo[childIds[0]])
     if (itemDataInfo[childIds[0]] != undefined) {
       const firstParentId = itemDataInfo[childIds[0]].parentId;
       const movingOutOfPublicRepo = this.folderInfo[firstParentId].isRepo &&
@@ -1371,7 +1372,8 @@ class DoenetChooser extends Component {
   }
 
   onTreeDragStart(draggedId, draggedType, sourceContainerId, sourceContainerType) {
-    //console.log("onTreeDragStart")
+    console.log("onTreeDragStart")
+    console.log(draggedId, draggedType, sourceContainerId, sourceContainerType)
     // get dataObjectSource
     let data = this.getDataSource(sourceContainerId, sourceContainerType);
     let dataObjectSource = data[draggedType];
@@ -1432,6 +1434,132 @@ class DoenetChooser extends Component {
     this.forceUpdate();
   };
 
+  splitPanelOnTreeDragStart(draggedId, draggedType, sourceContainerId, sourceContainerType) {
+    console.log("onTreeDragStart")
+    console.log(draggedId, draggedType, sourceContainerId, sourceContainerType)
+    // get dataObjectSource
+    let data = this.getDataSource(sourceContainerId, sourceContainerType);
+    let dataObjectSource = data[draggedType];
+    this.containerCache = {
+      ...this.containerCache,
+      [sourceContainerId]: {
+        folders: JSON.parse(JSON.stringify(data["folder"])),
+        content: JSON.parse(JSON.stringify(data["content"])),
+        urls: JSON.parse(JSON.stringify(data["url"])),
+      }
+    }
+
+    const dataObject = dataObjectSource[draggedId];
+    const sourceParentId = dataObjectSource[draggedId].parentId;
+
+    this.setState({
+      splitPanelCurrentDraggedObject: { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId },
+    })
+    this.cachedCurrentDraggedObject = { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId };
+    this.validDrop = false;
+    this.lastDroppedContainerId = null;
+  }
+
+  splitPanelOnTreeDraggableDragOver(id, type, containerId, containerType) {
+    // draggedType must be equal to dragOver type
+    if (type != this.state.splitPanelCurrentDraggedObject.type || id == "root") return;
+
+    const childrenListKeyMap = {
+      "folder": "childFolders",
+      "content": "childContent",
+      "url": "childUrls",
+    }
+
+    // determine data type and its corresponding data source
+    let data = this.getDataSource(containerId, containerType);
+    let draggedOverDataSource = data[type];
+    let draggedOverParentDataSource = data["folder"];
+    let headingsChildrenListKey = childrenListKeyMap[type];
+
+    const draggedOverItemParentListId = draggedOverDataSource[id]["parentId"];
+    const draggedOverItemIndex = draggedOverParentDataSource[draggedOverItemParentListId][headingsChildrenListKey]
+      .findIndex(itemId => itemId == id);
+
+    const draggedItemParentListId = this.state.splitPanelCurrentDraggedObject.dataObject["parentId"];
+
+    // if the item is dragged over itself, ignore
+    if (this.state.splitPanelCurrentDraggedObject.id == id || draggedItemParentListId != draggedOverItemParentListId) {
+      return;
+    }
+
+    // filter out the currently dragged item
+    const items = draggedOverParentDataSource[draggedOverItemParentListId][headingsChildrenListKey].filter(itemId => itemId != this.state.splitPanelCurrentDraggedObject.id);
+    // add the dragged item after the dragged over item
+    items.splice(draggedOverItemIndex, 0, this.state.splitPanelCurrentDraggedObject.id);
+
+    draggedOverParentDataSource[draggedOverItemParentListId][headingsChildrenListKey] = items;
+
+    this.forceUpdate();
+  };
+
+  splitPanelOnTreeDragStart(draggedId, draggedType, sourceContainerId, sourceContainerType) {
+    console.log("onTreeDragStart")
+    console.log(draggedId, draggedType, sourceContainerId, sourceContainerType)
+    // get dataObjectSource
+    let data = this.getDataSource(sourceContainerId, sourceContainerType);
+    let dataObjectSource = data[draggedType];
+    this.containerCache = {
+      ...this.containerCache,
+      [sourceContainerId]: {
+        folders: JSON.parse(JSON.stringify(data["folder"])),
+        content: JSON.parse(JSON.stringify(data["content"])),
+        urls: JSON.parse(JSON.stringify(data["url"])),
+      }
+    }
+
+    const dataObject = dataObjectSource[draggedId];
+    const sourceParentId = dataObjectSource[draggedId].parentId;
+
+    this.setState({
+      splitPanelCurrentDraggedObject: { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId },
+    })
+    this.cachedCurrentDraggedObject = { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId };
+    this.validDrop = false;
+    this.lastDroppedContainerId = null;
+  }
+
+  splitPanelOnTreeDraggableDragOver(id, type, containerId, containerType) {
+    // draggedType must be equal to dragOver type
+    if (type != this.state.splitPanelCurrentDraggedObject.type || id == "root") return;
+
+    const childrenListKeyMap = {
+      "folder": "childFolders",
+      "content": "childContent",
+      "url": "childUrls",
+    }
+
+    // determine data type and its corresponding data source
+    let data = this.getDataSource(containerId, containerType);
+    let draggedOverDataSource = data[type];
+    let draggedOverParentDataSource = data["folder"];
+    let headingsChildrenListKey = childrenListKeyMap[type];
+
+    const draggedOverItemParentListId = draggedOverDataSource[id]["parentId"];
+    const draggedOverItemIndex = draggedOverParentDataSource[draggedOverItemParentListId][headingsChildrenListKey]
+      .findIndex(itemId => itemId == id);
+
+    const draggedItemParentListId = this.state.splitPanelCurrentDraggedObject.dataObject["parentId"];
+
+    // if the item is dragged over itself, ignore
+    if (this.state.splitPanelCurrentDraggedObject.id == id || draggedItemParentListId != draggedOverItemParentListId) {
+      return;
+    }
+
+    // filter out the currently dragged item
+    const items = draggedOverParentDataSource[draggedOverItemParentListId][headingsChildrenListKey].filter(itemId => itemId != this.state.splitPanelCurrentDraggedObject.id);
+    // add the dragged item after the dragged over item
+    items.splice(draggedOverItemIndex, 0, this.state.splitPanelCurrentDraggedObject.id);
+
+    draggedOverParentDataSource[draggedOverItemParentListId][headingsChildrenListKey] = items;
+
+    this.forceUpdate();
+  };
+
   getDataSource(containerId, containerType) {
     let data = {};
     switch (containerType) {
@@ -1461,7 +1589,7 @@ class DoenetChooser extends Component {
   }
 
   onTreeDropEnter(listId, containerId, containerType) {
-    console.log("onTreeDropEnter5")
+    console.log("onTreeDropEnter5", listId + '----'+containerId + '----'+containerType)
 
     const childrenListKeyMap = {
       "folder": "childFolders",
@@ -1547,11 +1675,11 @@ class DoenetChooser extends Component {
     // Course -> Content : Not allowed
     // Course -> Course : Reset both courses data (object return to source course), reset draggedObj
 
-    console.log("onTreeDropLeave")
+    // console.log("onTreeDropLeave")
   }
 
   onTreeDragEnd(containerId, containerType) {
-    console.log("onTreeDragEnd")
+    // console.log("onTreeDragEnd")
     // // dropped outsize valid dropzone
     // let currTreeHeadings = this.headingsInfo[containerId];
     // let currTreeAssignments = this.assignmentsInfo[containerId];
@@ -1573,7 +1701,7 @@ class DoenetChooser extends Component {
   }
 
   onTreeDrop(containerId, containerType) {
-    console.log("onTreeDrop")
+    // console.log("onTreeDrop")
     // update courseHeadingsInfo/courseAssignmentsInfo currentDraggedObject parentId
     // remove currentDraggedObject from sourceParentId children list
     // if (this.state.currentDraggedObject.type == "leaf") {
@@ -1615,6 +1743,165 @@ class DoenetChooser extends Component {
     if (this.state.currentDraggedObject.type == "header") parentDataSource[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
     this.setState({
       currentDraggedObject: { id: null, type: null, sourceContainerId: null },
+    })
+    this.validDrop = true;
+    this.lastDroppedContainerId = containerId;
+  }
+  splitPanelOnTreeDropEnter(listId, containerId, containerType) {
+    console.log("onTreeDropEnter5", listId + '----'+containerId + '----'+containerType)
+
+    const childrenListKeyMap = {
+      "folder": "childFolders",
+      "content": "childContent",
+      "url": "childUrls",
+    }
+
+    // get data
+    let data = this.getDataSource(containerId, containerType);
+    let parentDataSource = data["folder"];
+    let itemDataSource = data[this.state.splitPanelCurrentDraggedObject.type];
+    let childrenListKey = childrenListKeyMap[this.state.splitPanelCurrentDraggedObject.type];
+
+    // handle dragged object coming from different container
+    if (this.state.splitPanelCurrentDraggedObject.sourceContainerId != containerId) {
+      // create new item, handle type conversion:
+      // content -> assignments || create copy of object
+      // insert new object into data
+
+      // create backup of current tree data
+      this.containerCache = {
+        ...this.containerCache,
+        [sourceContainerId]: {
+          folders: JSON.parse(JSON.stringify(data["folder"])),
+          content: JSON.parse(JSON.stringify(data["content"])),
+          urls: JSON.parse(JSON.stringify(data["url"])),
+        }
+      }
+
+      // insert copy into current container at base level (parentId = listId) 
+      const draggedObjectInfo = this.state.splitPanelCurrentDraggedObject.dataObject;
+      let newObject = draggedObjectInfo;
+      let newObjectChildren = [];
+
+      if (this.state.splitPanelCurrentDraggedObject.type == "content") {
+        itemDataSource = Object.assign({}, itemDataSource, { [this.state.splitPanelCurrentDraggedObject.id]: newObject });
+        parentDataSource[listId]["childrenId"].push(newObject.branchId);
+        parentDataSource[listId][childrenListKey].push(newObject.branchId);
+        const splitPanelCurrentDraggedObject = this.state.splitPanelCurrentDraggedObject;
+        splitPanelCurrentDraggedObject.dataObject = newObject;
+        splitPanelCurrentDraggedObject.type = "leaf";
+        splitPanelCurrentDraggedObject.sourceParentId = listId;
+        splitPanelCurrentDraggedObject.sourceContainerId = containerId;
+        this.setState({ splitPanelCurrentDraggedObject: splitPanelCurrentDraggedObject });
+      } else {  // "folder" || "heading"
+        // insert new heading into headings
+        // if any objectChildren, insert into assignments
+      }
+      return;
+    }
+
+    const currentDraggedObjectInfo = this.state.splitPanelCurrentDraggedObject.dataObject;
+    const previousParentId = currentDraggedObjectInfo.parentId;
+
+    if (previousParentId == listId || listId == this.state.splitPanelCurrentDraggedObject.id) // prevent heading from becoming a child of itself 
+      return;
+
+    const previousList = parentDataSource[previousParentId][childrenListKey];
+    const currentList = parentDataSource[listId][childrenListKey];
+    // remove from previous list
+    if (previousParentId !== this.state.splitPanelCurrentDraggedObject.sourceParentId) {
+      const indexInList = previousList.findIndex(itemId => itemId == this.state.splitPanelCurrentDraggedObject.id);
+      if (indexInList > -1) {
+        previousList.splice(indexInList, 1);
+      }
+    }
+    if (listId !== this.state.splitPanelCurrentDraggedObject.sourceParentId) {
+      // add to current list
+      currentList.push(this.state.splitPanelCurrentDraggedObject.id);
+    }
+
+    parentDataSource[previousParentId][childrenListKey] = previousList;
+    parentDataSource[listId][childrenListKey] = currentList;
+    const splitPanelCurrentDraggedObject = this.state.splitPanelCurrentDraggedObject;
+    splitPanelCurrentDraggedObject.dataObject.parentId = listId;
+    this.setState({ splitPanelCurrentDraggedObject: splitPanelCurrentDraggedObject })
+  }
+
+  splitPanelOnTreeDropLeave() {
+    // if not across containers, return
+    // Content -> Course :  Reset course data, reset content data (object return to source content), reset draggedObj
+    // Content -> Content :  Reset content data (object return to source content), reset draggedObj
+    // Course -> Content : Not allowed
+    // Course -> Course : Reset both courses data (object return to source course), reset draggedObj
+
+    // console.log("onTreeDropLeave")
+  }
+
+  splitPanelOnTreeDragEnd(containerId, containerType) {
+    // console.log("onTreeDragEnd")
+    // // dropped outsize valid dropzone
+    // let currTreeHeadings = this.headingsInfo[containerId];
+    // let currTreeAssignments = this.assignmentsInfo[containerId];
+    // if (!this.validDrop) {
+    //   currTreeHeadings = this.containerCache[containerId]["folders"];
+    //   currTreeAssignments = this.containerCache[containerId]["content"];
+    // }
+    // // updateHeadingsAndAssignments(currTreeHeadings, currTreeAssignments);
+
+    // this.headingsInfo[containerId] = currTreeHeadings;
+    // this.assignmentsInfo[containerId] = currTreeAssignments;
+    this.setState({
+      splitPanelCurrentDraggedObject: { id: null, type: null, sourceContainerId: null },
+    });
+    this.containerCache = {};
+    this.cachedCurrentDraggedObject = null;
+    this.validDrop = true;
+    this.lastDroppedContainerId = null;
+  }
+
+  splitPanelOnTreeDrop(containerId, containerType) {
+    // console.log("onTreeDrop")
+    // update courseHeadingsInfo/courseAssignmentsInfo currentDraggedObject parentId
+    // remove currentDraggedObject from sourceParentId children list
+    // if (this.state.currentDraggedObject.type == "leaf") {
+    //   const newCourseAssignments = this.assignmentsInfo[containerId];
+    //   newCourseAssignments[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
+    //   this.assignmentsInfo[containerId] = newCourseAssignments;
+    // }
+
+    const childrenListKeyMap = {
+      "folder": "childFolders",
+      "content": "childContent",
+      "url": "childUrls",
+    }
+
+    // get data
+    let data = this.getDataSource(containerId, containerType);
+    let parentDataSource = data["folder"];
+    let childrenListKey = childrenListKeyMap[this.state.splitPanelCurrentDraggedObject.type];
+
+    const sourceParentChildrenList = parentDataSource[this.state.splitPanelCurrentDraggedObject.sourceParentId][childrenListKey];
+
+    if (this.state.splitPanelCurrentDraggedObject.dataObject.parentId !== this.state.splitPanelCurrentDraggedObject.sourceParentId) {
+      const indexInSourceParentChildrenList = sourceParentChildrenList.findIndex(itemId => itemId == this.state.splitPanelCurrentDraggedObject.id);
+      if (indexInSourceParentChildrenList > -1) {
+        sourceParentChildrenList.splice(indexInSourceParentChildrenList, 1);
+      }
+    }
+
+    this.updateTree({
+      containerType: containerType,
+      folderInfo: data["folder"],
+      contentInfo: data["content"],
+      urlInfo: data["url"],
+      courseId: containerId
+    })
+
+    // update headings
+    parentDataSource[this.state.splitPanelCurrentDraggedObject.sourceParentId][childrenListKey] = sourceParentChildrenList;
+    if (this.state.splitPanelCurrentDraggedObject.type == "header") parentDataSource[this.state.splitPanelCurrentDraggedObject.id] = this.state.splitPanelCurrentDraggedObject.dataObject;
+    this.setState({
+      splitPanelCurrentDraggedObject: { id: null, type: null, sourceContainerId: null },
     })
     this.validDrop = true;
     this.lastDroppedContainerId = containerId;
@@ -1669,7 +1956,7 @@ class DoenetChooser extends Component {
     const sourceParentId = dataObjectSource[draggedId].parentId;
 
     this.setState({
-      currentDraggedObject: { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId },
+      splitPanelCurrentDraggedObject: { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId },
     })
     this.containerCache = {
       ...this.containerCache,
@@ -1732,7 +2019,7 @@ class DoenetChooser extends Component {
       // dropped outsize valid dropzone, reset all data
       currParentsInfo = this.containerCache[containerId].parents;
       currChildrenInfo = this.containerCache[containerId].leaves;
-      const newSourceContainerId = this.state.currentDraggedObject.sourceContainerId;
+      const newSourceContainerId = this.state.splitPanelCurrentDraggedObject.sourceContainerId;
       if (newSourceContainerId != containerId) {
         this.headingsInfo[newSourceContainerId] = this.containerCache[newSourceContainerId].parents;
         this.assignmentsInfo[newSourceContainerId] = this.containerCache[newSourceContainerId].leaves;
@@ -1743,7 +2030,7 @@ class DoenetChooser extends Component {
     // save folderInfo and branchId_info
 
     this.setState({
-      currentDraggedObject: { id: null, type: null, sourceContainerId: null },
+      splitPanelCurrentDraggedObject: { id: null, type: null, sourceContainerId: null },
     })
     this.containerCache = {};
     this.cachedCurrentDraggedObject = null;
@@ -1833,7 +2120,7 @@ class DoenetChooser extends Component {
   
   onSplitPanelBrowserFolderDrop({ containerId, droppedId }) {
     // handle dragging folder onto itself
-    if (this.state.currentDraggedObject.id == droppedId) return;
+    if (this.state.splitPanelCurrentDraggedObject.id == droppedId) return;
     let draggedItems = {
       id: this.state.selectedItems,
       type: this.state.selectedItemsType
@@ -1878,7 +2165,7 @@ class DoenetChooser extends Component {
         <SpinningLoader />
       </div>
     }
-    console.log(this.folderInfo)
+    // console.log(this.folderInfo)
     // return <DoenetAssignmentTree treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
       // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
     let assignmentsTree = <div className="tree" style={{padding: "5em 2em"}}>
@@ -2046,13 +2333,13 @@ class DoenetChooser extends Component {
        parentsInfo={treeParentsInfo}
        childrenInfo={treeChildrenInfo}
        treeNodeIcons={TreeIcons}
-       currentDraggedObject={this.state.currentDraggedObject}
+       currentDraggedObject={this.state.splitPanelCurrentDraggedObject}
        onDragStart={this.onTreeDragStart}
        onDragEnd={this.onTreeDragEnd}
        onDraggableDragOver={this.onTreeDraggableDragOver}
        onDropEnter={this.onTreeDropEnter}
        onDrop={this.onTreeDrop}
-       directoryData={[...this.state.directoryStack]}
+       directoryData={[...this.state.splitPanelDirectoryStack]}
        specialNodes={this.tempSet}
        treeStyles={{
          specialChildNode: {
@@ -2163,12 +2450,12 @@ class DoenetChooser extends Component {
               // specialNodes={this.tempSet}
               treeStyles={{
                 specialChildNode: {
-                  "title": { color: "#c9e2f0" },
-                  "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px" },
+                  "title": { color: "gray" },
+                  "frame": { color: "#2675ff",backgroundColor:"hsl(206, 66%, 85%)", paddingLeft: "5px" },
                 },
                 specialParentNode: {
                   "title": { color: "gray", background: "#e6efff", paddingLeft: "5px" },
-                  "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderLeft:'10px solid #0031f5' },
+                  "frame": { color: "#2675ff", backgroundColor:"hsl(206, 66%, 85%)", paddingLeft: "5px", borderLeft:'10px solid #0031f5' },
 
                 },
                 parentNode: {
@@ -2188,13 +2475,13 @@ class DoenetChooser extends Component {
                   // "frame": { border: "1px #a4a4a4 solid" },
                 },
                 specialChildNode: {
-                  "frame": { background: "#a7a7a7" ,color: "#d9eefa"},
+                  "frame": { backgroundColor: "hsl(206, 66%, 85%)" ,color: "#d9eefa"},
                 },
                 // specialParentNode: {
                 //   "frame": { background: "#a7a7a7" },
                 // },
                 //   expanderIcon: <FontAwesomeIcon icon={faPlus}/>
-                emptyParentExpanderIcon: <span></span>
+                // emptyParentExpanderIcon: <span style={{padding:'5px'}}></span>
 
               }}
               onLeafNodeClick={(nodeId) => {
@@ -2480,6 +2767,7 @@ class DoenetChooser extends Component {
         splitPanel={this.state.splitPanelLayout}
         panelHeaderControls={[mainPanelMenuControls, navigationPanelMenuControls, middlePanelMenuControls]}
         disableSplitPanelScroll={[true, false]}
+        key = {'middle'}
       >
         <MainPanel
           initialContainer="browser"
@@ -2489,6 +2777,7 @@ class DoenetChooser extends Component {
             { name: "tree", container: this.tree },
           ]}
           path={match.params.leftNavRoute}
+          keyProp={'mainPanel'}
         />
         <SplitLayoutPanel
           defaultVisible={false}
@@ -2514,7 +2803,7 @@ class DoenetChooser extends Component {
           rightPanelWidth="365"
           >
 
-          <ToolLayoutPanel panelName="Navigation Panel">
+          <ToolLayoutPanel panelName="Navigation Panel" key={'left'}>
             {this.customizedTree}
           </ToolLayoutPanel>
 
@@ -2526,7 +2815,7 @@ class DoenetChooser extends Component {
             </Switch>
           </Router>
 
-          <ToolLayoutPanel panelName="Info Panel">
+          <ToolLayoutPanel panelName="Info Panel" key={'right'}>
             <InfoPanel
               selectedItems={this.state.selectedItems}
               selectedItemsType={this.state.selectedItemsType}
@@ -2549,8 +2838,8 @@ class DoenetChooser extends Component {
   }
 }
 
-const MainPanel = ({panelId, initialContainer, activeContainer, containersData}) => {
-  return <div className="mainPanel">
+const MainPanel = ({panelId, initialContainer, activeContainer, containersData, keyProp}) => {
+  return <div className="mainPanel" key={keyProp}>
     <SwitchableContainers initialValue={initialContainer} currentValue={activeContainer}>
       {containersData.map((containerData) => {
         return <SwitchableContainerPanel name={containerData.name}>
@@ -3292,7 +3581,7 @@ class InfoPanel extends Component {
       // if file selected, show selectedFile/Folder info
       selectedItemId = this.props.selectedItems[this.props.selectedItems.length - 1];
       selectedItemType = this.props.selectedItemsType[this.props.selectedItemsType.length - 1];
-      console.log()
+      // console.log()
       // get title
       if (selectedItemType === "folder") {
         itemTitle = this.props.allFolderInfo[selectedItemId].title;
@@ -3382,7 +3671,7 @@ class InfoPanel extends Component {
   }
 
   buildInfoPanelItemDetails(selectedItemId, selectedItemType) {
-    console.log(selectedItemId)
+    // console.log(selectedItemId)
     this.infoPanelDetails = [];
     let itemDetails = {};
     if (selectedItemType === "folder") {

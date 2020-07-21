@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import "./selectbox.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cloneDeep from 'lodash/cloneDeep';
 
 function SelectBox({ items }) {
   const node = useRef();
   const [item, setItem] = useState(items);
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState("");
   const [showItems, setShowItems] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
     document.addEventListener('click', handleClick, false);
@@ -24,17 +23,15 @@ function SelectBox({ items }) {
     }
   }
 
-  const dropDown = () => {
-    setShowItems(!showItems);
-  };
-
   const selectChild = (child, parent) => {
     setValue(child.label);
     child.callback(child, parent);
   };
 
   const filter = ev => {
-    let itemsCopy = JSON.parse(JSON.stringify(items));
+    let itemsCopy = cloneDeep(items);
+    console.log(itemsCopy);
+    // let itemsCopy = JSON.parse(JSON.stringify(items));
     setValue(ev.target.value);
     if (!!ev && !!ev.target && !!ev.target.value) {
       itemsCopy.map(i => {
@@ -47,7 +44,7 @@ function SelectBox({ items }) {
   }
 
   const noResults = !item.filter(i => !!i.children.length).length;
-  
+
   return (
     <div className="select-box-box" ref={node}>
       <div className="select-box-container">
