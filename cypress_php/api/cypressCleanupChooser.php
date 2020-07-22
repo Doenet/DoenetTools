@@ -50,6 +50,19 @@ for ($i = 0; $i < $number_content; $i++){
   }else {
     echo "Error: " . $sql . "<br>" . $conn->error;
   }
+
+  $sql = "
+  DELETE FROM folder_content
+  WHERE childId = '$branchId'
+  ";
+  echo $sql;
+  $result = $conn->query($sql); 
+  if ($result === TRUE) {
+    // set response code - 200 OK
+    http_response_code(200);
+  }else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+  }
 }
 
 $number_folders = count($_POST["folderSeeds"]["folderId"]);
@@ -71,7 +84,7 @@ for ($i = 0; $i < $number_folders; $i++){
 
   $sql = "
   DELETE FROM folder_content
-  WHERE folderId = '$folderId'
+  WHERE folderId='$folderId' OR childId='$folderId'
   ";
   echo $sql;
   $result = $conn->query($sql); 
@@ -85,6 +98,50 @@ for ($i = 0; $i < $number_folders; $i++){
   $sql = "
   DELETE FROM user_folders
   WHERE folderId = '$folderId'
+  ";
+  echo $sql;
+  $result = $conn->query($sql); 
+  if ($result === TRUE) {
+    // set response code - 200 OK
+    http_response_code(200);
+  }else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+  }
+}
+
+$number_urls = count($_POST["urlSeeds"]["urlId"]);
+
+for ($i = 0; $i < $number_urls; $i++){
+  $urlId = mysqli_real_escape_string($conn,$_POST["urlSeeds"]["urlId"][$i]);
+  $sql = "
+  DELETE FROM url
+  WHERE urlId = '$urlId'
+  ";
+  echo $sql;
+  $result = $conn->query($sql); 
+  if ($result === TRUE) {
+    // set response code - 200 OK
+    http_response_code(200);
+  }else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+  }
+
+  $sql = "
+  DELETE FROM folder_content
+  WHERE childId = '$urlId'
+  ";
+  echo $sql;
+  $result = $conn->query($sql); 
+  if ($result === TRUE) {
+    // set response code - 200 OK
+    http_response_code(200);
+  }else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+  }
+
+  $sql = "
+  DELETE FROM user_urls
+  WHERE urlId = '$urlId'
   ";
   echo $sql;
   $result = $conn->query($sql); 

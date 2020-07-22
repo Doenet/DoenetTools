@@ -2790,7 +2790,7 @@ class InfoPanel extends Component {
       this.buildInfoPanelItemDetails(selectedItemId, selectedItemType);  
       this.infoPanel = <React.Fragment>
         <div className="infoPanel">
-          <div className="infoPanelTitle">
+          <div className="infoPanelTitle" data-cy="infoPanelTitle">
             <div className="infoPanelItemIcon">{itemIcon}</div>
             <span>{ itemTitle }</span>
           </div>
@@ -2851,8 +2851,8 @@ class InfoPanel extends Component {
         </tbody>
       </table>
       {this.props.selectedDrive === "Courses" &&
-      <div id="editContentButtonContainer">
-        <div id="editContentButton" data-cy="editContentButton"
+      <div id="editContentButtonContainer" data-cy="editContentButton">
+        <div id="editContentButton"
         onClick={this.props.openEditCourseForm}>
           <FontAwesomeIcon icon={faEdit} style={{"fontSize":"20px", "color":"#43aa90"}}/>
           <span>Edit</span>
