@@ -11,7 +11,6 @@ const useDrop = ({ ref, onDrop, onDropLeave, onDropEnter }) => {
 
   const dropCb = ev => {
     ev.preventDefault();
-    ev.dataTransfer.getData("source")
     onDrop && onDrop();
     updateDropState("dropped");
     ev.stopPropagation();
