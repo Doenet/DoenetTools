@@ -72,7 +72,7 @@
 }
 
 #doenetLogo {
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 /* #previousPageButton {
@@ -310,7 +310,7 @@
 
   #doenetLogo {
     height: 35px;
-    cursor: pointer;
+    /* cursor: pointer; */
     vertical-align: middle;
   }
 
