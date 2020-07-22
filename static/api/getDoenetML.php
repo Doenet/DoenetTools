@@ -15,7 +15,6 @@ $branchId = mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
 
 //Test if didn't request with a branchId
 if ($branchId == ""){
-	echo "here";
 	$response_arr = array(
 		"success" => 0,
 		"doenetML" => "",
