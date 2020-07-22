@@ -1693,20 +1693,27 @@ export function replacementFromProp({ component, components, componentOrReplacem
 
           let arrayKey = flattenedArrayKeys[ind];
 
-          let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
+          if (arrayKey) {
+            let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
 
-          propVariablesCopied.push(propVariable);
+            propVariablesCopied.push(propVariable);
 
-          serializedReplacements.push({
-            componentType,
-            downstreamDependencies: {
-              [targetName]: [{
-                dependencyType: "referenceShadow",
-                compositeName: component.componentName,
-                propVariable
-              }]
-            }
-          })
+            serializedReplacements.push({
+              componentType,
+              downstreamDependencies: {
+                [targetName]: [{
+                  dependencyType: "referenceShadow",
+                  compositeName: component.componentName,
+                  propVariable
+                }]
+              }
+            })
+          } else {
+            // didn't match an array key, so just add an empty component of componentType
+            serializedReplacements.push({
+              componentType,
+            })
+          }
         }
       } else {
 
@@ -1759,6 +1766,29 @@ export function replacementFromProp({ component, components, componentOrReplacem
         replacementInd += newReplacements.length;
 
         serializedReplacements.push(...newReplacements);
+
+        if (newReplacements.length < numReplacementsForTarget) {
+          // we didn't create enough replacements,
+          // which could happen if we have includeUndefinedArrayEntries set
+
+          // just create additional replacements,
+          // even though they won't yet refer to the right dependencies
+
+          for (let ind = newReplacements.length; ind < numReplacementsForTarget; ind++) {
+            replacementInd++;
+
+            let replacementClass = component.stateValues.replacementClasses[replacementInd];
+            let componentType = replacementClass.componentType.toLowerCase();
+
+            // just add an empty component of componentType
+            serializedReplacements.push({
+              componentType,
+            })
+          }
+
+        } else if (newReplacements > numReplacementsForTarget) {
+          throw Error(`Copying went wrong when creating replacements for ${component.componentName} as we ended up with too many replacements`)
+        }
 
       }
 

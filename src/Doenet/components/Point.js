@@ -495,15 +495,15 @@ export default class Point extends GraphicalComponent {
           for (let arrayKey of arrayKeys) {
             let varEnding = Number(arrayKey) + 1;
             let xsChild = dependencyValuesByKey[arrayKey].xsChild;
-            if (xsChild && xsChild.length === 1) {
+            if (xsChild.length === 1) {
               newXs[arrayKey] = xsChild[0].stateValues["math" + varEnding].simplify();
             } else {
               let pointChild = dependencyValuesByKey[arrayKey].pointChild;
-              if (pointChild && pointChild.length === 1) {
+              if (pointChild.length === 1) {
                 newXs[arrayKey] = pointChild[0].stateValues["x" + varEnding]
               } else {
                 let componentChild = dependencyValuesByKey[arrayKey].componentChild;
-                if (componentChild && componentChild.length === 1) {
+                if (componentChild.length === 1) {
                   newXs[arrayKey] = componentChild[0].stateValues.value.simplify();
                 } else {
                   essentialXs[arrayKey] = {
@@ -596,7 +596,7 @@ export default class Point extends GraphicalComponent {
             }
 
             let xsChild = dependencyValuesByKey[arrayKey].xsChild;
-            if (xsChild && xsChild.length === 1) {
+            if (xsChild.length === 1) {
               instructions.push({
                 setDependency: dependencyNamesByKey[arrayKey].xsChild,
                 desiredValue: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]),
@@ -606,7 +606,7 @@ export default class Point extends GraphicalComponent {
             } else {
 
               let pointChild = dependencyValuesByKey[arrayKey].pointChild;
-              if (pointChild && pointChild.length === 1) {
+              if (pointChild.length === 1) {
                 instructions.push({
                   setDependency: dependencyNamesByKey[arrayKey].pointChild,
                   desiredValue: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]),
@@ -616,7 +616,7 @@ export default class Point extends GraphicalComponent {
               } else {
 
                 let componentChild = dependencyValuesByKey[arrayKey].componentChild;
-                if (componentChild && componentChild.length === 1) {
+                if (componentChild.length === 1) {
                   instructions.push({
                     setDependency: dependencyNamesByKey[arrayKey].componentChild,
                     // since going through Math component, don't need to manually convert to math expression
@@ -686,9 +686,7 @@ export default class Point extends GraphicalComponent {
 
         for (let arrayKey of arrayKeys) {
 
-          if (dependencyValuesByKey[arrayKey].constraintsChild &&
-            dependencyValuesByKey[arrayKey].constraintsChild.length === 1
-          ) {
+          if (dependencyValuesByKey[arrayKey].constraintsChild.length === 1) {
             let varEnding = Number(arrayKey) + 1;
             xs[arrayKey] = convertValueToMathExpression(
               dependencyValuesByKey[arrayKey].constraintsChild[0].stateValues["constraintResult" + varEnding]
@@ -902,7 +900,12 @@ export default class Point extends GraphicalComponent {
         for (let arrayKey of arrayKeys) {
           let x = dependencyValuesByKey[arrayKey].x;
           if (x) {
-            numericalXs[arrayKey] = dependencyValuesByKey[arrayKey].x.evaluate_to_constant();
+            x = dependencyValuesByKey[arrayKey].x.evaluate_to_constant();
+            if(Number.isFinite(x)) {
+              numericalXs[arrayKey] = x;
+            } else {
+              numericalXs[arrayKey] = NaN;
+            }
           } else {
             numericalXs[arrayKey] = NaN;
           }

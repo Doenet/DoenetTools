@@ -210,7 +210,7 @@ export default class InterpolatedFunction extends Function {
         for (let arrayKey of arrayKeys) {
           let pointVariable = globalDependencyValues.throughInfoForArrayKey[arrayKey].pointVariable;
           let throughChild = dependencyValuesByKey[arrayKey].throughChild;
-          if (throughChild && throughChild.length === 1) {
+          if (throughChild.length === 1) {
             let point = throughChild[0].stateValues[pointVariable];
             let slope = throughChild[0].stateValues.slope;
 

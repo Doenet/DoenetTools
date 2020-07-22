@@ -4459,31 +4459,41 @@ export default class Core {
         }
 
         let dependencyValuesByKey = {};
+        let foundAllDependencyValuesForKey = {};
         for (let arrayKey of arrayKeys) {
           dependencyValuesByKey[arrayKey] = {};
-          for (let dependencyName in stateVarObj.dependencyNames.namesByKey[arrayKey]) {
-            let extendedDepName = stateVarObj.dependencyNames.namesByKey[arrayKey][dependencyName];
-            dependencyValuesByKey[arrayKey][dependencyName] = dependencyValues[extendedDepName];
+          if (arrayKey in stateVarObj.dependencyNames.namesByKey) {
+            foundAllDependencyValuesForKey[arrayKey] = true;
+            for (let dependencyName in stateVarObj.dependencyNames.namesByKey[arrayKey]) {
+              let extendedDepName = stateVarObj.dependencyNames.namesByKey[arrayKey][dependencyName];
+              if (extendedDepName in dependencyValues) {
+                dependencyValuesByKey[arrayKey][dependencyName] = dependencyValues[extendedDepName];
+              } else {
+                foundAllDependencyValuesForKey[arrayKey] = false;
+              }
+            }
+
           }
         }
 
-        return { globalDependencyValues, dependencyValuesByKey };
+        return { globalDependencyValues, dependencyValuesByKey, foundAllDependencyValuesForKey };
 
       }
 
 
       stateVarObj.definition = function (args) {
-
         // console.log(`definition in array ${stateVariable} of ${component.componentName}`)
         // console.log(JSON.parse(JSON.stringify(args)));
+        // console.log(args.arrayKeys)
 
         if (args.arrayKeys === undefined) {
           args.arrayKeys = stateVarObj.getAllArrayKeys(args.arraySize);
         }
 
-        let { globalDependencyValues, dependencyValuesByKey } = extractArrayDependencies(
-          args.dependencyValues, args.arrayKeys
-        );
+        let extractedDeps = extractArrayDependencies(args.dependencyValues, args.arrayKeys);
+        let globalDependencyValues = extractedDeps.globalDependencyValues;
+        let dependencyValuesByKey = extractedDeps.dependencyValuesByKey;
+        let foundAllDependencyValuesForKey = extractedDeps.foundAllDependencyValuesForKey;
 
         delete args.dependencyValues;
         args.globalDependencyValues = globalDependencyValues;
@@ -4494,8 +4504,8 @@ export default class Core {
         for (let arrayKey of args.arrayKeys) {
           // only recalculate if
           // - arrayKey isn't fresh, and
-          // - arrayKey is in namesByKey (which means have calculated dependencies for arrayKey)
-          if (!freshByKey[arrayKey] && arrayKey in stateVarObj.dependencyNames.namesByKey) {
+          // - found all dependency values for array key (i.e., have calculated dependencies for arrayKey)
+          if (!freshByKey[arrayKey] && foundAllDependencyValuesForKey[arrayKey]) {
             freshByKey[arrayKey] = true;
             arrayKeysToRecalculate.push(arrayKey);
           }
@@ -4557,11 +4567,11 @@ export default class Core {
           args.arrayKeys = stateVarObj.getAllArrayKeys(args.arraySize);
         }
 
-        // filter out any arrayKeys 
+        let extractedDeps = extractArrayDependencies(args.dependencyValues, args.arrayKeys);
+        let globalDependencyValues = extractedDeps.globalDependencyValues;
+        let dependencyValuesByKey = extractedDeps.dependencyValuesByKey;
+        let foundAllDependencyValuesForKey = extractedDeps.foundAllDependencyValuesForKey;
 
-        let { globalDependencyValues, dependencyValuesByKey } = extractArrayDependencies(
-          args.dependencyValues, args.arrayKeys,
-        );
         delete args.dependencyValues;
         args.globalDependencyValues = globalDependencyValues;
         args.dependencyValuesByKey = dependencyValuesByKey;
@@ -4572,8 +4582,8 @@ export default class Core {
         let arrayKeysToInvert = [];
         for (let arrayKey of args.arrayKeys) {
           // only invert if
-          // - arrayKey is in namesByKey (which means have calculated dependencies for arrayKey)
-          if (arrayKey in stateVarObj.dependencyNames.namesByKey) {
+          // - found all dependency values for array key (i.e., have calculated dependencies for arrayKey)
+          if (foundAllDependencyValuesForKey[arrayKey]) {
             arrayKeysToInvert.push(arrayKey);
           }
         }
@@ -11344,7 +11354,7 @@ export default class Core {
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
   }
 
-  requestUpdate({ updateInstructions, saveSerializedState, transient = false }) {
+  requestUpdate({ updateInstructions, transient = false }) {
 
     let updatesNeeded = {
       componentsTouched: [],
@@ -11357,7 +11367,6 @@ export default class Core {
       deletedComponents: {},
     }
 
-    let compositesBeingExpanded = [];
 
     let newStateVariableValues = {};
     let sourceInformation = {};
@@ -11418,8 +11427,6 @@ export default class Core {
     this.executeUpdateStateVariables({
       newStateVariableValues,
       updatesNeeded,
-      compositesBeingExpanded,
-      saveSerializedState,
       sourceOfUpdate: {
         sourceInformation,
         local: true,
@@ -11431,9 +11438,12 @@ export default class Core {
   }
 
   executeUpdateStateVariables({ newStateVariableValues,
-    updatesNeeded, compositesBeingExpanded,
-    saveSerializedState = true, sourceOfUpdate
+    updatesNeeded,
+    sourceOfUpdate
   }) {
+
+
+    let compositesBeingExpanded = [];
 
     // merge keys of newStateVariableValues into changedStateVariables
     for (let cName in newStateVariableValues) {
@@ -11448,8 +11458,6 @@ export default class Core {
 
     }
 
-
-    let saveSerializedStateImmediately = false;
 
     // if executeUpdateStateVariables is called from an external source
     // then it may not have updatesNeeded initialized
@@ -11528,12 +11536,12 @@ export default class Core {
     console.log("**** Components after updateValue");
     console.log(this._components);
 
-    if (sourceOfUpdate !== undefined && sourceOfUpdate.instructionsByComponent !== undefined) {
-      let updateKeys = Object.keys(sourceOfUpdate.instructionsByComponent);
-      if (updateKeys.length === 1 && updateKeys[0] === this.documentName) {
-        saveSerializedStateImmediately = true;
-      }
-    }
+    // if (sourceOfUpdate !== undefined && sourceOfUpdate.instructionsByComponent !== undefined) {
+    //   let updateKeys = Object.keys(sourceOfUpdate.instructionsByComponent);
+    //   if (updateKeys.length === 1 && updateKeys[0] === this.documentName) {
+    //     saveSerializedStateImmediately = true;
+    //   }
+    // }
 
 
     // TODO: implement saving serialized state
@@ -11781,7 +11789,7 @@ export default class Core {
       if (inverseDefinitionArgs.arrayKeys.length === 1) {
         desiredValuesForArray[inverseDefinitionArgs.arrayKeys[0]] = instruction.value
       } else {
-        for (let [ind, arrayKey] of inverseDefinitionArgs.arrayKeys) {
+        for (let [ind, arrayKey] of inverseDefinitionArgs.arrayKeys.entries()) {
           desiredValuesForArray[arrayKey] = instruction.value[ind];
         }
       }

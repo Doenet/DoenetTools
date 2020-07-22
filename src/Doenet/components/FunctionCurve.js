@@ -1,4 +1,5 @@
 import Curve from './Curve';
+import { returnNVariables } from '../utils/math';
 
 export default class FunctionCurve extends Curve {
   static componentType = "functioncurve";
@@ -57,6 +58,55 @@ export default class FunctionCurve extends Curve {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { nVariables: 2 } })
     }
+
+    stateVariableDefinitions.variables = {
+      isArray: true,
+      public: true,
+      componentType: "variable",
+      entryPrefixes: ["var"],
+      returnArraySizeDependencies: () => ({
+        nVariables: {
+          dependencyType: "stateVariable",
+          variableName: "nVariables",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nVariables];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          variablesChild: {
+            dependencyType: "childStateVariables",
+            childLogicName: "atMostOneVariables",
+            variableNames: ["variables"],
+          },
+          parentVariables: {
+            dependencyType: "parentStateVariable",
+            variableName: "variables"
+          }
+        };
+
+        return { globalDependencies }
+      },
+      arrayDefinitionByKey({ globalDependencyValues, arraySize }) {
+
+        let variablesSpecified = [];
+        if (globalDependencyValues.variablesChild.length === 1) {
+          variablesSpecified = globalDependencyValues.variablesChild[0].stateValues.variables;
+        } else if(globalDependencyValues.parentVariables !== null) {
+          variablesSpecified = globalDependencyValues.parentVariables
+        }
+
+        return {
+          newValues: {
+            variables: returnNVariables(arraySize[0], variablesSpecified)
+          }
+        }
+
+      }
+    }
+
+
 
     stateVariableDefinitions.f = {
       forRenderer: true,
