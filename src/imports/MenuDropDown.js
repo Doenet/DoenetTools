@@ -41,13 +41,14 @@ const DropDownContent = styled.div`
 `
 const DropDownContentItem = styled.div`
     cursor: default;
-    max-width:350px;
+    max-width:330px;
     // border-bottom:1px solid #e2e2e2;
 `
 
 const DropdownLabelLink = styled.div`
     padding: 5px 5px;
-    min-height: 40px;
+    // min-height: 40px;
+    height:35px;
     justify-content: center;
     align-items: center;
     background-color: ${props => props.selected ? 'rgb(58, 172, 144)' : 'transperant'};
