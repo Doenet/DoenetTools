@@ -12,6 +12,7 @@ function randomAlphaString(len) {
 }
 
 export default function Switch(props) {
+  console.log("Switch props",props)
   // props
   let id = props.id;
   if (!id) {
