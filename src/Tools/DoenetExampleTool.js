@@ -31,7 +31,7 @@ const phpUrl = '/api/recordContentInteraction.php';
         });
 }
 
-function loadContentInteractions({assignmentId, contentId, attemptNumber, submissionNumber}={}){
+function loadContentInteractions({assignmentId, contentId, attemptNumber, submissionNumber, callback}={}){
   //assignmentId, Attempt number, state glob
   const phpUrl = '/api/loadContentInteractions.php';
       const data = {
@@ -45,12 +45,15 @@ function loadContentInteractions({assignmentId, contentId, attemptNumber, submis
       axios.get(phpUrl, payload)
         .then(resp => {
           console.log('load',resp.data);
-          let divs = [];
-          for (let stringified of resp.data.stateVariables){
-            divs.push(<div>{JSON.stringify(stringified)}</div>)
+          if (callback){
+            callback({stateVariables:resp.data.stateVariables})
           }
+          // let divs = [];
+          // for (let stringified of resp.data.stateVariables){
+          //   divs.push(<div>{JSON.stringify(stringified)}</div>)
+          // }
     
-          setContentInteractionsDivs(divs);
+          // setContentInteractionsDivs(divs);
         });
   }
     return (
