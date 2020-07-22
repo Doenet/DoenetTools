@@ -1,0 +1,47 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    # runs-on: macos-10.15
+
+    # steps:
+    # - uses: actions/checkout@v2
+    # - uses: actions/setup-node@v1
+    #   with:
+    #     node-version: '10.x'
+    # - name: Install Dependencies
+    #   run: npm install && npm install docker-compose && npm install -g wait-on
+    # - name: Show File Structure
+    #   run: pwd && ls && ls doenet_docker && echo '===' && ls .. && echo '===' && ls ../..
+    # - name: Test file path
+    #   run: cd /Users/runner/work/CI-Test/CI-Test/doenet_docker && ls
+    # - name: Build the Docker image
+    #   run: node doenet_docker/run-build.js
+    # - name: Start the Server
+    #   run: node doenet_docker/run-compose-up.js && sleep 5
+    # - name: Run Tests
+    #   run: npm run test:all
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - name: Install Dependencies
+      run: npm install && npm install -g wait-on
+    - name: Build the Containers
+      run: npm run docker:build
+    - name: Start the Server
+      run: npm start & wait-on localhost
+    - name: Run Tests
+      run: npm run test:all
