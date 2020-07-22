@@ -46,6 +46,12 @@ if ($row['minutes'] > 10){
         //Valid code and not expired
         http_response_code(200);
 
+        $sql = "UPDATE user_device 
+        SET signedIn = '1'
+        WHERE email='$emailaddress' AND deviceName='$deviceName'";
+        $result = $conn->query($sql);
+
+
         $value = $jwt;
         $expirationTime = 0;    
         if ($stay == 1){
