@@ -19,8 +19,9 @@ body{
 }
 
 .homepage-stripes-container{
-  display:flex;
-  flex-direction: column;
+  /* display:flex;
+  flex-direction: column; */
+  width:100%;
 }
 
 .section{

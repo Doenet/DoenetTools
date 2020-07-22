@@ -20,7 +20,7 @@ const MainContent = styled.div`
 `;
 const SplitPanelHeader = styled.div`
     min-height: 1vh;
-    // overflow: hidden;
+    overflow: hidden;
     width: ${props => props.width || '50'}%;
     height: 100%;
     display: flex;
@@ -150,7 +150,9 @@ export default class ToolLayoutPanel extends Component {
               <SplitPanelHeader width={100}>{panelHeader}</SplitPanelHeader>
               : <>
                 {<SplitPanelHeader>
-                  {[panelHeader[0]]}
+                  {panelHeader.map((p,i)=>{
+                    return i < (panelHeader.length-1) ? [panelHeader[i]] : ''
+                  })}
                 </SplitPanelHeader>}
                 <SplitDivider></SplitDivider>
                 {<SplitPanelHeader justifyContent="flex-end">

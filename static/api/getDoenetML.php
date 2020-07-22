@@ -7,28 +7,23 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
-//prerelease security
-$sql = "SELECT accessAllowed FROM user WHERE username='$remoteuser'";
-$result = $conn->query($sql); 
-$row = $result->fetch_assoc();
-if ($row["accessAllowed"] != 1){
-	$response_arr = array(
-		"access"=> FALSE
-	);
-} else {
+$jwtArray = include "jwtArray.php";
+$emailaddress = $jwtArray['email'];
 
+$contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
+$branchId = mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
 
-$contentId =  mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
-$branchId =  mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
-
-
-
-if ($contentId == "" && $branchId == ""){
+//Test if didn't request with a branchId
+if ($branchId == ""){
 	$response_arr = array(
 		"success" => 0,
 		"doenetML" => "",
+		"reason" => "No BranchId",
 		);
 }else{
+
+
+	
 	//Find all the published contentIds
 	$sql = "SELECT contentId
 	FROM content
@@ -41,16 +36,66 @@ if ($contentId == "" && $branchId == ""){
 		$response_arr = array(
 			"success" => 0,
 			"doenetML" => "",
-			);
+			"reason" => "No Matching Content",
+	);
 	}else{
 		$content_id_array = array();
 		while ($row = $result->fetch_assoc()){
 			
 			array_push($content_id_array,$row["contentId"]);
 		}
-	}
+	} //This in the right spot?
+
+	//SECURITY
+	//1 - test if branch is public
+	$sql = "SELECT private
+	FROM content_branch
+	WHERE branchId = '$branchId'
+	AND removedFlag = '0'
+	";
+	$result = $conn->query($sql);
+	if ($result->num_rows < 1){
+		//Branch doesn't exist
+		$response_arr = array(
+			"success" => 0,
+			"doenetML" => "",
+			"reason" => "No Matching Content",
+		);
+	}else{
+
+		//Assume they should have access
+		$should_have_access = TRUE;
+		$row = $result->fetch_assoc();
+		$private = $row['private'];
+
+		if ($private == "1"){
+		//Assume they should NOT have access
+		$should_have_access = FALSE;
+
+			//SECURITY 2
+			//Test if they are part of a repo
+			$sql = "SELECT ra.username
+			FROM content_branch AS cb
+			LEFT JOIN folder_content AS fc
+			ON fc.childId = cb.branchId
+			LEFT JOIN repo_access AS ra
+			ON fc.rootId = ra.repoId
+			WHERE cb.branchId = '$branchId' 
+			AND cb.removedFlag = '0'
+			AND ra.username = '$emailaddress'
+			";
+			$result = $conn->query($sql);
+			if ($result->num_rows > 0){
+				$should_have_access = TRUE;
+			}
+		}
+	
+   if ($should_have_access){
+
+
 	if ($contentId == ""){
-		//load draft version
+
+		//load draft version because contentid was not specified
 		$sql = "SELECT doenetML,title, timestamp
 		FROM content
 		WHERE branchId = '$branchId'
@@ -87,8 +132,16 @@ if ($contentId == "" && $branchId == ""){
 				"contentIds"=>$content_id_array
 				);
 	}
+
+		 }else{
+		//Shouldn't have access
+		$response_arr = array(
+			"success" => 0,
+			"doenetML" => "",
+			);
+	 }
 	
-		
+}
 
 }
 
@@ -99,7 +152,7 @@ if ($contentId == "" && $branchId == ""){
 	
 	
          
-}
+
  http_response_code(200);
 
  // make it json format
