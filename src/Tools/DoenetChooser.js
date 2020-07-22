@@ -2455,7 +2455,9 @@ class DoenetChooser extends Component {
                   "frame": { color: "#2675ff",backgroundColor:"hsl(206, 66%, 85%)", paddingLeft: "5px" },
                 },
                 specialParentNode: {
-                  "title": { color: "gray", background: "#e6efff", paddingLeft: "5px" },
+                  "title": { color: "gray",
+                  //  background: "#e6efff",
+                    paddingLeft: "5px" },
                   "frame": { color: "#2675ff", backgroundColor:"hsl(206, 66%, 85%)", paddingLeft: "5px", borderLeft:'10px solid #0031f5' },
 
                 },
@@ -2470,17 +2472,12 @@ class DoenetChooser extends Component {
                 },
                 childNode: {
                   "title": {
-                    color: "white",
+                    color: "gray",
                     // border: "1px green solid",
                   },
                   // "frame": { border: "1px #a4a4a4 solid" },
                 },
-                // specialChildNode: {
-                //   "frame": { backgroundColor: "hsl(206, 66%, 85%)" ,color: "#d9eefa"},
-                // },
-                // specialParentNode: {
-                //   "frame": { background: "#a7a7a7" },
-                // },
+            
                 //   expanderIcon: <FontAwesomeIcon icon={faPlus}/>
                 // emptyParentExpanderIcon: <span style={{padding:'5px'}}></span>
 
@@ -3262,35 +3259,6 @@ class AddRoleForm extends React.Component {
 //     );
 //   }
 // }
-
-class AccordionSection extends Component {
-
-  onClick = () => {
-    this.props.onClick(this.props.label);
-  };
-
-  render() {
-    const {
-      onClick,
-      props: { isOpen, label },
-    } = this;
-
-    return (
-      <div style={{ "width": "100%", "cursor": 'pointer' }}>
-        <div onClick={onClick} data-cy="coursesAccordion">
-          {isOpen ? <FontAwesomeIcon className="menuTwirlIcon" icon={faCaretDown} /> :
-            <FontAwesomeIcon className="menuTwirlIcon" icon={faCaretRight} />}
-          {label}
-        </div>
-        {isOpen && (
-          <div>
-            {this.props.children}
-          </div>
-        )}
-      </div>
-    );
-  }
-}
 
 class FilterPanel extends Component {
 
