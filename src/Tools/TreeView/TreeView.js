@@ -8,7 +8,6 @@ import ChooserConstants from "../chooser/ChooserConstants";
 import styled from 'styled-components'
 
 /*
-
   Data and fields:
     mandatory fields:
       - loading       (set to false if loaders not async)
@@ -32,7 +31,6 @@ import styled from 'styled-components'
               parentId: "root"
             }
           }
-
     optional fields:
       - hideRoot    (set to true to hide root node of tree)
       - treeNodeIcons
@@ -68,17 +66,14 @@ import styled from 'styled-components'
           }
       - parentNodeOnClick
 			- childNodeOnClickCallback
-
   Callbacks and functions:
 		**Only enable one of onClick or Drag-and-Drop feature to avoid conflicts** 
-
     onClick callback for leaf nodes, leave empty if onclick actions not needed
     - onLeafNodeClick
       - example:
         const onLeafNodeClick = (leafNodeId) => {
           console.log(`leaf node ${leafNodeId} clicked`);
         }
-
     Drag and Drop functions, leave empty if DnD is not needed:
       - containerId
       - containerType
@@ -89,7 +84,6 @@ import styled from 'styled-components'
       - onDrop
       - onDropEnter
       - onDropLeave
-
 Example customized tree:
 <TreeView
   containerId={treeContainerId}
@@ -305,8 +299,8 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
    buildControlButtons, buildSearchComponent, setCurrentHovered, directoryData }) {
      
   const getBaseItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
-    console.log(parentsInfo)
-    console.log(childrenInfo)
+    // console.log(parentsInfo)
+    // console.log(childrenInfo)
     const isPublic = itemType == "folder" ? parentsInfo[currentItemId].isPublic : parentsInfo[childrenInfo[currentItemId].rootId].isPublic;
     if (itemType == "folder") itemType = parentsInfo[currentItemId].isRepo ? "repo" : "folder";
     const icon = currentItemId == "root" ? "" : treeNodeIcons({iconName: itemType, isPublic: isPublic});

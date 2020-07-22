@@ -505,7 +505,7 @@ export default class Core {
           if (!previousChildNames.includes(name)) {
 
             let comp = this._components[name];
-            if (comp && comp.rendererType) {
+            if (comp.rendererType) {
 
               let childToRender = this.initializeRenderedComponentInstruction(comp);
               instructionChildren.splice(ind, 0, childToRender);
@@ -555,7 +555,7 @@ export default class Core {
     if (component.stateValues.childrenToRender) {
       for (let childName of component.stateValues.childrenToRender) {
         let child = this._components[childName];
-        if (!child || !child.rendererType) {
+        if (!child.rendererType) {
           continue;
         }
         childInstructions.push(
@@ -608,10 +608,6 @@ export default class Core {
   }
 
   componentAndRenderedDescendants(component) {
-    if (component === undefined) {
-      return [];
-    }
-
     let componentNames = [component.componentName];
     if (component.stateValues.childrenToRender) {
       for (let childName of component.stateValues.childrenToRender) {
@@ -622,7 +618,7 @@ export default class Core {
   }
 
   createIsolatedComponents({ serializedState, ancestors, applySugar = false,
-    applyAdapters = true, shadow = false, compositesBeingExpanded = [] }
+    applyAdapters = true, shadow = false }
   ) {
 
     let updatesNeeded = {
@@ -642,7 +638,7 @@ export default class Core {
       serializedState: serializedState,
       ancestors,
       applySugar, applyAdapters,
-      shadow, updatesNeeded, compositesBeingExpanded
+      shadow, updatesNeeded
     });
 
     // console.log("createResult")
@@ -656,7 +652,7 @@ export default class Core {
 
     if (Object.keys(updatesNeeded.unresolvedDependencies).length > 0) {
       updatesNeeded.unresolvedMessage = "";
-      this.resolveAllDependencies(updatesNeeded, compositesBeingExpanded);
+      this.resolveAllDependencies(updatesNeeded);
     }
 
 
@@ -681,7 +677,7 @@ export default class Core {
       }
     }
 
-    this.updateDependencies(updatesNeeded, compositesBeingExpanded);
+    this.updateDependencies(updatesNeeded);
 
     return {
       success: true,
@@ -693,7 +689,7 @@ export default class Core {
   }
 
   createIsolatedComponentsSub({ serializedState, ancestors, applySugar = false,
-    applyAdapters = true, shadow = false, updatesNeeded, compositesBeingExpanded }
+    applyAdapters = true, shadow = false, updatesNeeded }
   ) {
 
     let newComponents = [];
@@ -744,7 +740,7 @@ export default class Core {
         componentName,
         ancestors,
         componentClass, applySugar,
-        applyAdapters, shadow, updatesNeeded, compositesBeingExpanded
+        applyAdapters, shadow, updatesNeeded,
       });
 
       let newComponent = createResult.newComponent;
@@ -765,7 +761,7 @@ export default class Core {
   createChildrenThenComponent({ serializedComponent, componentName,
     ancestors, componentClass,
     applySugar = false, applyAdapters = true, shadow = false,
-    updatesNeeded, compositesBeingExpanded,
+    updatesNeeded,
   }) {
 
     // first recursively create children
@@ -835,7 +831,7 @@ export default class Core {
             serializedState: [variantControlChild],
             ancestors: ancestorsForChildren,
             applySugar, applyAdapters, shadow,
-            updatesNeeded, compositesBeingExpanded
+            updatesNeeded,
           });
 
           definingChildren[variantControlInd] = childrenResult.components[0];
@@ -856,7 +852,7 @@ export default class Core {
           serializedState: childrenToCreate,
           ancestors: ancestorsForChildren,
           applySugar, applyAdapters, shadow,
-          updatesNeeded, compositesBeingExpanded
+          updatesNeeded,
         });
 
         for (let [createInd, locationInd] of indicesToCreate.entries()) {
@@ -895,7 +891,7 @@ export default class Core {
             serializedState: childrenToCreate,
             ancestors: ancestorsForChildren,
             applySugar, applyAdapters, shadow,
-            updatesNeeded, compositesBeingExpanded
+            updatesNeeded,
           });
 
           for (let [createInd, locationInd] of indicesToCreate.entries()) {
@@ -911,7 +907,7 @@ export default class Core {
           serializedState: serializedChildren,
           ancestors: ancestorsForChildren,
           applySugar, applyAdapters, shadow,
-          updatesNeeded, compositesBeingExpanded
+          updatesNeeded,
         });
 
         definingChildren = childrenResult.components;
@@ -1024,7 +1020,7 @@ export default class Core {
     }
 
 
-    this.deriveChildResultsFromDefiningChildren(newComponent, updatesNeeded, compositesBeingExpanded);
+    this.deriveChildResultsFromDefiningChildren(newComponent, updatesNeeded);
 
     this.initializeComponentStateVariables(newComponent);
 
@@ -1032,14 +1028,14 @@ export default class Core {
     // because newComponent doesn't yet have dependencies set up
     this.applySugarOrAddSugarCreationStateVariables({
       component: newComponent,
-      updatesNeeded, compositesBeingExpanded
+      updatesNeeded
     });
 
     this.setUpComponentDependencies({ component: newComponent });
 
     let { varsUnresolved } = this.resolveStateVariables({
       component: newComponent,
-      updatesNeeded, compositesBeingExpanded,
+      updatesNeeded
     });
 
     this.addUnresolvedDependencies({ varsUnresolved, component: newComponent, updatesNeeded });
@@ -1130,7 +1126,7 @@ export default class Core {
     return propertiesPropagated;
   }
 
-  deriveChildResultsFromDefiningChildren(component, updatesNeeded, compositesBeingExpanded) {
+  deriveChildResultsFromDefiningChildren(component, updatesNeeded) {
 
     // create allChildren and activeChildren from defining children
     // apply child logic and substitute adapters to modify activeChildren
@@ -1158,7 +1154,7 @@ export default class Core {
 
     // if any of activeChildren are compositeComponents
     // replace with new components given by the composite component
-    let replaceCompositeResult = this.replaceCompositeChildren(component, updatesNeeded, compositesBeingExpanded);
+    let replaceCompositeResult = this.replaceCompositeChildren(component, updatesNeeded);
 
     // If a class is not supposed to have blank string children,
     // it is still possible that it received blank string children from a composite.
@@ -1224,7 +1220,7 @@ export default class Core {
 
   }
 
-  expandCompositeComponent({ component, updatesNeeded, compositesBeingExpanded }) {
+  expandCompositeComponent({ component, updatesNeeded }) {
 
     if (!("readyToExpand" in component.state)) {
       throw Error(`Could not evaluate state variable readyToExpand of composite ${component.componentName}`);
@@ -1239,32 +1235,14 @@ export default class Core {
 
     // console.log(`expanding composite ${component.componentName}`);
 
-    compositesBeingExpanded.push(component.componentName);
 
     if (component.shadows) {
-
-      if (compositesBeingExpanded.includes(component.shadows.componentName)) {
-        // found a circular reference,
-        // as we are in the middle of expanding a composite
-        // that we are now trying to shadow
-
-        let compositeInvolved = this._components[component.shadows.componentName];
-        // find non-shadow for error message, as that would be a component from document
-        while (compositeInvolved.shadows) {
-          compositeInvolved = this._components[compositeInvolved.shadows.componentName];
-        }
-        throw Error(`Circular reference involving ${compositeInvolved.componentName}`)
-      }
-
       let shadowedComposite = this._components[component.shadows.componentName];
-
-      // console.log(`shadowedComposite: ${shadowedComposite.componentName}`)
-      // console.log(shadowedComposite.isExpanded);
 
       if (!shadowedComposite.isExpanded) {
         let result = this.expandCompositeComponent({
           component: shadowedComposite,
-          updatesNeeded, compositesBeingExpanded
+          updatesNeeded
         });
         if (!result.success) {
           return { sucess: false, readyToExpand: true };
@@ -1272,40 +1250,21 @@ export default class Core {
 
       }
 
-      // we'll copy the replacements of the shadowed composite
-      // and make those be the replacements of the shadowing composite
+      let compositeName = component.shadows.compositeName;
 
       let serializedReplacements = shadowedComposite.replacements.map(x => x.serialize({ forCopy: true }))
-
-      // Have three composites involved:
-      // 1. the shadowing composite (component, the one we're trying to expand)
-      // 2. the shadowed composite
-      // 3. the composite mediating the shadowing 
-      //    (of which shadowing composite is the replacement)
-      let nameOfCompositeMediatingTheShadow = component.shadows.compositeName;
       serializedReplacements = postProcessCopy({
         serializedComponents: serializedReplacements,
-        componentName: nameOfCompositeMediatingTheShadow
+        componentName: compositeName
       });
-
-
-      // console.log(`name of composite mediating shadow: ${nameOfCompositeMediatingTheShadow}`)
 
       this.createAndSetReplacements({
         component,
         serializedReplacements,
-        updatesNeeded,
-        compositesBeingExpanded,
+        updatesNeeded
       });
 
       this.markReplacementDependenciesChanged(component, updatesNeeded);
-
-      // record that are finished expanding the composite
-      let targetInd = compositesBeingExpanded.indexOf(component.componentName);
-      if (targetInd === -1) {
-        throw Error(`Something is wrong as we lost track that we were expanding ${component.componentName}`);
-      }
-      compositesBeingExpanded.splice(targetInd, 1)
 
       return { success: true };
 
@@ -1335,7 +1294,6 @@ export default class Core {
         component,
         serializedReplacements,
         updatesNeeded,
-        compositesBeingExpanded,
       });
     } else if (result.replacementsWithInstructions) {
 
@@ -1354,20 +1312,12 @@ export default class Core {
         replacementsWithInstructions: result.replacementsWithInstructions,
         serializedReplacementsFromComponent,
         updatesNeeded,
-        compositesBeingExpanded
       })
     } else {
       throw Error(`Invalid createSerializedReplacements of ${component.componentName}`);
     }
 
     this.markReplacementDependenciesChanged(component, updatesNeeded);
-
-    // record that are finished expanding the composite
-    let targetInd = compositesBeingExpanded.indexOf(component.componentName);
-    if (targetInd === -1) {
-      throw Error(`Something is wrong as we lost track that we were expanding ${component.componentName}`);
-    }
-    compositesBeingExpanded.splice(targetInd, 1)
 
     return { success: true };
   }
@@ -1401,7 +1351,7 @@ export default class Core {
     }
   }
 
-  createAndSetReplacements({ component, serializedReplacements, updatesNeeded, compositesBeingExpanded }) {
+  createAndSetReplacements({ component, serializedReplacements, updatesNeeded }) {
 
     this.parameterStack.push(component.sharedParameters, false);
 
@@ -1411,7 +1361,6 @@ export default class Core {
       applySugar: true,
       shadow: true,
       updatesNeeded,
-      compositesBeingExpanded
     });
 
     this.parameterStack.pop();
@@ -1427,14 +1376,14 @@ export default class Core {
   }
 
   createAndSetReplacementsWithInstructions({ component, replacementsWithInstructions,
-    serializedReplacementsFromComponent, updatesNeeded, compositesBeingExpanded
+    serializedReplacementsFromComponent, updatesNeeded
   }) {
 
     this.parameterStack.push(component.sharedParameters, false);
 
     let replacements = this.processReplacementsWithInstructions({
       replacementsWithInstructions, serializedReplacementsFromComponent, component,
-      updatesNeeded, compositesBeingExpanded
+      updatesNeeded,
     });
 
     this.parameterStack.pop();
@@ -1451,7 +1400,7 @@ export default class Core {
 
   processReplacementsWithInstructions({ replacementsWithInstructions,
     serializedReplacementsFromComponent, component,
-    updatesNeeded, compositesBeingExpanded
+    updatesNeeded
   }) {
 
     let replacements = [];
@@ -1627,7 +1576,6 @@ export default class Core {
         applySugar: true,
         shadow: true,
         updatesNeeded,
-        compositesBeingExpanded
       });
       replacements.push(...replacementResult.components);
 
@@ -1637,7 +1585,7 @@ export default class Core {
     return replacements;
   }
 
-  replaceCompositeChildren(component, updatesNeeded, compositesBeingExpanded) {
+  replaceCompositeChildren(component, updatesNeeded) {
     // if composite is not directly matched by any childLogic leaf
     // then replace the composite with its replacements,
     // expanding it if not already expanded
@@ -1662,8 +1610,7 @@ export default class Core {
           let expandResult = this.expandCompositeComponent({
             component: child,
             dryRun: child.needToDryRunExpansion,
-            updatesNeeded,
-            compositesBeingExpanded
+            updatesNeeded
           });
 
           if (!expandResult.success) {
@@ -1788,9 +1735,7 @@ export default class Core {
 
   }
 
-  replaceChildrenBySugar({ component, childLogicName, dependencyValues,
-    updatesNeeded, compositesBeingExpanded
-  }) {
+  replaceChildrenBySugar({ component, childLogicName, dependencyValues, updatesNeeded }) {
 
     // find defining childen indices for the children matched
     // at the same time, swap out active child for matching defining child
@@ -1834,7 +1779,7 @@ export default class Core {
       // sugar failed.
       // rerun child logic, now that we have marked childlogic component
       // as already having used sugars
-      this.processNewDefiningChildren({ parent: component, updatesNeeded, compositesBeingExpanded })
+      this.processNewDefiningChildren({ parent: component, updatesNeeded })
 
       if (!component.childLogicSatisfied) {
         // TODO: handle case where child logic is no longer satisfied
@@ -1861,8 +1806,7 @@ export default class Core {
         let result = this.replaceDefiningChildrenBySugar({
           component: child,
           sugarResults: changes,
-          updatesNeeded,
-          compositesBeingExpanded
+          updatesNeeded
         });
 
         // immediately apply sugar to shadows
@@ -1876,14 +1820,13 @@ export default class Core {
                 shadowingComponent,
                 changes,
                 componentsShadowingDeleted: result.componentsShadowingDeleted,
-                updatesNeeded,
-                compositesBeingExpanded,
+                updatesNeeded
               }));
             }
           }
         }
 
-        this.processNewDefiningChildren({ parent: child, updatesNeeded, compositesBeingExpanded })
+        this.processNewDefiningChildren({ parent: child, updatesNeeded })
 
         if (!component.childLogicSatisfied) {
           // TODO: handle case where child logic is no longer satisfied
@@ -1898,8 +1841,7 @@ export default class Core {
       let result = this.replaceDefiningChildrenBySugar({
         component,
         sugarResults: changes,
-        updatesNeeded,
-        compositesBeingExpanded
+        updatesNeeded
       });
 
 
@@ -1914,15 +1856,14 @@ export default class Core {
               shadowingComponent,
               changes,
               componentsShadowingDeleted: result.componentsShadowingDeleted,
-              updatesNeeded,
-              compositesBeingExpanded
+              updatesNeeded
             }));
           }
         }
       }
     }
 
-    this.processNewDefiningChildren({ parent: component, updatesNeeded, compositesBeingExpanded })
+    this.processNewDefiningChildren({ parent: component, updatesNeeded })
 
     if (!component.childLogicSatisfied) {
       // TODO: handle case where child logic is no longer satisfied
@@ -1933,9 +1874,7 @@ export default class Core {
 
   }
 
-  replaceDefiningChildrenBySugar({ component, sugarResults, shadow = false,
-    updatesNeeded, compositesBeingExpanded
-  }) {
+  replaceDefiningChildrenBySugar({ component, sugarResults, shadow = false, updatesNeeded }) {
 
     let componentsShadowingDeleted = {};
 
@@ -2052,7 +1991,7 @@ export default class Core {
       serializedState: sugarResults.newChildren,
       applySugar: true,
       ancestors: ancestorsForChildren,
-      shadow, updatesNeeded, compositesBeingExpanded
+      shadow, updatesNeeded,
     });
 
     this.parameterStack.pop();
@@ -2065,9 +2004,7 @@ export default class Core {
 
   }
 
-  applySugarToShadows({ originalComponent, shadowingComponent, changes, componentsShadowingDeleted,
-    updatesNeeded, compositesBeingExpanded
-  }) {
+  applySugarToShadows({ originalComponent, shadowingComponent, changes, componentsShadowingDeleted, updatesNeeded }) {
 
     // recreate sugar results with the following changes
     // 1. replace childrenToDelete with their shadows from componentsShadowingDeleted
@@ -2180,8 +2117,7 @@ export default class Core {
       component: shadowingComponent,
       sugarResults: shadowChanges,
       shadow: true,
-      updatesNeeded,
-      compositesBeingExpanded
+      updatesNeeded
     });
 
     // recurse if shadowingComponent is shadowed
@@ -2193,14 +2129,13 @@ export default class Core {
             shadowingComponent: shadowingComponent2,
             changes: shadowChanges,
             componentsShadowingDeleted: result.componentsShadowingDeleted,
-            updatesNeeded,
-            compositesBeingExpanded,
+            updatesNeeded
           }))
         }
       }
     }
 
-    this.processNewDefiningChildren({ parent: shadowingComponent, updatesNeeded, compositesBeingExpanded })
+    this.processNewDefiningChildren({ parent: shadowingComponent, updatesNeeded })
 
 
     if (!shadowingComponent.childLogicSatisfied) {
@@ -2397,14 +2332,7 @@ export default class Core {
             }
           }
 
-          if (propertySpecification.definitionForPropertyValue) {
-            return propertySpecification.definitionForPropertyValue({
-              dependencyValues,
-              propertyChild,
-              propertySpecification: new Proxy(propertySpecification, readOnlyProxyHandler),
-              arrayKeys, freshnessInfo
-            })
-          } else if (propertyClass.definitionForPropertyValue) {
+          if (propertyClass.definitionForPropertyValue) {
             return propertyClass.definitionForPropertyValue({
               dependencyValues,
               propertyChild,
@@ -2457,17 +2385,7 @@ export default class Core {
 
           // property based on child
 
-          if (propertySpecification.definitionForPropertyValue) {
-            if (propertySpecification.inverseDefinitionForPropertyValue) {
-              return propertySpecification.inverseDefinitionForPropertyValue({
-                desiredStateVariableValues,
-                dependencyValues,
-                propertySpecification: new Proxy(propertySpecification, readOnlyProxyHandler)
-              })
-            } else {
-              return { success: false }
-            }
-          } else if (propertyClass.definitionForPropertyValue) {
+          if (propertyClass.definitionForPropertyValue) {
             if (propertyClass.inverseDefinitionForPropertyValue) {
               return propertyClass.inverseDefinitionForPropertyValue({
                 desiredStateVariableValues,
@@ -2514,15 +2432,15 @@ export default class Core {
           }
         }
 
-        // if property class (or specification) has own definition for property value
+        // if property class has own definition for property value
         // and default value is not specified for this property
         // then use the definition even if there are no property children
-        // Note: since copy specified default=null for all its properties,
+        // Note: since ref specified default=null for all its properties,
         // default will always be used if not property children,
-        // allowing copy to check if all properties specified are valid
-        let useDefaultIfNoPropertyChild = !(
-          (propertyClass.definitionForPropertyValue || propertySpecification.definitionForPropertyValue)
-          && !("default" in propertySpecification)
+        // allowing ref to check if all properties specified are valid
+        let useDefaultIfNoPropertyChild = (
+          !propertyClass.definitionForPropertyValue
+          || "default" in propertySpecification
         );
 
         definition = function ({ dependencyValues, arrayKeys, freshnessInfo }) {
@@ -2552,14 +2470,7 @@ export default class Core {
             }
           }
 
-          if (propertySpecification.definitionForPropertyValue) {
-            return propertySpecification.definitionForPropertyValue({
-              dependencyValues,
-              propertyChild,
-              propertySpecification: new Proxy(propertySpecification, readOnlyProxyHandler),
-              arrayKeys, freshnessInfo
-            })
-          } else if (propertyClass.definitionForPropertyValue) {
+          if (propertyClass.definitionForPropertyValue) {
             return propertyClass.definitionForPropertyValue({
               dependencyValues,
               propertyChild,
@@ -2598,17 +2509,8 @@ export default class Core {
           }
           // property based on child
 
-          if (propertySpecification.definitionForPropertyValue) {
-            if (propertySpecification.inverseDefinitionForPropertyValue) {
-              return propertySpecification.inverseDefinitionForPropertyValue({
-                desiredStateVariableValues,
-                dependencyValues,
-                propertySpecification: new Proxy(propertySpecification, readOnlyProxyHandler)
-              })
-            } else {
-              return { success: false }
-            }
-          } else if (propertyClass.definitionForPropertyValue) {
+
+          if (propertyClass.definitionForPropertyValue) {
             if (propertyClass.inverseDefinitionForPropertyValue) {
               return propertyClass.inverseDefinitionForPropertyValue({
                 desiredStateVariableValues,
@@ -2664,8 +2566,7 @@ export default class Core {
         "entryPrefixes",
         "requireChildLogicInitiallySatisfied",
         "useDefaultForShadows",
-        "propagateToProps",
-        "disallowOverwiteOnCopy",
+        "propagateToProps"
       ]
 
       for (let attribute of propertyAttributesToCopy) {
@@ -2807,7 +2708,7 @@ export default class Core {
       let defaultValue = propertySpecification.default;
       let thisDependencies = {};
 
-      if (property in compositeComponent.state && !propertySpecification.disallowOverwiteOnCopy) {
+      if (property in compositeComponent.state) {
         thisDependencies.compositeComponentVariable = {
           dependencyType: "componentStateVariable",
           componentIdentity: {
@@ -2861,10 +2762,10 @@ export default class Core {
             !usedDefault.compositeComponentVariable
             || compositeComponent.state[property].useDefaultForShadows
           )) {
-            // if value of property was specified on copy component itself
+            // if value of property was specified on ref component itself
             // then use that property value
 
-            // need to validate it, since copy component
+            // need to validate it, since ref component
             // wouldn't have the validation logic
             let propertyValue = validatePropertyValue({
               value: dependencyValues.compositeComponentVariable,
@@ -2876,7 +2777,7 @@ export default class Core {
             !usedDefault.targetVariable
             || targetComponent.state[property].useDefaultForShadows
           )) {
-            // else if target has property, use that value
+            // else if ref target has property, use that value
             return { newValues: { [property]: dependencyValues.targetVariable } };
 
           } else if (dependencyValues.ancestorProp !== undefined) {
@@ -2916,7 +2817,7 @@ export default class Core {
         inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, usedDefault }) {
 
           if (dependencyValues.compositeComponentVariable !== undefined && !usedDefault.compositeComponentVariable) {
-            // if value of property was specified on copy component itself
+            // if value of property was specified on ref component itself
             // then set that value
             return {
               success: true,
@@ -2927,7 +2828,7 @@ export default class Core {
             };
 
           } else if (dependencyValues.targetVariable !== undefined && !usedDefault.targetVariable) {
-            // else if target has property, set that value
+            // else if ref target has property, set that value
             return {
               success: true,
               instructions: [{
@@ -3319,7 +3220,7 @@ export default class Core {
   //   }
   // }
 
-  applySugarOrAddSugarCreationStateVariables({ component, updatesNeeded, compositesBeingExpanded }) {
+  applySugarOrAddSugarCreationStateVariables({ component, updatesNeeded }) {
 
     let childLogic = component.childLogic;
 
@@ -3347,7 +3248,7 @@ export default class Core {
         }),
         resolvedAction: function ({ updatesNeeded }) {
 
-          let result = core.applySugarOrAddSugarCreationStateVariables({ component, updatesNeeded, compositesBeingExpanded });
+          let result = core.applySugarOrAddSugarCreationStateVariables({ component, updatesNeeded });
 
           core.deleteAllUpstreamDependencies({ component, stateVariables: ["__apply_sugar"], updatesNeeded });
           core.deleteAllDownstreamDependencies({ component, stateVariables: ["__apply_sugar"] });
@@ -3483,7 +3384,6 @@ export default class Core {
               childLogicName,
               dependencyValues,
               updatesNeeded,
-              compositesBeingExpanded
             });
 
             core.deleteAllUpstreamDependencies({ component, stateVariables: [applySugarStateVariable], updatesNeeded });
@@ -3525,8 +3425,7 @@ export default class Core {
           let result = this.resolveStateVariables({
             component,
             stateVariables: [applySugarStateVariable],
-            updatesNeeded,
-            compositesBeingExpanded
+            updatesNeeded
           });
 
           Object.assign(varsUnresolved, result.varsUnresolved);
@@ -3546,8 +3445,7 @@ export default class Core {
         this.replaceChildrenBySugar({
           component,
           childLogicName,
-          updatesNeeded,
-          compositesBeingExpanded
+          updatesNeeded
         });
 
       }
@@ -6138,7 +6036,7 @@ export default class Core {
 
   }
 
-  resolveStateVariables({ component, stateVariables, updatesNeeded, compositesBeingExpanded }) {
+  resolveStateVariables({ component, stateVariables, updatesNeeded }) {
     // console.log(`resolve state variable ${stateVariables ? stateVariables.toString() : ""} for ${component.componentName}`);
 
     let componentName = component.componentName;
@@ -6242,8 +6140,7 @@ export default class Core {
                     let result = this.createFromArrayEntry({
                       stateVariable: downVar,
                       component: depComponent,
-                      updatesNeeded,
-                      compositesBeingExpanded
+                      updatesNeeded
                     });
 
                     for (let cName in result.componentVarsDeleted) {
@@ -6291,11 +6188,7 @@ export default class Core {
                 }
               } else if (dep.expandReplacements) {
                 if (!depComponent.isExpanded) {
-                  let expandResult = this.expandCompositeComponent({
-                    component: depComponent,
-                    updatesNeeded,
-                    compositesBeingExpanded
-                  });
+                  let expandResult = this.expandCompositeComponent({ component: depComponent, updatesNeeded });
 
                   if (!expandResult.success) {
                     resolved = false;
@@ -6408,9 +6301,7 @@ export default class Core {
 
   }
 
-  createFromArrayEntry({ stateVariable, component, updatesNeeded,
-    compositesBeingExpanded, initializeOnly = false
-  }) {
+  createFromArrayEntry({ stateVariable, component, updatesNeeded, initializeOnly = false }) {
 
     let varsUnresolved = {};
     let componentVarsDeleted = {};
@@ -6458,7 +6349,6 @@ export default class Core {
                 this.createFromArrayEntry({
                   stateVariable: additionalVar,
                   component, updatesNeeded,
-                  compositesBeingExpanded,
                   initializeOnly: true
                 });
               }
@@ -6475,8 +6365,7 @@ export default class Core {
           let result = this.resolveStateVariables({
             component,
             stateVariables: allStateVariablesAffected,
-            updatesNeeded,
-            compositesBeingExpanded,
+            updatesNeeded
           });
 
           Object.assign(varsUnresolved, result.varsUnresolved);
@@ -6500,7 +6389,7 @@ export default class Core {
     return { varsUnresolved, componentVarsDeleted };
   }
 
-  resolveAllDependencies(updatesNeeded, compositesBeingExpanded) {
+  resolveAllDependencies(updatesNeeded) {
     // attempt to resolve all dependencies of all components
     // Does not return anything, but if updatesNeeded.unresolvedDependencies
     // is not empty when the function finishes,
@@ -6558,9 +6447,6 @@ export default class Core {
         }
         for (let varName in updatesNeeded.unresolvedByDependent[componentName]) {
           // check if componentName/varName is a resolved state variable
-
-          // in case component was deleted in earlier loop, check again
-          componentDeleted = updatesNeeded.deletedComponents[componentName];
 
           // if components hasn't been expanded, then its replacements aren't resolved
           if (varName === "__replacements" && !componentDeleted && !this.components[componentName].isExpanded) {
@@ -6620,7 +6506,6 @@ export default class Core {
                 component: depComponent,
                 stateVariables: [dep.stateVariable],
                 updatesNeeded,
-                compositesBeingExpanded,
               });
 
               for (let cName in resolveResult.componentVarsDeleted) {
@@ -6634,7 +6519,6 @@ export default class Core {
               if (updatesNeeded.compositesToUpdateReplacements.length > 0) {
                 this.replacementChangesFromCompositesToUpdate({
                   updatesNeeded,
-                  compositesBeingExpanded,
                 });
               }
 
@@ -6686,14 +6570,12 @@ export default class Core {
 
                   this.processNewDefiningChildren({
                     parent: this._components[depComponent.parentName],
-                    updatesNeeded,
-                    compositesBeingExpanded,
+                    updatesNeeded
                   });
 
                   let sugarResult = this.applySugarOrAddSugarCreationStateVariables({
                     component: this._components[depComponent.parentName],
-                    updatesNeeded,
-                    compositesBeingExpanded
+                    updatesNeeded
                   });
 
                   for (let cName in sugarResult.componentVarsDeleted) {
@@ -6707,7 +6589,6 @@ export default class Core {
                   if (updatesNeeded.compositesToUpdateReplacements.length > 0) {
                     this.replacementChangesFromCompositesToUpdate({
                       updatesNeeded,
-                      compositesBeingExpanded
                     });
                   }
 
@@ -6751,14 +6632,12 @@ export default class Core {
 
         this.processNewDefiningChildren({
           parent: this._components[composite.parentName],
-          updatesNeeded,
-          compositesBeingExpanded,
+          updatesNeeded
         });
 
         let sugarResult = this.applySugarOrAddSugarCreationStateVariables({
           component: this._components[composite.parentName],
-          updatesNeeded,
-          compositesBeingExpanded,
+          updatesNeeded
         });
 
         for (let cName in sugarResult.componentVarsDeleted) {
@@ -6774,7 +6653,6 @@ export default class Core {
           if (updatesNeeded.compositesToUpdateReplacements.length > 0) {
             this.replacementChangesFromCompositesToUpdate({
               updatesNeeded,
-              compositesBeingExpanded,
             });
           }
         }
@@ -6904,7 +6782,7 @@ export default class Core {
   }
 
 
-  markChildAndDescendantDependenciesChanged(component, updatesNeeded, compositesBeingExpanded) {
+  markChildAndDescendantDependenciesChanged(component, updatesNeeded) {
 
     // console.log(`mark child and descendant deps changed for ${component.componentName}`)
 
@@ -6917,23 +6795,23 @@ export default class Core {
     if (componentName in this.downstreamDependencies) {
       // only need to change child dependencies if the component already has dependencies
 
-      this.markChildDependenciesChanged(component, updatesNeeded, compositesBeingExpanded);
+      this.markChildDependenciesChanged(component, updatesNeeded);
 
     }
 
     if (component.ancestors) {
 
-      this.markParentDependenciesChanged(component, updatesNeeded, compositesBeingExpanded);
+      this.markParentDependenciesChanged(component, updatesNeeded);
 
-      this.markDescendantDependenciesChanged(component, updatesNeeded, compositesBeingExpanded);
+      this.markDescendantDependenciesChanged(component, updatesNeeded);
 
-      this.markAncestorDependenciesChanged(component, updatesNeeded, compositesBeingExpanded);
+      this.markAncestorDependenciesChanged(component, updatesNeeded);
 
     }
 
   }
 
-  markChildDependenciesChanged(parent, updatesNeeded, compositesBeingExpanded) {
+  markChildDependenciesChanged(parent, updatesNeeded) {
 
     // console.log(`mark child dependencies changed for ${parent.componentName}`)
 
@@ -7076,8 +6954,7 @@ export default class Core {
                     let result = this.createFromArrayEntry({
                       component: this._components[newChildName],
                       stateVariable: vName,
-                      updatesNeeded,
-                      compositesBeingExpanded
+                      updatesNeeded
                     });
                     if (Object.keys(result.varsUnresolved).length > 0) {
                       this.addUnresolvedDependencies({
@@ -7174,7 +7051,8 @@ export default class Core {
 
   }
 
-  markDescendantDependenciesChanged(parent, updatesNeeded, compositesBeingExpanded) {
+  markDescendantDependenciesChanged(parent, updatesNeeded) {
+
     let parentAndAncestors = [
       {
         componentName: parent.componentName,
@@ -7192,13 +7070,7 @@ export default class Core {
         for (let depDescription of descendantDependencies) {
           let upstreamComponentName = depDescription.componentName;
           let dependencyName = depDescription.dependencyName;
-
-          let depsOfStateVar = this.downstreamDependencies[upstreamComponentName][depDescription.stateVariables[0]];
-          if (!depsOfStateVar) {
-            descendantDepsToDelete.push(depDescription);
-            continue;
-          }
-          let currentDep = depsOfStateVar[dependencyName];
+          let currentDep = this.downstreamDependencies[upstreamComponentName][depDescription.stateVariables[0]][dependencyName];
 
 
           if (!currentDep) {
@@ -7315,8 +7187,7 @@ export default class Core {
                       let result = this.createFromArrayEntry({
                         component: this._components[newDescendantName],
                         stateVariable: vName,
-                        updatesNeeded,
-                        compositesBeingExpanded,
+                        updatesNeeded
                       });
                       if (Object.keys(result.varsUnresolved).length > 0) {
                         this.addUnresolvedDependencies({
@@ -7401,7 +7272,7 @@ export default class Core {
         for (let depDescription of descendantDepsToDelete) {
           // if this dependency were deleted, simply delete from descendantDependenciesByAncestor
           if (descendantDependencies.length === 1) {
-            delete this.componentIdentityDependencies.descendantDependenciesByAncestor[ancestorObj.componentName];
+            delete this.componentIdentityDependencies.descendantDependenciesByAncestor[componentName];
           } else {
             descendantDependencies.splice(descendantDependencies.indexOf(depDescription), 1)
           }
@@ -7412,7 +7283,7 @@ export default class Core {
 
   }
 
-  markParentDependenciesChanged(parent, updatesNeeded, compositesBeingExpanded) {
+  markParentDependenciesChanged(parent, updatesNeeded) {
 
     // TODO: test this code
 
@@ -7529,7 +7400,7 @@ export default class Core {
 
   }
 
-  markAncestorDependenciesChanged(parent, updatesNeeded, compositesBeingExpanded) {
+  markAncestorDependenciesChanged(parent, updatesNeeded) {
 
     // TODO: test this code
 
@@ -7686,7 +7557,6 @@ export default class Core {
                   component: this._components[ancestorResults.ancestorFound.componentName],
                   stateVariable: vName,
                   updatesNeeded,
-                  compositesBeingExpanded,
                 });
                 if (Object.keys(result.varsUnresolved).length > 0) {
                   this.addUnresolvedDependencies({
@@ -7736,7 +7606,7 @@ export default class Core {
 
   }
 
-  markReplacementDependenciesChanged(composite, updatesNeeded, compositesBeingExpanded) {
+  markReplacementDependenciesChanged(composite, updatesNeeded) {
     // composite's replacements have changed
     // find all replacement dependencies that include that composite
     // and check for changes in the components
@@ -7884,7 +7754,6 @@ export default class Core {
                       component: this._components[newReplacementName],
                       stateVariable: vName,
                       updatesNeeded,
-                      compositesBeingExpanded
                     });
                     if (Object.keys(result.varsUnresolved).length > 0) {
                       this.addUnresolvedDependencies({
@@ -8438,8 +8307,7 @@ export default class Core {
 
           let componentInd = upDep.downstreamComponentNames.indexOf(componentName);
           if (componentInd === -1) {
-            // presumably component was deleted
-            continue;
+            throw Error(`something went wrong as ${componentName} not a downstreamComponent of ${upDep.dependencyName}`);
           }
 
           // if have multiple components, there must be multiple variables
@@ -8623,7 +8491,7 @@ export default class Core {
 
   }
 
-  updateDependencies(updatesNeeded, compositesBeingExpanded) {
+  updateDependencies(updatesNeeded) {
 
     let dependencyChanges = [];
 
@@ -8797,8 +8665,7 @@ export default class Core {
         this.resolveStateVariables({
           component,
           stateVariables: updateObj.allStateVariablesAffected,
-          updatesNeeded,
-          compositesBeingExpanded,
+          updatesNeeded
         })
 
         for (let varName of updateObj.allStateVariablesAffected) {
@@ -8815,7 +8682,7 @@ export default class Core {
       }
 
       if (haveUnresolved) {
-        this.resolveAllDependencies(updatesNeeded, compositesBeingExpanded);
+        this.resolveAllDependencies(updatesNeeded);
       }
 
       // look up value of all determine dependencies state variables
@@ -8827,14 +8694,14 @@ export default class Core {
 
     }
 
-    this.replacementChangesFromCompositesToUpdate({ updatesNeeded, compositesBeingExpanded })
+    this.replacementChangesFromCompositesToUpdate({ updatesNeeded })
 
     if (updatesNeeded.componentsToUpdateDependencies.length > 0) {
       // TODO: address case where have continued dependencies to update
       // How do we make sure don't have infinite loop?
       console.log(`since found more components to updated dependencies, will try to recurse`)
       console.log(updatesNeeded.componentsToUpdateDependencies)
-      this.updateDependencies(updatesNeeded, compositesBeingExpanded);
+      this.updateDependencies(updatesNeeded);
       // throw Error("Need to address further updates to dependencies caused by composite changes")
     }
 
@@ -8970,18 +8837,15 @@ export default class Core {
     }
   }
 
-  addChildren({ parent, indexOfDefiningChildren, newChildren, updatesNeeded, compositesBeingExpanded }) {
+  addChildren({ parent, indexOfDefiningChildren, newChildren, updatesNeeded }) {
 
     this.spliceChildren(parent, indexOfDefiningChildren, newChildren);
 
-    let newChildrenResult = this.processNewDefiningChildren({
-      parent, updatesNeeded, compositesBeingExpanded
-    });
+    let newChildrenResult = this.processNewDefiningChildren({ parent, updatesNeeded });
 
     let sugarResult = this.applySugarOrAddSugarCreationStateVariables({
       component: parent,
-      updatesNeeded,
-      compositesBeingExpanded
+      updatesNeeded
     });
 
     if (sugarResult.varsUnresolved) {
@@ -9012,12 +8876,10 @@ export default class Core {
     }
   }
 
-  processNewDefiningChildren({ parent, updatesNeeded, compositesBeingExpanded }) {
+  processNewDefiningChildren({ parent, updatesNeeded }) {
 
     this.parameterStack.push(parent.sharedParameters, false);
-    let childResult = this.deriveChildResultsFromDefiningChildren(
-      parent, updatesNeeded, compositesBeingExpanded
-    );
+    let childResult = this.deriveChildResultsFromDefiningChildren(parent, updatesNeeded);
     this.parameterStack.pop();
 
     let ancestorsForChildren = [
@@ -9035,7 +8897,7 @@ export default class Core {
       this.setAncestors(unproxiedChild, ancestorsForChildren);
     }
 
-    this.markChildAndDescendantDependenciesChanged(parent, updatesNeeded, compositesBeingExpanded);
+    this.markChildAndDescendantDependenciesChanged(parent, updatesNeeded);
 
     return childResult;
 
@@ -9079,8 +8941,7 @@ export default class Core {
 
   deleteComponents({ components, deleteUpstreamDependencies = true,
     cancelIfUpstreamDeleteFailure = true, //dryRun = false,
-    updatesNeeded,
-    compositesBeingExpanded
+    updatesNeeded
   }) {
 
     // to delete a component, one must
@@ -9175,28 +9036,20 @@ export default class Core {
       // create shallow copy of definingChildren so can modify
       parent.definingChildren = parent.definingChildren.slice();
 
-      let deletedADefiningChild = false;
-
       for (let ind = parent.definingChildren.length - 1; ind >= 0; ind--) {
         let child = parent.definingChildren[ind];
         if (parentObj.definingChildrenNames.has(child.componentName)) {
           parent.definingChildren.splice(ind, 1);  // delete from array
-          deletedADefiningChild = true;
         }
       }
 
-      if (deletedADefiningChild) {
+      // with new defining children and adjusted replacements
+      // determine if parent can accept the active children that result
+      let childResult = this.processNewDefiningChildren({ parent, updatesNeeded });
 
-        // with new defining children and adjusted replacements
-        // determine if parent can accept the active children that result
-        let childResult = this.processNewDefiningChildren({
-          parent, updatesNeeded, compositesBeingExpanded
-        });
-
-        if (!childResult.success) {
-          console.log("***** can't delete because couldn't derive child results");
-          goAheadAndDelete = false;
-        }
+      if (!childResult.success) {
+        console.log("***** can't delete because couldn't derive child results");
+        goAheadAndDelete = false;
       }
 
       // parent.activeChildren = childResult.activeChildren;
@@ -9234,7 +9087,7 @@ export default class Core {
         let parentObj = parentsOfPotentiallyDeleted[parentName];
         let parent = parentObj.parent;
         parent.definingChildren = previousDefiningChildren[parentName];
-        this.processNewDefiningChildren({ parent, updatesNeeded, compositesBeingExpanded });
+        this.processNewDefiningChildren({ parent, updatesNeeded });
       }
       return { success: false };
     }
@@ -9289,9 +9142,7 @@ export default class Core {
 
     for (let compositeName in replacementsDeleted) {
       if (!(compositeName in componentsToDelete)) {
-        this.markReplacementDependenciesChanged(
-          this._components[compositeName], updatesNeeded, compositesBeingExpanded
-        );
+        this.markReplacementDependenciesChanged(this._components[compositeName], updatesNeeded);
       }
     }
 
@@ -9327,7 +9178,7 @@ export default class Core {
 
       if (deleteUpstreamDependencies === true) {
 
-        // TODO: recurse on copy of the component (other composites?)
+        // TODO: recurse on ref of the component (other composites?)
 
         // recurse on components that shadow
         if (component.shadowedBy) {
@@ -9353,7 +9204,7 @@ export default class Core {
   }
 
   updateCompositeReplacements({ component, componentChanges,
-    sourceOfUpdate, updatesNeeded, compositesBeingExpanded }) {
+    sourceOfUpdate, updatesNeeded }) {
 
     // TODO: this function is only partially converted to the new system
 
@@ -9379,7 +9230,6 @@ export default class Core {
       return results;
     }
 
-    compositesBeingExpanded.push(component.componentName);
 
     let proxiedComponent = this.components[component.componentName];
 
@@ -9420,10 +9270,6 @@ export default class Core {
 
         let newComponents;
 
-        let currentShadowedBy = {
-          [component.componentName]: calculateAllComponentsShadowing(component)
-        }
-
         if (change.serializedReplacements) {
 
           let serializedReplacements = change.serializedReplacements;
@@ -9433,7 +9279,6 @@ export default class Core {
             applySugar: true,
             ancestors: component.ancestors,
             updatesNeeded,
-            compositesBeingExpanded,
           });
 
           newComponents = createResult.components;
@@ -9448,7 +9293,6 @@ export default class Core {
             serializedReplacementsFromComponent,
             component,
             updatesNeeded,
-            compositesBeingExpanded,
           })
 
         } else {
@@ -9467,8 +9311,6 @@ export default class Core {
             componentToShadow: unproxiedComponent,
             parentToShadow: change.parent,
             updatesNeeded,
-            compositesBeingExpanded,
-            currentShadowedBy,
           });
 
           Object.assign(newReplacementsByComposite, newReplacementsForShadows)
@@ -9477,20 +9319,10 @@ export default class Core {
         for (let compositeName in newReplacementsByComposite) {
 
           let composite = this._components[compositeName];
-
-          // if composite was just deleted in previous pass of this loop, skip
-          if (!composite) {
-            continue;
-          }
-
           let newReplacements = newReplacementsByComposite[compositeName].newComponents;
 
           if (!composite.isExpanded) {
-            this.expandCompositeComponent({
-              component: composite,
-              updatesNeeded,
-              compositesBeingExpanded,
-            });
+            this.expandCompositeComponent({ component: composite, updatesNeeded });
 
             let newChange = {
               changeType: "addedReplacements",
@@ -9533,7 +9365,6 @@ export default class Core {
                 components: replacementsToDelete,
                 componentChanges: componentChanges,
                 updatesNeeded,
-                compositesBeingExpanded,
                 // sourceOfUpdate: sourceOfUpdate,
               });
 
@@ -9563,16 +9394,14 @@ export default class Core {
 
             this.processNewDefiningChildren({
               parent,
-              updatesNeeded,
-              compositesBeingExpanded
+              updatesNeeded
             });
 
             updatesNeeded.componentsTouched.push(...this.componentAndRenderedDescendants(parent));
 
             this.applySugarOrAddSugarCreationStateVariables({
               component: parent,
-              updatesNeeded,
-              compositesBeingExpanded,
+              updatesNeeded
             });
 
             // TODO: do we need to do anything if applySugar returns varsUnresolved?
@@ -9586,7 +9415,7 @@ export default class Core {
 
             this.spliceChildren(parent, change.indexOfDefiningChildren, newReplacements);
 
-            this.processNewDefiningChildren({ parent, updatesNeeded, compositesBeingExpanded });
+            this.processNewDefiningChildren({ parent, updatesNeeded });
 
             newReplacements.forEach(x => addedComponents[x.componentName] = x);
 
@@ -9594,8 +9423,7 @@ export default class Core {
 
             this.applySugarOrAddSugarCreationStateVariables({
               component: parent,
-              updatesNeeded,
-              compositesBeingExpanded,
+              updatesNeeded
             });
 
             // TODO: do we need to do anything if applySugar returns varsUnresolved?
@@ -9625,7 +9453,6 @@ export default class Core {
           componentChanges, sourceOfUpdate,
           parentsOfDeleted, deletedComponents, addedComponents,
           updatesNeeded,
-          compositesBeingExpanded,
         });
 
 
@@ -9681,29 +9508,21 @@ export default class Core {
           this.adjustReplacementsToWithhold(component, change, componentChanges);
         }
 
-        this.processChildChangesAndRecurseToShadows({ component, updatesNeeded, compositesBeingExpanded });
+        this.processChildChangesAndRecurseToShadows({ component, updatesNeeded });
 
       }
 
     }
 
     if (changedReplacementIdentities) {
-      this.markReplacementDependenciesChanged(component, updatesNeeded, compositesBeingExpanded);
+      this.markReplacementDependenciesChanged(component, updatesNeeded);
 
       // TODO: make this more specific so just updates descendants
       // of direct parent of composite, as that's the only one that would see
       // replacements as a descendant?
-      this.markDescendantDependenciesChanged(component, updatesNeeded, compositesBeingExpanded);
+      this.markDescendantDependenciesChanged(component, updatesNeeded);
 
     }
-
-    // record that are finished expanding the composite
-    let targetInd = compositesBeingExpanded.indexOf(component.componentName);
-    if (targetInd === -1) {
-      throw Error(`Something is wrong as we lost track that we were updating composite ${component.componentName}`);
-    }
-    compositesBeingExpanded.splice(targetInd, 1);
-
 
     let results = {
       success: true,
@@ -9721,12 +9540,7 @@ export default class Core {
     componentChanges, sourceOfUpdate,
     parentsOfDeleted, deletedComponents, addedComponents,
     updatesNeeded,
-    compositesBeingExpanded
   }) {
-
-    if (!composite.isExpanded) {
-      return;
-    }
 
     if (composite.shadowedBy) {
       for (let shadowingComposite of composite.shadowedBy) {
@@ -9760,8 +9574,7 @@ export default class Core {
           componentsToDelete: shadowingComponentsToDelete,
           componentChanges, sourceOfUpdate,
           parentsOfDeleted, deletedComponents, addedComponents,
-          updatesNeeded,
-          compositesBeingExpanded
+          updatesNeeded
         })
       }
     }
@@ -9810,8 +9623,7 @@ export default class Core {
       let parent = this._components[composite.parentName];
       this.processNewDefiningChildren({
         parent,
-        updatesNeeded,
-        compositesBeingExpanded
+        updatesNeeded
       });
       updatesNeeded.componentsTouched.push(...this.componentAndRenderedDescendants(parent));
     }
@@ -9825,7 +9637,6 @@ export default class Core {
         componentChanges: componentChanges,
         sourceOfUpdate: sourceOfUpdate,
         updatesNeeded,
-        compositesBeingExpanded
       });
       if (deleteResults.success === false) {
         throw Error("Couldn't delete components prescribed by composite");
@@ -9856,13 +9667,12 @@ export default class Core {
     }
   }
 
-  processChildChangesAndRecurseToShadows({ component, updatesNeeded, compositesBeingExpanded }) {
+  processChildChangesAndRecurseToShadows({ component, updatesNeeded }) {
     let parent = this._components[component.parentName];
     this.processNewDefiningChildren({
       parent,
       applySugar: true,
-      updatesNeeded,
-      compositesBeingExpanded
+      updatesNeeded
     });
     updatesNeeded.componentsTouched.push(...this.componentAndRenderedDescendants(parent));
 
@@ -9870,8 +9680,7 @@ export default class Core {
       for (let shadowingComponent of component.shadowedBy) {
         this.processChildChangesAndRecurseToShadows({
           component: shadowingComponent,
-          updatesNeeded,
-          compositesBeingExpanded
+          updatesNeeded
         })
       }
     }
@@ -9882,44 +9691,11 @@ export default class Core {
     componentToShadow,
     parentToShadow,
     updatesNeeded,
-    compositesBeingExpanded,
-    currentShadowedBy,
   }) {
-
-    let newShadowedBy = calculateAllComponentsShadowing(componentToShadow);
-
-    if (!currentShadowedBy[componentToShadow.componentName] ||
-      !newShadowedBy.every(
-        x => currentShadowedBy[componentToShadow.componentName].includes(x)
-      )
-    ) {
-      // If components shadowing componentToShadow increased
-      // that means it is shadowed by one of its newly created replacements
-      // so we have a circular reference
-      throw Error(`circular reference involving ${componentToShadow.componentName}`);
-    }
-
-    if (compositesBeingExpanded.length > 3) {
-      throw Error('too long')
-    }
-
-    // use compositesBeingExpanded to look for circular dependence
-    compositesBeingExpanded.push(componentToShadow.componentName);
 
     let newComponentsForShadows = {};
 
     for (let shadowingComponent of componentToShadow.shadowedBy) {
-
-      if (compositesBeingExpanded.includes(shadowingComponent.componentName)) {
-        throw Error(`circular dependence involving ${shadowingComponent.componentName}`)
-      }
-
-      if (shadowingComponent.shadowedBy) {
-        currentShadowedBy[shadowingComponent.componentName] = shadowingComponent.shadowedBy.map(
-          x => x.componentName
-        )
-      }
-
       let newSerializedReplacements = replacementsToShadow.map(x => x.serialize({ forCopy: true }))
       newSerializedReplacements = postProcessCopy({
         serializedComponents: newSerializedReplacements,
@@ -9933,7 +9709,6 @@ export default class Core {
         applySugar: true,
         ancestors: shadowingComponent.ancestors,
         updatesNeeded,
-        compositesBeingExpanded,
       });
 
       newComponents = createResult.components;
@@ -9964,19 +9739,10 @@ export default class Core {
           componentToShadow: shadowingComponent,
           parentToShadow: shadowingParent,
           updatesNeeded,
-          compositesBeingExpanded,
-          currentShadowedBy,
         })
         Object.assign(newComponentsForShadows, recursionComponents);
       }
     }
-
-    // record that are finished expanding the composite
-    let targetInd = compositesBeingExpanded.indexOf(componentToShadow.componentName);
-    if (targetInd === -1) {
-      throw Error(`Something is wrong as we lost track that we were expanding ${component.componentName}`);
-    }
-    compositesBeingExpanded.splice(targetInd, 1)
 
     return newComponentsForShadows;
 
@@ -10136,8 +9902,6 @@ export default class Core {
       deletedComponents: {},
     }
 
-    let compositesBeingExpanded = [];
-
     let newStateVariableValues = {};
     let sourceInformation = {};
     let workspace = {};
@@ -10155,10 +9919,7 @@ export default class Core {
 
       if (instruction.updateType === "updateValue") {
 
-        let additionalChanges = this.requestComponentChanges({
-          instruction, workspace,
-          updatesNeeded,
-        });
+        let additionalChanges = this.requestComponentChanges({ instruction, workspace, updatesNeeded });
         for (let cName in additionalChanges.newStateVariableValues) {
           if (!newStateVariableValues[cName]) {
             newStateVariableValues[cName] = {};
@@ -10196,7 +9957,6 @@ export default class Core {
     this.executeUpdateStateVariables({
       newStateVariableValues,
       updatesNeeded,
-      compositesBeingExpanded,
       saveSerializedState,
       sourceOfUpdate: {
         sourceInformation,
@@ -10208,8 +9968,7 @@ export default class Core {
     return { success: true };
   }
 
-  executeUpdateStateVariables({ newStateVariableValues,
-    updatesNeeded, compositesBeingExpanded,
+  executeUpdateStateVariables({ newStateVariableValues, updatesNeeded,
     saveSerializedState = true, sourceOfUpdate
   }) {
 
@@ -10249,11 +10008,11 @@ export default class Core {
     this.processNewStateVariableValues(newStateVariableValues, updatesNeeded);
 
     // calculate any replacement changes on composites touched
-    this.replacementChangesFromCompositesToUpdate({ updatesNeeded, compositesBeingExpanded });
+    this.replacementChangesFromCompositesToUpdate({ updatesNeeded });
 
     if (Object.keys(updatesNeeded.unresolvedDependencies).length > 0) {
       updatesNeeded.unresolvedMessage = "";
-      this.resolveAllDependencies(updatesNeeded, compositesBeingExpanded);
+      this.resolveAllDependencies(updatesNeeded);
     }
 
 
@@ -10280,7 +10039,7 @@ export default class Core {
     }
 
 
-    this.updateDependencies(updatesNeeded, compositesBeingExpanded);
+    this.updateDependencies(updatesNeeded);
 
 
     // console.log("replacementResults")
@@ -10333,7 +10092,7 @@ export default class Core {
   }
 
   replacementChangesFromCompositesToUpdate({
-    updatesNeeded, compositesBeingExpanded
+    updatesNeeded,
   }) {
 
     let compositesToUpdateReplacements = [...new Set(updatesNeeded.compositesToUpdateReplacements)];
@@ -10353,8 +10112,7 @@ export default class Core {
             let result = this.updateCompositeReplacements({
               component: composite,
               componentChanges,
-              updatesNeeded,
-              compositesBeingExpanded
+              updatesNeeded
             });
 
             for (let componentName in result.addedComponents) {
@@ -10938,21 +10696,4 @@ function validatePropertyValue({ value, propertySpecification, property }) {
   }
 
   return value;
-}
-
-function calculateAllComponentsShadowing(component) {
-  let allShadowing = [];
-  if (component.shadowedBy) {
-    for (let comp2 of component.shadowedBy) {
-      allShadowing.push(comp2.componentName);
-      let additionalShadowing = calculateAllComponentsShadowing(comp2);
-      allShadowing.push(...additionalShadowing);
-    }
-  }
-  if (component.replacementOf) {
-    let additionalShadowing = calculateAllComponentsShadowing(component.replacementOf);
-    allShadowing.push(...additionalShadowing);
-  }
-
-  return allShadowing;
 }

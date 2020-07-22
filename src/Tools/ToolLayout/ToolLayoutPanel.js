@@ -13,7 +13,6 @@ import SplitLayoutPanel from './SplitLayoutPanel';
 const MainContent = styled.div`
   width: 100%;
   overflow:auto;
-  background-color:white;
   height:  calc(100vh - ${props => props.height});
   flex-direction: row;
   display: flex;

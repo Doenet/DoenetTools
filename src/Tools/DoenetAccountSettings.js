@@ -16,6 +16,7 @@ import axios from "axios";
 // general styled components
 let SpanAll = styled.div`
   grid-column: 1/-1;
+  color:white;
 `;
 
 let WidthEnforcer = styled.div`
@@ -160,6 +161,7 @@ export default function DoenetProfile(props) {
     //Not signed in
     return (
       <ToolLayout toolName="Account Settings" headerChangesFromLayout={profile}>
+        <ToolLayoutPanel >
         <SpanAll>
           <SectionHeader>Tracking</SectionHeader>
           <StyledSwitch
@@ -188,6 +190,8 @@ export default function DoenetProfile(props) {
             </em>
           </p>
         </SpanAll>
+        </ToolLayoutPanel>
+        
       </ToolLayout>
     )
 
