@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-axios.defaults.withCredentials = true;
 import crypto from 'crypto';
 import DoenetViewer from './DoenetViewer';
 import "./editor.css";

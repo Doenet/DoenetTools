@@ -15,7 +15,6 @@ $branchId = mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
 
 //Test if didn't request with a branchId
 if ($branchId == ""){
-	echo "here";
 	$response_arr = array(
 		"success" => 0,
 		"doenetML" => "",
@@ -37,14 +36,15 @@ if ($branchId == ""){
 		$response_arr = array(
 			"success" => 0,
 			"doenetML" => "",
-			);
+			"reason" => "No Matching Content",
+	);
 	}else{
 		$content_id_array = array();
 		while ($row = $result->fetch_assoc()){
 			
 			array_push($content_id_array,$row["contentId"]);
 		}
-	}
+	} //This in the right spot?
 
 	//SECURITY
 	//1 - test if branch is public
@@ -59,7 +59,8 @@ if ($branchId == ""){
 		$response_arr = array(
 			"success" => 0,
 			"doenetML" => "",
-			);
+			"reason" => "No Matching Content",
+		);
 	}else{
 
 		//Assume they should have access

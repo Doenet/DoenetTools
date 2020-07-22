@@ -162,6 +162,27 @@ class DoenetHeader extends Component {
       this.profilePicture = "anonymous";
     }
     
+
+    this.profileMenuMap = [
+      {
+        id: "Account",
+        label: "Account settings",
+        link: "/accountsettings/"
+      }];
+    if (props.isSignedIn) {
+      this.profileMenuMap.push({
+        id: "SignOut",
+        label: "Sign out",
+        link: "/signout/",
+      });
+    } else {
+      this.profileMenuMap.push({
+        id: "SignIn",
+        label: "Sign in",
+        link: "/signin/",
+      });
+    }
+    
     this.populateMenuToolbox(props.profile.toolAccess)
     this.profilePicture = this.props.profile.profilePicture;
     this.prepareProfileDropDown(this.profilePicture);
@@ -189,7 +210,6 @@ class DoenetHeader extends Component {
       }];
     
   }
-
 
   populateMenuToolbox(tools){
     const toolObjs = {
@@ -219,7 +239,6 @@ class DoenetHeader extends Component {
         link: "/dashboard/"
       }
     }
-  
     this.menuToolBoxItems = [];
     for (let tool of tools){
       this.menuToolBoxItems.push(toolObjs[tool.toLowerCase()]);
@@ -251,6 +270,13 @@ class DoenetHeader extends Component {
         link: "/signin/",
       });
     }
+  }  
+  componentWillReceiveProps(props) {
+    if (props.headerChangesFromLayout && props.headerChangesFromLayout.toolAccess){
+      this.populateMenuToolbox(props.headerChangesFromLayout.toolAccess);
+      this.profilePicture = props.headerChangesFromLayout.profilePicture;
+    }
+ 
   }
 
   componentWillReceiveProps(props) {
@@ -260,6 +286,7 @@ class DoenetHeader extends Component {
       this.prepareProfileDropDown(this.profilePicture);
   }
   }
+    
 
 
   componentWillUnmount() {
