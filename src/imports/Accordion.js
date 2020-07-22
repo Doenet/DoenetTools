@@ -2,6 +2,7 @@
 import React, { Component, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import "./accordion.css" 
 
 export default class Accordion extends Component {
 
@@ -55,8 +56,8 @@ export default class Accordion extends Component {
       } = this;
   
       return (
-        <div style={{ "width": "100%", "cursor": 'pointer' }}>
-          <div onClick={onClick} data-cy="coursesAccordion" style={{color: "#03a1fc", backgroundColor: isOpen && '#d9eefa' }}>
+        <div style={{ "width": "100%", "cursor": 'pointer', "fontWeight": "bold" }}>
+          <div onClick={onClick} data-cy="coursesAccordion" style={{color: "#03a1fc", backgroundColor: isOpen && '#d9eefa' , borderLeft: isOpen && '10px solid blue', padding: '3px'}}>
             {isOpen ?  <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronDown} /> :
               <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronRight} />}
             {label}
