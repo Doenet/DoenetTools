@@ -1,6 +1,7 @@
 import ChildLogicClass from '../../ChildLogic';
 import readOnlyProxyHandler from '../../ReadOnlyProxyHandler';
 import createStateProxyHandler from '../../StateProxyHandler';
+import { mapDeep } from '../../utils/array';
 
 export default class BaseComponent {
   constructor({
@@ -228,6 +229,9 @@ export default class BaseComponent {
       "returnDependencies", "definition",
       "inverseDefinition", "stateVariablesDeterminingDependencies",
       "isArray", "nDimensions",
+      "returnArraySizeDependencies", "returnArraySize",
+      "returnArrayDependenciesByKey", "arrayDefinitionByKey",
+      "inverseArrayDefinitionByKey",
       "markStale", "getPreviousDependencyValuesForMarkStale",
       "triggerParentChildLogicWhenResolved",
     ];
@@ -300,7 +304,7 @@ export default class BaseComponent {
             }
           }
         } else {
-          console.warn(`entryPrefixes ignored for property ${varName} of ${this.componentName}`)
+          console.warn(`entryPrefixes ignored for property ${varName} of ${this.componentType}`)
         }
       }
 
@@ -322,10 +326,14 @@ export default class BaseComponent {
         };
         if (theStateDef.isArray) {
           stateVariableDescriptions[varName].isArray = true;
+          stateVariableDescriptions[varName].nDimensions = theStateDef.nDimensions === undefined ? 1 : theStateDef.nDimensions;
+          stateVariableDescriptions[varName].wrappingComponents = theStateDef.returnWrappingComponents ? mapDeep(theStateDef.returnWrappingComponents(), x => x.toLowerCase()) : [];
           if (theStateDef.entryPrefixes) {
             for (let prefix of theStateDef.entryPrefixes) {
               arrayEntryPrefixes[prefix] = {
                 arrayVariableName: varName,
+                nDimensions: theStateDef.returnEntryDimensions ? theStateDef.returnEntryDimensions(prefix) : 1,
+                wrappingComponents: theStateDef.returnWrappingComponents ? mapDeep(theStateDef.returnWrappingComponents(prefix), x => x.toLowerCase()) : []
               }
             }
           }

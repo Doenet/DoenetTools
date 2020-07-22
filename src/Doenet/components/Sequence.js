@@ -824,7 +824,7 @@ export default class Sequence extends CompositeComponent {
       }
 
       if (component.stateValues.selectedType === "math") {
-        if (component.stateValues.exclude.some(x => x.equals(componentValue))) {
+        if (component.stateValues.exclude.some(x => x && x.equals(componentValue))) {
           continue;
         }
       } else {

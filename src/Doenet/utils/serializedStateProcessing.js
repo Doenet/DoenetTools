@@ -1,5 +1,6 @@
 import me from 'math-expressions';
 import { createUniqueName } from './naming';
+import { flattenDeep } from './array';
 
 export function scrapeOffAllDoumentRelated(serializedState) {
 
@@ -396,11 +397,6 @@ export function createComponentsFromProps(serializedState, standardComponentClas
 // function lowercaseDeep(arr1) {
 //   return arr1.map(val => Array.isArray(val) ? lowercaseDeep(val) : val.toLowerCase());
 // }
-
-// from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat
-function flattenDeep(arr1) {
-  return arr1.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
-}
 
 function breakStringByCommasWithParens(string) {
   let Nparens = 0;
