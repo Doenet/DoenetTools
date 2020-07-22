@@ -17,6 +17,7 @@ import IndexedDB from '../services/IndexedDB';
 import DoenetBranchBrowser from './DoenetBranchBrowser';
 import SpinningLoader from './SpinningLoader';
 import { TreeView } from './TreeView/TreeView';
+import Accordion from "../imports/Accordion";
 import styled from 'styled-components';
 import { ToastContext, useToasts, ToastProvider } from './ToastManager';
 import ChooserConstants from './chooser/ChooserConstants';
@@ -2424,7 +2425,7 @@ class DoenetChooser extends Component {
       //   }
       // }
       // console.log('customizedContentTreeChildrenInfo', customizedContentTreeChildrenInfo);
-      // console.log('customizedContentTreeParentInfo', customizedContentTreeParentInfo);
+      console.log('customizedContentTreeParentInfo', customizedContentTreeParentInfo);
       // console.log('customizedCoursesTreeParentInfo', customizedCoursesTreeParentInfo);
       // console.log('customizedCoursesTreeChildrenInfo', customizedCoursesTreeChildrenInfo);
       this.customizedTree = <div className="tree-column">
@@ -2474,9 +2475,9 @@ class DoenetChooser extends Component {
                   },
                   // "frame": { border: "1px #a4a4a4 solid" },
                 },
-                specialChildNode: {
-                  "frame": { backgroundColor: "hsl(206, 66%, 85%)" ,color: "#d9eefa"},
-                },
+                // specialChildNode: {
+                //   "frame": { backgroundColor: "hsl(206, 66%, 85%)" ,color: "#d9eefa"},
+                // },
                 // specialParentNode: {
                 //   "frame": { background: "#a7a7a7" },
                 // },
@@ -2760,7 +2761,7 @@ class DoenetChooser extends Component {
     // const mainPanelMenuControls = [switchPanelButton];
     const mainPanelMenuControls = [switchPanelButton];
     const middlePanelMenuControls = [splitPanelButton];
-    const rightPanelMenuControls = [dropDownSelectButton, splitSwitchPanelButton];
+    const rightPanelMenuControls = [ dropDownSelectButton, splitSwitchPanelButton];
     const createMiddlePanelContent = (match) => {
       return (<ToolLayoutPanel
         panelName="Main Panel"
@@ -3194,73 +3195,73 @@ class AddRoleForm extends React.Component {
   }
 }
 
-class Accordion extends Component {
+// class Accordion extends Component {
 
-  constructor(props) {
-    super(props);
-    const openSections = {};
-    this.state = { openSections };
-  }
+//   constructor(props) {
+//     super(props);
+//     const openSections = {};
+//     this.state = { openSections };
+//   }
 
-  onClick = label => {
-    const {
-      state: { openSections },
-    } = this;
+//   onClick = label => {
+//     const {
+//       state: { openSections },
+//     } = this;
 
-    const isOpen = !!openSections[label];
+//     const isOpen = !!openSections[label];
 
-    this.setState({
-      openSections: {
-        [label]: !isOpen
-      }
-    });
-  };
+//     this.setState({
+//       openSections: {
+//         [label]: !isOpen
+//       }
+//     });
+//   };
 
-  render() {
-    const {
-      onClick,
-      props: { children },
-      state: { openSections },
-    } = this;
+//   render() {
+//     const {
+//       onClick,
+//       props: { children },
+//       state: { openSections },
+//     } = this;
 
-    return (
-      <AccordionSectionCustom
-        isOpen={!!openSections[children.props.label]}
-        label={children.props.label}
-        onClick={onClick}>
-        {children.props.children}
-      </AccordionSectionCustom>
-    );
-  }
-}
-class AccordionSectionCustom extends Component {
+//     return (
+//       <AccordionSectionCustom
+//         isOpen={!!openSections[children.props.label]}
+//         label={children.props.label}
+//         onClick={onClick}>
+//         {children.props.children}
+//       </AccordionSectionCustom>
+//     );
+//   }
+// }
+// class AccordionSectionCustom extends Component {
 
-  onClick = () => {
-    this.props.onClick(this.props.label);
-  };
+//   onClick = () => {
+//     this.props.onClick(this.props.label);
+//   };
 
-  render() {
-    const {
-      onClick,
-      props: { isOpen, label },
-    } = this;
+//   render() {
+//     const {
+//       onClick,
+//       props: { isOpen, label },
+//     } = this;
 
-    return (
-      <div style={{ "width": "100%", "cursor": 'pointer' }}>
-        <div onClick={onClick} data-cy="coursesAccordion" style={{color: "#03a1fc" }}>
-          {isOpen ?  <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronDown} /> :
-            <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronRight} />}
-          {label}
-        </div>
-        {isOpen && (
-          <div>
-            {this.props.children}
-          </div>
-        )}
-      </div>
-    );
-  }
-}
+//     return (
+//       <div style={{ "width": "100%", "cursor": 'pointer' }}>
+//         <div onClick={onClick} data-cy="coursesAccordion" style={{color: "#03a1fc" }}>
+//           {isOpen ?  <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronDown} /> :
+//             <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronRight} />}
+//           {label}
+//         </div>
+//         {isOpen && (
+//           <div>
+//             {this.props.children}
+//           </div>
+//         )}
+//       </div>
+//     );
+//   }
+// }
 
 class AccordionSection extends Component {
 
