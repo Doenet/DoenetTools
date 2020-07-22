@@ -14,6 +14,7 @@ module.exports = {
     "chooser/index.js":"./src/chooser/index.js",
     "course/index.js": "./src/course/index.js",
     "docs/index.js": "./src/docs/index.js",
+    "dragdrop/index.js": "./src/dragdrop/index.js",
     "editor/index.js": "./src/editor/index.js",
     "exam/index.js": "./src/exam/index.js",
     "gradebook/index.js": "./src/gradebook/index.js",
@@ -105,6 +106,12 @@ module.exports = {
       chunks: ['docs/index.js'],
       template: "./src/docs/index.html",
       filename: "./docs/index.html",
+      // favicon: "",
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ['dragdrop/index.js'],
+      template: "./src/dragdrop/index.html",
+      filename: "./dragdrop/index.html",
       // favicon: "",
     }),
     new HtmlWebPackPlugin({
