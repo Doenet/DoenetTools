@@ -42,6 +42,6 @@ jobs:
     # - name: Build the Containers
     #   run: npm run docker:build
     - name: Start the Server
-      run: npm start & wait-on localhost
+      run: sudo npm start & wait-on localhost
     - name: Run Tests
       run: npm run test:all
