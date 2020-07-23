@@ -42,7 +42,7 @@ jobs:
     - name: Build the Containers
       run: sudo npm run docker:build
     - name: Anticipate a Crash
-      run: npm start & sleep 30 && docker stop $(docker ps -a)
+      run: npm start & sleep 60 && docker stop $(docker ps -a)
     - name: Start the Server
       run: sudo npm start & wait-on localhost
     - name: Run Tests
