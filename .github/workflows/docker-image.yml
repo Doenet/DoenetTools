@@ -39,9 +39,9 @@ jobs:
         node-version: '10.x'
     - name: Install Dependencies
       run: npm install && npm install -g wait-on
-    # - name: Build the Containers
-    #   run: npm run docker:build
+    - name: Build the Containers
+      run: npm run docker:build
     - name: Start the Server
-      run: sudo npm start & wait-on localhost
+      run: npm start & wait-on localhost
     - name: Run Tests
       run: npm run test:all
