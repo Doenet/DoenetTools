@@ -40,8 +40,8 @@ jobs:
     - name: Install Dependencies
       run: npm install && npm install -g wait-on
     - name: Build the Containers
-      run: npm run docker:build
+      run: sudo npm run docker:build
     - name: Start the Server
-      run: npm start & wait-on localhost
+      run: sudo npm start & wait-on localhost
     - name: Run Tests
       run: npm run test:all
