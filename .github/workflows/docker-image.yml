@@ -39,11 +39,12 @@ jobs:
         node-version: '10.x'
     - name: Install Dependencies
       run: npm install && npm install -g wait-on
+    - name: Make dist_local Folder
+      run: mkdir dist_local
+    - name: Show File Structure
+      run: ls . && echo '===' && ls dist_local
     - name: Build the Containers
       run: npm run docker:build
-    # - name: Anticipate a Crash
-    #   continue-on-error: true
-    #   run: npm start & sleep 60 && docker stop $(docker ps)
     - name: Start the Server
       run: npm start & wait-on localhost
     - name: Run Tests
