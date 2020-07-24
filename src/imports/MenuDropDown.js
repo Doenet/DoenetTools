@@ -46,9 +46,8 @@ const DropDownContentItem = styled.div`
 `
 
 const DropdownLabelLink = styled.div`
-    padding: 5px 5px;
-    // min-height: 40px;
-    height:35px;
+
+    height:45px;
     justify-content: center;
     align-items: center;
     background-color: ${props => props.selected ? 'rgb(58, 172, 144)' : 'transperant'};
