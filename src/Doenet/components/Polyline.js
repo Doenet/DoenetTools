@@ -272,11 +272,11 @@ export default class Polyline extends GraphicalComponent {
           let [pointInd, dimInd] = arrayKey.split(",");
           let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
 
-          let vertexChild = dependencyValuesByKey[arrayKey].verticesChild;
-          if (vertexChild.length === 1
-            && vertexChild[0].stateValues["pointX" + varEnding]
+          let verticesChild = dependencyValuesByKey[arrayKey].verticesChild;
+          if (verticesChild.length === 1
+            && verticesChild[0].stateValues["pointX" + varEnding]
           ) {
-            vertices[arrayKey] = vertexChild[0].stateValues["pointX" + varEnding];
+            vertices[arrayKey] = verticesChild[0].stateValues["pointX" + varEnding];
           } else {
             vertices[arrayKey] = me.fromAst('\uff3f');
           }

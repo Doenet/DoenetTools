@@ -210,7 +210,27 @@ export default class When extends BaseComponent {
       definition: evaluateLogic
     };
 
-    stateVariableDefinitions.responseComponents = {
+
+    stateVariableDefinitions.nResponses = {
+      returnDependencies: () => ({
+        allDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: ["_base"],
+          variableNames: ["isResponse", "nValues"],
+          variablesOptional: true,
+          requireChildLogicInitiallySatisfied: true,
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          nResponses: dependencyValues.allDescendants
+            .filter(x => x.stateValues.isResponse)
+            .reduce((a, c) => a + (c.stateValues.nValues === undefined ? 1 : c.stateValues.nValues), 0)
+        }
+      })
+    }
+
+    stateVariableDefinitions.responses = {
       returnDependencies: () => ({
         allDescendants: {
           dependencyType: "descendantStateVariables",
@@ -220,9 +240,15 @@ export default class When extends BaseComponent {
           requireChildLogicInitiallySatisfied: true,
         }
       }),
-      definition: ({dependencyValues}) => ({
+      definition: ({ dependencyValues }) => ({
         newValues: {
-          responseComponents: dependencyValues.allDescendants.filter(x=> x.stateValues.isResponse)
+          responses: dependencyValues.allDescendants
+            .filter(x => x.stateValues.isResponse)
+            .map(x => ({
+              componentType: x.componentType,
+              value: x.stateValues.value,
+              values: x.stateValues.values
+            }))
         }
       })
     }

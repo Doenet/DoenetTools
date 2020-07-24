@@ -198,17 +198,9 @@ export default class Choiceinput extends Input {
       isArray: true,
       entryPrefixes: ["selectedIndex"],
       forRenderer: true,
-      returnArraySizeDependencies: () => ({
-        numberChoices: {
-          dependencyType: "stateVariable",
-          variableName: "numberChoices",
-        },
-      }),
-      returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numberChoices];
-      },
-      returnArrayDependenciesByKey() {
-        let globalDependencies = {
+      entireArrayAtOnce: true,
+      returnDependencies() {
+        return {
           choiceOrder: {
             dependencyType: "stateVariable",
             variableName: "choiceOrder"
@@ -219,12 +211,11 @@ export default class Choiceinput extends Input {
             variableNames: ["selected"]
           },
         };
-        return { globalDependencies }
       },
-      arrayDefinitionByKey({ globalDependencyValues }) {
+      entireArrayDefinition({ dependencyValues }) {
 
         let selectedIndices = [];
-        let choiceChildrenOrdered = globalDependencyValues.choiceOrder.map(i => globalDependencyValues.choiceChildren[i]);
+        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
 
         for (let [ind, choiceChild] of choiceChildrenOrdered.entries()) {
           if (choiceChild.stateValues.selected) {
@@ -233,12 +224,12 @@ export default class Choiceinput extends Input {
         }
         return { newValues: { selectedIndices } }
       },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
+      inverseDefinition({ desiredStateVariableValues, dependencyValues,
       }) {
         let instructions = [];
-        for (let [ind, choiceChild] of globalDependencyValues.choiceChildren.entries()) {
+        for (let [ind, choiceChild] of dependencyValues.choiceChildren.entries()) {
 
-          let indexInOrder = globalDependencyValues.choiceOrder.indexOf(ind) + 1;
+          let indexInOrder = dependencyValues.choiceOrder.indexOf(ind) + 1;
           let choiceSelected = desiredStateVariableValues.selectedIndices.includes(indexInOrder);
           if (choiceChild.stateValues.selected !== choiceSelected) {
             instructions.push({
@@ -269,17 +260,9 @@ export default class Choiceinput extends Input {
       componentType: "text",
       isArray: true,
       entryPrefixes: ["selectedValue"],
-      returnArraySizeDependencies: () => ({
-        numberChoices: {
-          dependencyType: "stateVariable",
-          variableName: "numberChoices",
-        },
-      }),
-      returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numberChoices];
-      },
-      returnArrayDependenciesByKey() {
-        let globalDependencies = {
+      entireArrayAtOnce: true,
+      returnDependencies() {
+        return {
           selectedIndices: {
             dependencyType: "stateVariable",
             variableName: "selectedIndices"
@@ -289,13 +272,17 @@ export default class Choiceinput extends Input {
             variableName: "choiceTexts"
           }
         };
-        return { globalDependencies }
       },
-      arrayDefinitionByKey({ globalDependencyValues }) {
+      entireArrayDefinition({ dependencyValues }) {
+        console.log(`definition of selected values`)
+        console.log(dependencyValues)
+        console.log(dependencyValues.selectedIndices
+          .map(i => dependencyValues.choiceTexts[i - 1])
+        )
         return {
           newValues: {
-            selectedValues: globalDependencyValues.selectedIndices
-              .map(i => globalDependencyValues.choiceTexts[i - 1])
+            selectedValues: dependencyValues.selectedIndices
+              .map(i => dependencyValues.choiceTexts[i - 1])
           }
         }
       }
@@ -311,6 +298,17 @@ export default class Choiceinput extends Input {
       targetVariableName: "selectedValues"
     };
 
+    stateVariableDefinitions.nValues = {
+      returnDependencies: () => ({
+        values: {
+          dependencyType: "stateVariable",
+          variableName: "values"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { nValues: dependencyValues.values.length }
+      })
+    }
 
     stateVariableDefinitions.creditAchievedIfSubmit = {
       returnDependencies: () => ({

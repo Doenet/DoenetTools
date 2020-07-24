@@ -3872,6 +3872,22 @@ export default class Core {
           dependencyType: "stateVariable",
           variableName: stateVarObj.arrayKeysStateVariable
         }
+
+        // We keep track of how many names were defined when we calculate dependencies
+        // If this number changes, it should be treated as dependencies changing
+        // so that we recalculate the value of the arrayEntry variable
+        // TODO: we are communicating this to updateDependencies by adding
+        // an attribute to the arguments?  Is there a better way of doing it.
+        // Didn't want to add to the return value, as that would add complexity
+        // to how we normally define returnDependencies
+        // We could change returnDependencies to output an object.
+        // That would probably be cleaner.
+        let numNames = Object.keys(arrayStateVarObj.dependencyNames.namesByKey).length;
+        if(stateVarObj.numberNamesInPreviousReturnDep !==numNames) {
+          args.changedDependency = true;
+        }
+        stateVarObj.numberNamesInPreviousReturnDep = numNames;
+
         return dependencies
       }
     }
@@ -4307,6 +4323,18 @@ export default class Core {
         for (let arrayKey of args.arrayKeys) {
           // namesByKey also functions to indicate that dependencies
           // have been returned for that arrayKey
+
+        // If had additional nameByKey, it should be treated as dependencies changing
+        // so that we recalculate the value of the array variable
+        // TODO: we are communicating this to updateDependencies by adding
+        // an attribute to the arguments?  Is there a better way of doing it.
+        // Didn't want to add to the return value, as that would add complexity
+        // to how we normally define returnDependencies
+        // We could change returnDependencies to output an object.
+        // That would probably be cleaner.
+          if(!(arrayKey in stateVarObj.dependencyNames.namesByKey)) {
+            args.changedDependency = true;
+          }
           stateVarObj.dependencyNames.namesByKey[arrayKey] = {};
           for (let depName in arrayDependencies.dependenciesByKey[arrayKey]) {
             let extendedDepName = "__" + arrayKey + "_" + depName;
@@ -4326,7 +4354,8 @@ export default class Core {
         };
         stateVarObj.dependencyNames.global.push("__array_size");
 
-
+        // console.log(`resulting dependencies for ${stateVariable} of ${component.componentName}`)
+        // console.log(dependencies)
         return dependencies;
 
       }
@@ -4385,7 +4414,7 @@ export default class Core {
 
         if (changes.__array_keys || Object.keys(freshByKey).length === 0) {
           // everything is stale, except possibly array size
-          // (check is nothing fresh as a shortcut, as mark stale could
+          // (check for nothing fresh as a shortcut, as mark stale could
           // be called repeated if size doesn't change, given that it's partially fresh)
           freshnessInfo.freshByKey = {};
           if (freshnessInfo.freshArraySize) {
@@ -4570,7 +4599,7 @@ export default class Core {
         let extractedDeps = extractArrayDependencies(args.dependencyValues, args.arrayKeys);
         let globalDependencyValues = extractedDeps.globalDependencyValues;
         let dependencyValuesByKey = extractedDeps.dependencyValuesByKey;
-        let foundAllDependencyValuesForKey = extractedDeps.foundAllDependencyValuesForKey;
+        // let foundAllDependencyValuesForKey = extractedDeps.foundAllDependencyValuesForKey;
 
         delete args.dependencyValues;
         args.globalDependencyValues = globalDependencyValues;
@@ -4579,20 +4608,20 @@ export default class Core {
         args.dependencyNamesByKey = stateVarObj.dependencyNames.namesByKey;
         // args.arraySize = stateVarObj.arraySize;
 
-        let arrayKeysToInvert = [];
-        for (let arrayKey of args.arrayKeys) {
-          // only invert if
-          // - found all dependency values for array key (i.e., have calculated dependencies for arrayKey)
-          if (foundAllDependencyValuesForKey[arrayKey]) {
-            arrayKeysToInvert.push(arrayKey);
-          }
-        }
+        // let arrayKeysToInvert = [];
+        // for (let arrayKey of args.arrayKeys) {
+        //   // only invert if
+        //   // - found all dependency values for array key (i.e., have calculated dependencies for arrayKey)
+        //   if (foundAllDependencyValuesForKey[arrayKey]) {
+        //     arrayKeysToInvert.push(arrayKey);
+        //   }
+        // }
 
-        if (arrayKeysToInvert.length === 0) {
-          return {};
-        }
+        // if (arrayKeysToInvert.length === 0) {
+        //   return {};
+        // }
 
-        args.arrayKeys = arrayKeysToInvert;
+        // args.arrayKeys = arrayKeysToInvert;
 
         let result = stateVarObj.inverseArrayDefinitionByKey(args);
         // console.log(`result of inverse definition of array`)
@@ -5455,7 +5484,9 @@ export default class Core {
 
       }
 
-    } else if (dependencyDefinition.dependencyType === "stateVariable") {
+    } else if (dependencyDefinition.dependencyType === "stateVariable" ||
+      dependencyDefinition.dependencyType === "stateVariableComponentType"
+    ) {
       newDep.downstreamComponentName = component.componentName;
       if (dependencyDefinition.variableName === undefined) {
         throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${dependencyName}: variableName is not defined`);
@@ -6254,6 +6285,10 @@ export default class Core {
       } else {
         // not an array
 
+        // if (!(Object.getOwnPropertyDescriptor(component.state[varName], 'value').get || component.state[varName].immutable)) {
+        //   throw Error(`${varName} of ${component.componentName} is not stale, but still setting its valuae!!`)
+        // }
+
         // delete before assigning value to remove any getter for the property
         delete component.state[varName].value;
         component.state[varName].value = result.newValues[varName];
@@ -6560,6 +6595,22 @@ export default class Core {
         component.state[varName].value = component.state[varName].arrayValues;
       } else if (component.state[varName].isArrayEntry) {
         delete component.state[varName].value;
+        if (component.state[varName].entireArrayAtOnce) {
+
+          // if value of arraySize has changed, need to record its actual change now
+          // before we try to access the value of arrayKeys
+          // (Otherwise, arrayKey won't be told that arraySize changed)
+          let arraySizeVarName = component.state[varName].arraySizeStateVariable;
+          if (valuesChanged[arraySizeVarName]) {
+            this.recordActualChangeInUpstreamDependencies({
+              component, varName: arraySizeVarName,
+              changes: valuesChanged[arraySizeVarName]
+            });
+
+            delete valuesChanged[arraySizeVarName]
+          }
+
+        }
         component.state[varName].value = component.state[varName].getValueFromArrayValues();
       }
 
@@ -6888,7 +6939,9 @@ export default class Core {
           // variable is optional and doesn't exist
           value = null;
         }
-      } else if (dep.dependencyType === "componentStateVariableComponentType") {
+      } else if (dep.dependencyType === "componentStateVariableComponentType" ||
+        dep.dependencyType === "stateVariableComponentType"
+      ) {
         let depComponent = this.components[dep.downstreamComponentName];
         // call getter to make sure component type is set
         depComponent.state[dep.mappedDownstreamVariableName].value;
@@ -9960,17 +10013,23 @@ export default class Core {
           }
 
 
-          let newDependencies = stateVarObj.returnDependencies({
+          // TODO: should we change the output of returnDependencies
+          // to be an object with one key being dependencies?
+          // That wway, we could add another attribute to the return value
+          // rather than having returnDependencies add the attribute
+          // changedDependency to the arguments
+          let returnDepArgs = {
             stateValues: definitionArgs.dependencyValues,
             componentInfoObjects: this.componentInfoObjects,
             sharedParameters: component.sharedParameters,
-          });
+          }
+          let newDependencies = stateVarObj.returnDependencies(returnDepArgs);
 
           let changedDependency = this.replaceDependenciesIfChanged({
             component, stateVariable, newDependencies, allStateVariablesAffected
           });
 
-          if (changedDependency) {// || arraySizeChanged) {
+          if (changedDependency || returnDepArgs.changedDependency) {// || arraySizeChanged) {
             dependencyChanges.push({
               componentName: component.componentName,
               stateVariable,
@@ -11707,7 +11766,9 @@ export default class Core {
               // since were not given array, instead just set the components
               if (compStateObj.set) {
                 // TODO: use a different .set function here?
-                compStateObj.arrayValues[key] = compStateObj.set(newComponentStateVariables[vName][key]);
+                for (let key in newComponentStateVariables[vName]) {
+                  compStateObj.arrayValues[key] = compStateObj.set(newComponentStateVariables[vName][key]);
+                }
               } else {
                 for (let key in newComponentStateVariables[vName]) {
                   compStateObj.arrayValues[key] = newComponentStateVariables[vName][key]
@@ -11716,7 +11777,17 @@ export default class Core {
             }
             if (compStateObj.arrayEntryNames) {
               for (let arrayEntryName of compStateObj.arrayEntryNames) {
-                this.markStateVariableAndUpstreamDependentsStale({
+                let entryStateVarObj = comp.state[arrayEntryName];
+
+                // is array entry was fresh, mark it stale
+                if (!(Object.getOwnPropertyDescriptor(entryStateVarObj, 'value').get || entryStateVarObj.immutable)) {
+                  entryStateVarObj._previousValue = entryStateVarObj.value;
+                  delete entryStateVarObj.value;
+                  let getStateVar = this.getStateVariableValue;
+                  Object.defineProperty(entryStateVarObj, 'value', { get: () => getStateVar({ component: comp, stateVariable: arrayEntryName }), configurable: true });
+                }
+
+                this.markUpstreamDependentsStale({
                   component: comp, varName: arrayEntryName, updatesNeeded
                 });
                 this.recordActualChangeInUpstreamDependencies({
@@ -11725,8 +11796,6 @@ export default class Core {
               }
             }
           } else {
-            // delete value before assigning new value to remove any getter
-            delete compStateObj.value;
             if (compStateObj.set) {
               compStateObj.value = compStateObj.set(newComponentStateVariables[vName]);
             } else {
