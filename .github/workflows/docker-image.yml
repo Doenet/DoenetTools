@@ -43,8 +43,10 @@ jobs:
       run: sudo npm run docker:build
     - name: Anticipate a Crash
       continue-on-error: true
-      run: npm start & sleep 60 && docker stop $(docker ps -a)
-    - name: Start the Server
-      run: sudo npm start & wait-on localhost
-    - name: Run Tests
-      run: npm run test:all
+      run: npm start & sleep 60 && docker stop $(docker ps)
+    - name: Show file structure
+      run: ls . && echo '===' && ls dist_local
+    # - name: Start the Server
+    #   run: sudo npm start & wait-on localhost
+    # - name: Run Tests
+    #   run: npm run test:all
