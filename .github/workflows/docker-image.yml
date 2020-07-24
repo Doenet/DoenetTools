@@ -40,7 +40,7 @@ jobs:
     - name: Install Dependencies
       run: npm install && npm install -g wait-on
     - name: Make dist_local Folder
-      run: mkdir dist_local
+      run: mkdir -m 777 dist_local
     - name: Show File Structure
       run: ls . && echo '===' && ls dist_local
     - name: Build the Containers
