@@ -669,23 +669,40 @@ class DoenetChooser extends Component {
       isPublic = true;
     }
 
-    this.saveFolder(folderId, title, [], [], "insert", false, isPublic, () => {
-      let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
-      this.saveUserContent([folderId], ["folder"], "insert", () => {  // add to user root
-        this.addContentToFolder([folderId], ["folder"], currentFolderId, () => {  // add to folder
-          this.loadUserFoldersAndRepo(() => {
-            this.setState({
-              selectedItems: [folderId],
-              selectedItemsType: ["folder"],
-              activeSection: "chooser",
-              selectedDrive: "Content"
-            }, () => { 
-              this.updateNumber++;
-            });
-          });
-        });   
-      });  
-    });
+    // this.saveFolder(folderId, title, [], [], "insert", false, isPublic, () => {
+    //   let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
+    //   this.saveUserContent([folderId], ["folder"], "insert", () => {  // add to user root
+    //     this.addContentToFolder([folderId], ["folder"], currentFolderId, () => {  // add to folder
+    //       this.loadUserFoldersAndRepo(() => {
+    //         this.setState({
+    //           selectedItems: [folderId],
+    //           selectedItemsType: ["folder"],
+    //           activeSection: "chooser",
+    //           selectedDrive: "Content"
+    //         }, () => { 
+    //           this.updateNumber++;
+    //         });
+    //       });
+    //     });   
+    //   });  
+    // });
+    const currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
+    Promise.all([
+      this.saveFolder(folderId, title, [], [], "insert", false, isPublic), // add new folder
+      this.saveUserContent([folderId], ["folder"], "insert"),  // add to user root
+      this.addContentToFolder([folderId], ["folder"], currentFolderId), // add to folder
+    ]).then(() => {
+      this.loadUserFoldersAndRepo(() => {
+        this.setState({
+          selectedItems: [folderId],
+          selectedItemsType: ["folder"],
+          activeSection: "chooser",
+          selectedDrive: "Content"
+        }, () => { 
+          this.updateNumber++;
+        });
+      });
+    })
   }
 
   addContentToRepo(childIds, childType, repoId) {
