@@ -85,7 +85,7 @@ export const ParentNode = memo(({
   return(<DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
     <Frame style={styles["frame"]}>
       <ListItem onMouseEnter={() => setCurrentHovered(id)} onMouseLeave={() => setCurrentHovered(null)}>
-        <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}> 
+        <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center", ...styles["node"]}}> 
           <div style={{width: "85%"}}>
             <span onClick={() => setOpen(!isOpen)}>
               { expander }

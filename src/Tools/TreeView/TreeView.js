@@ -117,7 +117,8 @@ Example customized tree:
       },
       "contentContainer": {
         border: "none",
-      }
+      },
+      "node": { background: "rgba(58,172,144)" },
     },
     childNode: {
       "title": {
