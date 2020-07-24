@@ -1,5 +1,5 @@
 import Polygon from './Polygon';
-import me from "math-expressions";
+import me, { object } from "math-expressions";
 
 export default class Rectangle extends Polygon {
   static componentType = "rectangle";
@@ -312,7 +312,7 @@ export default class Rectangle extends Polygon {
 
     stateVariableDefinitions.width = {
       public: true,
-      componentType: "width",
+      componentType: "number",
       defaultValue: null,
 
       returnDependencies({ }) {
@@ -325,33 +325,46 @@ export default class Rectangle extends Polygon {
       },
 
       definition({ dependencyValues }) {
-        let v1x, v2x;
+        let v0x, v2x;
 
-        v1x = getNumericalComponent(dependencyValues.vertices[0], 0);
+        v0x = getNumericalComponent(dependencyValues.vertices[0], 0);
         v2x = getNumericalComponent(dependencyValues.vertices[2], 0);
 
-        let width = Math.abs(v1x - v2x);
+        let width = Math.abs(v0x - v2x);
 
         return { newValues: { width } };
       },
 
       inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
-        let v1x, v1y;
+        let v0x, v2x;
 
-        v1x = getNumericalComponent(dependencyValues.vertices[2], 0);
-        v1y = getNumericalComponent(dependencyValues.vertices[2], 1);
+        v0x = getNumericalComponent(dependencyValues.vertices[0], 0);
+        v2x = getNumericalComponent(dependencyValues.vertices[2], 0);
 
-        if (stateValues.nVertices === 0 && stateValues.specifiedCenter !== null) {
+        let widthSign = Math.sign(v2x - v0x);
 
-        } else {
+        let desiredV2x = v0x + widthSign * desiredStateVariableValues.width;
+        let desiredV2 = me.fromAst(["vector", desiredV2x, undefined]);
 
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "vertices",
+            desiredValue: { 2: desiredV2 }
+          }]
         }
+
+        // if (stateValues.nVertices === 0 && stateValues.specifiedCenter !== null) {
+
+        // } else {
+
+        // }
       }
     }
 
     stateVariableDefinitions.height = {
       public: true,
-      componentType: "height",
+      componentType: "number",
       defaultValue: null,
 
       returnDependencies({ }) {
@@ -364,12 +377,12 @@ export default class Rectangle extends Polygon {
       },
 
       definition({ dependencyValues }) {
-        let v1y, v2y;
+        let v0y, v2y;
 
-        v1y = dependencyValues.vertices[0].get_component(1);
-        v2y = dependencyValues.vertices[1].get_component(1);
+        v0y = getNumericalComponent(dependencyValues.vertices[0], 1);
+        v2y = getNumericalComponent(dependencyValues.vertices[2], 1);
 
-        let height = Math.abs(v1y - v2y);
+        let height = Math.abs(v0y - v2y);
 
         return { newValues: { height } };
       },
@@ -503,7 +516,7 @@ export default class Rectangle extends Polygon {
             v0y = centery - height / 2;
             v2x = centerx + width / 2;
             v2y = centery + height / 2;
-            
+
           }
           else {
             // no center
@@ -528,7 +541,7 @@ export default class Rectangle extends Polygon {
             v0y = pointy;
             v2x = pointx + width;
             v2y = pointy + height;
-            
+
           } else {
             // 1 point, center
 
@@ -573,34 +586,109 @@ export default class Rectangle extends Polygon {
       },
 
       inverseDefinition: function ({
-        desiredStateVariableValues, dependencyValues, stateValues, arrayKeys
+        desiredStateVariableValues, dependencyValues, stateValues, workspace
       }) {
         console.log("inverse definition of vertices of rectangle");
         console.log(desiredStateVariableValues, dependencyValues, stateValues);
 
+        if (!workspace.desiredVertices) {
+          workspace.desiredVertices = {};
+        }
+
+        Object.assign(workspace.desiredVertices, desiredStateVariableValues.vertices);
+        for (let i in workspace.desiredVertices) {
+          if (!["0", "1", "2", "3"].includes(i)) {
+            delete workspace.desiredVertices[i];
+          }
+        }
+
         let vertexInd, oppositeInd;
         let v0x, v0y, v2x, v2y;
 
-        if (Object.keys(desiredStateVariableValues.vertices).length === 1) {
-          vertexInd = Number(Object.keys(desiredStateVariableValues.vertices)[0]);
+        if (Object.keys(workspace.desiredVertices).length === 1) {
+
+          vertexInd = Number(Object.keys(workspace.desiredVertices)[0]);
           oppositeInd = (vertexInd + 2) % 4;
 
-          v0x = desiredStateVariableValues.vertices[vertexInd].get_component(0);
-          v0y = desiredStateVariableValues.vertices[vertexInd].get_component(1);
+          v0x = workspace.desiredVertices[vertexInd].get_component(0);
+          v0y = workspace.desiredVertices[vertexInd].get_component(1);
 
           v2x = stateValues.vertices[oppositeInd].get_component(0);
           v2y = stateValues.vertices[oppositeInd].get_component(1);
 
-        } else {
+        } else if (Object.keys(workspace.desiredVertices).length === 4) {
           //if 4 points are given, use 2 to make the rectangle
           vertexInd = 0;
           oppositeInd = 2;
 
-          v0x = desiredStateVariableValues.vertices[vertexInd].get_component(0);
-          v0y = desiredStateVariableValues.vertices[vertexInd].get_component(1);
+          v0x = workspace.desiredVertices[vertexInd].get_component(0);
+          v0y = workspace.desiredVertices[vertexInd].get_component(1);
 
-          v2x = desiredStateVariableValues.vertices[oppositeInd].get_component(0);
-          v2y = desiredStateVariableValues.vertices[oppositeInd].get_component(1);
+          v2x = workspace.desiredVertices[oppositeInd].get_component(0);
+          v2y = workspace.desiredVertices[oppositeInd].get_component(1);
+
+        } else if (Object.keys(workspace.desiredVertices).length === 3) {
+
+          if ("0" in workspace.desiredVertices && "2" in workspace.desiredVertices) {
+            vertexInd = 0;
+            oppositeInd = 2;
+          } else {
+            vertexInd = 1;
+            oppositeInd = 3;
+          }
+
+          v0x = workspace.desiredVertices[vertexInd].get_component(0);
+          v0y = workspace.desiredVertices[vertexInd].get_component(1);
+
+          v2x = workspace.desiredVertices[oppositeInd].get_component(0);
+          v2y = workspace.desiredVertices[oppositeInd].get_component(1);
+        } else {
+          // 2 points
+          let changedVerts = Object.keys(workspace.desiredVertices).map(x => Number(x)).sort();
+
+          vertexInd = changedVerts[0];
+          oppositeInd = (vertexInd + 2) % 4;
+
+          console.log("inds: ", vertexInd, oppositeInd);
+
+          if (oppositeInd === changedVerts[1]) {
+            // opposite vertices
+            v0x = workspace.desiredVertices[vertexInd].get_component(0);
+            v0y = workspace.desiredVertices[vertexInd].get_component(1);
+
+            v2x = workspace.desiredVertices[oppositeInd].get_component(0);
+            v2y = workspace.desiredVertices[oppositeInd].get_component(1);
+          } else {
+            // adjacent vertices - one side
+
+            if (changedVerts[0] === 1) {
+              // 1, 2 - right
+              v2x = stateValues.vertices[oppositeInd].get_component(0);
+              v2y = workspace.desiredVertices[changedVerts[1]].get_component(1);
+
+            } else if (changedVerts[0] === 2) {
+              // 2, 3 - top
+              v2x = workspace.desiredVertices[changedVerts[1]].get_component(0);
+              v2y = stateValues.vertices[oppositeInd].get_component(1);
+
+            } else if (changedVerts[1] === 1) {
+              console.log("i hope this code is running");
+              // 0, 1 - bottom
+              v2x = workspace.desiredVertices[changedVerts[1]].get_component(0);
+              v2y = stateValues.vertices[oppositeInd].get_component(1);
+
+            } else {
+              // 0, 3 - left
+              vertexInd = 3;
+              oppositeInd = 1;
+
+              v2x = stateValues.vertices[oppositeInd].get_component(0);
+              v2y = workspace.desiredVertices[0].get_component(1);
+            }
+
+            v0x = workspace.desiredVertices[vertexInd].get_component(0);
+            v0y = workspace.desiredVertices[vertexInd].get_component(1);
+          }
         }
 
         if (vertexInd === 2 || vertexInd === 3) {
