@@ -37,8 +37,14 @@ export const ParentNode = memo(({
   const { height, opacity, transform } = useSpring({
     from: { height: 0, opacity: 0, transform: 'translate3d(20px,0,0)' },
     to: { height: isOpen ? viewHeight : 0, opacity: isOpen ? 1 : 0, transform: `translate3d(${isOpen ? 0 : 20}px,0,0)` }
-  })
-  const Icon = Icons[`${isOpen ? 'ArrowDown0' : 'ArrowRight0'}`]
+  })  
+  let expander = <span></span>
+  if (expanderIcon) {
+    expander = isOpen ? expanderIcon["opened"] : expanderIcon["closed"];
+  } else {
+    const Icon = Icons[`${isOpen ? 'ArrowDown0' : 'ArrowRight0'}`];
+    expander = <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }}/>;
+  }
 
   const onDraggableDragOverCb = (id) => {
     if (id !== currentDraggedId) {
@@ -82,7 +88,7 @@ export const ParentNode = memo(({
         <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}> 
           <div style={{width: "85%"}}>
             <span onClick={() => setOpen(!isOpen)}>
-              { expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }}/> }
+              { expander }
             </span>            
             <div style={{display: "inline-block", width: "100%", ...styles["title"]}} onClick={() => onClick(id, type)} onDoubleClick={() => onDoubleClickCb(id, type)}>
               {nodeItem}

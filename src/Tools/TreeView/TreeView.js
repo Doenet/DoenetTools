@@ -64,7 +64,7 @@ import styled from 'styled-components'
               title: {},
               frame: {},
             },
-            expanderIcon:          
+            expanderIcons:          
           }
       - parentNodeOnClick
 			- childNodeOnClickCallback
@@ -128,7 +128,6 @@ Example customized tree:
     specialChildNode: {
       "frame": { background: "#a7a7a7" },
     },
-    expanderIcon: <FontAwesomeIcon icon={faPlus} style={{paddingRight: "8px"}}/>
     emptyParentExpanderIcon: <span></span>
   }}
   onLeafNodeClick={(nodeId) => {
@@ -373,7 +372,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
     hide={hideRoot && parentHeadingId == "root"}
     defaultOpen={defaultOpen}
     nodeItem={parentNodeItem({title: parentsInfo[parentHeadingId]["title"], icon: baseItemStyleAndIcon.icon})}
-    expanderIcon={parentsInfo[parentHeadingId]["numChild"] == 0 ? treeStyles["emptyParentExpanderIcon"] : treeStyles["expanderIcon"]}
+    expanderIcon={parentsInfo[parentHeadingId]["numChild"] == 0 ? treeStyles["emptyParentExpanderIcon"] : treeStyles["expanderIcons"]}
     onClick={parentHeadingId != "root" ? onParentNodeClick : ()=>{}}
     onDoubleClick={parentHeadingId != "root" ? onParentNodeDoubleClick : ()=>{}}
     onDrop={onDrop}
