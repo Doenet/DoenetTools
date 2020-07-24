@@ -101,237 +101,22 @@ export default class Circle extends Curve {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    // since circle inherits from curve, we put dummy placeholders for variables
     stateVariableDefinitions.nVariables = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { nVariables: 2 } })
+      definition: () => ({ newValues: { nVariables: 0 } })
     }
-
-    delete stateVariableDefinitions.nearestPoint;
-
-    stateVariableDefinitions.throughPoints = {
-      public: true,
-      componentType: "point",
+    stateVariableDefinitions.variables = {
       isArray: true,
-      entryPrefixes: ["throughPoint"],
-      returnDependencies: function ({ arrayKeys }) {
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-        if (arrayKey === undefined) {
-          return ({
-            throughChild: {
-              dependencyType: "childStateVariables",
-              childLogicName: "exactlyOneThrough",
-              variableNames: ["points"]
-            }
-          })
-        } else {
-          return ({
-            throughChild: {
-              dependencyType: "childStateVariables",
-              childLogicName: "exactlyOneThrough",
-              variableNames: ["point" + (arrayKey + 1)]
-            }
-          })
-        }
+      public: true,
+      componentType: "variable",
+      entryPrefixes: ["var"],
+      returnArraySizeDependencies: () => ({}),
+      returnArraySize() {
+        return [0];
       },
-      markStale: function ({ freshnessInfo, changes, arrayKeys }) {
-
-        let freshByKey = freshnessInfo.throughPoints.freshByKey;
-
-        // console.log('markStale for circle throughPoints')
-        // console.log(JSON.parse(JSON.stringify(freshByKey)));
-        // console.log(JSON.parse(JSON.stringify(changes)))
-        // console.log(arrayKeys);
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        if (changes.throughChild) {
-
-          if (changes.throughChild.componentIdentitiesChanged) {
-
-            // if throughChild changed
-            // then the entire points array of line is also changed
-            for (let key in freshByKey) {
-              delete freshByKey[key];
-            }
-          } else {
-
-            let valuesChanged = changes.throughChild.valuesChanged[0];
-
-            if (arrayKey === undefined) {
-
-              if (valuesChanged.points) {
-                // if have the same points from throughChild
-                // then just check if any of those points values
-                // are no longer fresh
-                let newFreshByKey = valuesChanged.points.freshnessInfo.freshByKey;
-                for (let key in freshByKey) {
-                  if (!newFreshByKey[key]) {
-                    delete freshByKey[key];
-                  }
-                }
-              }
-            } else {
-              if (valuesChanged["point" + (arrayKey + 1)]) {
-                delete freshByKey[arrayKey];
-              }
-            }
-
-          }
-
-        }
-
-        if (arrayKey === undefined) {
-          if (Object.keys(freshByKey).length === 0) {
-            // asked for entire array and it is all stale
-            return { fresh: { throughPoints: false } }
-          } else {
-            // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: { throughPoints: true } }
-          }
-        } else {
-          // asked for just one component
-          return { fresh: { throughPoints: freshByKey[arrayKey] === true } }
-        }
-
-      },
-      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
-        let freshByKey = freshnessInfo.throughPoints.freshByKey;
-
-        // console.log('definition of circle throughPoints');
-        // console.log(dependencyValues)
-        // console.log(arrayKeys);
-        // console.log(JSON.parse(JSON.stringify(freshByKey)));
-        // console.log(changes)
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        if (dependencyValues.throughChild.length === 1) {
-
-          if (arrayKey === undefined) {
-            let throughPoints = dependencyValues.throughChild[0].stateValues.points;
-
-            if (changes.throughChild && (
-              changes.throughChild.componentIdentitiesChanged ||
-              changes.throughChild.valuesChanged[0].points.changed.changedEntireArray
-            )) {
-              // send array to indicate that should overwrite entire array
-              for (let key in throughPoints) {
-                freshByKey[key] = true;
-              }
-
-              return {
-                newValues: { throughPoints }
-              }
-            }
-
-            let newPointValues = {};
-            for (let key in throughPoints) {
-              if (!freshByKey[key]) {
-                freshByKey[key] = true;
-                newPointValues[key] = throughPoints[key]
-              }
-            }
-            return { newValues: { throughPoints: newPointValues } };
-
-          } else {
-            // have an arrayKey defined
-
-            if (!freshByKey[arrayKey]) {
-              freshByKey[arrayKey] = true;
-              let coords = dependencyValues.throughChild[0].stateValues["point" + (arrayKey + 1)];
-
-              return {
-                newValues: {
-                  throughPoints: {
-                    [arrayKey]: coords
-                  }
-                }
-              }
-            } else {
-              // arrayKey asked for didn't change
-              // don't need to report noChanges for array state variable
-              return {};
-            }
-          }
-
-        } else {
-          return { newValues: { throughPoints: [] } }
-        }
-      },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues,
-        stateValues, initialChange, arrayKeys
-      }) {
-
-        // console.log(`inverseDefinition of throughPoints of circle`);
-        // console.log(desiredStateVariableValues)
-        // console.log(JSON.parse(JSON.stringify(stateValues)))
-        // console.log(arrayKeys);
-        // console.log(dependencyValues);
-
-
-        // if not draggable, then disallow initial change 
-        if (initialChange && !stateValues.draggable) {
-          return { success: false };
-        }
-
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-        if (dependencyValues.throughChild.length !== 1) {
-          return { success: false }
-        }
-
-
-        if (arrayKey === undefined) {
-          // working with entire array
-
-          let instructions = [{
-            setDependency: "throughChild",
-            desiredValue: desiredStateVariableValues.throughPoints,
-            childIndex: 0,
-            variableIndex: 0
-          }]
-
-          return {
-            success: true,
-            instructions
-          }
-        } else {
-
-          // just have one arrayKey
-          // so child variable of throughChild is an array entry (rather than array)
-
-
-          if (dependencyValues.throughChild[0].stateValues["point" + (arrayKey + 1)] === undefined) {
-            return { success: false }
-          } else {
-            let instructions = [{
-              setDependency: "throughChild",
-              desiredValue: desiredStateVariableValues.throughPoints[arrayKey],
-              childIndex: 0,
-              variableIndex: 0,
-            }]
-            return {
-              success: true,
-              instructions
-            }
-          }
-        }
-
-      }
+      returnArrayDependenciesByKey: () => ({}),
+      arrayDefinitionByKey: () => ({})
     }
 
     stateVariableDefinitions.nThroughPoints = {
@@ -352,6 +137,155 @@ export default class Circle extends Curve {
         } else {
           return { newValues: { nThroughPoints: 0 } }
         }
+      }
+    }
+
+    stateVariableDefinitions.throughPoints = {
+      public: true,
+      componentType: "math",
+      isArray: true,
+      nDimensions: 2,
+      entryPrefixes: ["throughPointX", "throughPoint"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "throughPointX") {
+          return [];
+        } else {
+          // point or entire array
+          // wrap inner dimension by both <point> and <xs>
+          // don't wrap outer dimension (for entire array)
+          return [["point", "xs"]];
+        }
+      },
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (arrayEntryPrefix === "throughPointX") {
+          // throughPointX1_2 is the 2nd component of the first point
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (indices.length === 2 && indices.every(
+            (x, i) => Number.isInteger(x) && x >= 0
+          )) {
+            if (arraySize) {
+              if (indices.every((x, i) => x < arraySize[i])) {
+                return [String(indices)];
+              } else {
+                return [];
+              }
+            } else {
+              // if don't know array size, just guess that the entry is OK
+              // It will get corrected once array size is known.
+              // TODO: better to return empty array?
+              return [String(indices)];
+            }
+          } else {
+            return [];
+          }
+        } else {
+          // throughPoint3 is all components of the third vertex
+          if (!arraySize) {
+            return [];
+          }
+          let pointInd = Number(varEnding) - 1;
+          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+            // array of "pointInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
+          } else {
+            return [];
+          }
+        }
+      },
+      returnArraySizeDependencies: () => ({
+        nThroughPoints: {
+          dependencyType: "stateVariable",
+          variableName: "nThroughPoints",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nThroughPoints, 2];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          let [pointInd, dimInd] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+
+
+          dependenciesByKey[arrayKey] = {
+            throughChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneThrough",
+              variableNames: ["pointX" + varEnding]
+            }
+          }
+        }
+        return { dependenciesByKey }
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+
+        // console.log('definition of circle throughPoints');
+        // console.log(dependencyValuesByKey)
+        // console.log(arrayKeys);
+
+        let throughPoints = {};
+
+        for (let arrayKey of arrayKeys) {
+
+          let [pointInd, dimInd] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+
+          let throughChild = dependencyValuesByKey[arrayKey].throughChild;
+          if (throughChild.length === 1
+            && throughChild[0].stateValues["pointX" + varEnding]
+          ) {
+            throughPoints[arrayKey] = throughChild[0].stateValues["pointX" + varEnding];
+          } else {
+            throughPoints[arrayKey] = me.fromAst('\uff3f');
+          }
+        }
+
+        return { newValues: { throughPoints } };
+
+      },
+
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        dependencyValuesByKey, dependencyNamesByKey,
+        initialChange, stateValues,
+      }) {
+
+        // console.log(`inverseDefinition of throughPoints of circle`);
+        // console.log(desiredStateVariableValues)
+        // console.log(JSON.parse(JSON.stringify(stateValues)))
+        // console.log(dependencyValuesByKey);
+
+        // if not draggable, then disallow initial change 
+        if (initialChange && !stateValues.draggable) {
+          return { success: false };
+        }
+
+        let instructions = [];
+        for (let arrayKey in desiredStateVariableValues.throughPoints) {
+          let [pointInd, dimInd] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+
+          if (dependencyValuesByKey[arrayKey].throughChild.length === 1
+            && dependencyValuesByKey[arrayKey].throughChild[0].stateValues["pointX" + varEnding]
+          ) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].throughChild,
+              desiredValue: desiredStateVariableValues.throughPoints[arrayKey],
+              childIndex: 0,
+              variableIndex: 0,
+            })
+
+          } else {
+            return { success: false };
+          }
+
+        }
+
+        return {
+          success: true,
+          instructions
+        }
+
       }
     }
 
@@ -398,58 +332,133 @@ export default class Circle extends Curve {
       }
     }
 
-    stateVariableDefinitions.prescribedCenter = {
-      defaultValue: null,
+    stateVariableDefinitions.havePrescribedCenter = {
       returnDependencies: () => ({
         centerChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneCenter",
-          variableNames: ["coords"],
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneCenter"
         },
         centerShadow: {
           dependencyType: "stateVariable",
           variableName: "centerShadow"
         },
       }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.centerChild.length === 1) {
-          return {
-            newValues: {
-              prescribedCenter: dependencyValues.centerChild[0].stateValues.coords
-            }
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          havePrescribedCenter: dependencyValues.centerChild.length === 1
+            || dependencyValues.centerShadow !== null
+        },
+        checkForActualChange: { havePrescribedCenter: true }
+      })
+    }
+
+
+    stateVariableDefinitions.prescribedCenter = {
+      isArray: true,
+      entryPrefixes: ["prescribedCenterX"],
+      returnArraySizeDependencies: () => ({
+        havePrescribedCenter: {
+          dependencyType: "stateVariable",
+          variableName: "havePrescribedCenter",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.havePrescribedCenter ? 2 : 0];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let globalDependencies = {
+          centerShadow: {
+            dependencyType: "stateVariable",
+            variableName: "centerShadow"
+          },
+        }
+
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          let varEnding = Number(arrayKey) + 1;
+          dependenciesByKey[arrayKey] = {
+            centerChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneCenter",
+              variableNames: ["x" + varEnding],
+            },
           }
-        } else {
-          return {
-            newValues: {
-              prescribedCenter: dependencyValues.centerShadow
-            }
+
+        }
+
+        return { globalDependencies, dependenciesByKey }
+      },
+      arrayDefinitionByKey: function ({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+
+        let prescribedCenter = {};
+
+        for (let arrayKey of arrayKeys) {
+          let varEnding = Number(arrayKey) + 1;
+
+          if (dependencyValuesByKey[arrayKey].centerChild.length === 1) {
+            prescribedCenter[arrayKey] = dependencyValuesByKey[arrayKey].centerChild[0].stateValues["x" + varEnding];
+          } else if (globalDependencyValues.centerShadow !== null) {
+            prescribedCenter[arrayKey] = globalDependencyValues.centerShadow.get_component(Number(arrayKey));
           }
         }
+
+        return { newValues: { prescribedCenter } }
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        globalDependencyValues, dependencyValuesByKey, dependencyNamesByKey, arraySize
+      }) {
         // console.log(`inverse definition of prescribed center of circle`)
         // console.log(desiredStateVariableValues)
-        // console.log(dependencyValues)
+        // console.log(globalDependencyValues)
+        // console.log(dependencyValuesByKey)
 
-        if (dependencyValues.centerChild.length === 1) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "centerChild",
-              desiredValue: desiredStateVariableValues.prescribedCenter,
+        let instructions = [];
+
+        let updateCenterShadow = false;
+
+        for (let arrayKey in desiredStateVariableValues.prescribedCenter) {
+
+          if (dependencyValuesByKey[arrayKey].centerChild &&
+            dependencyValuesByKey[arrayKey].centerChild.length === 1
+          ) {
+
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].centerChild,
+              desiredValue: desiredStateVariableValues.prescribedCenter[arrayKey],
               childIndex: 0,
-              variableIndex: 0
-            }]
-          }
-        } else {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "centerShadow",
-              desiredValue: desiredStateVariableValues.prescribedCenter,
-            }]
+              variableIndex: 0,
+            })
+          } else if (globalDependencyValues.centerShadow !== null) {
+            updateCenterShadow = true;
           }
         }
+
+        if (updateCenterShadow) {
+          if (arraySize[0] > 1) {
+            let desiredCenter = ["vector"];
+            for (let arrayKey in desiredStateVariableValues.prescribedCenter) {
+              desiredCenter[Number(arrayKey) + 1] = desiredStateVariableValues.prescribedCenter[arrayKey].tree;
+            }
+            desiredCenter.length = arraySize[0] + 1
+            instructions.push({
+              setDependency: "centerShadow",
+              desiredValue: me.fromAst(desiredCenter),
+            })
+          } else if (arraySize[0] === 1 && "0" in desiredStateVariableValues.prescribedCenter) {
+            instructions.push({
+              setDependency: "centerShadow",
+              desiredValue: desiredStateVariableValues.prescribedCenter[0]
+            })
+          }
+
+        }
+
+        return {
+          success: true,
+          instructions
+        };
+
       }
     }
 
@@ -504,25 +513,6 @@ export default class Circle extends Curve {
       }
     }
 
-    stateVariableDefinitions.havePrescribedCenter = {
-      returnDependencies: () => ({
-        centerChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneCenter"
-        },
-        centerShadow: {
-          dependencyType: "stateVariable",
-          variableName: "centerShadow"
-        },
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          havePrescribedCenter: dependencyValues.centerChild.length === 1
-            || dependencyValues.centerShadow !== null
-        },
-        checkForActualChange: { havePrescribedCenter: true }
-      })
-    }
 
     stateVariableDefinitions.havePrescribedRadius = {
       returnDependencies: () => ({
@@ -606,78 +596,88 @@ export default class Circle extends Curve {
 
 
     stateVariableDefinitions.numericalPrescribedCenter = {
-      returnDependencies: () => ({
-        prescribedCenter: {
+      isArray: true,
+      entryPrefixes: ["numericalPrescribedCenterX"],
+      returnArraySizeDependencies: () => ({
+        havePrescribedCenter: {
           dependencyType: "stateVariable",
-          variableName: "prescribedCenter"
+          variableName: "havePrescribedCenter",
         },
       }),
-      additionalStateVariablesDefined: ["haveNonNumericalPrescribedCenter"],
-      definition: function ({ dependencyValues }) {
-        let haveNonNumericalPrescribedCenter = false;
-        let numericalPrescribedCenter;
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.havePrescribedCenter ? 2 : 0];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
 
-        if (dependencyValues.prescribedCenter === null) {
-          numericalPrescribedCenter = null;
-        } else {
-          numericalPrescribedCenter = [];
-          for (let dim = 0; dim < 2; dim++) {
-            let numericalValue;
-            try {
-              numericalValue = dependencyValues.prescribedCenter.get_component(dim).evaluate_to_constant();
-            } catch (e) {
-              console.warn('invalid center for circle');
-              haveNonNumericalPrescribedCenter = true;
-              numericalPrescribedCenter = [NaN, NaN];
-              break;
-            }
-            if (Number.isFinite(numericalValue)) {
-              numericalPrescribedCenter.push(numericalValue);
-            } else {
-              haveNonNumericalPrescribedCenter = true;
-              numericalPrescribedCenter = [NaN, NaN];
-              break;
-            }
+        for (let arrayKey of arrayKeys) {
+          let varEnding = Number(arrayKey) + 1;
+          dependenciesByKey[arrayKey] = {
+            prescribedCenterX: {
+              dependencyType: "stateVariable",
+              variableName: "prescribedCenterX" + varEnding
+            },
           }
         }
+
+        return { dependenciesByKey };
+      },
+      arrayDefinitionByKey: function ({ dependencyValuesByKey, arrayKeys }) {
+
+        let numericalPrescribedCenter = {};
+        for (let arrayKey of arrayKeys) {
+          numericalPrescribedCenter[arrayKey] = dependencyValuesByKey[arrayKey].prescribedCenterX.evaluate_to_constant();
+          if (!Number.isFinite(numericalPrescribedCenter[arrayKey])) {
+            numericalPrescribedCenter[arrayKey] = NaN;
+          }
+        }
+
+        return { newValues: { numericalPrescribedCenter } }
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues, dependencyNamesByKey }) {
+
+        // console.log('inverse definition of numerical prescribed center of circle')
+        // console.log(desiredStateVariableValues)
+        // console.log(dependencyValuesByKey)
+
+        let instructions = [];
+
+        for (let arrayKey in desiredStateVariableValues.numericalPrescribedCenter) {
+          instructions.push({
+            setDependency: dependencyNamesByKey[arrayKey].prescribedCenterX,
+            desiredValue: me.fromAst(desiredStateVariableValues.numericalPrescribedCenter[arrayKey]),
+          })
+        }
+
+        return {
+          success: true,
+          instructions
+        };
+
+      }
+    }
+
+
+    stateVariableDefinitions.haveNonNumericalPrescribedCenter = {
+      returnDependencies: () => ({
+        numericalPrescribedCenter: {
+          dependencyType: "stateVariable",
+          variableName: "numericalPrescribedCenter"
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        let haveNonNumericalPrescribedCenter = dependencyValues.numericalPrescribedCenter
+          .some(x => !Number.isFinite(x))
 
         return {
           newValues: {
             haveNonNumericalPrescribedCenter,
-            numericalPrescribedCenter,
           },
           checkForActualChange: { haveNonNumericalPrescribedCenter: true }
         }
-      },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues }) {
-
-        // console.log('inverse definition of numerical prescribed center of circle')
-        // console.log(desiredStateVariableValues)
-        // console.log(dependencyValues)
-
-        if (stateValues.haveNonNumericalPrescribedCenter) {
-          return { success: false }
-        }
-
-        if (desiredStateVariableValues.numericalPrescribedCenter !== undefined) {
-          if (dependencyValues.prescribedCenter === null) {
-            return { success: false };
-          }
-
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "prescribedCenter",
-              desiredValue: me.fromAst(["vector", ...desiredStateVariableValues.numericalPrescribedCenter])
-            }]
-          }
-        }
-
-        return { success: false }
       }
-
     }
-
 
     stateVariableDefinitions.numericalThroughPoints = {
       returnDependencies: () => ({
@@ -696,7 +696,7 @@ export default class Circle extends Curve {
           for (let dim = 0; dim < 2; dim++) {
             let numericalValue;
             try {
-              numericalValue = point.get_component(dim).evaluate_to_constant();
+              numericalValue = point[dim].evaluate_to_constant();
             } catch (e) {
               console.warn('Invalid point of circle');
               haveNonNumericalThroughPoints = true;
@@ -738,12 +738,16 @@ export default class Circle extends Curve {
         }
 
         if (desiredStateVariableValues.numericalThroughPoints !== undefined) {
+          let desiredThroughPoints = {};
+          for (let [ind, pt] of desiredStateVariableValues.numericalThroughPoints.entries()) {
+            desiredThroughPoints[ind + ",0"] = me.fromAst(pt[0]);
+            desiredThroughPoints[ind + ",1"] = me.fromAst(pt[1]);
+          }
           return {
             success: true,
             instructions: [{
               setDependency: "throughPoints",
-              desiredValue: desiredStateVariableValues.numericalThroughPoints
-                .map(x => me.fromAst(["vector", ...x])),
+              desiredValue: desiredThroughPoints
             }]
           }
         }
@@ -1151,38 +1155,46 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.numericalCenter = {
       forRenderer: true,
+      isArray: true,
+      defaultEntryValue: 0,
       stateVariablesDeterminingDependencies: [
         "nThroughPoints", "havePrescribedCenter", "havePrescribedRadius",
       ],
-      defaultValue: [0, 0],
-      returnDependencies: function ({ stateValues }) {
-        let dependencies = {
-          haveNonNumericalPrescribedCenter: {
-            dependencyType: "stateVariable",
-            variableName: "haveNonNumericalPrescribedCenter"
-          },
-        }
+      returnArraySizeDependencies: () => ({}),
+      returnArraySize() {
+        return [2];
+      },
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
+        let globalDependencies = {}
+
+        let dependenciesByKey = {};
+
         if (stateValues.havePrescribedCenter) {
-          dependencies.numericalPrescribedCenter = {
-            dependencyType: "stateVariable",
-            variableName: "numericalPrescribedCenter"
+          for (let arrayKey of arrayKeys) {
+            let varEnding = Number(arrayKey) + 1;
+            dependenciesByKey[arrayKey] = {
+              numericalPrescribedCenterX: {
+                dependencyType: "stateVariable",
+                variableName: "numericalPrescribedCenterX" + varEnding
+              },
+            }
           }
           if (stateValues.havePrescribedRadius && stateValues.nThroughPoints > 0) {
-            dependencies.haveCenterRadiusPoints = {
+            globalDependencies.haveCenterRadiusPoints = {
               dependencyType: "value",
               value: true,
             }
           }
         } else {
-          dependencies.nThroughPoints = {
+          globalDependencies.nThroughPoints = {
             dependencyType: "stateVariable",
             variableName: "nThroughPoints"
           };
-          dependencies.numericalThroughPoints = {
+          globalDependencies.numericalThroughPoints = {
             dependencyType: "stateVariable",
             variableName: "numericalThroughPoints"
           };
-          dependencies.haveNonNumericalThroughPoints = {
+          globalDependencies.haveNonNumericalThroughPoints = {
             dependencyType: "stateVariable",
             variableName: "haveNonNumericalThroughPoints"
           };
@@ -1190,35 +1202,50 @@ export default class Circle extends Curve {
           if (stateValues.havePrescribedRadius) {
             // still used numericalRadius, rather than numericalPrescribedRadius
             // as numericalRadius becomes zero if have negative numericalPrescribedRadius
-            dependencies.numericalRadius = {
+            globalDependencies.numericalRadius = {
               dependencyType: "stateVariable",
               variableName: "numericalRadius"
             };
           } else if (stateValues.nThroughPoints == 1) {
             // if didn't have prescribed radius but just one point
             // we treat the radius calculated above as prescribed
-            dependencies.numericalRadius = {
+            globalDependencies.numericalRadius = {
               dependencyType: "stateVariable",
               variableName: "numericalRadius"
             };
 
           } else if (stateValues.nThroughPoints > 1) {
-            dependencies.numericalCenterCalculatedWithRadius = {
+            globalDependencies.numericalCenterCalculatedWithRadius = {
               dependencyType: "stateVariable",
               variableName: "numericalCenterCalculatedWithRadius"
             };
           }
         }
 
-        return dependencies;
+        return { globalDependencies, dependenciesByKey };
       },
-      definition: function ({ dependencyValues }) {
+      arrayDefinitionByKey: function ({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
         // console.log(`definition of numericalCenter of circle`);
-        // console.log(dependencyValues);
+        // console.log(globalDependencyValues);
+        // console.log(dependencyValuesByKey);
 
-        if (dependencyValues.haveNonNumericalPrescribedRadius
-          || dependencyValues.haveNonNumericalPrescribedCenter
-          || dependencyValues.haveNonNumericalThroughPoints
+        let numericalCenter = {};
+
+        for (let arrayKey of arrayKeys) {
+          if (dependencyValuesByKey[arrayKey].numericalPrescribedCenterX !== undefined) {
+            if (globalDependencyValues.haveCenterRadiusPoints) {
+              console.warn("Can't calculate circle with specified radius and center and through points")
+              return { newValues: { numericalCenter: [NaN, NaN] } }
+            }
+            numericalCenter[arrayKey] = dependencyValuesByKey[arrayKey].numericalPrescribedCenterX;
+          }
+        }
+        if (Object.keys(numericalCenter).length > 0) {
+          return { newValues: { numericalCenter } }
+        }
+
+        if (globalDependencyValues.haveNonNumericalPrescribedRadius
+          || globalDependencyValues.haveNonNumericalThroughPoints
         ) {
           return {
             newValues: {
@@ -1227,49 +1254,41 @@ export default class Circle extends Curve {
           }
         }
 
-        if (dependencyValues.numericalPrescribedCenter !== undefined) {
-          if (dependencyValues.haveCenterRadiusPoints) {
-            console.warn("Can't calculate circle with specified radius and center and through points")
-            return { newValues: { numericalCenter: [NaN, NaN] } }
-          }
-          return {
-            newValues: {
-              numericalCenter: dependencyValues.numericalPrescribedCenter
-            }
-          }
-        }
-
-        if (dependencyValues.numericalRadius !== undefined) {
+        if (globalDependencyValues.numericalRadius !== undefined) {
           // have a radius defined and no center
-          if (dependencyValues.nThroughPoints === 0) {
+          if (globalDependencyValues.nThroughPoints === 0) {
             // only radius specified.  Create centered at origin as a default.
-            return {
-              useEssentialOrDefaultValue: {
-                numericalCenter: {
-                  variablesToCheck: "numericalCenter"
-                }
+            let essentialCenter = {};
+            for (let arrayKey of arrayKeys) {
+              essentialCenter[arrayKey] = {
+                variablesToCheck: "numericalCenterX" + arrayKey
               }
             }
-          } else if (dependencyValues.nThroughPoints === 1) {
+            return {
+              useEssentialOrDefaultValue: { numericalCenter: essentialCenter },
+              makeEssential: ["numericalCenter"]
+            };
+
+          } else if (globalDependencyValues.nThroughPoints === 1) {
             // radius and one through point
             // create a circle with top being the point
 
             let numericalCenter = [
-              dependencyValues.numericalThroughPoints[0][0],
-              dependencyValues.numericalThroughPoints[0][1] - dependencyValues.numericalRadius
+              globalDependencyValues.numericalThroughPoints[0][0],
+              globalDependencyValues.numericalThroughPoints[0][1] - globalDependencyValues.numericalRadius
             ];
 
             return { newValues: { numericalCenter } }
 
-          } else if (dependencyValues.nThroughPoints === 2) {
+          } else if (globalDependencyValues.nThroughPoints === 2) {
 
             // find circle through two points with given radius
-            let r = dependencyValues.numericalRadius;
+            let r = globalDependencyValues.numericalRadius;
 
-            let x1 = dependencyValues.numericalThroughPoints[0][0];
-            let x2 = dependencyValues.numericalThroughPoints[1][0];
-            let y1 = dependencyValues.numericalThroughPoints[0][1];
-            let y2 = dependencyValues.numericalThroughPoints[1][1];
+            let x1 = globalDependencyValues.numericalThroughPoints[0][0];
+            let x2 = globalDependencyValues.numericalThroughPoints[1][0];
+            let y1 = globalDependencyValues.numericalThroughPoints[0][1];
+            let y2 = globalDependencyValues.numericalThroughPoints[1][1];
 
             let dist2 = Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2);
             let r2 = r * r;
@@ -1303,14 +1322,17 @@ export default class Circle extends Curve {
 
 
         // don't have prescribed radius
-        if (dependencyValues.nThroughPoints === 0) {
-          return {
-            useEssentialOrDefaultValue: {
-              numericalCenter: {
-                variablesToCheck: "numericalCenter"
-              }
+        if (globalDependencyValues.nThroughPoints === 0) {
+          let essentialCenter = {};
+          for (let arrayKey of arrayKeys) {
+            essentialCenter[arrayKey] = {
+              variablesToCheck: "numericalCenterX" + arrayKey
             }
           }
+          return {
+            useEssentialOrDefaultValue: { numericalCenter: essentialCenter },
+            makeEssential: ["numericalCenter"]
+          };
         } else {
 
           // Must have at least two points, as case with one through point
@@ -1320,7 +1342,7 @@ export default class Circle extends Curve {
           // with no prescribed radius or center
           // is case where calculated radius and center together.
 
-          if (dependencyValues.numericalCenterCalculatedWithRadius === undefined) {
+          if (globalDependencyValues.numericalCenterCalculatedWithRadius === undefined) {
             // if nThroughPoints changed, but dependencies haven't been recalculated yet
             // could get to here where don't have numericalCenterCalculatedWithRadius
             return {
@@ -1333,7 +1355,7 @@ export default class Circle extends Curve {
 
             return {
               newValues: {
-                numericalCenter: dependencyValues.numericalCenterCalculatedWithRadius
+                numericalCenter: globalDependencyValues.numericalCenterCalculatedWithRadius
               }
             }
           }
@@ -1342,44 +1364,71 @@ export default class Circle extends Curve {
 
 
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues }) {
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        globalDependencyValues, dependencyValuesByKey, dependencyNamesByKey,
+        stateValues, workspace
+      }) {
 
         // console.log('inverse definition of numericalCenter of circle')
         // console.log(desiredStateVariableValues)
-        // console.log(dependencyValues)
+        // console.log(globalDependencyValues)
+        // console.log(dependencyValuesByKey)
 
-        if (dependencyValues.numericalPrescribedCenter !== undefined) {
+        let instructions = [];
 
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "numericalPrescribedCenter",
-              desiredValue: desiredStateVariableValues.numericalCenter,
-            }]
+        for (let arrayKey in desiredStateVariableValues.numericalCenter) {
+          if (dependencyValuesByKey[arrayKey].numericalPrescribedCenterX !== undefined) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].numericalPrescribedCenterX,
+              desiredValue: desiredStateVariableValues.numericalCenter[arrayKey],
+            })
           }
         }
 
-
-        if (dependencyValues.nThroughPoints === 0) {
-          // just change essential value of numericalCenter
+        if (instructions.length > 0) {
           return {
             success: true,
-            instructions: [{
+            instructions
+          }
+        }
+
+        if (globalDependencyValues.nThroughPoints === 0) {
+          // just change essential value of numericalCenter
+          for (let arrayKey in desiredStateVariableValues.numericalCenter) {
+            instructions.push({
               setStateVariable: "numericalCenter",
-              value: desiredStateVariableValues.numericalCenter
-            }]
+              value: desiredStateVariableValues.numericalCenter[arrayKey],
+              arrayKey
+            })
+          }
+          return {
+            success: true,
+            instructions
           }
         } else {
+
+          // in case just one key specified, merge with previous values
+          if (!workspace.desiredCenter) {
+            workspace.desiredCenter = {};
+          }
+          for (let key = 0; key < 2; key++) {
+            if (desiredStateVariableValues.numericalCenter[key] !== undefined) {
+              workspace.desiredCenter[key] = desiredStateVariableValues.numericalCenter[key];
+            } else if (workspace.desiredCenter[key] === undefined) {
+              workspace.desiredCenter[key] = stateValues.numericalCenter[key];
+            }
+          }
+
           let newThroughPoints = [];
 
-          for (let i = 0; i < dependencyValues.nThroughPoints; i++) {
+          for (let i = 0; i < globalDependencyValues.nThroughPoints; i++) {
             let theta = stateValues.throughAngles[i];
             if (!Number.isFinite(theta)) {
               return { success: false }
             }
             let pt = [
-              desiredStateVariableValues.numericalCenter[0] + stateValues.numericalRadius * Math.cos(theta),
-              desiredStateVariableValues.numericalCenter[1] + stateValues.numericalRadius * Math.sin(theta)
+              workspace.desiredCenter[0] + stateValues.numericalRadius * Math.cos(theta),
+              workspace.desiredCenter[1] + stateValues.numericalRadius * Math.sin(theta)
             ]
 
             newThroughPoints.push(pt);
@@ -1543,10 +1592,10 @@ export default class Circle extends Curve {
 
             try {
               let pt = dependencyValues.throughPoints[0];
-              let ptx = pt.get_component(0);
-              let pty = pt.get_component(1);
-              let ctx = dependencyValues.prescribedCenter.get_component(0);
-              let cty = dependencyValues.prescribedCenter.get_component(1);
+              let ptx = pt[0];
+              let pty = pt[1];
+              let ctx = dependencyValues.prescribedCenter[0];
+              let cty = dependencyValues.prescribedCenter[1];
 
               let radius = ptx.subtract(ctx).pow(2)
                 .add(pty.subtract(cty).pow(2))
@@ -1644,36 +1693,73 @@ export default class Circle extends Curve {
     stateVariableDefinitions.center = {
       forRenderer: true,
       public: true,
-      componentType: "point",
+      componentType: "math",
+      isArray: true,
+      entryPrefixes: ["centerX"],
+      defaultEntryValue: me.fromAst(0),
+      returnWrappingComponents(prefix) {
+        if (prefix === "centerX") {
+          return [];
+        } else {
+          // entire array
+          // wrap by both <point> and <xs>
+          return [["point", "xs"]];
+        }
+      },
       stateVariablesDeterminingDependencies: [
         "nThroughPoints", "havePrescribedCenter", "havePrescribedRadius"
       ],
-      defaultValue: me.fromAst(["vector", 0, 0]),
-      returnDependencies: function ({ stateValues }) {
-        let dependencies = {
-          numericalCenter: {
-            dependencyType: "stateVariable",
-            variableName: "numericalCenter"
-          },
-        }
+      returnArraySizeDependencies: () => ({}),
+      returnArraySize() {
+        return [2];
+      },
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
+        let globalDependencies = {};
+        let dependenciesByKey = {};
 
         if (stateValues.havePrescribedCenter) {
-          dependencies.prescribedCenter = {
-            dependencyType: "stateVariable",
-            variableName: "prescribedCenter"
+          // if have prescribed center, we separate dependencies by key
+
+          // add havePrescribedCenter as a value
+          // so that it changes only when dependencies are recalculated
+          globalDependencies.havePrescribedCenter = {
+            dependencyType: "value",
+            value: true,
           }
+
+          for (let arrayKey of arrayKeys) {
+            let varEnding = Number(arrayKey) + 1;
+            dependenciesByKey[arrayKey] = {
+              numericalCenterX: {
+                dependencyType: "stateVariable",
+                variableName: "numericalCenterX" + varEnding
+              },
+              prescribedCenterX: {
+                dependencyType: "stateVariable",
+                variableName: "prescribedCenterX" + varEnding
+              }
+            }
+          }
+
           if (stateValues.havePrescribedRadius && stateValues.nThroughPoints > 0) {
-            dependencies.haveCenterRadiusPoints = {
+            globalDependencies.haveCenterRadiusPoints = {
               dependencyType: "value",
               value: true,
             }
           }
         } else {
-          dependencies.nThroughPoints = {
+
+          // if don't have a prescribed center, we used global dependencies
+          globalDependencies.numericalCenter = {
+            dependencyType: "stateVariable",
+            variableName: "numericalCenter"
+          }
+
+          globalDependencies.nThroughPoints = {
             dependencyType: "stateVariable",
             variableName: "nThroughPoints"
           };
-          dependencies.throughPoints = {
+          globalDependencies.throughPoints = {
             dependencyType: "stateVariable",
             variableName: "throughPoints"
           };
@@ -1682,14 +1768,14 @@ export default class Circle extends Curve {
             // we call prescribedRadius as radius
             // as we will treat the same as calculated radius
             // for case with one through point
-            dependencies.radius = {
+            globalDependencies.radius = {
               dependencyType: "stateVariable",
               variableName: "prescribedRadius"
             };
           } else if (stateValues.nThroughPoints == 1) {
             // if didn't have prescribed radius but just one point
             // we treat the radius calculated above as prescribed
-            dependencies.radius = {
+            globalDependencies.radius = {
               dependencyType: "stateVariable",
               variableName: "radius"
             };
@@ -1697,16 +1783,41 @@ export default class Circle extends Curve {
           }
         }
 
-        return dependencies;
+        return { dependenciesByKey, globalDependencies };
       },
-      definition: function ({ dependencyValues }) {
+      arrayDefinitionByKey: function ({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
         // console.log(`definition of center of circle`);
-        // console.log(dependencyValues);
+        // console.log(globalDependencyValues);
+        // console.log(dependencyValuesByKey);
 
-        if (dependencyValues.numericalCenter.every(x => Number.isFinite(x))) {
+
+        if (globalDependencyValues.havePrescribedCenter) {
+          if (globalDependencyValues.haveCenterRadiusPoints) {
+            console.warn("Can't calculate circle with specified radius and center and through points")
+            return {
+              newValues: {
+                center: [me.fromAst('\uff3f'), me.fromAst('\uff3f')]
+              }
+            }
+          }
+
+          let center = {};
+          for (let arrayKey of arrayKeys) {
+            if (Number.isFinite(dependencyValuesByKey[arrayKey].numericalCenterX)) {
+              center[arrayKey] = me.fromAst(dependencyValuesByKey[arrayKey].numericalCenterX);
+            } else {
+              center[arrayKey] = dependencyValuesByKey[arrayKey].prescribedCenterX
+            }
+
+          }
+          return { newValues: { center } }
+        }
+
+
+        if (globalDependencyValues.numericalCenter.every(x => Number.isFinite(x))) {
           return {
             newValues: {
-              center: me.fromAst(["vector", ...dependencyValues.numericalCenter])
+              center: globalDependencyValues.numericalCenter.map(x => me.fromAst(x))
             },
             // make center essential in case center becomes non-numeric
             // and we have to set the center state variable in the inverse definition
@@ -1714,43 +1825,45 @@ export default class Circle extends Curve {
           }
         }
 
-        if (dependencyValues.prescribedCenter !== undefined) {
-          if (dependencyValues.haveCenterRadiusPoints) {
-            console.warn("Can't calculate circle with specified radius and center and through points")
-            return {
-              newValues: {
-                center: me.fromAst(["vector", '\uff3f', '\uff3f'])
-              }
-            }
-          }
-          return {
-            newValues: {
-              center: dependencyValues.prescribedCenter
-            }
-          }
-        }
 
-        if (dependencyValues.radius !== undefined) {
+        if (globalDependencyValues.radius !== undefined) {
 
           // have a radius defined and no center
-          if (dependencyValues.nThroughPoints === 0) {
+          if (globalDependencyValues.nThroughPoints === 0) {
             // only radius specified.  Create centered at origin as a default.
-            return {
-              useEssentialOrDefaultValue: {
-                center: {
-                  variablesToCheck: "center"
-                }
+
+            let essentialCenter = {};
+            for (let arrayKey of arrayKeys) {
+              essentialCenter[arrayKey] = {
+                variablesToCheck: "centerX" + arrayKey
               }
             }
-          } else if (dependencyValues.nThroughPoints === 1) {
+            return {
+              useEssentialOrDefaultValue: { center: essentialCenter },
+              makeEssential: ["center"]
+            };
+
+          } else if (globalDependencyValues.nThroughPoints === 1) {
             // radius and one through point
             // create a circle with top being the point
 
-            let temp = dependencyValues.throughPoints[0];
-            let center = temp.substitute_component(1,
-              temp.get_component(1).subtract(dependencyValues.radius)
-            ).simplify();
+            console.log(globalDependencyValues.throughPoints)
+            console.log(globalDependencyValues.nThroughPoints)
 
+            let center;
+
+            // it is possible, as dependency are being worked out
+            // that throughPoints[0][1], so catch the resulting error
+            try {
+              center = [
+                globalDependencyValues.throughPoints[0][0],
+                globalDependencyValues.throughPoints[0][1]
+                  .subtract(globalDependencyValues.radius)
+                  .simplify()
+              ];
+            } catch (e) {
+              center = [me.fromAst('\uff3f'), me.fromAst('\uff3f')];
+            }
 
             return { newValues: { center } }
 
@@ -1759,7 +1872,7 @@ export default class Circle extends Curve {
             console.warn("Can't create circle through more than one point with given radius when don't have numerical values");
             return {
               newValues: {
-                center: me.fromAst(["vector", '\uff3f', '\uff3f'])
+                center: [me.fromAst('\uff3f'), me.fromAst('\uff3f')]
               }
             }
           }
@@ -1767,14 +1880,17 @@ export default class Circle extends Curve {
 
 
         // don't have prescribed radius
-        if (dependencyValues.nThroughPoints === 0) {
-          return {
-            useEssentialOrDefaultValue: {
-              center: {
-                variablesToCheck: "center"
-              }
+        if (globalDependencyValues.nThroughPoints === 0) {
+          let essentialCenter = {};
+          for (let arrayKey of arrayKeys) {
+            essentialCenter[arrayKey] = {
+              variablesToCheck: "centerX" + arrayKey
             }
           }
+          return {
+            useEssentialOrDefaultValue: { center: essentialCenter },
+            makeEssential: ["center"]
+          };
         } else {
 
           // Must have at least two points, as case with one through point
@@ -1783,47 +1899,67 @@ export default class Circle extends Curve {
           console.warn("Can't create circle through more than one point when don't have numerical values");
           return {
             newValues: {
-              center: me.fromAst(["vector", '\uff3f', '\uff3f'])
+              center: [me.fromAst('\uff3f'), me.fromAst('\uff3f')]
             }
           }
         }
 
-
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues, workspace }) {
+
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        globalDependencyValues, stateValues, dependencyNamesByKey, workspace
+      }) {
 
         // console.log('inverse definition of center of circle')
         // console.log(desiredStateVariableValues)
-        // console.log(dependencyValues)
+        // console.log(globalDependencyValues)
+        // console.log(dependencyValuesByKey)
 
-        if (!["tuple", "vector"].includes(desiredStateVariableValues.center.tree[0])) {
-          return { success: false };
+
+        if (globalDependencyValues.havePrescribedCenter) {
+
+          let instructions = [];
+
+          for (let arrayKey in desiredStateVariableValues.center) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].prescribedCenterX,
+              desiredValue: desiredStateVariableValues.center[arrayKey],
+              arrayKey
+            })
+          }
+
+          return {
+            success: true,
+            instructions
+          }
+
         }
+
+        // since don't have prescribed center
+        // we work with global dependency values
+
 
         // if have any empty values in desired value,
         // merge with current values, or value from workspace
-        let centerAst;
-        if (workspace.desiredCenterAst) {
-          // if have desired expresson from workspace, use that instead of currentValue
-          centerAst = workspace.desiredCenterAst.slice(0);
-        } else {
-          centerAst = stateValues.center.tree.slice(0);
+
+        if (!workspace.desiredCenter) {
+          workspace.desiredCenter = {};
         }
 
-        for (let [ind, value] of desiredStateVariableValues.center.tree.entries()) {
-          if (value !== undefined) {
-            centerAst[ind] = value;
+        for (let key = 0; key < 2; key++) {
+          if (desiredStateVariableValues.center[key] !== undefined) {
+            workspace.desiredCenter[key] = desiredStateVariableValues.center[key];
+          } else if (workspace.desiredCenter[key] === undefined) {
+            workspace.desiredCenter[key] = stateValues.center[key];
           }
         }
 
-        let desiredCenter = me.fromAst(centerAst);
-        workspace.desiredCenterAst = centerAst;
 
         let numericalCenter = [];
         let desiredCenterIsNumeric = true;
 
         for (let i = 0; i < 2; i++) {
-          let component = desiredCenter.get_component(i).evaluate_to_constant();
+          let component = workspace.desiredCenter[i].evaluate_to_constant();
           if (!Number.isFinite(component)) {
             desiredCenterIsNumeric = false;
             break;
@@ -1831,7 +1967,7 @@ export default class Circle extends Curve {
           numericalCenter.push(component);
         }
 
-        if (desiredCenterIsNumeric && dependencyValues.numericalCenter.every(x => Number.isFinite(x))) {
+        if (desiredCenterIsNumeric && globalDependencyValues.numericalCenter.every(x => Number.isFinite(x))) {
           return {
             success: true,
             instructions: [{
@@ -1841,25 +1977,14 @@ export default class Circle extends Curve {
           }
         }
 
-        if (dependencyValues.prescribedCenter !== undefined) {
 
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "prescribedCenter",
-              desiredValue: desiredCenter,
-            }]
-          }
-        }
-
-
-        if (dependencyValues.nThroughPoints === 0) {
+        if (globalDependencyValues.nThroughPoints === 0) {
           // just change essential value of center
           // (and numericalCenter if we have a numerical center)
 
           let instructions = [{
             setStateVariable: "center",
-            value: desiredCenter
+            value: workspace.desiredCenter
           }];
 
           if (desiredCenterIsNumeric) {
