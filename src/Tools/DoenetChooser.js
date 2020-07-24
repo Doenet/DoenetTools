@@ -1804,6 +1804,8 @@ class DoenetChooser extends Component {
           onDropEnter={this.onTreeDropEnter}
           onDrop={this.onTreeDrop}
           directoryData={[...this.state.directoryStack]}
+          parentNodeItem={TreeNodeItem}
+          leafNodeItem={TreeNodeItem}
           specialNodes={this.tempSet}
           treeStyles={{
             specialChildNode: {
@@ -2080,6 +2082,19 @@ const MainPanel = ({panelId, initialContainer, activeContainer, containersData})
         </SwitchableContainerPanel>
       })}
     </SwitchableContainers>
+  </div>;
+}
+
+const TreeNodeItem = ({title, icon}) => {
+  return <div>
+    {icon}
+    <span style={{
+      verticalAlign: "middle",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+    }}
+    >{title}</span>
   </div>;
 }
 

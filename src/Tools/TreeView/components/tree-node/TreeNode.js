@@ -12,9 +12,8 @@ export const ParentNode = memo(({
   id, 
   hide = false, 
   children, 
-  title, 
+  nodeItem, 
   type, 
-  itemIcon, 
   onClick, 
   onDoubleClick,
   expanderIcon, 
@@ -86,8 +85,7 @@ export const ParentNode = memo(({
               { expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }}/> }
             </span>            
             <div style={{display: "inline-block", width: "100%", ...styles["title"]}} onClick={() => onClick(id, type)} onDoubleClick={() => onDoubleClickCb(id, type)}>
-              { itemIcon }
-              <Title>{title}</Title>
+              {nodeItem}
             </div>
           </div>
           <div>{ controlButtons }</div>
@@ -105,7 +103,7 @@ export const ParentNode = memo(({
 
 })
 
-export const LeafNode = memo(({ id, title, type, itemIcon, styles, onDragStart, onDragOver, onDragEnd, onClick }) => {
+export const LeafNode = memo(({ id, nodeItem, type, styles, onDragStart, onDragOver, onDragEnd, onClick }) => {
 
   const onDraggableDragOverCb = (id) => {
     onDragOver(id, type)
@@ -119,8 +117,7 @@ export const LeafNode = memo(({ id, title, type, itemIcon, styles, onDragStart, 
     <DragItem id={id} onDragStart={onDragStartCb} onDragOver={onDraggableDragOverCb} onDragEnd={onDragEnd}>
       <Frame style={styles["frame"]} onClick={() => onClick(id, type)}>
         <ListItem style={styles["title"]}>
-          { itemIcon }
-          <Title>{title}</Title>
+          {nodeItem}
         </ListItem>
       </Frame>
     </DragItem>    
