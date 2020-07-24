@@ -681,7 +681,7 @@ export default class DoenetGradebook extends Component {
 
 
         const leftNav = <Accordion>
-            <div label="See All Assignments">
+            <div label="Assignments">
                 <TreeView
                     containerId={'assignments'}
                     containerType={'course_assignments'}
@@ -728,19 +728,16 @@ export default class DoenetGradebook extends Component {
 
                     }}
                     onLeafNodeClick={(nodeId) => {
-                        // if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
-                        // else this.tempSet.add(nodeId);
-                        // this.forceUpdate();
-                        // this.selectDrive("Courses", nodeId)
+                        this.tempSet.clear();
+                        this.tempSet.add(nodeId);
+                        this.forceUpdate()
+                  
                     }}
                     onParentNodeClick={(nodeId) => {
                         // this.tempSet.clear();
                         // this.tempSet.add(nodeId);
-                        // this.goToFolder(nodeId, customizedContentTreeParentInfo);
-                        // if (!this.state.splitPanelLayout) {
-                        //     this.splitPanelGoToFolder(nodeId, customizedContentTreeParentInfo);
-                        // }
-                        // this.forceUpdate();
+                        // this.forceUpdate()
+                     
                         window.location.href = `/gradebook/assignment/?assignmentId=${nodeId}`;
                     }}
                 />
@@ -760,12 +757,16 @@ export default class DoenetGradebook extends Component {
                     <h2>Assignments</h2>
                     {this.navItems}
                     </div> */}
-                        {leftNav}
+                    
+                        <div style={{ padding: "5px 0px" }}>
+                            <Link to="/" className="gradebookNavItem">See All Assignments</Link>
+                            {leftNav}
+                        </div>
                     </ToolLayoutPanel>
                     <ToolLayoutPanel key="two" panelName="Grades Panel">
                         <div style={{ padding: "5px" }}>
                             <Switch>
-                                <Route sensitive exact path="/overview" component={GradebookOverview} />
+                                <Route sensitive exact path="/" component={GradebookOverview} />
                                 <Route sensitive exact path="/assignment/" component={GradebookAssignmentView} />
                                 <Route sensitive exact path="/attempt/" component={GradebookAttemptView} />
                             </Switch>
