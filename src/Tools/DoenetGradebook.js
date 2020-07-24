@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 axios.defaults.withCredentials = true;
-// import { browserHistory } from 'react-router';
 import {
     BrowserRouter as Router,
     Switch,
