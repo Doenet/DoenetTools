@@ -38,12 +38,12 @@ jobs:
       with:
         node-version: '10.x'
     - name: Install Dependencies
-      run: npm install && npm install -g wait-on
+      run: npm install
     - name: Make dist_local Folder
       run: mkdir -m 777 dist_local
     - name: Build the Containers
       run: npm run docker:build
     - name: Start the Server
-      run: npm start & wait-on localhost
+      run: npm start & sleep 90
     - name: Run Tests
       run: npm run test:all

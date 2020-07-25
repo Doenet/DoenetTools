@@ -39,7 +39,7 @@
     "docker:build": "cd doenet_docker && docker-compose build",
     "docker:lamp": "cd doenet_docker_lamp_only && docker-compose up",
     "docker:webpack": "cd doenet_docker_webpack_only && docker-compose up",
-    "webpack": "webpack --mode development --config webpack.local.config.js",
+    "webpack": "webpack --mode development --config webpack.local.config.js --watch",
     "build": "webpack --mode production --config webpack.deployment.config.js",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome'",
