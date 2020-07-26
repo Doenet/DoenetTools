@@ -283,19 +283,19 @@ class DoenetChooser extends Component {
     let syllabusDocumentName = courseName + " Syllabus";    
     
     Promise.all([
-      this.saveContentToServer({
+      new Promise(resolve => this.saveContentToServer({
         documentName:overviewDocumentName,
         code:"",
         branchId:overviewId,
         publish:true
-      }),
-      this.saveContentToServer({
+      }, ()=>{resolve()})),
+      new Promise(resolve => this.saveContentToServer({
         documentName:syllabusDocumentName,
         code:"",
         branchId:syllabusId,
         publish:true
-      }),
-      this.saveCourse({
+      }, ()=>{resolve()})),
+      new Promise(resolve => this.saveCourse({
         courseName: courseName,
         courseId: courseId,
         courseCode: courseCode,
@@ -305,9 +305,9 @@ class DoenetChooser extends Component {
         section: section,
         overviewId: overviewId,
         syllabusId: syllabusId
-      }),
-      this.addContentToCourse(courseId, [overviewId, syllabusId], ["content", "content"]),
-      this.saveUserContent([overviewId, syllabusId], ["content", "content"], "insert")
+      }, ()=>{resolve()})),
+      new Promise(resolve => this.addContentToCourse(courseId, [overviewId, syllabusId], ["content", "content"], ()=>{resolve()})),
+      new Promise(resolve => this.saveUserContent([overviewId, syllabusId], ["content", "content"], "insert", ()=>{resolve()}))
     ])
     .then(() => {
       this.loadAllCourses(() => {
@@ -327,32 +327,27 @@ class DoenetChooser extends Component {
   }
 
   handleNewUrlCreated({urlId, title, url, description, usesDoenetAPI}, callback=(()=>{})) {
+    const currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
     Promise.all([
-      this.saveUrl({
+      new Promise(resolve => this.saveUrl({
         urlId: urlId,
         title: title,
         url: url,
         description: description,
         usesDoenetAPI: usesDoenetAPI
-      }, () => {
-        // add url to current folder
-        let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
-        this.addContentToFolder([urlId], ["url"], currentFolderId);        
-
-        this.saveUserContent([urlId], ["url"], "insert", () => {  // add to user root
-          this.loadUserUrls(() => {
-            this.setState({
-              selectedItems: [urlId],
-              selectedItemsType: ["url"],
-              activeSection: "chooser",
-              selectedDrive: "Content"
-            }, () => { 
-            });
-          });
-        })        
-      }),
+      }, ()=>{resolve()})),
+      new Promise(resolve => this.addContentToFolder([urlId], ["url"], currentFolderId, ()=>{resolve()})), // add url to current folder
+      new Promise(resolve => this.saveUserContent([urlId], ["url"], "insert", ()=>{resolve()})), // add to user root
     ])
     .then(() => {
+      this.loadUserUrls(() => {
+        this.setState({
+          selectedItems: [urlId],
+          selectedItemsType: ["url"],
+          activeSection: "chooser",
+          selectedDrive: "Content"
+        });
+      });
       callback();
     })
   }
@@ -581,11 +576,12 @@ class DoenetChooser extends Component {
     this.updateNumber++;
   }
 
-  addContentToCourse(courseId, itemIds, itemTypes) {
+  addContentToCourse(courseId, itemIds, itemTypes, callback=()=>{}) {
     let operationType = "insert";
     this.saveCourseContent(courseId, itemIds, itemTypes, operationType ,(courseId) => {
       this.loadAllCourses(() => {
         this.selectDrive("Courses", courseId);
+        callback();
       });
     });
   }
@@ -618,6 +614,7 @@ class DoenetChooser extends Component {
     }
     axios.post(url, data)
     .then((resp) => {
+      console.log(resp);
       callback(resp);
     })
     .catch(function (error) {
@@ -647,6 +644,7 @@ class DoenetChooser extends Component {
     
     axios.get(loadUserFoldersAndRepoUrl,payload)
     .then(resp=>{
+      console.log(resp)
       this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
       this.folderIds = resp.data.folderIds;
       this.userFolderInfo = resp.data.folderInfo;
@@ -669,28 +667,11 @@ class DoenetChooser extends Component {
       isPublic = true;
     }
 
-    // this.saveFolder(folderId, title, [], [], "insert", false, isPublic, () => {
-    //   let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
-    //   this.saveUserContent([folderId], ["folder"], "insert", () => {  // add to user root
-    //     this.addContentToFolder([folderId], ["folder"], currentFolderId, () => {  // add to folder
-    //       this.loadUserFoldersAndRepo(() => {
-    //         this.setState({
-    //           selectedItems: [folderId],
-    //           selectedItemsType: ["folder"],
-    //           activeSection: "chooser",
-    //           selectedDrive: "Content"
-    //         }, () => { 
-    //           this.updateNumber++;
-    //         });
-    //       });
-    //     });   
-    //   });  
-    // });
     const currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
     Promise.all([
-      this.saveFolder(folderId, title, [], [], "insert", false, isPublic), // add new folder
-      this.saveUserContent([folderId], ["folder"], "insert"),  // add to user root
-      this.addContentToFolder([folderId], ["folder"], currentFolderId), // add to folder
+      new Promise(resolve => this.saveFolder(folderId, title, [], [], "insert", false, isPublic, ()=>{resolve()})), // add new folder
+      new Promise(resolve => this.saveUserContent([folderId], ["folder"], "insert", ()=>{resolve()})),  // add to user root
+      new Promise(resolve => this.addContentToFolder([folderId], ["folder"], currentFolderId, ()=>{resolve()})) // add to folder
     ]).then(() => {
       this.loadUserFoldersAndRepo(() => {
         this.setState({
@@ -1024,20 +1005,23 @@ class DoenetChooser extends Component {
 
   addNewRepo(title) {
     let folderId = nanoid();
-    this.saveFolder(folderId, title, [], [], "insert", true, false, () => {
-      this.modifyRepoAccess(folderId, "insert", true, () => {  // add user to repo_access
-        this.loadUserFoldersAndRepo(() => {
-          this.setState({
-            directoryStack: [],
-            selectedItems: [folderId],
-            selectedItemsType: ["folder"],
-            activeSection: "chooser",
-            selectedDrive: "Content"
-          }, () => { 
-            this.updateNumber++;
-          });
+    Promise.all([
+      new Promise(resolve => this.saveFolder(folderId, title, [], [], "insert", true, false, ()=>{resolve()})),
+      new Promise(resolve => this.modifyRepoAccess(folderId, "insert", true, ()=>{resolve()}))
+    ])
+    .then(() => {
+      console.log("Here")
+      this.loadUserFoldersAndRepo(() => {
+        this.setState({
+          directoryStack: [],
+          selectedItems: [folderId],
+          selectedItemsType: ["folder"],
+          activeSection: "chooser",
+          selectedDrive: "Content"
+        }, () => { 
+          this.updateNumber++;
         });
-      });  
+      });
     })
   }
 
@@ -1050,6 +1034,7 @@ class DoenetChooser extends Component {
     }
     axios.post(url, data)
     .then(resp => {
+      console.log(resp);
       callback();
     })
     .catch(function (error) {
