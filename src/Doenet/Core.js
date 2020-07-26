@@ -662,6 +662,9 @@ export default class Core {
     }
 
 
+    this.updateDependencies(updatesNeeded, compositesBeingExpanded);
+
+
     if (Object.keys(updatesNeeded.unresolvedDependencies).length > 0) {
       console.log("have some unresolved");
       console.log(updatesNeeded.unresolvedDependencies);
@@ -682,8 +685,6 @@ export default class Core {
         return { success: false, message: childLogicMessage, updatesNeeded }
       }
     }
-
-    this.updateDependencies(updatesNeeded, compositesBeingExpanded);
 
     return {
       success: true,
@@ -3467,7 +3468,6 @@ export default class Core {
 
     }
 
-    let componentVarsDeleted = {};
     let varsUnresolved = {};
 
     for (let childLogicName in childLogic.logicResult.sugarResults) {
@@ -3600,7 +3600,14 @@ export default class Core {
                 }
               }
             }
-            return { componentVarsDeleted: { [component.componentName]: [applySugarStateVariable] } }
+
+            if (!updatesNeeded.deletedStateVariables[component.componentName]) {
+              updatesNeeded.deletedStateVariables[component.componentName] = [];
+            }
+            updatesNeeded.deletedStateVariables[component.componentName].push(applySugarStateVariable);
+
+
+            return {}
 
           }
         }
@@ -3626,14 +3633,6 @@ export default class Core {
 
           Object.assign(varsUnresolved, result.varsUnresolved);
 
-          for (let cName in result.componentVarsDeleted) {
-            if (!componentVarsDeleted[cName]) {
-              componentVarsDeleted[cName] = [];
-            }
-            componentVarsDeleted[cName].push(...result.componentVarsDeleted[cName]);
-          }
-
-
         }
 
       } else {
@@ -3649,7 +3648,7 @@ export default class Core {
 
     }
 
-    return { componentVarsDeleted, varsUnresolved }
+    return { varsUnresolved }
 
   }
 
@@ -3883,7 +3882,7 @@ export default class Core {
         // We could change returnDependencies to output an object.
         // That would probably be cleaner.
         let numNames = Object.keys(arrayStateVarObj.dependencyNames.namesByKey).length;
-        if(stateVarObj.numberNamesInPreviousReturnDep !==numNames) {
+        if (stateVarObj.numberNamesInPreviousReturnDep !== numNames) {
           args.changedDependency = true;
         }
         stateVarObj.numberNamesInPreviousReturnDep = numNames;
@@ -4324,15 +4323,15 @@ export default class Core {
           // namesByKey also functions to indicate that dependencies
           // have been returned for that arrayKey
 
-        // If had additional nameByKey, it should be treated as dependencies changing
-        // so that we recalculate the value of the array variable
-        // TODO: we are communicating this to updateDependencies by adding
-        // an attribute to the arguments?  Is there a better way of doing it.
-        // Didn't want to add to the return value, as that would add complexity
-        // to how we normally define returnDependencies
-        // We could change returnDependencies to output an object.
-        // That would probably be cleaner.
-          if(!(arrayKey in stateVarObj.dependencyNames.namesByKey)) {
+          // If had additional nameByKey, it should be treated as dependencies changing
+          // so that we recalculate the value of the array variable
+          // TODO: we are communicating this to updateDependencies by adding
+          // an attribute to the arguments?  Is there a better way of doing it.
+          // Didn't want to add to the return value, as that would add complexity
+          // to how we normally define returnDependencies
+          // We could change returnDependencies to output an object.
+          // That would probably be cleaner.
+          if (!(arrayKey in stateVarObj.dependencyNames.namesByKey)) {
             args.changedDependency = true;
           }
           stateVarObj.dependencyNames.namesByKey[arrayKey] = {};
@@ -5024,8 +5023,11 @@ export default class Core {
       if (downstreamComponentName !== null && downstreamComponentNames.length > 1) {
         partialDeletion = true;
 
-        // for effiency, not checking if index is valid.
+        // for effiency, should we not check if index is valid?
         deletedIndex = downstreamComponentNames.indexOf(downstreamComponentName);
+        if (deletedIndex === -1) {
+          throw Error('bad deleted index in dependency')
+        }
         depToDelete.downstreamComponentNames.splice(deletedIndex, 1);
         downstreamComponentNames = [downstreamComponentName];
       }
@@ -5059,6 +5061,9 @@ export default class Core {
       else if (depToDelete.dependencyType === "childLogicSatisfied") {
         mappedDownstreamVariableNamesByComponent = Array(downstreamComponentNames.length).fill(['__childLogic']);
       }
+      else if (depToDelete.dependencyType === "expandedComposites") {
+        mappedDownstreamVariableNamesByComponent = Array(downstreamComponentNames.length).fill(['__replacements']);
+      }
       else {
         mappedDownstreamVariableNamesByComponent = Array(downstreamComponentNames.length).fill(['__identity']);
       }
@@ -5070,6 +5075,9 @@ export default class Core {
       }
       else if (depToDelete.dependencyType === "childLogicSatisfied") {
         mappedDownstreamVariableNamesByComponent = [['__childLogic']];
+      }
+      else if (depToDelete.dependencyType === "expandedComposites") {
+        mappedDownstreamVariableNamesByComponent = [['__replacements']];
       }
       else {
         mappedDownstreamVariableNamesByComponent = [['__identity']];
@@ -5677,7 +5685,9 @@ export default class Core {
         depUp['__identity'] = [];
       }
       depUp['__identity'].push(newDep);
-    } else if (dependencyDefinition.dependencyType === "replacementStateVariables" || dependencyDefinition.dependencyType === "replacementIdentity") {
+    } else if (dependencyDefinition.dependencyType === "replacementStateVariables" ||
+      dependencyDefinition.dependencyType === "replacementIdentity"
+    ) {
 
       let replacements = component.replacements;
       if (replacements === undefined) {
@@ -7229,7 +7239,6 @@ export default class Core {
     let componentName = component.componentName;
 
     let varsUnresolved = {};
-    let componentVarsDeleted = {};
 
     let numInternalUnresolved = Infinity;
     let prevUnresolved = [];
@@ -7251,8 +7260,8 @@ export default class Core {
       let onlyInternalDependenciesUnresolved = [];
 
       for (let varName of prevUnresolved) {
-        if (componentVarsDeleted[componentName] &&
-          componentVarsDeleted[componentName].includes(varName)
+        if (updatesNeeded.deletedStateVariables[componentName] &&
+          updatesNeeded.deletedStateVariables[componentName].includes(varName)
         ) {
           continue;
         }
@@ -7326,13 +7335,6 @@ export default class Core {
                       updatesNeeded,
                       compositesBeingExpanded
                     });
-
-                    for (let cName in result.componentVarsDeleted) {
-                      if (!componentVarsDeleted[cName]) {
-                        componentVarsDeleted[cName] = [];
-                      }
-                      componentVarsDeleted[cName].push(...result.componentVarsDeleted[cName])
-                    }
 
                     if (Object.keys(result.varsUnresolved).length > 0) {
                       this.addUnresolvedDependencies({
@@ -7414,14 +7416,6 @@ export default class Core {
             let result = component.state[varName].resolvedAction(actionArgs);
 
             if (result) {
-              if (result.componentVarsDeleted) {
-                for (let cName in result.componentVarsDeleted) {
-                  if (!componentVarsDeleted[cName]) {
-                    componentVarsDeleted[cName] = [];
-                  }
-                  componentVarsDeleted[cName].push(...result.componentVarsDeleted[cName]);
-                }
-              }
 
               if (result.varsUnresolved) {
                 Object.assign(varsUnresolved, result.varsUnresolved);
@@ -7461,7 +7455,7 @@ export default class Core {
 
     }
 
-    return { varsUnresolved, componentVarsDeleted, triggerParentChildLogic };
+    return { varsUnresolved, triggerParentChildLogic };
 
   }
 
@@ -7502,7 +7496,6 @@ export default class Core {
   }) {
 
     let varsUnresolved = {};
-    let componentVarsDeleted = {};
 
     let foundArrayEntry = false;
 
@@ -7529,7 +7522,7 @@ export default class Core {
         });
 
         if (initializeOnly) {
-          return { varsUnresolved, componentVarsDeleted }
+          return { varsUnresolved }
         }
 
         let allStateVariablesAffected = [stateVariable];
@@ -7597,12 +7590,7 @@ export default class Core {
         });
 
         Object.assign(varsUnresolved, result.varsUnresolved);
-        for (let cName in result.componentVarsDeleted) {
-          if (!componentVarsDeleted[cName]) {
-            componentVarsDeleted[cName] = [];
-          }
-          componentVarsDeleted[cName].push(...results.componentVarsDeleted[cName])
-        }
+
         foundArrayEntry = true;
 
         break;
@@ -7613,7 +7601,7 @@ export default class Core {
       throw Error(`Unknown state variable ${stateVariable} of ${component.componentName}`);
     }
 
-    return { varsUnresolved, componentVarsDeleted };
+    return { varsUnresolved };
   }
 
   resolveAllDependencies(updatesNeeded, compositesBeingExpanded) {
@@ -7641,9 +7629,6 @@ export default class Core {
 
 
     console.log('resolving all dependencies');
-
-    // for each component, keep an array of state variables deleted
-    let componentVarsDeleted = updatesNeeded.deletedStateVariables;
 
     // keep track of unresolved references to component names
     // so that can give an appropriate error message
@@ -7688,8 +7673,8 @@ export default class Core {
             continue;
           }
 
-          let stateVariableDeleted = componentVarsDeleted[componentName] &&
-            componentVarsDeleted[componentName].includes(varName);
+          let stateVariableDeleted = updatesNeeded.deletedStateVariables[componentName] &&
+            updatesNeeded.deletedStateVariables[componentName].includes(varName);
 
           if (varName !== "__identity" && varName !== "__replacements"
             && varName !== "__childLogic" && !componentDeleted
@@ -7718,8 +7703,8 @@ export default class Core {
                 // if already resolved (by another dependency), skip
                 continue;
               }
-              if (componentVarsDeleted[dep.componentName] &&
-                componentVarsDeleted[dep.componentName].includes(dep.stateVariable)) {
+              if (updatesNeeded.deletedStateVariables[dep.componentName] &&
+                updatesNeeded.deletedStateVariables[dep.componentName].includes(dep.stateVariable)) {
                 // if depComponent's variable was already deleted
                 // (from when we processed another dependency)
                 // remove it from unresolvedDepenencies and skip
@@ -7738,13 +7723,6 @@ export default class Core {
                 updatesNeeded,
                 compositesBeingExpanded,
               });
-
-              for (let cName in resolveResult.componentVarsDeleted) {
-                if (!componentVarsDeleted[cName]) {
-                  componentVarsDeleted[cName] = [];
-                }
-                componentVarsDeleted[cName].push(...resolveResult.componentVarsDeleted[cName])
-              }
 
               // check to see if we can update replacements of any composites
               if (updatesNeeded.compositesToUpdateReplacements.length > 0) {
@@ -7835,13 +7813,6 @@ export default class Core {
                     compositesBeingExpanded
                   });
 
-                  for (let cName in sugarResult.componentVarsDeleted) {
-                    if (!componentVarsDeleted[cName]) {
-                      componentVarsDeleted[cName] = [];
-                    }
-                    componentVarsDeleted[cName].push(...sugarResult.componentVarsDeleted[cName])
-                  }
-
                   if (sugarResult.varsUnresolved) {
                     this.addUnresolvedDependencies({
                       varsUnresolved: sugarResult.varsUnresolved,
@@ -7908,18 +7879,11 @@ export default class Core {
           compositesBeingExpanded,
         });
 
-        let sugarResult = this.applySugarOrAddSugarCreationStateVariables({
+        this.applySugarOrAddSugarCreationStateVariables({
           component: this._components[composite.parentName],
           updatesNeeded,
           compositesBeingExpanded,
         });
-
-        for (let cName in sugarResult.componentVarsDeleted) {
-          if (!componentVarsDeleted[cName]) {
-            componentVarsDeleted[cName] = [];
-          }
-          componentVarsDeleted[cName].push(...sugarResult.componentVarsDeleted[cName])
-        }
 
         if (updatesNeeded.compositesToExpand.size < nUnexpanded) {
           resolvedAnotherDependency = true;
@@ -9011,7 +8975,7 @@ export default class Core {
 
           // change upstream dependencies
           for (let [replacementInd, currentReplacementName] of currentDep.downstreamComponentNames.entries()) {
-            if (replacementNames.includes(currentReplacementName)) {
+            if (!replacementNames.includes(currentReplacementName)) {
               // lost a replacement.  remove dependency
               updatesNeeded.componentsTouched.push(currentReplacementName);
               let replacementUpDep = this.upstreamDependencies[currentReplacementName];
@@ -10049,7 +10013,7 @@ export default class Core {
       // more dependencies that get marked for needing updates
       updatesNeeded.componentsToUpdateDependencies = dependenciesCouldNotUpdate;
 
-      let haveUnresolved = false;
+      let haveUnresolved = Object.keys(updatesNeeded.unresolvedDependencies).length > 0;
       for (let updateObj of dependencyChanges) {
 
         let component = this._components[updateObj.componentName];
@@ -10109,8 +10073,15 @@ export default class Core {
 
       }
 
+    }
 
+    // check more more time for unresolved
+    // (Encountered case where composite wasn't ready to expand
+    // until after the final mark stale step, above.
+    // resolveAllDependencies tries to expand composites.)
 
+    if (Object.keys(updatesNeeded.unresolvedDependencies).length > 0) {
+      this.resolveAllDependencies(updatesNeeded, compositesBeingExpanded);
     }
 
     this.replacementChangesFromCompositesToUpdate({ updatesNeeded, compositesBeingExpanded })
@@ -10118,7 +10089,7 @@ export default class Core {
     if (updatesNeeded.componentsToUpdateDependencies.length > 0) {
       // TODO: address case where have continued dependencies to update
       // How do we make sure don't have infinite loop?
-      console.log(`since found more components to updated dependencies, will try to recurse`)
+      console.log(`since found more components to update dependencies, will try to recurse`)
       console.log(updatesNeeded.componentsToUpdateDependencies)
       this.updateDependencies(updatesNeeded, compositesBeingExpanded);
       // throw Error("Need to address further updates to dependencies caused by composite changes")
@@ -10282,13 +10253,6 @@ export default class Core {
     if (sugarResult.varsUnresolved) {
       throw Error(`need to implement resolving additional state variables in addChildren`)
     }
-    // for (let cName in sugarResult.componentVarsDeleted) {
-    //   if (!componentVarsDeleted[cName]) {
-    //     componentVarsDeleted[cName] = [];
-    //   }
-    //   componentVarsDeleted[cName].push(...sugarResult.componentVarsDeleted[cName])
-    // }
-
 
     let addedComponents = {};
     let deletedComponents = {};

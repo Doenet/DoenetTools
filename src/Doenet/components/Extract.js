@@ -113,7 +113,8 @@ export default class Extract extends CompositeComponent {
     stateVariableDefinitions.replacementClasses = {
       additionalStateVariablesDefined: [
         "stateVariablesRequested", "validProp",
-        "componentTypeBySource", "potentialReplacementClasses"
+        "componentTypeBySource", "potentialReplacementClasses",
+        "propDependenciesSetUp"
       ],
       stateVariablesDeterminingDependencies: [
         "propVariableObjs", "sourceComponents",
@@ -176,11 +177,12 @@ export default class Extract extends CompositeComponent {
         if (dependencyValues.propVariableObjs === null) {
           return {
             newValues: {
-              replacementClasses: null,
+              replacementClasses: [],
               stateVariablesRequested: null,
               validProp: false,
+              propDependenciesSetUp: true,
               componentTypeBySource: null,
-              potentialReplacementClasses: null,
+              potentialReplacementClasses: [],
             }
           };
         }
@@ -189,6 +191,7 @@ export default class Extract extends CompositeComponent {
         let stateVariablesRequested = [];
         let componentTypeBySource = [];
         let potentialReplacementClasses = [];
+        let propDependenciesSetUp = true;
 
         for (let [ind, propVariableObj] of dependencyValues.propVariableObjs.entries()) {
           let componentType = propVariableObj.componentType;
@@ -212,6 +215,7 @@ export default class Extract extends CompositeComponent {
             )
           } else if (propVariableObj.isArray) {
             if (dependencyValues[`targetArraySize${ind}`] === undefined) {
+              propDependenciesSetUp = false;
               continue;
             }
 
@@ -248,6 +252,10 @@ export default class Extract extends CompositeComponent {
           } else if (propVariableObj.isArrayEntry) {
 
             let arrayLength = 1;
+            if(!(`targetArray${ind}` in dependencyValues)) {
+              propDependenciesSetUp = false;
+              continue;
+            }
             let targetArrayEntry = dependencyValues[`targetArray${ind}`];
             if (Array.isArray(targetArrayEntry)) {
               let numWrappingComponents = propVariableObj.wrappingComponents.length;
@@ -303,6 +311,7 @@ export default class Extract extends CompositeComponent {
             replacementClasses,
             stateVariablesRequested,
             validProp: true,
+            propDependenciesSetUp,
             componentTypeBySource,
             potentialReplacementClasses,
           }
@@ -333,9 +342,13 @@ export default class Extract extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "needsReplacementsUpdatedWhenStale"
         },
+        propDependenciesSetUp: {
+          dependencyType: "stateVariable",
+          variableName: "propDependenciesSetUp"
+        }
       }),
-      definition: function () {
-        return { newValues: { readyToExpand: true } };
+      definition: function ({ dependencyValues }) {
+        return { newValues: { readyToExpand: dependencyValues.propDependenciesSetUp } };
       },
     };
 
@@ -501,20 +514,29 @@ export default class Extract extends CompositeComponent {
 
           let arrayKey = flattenedArrayKeys[ind];
 
-          let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
+          if (arrayKey) {
 
-          propVariablesCopied.push(propVariable);
+            let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
 
-          serializedReplacements.push({
-            componentType,
-            downstreamDependencies: {
-              [sourceName]: [{
-                dependencyType: "referenceShadow",
-                compositeName: component.componentName,
-                propVariable
-              }]
-            }
-          })
+            propVariablesCopied.push(propVariable);
+
+            serializedReplacements.push({
+              componentType,
+              downstreamDependencies: {
+                [sourceName]: [{
+                  dependencyType: "referenceShadow",
+                  compositeName: component.componentName,
+                  propVariable
+                }]
+              }
+            })
+          } else {
+            // didn't match an array key, so just add an empty component of componentType
+            serializedReplacements.push({
+              componentType,
+            })
+
+          }
         }
       } else {
 
@@ -568,12 +590,34 @@ export default class Extract extends CompositeComponent {
 
         serializedReplacements.push(...newReplacements);
 
+        if (newReplacements.length < numReplacementsForSource) {
+          // we didn't create enough replacements,
+          // which could happen if we have includeUndefinedArrayEntries set
+
+          // just create additional replacements,
+          // even though they won't yet refer to the right dependencies
+
+          for (let ind = newReplacements.length; ind < numReplacementsForSource; ind++) {
+            replacementInd++;
+
+            let replacementClass = component.stateValues.replacementClasses[replacementInd];
+            let componentType = replacementClass.componentType.toLowerCase();
+
+            // just add an empty component of componentType
+            serializedReplacements.push({
+              componentType,
+            })
+          }
+
+        } else if (newReplacements > numReplacementsForSource) {
+          throw Error(`Something went wrong when creating replacements for ${component.componentName} as we ended up with too many replacements`)
+        }
       }
 
 
-
-
     } else {
+      // if not array or array entry
+
       for (let ind = 0; ind < numReplacementsForSource; ind++) {
         replacementInd++;
 
@@ -582,6 +626,8 @@ export default class Extract extends CompositeComponent {
         let componentType = replacementClass.componentType
 
         if (propVariableObj.isArray) {
+          console.log(`*****************We shouldn't be able to get here ******************`)
+
           let arrayStateVarObj = sourceComponent.state[propVariableObj.varName];
 
           // TODO: generalize to multi-dimensional arrays
@@ -626,6 +672,8 @@ export default class Extract extends CompositeComponent {
           }
 
         } else if (propVariableObj.isArrayEntry) {
+
+          console.log(`*****************We shouldn't be able to get here ******************`)
 
           let arrayStateVarObj = sourceComponent.state[propVariableObj.arrayVarName];
           let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
@@ -753,6 +801,9 @@ export default class Extract extends CompositeComponent {
     // console.log(workspace.numReplacementsBySource);
     // console.log(component.replacements);
 
+    if(!component.stateValues.propDependenciesSetUp) {
+      return [];
+    }
 
     let replacementChanges = [];
 
@@ -870,7 +921,7 @@ export default class Extract extends CompositeComponent {
     workspace.numReplacementsBySource = numReplacementsBySource;
     workspace.sourceNames = component.stateValues.sourceComponents.map(x => x.componentName)
     workspace.propVariablesCopiedBySource = propVariablesCopiedBySource;
-    
+
     // console.log("replacementChanges");
     // console.log(replacementChanges);
 

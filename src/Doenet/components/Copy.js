@@ -350,6 +350,7 @@ export default class Copy extends CompositeComponent {
       additionalStateVariablesDefined: [
         "stateVariablesRequested", "validProp",
         "componentTypeByTarget", "potentialReplacementClasses",
+        "propDependenciesSetUp"
       ],
       stateVariablesDeterminingDependencies: [
         "propVariableObjs", "targetComponent",
@@ -423,6 +424,7 @@ export default class Copy extends CompositeComponent {
               replacementClasses: dependencyValues.effectiveTargetClasses,
               stateVariablesRequested: null,
               validProp: null,
+              propDependenciesSetUp: true,
               componentTypeByTarget: null,
               potentialReplacementClasses: dependencyValues.effectiveTargetClasses,
             }
@@ -433,11 +435,12 @@ export default class Copy extends CompositeComponent {
         if (dependencyValues.propVariableObjs === null) {
           return {
             newValues: {
-              replacementClasses: null,
+              replacementClasses: [],
               stateVariablesRequested: null,
               validProp: false,
+              propDependenciesSetUp: true,
               componentTypeByTarget: null,
-              potentialReplacementClasses: null,
+              potentialReplacementClasses: [],
             }
           };
         }
@@ -446,6 +449,7 @@ export default class Copy extends CompositeComponent {
         let stateVariablesRequested = [];
         let componentTypeByTarget = [];
         let potentialReplacementClasses = [];
+        let propDependenciesSetUp = true;
 
         for (let [ind, propVariableObj] of dependencyValues.propVariableObjs.entries()) {
           let componentType = propVariableObj.componentType;
@@ -472,6 +476,7 @@ export default class Copy extends CompositeComponent {
             )
           } else if (propVariableObj.isArray) {
             if (dependencyValues[`targetArraySize${ind}`] === undefined) {
+              propDependenciesSetUp = false;
               continue;
             }
 
@@ -507,6 +512,10 @@ export default class Copy extends CompositeComponent {
           } else if (propVariableObj.isArrayEntry) {
 
             let arrayLength = 1;
+            if(!(`targetArray${ind}` in dependencyValues)) {
+              propDependenciesSetUp = false;
+              continue;
+            }
             let targetArrayEntry = dependencyValues[`targetArray${ind}`];
             if (Array.isArray(targetArrayEntry)) {
               let numWrappingComponents = propVariableObj.wrappingComponents.length;
@@ -562,6 +571,7 @@ export default class Copy extends CompositeComponent {
             replacementClasses,
             stateVariablesRequested,
             validProp: true,
+            propDependenciesSetUp,
             componentTypeByTarget,
             potentialReplacementClasses,
           }
@@ -719,6 +729,10 @@ export default class Copy extends CompositeComponent {
           componentIdentitiesForProp: {
             dependencyType: "stateVariable",
             variableName: "componentIdentitiesForProp"
+          },
+          propDependenciesSetUp: {
+            dependencyType: "stateVariable",
+            variableName: "propDependenciesSetUp"
           }
 
         }
@@ -742,7 +756,7 @@ export default class Copy extends CompositeComponent {
 
       },
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.targetComponent === null) {
+        if (dependencyValues.targetComponent === null || !dependencyValues.propDependenciesSetUp) {
           return { newValues: { readyToExpand: false } }
         }
         return { newValues: { readyToExpand: true } };
@@ -1337,6 +1351,10 @@ export default class Copy extends CompositeComponent {
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
 
+    if(!component.stateValues.propDependenciesSetUp) {
+      return [];
+    }
+
     let replacementChanges = [];
 
     // TODO: determine how to calculate replacement changes with new conventions
@@ -1787,12 +1805,10 @@ export function replacementFromProp({ component, components, componentOrReplacem
           }
 
         } else if (newReplacements > numReplacementsForTarget) {
-          throw Error(`Copying went wrong when creating replacements for ${component.componentName} as we ended up with too many replacements`)
+          throw Error(`Something went wrong when creating replacements for ${component.componentName} as we ended up with too many replacements`)
         }
 
       }
-
-
 
 
     } else {
@@ -1806,6 +1822,8 @@ export function replacementFromProp({ component, components, componentOrReplacem
         let componentType = replacementClass.componentType.toLowerCase();
 
         if (propVariableObj.isArray) {
+          console.log(`*****************We shouldn't be able to get here ******************`)
+
           let arrayStateVarObj = targetComponent.state[propVariableObj.varName];
 
           // TODO: generalize to multi-dimensional arrays
@@ -1852,6 +1870,8 @@ export function replacementFromProp({ component, components, componentOrReplacem
 
 
         } else if (propVariableObj.isArrayEntry) {
+
+          console.log(`*****************We shouldn't be able to get here ******************`)
 
           let arrayStateVarObj = targetComponent.state[propVariableObj.arrayVarName];
           let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
