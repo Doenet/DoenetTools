@@ -312,7 +312,6 @@ export default class BaseComponent {
 
     let stateDef = this.returnNormalizedStateVariableDefinitions({ propertyNames: Object.keys(stateVariableDescriptions) });
 
-
     for (let varName in stateDef) {
       let theStateDef = stateDef[varName];
       if (theStateDef.isAlias) {
@@ -323,6 +322,7 @@ export default class BaseComponent {
         stateVariableDescriptions[varName] = {
           componentType: theStateDef.componentType,
           public: theStateDef.public,
+          containsComponentNamesToCopy: theStateDef.containsComponentNamesToCopy,
         };
         if (theStateDef.isArray) {
           stateVariableDescriptions[varName].isArray = true;

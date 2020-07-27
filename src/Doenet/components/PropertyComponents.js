@@ -247,13 +247,13 @@ export class Step extends MathComponent {
   static rendererType = "math";
 }
 
-export class NumRows extends Integer {
-  static componentType = "numrows";
+export class MinNumRows extends Integer {
+  static componentType = "minnumrows";
   static rendererType = "number";
 }
 
-export class NumColumns extends Integer {
-  static componentType = "numcolumns";
+export class MinNumColumns extends Integer {
+  static componentType = "minnumcolumns";
   static rendererType = "number";
 }
 
