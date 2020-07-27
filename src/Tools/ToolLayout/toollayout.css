@@ -15,11 +15,7 @@ button{
   min-height: 1vh;
   overflow: hidden;
   width:100%;
-<<<<<<< HEAD
-
-=======
   background-image: url('../../media/doenets-monochrome.png');
->>>>>>> master
 }
 
 .middlepanel{

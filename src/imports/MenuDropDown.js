@@ -36,11 +36,8 @@ const DropDownContent = styled.div`
     position:${props => props.appendToBody ? 'fixed' : 'absolute'};
     left: ${props => props.position === 'right' ? 0 : 'unset'};
     right: ${props => props.position === 'left' ? 0 : 'unset'};
-<<<<<<< HEAD
-=======
     top: ${props => props.position === 'right' ? '35px' : 'unset'};
 
->>>>>>> master
 `
 const DropDownContentItem = styled.div`
     cursor: default;
@@ -53,10 +50,6 @@ const DropdownLabelLink = styled.div`
     // min-height: 40px;
     height:35px;
     justify-content: center;
-<<<<<<< HEAD
-    min-height: 40px;
-=======
->>>>>>> master
     align-items: center;
     background-color: ${props => props.selected ? 'rgb(58, 172, 144)' : 'transperant'};
     display:flex;
@@ -64,12 +57,6 @@ const DropdownLabelLink = styled.div`
     &:hover {
         background-color: ${props => props.selected ? 'rgb(58, 172, 144)' : 'lightgray'};
     }
-<<<<<<< HEAD
-    cursor: default;
-    max-width:250px;
- 
-=======
->>>>>>> master
     a {
         width: 190px;
         padding: 20px 0px;
@@ -77,27 +64,6 @@ const DropdownLabelLink = styled.div`
         background-color: transperant;
         color: ${props => props.selected ? 'white' : 'black'};    
     }
-<<<<<<< HEAD
-`
-const ProfilePicture = styled.button`
-  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url("/profile_pictures/${props => props.pic}.jpg");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  transition: 300ms;
-  color: #333333;
-  width:40px;
-  height:40px;
-  display: inline;
-  color: rgba(0, 0, 0, 0);
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  border-style:none;
-  
-`;
-=======
 `
 const DropdownCustomLabelLink = styled.div`
     padding: 5px 5px;
@@ -121,17 +87,12 @@ const DropdownCustomOption = styled.div`
     align-items: center;
     display:flex;
 `
->>>>>>> master
 
 const MenuDropDown = ({
     currentTool,
     showThisMenuText = "",
     options = [],
-<<<<<<< HEAD
-    menuIcon,
-=======
     menuBase,
->>>>>>> master
     width,
     picture,
     grayTheseOut = [],
@@ -141,13 +102,8 @@ const MenuDropDown = ({
     menuWidth,
     placeholder = "Select Value" }) => {
     const [MenuWidth, setMenuWidth] = useState(menuWidth);
-<<<<<<< HEAD
-    let defaultValue = !!options.length && !!showThisMenuText && options.filter(o => o.id === showThisMenuText)[0];
-    if (!defaultValue){ defaultValue = [];}
-=======
     let defaultValue = !!options.length && !!showThisMenuText && options.filter(o => o.label === showThisMenuText)[0];
     if (!defaultValue) { defaultValue = []; }
->>>>>>> master
     const [currentItemDisplay, setCurrentItemDisplay] = useState(defaultValue);
 
     let updateNumber = 0;
@@ -173,63 +129,6 @@ const MenuDropDown = ({
         }
     }
 
-<<<<<<< HEAD
-
-    let menuBase = (
-        <button
-            style={{
-                color: "black",
-                margin: "0",
-                height: "20px",
-                fontSize: "14px",
-                cursor: "pointer",
-                display: "block",
-            }}
-        >
-            {!!Object.keys(currentItemDisplay).length ? <div
-                style={{
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    maxWidth: "100px",
-                    display: "inline-block"
-                }}>
-                {currentItemDisplay.label}
-            </div> : <div
-                style={{
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    maxWidth: "100px",
-                    display: "inline-block"
-                }}>
-                    {placeholder}
-                </div>}
-            <FontAwesomeIcon
-                icon={faChevronDown}
-                style={{
-                    verticalAlign: "1px",
-                    marginLeft: "5px"
-                }}
-                size={'sm'} />
-        </button>)
-
-    if (menuIcon) {
-        menuBase = <Icon>
-            <FontAwesomeIcon icon={menuIcon} size={'lg'} />
-        </Icon>
-    } else if (picture) {
-
-        menuBase = <ProfilePicture
-            pic={picture}
-            name="changeProfilePicture"
-            id="changeProfilePicture"
-        >
-        </ProfilePicture>
-
-    }
-
-=======
     if (!menuBase) {
         menuBase = (
             <button
@@ -272,7 +171,6 @@ const MenuDropDown = ({
     }
 
 
->>>>>>> master
     return (
         <DropDown ref={node}>
             <div>
@@ -292,12 +190,6 @@ const MenuDropDown = ({
                                     o["callBackFunction"](o)
                                 }
                             }
-<<<<<<< HEAD
-                        }}
-                        selected={currentItemDisplay && currentItemDisplay.id === o['id']}>
-                        {!!o.link ? <a href={o.link}>
-                            {o['label']}</a> : o['label']}
-=======
                         }}>
                         {!!o['optionElem'] ?
                             <><DropdownCustomOption>
@@ -312,7 +204,6 @@ const MenuDropDown = ({
                                 {!!o.link ? <a href={o.link}>
                                     {o['label']}</a> : o['label']}
                             </DropdownLabelLink>}
->>>>>>> master
                     </DropDownContentItem>
                     ))}
             </DropDownContent>

@@ -9,7 +9,7 @@ header("Access-Control-Allow-Credentials: true");
 include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
-$emailaddress = $jwtArray['email'];
+$userId = $jwtArray['userId'];
 $device = $jwtArray['deviceName'];
 
 $contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
@@ -18,7 +18,7 @@ $contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
 
 $sql = "SELECT stateVariables
         FROM content_interactions
-        WHERE email='$emailaddress'
+        WHERE userId='$userId'
         AND contentId='$contentId'
         ORDER BY timestamp";
 
