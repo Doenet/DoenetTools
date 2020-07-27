@@ -99,6 +99,8 @@ export default class Graph extends DoenetRenderer {
 
     }
 
+    this.forceUpdate();
+
   }
 
   setToLowQualityRender({ stayLowQuality } = {}) {
@@ -164,13 +166,13 @@ export default class Graph extends DoenetRenderer {
 
   render() {
 
-    if (this.doenetSvData.hide) {
-      return null;
-    }
-
     const divStyle = {
       width: this.doenetSvData.numericalWidth,
       height: this.doenetSvData.numericalHeight,
+    }
+
+    if(this.doenetSvData.hide) {
+      divStyle.display = "none";
     }
 
     return <React.Fragment>
