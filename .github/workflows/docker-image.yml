@@ -1,5 +1,10 @@
 name: Docker Image CI
 
+# To Do
+# 2. Try out Cypress Dashboard
+# 3. Look into differential testing
+# 4. Caching Containers?
+
 on:
   push:
     branches: [ master, Implement-CI ]
@@ -10,26 +15,6 @@ jobs:
 
   build:
 
-    # runs-on: macos-10.15
-
-    # steps:
-    # - uses: actions/checkout@v2
-    # - uses: actions/setup-node@v1
-    #   with:
-    #     node-version: '10.x'
-    # - name: Install Dependencies
-    #   run: npm install && npm install docker-compose && npm install -g wait-on
-    # - name: Show File Structure
-    #   run: pwd && ls && ls doenet_docker && echo '===' && ls .. && echo '===' && ls ../..
-    # - name: Test file path
-    #   run: cd /Users/runner/work/CI-Test/CI-Test/doenet_docker && ls
-    # - name: Build the Docker image
-    #   run: node doenet_docker/run-build.js
-    # - name: Start the Server
-    #   run: node doenet_docker/run-compose-up.js && sleep 5
-    # - name: Run Tests
-    #   run: npm run test:all
-
     runs-on: ubuntu-latest
 
     steps:
@@ -38,12 +23,12 @@ jobs:
       with:
         node-version: '10.x'
     - name: Install Dependencies
-      run: npm install
-    - name: Make dist_local Folder
-      run: mkdir -m 777 dist_local
+      run: npm install && npm install -g wait-on
+    # - name: Make dist_local Folder
+    #   run: mkdir -m 777 dist_local
     - name: Build the Containers
       run: npm run docker:build
     - name: Start the Server
-      run: npm start & sleep 90
+      run: npm run deploy & wait-on http://localhost:3000
     - name: Run Tests
       run: npm run test:all
