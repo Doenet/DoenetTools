@@ -8570,6 +8570,8 @@ export default class Core {
 
     // TODO: test this code
 
+    // TODO: need to add logic for adding an unresolved dependency to a resolved variable
+
     let parentName = parent.componentName;
 
     let parentDependencies = this.componentIdentityDependencies.parentDependenciesByParent[parentName];
@@ -8862,6 +8864,50 @@ export default class Core {
                 ancestorUpDep[vName] = [];
               }
               ancestorUpDep[vName].push(currentDep);
+
+              if (vName !== "__identity" && !this._components[ancestorResults.ancestorFound.componentName].state[vName].isResolved) {
+                // just added a dependency to descendant/stateVariables that is not resolved
+                // add unresolved dependencies
+
+                let upstreamComponent = this._components[currentDep.upstreamComponentName]
+
+                let varsUnresolved = {};
+                for (let varName of depDescription.stateVariables) {
+                  varsUnresolved[varName] = [{
+                    componentName: ancestorResults.ancestorFound.componentName,
+                    stateVariable: vName
+                  }]
+                }
+
+                this.addUnresolvedDependencies({
+                  varsUnresolved,
+                  component: upstreamComponent,
+                  updatesNeeded
+                });
+
+                // if upstreamComponent/stateVariables was previously resolved
+                // mark it as unresolved and recursively add 
+                //unresolved dependencies upstream
+                for (let varName of depDescription.stateVariables) {
+                  if (upstreamComponent.state[varName].isResolved) {
+                    this.markStateVariableAndUpstreamDependentsStale({
+                      component: upstreamComponent,
+                      varName,
+                      updatesNeeded,
+                      forceRecalculation: true
+                    });
+
+                    upstreamComponent.state[varName].isResolved = false;
+                    this.resetUpstreamDependentsUnresolved({
+                      component: upstreamComponent,
+                      varName,
+                      updatesNeeded
+                    })
+                  }
+                }
+
+              }
+
             }
 
             this.resetCircularCheckPassed(currentDep.upstreamComponentName, currentDep.upstreamVariableNames[0]);
@@ -9069,6 +9115,50 @@ export default class Core {
                     replacementUpDep[vName] = [];
                   }
                   replacementUpDep[vName].push(currentDep);
+
+                  if (vName !== "__identity" && !this._components[newReplacementName].state[vName].isResolved) {
+                    // just added a dependency upstreamComponent/stateVariables that is not resolved
+                    // add unresolved dependencies
+
+                    let varsUnresolved = {};
+                    for (let varName of depDescription.stateVariables) {
+                      varsUnresolved[varName] = [{
+                        componentName: newReplacementName,
+                        stateVariable: vName
+                      }]
+                    }
+
+                    let upstreamComponent = this.components[currentDep.upstreamComponentName];
+
+                    this.addUnresolvedDependencies({
+                      varsUnresolved,
+                      component: upstreamComponent,
+                      updatesNeeded
+                    });
+
+                    // if upstreamComponent/stateVariables was previously resolved
+                    // mark it as unresolved and recursively add 
+                    //unresolved dependencies upstream
+                    for (let varName of depDescription.stateVariables) {
+                      if (upstreamComponent.state[varName].isResolved) {
+                        this.markStateVariableAndUpstreamDependentsStale({
+                          component: upstreamComponent,
+                          varName,
+                          updatesNeeded,
+                          forceRecalculation: true
+                        });
+
+                        upstreamComponent.state[varName].isResolved = false;
+                        this.resetUpstreamDependentsUnresolved({
+                          component: upstreamComponent,
+                          varName,
+                          updatesNeeded
+                        })
+                      }
+                    }
+
+                  }
+
                 }
 
                 this.resetCircularCheckPassed(currentDep.upstreamComponentName, currentDep.upstreamVariableNames[0]);
@@ -9082,8 +9172,6 @@ export default class Core {
               }
             }
           }
-
-
 
           currentDep.downstreamComponentNames = replacementNames;
           if (currentDep.originalDownstreamVariableNames) {
@@ -10022,12 +10110,18 @@ export default class Core {
           component.state[varName].isResolved = false;
         }
 
-        this.resolveStateVariables({
+        let resolveResult = this.resolveStateVariables({
           component,
           stateVariables: updateObj.allStateVariablesAffected,
           updatesNeeded,
           compositesBeingExpanded,
         })
+
+        this.addUnresolvedDependencies({
+          varsUnresolved: resolveResult.varsUnresolved,
+          component,
+          updatesNeeded
+        });
 
         for (let varName of updateObj.allStateVariablesAffected) {
           if (!component.state[varName].isResolved) {
