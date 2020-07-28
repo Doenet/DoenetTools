@@ -155,12 +155,6 @@ input[type=number]::-webkit-outer-spin-button {
   margin-right: 15px;
   margin-left: 6px;
 }
-.menuCustomTwirlIcon{
-  font-size: 15px;
-  color: #03a1fc;
-  margin-right: 8px;
-  margin-left: 6px;
-}
 
 .activeLeftNavPanelMenuItem {
   background-color: #e8f0fe;
