@@ -19,7 +19,7 @@ $deviceName = $deviceNames[$randomNumber];
 //Nine digit random number
 $signInCode = rand(100000000,999999999);
 
-$sql = "SELECT email, id
+$sql = "SELECT email, userId
 FROM user
 WHERE email='$emailaddress'";
 
@@ -27,16 +27,16 @@ $result = $conn->query($sql);
 
 if ($result->num_rows > 0){
     $row = $result->fetch_assoc();
-    $userTable_id = $row['id'];
+    $user_id = $row['userId'];
 
 }else{
     //New email address
-    $sql = "INSERT INTO user (email) VALUE ('$emailaddress')";
+    $user_id = include "randomId.php";
+    $sql = "INSERT INTO user (userId,email) VALUE ('$user_id','$emailaddress')";
     $result = $conn->query($sql);
-    $userTable_id = $conn->insert_id;
 }
-$sql = "INSERT INTO user_device (userTableId,email,signInCode,timestampOfSignInCode, deviceName) 
-    VALUE ('$userTable_id','$emailaddress','$signInCode',NOW(),'$deviceName')";
+$sql = "INSERT INTO user_device (userId,email,signInCode,timestampOfSignInCode, deviceName) 
+    VALUE ('$user_id','$emailaddress','$signInCode',NOW(),'$deviceName')";
     $result = $conn->query($sql);
 
 //SEND EMAIL WITH CODE HERE

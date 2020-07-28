@@ -8,11 +8,11 @@ header('Content-Type: application/json');
 include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
-$emailaddress = $jwtArray['email'];
+$userId = $jwtArray['userId'];
 
 $sql = "SELECT screenName, email, lastName, firstName, profilePicture, trackingConsent, roleStudent, roleInstructor, roleCourseDesigner, roleWatchdog, roleCommunityTA, roleLiveDataCommunity
         FROM user
-        WHERE email = '$emailaddress'";
+        WHERE userId = '$userId'";
 
 $result = $conn->query($sql);
 $response_arr = array("success" => "0");

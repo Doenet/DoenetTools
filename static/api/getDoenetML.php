@@ -8,7 +8,7 @@ header('Content-Type: application/json');
 include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
-$emailaddress = $jwtArray['email'];
+$userId = $jwtArray['userId'];
 
 $contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
 $branchId = mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
@@ -82,7 +82,7 @@ if ($branchId == ""){
 			ON fc.rootId = ra.repoId
 			WHERE cb.branchId = '$branchId' 
 			AND cb.removedFlag = '0'
-			AND ra.username = '$emailaddress'
+			AND ra.userId = '$userId'
 			";
 			$result = $conn->query($sql);
 			if ($result->num_rows > 0){

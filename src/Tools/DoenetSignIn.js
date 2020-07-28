@@ -47,17 +47,18 @@ export default function DoenetSignIn(props) {
   //Developer only sign in as devuser
   //Comment this if statement out if you are working on 
   // sign in or multiple devices
-  if (window.location.hostname === "localhost"){
-    console.log("Auto Signing In Devuser");
-    let emailaddress = "devuser@example.com";
-    let deviceName = "Cacao tree";
-    let maxAge = "2147483647"
-    let cookieSettingsObj = { path: "/", maxAge };
-    setDeviceNameCookie('Device', deviceName, cookieSettingsObj);
-    setStayCookie('Stay',maxAge,cookieSettingsObj);
-    location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(emailaddress)}&nineCode=${encodeURIComponent("123456789")}&deviceName=${deviceName}&newAccount=${"0"}&stay=${"1"}`;
+  
+  // if (window.location.hostname === "localhost"){
+  //   console.log("Auto Signing In Devuser");
+  //   let emailaddress = "devuser@example.com";
+  //   let deviceName = "Cacao tree";
+  //   let maxAge = "2147483647"
+  //   let cookieSettingsObj = { path: "/", maxAge };
+  //   setDeviceNameCookie('Device', deviceName, cookieSettingsObj);
+  //   setStayCookie('Stay',maxAge,cookieSettingsObj);
+  //   location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(emailaddress)}&nineCode=${encodeURIComponent("123456789")}&deviceName=${deviceName}&newAccount=${"0"}&stay=${"1"}`;
 
-  }
+  // }
 
   // ** *** *** *** *** **
 
