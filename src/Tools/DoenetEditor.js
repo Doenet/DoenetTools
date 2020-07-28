@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-axios.defaults.withCredentials = true;
 import crypto from 'crypto';
 import DoenetViewer from './DoenetViewer';
 import "./editor.css";
@@ -56,6 +55,7 @@ class DoenetEditor extends Component {
 
       axios.get(phpUrl, payload)
         .then(resp => {
+          console.log("editor get doenetML",resp.data)
           
           if (resp.data.access === false){
             this.setState({loading:false,accessAllowed:false});
@@ -174,7 +174,7 @@ class DoenetEditor extends Component {
   updateLocationBar(assignmentId=this.assignmentId, activeSection=this.activeSection){
     history.replaceState({},"title","?active="+activeSection);
     if (this.activeSection === "assignments") {
-      console.log(this.assignmentId);
+      // console.log(this.assignmentId);
       history.replaceState({},"title","?active="+activeSection+"&assignmentId="+assignmentId);
     }
   }
@@ -200,7 +200,7 @@ class DoenetEditor extends Component {
 
       axios.post(url, data)
         .then(resp=>{
-          
+          console.log("save content ", resp.data)
           
           if (resp.data.access === false){
             this.setState({loading:false,accessAllowed:false});
@@ -270,7 +270,7 @@ class DoenetEditor extends Component {
         }
 
     let publish_button_enabled = this.should_publish_button_be_enabled({newValue});
-    console.log("publish_button_enabled",publish_button_enabled)
+    // console.log("publish_button_enabled",publish_button_enabled)
     let documentTitle = this.calculate_documentTitle({doenetML:newValue,currentTitle:this.state.documentTitle});
     let version = this.describe_version({publish_button_enabled:publish_button_enabled,doenetML:newValue})
   
@@ -301,14 +301,15 @@ class DoenetEditor extends Component {
       this.onSelectionsChange(e.selection, ...e.secondarySelections)
     })
   };
+
   onSelectionsChange = (selection,secondarySelections) => {
     if (secondarySelections){
-      console.log('secondary!')
+      // console.log('secondary!')
       return;
     }
-    console.log('selection',selection)
+    // console.log('selection',selection)
     // let model = this.editorDOM.getModel();
-    console.log('model',this.model)
+    // console.log('model',this.model)
     // console.log(model._tokenization)
 
   }
@@ -368,7 +369,7 @@ class DoenetEditor extends Component {
    
         let title_text = `${this.state.documentTitle} (version ${this.state.version})`;
     
-        console.log('RENDER REFRESH')
+        // console.log('RENDER REFRESH')
       return (
       <ToolLayout toolName="Editor" headingTitle={title_text} leftPanelWidth="100" rightPanelWidth="500">
         <ToolLayoutPanel panelHeaderControls={[contextPanelMenu]} panelName="left nav">

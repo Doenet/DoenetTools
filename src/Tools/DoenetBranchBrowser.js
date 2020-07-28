@@ -68,6 +68,9 @@ class DoenetBranchBrowser extends Component {
     this.onBreadcrumbDropEnterCb = this.onBreadcrumbDropEnterCb.bind(this);
   }
 
+  componentWillReceiveProps(props) {
+    this.setState({directoryStack: props.directoryData}); //watch for directoryData prop and updates directoryStack state variable
+  }
   getAllSelectedItems() {
     let allSelectedContent = [];
     for (let i =0; i < this.state.selectedItemsType.length; i++) {

@@ -6,7 +6,7 @@
   background-color: white;
   border-bottom: 1px solid #E3E2E2;
   justify-content: space-between;
-  padding: 6px;
+  /* padding: 6px; */
   width: 100%;
   height: 50px;
   z-index: 5;
@@ -72,7 +72,7 @@
 }
 
 #doenetLogo {
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 /* #previousPageButton {
@@ -310,7 +310,7 @@
 
   #doenetLogo {
     height: 35px;
-    cursor: pointer;
+    /* cursor: pointer; */
     vertical-align: middle;
   }
 

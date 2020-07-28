@@ -77,11 +77,11 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 #newContentButtonMenu {
-  position: fixed;
+  position: absolute;
   width: 225px;
   height: auto;
-  top: 54px;
-  left: 5px;
+  top: 17px;
+  left: 64px;
   background: #fff;
   border: 1px solid #ccc;
   border-color: rgba(0,0,0,.2);
@@ -153,6 +153,12 @@ input[type=number]::-webkit-outer-spin-button {
   font-size: 17px;
   color: #8c8c8c;
   margin-right: 15px;
+  margin-left: 6px;
+}
+.menuCustomTwirlIcon{
+  font-size: 15px;
+  color: #03a1fc;
+  margin-right: 8px;
   margin-left: 6px;
 }
 
@@ -550,6 +556,20 @@ input[type=number]::-webkit-outer-spin-button {
 .tree {
   display: flex;
   flex-direction: row;
+  justify-content: left;
+  align-items: left;
+  text-align: left;
+  overflow-x: hidden;
+  grid-row: 2 / 3;
+  grid-column: 3 / 4;
+  transform: scale(1.2);
+  transform-origin: top left;
+  margin-top: 15px;
+}
+
+.tree-column {
+  display: flex;
+  flex-direction: column;
   justify-content: left;
   align-items: left;
   text-align: left;

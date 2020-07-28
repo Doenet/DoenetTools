@@ -1,19 +1,23 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import axios from 'axios';
 axios.defaults.withCredentials = true;
+// import { browserHistory } from 'react-router';
 import {
     BrowserRouter as Router,
     Switch,
     Route,
     Link,
+    useHistory
 } from "react-router-dom";
 import query from '../queryParamFuncs';
 import DoenetViewer from "./DoenetViewer";
 
 import "../imports/table.css";
 import "../imports/doenet.css";
+import Accordion from "../imports/Accordion";
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
+import { TreeView } from './TreeView/TreeView';
 
 function sortArraysByElementI(arrarr, i) {
     // TODO: finish
@@ -38,6 +42,8 @@ class GradebookOverview extends Component {
         this.students = null;
         this.overviewData = null;
         this._assignmentsTable = null;
+        this.tempSet = new Set();
+       
     }
 
     componentDidMount() {
@@ -582,6 +588,9 @@ export default class DoenetGradebook extends Component {
 
         this.assignments = null;
 
+        //  this.history = useHistory();
+        //  console.log('history',this.history);
+
         axios.get(`/api/loadAssignments.php?courseId=${this.courseId}`).then(resp => {
             let data = resp.data;
             // From API:
@@ -612,7 +621,7 @@ export default class DoenetGradebook extends Component {
         for (let assignmentId in this.assignments) {
             let assignmentName = this.assignments[assignmentId];
             navItems.push(
-                <div style={{width:"100%", borderBottom: "solid #6e6e6e 1px",marginBottom: ".5em"}} key={`navItem_${assignmentId}`}>
+                <div style={{ width: "100%", borderBottom: "solid #6e6e6e 1px", marginBottom: ".5em" }} key={`navItem_${assignmentId}`}>
                     <Link to={`/assignment/?assignmentId=${assignmentId}`} className="gradebookNavLink">{assignmentName}</Link>
                 </div>
             );
@@ -637,36 +646,133 @@ export default class DoenetGradebook extends Component {
                 <p>If this takes too long you can try refreshing the page.</p>
             </div>)
         }
+        let parentsInfo = {
+            root: {
+                childContent: [],
+                childFolders: [],
+                childUrls: [],
+                isPublic: false,
+                title: "See All Assignments",
+                type: "folder"
+            }
+        }
+
+        let counter = 0;
+
+        for (let assignmentId in this.assignments) {
+            let assignmentName = this.assignments[assignmentId];
+            counter++;
+            parentsInfo[assignmentId] = {
+                childContent: [],
+                childFolders: [],
+                childUrls: [],
+                isPublic: false,
+                isRepo: false,
+                numChild: counter,
+                parentId: "root",
+                publishDate: "",
+                rootId: "root",
+                title: assignmentName,
+                type: "folder"
+            }
+            parentsInfo.root.childFolders.push(assignmentId);
+        }
+
+
+
+        const leftNav = <Accordion>
+            <div label="See All Assignments">
+                <TreeView
+                    containerId={'assignments'}
+                    containerType={'course_assignments'}
+                    loading={!this.state.assignmentsLoaded}
+                    parentsInfo={parentsInfo}
+                    childrenInfo={{}}
+                    specialNodes={this.tempSet}
+                    hideRoot={true}
+                    disableSearch={true}
+                    treeNodeIcons={(itemType) => {
+                        let map = {};
+                        return map[itemType]
+                    }}
+                    // hideRoot={true}
+                    treeStyles={{
+                        specialChildNode: {
+                            "title": { color: "gray" },
+                            "frame": { color: "#2675ff", backgroundColor: "hsl(206, 66%, 85%)", paddingLeft: "5px" },
+                        },
+                        specialParentNode: {
+                            "title": { color: "gray", background: "#e6efff", paddingLeft: "5px" },
+                            "frame": { color: "#2675ff", backgroundColor: "hsl(206, 66%, 85%)", paddingLeft: "5px", borderLeft: '10px solid #0031f5' },
+
+                        },
+                        parentNode: {
+                            "title": { color: "#d9eefa" },
+
+                            "contentContainer": {
+                                border: "none",
+                                
+                            }
+                        },
+                        childNode: {
+                            "title": {
+                                color: "white",
+                            }
+                            
+                        },
+                        specialChildNode: {
+                            "frame": { backgroundColor: "hsl(206, 66%, 85%)", color: "#d9eefa" },
+                        },
+                       emptyParentExpanderIcon: <span style={{padding:'5px'}}></span>
+                      
+
+                    }}
+                    onLeafNodeClick={(nodeId) => {
+                        // if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
+                        // else this.tempSet.add(nodeId);
+                        // this.forceUpdate();
+                        // this.selectDrive("Courses", nodeId)
+                    }}
+                    onParentNodeClick={(nodeId) => {
+                        // this.tempSet.clear();
+                        // this.tempSet.add(nodeId);
+                        // this.goToFolder(nodeId, customizedContentTreeParentInfo);
+                        // if (!this.state.splitPanelLayout) {
+                        //     this.splitPanelGoToFolder(nodeId, customizedContentTreeParentInfo);
+                        // }
+                        // this.forceUpdate();
+                        window.location.href = `/gradebook/assignment/?assignmentId=${nodeId}`;
+                    }}
+                />
+            </div>
+        </Accordion>;
 
 
 
 
         return (
-        <Router basename="/gradebook">
-            <ToolLayout toolName="Gradebook" headingTitle="TODO: courseName" >
-                <ToolLayoutPanel key="one" panelName="Left Nav">
-                <div style={{padding: "5px"}}>
+            <Router basename="/gradebook">
+                <ToolLayout toolName="Gradebook" headingTitle="TODO: courseName" >
+                    <ToolLayoutPanel key="one" panelName="Left Nav">
+                        {/* <div style={{padding: "5px"}}>
 
                     <Link to="/" className="gradebookNavItem">See All Assignments</Link>
                     <h2>Assignments</h2>
                     {this.navItems}
-                    </div>
-                </ToolLayoutPanel>
-                <ToolLayoutPanel key="two" panelName="Grades Panel">
-                    <div style={{padding: "5px"}}>
-                        <Switch>
-                            <Route sensitive exact path="/" component={GradebookOverview} />
-                            <Route sensitive exact path="/assignment/" component={GradebookAssignmentView} />
-                            <Route sensitive exact path="/attempt/" component={GradebookAttemptView} />
-                        </Switch>
-
-                    </div>
-
-                </ToolLayoutPanel>
-
-            </ToolLayout>
-        </Router>
-
+                    </div> */}
+                        {leftNav}
+                    </ToolLayoutPanel>
+                    <ToolLayoutPanel key="two" panelName="Grades Panel">
+                        <div style={{ padding: "5px" }}>
+                            <Switch>
+                                <Route sensitive exact path="/overview" component={GradebookOverview} />
+                                <Route sensitive exact path="/assignment/" component={GradebookAssignmentView} />
+                                <Route sensitive exact path="/attempt/" component={GradebookAttemptView} />
+                            </Switch>
+                        </div>
+                    </ToolLayoutPanel>
+                </ToolLayout>
+            </Router>
         );
     }
 }
