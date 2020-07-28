@@ -230,7 +230,7 @@ font-weight: 300;
 }
 
 .footer-logo-container p {
-  margin: 16px 0;
+  /* margin: 16px 0; */
 }
 
 
@@ -341,7 +341,7 @@ font-weight: 300;
   }
 
   .footer {
-    display: flex;
-    flex-direction: column;
+    /* display: flex;
+    flex-direction: column; */
   }
 }
