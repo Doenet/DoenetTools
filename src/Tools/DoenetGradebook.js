@@ -757,8 +757,18 @@ export default class DoenetGradebook extends Component {
                     {this.navItems}
                     </div> */}
                     
-                        <div style={{ padding: "5px 0px" }}>
+                        <div style={{ padding: "5px 0px", color:"white" }}>
                             <Link to="/" className="gradebookNavItem">See All Assignments</Link>
+                            <div>
+                                <input 
+                                className = "search-input"
+                                // onChange={this.handleLeftNavSearch.bind(this)}
+                                placeholder="Search Assignments"
+                                style={{width:"235px", paddingLeft: "5px",minHeight:"30px"}}
+
+                                />
+            
+                            </div>
                             {leftNav}
                         </div>
                     </ToolLayoutPanel>

@@ -88,11 +88,11 @@ class DoenetDocs extends Component {
       treeStyles={{
         specialChildNode: {
           "title": { color: "gray" },
-          "frame": { color: "#2675ff", backgroundColor: "hsl(206, 66%, 85%)", paddingLeft: "5px" },
+          "frame": { color: "#2675ff", backgroundColor: "rgb(192, 220, 242)", paddingLeft: "5px" },
         },
         specialParentNode: {
           "title": { color: "gray", paddingLeft: "5px" },
-          "frame": { color: "#2675ff", backgroundColor: "hsl(206, 66%, 85%)", paddingLeft: "5px", borderLeft: '10px solid #0031f5' },
+          "frame": { color: "#2675ff", backgroundColor: "rgb(192, 220, 242)", opacity:"0.5",paddingLeft: "5px", borderLeft: '10px solid #1b216e' },
 
         },
         parentNode: {
@@ -236,13 +236,15 @@ class SearchBox extends Component {
 
   render() {
     return (
-      <form className="search">
+      // <form className="search">
         <input
-          className="search-input"
+          // className="search-input"
           onChange={this.handleChange}
           placeholder="Search components..."
+          style={{width:"235px", paddingLeft: "5px",minHeight:"30px"}}
+
         />
-      </form>
+      // </form>
     );
   }
 };
