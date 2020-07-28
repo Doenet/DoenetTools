@@ -42,7 +42,8 @@ const Frame = styled('div')`
   display: inline-block;
   position: relative;
   width: 100%;
-  padding: 2px 10px 2px 0px;
+  min-width: 200px;
+  padding: 2px 19px 2px 0px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow-x: hidden;
@@ -57,11 +58,13 @@ const ListItem = styled('div')`
   display: flex;
   align-items: center;
   padding: 0px;
-  margin: 1px 0px;
 `
 
 const Title = styled('span')`
   vertical-align: middle;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 `
 
 const Content = styled(animated.div)`

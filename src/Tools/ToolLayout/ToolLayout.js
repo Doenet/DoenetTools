@@ -4,6 +4,9 @@ import PlacementContext from './PlacementContext';
 import DoenetHeader from "../DoenetHeader";
 import './toollayout.css';
 import "../../imports/doenet.css";
+import { useCookies } from 'react-cookie';
+import axios from "axios";
+
 
 //This component deals with resizing and resizers
 
@@ -14,6 +17,7 @@ const Container = styled.div`
   height:calc(100vh - 50px);
   overflow:hidden;
   z-index:0;
+  width:100%;
 `;
 
 const widthToDevice = () => {
@@ -25,6 +29,80 @@ const widthToDevice = () => {
 };
 
 export default function ToolLayout(props) {
+  let anonymousUserProfile = {
+    accessAllowed: "0",
+    adminAccessAllowed: "0",
+    email: "",
+    firstName: "",
+    lastName: "",
+    profilePicture: "anonymous",
+    roleCommunityTA: "0",
+    roleCourseDesigner: "0",
+    roleInstructor: "0",
+    roleLiveDataCommunity: "0",
+    roleStudent: "1",
+    roleWatchdog: "0",
+    studentId: null,
+    toolAccess: ["Chooser", "Documentation"],
+    trackingConsent: "1",
+    username: "anonymous",
+  }
+  const [jwt, setjwt] = useCookies('JWT_JS');
+
+  let isSignedIn = false;
+  if (Object.keys(jwt).includes("JWT_JS")) {
+    isSignedIn = true;
+  }
+
+  const [profile, setProfile] = useState({});
+
+  useEffect(() => {
+    //Fires each time you change the tool
+    //Need to load profile from database each time
+        const phpUrl = '/api/loadProfile.php';
+        const data = {}
+        const payload = {
+          params: data
+        }
+        axios.get(phpUrl, payload)
+          .then(resp => {
+            console.log(resp)
+            if (resp.data.success === "1") {
+              setProfile(resp.data.profile);
+            }
+          })
+          .catch(error => { this.setState({ error: error }) });
+        }, []); 
+   
+      //Start Signed In when local host development
+      //To Start Signed Out Clear the Cookies and comment the next line out
+      // let devUserProfile = {
+      //   accessAllowed: "1",
+      //   adminAccessAllowed: "1",
+      //   email: "devuser@example.com",
+      //   firstName: "Dev",
+      //   lastName: "User",
+      //   profilePicture: "emu",
+      //   roleCommunityTA: "0",
+      //   roleCourseDesigner: "0",
+      //   roleInstructor: "1",
+      //   roleLiveDataCommunity: "0",
+      //   roleStudent: "1",
+      //   roleWatchdog: "0",
+      //   studentId: null,
+      //   toolAccess: ["Chooser", "Course", "Profile", "Documentation", "Gradebook"],
+      //   trackingConsent: "1",
+      //   username: "devuser",
+      // }
+      // setProfile(devUserProfile);
+
+    
+
+ 
+
+
+ 
+
   var w = window.innerWidth;
   let leftW;
   let rightW;
@@ -66,7 +144,7 @@ export default function ToolLayout(props) {
   const [deviceType, setDeviceType] = useState(widthToDevice());
 
   useEffect(() => {
-  
+
     if (deviceType === "computer") {
       window.addEventListener("mouseup", stopResize);
       window.addEventListener("touchend", stopResize);
@@ -166,7 +244,7 @@ export default function ToolLayout(props) {
           setRightCloseBtn(true);
           setRightOpenBtn(false);
           secondResizer.className = 'resizer column-resizer';
-        }  else {
+        } else {
           setRightCloseBtn(true);
           setRightOpenBtn(false);
           secondResizer.className = 'resizer column-resizer';
@@ -266,21 +344,21 @@ export default function ToolLayout(props) {
   panelHeadersControlVisible.hideCollapse = !Array.isArray(props.children);
 
   let leftNav = <PlacementContext.Provider value={{ leftCloseBtn: leftCloseBtn, width: `${leftWidth}px`, position: 'left', panelHeadersControlVisible, leftPanelHideable, isResizing }}>{leftNavContent}</PlacementContext.Provider>
- 
+
   !props.guestUser && allParts.push(<div key="part1" id="leftpanel" className="leftpanel" style={{ width: `${leftWidth}px`, marginLeft: `${leftOpenBtn ? `-${leftWidth}px` : '0px'} ` }} >{leftNav}</div>);
 
   //Resizer
   if (props.children.length === 2 || props.children.length === 3) {
     allParts.push(
       <div key="resizer1" id="first" className="resizer column-resizer" />
-      
+
     );
   }
 
   //Props children[1]
   let middleNav
   if (props.children[1]) {
-    middleNav = <PlacementContext.Provider value={{ splitPanel:props.splitPanel, rightOpenBtn, leftOpenBtn, position: 'middle', panelHeadersControlVisible, leftPanelVisible, rightPanelVisible, isResizing, leftWidth: leftWidth, guestUser: props.guestUser}}> {props.children[1]}</PlacementContext.Provider>
+    middleNav = <PlacementContext.Provider value={{ splitPanel: props.splitPanel, rightOpenBtn, leftOpenBtn, position: 'middle', panelHeadersControlVisible, leftPanelVisible, rightPanelVisible, isResizing, leftWidth: leftWidth, guestUser: props.guestUser }}> {props.children[1]}</PlacementContext.Provider>
     allParts.push(<div key="part2" id="middlepanel" className="middlepanel" style={{ width: `${middleWidth}px`, display: `${middleWidth === 0 ? "none" : "flex"} ` }} >  {middleNav}</div>);
   }
 
@@ -288,7 +366,7 @@ export default function ToolLayout(props) {
   if (props.children.length >= 3) {
     allParts.push(
       <div key="resizer2" id="second" className="resizer column-resizer" />
-     
+
     );
   }
 
@@ -300,23 +378,38 @@ export default function ToolLayout(props) {
 
   }
   const footerClass = props.children.length > 1 ? 'footer-on' : 'footer-off';
+
+  
+  //Show loading if profile if not loaded yet (loads each time)
+  if (Object.keys(profile).length < 1) {
+    return (<h1>Loading...</h1>)
+  }
+
   return (
     <>
-      <DoenetHeader toolName={props.toolName} headingTitle={props.headingTitle} headerRoleFromLayout={props.headerRoleFromLayout} headerChangesFromLayout={props.headerChangesFromLayout} guestUser = {props.guestUser} onChange={showCollapseMenu} />
+      <DoenetHeader
+        profile={profile}
+        isSignedIn={isSignedIn}
+        toolName={props.toolName}
+        headingTitle={props.headingTitle}
+        headerRoleFromLayout={props.headerRoleFromLayout}
+        headerChangesFromLayout={props.headerChangesFromLayout}
+        guestUser={props.guestUser}
+        onChange={showCollapseMenu} />
       {deviceType === "phone" ? <div ref={container}>
         <div className={footerClass}>
           {(phoneVisiblePanel === "left" || allParts.length === 1) &&
-            <div key="part1" id="leftpanel" >{leftNav}</div>}
+            <div key="part1" id="leftpanel" className="leftpanel" >{leftNav}</div>}
           {phoneVisiblePanel === "middle" &&
-            <div key="part2" id="middlepanel" >{middleNav} </div>}
+            <div key="part2" id="middlepanel" className="middlepanel" >{middleNav} </div>}
           {phoneVisiblePanel === "right" && allParts.length > 2 &&
-            <div key="part3" id="rightpanel"  > {rightNav} </div>}
+            <div key="part3" id="rightpanel" className="rightpanel" > {rightNav} </div>}
         </div>
 
         {props.children.length > 1 && <div className="phonebuttoncontainer" >
           {leftNav && middleNav && leftNav.props.children.props && middleNav.props.children[1].props && (
             <>
-             {!props.guestUser &&  <button className="phonebutton"
+              {!props.guestUser && <button className="phonebutton"
                 onClick={() => setPhoneVisiblePanel("left")}>{leftNav.props.children.props.panelName}</button>}
               <button className="phonebutton"
                 onClick={() => setPhoneVisiblePanel("middle")}>{middleNav.props.children[1].props.panelName}</button>
@@ -332,319 +425,3 @@ export default function ToolLayout(props) {
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

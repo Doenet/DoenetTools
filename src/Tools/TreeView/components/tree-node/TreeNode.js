@@ -81,11 +81,11 @@ export const ParentNode = memo(({
     <Frame style={styles["frame"]}>
       <ListItem onMouseEnter={() => setCurrentHovered(id)} onMouseLeave={() => setCurrentHovered(null)}>
         <div style={{display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}> 
-          <div style={{width: "100%"}}>
+          <div style={{width: "85%"}}>
             <span onClick={() => setOpen(!isOpen)}>
               { expanderIcon || <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }}/> }
             </span>            
-            <div style={{display: "inline-block", width: "94%", ...styles["title"]}} onClick={() => onClick(id, type)} onDoubleClick={() => onDoubleClickCb(id, type)}>
+            <div style={{display: "inline-block", width: "100%", ...styles["title"]}} onClick={() => onClick(id, type)} onDoubleClick={() => onDoubleClickCb(id, type)}>
               { itemIcon }
               <Title>{title}</Title>
             </div>

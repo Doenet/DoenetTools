@@ -55,7 +55,8 @@ if ($result->num_rows > 0){
           "childUrls" => array(),
           "childFolders" => array(),
           "isRepo" => ($row["isRepo"] == 1),
-          "isPublic" => ($row["isPublic"] == 1)
+          "isPublic" => ($row["isPublic"] == 1),
+          "numChild" => 0
     );
   }
 }
@@ -71,7 +72,8 @@ $folder_info_arr["root"] = array(
   "childUrls" => array(),
   "childFolders" => array(),
   "isRepo" => FALSE,
-  "isPublic" => TRUE
+  "isPublic" => TRUE,
+  "numChild" => 0
 );
 
 
@@ -98,11 +100,12 @@ if ($result->num_rows > 0){
     } else if ($row["childType"] == "url"){
       array_push($folder_info_arr[$row["folderId"]]["childUrls"], $row["childId"]);
     }
+    $folder_info_arr[$row["folderId"]]["numChild"]++;
   }
 }
 
 //Collect users who can access repos
-foreach ($repos_arr as $repoId){
+foreach ($repos_arr as $repoId) {
   $sql = "
   SELECT 
 u.firstName AS firstName,

@@ -68,6 +68,9 @@ class DoenetBranchBrowser extends Component {
     this.onBreadcrumbDropEnterCb = this.onBreadcrumbDropEnterCb.bind(this);
   }
 
+  componentWillReceiveProps(props) {
+    this.setState({directoryStack: props.directoryData}); //watch for directoryData prop and updates directoryStack state variable
+  }
   getAllSelectedItems() {
     let allSelectedContent = [];
     for (let i =0; i < this.state.selectedItemsType.length; i++) {
@@ -457,6 +460,18 @@ class DoenetBranchBrowser extends Component {
     return this.state.directoryStack[this.state.directoryStack.length - 1];
   }
 
+  // openFolder(folderId) {
+  //   this.pushDirectoryStack(folderId);
+  //   this.props.updateDirectoryStack(this.state.directoryStack);
+  // }
+
+  // upOneDirectory() {
+  //   this.popDirectoryStack();
+  //   this.setState({selectedItems: [], selectedItemType: []});
+  //   this.props.updateDirectoryStack(this.state.directoryStack);
+  //   this.props.updateSelectedItems([], []);
+  // }
+
   openFolder(folderId) {
     this.pushDirectoryStack(folderId);
     this.setState({selectedItems: [], selectedItemType: []});
@@ -472,6 +487,7 @@ class DoenetBranchBrowser extends Component {
       this.props.updateDirectoryStack(this.state.directoryStack);
     }
   }
+
 
   jumpToDirectory(folderId) {
     // pop all items after folderId

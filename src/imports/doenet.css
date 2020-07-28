@@ -16,6 +16,9 @@ a:hover {
 }
 button{
     height:20px;
+    text-decoration:none;
+    outline-style: hidden;
+
 }
 select{
     height:20px;
