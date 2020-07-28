@@ -2305,6 +2305,8 @@ class DoenetChooser extends Component {
           onDropEnter={this.onTreeDropEnter}
           onDrop={this.onTreeDrop}
           directoryData={[...this.state.directoryStack]}
+          parentNodeItem={TreeNodeItem}
+          leafNodeItem={TreeNodeItem}
           specialNodes={this.tempSet}
           treeStyles={{
             specialChildNode: {
@@ -2314,7 +2316,10 @@ class DoenetChooser extends Component {
             specialParentNode: {
               "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
             },
-            emptyParentExpanderIcon: <span></span>
+            // parentNode: {
+            //   "node": { background: "rgba(58,172,144)" },
+            // },
+            emptyParentExpanderIcon: <span></span>,
           }}
           onLeafNodeClick={(id, type) => {
             // get path to item
@@ -2605,6 +2610,67 @@ class DoenetChooser extends Component {
           </div>
         </Accordion>
       </div>
+        //   />
+        // </div>
+
+      // DEPRECIATED
+      // this.customizedTree = <div className="tree" style={{ paddingLeft: "1em", marginLeft: "4em" }}>
+      //   <TreeView
+      //   containerId={treeContainerId}
+      //   containerType={treeContainerType}
+      //   loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
+      //   parentsInfo={treeParentsInfo} 
+      //   childrenInfo={treeChildrenInfo}
+      //   treeNodeIcons={(itemType) => { 
+      //       let map = { 
+      //         folder: <FontAwesomeIcon icon={faDotCircle}
+      //                 style={{ fontSize: "16px",  color: "#737373" }}/>,
+      //         content: <FontAwesomeIcon icon={faTimesCircle}/> 
+      //       }
+      //       return map[itemType]
+      //   }} 
+      //   hideRoot={true}
+      //   specialNodes={this.tempSet}
+      //   treeStyles={{
+      //     parentNode: {
+      //       "title": { color: "rgba(58,172,144)" },
+      //       "frame": {
+      //         border: "1px #b3b3b3 solid",
+      //         width: "100%"
+      //       },
+      //       "contentContainer": {
+      //         border: "none",
+      //       }
+      //     },
+      //     childNode: {
+      //       "title": {
+      //         color: "rgba(33,11,124)", 
+      //       },
+      //       "frame": { border: "1px #a4a4a4 solid" },
+      //     },
+      //     specialChildNode: {
+      //       "frame": { background: "#a7a7a7" },
+      //     },
+      //     specialParentNode: {
+      //       "frame": { background: "#a7a7a7" },
+      //     },
+      //     expanderIconOpen: <FontAwesomeIcon icon={faPlus}/>
+      //   }}
+      //   onLeafNodeClick={(nodeId) => {
+      //     this.tempSet.clear();
+      //     this.tempSet.add(nodeId); 
+      //     this.forceUpdate()
+      //   }}
+      //   onParentNodeClick={(nodeId) => {
+      //     this.tempSet.clear();
+      //     this.tempSet.add(nodeId); 
+      //     this.forceUpdate()
+      //   }}
+      //   onParentNodeDoubleClick={(nodeId) => {
+      //     console.log(`${nodeId} double clicked!`)
+      //   }}
+      //   />
+      // </div>
 
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
@@ -2903,6 +2969,19 @@ const SplitPanelMainContent = ({ panelId, initialContainer, activeContainer, con
         </SwitchableContainerPanel>
       })}
     </SwitchableContainers>
+  </div>;
+}
+
+const TreeNodeItem = ({title, icon}) => {
+  return <div>
+    {icon}
+    <span style={{
+      verticalAlign: "middle",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+    }}
+    >{title}</span>
   </div>;
 }
 
