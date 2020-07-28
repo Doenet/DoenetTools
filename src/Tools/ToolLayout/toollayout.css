@@ -15,7 +15,9 @@ button{
   min-height: 1vh;
   overflow: hidden;
   width:100%;
-  background-image: url('../../media/doenets-monochrome.png');
+  background-color: #288ae9;
+  /* background-repeat: repeat-y; */
+  /* background-image: url('../../media/doenet_bg.png'); */
 }
 
 .middlepanel{
