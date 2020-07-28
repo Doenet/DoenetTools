@@ -36,6 +36,7 @@ export default class Accordion extends Component {
       return (
         <AccordionSectionCustom
           isOpen={!!openSections[children.props.label]}
+          activeChild={this.props.children.props.activeChild}
           label={children.props.label}
           onClick={onClick}>
           {children.props.children}
@@ -43,31 +44,25 @@ export default class Accordion extends Component {
       );
     }
   }
-  class AccordionSectionCustom extends Component {
+  function AccordionSectionCustom ({onClick, isOpen, label, children, activeChild}) {
+
+    console.log('activeChild', activeChild);
   
-    onClick = () => {
-      this.props.onClick(this.props.label);
+    const handleOnClick = () => {
+      onClick(label);
     };
-  
-    render() {
-      const {
-        onClick,
-        props: { isOpen, label },
-      } = this;
-  
       return (
-        <div style={{ "width": "100%", "cursor": 'pointer', "fontWeight": "bold" }}>
-          <div onClick={onClick} data-cy="coursesAccordion" style={{color: "#03a1fc", backgroundColor: isOpen && '#d9eefa' , borderLeft: isOpen && '10px solid blue', padding: '3px'}}>
-            {isOpen ?  <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronDown} /> :
-              <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronRight} />}
+        <div style={{ "width": "100%", "cursor": 'pointer', "fontWeight": "bold"}}>
+          <div onClick={handleOnClick} data-cy="coursesAccordion" style={{display: 'flex', justifyContent: 'flex-start', alignItems:'center', color: "darkblue",opacity:'0.5', backgroundColor: isOpen && !activeChild && ' rgb(192, 220, 242)' , borderLeft: isOpen && !activeChild && '6px solid #1b216e'}}>
+            {isOpen ?  <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronDown} style={{width:'100%',fontSize:'15px', color:'#03a1fc', border:'1px solid #03a1fc', borderRadius:'2px', width:'15px',height:'15px'}}/> :
+              <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronRight} style={{width:'100%',fontSize:'15px', color:'#03a1fc', border:'1px solid #03a1fc',borderRadius:'2px', width:'15px',height:'15px'}} />}
             {label}
           </div>
           {isOpen && (
             <div>
-              {this.props.children}
+              {children}
             </div>
           )}
         </div>
       );
-    }
   }
