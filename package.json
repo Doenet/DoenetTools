@@ -42,7 +42,7 @@
     "webpack": "webpack --mode development --config webpack.local.config.js --watch",
     "build": "webpack --mode production --config webpack.deployment.config.js",
     "test": "cypress open",
-    "test:all": "cypress run -b 'chrome'",
+    "test:all": "cypress run -b 'chrome' --config video=false",
     "generate-docs:components": "babel-node generate-components-json.js",
     "docs": "babel-node test2.js",
     "deploy": "cd doenet_docker_deploy && docker-compose up",
