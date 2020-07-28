@@ -1525,7 +1525,6 @@ class DoenetChooser extends Component {
 
   onBrowserDropEnter = (listId) => {
     console.log("onDropEnter")
-
   }
 
   onBrowserDragEnd = ({containerId, parentsInfo, leavesInfo}) => {
