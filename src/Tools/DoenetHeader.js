@@ -250,7 +250,7 @@ class DoenetHeader extends Component {
       {
         optionElem: <ProfilePictureLrg pic={this.profilePicture} name="changeProfilePicture" id="changeProfilePicture"   />,
         id:'profile',
-        label: `${this.props.profile.screenName}`
+        label: this.props.cookies.Device ? `${this.props.profile.screenName} : ${this.props.cookies.Device}` : `${this.props.profile.screenName}`
       },
       {
         id: "Account",
