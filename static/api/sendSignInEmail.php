@@ -19,7 +19,7 @@ $deviceName = $deviceNames[$randomNumber];
 //Nine digit random number
 $signInCode = rand(100000000,999999999);
 
-$sql = "SELECT email, id
+$sql = "SELECT email, userId
 FROM user
 WHERE email='$emailaddress'";
 
