@@ -691,7 +691,7 @@ function returnDefaultStyleDefinitions() {
   {
     styleNumber: 2,
     lineColor: "green",
-    lineWidth: 1,
+    lineWidth: 2,
     lineStyle: "solid",
     markerColor: "green",
     markerStyle: "square",

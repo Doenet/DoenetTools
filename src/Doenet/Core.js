@@ -2262,6 +2262,7 @@ export default class Core {
               propVariable: dep.propVariable,
               arrayStateVariable: dep.arrayStateVariable,
               arrayKey: dep.arrayKey,
+              ignorePrimaryStateVariable: dep.ignorePrimaryStateVariable,
             }
           } else if (dep.dependencyType === "adapter") {
             redefineDependencies = {
@@ -2679,7 +2680,7 @@ export default class Core {
         "requireChildLogicInitiallySatisfied",
         "useDefaultForShadows",
         "propagateToProps",
-        "disallowOverwiteOnCopy",
+        "disallowOverwriteOnCopy",
       ]
 
       for (let attribute of propertyAttributesToCopy) {
@@ -2821,7 +2822,7 @@ export default class Core {
       let defaultValue = propertySpecification.default;
       let thisDependencies = {};
 
-      if (property in compositeComponent.state && !propertySpecification.disallowOverwiteOnCopy) {
+      if (property in compositeComponent.state && !propertySpecification.disallowOverwriteOnCopy) {
         thisDependencies.compositeComponentVariable = {
           dependencyType: "componentStateVariable",
           componentIdentity: {
@@ -2843,8 +2844,19 @@ export default class Core {
           },
           variableName: property,
         };
+        if ("targetPropertiesToIgnore" in compositeComponent.state) {
+          thisDependencies.targetPropertiesToIgnore = {
+            dependencyType: "componentStateVariable",
+            componentIdentity: {
+              componentName: compositeComponent.componentName,
+              componentType: compositeComponent.componentType
+            },
+            variableName: "targetPropertiesToIgnore",
+          };
+        }
       }
 
+      // TODO: do we really want to overwrite targetVariable here?
       if (additionalPropertiesFromStateVariables[property]) {
         thisDependencies.targetVariable = {
           dependencyType: "componentStateVariable",
@@ -2886,10 +2898,15 @@ export default class Core {
             })
             return { newValues: { [property]: propertyValue } };
 
-          } else if (dependencyValues.targetVariable !== undefined && (
-            !usedDefault.targetVariable
-            || targetComponent.state[property].useDefaultForShadows
-          )) {
+          } else if (dependencyValues.targetVariable !== undefined
+            && !(
+              dependencyValues.targetPropertiesToIgnore &&
+              dependencyValues.targetPropertiesToIgnore.map(x => x.toLowerCase()).includes(property.toLowerCase())
+            )
+            && (
+              !usedDefault.targetVariable
+              || targetComponent.state[property].useDefaultForShadows
+            )) {
             // else if target has property, use that value
             return { newValues: { [property]: dependencyValues.targetVariable } };
 
@@ -2940,7 +2957,9 @@ export default class Core {
               }]
             };
 
-          } else if (dependencyValues.targetVariable !== undefined && !usedDefault.targetVariable) {
+          } else if (dependencyValues.targetVariable !== undefined &&
+            !dependencyValues.targetPropertiesToIgnore.map(x => x.toLowerCase()).includes(property.toLowerCase()) &&
+            !usedDefault.targetVariable) {
             // else if target has property, set that value
             return {
               success: true,
@@ -2996,55 +3015,58 @@ export default class Core {
     }
 
     if (redefineDependencies.propVariable) {
-      // primaryStateVariableForDefinition is the state variable that the componentClass
-      // being created has specified should be given the value when it
-      // is created from an outside source like a reference to a prop or an adapter
-      let primaryStateVariableForDefinition = "value";
-      if (componentClass.primaryStateVariableForDefinition) {
-        primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
-      }
-      let stateDef = stateVariableDefinitions[primaryStateVariableForDefinition];
-      if (!stateDef) {
-        throw Error(`Cannot have a public state variable with componentType ${componentClass.componentType} as the class doesn't have a primary state variable for definition`)
-      }
-      stateDef.returnDependencies = () => ({
-        targetVariable: {
-          dependencyType: "componentStateVariable",
-          componentIdentity: {
-            componentName: targetComponent.componentName,
-            componentType: targetComponent.componentType
+
+      if (!redefineDependencies.ignorePrimaryStateVariable) {
+        // primaryStateVariableForDefinition is the state variable that the componentClass
+        // being created has specified should be given the value when it
+        // is created from an outside source like a reference to a prop or an adapter
+        let primaryStateVariableForDefinition = "value";
+        if (componentClass.primaryStateVariableForDefinition) {
+          primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+        }
+        let stateDef = stateVariableDefinitions[primaryStateVariableForDefinition];
+        if (!stateDef) {
+          throw Error(`Cannot have a public state variable with componentType ${componentClass.componentType} as the class doesn't have a primary state variable for definition`)
+        }
+        stateDef.returnDependencies = () => ({
+          targetVariable: {
+            dependencyType: "componentStateVariable",
+            componentIdentity: {
+              componentName: targetComponent.componentName,
+              componentType: targetComponent.componentType
+            },
+            variableName: redefineDependencies.propVariable,
           },
-          variableName: redefineDependencies.propVariable,
-        },
-      });
-      if (stateDef.set) {
-        stateDef.definition = function ({ dependencyValues }) {
-          return {
-            newValues: {
-              [primaryStateVariableForDefinition]: stateDef.set(dependencyValues.targetVariable),
-            },
-            alwaysShadow: [primaryStateVariableForDefinition],
+        });
+        if (stateDef.set) {
+          stateDef.definition = function ({ dependencyValues }) {
+            return {
+              newValues: {
+                [primaryStateVariableForDefinition]: stateDef.set(dependencyValues.targetVariable),
+              },
+              alwaysShadow: [primaryStateVariableForDefinition],
+            };
           };
-        };
-      } else {
-        stateDef.definition = function ({ dependencyValues }) {
+        } else {
+          stateDef.definition = function ({ dependencyValues }) {
+            return {
+              newValues: {
+                [primaryStateVariableForDefinition]: dependencyValues.targetVariable,
+              },
+              alwaysShadow: [primaryStateVariableForDefinition],
+            };
+          };
+        }
+        stateDef.inverseDefinition = function ({ desiredStateVariableValues }) {
           return {
-            newValues: {
-              [primaryStateVariableForDefinition]: dependencyValues.targetVariable,
-            },
-            alwaysShadow: [primaryStateVariableForDefinition],
+            success: true,
+            instructions: [{
+              setDependency: "targetVariable",
+              desiredValue: desiredStateVariableValues[primaryStateVariableForDefinition],
+            }]
           };
         };
       }
-      stateDef.inverseDefinition = function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setDependency: "targetVariable",
-            desiredValue: desiredStateVariableValues[primaryStateVariableForDefinition],
-          }]
-        };
-      };
 
       // for referencing a prop variable, don't shadow standard state variables
       // so just return now

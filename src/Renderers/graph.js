@@ -99,7 +99,7 @@ export default class Graph extends DoenetRenderer {
 
     }
 
-    this.forceUpdate();
+    super.update();
 
   }
 

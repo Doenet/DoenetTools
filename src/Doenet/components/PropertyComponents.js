@@ -813,6 +813,11 @@ export class Target extends TextComponent {
   static rendererType = "text";
 }
 
+export class targetPropertiesToIgnore extends TextList {
+  static componentType = "targetPropertiesToIgnore";
+  static rendererType = "textlist";
+}
+
 export class PluralForm extends TextComponent {
   static componentType = "pluralform";
   static rendererType = "text";

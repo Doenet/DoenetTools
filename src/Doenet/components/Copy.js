@@ -49,7 +49,9 @@ export default class Copy extends CompositeComponent {
     delete properties.number;
     delete properties.text;
 
-    properties.includeUndefinedArrayEntries = { default: false }
+    properties.includeUndefinedArrayEntries = { default: false };
+
+    properties.targetPropertiesToIgnore = { default: [] };
 
     return properties;
 
@@ -512,7 +514,7 @@ export default class Copy extends CompositeComponent {
           } else if (propVariableObj.isArrayEntry) {
 
             let arrayLength = 1;
-            if(!(`targetArray${ind}` in dependencyValues)) {
+            if (!(`targetArray${ind}` in dependencyValues)) {
               propDependenciesSetUp = false;
               continue;
             }
@@ -682,7 +684,7 @@ export default class Copy extends CompositeComponent {
 
           for (let property in dependencyValues) {
             if (!["replacementClasses", "useProp", "validProp", "includeUndefinedArrayEntries"].includes(property)
-              && (!(property in propertiesObject) || propertiesObject[property].disallowOverwiteOnCopy)
+              && (!(property in propertiesObject) || propertiesObject[property].disallowOverwriteOnCopy)
             ) {
               let prescribedValue = dependencyValues[property];
               if (prescribedValue !== null && !(Array.isArray(prescribedValue) && prescribedValue.length === 0)) {
@@ -1351,7 +1353,7 @@ export default class Copy extends CompositeComponent {
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
 
-    if(!component.stateValues.propDependenciesSetUp) {
+    if (!component.stateValues.propDependenciesSetUp) {
       return [];
     }
 
@@ -1680,10 +1682,10 @@ export function replacementFromProp({ component, components, componentOrReplacem
     let targetName = componentOrReplacementNames[targetInd];
     let targetComponent = components[targetName];
 
+    let stateVarObj = targetComponent.state[propVariableObj.varName];
 
     if (propVariableObj.isArray || propVariableObj.isArrayEntry) {
 
-      let stateVarObj = targetComponent.state[propVariableObj.varName];
 
       let arrayStateVarObj, unflattenedArrayKeys;
       if (stateVarObj.isArray) {
@@ -1716,16 +1718,57 @@ export function replacementFromProp({ component, components, componentOrReplacem
 
             propVariablesCopied.push(propVariable);
 
-            serializedReplacements.push({
-              componentType,
-              downstreamDependencies: {
-                [targetName]: [{
-                  dependencyType: "referenceShadow",
-                  compositeName: component.componentName,
-                  propVariable
-                }]
+            if (propVariableObj.containsComponentNamesToCopy) {
+
+              let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
+              let componentToCopy = components[componentNameToCopy];
+
+              if (componentToCopy) {
+                while (componentToCopy.replacementOf
+                  && componentToCopy.replacementOf.replacements.length === 1
+                ) {
+                  componentToCopy = componentToCopy.replacementOf;
+                }
+
+                let stateForReplacementCopy;
+                if (arrayStateVarObj.targetPropertiesToIgnoreOnCopy) {
+                  stateForReplacementCopy = {
+                    targetPropertiesToIgnore: arrayStateVarObj.targetPropertiesToIgnoreOnCopy
+                  }
+                }
+
+                serializedReplacements.push({
+                  componentType: "copy",
+                  children: [{
+                    componentType: "tname",
+                    state: { targetName: componentToCopy.componentName },
+                  }],
+                  state: stateForReplacementCopy
+                });
+
+                propVariablesCopied.push(componentToCopy.componentName)
+
+              } else {
+                // just give an empty component of componentType
+                serializedReplacements.push({
+                  componentType,
+                })
+                propVariablesCopied.push(null)
+
               }
-            })
+
+            } else {
+              serializedReplacements.push({
+                componentType: componentType,
+                downstreamDependencies: {
+                  [targetName]: [{
+                    dependencyType: "referenceShadow",
+                    compositeName: component.componentName,
+                    propVariable
+                  }]
+                }
+              })
+            }
           } else {
             // didn't match an array key, so just add an empty component of componentType
             serializedReplacements.push({
@@ -1751,16 +1794,57 @@ export function replacementFromProp({ component, components, componentOrReplacem
               let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
               propVariablesCopied.push(propVariable);
 
-              pieces.push({
-                componentType: arrayStateVarObj.componentType,
-                downstreamDependencies: {
-                  [targetName]: [{
-                    dependencyType: "referenceShadow",
-                    compositeName: component.componentName,
-                    propVariable
-                  }]
+              if (propVariableObj.containsComponentNamesToCopy) {
+
+                let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
+                let componentToCopy = components[componentNameToCopy];
+
+                if (componentToCopy) {
+                  while (componentToCopy.replacementOf
+                    && componentToCopy.replacementOf.replacements.length === 1
+                  ) {
+                    componentToCopy = componentToCopy.replacementOf;
+                  }
+
+                  let stateForReplacementCopy;
+                  if (arrayStateVarObj.targetPropertiesToIgnoreOnCopy) {
+                    stateForReplacementCopy = {
+                      targetPropertiesToIgnore: arrayStateVarObj.targetPropertiesToIgnoreOnCopy
+                    }
+                  }
+
+                  pieces.push({
+                    componentType: "copy",
+                    children: [{
+                      componentType: "tname",
+                      state: { targetName: componentToCopy.componentName },
+                    }],
+                    state: stateForReplacementCopy
+                  });
+                  propVariablesCopied.push(componentToCopy.componentName)
+
+                } else {
+                  // just give an empty component of componentType
+                  pieces.push({
+                    componentType: arrayStateVarObj.componentType
+                  })
+                  propVariablesCopied.push(null)
+
                 }
-              })
+
+              } else {
+
+                pieces.push({
+                  componentType: arrayStateVarObj.componentType,
+                  downstreamDependencies: {
+                    [targetName]: [{
+                      dependencyType: "referenceShadow",
+                      compositeName: component.componentName,
+                      propVariable
+                    }]
+                  }
+                })
+              }
             }
           }
 
@@ -1780,6 +1864,18 @@ export function replacementFromProp({ component, components, componentOrReplacem
         }
 
         let newReplacements = createReplacementPiece(unflattenedArrayKeys, stateVarObj.nDimensions);
+
+        // add downstream dependencies to replacements
+        for (let replacement of newReplacements) {
+          replacement.downstreamDependencies = {
+            [targetName]: [{
+              dependencyType: "referenceShadow",
+              compositeName: component.componentName,
+              propVariable: propVariableObj.varName,
+              ignorePrimaryStateVariable: true,
+            }]
+          }
+        }
 
         replacementInd += newReplacements.length;
 
@@ -1821,167 +1917,53 @@ export function replacementFromProp({ component, components, componentOrReplacem
 
         let componentType = replacementClass.componentType.toLowerCase();
 
-        if (propVariableObj.isArray) {
-          console.log(`*****************We shouldn't be able to get here ******************`)
+        if (propVariableObj.containsComponentNamesToCopy) {
 
-          let arrayStateVarObj = targetComponent.state[propVariableObj.varName];
+          let componentNameToCopy = targetComponent.state[propVariableObj.varName].value
+          let componentToCopy = components[componentNameToCopy];
 
-          // TODO: generalize to multi-dimensional arrays
-
-          let arrayKey = arrayStateVarObj.indexToKey(ind);
-          let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
-
-          if (propVariableObj.containsComponentNamesToCopy) {
-
-            let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
-            let componentToCopy = components[componentNameToCopy];
-
-            if (componentToCopy) {
-              while (componentToCopy.replacementOf
-                && componentToCopy.replacementOf.replacements.length === 1
-              ) {
-                componentToCopy = componentToCopy.replacementOf;
-              }
-
-              serializedReplacements.push({
-                componentType: "copy",
-                children: [{
-                  componentType: "tname",
-                  state: { targetName: componentToCopy.componentName },
-                }]
-              });
+          if (componentToCopy) {
+            while (componentToCopy.replacementOf
+              && componentToCopy.replacementOf.replacements.length === 1
+            ) {
+              componentToCopy = componentToCopy.replacementOf;
             }
 
-          } else {
-            serializedReplacements.push({
-              componentType,
-              downstreamDependencies: {
-                [targetName]: [{
-                  dependencyType: "referenceShadow",
-                  compositeName: component.componentName,
-                  propVariable
-                  // arrayStateVariable: propVariableObj.varName,
-                  // arrayKey
-                }]
+            let stateForReplacementCopy;
+            if (stateVarObj.targetPropertiesToIgnoreOnCopy) {
+              stateForReplacementCopy = {
+                targetPropertiesToIgnore: stateVarObj.targetPropertiesToIgnoreOnCopy
               }
-            })
-          }
-
-
-
-        } else if (propVariableObj.isArrayEntry) {
-
-          console.log(`*****************We shouldn't be able to get here ******************`)
-
-          let arrayStateVarObj = targetComponent.state[propVariableObj.arrayVarName];
-          let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
-            varEnding: propVariableObj.varEnding,
-            arrayEntryPrefix: propVariableObj.arrayEntryPrefix,
-          });
-
-          // TODO: commented out below two conditiions to get tests to pass
-          // Check why these conditions were added in the first place.
-
-          // let entryValue = targetComponent.state[propVariableObj.varName].value;
-
-          // if (entryValue !== undefined) {
-          let arrayKey = arrayKeys[ind];
-          // if (arrayStateVarObj.getArrayValue({ arrayKey }) !== undefined) {
-
-
-          let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
-
-          if (propVariableObj.containsComponentNamesToCopy) {
-
-            let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
-            let componentToCopy = components[componentNameToCopy];
-
-            if (componentToCopy) {
-              while (componentToCopy.replacementOf
-                && componentToCopy.replacementOf.replacements.length === 1
-              ) {
-                componentToCopy = componentToCopy.replacementOf;
-              }
-
-              serializedReplacements.push({
-                componentType: "copy",
-                children: [{
-                  componentType: "tname",
-                  state: { targetName: componentToCopy.componentName },
-                }]
-              });
-            } else if (component.stateValues.includeUndefinedArrayEntries) {
-
-              serializedReplacements.push({
-                componentType,
-                downstreamDependencies: {
-                  [targetName]: [{
-                    dependencyType: "referenceShadow",
-                    compositeName: component.componentName,
-                    propVariable,
-                    // propVariable: propVariableObj.varName,
-                    // arrayStateVariable: propVariableObj.arrayVarName,
-                    // arrayKey
-                  }]
-                }
-              })
             }
 
+            serializedReplacements.push({
+              componentType: "copy",
+              children: [{
+                componentType: "tname",
+                state: { targetName: componentToCopy.componentName },
+              }],
+              state: stateForReplacementCopy
+            });
           } else {
+            // just give an empty component of componentType
             serializedReplacements.push({
               componentType,
-              downstreamDependencies: {
-                [targetName]: [{
-                  dependencyType: "referenceShadow",
-                  compositeName: component.componentName,
-                  propVariable,
-                  // propVariable: propVariableObj.varName,
-                  // arrayStateVariable: propVariableObj.arrayVarName,
-                  // arrayKey
-                }]
-              }
             })
           }
-          // }
-          // }
 
         } else {
+          propVariablesCopied.push(propVariableObj.varName);
 
-          if (propVariableObj.containsComponentNamesToCopy) {
-
-            let componentNameToCopy = targetComponent.state[propVariableObj.varName].value
-            let componentToCopy = components[componentNameToCopy];
-
-            if (componentToCopy) {
-              while (componentToCopy.replacementOf
-                && componentToCopy.replacementOf.replacements.length === 1
-              ) {
-                componentToCopy = componentToCopy.replacementOf;
-              }
-
-              serializedReplacements.push({
-                componentType: "copy",
-                children: [{
-                  componentType: "tname",
-                  state: { targetName: componentToCopy.componentName },
-                }]
-              });
+          serializedReplacements.push({
+            componentType,
+            downstreamDependencies: {
+              [targetName]: [{
+                dependencyType: "referenceShadow",
+                compositeName: component.componentName,
+                propVariable: propVariableObj.varName,
+              }]
             }
-
-          } else {
-            propVariablesCopied.push(propVariableObj.varName);
-
-            serializedReplacements.push({
-              componentType,
-              downstreamDependencies: {
-                [targetName]: [{
-                  dependencyType: "referenceShadow",
-                  compositeName: component.componentName,
-                  propVariable: propVariableObj.varName,
-                }]
-              }
-            })
-          }
+          })
         }
       }
     }

@@ -9,8 +9,8 @@ export default class Table extends BaseComponent {
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
     properties.width = { default: '400px' };
-    properties.minNumRows = { default: 4 };
-    properties.minNumColumns = { default: 4 };
+    properties.minNumRows = { default: 1 };
+    properties.minNumColumns = { default: 1 };
 
     properties.height = {
       forRenderer: true,
@@ -102,7 +102,7 @@ export default class Table extends BaseComponent {
         }
       }),
       definition({ dependencyValues, componentInfoObjects }) {
-        let result = determingCellMapping({
+        let result = determineCellMapping({
           cellRelatedChildren: dependencyValues.cellRelatedChildren,
           componentInfoObjects
         })
@@ -170,10 +170,38 @@ export default class Table extends BaseComponent {
       public: true,
       componentType: "cell",
       isArray: true,
-      entryPrefixes: ["cell"],
+      entryPrefixes: ["cell", "row", "column", "range"],
       nDimensions: 2,
+      // stateVariablesDeterminingDependencies: ["numRows", "numColumns"],
+      returnArraySizeDependencies: () => ({
+        numRows: {
+          dependencyType: "stateVariable",
+          variableName: "numRows",
+        },
+        numColumns: {
+          dependencyType: "stateVariable",
+          variableName: "numColumns",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.numRows, dependencyValues.numColumns];
+      },
+      returnEntryDimensions: prefix => prefix === "range" ? 2 : 1,
       containsComponentNamesToCopy: true,
-      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding }) {
+      targetPropertiesToIgnoreOnCopy: ["rowNum", "colNum"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "cell") {
+          return [];
+        } else if (prefix === "row") {
+          return [["row"]];
+        } else if (prefix === " col") {
+          return [["column"]];
+        } else {
+          // range or entire array
+          return [["row"], ["cellblock"]]
+        }
+      },
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "cell") {
           // accept two formats: cellB1 or cell(1,2)
           // (accept letters in second format: (A, 2), (1, B), or (A,B))
@@ -191,14 +219,104 @@ export default class Table extends BaseComponent {
             if (result) {
               rowNum = result[1];
               colNum = result[2];
+            } else {
+              return []; // invalid
             }
           }
 
-          if (!result) {
-            return // invalid
+          let rowIndex = normalizeIndex(rowNum);
+          let colIndex = normalizeIndex(colNum);
+
+          if (!(rowIndex >= 0 && rowIndex < arraySize[0] && colIndex >= 0 && colIndex < arraySize[1])) {
+            // invalid index or index of out range
+            return [];
           }
 
-          return [String(normalizeIndex(rowNum)) + "," + String(normalizeIndex(colNum))]
+          return [String(rowIndex) + "," + String(colIndex)]
+
+        } else if (arrayEntryPrefix === "row") {
+          // row2 or rowB
+
+          let rowIndex = normalizeIndex(varEnding);
+          if (!(rowIndex >= 0 && rowIndex < arraySize[0])) {
+            // invalid index or index of out range
+            return [];
+          }
+
+          let arrayKeys = [];
+          let arrayKeyBegin = String(rowIndex) + ",";
+          for (let i = 0; i < arraySize[1]; i++) {
+            arrayKeys.push(arrayKeyBegin + i);
+          }
+
+          return arrayKeys;
+
+        } else if (arrayEntryPrefix === "column") {
+          // column2 or columnB
+
+          let colIndex = normalizeIndex(varEnding);
+          if (!(colIndex >= 0 && colIndex < arraySize[1])) {
+            // invalid index or index of out range
+            return [];
+          }
+
+          let arrayKeys = [];
+          let arrayKeyEnd = "," + String(colIndex);
+          for (let i = 0; i < arraySize[1]; i++) {
+            arrayKeys.push(i + arrayKeyEnd);
+          }
+
+          return arrayKeys;
+
+        } else {
+          // range
+          // accept two formats: rangeB1D5 or range((1,2),(5,4))
+
+          let fromRow, fromCol, toRow, toCol;
+
+          let letterNumStyle = /^([a-zA-Z]+)([1-9]\d*)([a-zA-Z]+)([1-9]\d*)$/;
+          let result = varEnding.match(letterNumStyle);
+          if (result) {
+            fromCol = normalizeIndex(result[1]);
+            fromRow = normalizeIndex(result[2]);
+            toCol = normalizeIndex(result[3]);
+            toRow = normalizeIndex(result[4]);
+          } else {
+            let tupleStyle = /^\(\(([a-zA-Z]+|\d+),([a-zA-Z]+|\d+)\),\(([a-zA-Z]+|\d+),([a-zA-Z]+|\d+)\)\)$/;
+            result = varEnding.match(tupleStyle);
+            if (result) {
+              fromRow = normalizeIndex(result[1]);
+              fromCol = normalizeIndex(result[2]);
+              toRow = normalizeIndex(result[3]);
+              toCol = normalizeIndex(result[4]);
+            } else {
+              return [];  //invalid
+            }
+          }
+
+
+          if (!(fromRow >= 0 && toRow >= 0 && fromCol >= 0 && toCol >= 0)) {
+            // invalid range
+            return [];
+          }
+
+          let row1 = Math.min(Math.min(fromRow, toRow), arraySize[0] - 1);
+          let row2 = Math.min(Math.max(fromRow, toRow), arraySize[0] - 1);
+          let col1 = Math.min(Math.min(fromCol, toCol), arraySize[1] - 1);
+          let col2 = Math.min(Math.max(fromCol, toCol), arraySize[1] - 1);
+
+          let arrayKeys = [];
+
+          for (let rowIndex = row1; rowIndex <= row2; rowIndex++) {
+            let rowKeys = [];
+            let arrayKeyBegin = String(rowIndex) + ",";
+            for (let colIndex = col1; colIndex <= col2; colIndex++) {
+              rowKeys.push(arrayKeyBegin + colIndex);
+            }
+            arrayKeys.push(rowKeys);
+          }
+
+          return arrayKeys;
 
         }
 
@@ -206,21 +324,29 @@ export default class Table extends BaseComponent {
       arrayVarNameFromArrayKey(arrayKey) {
         return "cell(" + arrayKey.split(',').map(x => Number(x) + 1).join(',') + ")"
       },
-      allVarNamesThatIncludeArrayKey(arrayKey) {
-        return ["cell(" + arrayKey.split(',').map(x => Number(x) + 1).join(',') + ")"]
-      },
-      returnDependencies: () => ({
-        cellNamesByRowCol: {
-          dependencyType: "stateVariable",
-          variableName: "cellNamesByRowCol",
-        }
-      }),
-      definition({ dependencyValues }) {
-        return {
-          newValues: {
-            cells: dependencyValues.cellNamesByRowCol
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          cellNamesByRowCol: {
+            dependencyType: "stateVariable",
+            variableName: "cellNamesByRowCol",
           }
         }
+        return { globalDependencies }
+      },
+      arrayDefinitionByKey({ globalDependencyValues, arrayKeys }) {
+
+        let cells = {};
+        let cnbrc = globalDependencyValues.cellNamesByRowCol;
+
+        for (let arrayKey of arrayKeys) {
+          let [rowInd, colInd] = arrayKey.split(',');
+          if (cnbrc[rowInd] && cnbrc[rowInd][colInd]) {
+            cells[arrayKey] = cnbrc[rowInd][colInd];
+          } else {
+            cells[arrayKey] = null;
+          }
+        }
+        return { newValues: { cells } }
       }
     }
 
@@ -1006,7 +1132,7 @@ export default class Table extends BaseComponent {
 
 
 
-function determingCellMapping({ cellRelatedChildren, rowOffset = 0, colOffset = 0,
+function determineCellMapping({ cellRelatedChildren, rowOffset = 0, colOffset = 0,
   cellNameToRowCol = {}, cellNamesByRowCol = [],
   componentInfoObjects
 }) {
@@ -1143,7 +1269,7 @@ function determingCellMapping({ cellRelatedChildren, rowOffset = 0, colOffset = 
         }
       }
 
-      let results = determingCellMapping({
+      let results = determineCellMapping({
         cellRelatedChildren: cellblock.stateValues.prescribedCellsRowsColumnsBlocks,
         rowOffset: rowIndex,
         colOffset: colIndex,
