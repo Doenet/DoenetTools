@@ -113,6 +113,7 @@ DROP TABLE IF EXISTS `author`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `author` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   `branchId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -303,6 +304,7 @@ DROP TABLE IF EXISTS `course_enrollment`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `course_enrollment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `firstName` varchar(127) COLLATE utf8_unicode_ci DEFAULT NULL,
   `lastName` varchar(127) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -328,7 +330,7 @@ CREATE TABLE `course_enrollment` (
 
 LOCK TABLES `course_enrollment` WRITE;
 /*!40000 ALTER TABLE `course_enrollment` DISABLE KEYS */;
-INSERT INTO `course_enrollment` VALUES (1,'generic','user','devuser',NULL,1234567,'aI8sK4vmEhC5sdeSP3vNW','2019-09-03 20:29:41','15',_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(2,'SHOULD NOT','BE LOADED','invalid',NULL,5254243,'fsa4214fasgag1512525f','2019-09-03 20:29:41','2',_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(4,'Anatole','Wickrath','awickrath0',NULL,60,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(5,'Antony','Aylett','aaylett1',NULL,7,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(6,'Lindi','Rash','lrash2',NULL,5,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(7,'Nicholas','Peteri','npeteri3',NULL,119,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(8,'Savina','Michin','smichin4',NULL,852,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(9,'Gerry','Sallan','gsallan5',NULL,89,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(10,'Wakefield','Bengle','wbengle6',NULL,4786,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(11,'Patrice','Bavin','pbavin8',NULL,75024,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(12,'Merrile','McGee','mmcgee9',NULL,9240,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(13,'Ardath','Celler','acellera',NULL,4522,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(14,'Ashleigh','Lothean','alotheanb',NULL,259,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(15,'Salomon','Scorah','sscorahd',NULL,2,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(16,'Xaviera','Kupec','xkupece',NULL,4,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(17,'Pennie','Badder','pbadderg',NULL,3931,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(18,'Travis','Sarrell','tsarrellh',NULL,7947,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(19,'Eldin','Crosser','ecrosserj',NULL,96895,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(20,'Ginger','Nijs','gnijsl',NULL,60,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(21,'Petronille','Pidcock','ppidcockm',NULL,381,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(22,'Arlee','Duggleby','adugglebyn',NULL,5,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(23,'Ambur','Viant','avianto',NULL,34,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL);
+INSERT INTO `course_enrollment` VALUES (1,NULL,'generic','user','devuser',NULL,1234567,'aI8sK4vmEhC5sdeSP3vNW','2019-09-03 20:29:41','15',_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(2,NULL,'SHOULD NOT','BE LOADED','invalid',NULL,5254243,'fsa4214fasgag1512525f','2019-09-03 20:29:41','2',_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(4,NULL,'Anatole','Wickrath','awickrath0',NULL,60,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(5,NULL,'Antony','Aylett','aaylett1',NULL,7,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(6,NULL,'Lindi','Rash','lrash2',NULL,5,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(7,NULL,'Nicholas','Peteri','npeteri3',NULL,119,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(8,NULL,'Savina','Michin','smichin4',NULL,852,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(9,NULL,'Gerry','Sallan','gsallan5',NULL,89,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(10,NULL,'Wakefield','Bengle','wbengle6',NULL,4786,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(11,NULL,'Patrice','Bavin','pbavin8',NULL,75024,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(12,NULL,'Merrile','McGee','mmcgee9',NULL,9240,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(13,NULL,'Ardath','Celler','acellera',NULL,4522,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(14,NULL,'Ashleigh','Lothean','alotheanb',NULL,259,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(15,NULL,'Salomon','Scorah','sscorahd',NULL,2,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(16,NULL,'Xaviera','Kupec','xkupece',NULL,4,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(17,NULL,'Pennie','Badder','pbadderg',NULL,3931,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(18,NULL,'Travis','Sarrell','tsarrellh',NULL,7947,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(19,NULL,'Eldin','Crosser','ecrosserj',NULL,96895,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(20,NULL,'Ginger','Nijs','gnijsl',NULL,60,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(21,NULL,'Petronille','Pidcock','ppidcockm',NULL,381,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(22,NULL,'Arlee','Duggleby','adugglebyn',NULL,5,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(23,NULL,'Ambur','Viant','avianto',NULL,34,'aI8sK4vmEhC5sdeSP3vNW',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `course_enrollment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -399,6 +401,7 @@ DROP TABLE IF EXISTS `course_instructor`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `course_instructor` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   `courseId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `role` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Used as a label in the interface not for permissions',
@@ -428,6 +431,7 @@ DROP TABLE IF EXISTS `course_section_instructor`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `course_section_instructor` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   `section` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `courseId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -652,8 +656,8 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `username` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'username will be deleted. Use screenName or userId',
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `username` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'username will be deleted. Use screenName or userId',
   `screenName` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'full email address',
   `email` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'full email address',
   `studentId` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -678,7 +682,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'devuser','4VYp5dOrVWGz0OKB2hkLW','DEV','devuser@example.com',NULL,'User','Dev','quokka',1,1,0,0,0,0,0);
+INSERT INTO `user` VALUES (1,'4VYp5dOrVWGz0OKB2hkLW','devuser','DEV','devuser@example.com',NULL,'User','Dev','quokka',1,1,0,0,0,0,0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -691,6 +695,7 @@ DROP TABLE IF EXISTS `user_assignment`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_assignment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `assignmentId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `username` varchar(10) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `dueDateOverride` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means no override',
@@ -725,6 +730,7 @@ DROP TABLE IF EXISTS `user_assignment_attempt`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_assignment_attempt` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` varchar(256) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `assignmentId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `attemptNumber` int(11) NOT NULL DEFAULT '1',
@@ -759,6 +765,7 @@ DROP TABLE IF EXISTS `user_assignment_attempt_item`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_assignment_attempt_item` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   `assignmentId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `attemptNumber` int(11) DEFAULT NULL,
@@ -792,6 +799,7 @@ DROP TABLE IF EXISTS `user_assignment_attempt_item_submission`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_assignment_attempt_item_submission` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   `assignmentId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `attemptNumber` int(11) DEFAULT NULL,
@@ -824,6 +832,7 @@ DROP TABLE IF EXISTS `user_content`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_content` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `branchId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `timestampOfSignInCode` timestamp NULL DEFAULT NULL,
@@ -837,7 +846,7 @@ CREATE TABLE `user_content` (
 
 LOCK TABLES `user_content` WRITE;
 /*!40000 ALTER TABLE `user_content` DISABLE KEYS */;
-INSERT INTO `user_content` VALUES (1,'char0042','iTjnk-kS671DxMUMLS4F4',NULL),(2,'moone237','5j5h1wzoW3zuTxMQCnJEL',NULL),(3,'nykamp','IooAElFG3OSNjzLwyKQqn',NULL),(4,'char0042','nIv_0GemoYFxxSR9sWcph',NULL),(5,'spride','VjxCuRn4zY9Hlktkx5Pkw',NULL),(6,'devuser','Efg9g5jLABCKexVFxK0np',NULL),(7,'devuser','HCK8dpDSJIYTNjw1So5MH',NULL),(8,'devuser','MPQ2c4t-jALzQYeGRk8vw',NULL),(9,'devuser','r5zYs7dMiDYYaiq8nYKPF',NULL),(10,'devuser','MVHoKTLwjEvuZPNm3x90S',NULL),(11,'devuser','GTRwbadxhxI7OWJejs1mA',NULL),(12,'devuser','8gsu2TT2X7otX5XjtVD9R',NULL),(13,'devuser','JoVoeD9M9--hORrWX0TGz',NULL),(14,'devuser','jIV5Ijk85TvpirThq1tlv',NULL),(15,'devuser','QqQ_rVz7xBog1jm1pY-pc',NULL),(16,'devuser','yTfzco0fbTHL_JDCq8Tgz',NULL),(17,'devuser','U3_GUY9poJdTs-nABsmJB',NULL),(18,'devuser','0xx9sQ44yb8ia7yNTHiE3',NULL),(19,'devuser','1q6e28Dg7HLaPaVzM0YSu',NULL),(20,'devuser','o2_lyeApeJXh7pKw1yvIm',NULL),(21,'devuser','htjJcGAQefth_uAPLcUdh',NULL),(22,'devuser','H_K4CgBesKl_q6QZ5GOb5',NULL),(23,'devuser','09kEYJQBB8v_AG5UEjtkG',NULL),(24,'devuser','GJqovNClEobHRxhtj4YCX',NULL),(25,'devuser','rZem0ySmb8MuVN8uTLBNU',NULL);
+INSERT INTO `user_content` VALUES (1,NULL,'char0042','iTjnk-kS671DxMUMLS4F4',NULL),(2,NULL,'moone237','5j5h1wzoW3zuTxMQCnJEL',NULL),(3,NULL,'nykamp','IooAElFG3OSNjzLwyKQqn',NULL),(4,NULL,'char0042','nIv_0GemoYFxxSR9sWcph',NULL),(5,NULL,'spride','VjxCuRn4zY9Hlktkx5Pkw',NULL),(6,NULL,'devuser','Efg9g5jLABCKexVFxK0np',NULL),(7,NULL,'devuser','HCK8dpDSJIYTNjw1So5MH',NULL),(8,NULL,'devuser','MPQ2c4t-jALzQYeGRk8vw',NULL),(9,NULL,'devuser','r5zYs7dMiDYYaiq8nYKPF',NULL),(10,NULL,'devuser','MVHoKTLwjEvuZPNm3x90S',NULL),(11,NULL,'devuser','GTRwbadxhxI7OWJejs1mA',NULL),(12,NULL,'devuser','8gsu2TT2X7otX5XjtVD9R',NULL),(13,NULL,'devuser','JoVoeD9M9--hORrWX0TGz',NULL),(14,NULL,'devuser','jIV5Ijk85TvpirThq1tlv',NULL),(15,NULL,'devuser','QqQ_rVz7xBog1jm1pY-pc',NULL),(16,NULL,'devuser','yTfzco0fbTHL_JDCq8Tgz',NULL),(17,NULL,'devuser','U3_GUY9poJdTs-nABsmJB',NULL),(18,NULL,'devuser','0xx9sQ44yb8ia7yNTHiE3',NULL),(19,NULL,'devuser','1q6e28Dg7HLaPaVzM0YSu',NULL),(20,NULL,'devuser','o2_lyeApeJXh7pKw1yvIm',NULL),(21,NULL,'devuser','htjJcGAQefth_uAPLcUdh',NULL),(22,NULL,'devuser','H_K4CgBesKl_q6QZ5GOb5',NULL),(23,NULL,'devuser','09kEYJQBB8v_AG5UEjtkG',NULL),(24,NULL,'devuser','GJqovNClEobHRxhtj4YCX',NULL),(25,NULL,'devuser','rZem0ySmb8MuVN8uTLBNU',NULL);
 /*!40000 ALTER TABLE `user_content` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -850,11 +859,11 @@ DROP TABLE IF EXISTS `user_device`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_device` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) DEFAULT NULL,
-  `email` varchar(256) DEFAULT NULL,
+  `userId` char(21) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(256) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `signInCode` decimal(9,0) DEFAULT NULL,
   `timestampOfSignInCode` datetime DEFAULT NULL,
-  `deviceName` varchar(256) DEFAULT NULL,
+  `deviceName` varchar(256) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `signedIn` int(1) DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
@@ -866,7 +875,7 @@ CREATE TABLE `user_device` (
 
 LOCK TABLES `user_device` WRITE;
 /*!40000 ALTER TABLE `user_device` DISABLE KEYS */;
-INSERT INTO `user_device` VALUES (1,'4VYp5dOrVWGz0OKB2hkLW','devuser@example.com',123456789,'3000-01-01 12:01:01','Cacao tree',0);
+INSERT INTO `user_device` VALUES (1,'4VYp5dOrVWGz0OKB2hkLW','devuser@example.com',123456789,'3000-01-01 12:01:01','Cacao tree',1);
 /*!40000 ALTER TABLE `user_device` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -879,6 +888,7 @@ DROP TABLE IF EXISTS `user_folders`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_folders` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `folderId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -891,7 +901,7 @@ CREATE TABLE `user_folders` (
 
 LOCK TABLES `user_folders` WRITE;
 /*!40000 ALTER TABLE `user_folders` DISABLE KEYS */;
-INSERT INTO `user_folders` VALUES (2,'devuser','gPn_nJmbSEDpjEZdJS7bZ'),(3,'devuser','cN07KIt2btQTlPQXqG0ed'),(4,'devuser','D9K5vETXe7J9iy9-tyhnO'),(5,'devuser','L53eYmiC9Hs9HgBqP18ws');
+INSERT INTO `user_folders` VALUES (2,NULL,'devuser','gPn_nJmbSEDpjEZdJS7bZ'),(3,NULL,'devuser','cN07KIt2btQTlPQXqG0ed'),(4,NULL,'devuser','D9K5vETXe7J9iy9-tyhnO'),(5,NULL,'devuser','L53eYmiC9Hs9HgBqP18ws');
 /*!40000 ALTER TABLE `user_folders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -931,6 +941,7 @@ DROP TABLE IF EXISTS `user_urls`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_urls` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `urlId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -943,7 +954,7 @@ CREATE TABLE `user_urls` (
 
 LOCK TABLES `user_urls` WRITE;
 /*!40000 ALTER TABLE `user_urls` DISABLE KEYS */;
-INSERT INTO `user_urls` VALUES (2,'devuser','jOyA1q4mai479w6MjaIhq'),(4,'devuser','FDwQILDPGV8EmfNO3sPcc'),(6,'devuser','0cuiOsNqzxr4yFoSvoOq9'),(7,'devuser','jknEx1pvdcw4KpEk1bjdP'),(8,'devuser','aXPBcP3w2ZYLpWTlmk7qY');
+INSERT INTO `user_urls` VALUES (2,NULL,'devuser','jOyA1q4mai479w6MjaIhq'),(4,NULL,'devuser','FDwQILDPGV8EmfNO3sPcc'),(6,NULL,'devuser','0cuiOsNqzxr4yFoSvoOq9'),(7,NULL,'devuser','jknEx1pvdcw4KpEk1bjdP'),(8,NULL,'devuser','aXPBcP3w2ZYLpWTlmk7qY');
 /*!40000 ALTER TABLE `user_urls` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -956,4 +967,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-07-28 14:54:29
+-- Dump completed on 2020-07-29 16:07:09
