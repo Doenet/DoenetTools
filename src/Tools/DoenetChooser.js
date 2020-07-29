@@ -1058,7 +1058,7 @@ class DoenetChooser extends Component {
     })
   }
 
-  updateSelectedItems(selectedItems, selectedItemsType) {
+  updateSelectedItems = (selectedItems, selectedItemsType) => {
     this.setState({
       selectedItems: selectedItems,
       selectedItemsType: selectedItemsType,
