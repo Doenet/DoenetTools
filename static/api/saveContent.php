@@ -7,7 +7,7 @@ header("Access-Control-Allow-Credentials: true");
 include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
-$emailaddress = $jwtArray['email'];
+$userId = $jwtArray['userId'];
 
 $response_arr = array(
     "access"=> TRUE
