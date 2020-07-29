@@ -696,7 +696,9 @@ export default class Core {
   }
 
   createIsolatedComponentsSub({ serializedState, ancestors, applySugar = false,
-    applyAdapters = true, shadow = false, updatesNeeded, compositesBeingExpanded }
+    applyAdapters = true, shadow = false, updatesNeeded, compositesBeingExpanded,
+    createNameContext = ""
+  }
   ) {
 
     let newComponents = [];
@@ -704,7 +706,7 @@ export default class Core {
     //TODO: last message
     let lastMessage = "";
 
-    for (let serializedComponent of serializedState) {
+    for (let [componentInd, serializedComponent] of serializedState.entries()) {
 
       // if already corresponds to a created component
       // add to array
@@ -738,8 +740,11 @@ export default class Core {
         componentName = serializedComponent.doenetAttributes.componentName;
       }
       if (componentName === undefined) {
-        componentName = createUniqueName(serializedComponent.componentType,
-          this.idRng)
+        // Note: assuming that document always has a name
+        // so we never get here without an ancestor
+        let longNameId = ancestors[0].componentName + createNameContext + componentInd;
+
+        componentName = createUniqueName(serializedComponent.componentType, longNameId);
       }
 
       let createResult = this.createChildrenThenComponent({
@@ -838,7 +843,8 @@ export default class Core {
             serializedState: [variantControlChild],
             ancestors: ancestorsForChildren,
             applySugar, applyAdapters, shadow,
-            updatesNeeded, compositesBeingExpanded
+            updatesNeeded, compositesBeingExpanded,
+            createNameContext: "variantControl"
           });
 
           definingChildren[variantControlInd] = childrenResult.components[0];

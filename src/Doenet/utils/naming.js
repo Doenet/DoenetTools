@@ -1,22 +1,20 @@
-import nanoid from 'nanoid';
-import format from 'nanoid/format';
+export function createUniqueName(componentType, longNameId) {
 
-export function createUniqueName(componentType, rng) {
-  // choose componentIndex randomly using nanoid
-  // for now, make name be as: __componentType_ + componentIndex
-  // but could change this to remove the prefix
+  console.log(longNameId)
 
-  // let componentIndex = nanoid(12);
-
-  function randomArray (size) {
-    const result = []
-    for (let i = 0; i < size; i++) {
-      result.push(rng.random_int31())
-    }
-    return result
-  }
-
-  let componentIndex = format(randomArray, "abcdefghijklmnopqrtstuvxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-",12)
-  return `__${componentType}_${componentIndex}`;
+  return "__" + componentType + "_" + hashStringToInteger(longNameId);
 
 }
+
+// from https://stackoverflow.com/a/7616484
+function hashStringToInteger(s) {
+  var hash = 0, i, chr;
+  if (s.length === 0)
+    return hash;
+  for (i = 0; i < s.length; i++) {
+    chr = s.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
+    hash >>>= 0; // Convert to 32bit unsigned integer
+  }
+  return hash;
+};
