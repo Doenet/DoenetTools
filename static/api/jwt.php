@@ -16,11 +16,7 @@ $nineCode =  mysqli_real_escape_string($conn,$_REQUEST["nineCode"]);
 $deviceName =  mysqli_real_escape_string($conn,$_REQUEST["deviceName"]);  
 $newAccount =  mysqli_real_escape_string($conn,$_REQUEST["newAccount"]);  
 $stay =  mysqli_real_escape_string($conn,$_REQUEST["stay"]);  
-$payload = array(
-    "email" => $emailaddress,
-    "deviceName" => $deviceName,
-);
-$jwt = JWT::encode($payload, $key);
+
 
 //Check if expired
 $sql = "SELECT TIMESTAMPDIFF(MINUTE, timestampOfSignInCode, NOW()) AS minutes 
@@ -35,20 +31,28 @@ $row = $result->fetch_assoc();
 if ($row['minutes'] > 10){
     echo "Code expired";
 }else{
-    $sql = "SELECT signInCode AS nineCode 
+    $sql = "SELECT signInCode AS nineCode, userId
     FROM user_device 
     WHERE email='$emailaddress' AND deviceName='$deviceName'";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
+    $userId = $row["userId"];
     if ($row["nineCode"]!= $nineCode){
         echo "Invalid Code";
     }else{
         //Valid code and not expired
         http_response_code(200);
 
+        $payload = array(
+            // "email" => $emailaddress,
+            "userId" => $userId,
+            "deviceName" => $deviceName,
+        );
+        $jwt = JWT::encode($payload, $key);
+
         $sql = "UPDATE user_device 
         SET signedIn = '1'
-        WHERE email='$emailaddress' AND deviceName='$deviceName'";
+        WHERE userId='$userId' AND deviceName='$deviceName'";
         $result = $conn->query($sql);
 
 

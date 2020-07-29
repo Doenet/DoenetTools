@@ -9,7 +9,8 @@ header("Access-Control-Allow-Credentials: true");
 include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
-$emailaddress = $jwtArray['email'];
+$userId = $jwtArray['userId'];
+
 $device = $jwtArray['deviceName'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
@@ -18,7 +19,7 @@ $contentId =  mysqli_real_escape_string($conn,$_POST["contentId"]);
 $stateVariables =  mysqli_real_escape_string($conn,$_POST["stateVariables"]);
 
 $sql = "INSERT INTO content_interactions
-        SET email='$emailaddress', 
+        SET userId='$userId', 
         deviceName='$device',
         assignmentId='$assignmentId',
         contentId='$contentId',
