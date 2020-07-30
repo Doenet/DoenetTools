@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[31,37],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[32,39],{
 
-/***/ 703:
+/***/ 731:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57,10 +57,10 @@ function useDoenetRenderer(props) {
   };
 
   function addChildren(instruction) {
-    var childInstructions = this.childrenToCreate[instruction.indexForParent];
-    var child = this.createChildFromInstructions(childInstructions);
+    var childInstructions = childrenToCreate[instruction.indexForParent];
+    var child = createChildFromInstructions(childInstructions);
     children.splice(instruction.indexForParent, 0, child);
-    children = _toConsumableArray(this.children); // needed for React to recognize it's different
+    children = _toConsumableArray(children); // needed for React to recognize it's different
 
     setUpdateCount(updateCount + 1);
   }
@@ -140,7 +140,7 @@ function useDoenetRenderer(props) {
 
 /***/ }),
 
-/***/ 734:
+/***/ 763:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -148,10 +148,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Slider; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var styled_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(27);
-/* harmony import */ var react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1243);
+/* harmony import */ var styled_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(21);
+/* harmony import */ var react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1344);
 /* harmony import */ var react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _useDoenetRenderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(703);
+/* harmony import */ var _useDoenetRenderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(731);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }

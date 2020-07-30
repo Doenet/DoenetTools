@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[37],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[39],{
 
-/***/ 703:
+/***/ 731:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57,10 +57,10 @@ function useDoenetRenderer(props) {
   };
 
   function addChildren(instruction) {
-    var childInstructions = this.childrenToCreate[instruction.indexForParent];
-    var child = this.createChildFromInstructions(childInstructions);
+    var childInstructions = childrenToCreate[instruction.indexForParent];
+    var child = createChildFromInstructions(childInstructions);
     children.splice(instruction.indexForParent, 0, child);
-    children = _toConsumableArray(this.children); // needed for React to recognize it's different
+    children = _toConsumableArray(children); // needed for React to recognize it's different
 
     setUpdateCount(updateCount + 1);
   }
