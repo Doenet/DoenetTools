@@ -365,14 +365,17 @@ class DoenetHomePage extends Component {
 
 
           <div className="footer">
-            <div className="footer-logo-container">
+            <div>
               <h4 style={{ marginBottom: "0px" }}>Contact us</h4>
-              <div style={{ marginBottom: "20px" }}><a href="mailto:info@doenet.org">info@doenet.org</a></div>
+              <div style={{ marginBottom: "40px" }}><a href="mailto:info@doenet.org">info@doenet.org</a>
+            </div>
               <p>
                 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
                   <img alt="Creative Commons License" style={{ borderWidth: 0 }} src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>
                 <br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
                     </p>
+                    <p>
+                    Doenet is a collaborative project involving the University of Minnesota, the Ohio State University, and Ithaca College, with support from the National Science Foundation (DUE-1915294, DUE-1915363, DUE-1915438).  Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.                    </p>
             </div>
           </div>
         </div>

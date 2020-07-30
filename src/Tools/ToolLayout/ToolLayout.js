@@ -66,7 +66,6 @@ export default function ToolLayout(props) {
         }
         axios.get(phpUrl, payload)
           .then(resp => {
-            console.log(resp)
             if (resp.data.success === "1") {
               setProfile(resp.data.profile);
             }
@@ -389,6 +388,7 @@ export default function ToolLayout(props) {
     <>
       <DoenetHeader
         profile={profile}
+        cookies={jwt}
         isSignedIn={isSignedIn}
         toolName={props.toolName}
         headingTitle={props.headingTitle}

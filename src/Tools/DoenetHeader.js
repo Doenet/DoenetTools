@@ -187,27 +187,6 @@ class DoenetHeader extends Component {
     this.profilePicture = this.props.profile.profilePicture;
     this.prepareProfileDropDown(this.profilePicture);
 
-    this.menuToolBoxItems = [
-      {
-        id: "Chooser",
-        label: "Chooser",
-        link: "/chooser/"
-      },
-      {
-        id: "Course",
-        label: "Course",
-        link: "/course/"
-      },
-      {
-        id: "Documentation",
-        label: "Documentation",
-        link: "/docs/"
-      },
-      {
-        id: "Gradebook",
-        label: "Gradebook",
-        link: "/gradebook/"
-      }];
     
   }
 
@@ -250,7 +229,8 @@ class DoenetHeader extends Component {
       {
         optionElem: <ProfilePictureLrg pic={this.profilePicture} name="changeProfilePicture" id="changeProfilePicture"   />,
         id:'profile',
-        label: `${this.props.profile.screenName}`
+        label: `${this.props.profile.screenName}`,
+        subLabel: `${this.props.cookies.Device}`
       },
       {
         id: "Account",
@@ -271,13 +251,7 @@ class DoenetHeader extends Component {
       });
     }
   }  
-  componentWillReceiveProps(props) {
-    if (props.headerChangesFromLayout && props.headerChangesFromLayout.toolAccess){
-      this.populateMenuToolbox(props.headerChangesFromLayout.toolAccess);
-      this.profilePicture = props.headerChangesFromLayout.profilePicture;
-    }
- 
-  }
+
 
   componentWillReceiveProps(props) {
     if (props.headerChangesFromLayout && props.headerChangesFromLayout.toolAccess){
