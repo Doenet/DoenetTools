@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 axios.defaults.withCredentials = true;
+// import { browserHistory } from 'react-router';
 import {
     BrowserRouter as Router,
     Switch,
     Route,
     Link,
+    useHistory
 } from "react-router-dom";
 import query from '../queryParamFuncs';
 import DoenetViewer from "./DoenetViewer";
@@ -43,7 +45,7 @@ class GradebookOverview extends Component {
         this.overviewData = null;
         this._assignmentsTable = null;
         this.tempSet = new Set();
-
+       
     }
 
     componentDidMount() {

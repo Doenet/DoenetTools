@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 $jwtArray = include "jwtArray.php";
-$emailaddress = $jwtArray['email'];
+$userId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $screenName =  mysqli_real_escape_string($conn,$_POST["screenName"]);
@@ -32,7 +32,7 @@ $sql = "UPDATE user
         roleStudent = '$roleStudent', 
         roleInstructor = '$roleInstructor', 
         roleCourseDesigner = '$roleCourseDesigner'
-        WHERE email = '$emailaddress' ";
+        WHERE userId = '$userId' ";
 // echo $sql;
 $result = $conn->query($sql);
 

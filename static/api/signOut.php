@@ -8,12 +8,12 @@ header('Content-Type: application/json');
 include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
-$emailaddress = $jwtArray['email'];
 $device = $jwtArray['deviceName'];
+$userId = $jwtArray['userId'];
 
 $sql = "UPDATE user_device
         SET signedIn='0'
-        WHERE email='$emailaddress' AND deviceName = '$device'";
+        WHERE userId='$userId' AND deviceName = '$device'";
 $result = $conn->query($sql);
 
 // set response code - 200 OK
