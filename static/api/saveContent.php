@@ -13,17 +13,6 @@ $response_arr = array(
     "access"=> TRUE
 );
 
-//prerelease security
-// $sql = "SELECT adminAccessAllowed FROM user WHERE username='$emailaddress'";
-// $result = $conn->query($sql); 
-// $row = $result->fetch_assoc();
-// if ($row["adminAccessAllowed"] != 1){
-// 	$response_arr = array(
-// 		"access"=> FALSE
-//     );
-    
-// } else {
-
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $title =  mysqli_real_escape_string($conn,$_POST["title"]);
@@ -32,6 +21,51 @@ $contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
 $branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
 $publish = mysqli_real_escape_string($conn,$_POST["publish"]);
 
+//SECURITY TEST
+if ($userId == ""){
+    //SECURITY 1
+    //Test if signed in
+
+$response_arr = array(
+    "access"=> FALSE,
+    "reason"=> "Not signed in"
+);
+
+}else{
+    //SECURITY 2
+    $HAVE_ACCESS = TRUE; //Assume they have access
+    //Test if they are part of a repo
+    $sql = "SELECT ra.userId as userId
+    FROM folder_content AS fc
+    LEFT JOIN repo_access AS ra
+    ON fc.rootId = ra.repoId
+    WHERE fc.childId = '$branchId' 
+    AND ra.userId = '$userId'
+    ";
+    $result = $conn->query($sql);
+    if ($result->num_rows < 1){
+    //SECURITY 3
+    //TEST if the branch is not in a repo and is user's
+    $sql = "
+    SELECT userId 
+    FROM user_content
+    WHERE userId = '$userId'
+    AND branchId = '$branchId'
+    ";
+    $result = $conn->query($sql);
+        if ($result->num_rows < 1){
+            $response_arr = array(
+                "access"=> FALSE,
+                "reason"=> "No access to content"
+            );
+            $HAVE_ACCESS = FALSE;
+        } 
+    }
+
+
+    if ($HAVE_ACCESS){
+            
+            
 //TEST if branch exists
 $sql = "
 SELECT id
@@ -99,6 +133,12 @@ if ($publish){
     ";
     $result = $conn->query($sql); 
 }
+    }
+    
+}
+
+
+
 
 
     // set response code - 200 OK
