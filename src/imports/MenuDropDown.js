@@ -25,10 +25,7 @@ const MenuController = styled.button`
 const DropDownContent = styled.div`
     opacity:1;
     display: ${props => props.open ? 'block' : 'none'};
-    // position: fixed;
     background-color: white;
-    // min-width: 200px;
-    // max-width:500px;
     width:300px;
     border:1px solid #E2E2E2;
     z-index: 9999;
@@ -42,16 +39,15 @@ const DropDownContent = styled.div`
 const DropDownContentItem = styled.div`
     cursor: default;
     max-width:330px;
-    // border-bottom:1px solid #e2e2e2;
 `
 
 const DropdownLabelLink = styled.div`
-    padding: 5px 5px;
-    // min-height: 40px;
-    height:35px;
+
+    height:45px;
     justify-content: center;
     align-items: center;
     background-color: ${props => props.selected ? 'rgb(58, 172, 144)' : 'transperant'};
+    // background-color: ${props => props.selected ? '#288ae9' : 'transperant'};
     display:flex;
     color: ${props => props.selected ? 'white' : 'black'};
     &:hover {
@@ -65,20 +61,45 @@ const DropdownLabelLink = styled.div`
         color: ${props => props.selected ? 'white' : 'black'};    
     }
 `
+
 const DropdownCustomLabelLink = styled.div`
-    padding: 5px 5px;
-    min-height: 40px;
+    padding: 8px 5px 0px 5px;
+    min-height: 20px;
+    max-height:20px;
     justify-content: center;
     align-items: center;
     display:flex;
-    color: 'black';
-    border-bottom:1px solid #E2E2E2;
+    color: black;
+    font-weight: 600;
+    // font-size:16px;
+    // letter-spacing:0.29px;
     a {
         width: 190px;
         padding: 20px 0px;
         text-decoration: none !important;
         background-color: transperant;
-        color: 'black';    
+        color: black;    
+    }
+`
+const DropdownSubLabel = styled.div`
+    padding: 0px 5px 10px 5px;
+    max-height:20px;
+    min-height: 24px;
+    justify-content: center;
+    align-items: center;
+    display:flex;
+    color: black;
+    border-bottom:1px solid #E2E2E2;
+    font-weight: 400;
+    // font-size:15px;
+    // letter-spacing:normal;
+
+    a {
+        width: 190px;
+        padding: 20px 0px;
+        text-decoration: none !important;
+        background-color: transperant;
+        color: black;    
     }
 `
 
@@ -133,7 +154,7 @@ const MenuDropDown = ({
         menuBase = (
             <button
                 style={{
-                    color: "black",
+                    color: "'black'",
                     margin: "0",
                     height: "20px",
                     fontSize: "14px",
@@ -198,12 +219,17 @@ const MenuDropDown = ({
                                 <DropdownCustomLabelLink>
                                     {!!o.link ? <a href={o.link}>
                                         {o['label']}</a> : o['label']}
-                                </DropdownCustomLabelLink></> :
-                            <DropdownLabelLink
-                                selected={currentItemDisplay && currentItemDisplay.id === o['id']}>
-                                {!!o.link ? <a href={o.link}>
-                                    {o['label']}</a> : o['label']}
-                            </DropdownLabelLink>}
+                                </DropdownCustomLabelLink>
+                                {o['subLabel'] && <DropdownSubLabel>{o['subLabel']}</DropdownSubLabel>}
+                            </> :
+                            <>
+                                <DropdownLabelLink
+                                    selected={currentItemDisplay && currentItemDisplay.id === o['id']}>
+                                    {!!o.link ? <a href={o.link}>
+                                        {o['label']}</a> : o['label']}
+                                </DropdownLabelLink>
+                                {o['subLabel'] && <DropdownSubLabel>{o['subLabel']}</DropdownSubLabel>}
+                            </>}
                     </DropDownContentItem>
                     ))}
             </DropDownContent>

@@ -388,6 +388,7 @@ export default function ToolLayout(props) {
     <>
       <DoenetHeader
         profile={profile}
+        cookies={jwt}
         isSignedIn={isSignedIn}
         toolName={props.toolName}
         headingTitle={props.headingTitle}
