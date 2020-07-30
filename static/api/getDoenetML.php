@@ -31,6 +31,7 @@ if ($branchId == ""){
 	AND draft = 0
 	ORDER BY timestamp ASC
 	";
+	
 	$result = $conn->query($sql);
 	if ($result->num_rows < 1){
 		$response_arr = array(
@@ -48,7 +49,7 @@ if ($branchId == ""){
 
 	//SECURITY
 	//1 - test if branch is public
-	$sql = "SELECT private
+	$sql = "SELECT public
 	FROM content_branch
 	WHERE branchId = '$branchId'
 	AND removedFlag = '0'
@@ -66,32 +67,41 @@ if ($branchId == ""){
 		//Assume they should have access
 		$should_have_access = TRUE;
 		$row = $result->fetch_assoc();
-		$private = $row['private'];
-
-		if ($private == "1"){
+		$public = $row['public'];
+		if ($public == "0"){
 		//Assume they should NOT have access
 		$should_have_access = FALSE;
 
 			//SECURITY 2
 			//Test if they are part of a repo
-			$sql = "SELECT ra.username
-			FROM content_branch AS cb
-			LEFT JOIN folder_content AS fc
-			ON fc.childId = cb.branchId
+			$sql = "SELECT ra.userId as userId
+			FROM folder_content AS fc
 			LEFT JOIN repo_access AS ra
 			ON fc.rootId = ra.repoId
-			WHERE cb.branchId = '$branchId' 
-			AND cb.removedFlag = '0'
+			WHERE fc.childId = '$branchId' 
 			AND ra.userId = '$userId'
 			";
+
 			$result = $conn->query($sql);
-			if ($result->num_rows > 0){
+				if ($result->num_rows > 0){
 				$should_have_access = TRUE;
+			}else{
+				//SECURITY 3
+				//TEST if the branch is not in a repo and is user's
+				$sql = "
+				SELECT userId 
+			FROM user_content
+			WHERE userId = '$userId'
+			AND branchId = '$branchId'
+			";
+				$result = $conn->query($sql);
+				if ($result->num_rows > 0){
+					$should_have_access = TRUE;
+				}
 			}
 		}
 	
    if ($should_have_access){
-
 
 	if ($contentId == ""){
 
