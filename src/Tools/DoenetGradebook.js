@@ -6,7 +6,6 @@ import {
     Switch,
     Route,
     Link,
-    useHistory
 } from "react-router-dom";
 import query from '../queryParamFuncs';
 import DoenetViewer from "./DoenetViewer";
@@ -17,6 +16,8 @@ import Accordion from "../imports/Accordion";
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import { TreeView } from './TreeView/TreeView';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 function sortArraysByElementI(arrarr, i) {
     // TODO: finish
@@ -42,7 +43,7 @@ class GradebookOverview extends Component {
         this.overviewData = null;
         this._assignmentsTable = null;
         this.tempSet = new Set();
-       
+
     }
 
     componentDidMount() {
@@ -97,10 +98,9 @@ class GradebookOverview extends Component {
             this.assignments = {};
             for (let row in data) {
                 let [assignmentId, assignmentName] = data[row];
-
                 this.assignments[row] = { assignmentId, assignmentName };
             }
-
+            this.setState({assignmentList: this.assignments});
             this.assignmentsLoaded = true;
             if (this.studentsLoaded) {
                 this.getOverviewData();
@@ -295,7 +295,7 @@ class GradebookAssignmentView extends Component {
 
                 this.assignments[assignmentId] = assignmentName; // note: this is in a different format than it is in overview
             }
-
+            this.setState({assignmentList: this.assignments});
             this.assignmentsLoaded = true;
             if (this.studentsLoaded) {
                 this.getAssignmentData();
@@ -509,6 +509,7 @@ class GradebookAttemptView extends Component {
 
                 this.assignments[assignmentId] = assignmentName; // note: this is in a different format than it is in overview
             }
+            this.setState({assignmentList: this.assignments});
 
             this.assignmentsLoaded = true;
             if (this.studentsLoaded) {
@@ -581,6 +582,7 @@ export default class DoenetGradebook extends Component {
             error: null,
             errorInfo: null,
             assignmentsLoaded: false,
+            assignmentList: []
         };
 
         this.courseId = "aI8sK4vmEhC5sdeSP3vNW"; // FIXME: value used for testing, this needs to be read from the url query
@@ -605,7 +607,7 @@ export default class DoenetGradebook extends Component {
                 let [assignmentId, assignmentName] = row;
                 this.assignments[assignmentId] = assignmentName;
             }
-
+            this.setState({assignmentList: this.assignments});
             this.setState({ assignmentsLoaded: true });
         }).catch(err => console.log((err.response).toString()));
     }
@@ -658,8 +660,8 @@ export default class DoenetGradebook extends Component {
 
         let counter = 0;
 
-        for (let assignmentId in this.assignments) {
-            let assignmentName = this.assignments[assignmentId];
+        for (let assignmentId in this.state.assignmentList) {
+            let assignmentName = this.state.assignmentList[assignmentId];
             counter++;
             parentsInfo[assignmentId] = {
                 childContent: [],
@@ -678,6 +680,18 @@ export default class DoenetGradebook extends Component {
         }
 
 
+        const TreeNodeItem = ({ title, icon }) => {
+            let assignmentId = '';
+            for (let key in this.assignments) {
+                if (this.assignments[key] === title) {
+                    assignmentId = key;
+                }
+            }
+            return <div>
+                {/* {icon} */}
+                <Link to={`/assignment/?assignmentId=${assignmentId}`} style={{ color: 'white', fontSize: "20px", fontWeight: "700", textDecoration: 'none' }}>{title}</Link>
+            </div>
+        };
 
         const leftNav = <Accordion>
             <div label="Assignments">
@@ -687,6 +701,8 @@ export default class DoenetGradebook extends Component {
                     loading={!this.state.assignmentsLoaded}
                     parentsInfo={parentsInfo}
                     childrenInfo={{}}
+                    parentNodeItem={TreeNodeItem}
+                    leafNodeItem={TreeNodeItem}
                     specialNodes={this.tempSet}
                     hideRoot={true}
                     disableSearch={true}
@@ -698,53 +714,102 @@ export default class DoenetGradebook extends Component {
                     treeStyles={{
                         specialChildNode: {
                             "title": { color: "gray" },
-                            "frame": { color: "#2675ff", backgroundColor: "hsl(206, 66%, 85%)", paddingLeft: "5px" },
+                            "frame": { color: "#2675ff", backgroundColor: "pink", paddingLeft: "5px" },
                         },
                         specialParentNode: {
-                            "title": { color: "gray", background: "#e6efff", paddingLeft: "5px" },
-                            "frame": { color: "#2675ff", backgroundColor: "hsl(206, 66%, 85%)", paddingLeft: "5px", borderLeft: '10px solid #0031f5' },
-
+                            "title": {
+                                color: "white",
+                                paddingLeft: "5px"
+                            },
+                            "node": {
+                                backgroundColor: "rgba(192, 220, 242,0.3)",
+                                color: "white",
+                                // marginRight:"10px",
+                                borderLeft: '8px solid #1b216e',
+                                height: "2.6em",
+                                width: "100%"
+                            }
                         },
                         parentNode: {
-                            "title": { color: "#d9eefa" },
+                            "title": { color: "white", paddingLeft: '5px', fontWeight: "700" },
+                            "node": {
+                                width: "100%",
+                                height: "2.6em",
+                            },
 
-                            "contentContainer": {
-                                border: "none",
-                                
-                            }
                         },
                         childNode: {
                             "title": {
                                 color: "white",
+                                paddingLeft: "5px"
+                            },
+                            "node": {
+                                backgroundColor: "rgba(192, 220, 242,0.3)",
+                                color: "white",
+                                // marginRight:"10px",
+                                borderLeft: '8px solid #1b216e',
+                                height: "2.6em",
+                                width: "100%"
                             }
-                            
                         },
+
                         specialChildNode: {
                             "frame": { backgroundColor: "hsl(206, 66%, 85%)", color: "#d9eefa" },
                         },
-                       emptyParentExpanderIcon: <span style={{padding:'5px'}}></span>
-                      
+                        emptyParentExpanderIcon: <span style={{ padding: '5px' }}></span>,
+                        //    expanderIcons:{
+                        //     opened: <FontAwesomeIcon icon={faChevronDown} 
+                        //     style={{ 
+                        //       padding: '1px' ,
+                        //       width:'1.3em',
+                        //       height:'1.2em', 
+                        //       border:"1px solid darkblue" , 
+                        //       borderRadius:'2px',
+                        //       marginLeft:"5px"
+
+                        //     }}
+                        //     />,
+                        //     closed:<FontAwesomeIcon icon={faChevronRight} 
+                        //     style={{ 
+                        //       padding: '1px' ,
+                        //       width:'1.3em',
+                        //       height:'1.2em', 
+                        //       border:"1px solid darkblue", 
+                        //       borderRadius:"2px",
+                        //       marginLeft:"5px"
+                        //     }}/>,
+                        //   }
+
 
                     }}
                     onLeafNodeClick={(nodeId) => {
-                        this.tempSet.clear();
-                        this.tempSet.add(nodeId);
-                        this.forceUpdate()
-                  
+                        if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
+                        else this.tempSet.add(nodeId);
+                        this.forceUpdate();
+
                     }}
                     onParentNodeClick={(nodeId) => {
-                        // this.tempSet.clear();
-                        // this.tempSet.add(nodeId);
+                        this.tempSet.clear();
+                        this.tempSet.add(nodeId);
                         // this.forceUpdate()
-                     
-                        window.location.href = `/gradebook/assignment/?assignmentId=${nodeId}`;
+
+                        // window.location.href = `/gradebook/assignment/?assignmentId=${nodeId}`;
                     }}
                 />
             </div>
         </Accordion>;
 
-
-
+        const handleLeftNavSearch = function (e) {
+            const searchTerm = e.target.value || '';
+            let filteredAssignmentList = {};
+            const copyAssignments = JSON.parse(JSON.stringify(this.assignments));
+            for (let key in copyAssignments) {
+                if (copyAssignments[key].toLowerCase().indexOf(searchTerm.toLowerCase()) > -1) {
+                    filteredAssignmentList[key] = copyAssignments[key];
+                }
+            }
+            this.setState({ assignmentList: filteredAssignmentList });
+        }
 
         return (
             <Router basename="/gradebook">
@@ -756,18 +821,21 @@ export default class DoenetGradebook extends Component {
                     <h2>Assignments</h2>
                     {this.navItems}
                     </div> */}
-                    
-                        <div style={{ padding: "5px 0px", color:"white" }}>
+
+                        <div style={{ padding: "5px 0px", color: "white" }}>
                             <Link to="/" className="gradebookNavItem">See All Assignments</Link>
                             <div>
-                                <input 
-                                className = "search-input"
-                                // onChange={this.handleLeftNavSearch.bind(this)}
-                                placeholder="Search Assignments"
-                                style={{width:"235px", paddingLeft: "5px",minHeight:"30px"}}
+                                <div style={{ padding: "10px", marginBottom: "30px" }} >
+                                    <input
+                                        className="search-input"
+                                        onChange={handleLeftNavSearch.bind(this)}
+                                        placeholder="Search Assignments"
+                                        style={{ width: "200px", paddingLeft: "5px", minHeight: "30px" }}
 
-                                />
-            
+                                    />
+                                </div>
+
+
                             </div>
                             {leftNav}
                         </div>
