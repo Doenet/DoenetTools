@@ -3,7 +3,7 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faFolder, faArrowUp, 
-  faArrowDown, faDotCircle, faEdit, faArrowRight, faFolderOpen, faLink} from '@fortawesome/free-solid-svg-icons';
+  faArrowDown, faDotCircle, faEdit, faThumbtack, faFolderOpen, faLink} from '@fortawesome/free-solid-svg-icons';
 import "./branchBrowser.css";
 import SpinningLoader from './SpinningLoader';
 import styled from 'styled-components';
@@ -184,6 +184,8 @@ class DoenetBranchBrowser extends Component {
   }
 
   buildFolderItems() {
+    let folderItems = [];
+    let pinnedFolderItems = [];
     this.folderItems = [];
     this.folderList = this.props.folderList;
     // show items in current directory
@@ -203,39 +205,46 @@ class DoenetBranchBrowser extends Component {
       let childFolder = this.props.allFolderInfo[folderId].childFolder;
       let isRepo = this.props.allFolderInfo[folderId].isRepo;
       let isPublic = this.props.allFolderInfo[folderId].isPublic;
+      let isPinned = this.props.allFolderInfo[folderId].isPinned;
       let isShared = this.props.allFolderInfo[this.props.allFolderInfo[folderId].rootId].isRepo;
       let classes = this.state.selectedItems.includes(folderId) || folderId == this.state.currentDraggedOverFolder ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
 
+      let folderItem = <Folder      
+        onClick={this.handleContentItemClick}
+        onDoubleClick={this.openFolder}
+        title={title}
+        publishDate={publishDate}
+        draftDate={" — "}
+        childContent={childContent}
+        childUrls={childUrls}
+        childFolder={childFolder}
+        folderId={folderId}
+        isRepo={isRepo}
+        isPublic={isPublic}
+        isShared={isShared}
+        isPinned={isPinned}
+        classes={classes}
+        key={"folder" + folderId}
+        tableIndex={this.tableIndex++}
+        handleAddContentToFolder={this.handleAddContentToFolder}
+        handleRemoveContent={this.props.selectedDrive === "Content" ? 
+                            this.handleRemoveContentFromCurrentFolder :
+                            this.handleRemoveContentFromCourse}
+        renameFolder={this.props.renameFolder}
+        onDragStart={this.onDragStartCb}
+        onDragEnd={this.onDragEndCb}
+        onDropEnter={this.onFolderDropEnterCb}
+        onDrop={this.onFolderDropCb}
+      />
 
-      this.folderItems.push(
-        <Folder      
-          onClick={this.handleContentItemClick}
-          onDoubleClick={this.openFolder}
-          title={title}
-          publishDate={publishDate}
-          draftDate={" — "}
-          childContent={childContent}
-          childUrls={childUrls}
-          childFolder={childFolder}
-          folderId={folderId}
-          isRepo={isRepo}
-          isPublic={isPublic}
-          isShared={isShared}
-          classes={classes}
-          key={"folder" + folderId}
-          tableIndex={this.tableIndex++}
-          handleAddContentToFolder={this.handleAddContentToFolder}
-          handleRemoveContent={this.props.selectedDrive === "Content" ? 
-                              this.handleRemoveContentFromCurrentFolder :
-                              this.handleRemoveContentFromCourse}
-          renameFolder={this.props.renameFolder}
-          onDragStart={this.onDragStartCb}
-          onDragEnd={this.onDragEndCb}
-          onDropEnter={this.onFolderDropEnterCb}
-          onDrop={this.onFolderDropCb}
-          />
-      );
+      if (isPinned) {
+        pinnedFolderItems.push(folderItem);
+      } else {
+        folderItems.push(folderItem);        
+      }
+
+      this.folderItems = [...pinnedFolderItems, ...folderItems];
     }
   }
   
@@ -888,6 +897,7 @@ class Folder extends React.Component {
           data-cy={this.props.folderId}>
             <td className="browserItemName">
               <div style={{"position":"relative"}}>
+                {this.props.isPinned && <FontAwesomeIcon icon={faThumbtack} style={{"fontSize":"15px", "color":"#8e8e8e", "position":"aboslute", "left":"-6px", "top":"3px"}}/> }
                 {folderIcon}
                 <span
                 contentEditable="true"

@@ -15,6 +15,7 @@ SELECT   -- get all repos user has access to
   f.creationDate as creationDate,
   f.isRepo as isRepo,
   f.public as isPublic,
+  f.isPinned as isPinned,
   f.folderId as rootId
 FROM repo_access AS ra
 LEFT JOIN folder f ON ra.repoId = f.folderId
@@ -27,11 +28,13 @@ SELECT  -- get all personal folders
   f.creationDate as creationDate,
   f.isRepo as isRepo,
   f.public as isPublic,
+  f.isPinned as isPinned,
   fc.rootId as rootId
 FROM user_folders AS uf
 LEFT JOIN folder f ON uf.folderId = f.folderId
 LEFT JOIN folder_content fc ON uf.folderId = fc.childId
 WHERE uf.username='$remoteuser'
+ORDER BY isPinned DESC
 ";
 
 $result = $conn->query($sql); 
@@ -56,6 +59,7 @@ if ($result->num_rows > 0){
           "childFolders" => array(),
           "isRepo" => ($row["isRepo"] == 1),
           "isPublic" => ($row["isPublic"] == 1),
+          "isPinned" => ($row["isPinned"] == 1), 
           "numChild" => 0
     );
   }
@@ -73,6 +77,7 @@ $folder_info_arr["root"] = array(
   "childFolders" => array(),
   "isRepo" => FALSE,
   "isPublic" => TRUE,
+  "isPinned" => FALSE,
   "numChild" => 0
 );
 
