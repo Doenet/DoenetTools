@@ -688,13 +688,13 @@ export default class DoenetGradebook extends Component {
                 }
             }
             return <div>
-                {/* {icon} */}
+                {icon}
                 <Link to={`/assignment/?assignmentId=${assignmentId}`} style={{ color: 'white', fontSize: "20px", fontWeight: "700", textDecoration: 'none' }}>{title}</Link>
             </div>
         };
 
         const leftNav = <Accordion>
-            <div label="Assignments">
+            <div label="ASSIGNMENTS">
                 <TreeView
                     containerId={'assignments'}
                     containerType={'course_assignments'}
@@ -753,10 +753,8 @@ export default class DoenetGradebook extends Component {
                             }
                         },
 
-                        specialChildNode: {
-                            "frame": { backgroundColor: "hsl(206, 66%, 85%)", color: "#d9eefa" },
-                        },
-                        emptyParentExpanderIcon: <span style={{ padding: '5px' }}></span>,
+                      
+                        // emptyParentExpanderIcon: <span style={{ padding: '5px' }}></span>,
                         //    expanderIcons:{
                         //     opened: <FontAwesomeIcon icon={faChevronDown} 
                         //     style={{ 
@@ -815,15 +813,9 @@ export default class DoenetGradebook extends Component {
             <Router basename="/gradebook">
                 <ToolLayout toolName="Gradebook" headingTitle="TODO: courseName" >
                     <ToolLayoutPanel key="one" panelName="Left Nav">
-                        {/* <div style={{padding: "5px"}}>
-
-                    <Link to="/" className="gradebookNavItem">See All Assignments</Link>
-                    <h2>Assignments</h2>
-                    {this.navItems}
-                    </div> */}
 
                         <div style={{ padding: "5px 0px", color: "white" }}>
-                            <Link to="/" className="gradebookNavItem">See All Assignments</Link>
+                            <Link to="/" className="gradebookNavItem" style={{ paddingLeft:"5px", color: "white" , textDecoration:"none", fontSize:"16px", fontWeight:"700"}}>See All Assignments</Link>
                             <div>
                                 <div style={{ padding: "10px", marginBottom: "30px" }} >
                                     <input
