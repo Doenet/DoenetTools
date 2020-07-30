@@ -156,6 +156,7 @@ class DoenetChooser extends Component {
     this.onSplitPanelBrowserDrop = this.onSplitPanelBrowserDrop.bind(this);
     this.onSplitPanelBrowserFolderDrop = this.onSplitPanelBrowserFolderDrop.bind(this);
     this.tempSet = new Set();
+    this.customizedTempSet = new Set();
   }
 
   buildCourseList() {
@@ -2168,7 +2169,9 @@ class DoenetChooser extends Component {
     for (let key in copyUserFolderInfo) {
       if (copyUserFolderInfo[key].title.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 && key !== 'root') {
         filteredUserFolderInfo[key] = copyUserFolderInfo[key];
+        if(copyUserFolderInfo[key].parentId === 'root'){
         filteredChildFolders.push(key);
+        }
         copyUserFolderInfo[key].childFolders.forEach((f)=> {
           filteredUserFolderInfo[f] = copyUserFolderInfo[f];
         });
@@ -2176,9 +2179,8 @@ class DoenetChooser extends Component {
     }
     copyUserFolderInfo['root'].childFolders = filteredChildFolders;
     filteredUserFolderInfo['root'] = copyUserFolderInfo['root'];
+    console.log(filteredUserFolderInfo);
     this.setState({ userFolderInfo: filteredUserFolderInfo });
-
-    
   }
 
 
@@ -2288,6 +2290,19 @@ class DoenetChooser extends Component {
 
       //console.log('treeParentsInfo', treeParentsInfo);
       //console.log('treeChildrenInfo', treeChildrenInfo);
+      const TreeNodeItem = ({title, icon}) => {
+        return <div>
+          {icon}
+          {/* <span style={{
+            verticalAlign: 'middle',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+          }}
+          >{title}</span> */}
+          <Link to={`/go/?path=${title}`}>{title}</Link>
+        </div>
+      };
 
 
       this.tree = <div className="tree" style={{ paddingLeft: "1em" }}>
@@ -2308,6 +2323,7 @@ class DoenetChooser extends Component {
           parentNodeItem={TreeNodeItem}
           leafNodeItem={TreeNodeItem}
           specialNodes={this.tempSet}
+          // specialNodes={new Set(this.tempSet).add(selectedItem.parentId)}
           treeStyles={{
             specialChildNode: {
               "title": { color: "#2675ff" },
@@ -2333,7 +2349,10 @@ class DoenetChooser extends Component {
               directoryStack: pathToSelectedFolder
             })
             this.setState({ selectedItems: [id], selectedItemsType: [type] })
-            this.tempSet = new Set([id]);
+            this.tempSet.clear()
+            this.tempSet.add(id);
+            this.customizedTempSet.clear();
+            this.customizedTempSet.add(itemParentId);
             this.forceUpdate()
           }}
           onParentNodeClick={(id, type) => {
@@ -2346,14 +2365,29 @@ class DoenetChooser extends Component {
               directoryStack: pathToSelectedFolder
             })
             this.tempSet = new Set([id]);
-            this.setState({})
-            this.forceUpdate()
+            this.customizedTempSet.clear();
+            this.customizedTempSet.add(id);
+            this.setState({});
+            this.forceUpdate();
           }}
           onParentNodeDoubleClick={(id) => {
             // openSubtree
           }}
         />
       </div>
+
+const TreeNodeItemSplit = ({title, icon}) => {
+  return <div>
+    {icon}
+    <span style={{
+      verticalAlign: 'middle',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+    }}
+    >{title}</span>
+  </div>
+};
       this.splitPanelTree =  <div className="tree" style={{ paddingLeft: "1em" }}>
         <TreeView
           containerId={treeContainerId}
@@ -2361,6 +2395,8 @@ class DoenetChooser extends Component {
           loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
           parentsInfo={treeParentsInfo}
           childrenInfo={treeChildrenInfo}
+          parentNodeItem={TreeNodeItemSplit}
+          leafNodeItem={TreeNodeItemSplit}
           treeNodeIcons={TreeIcons}
           currentDraggedObject={this.state.splitPanelCurrentDraggedObject}
           onDragStart={this.onTreeDragStart}
@@ -2453,72 +2489,106 @@ class DoenetChooser extends Component {
         customizedCoursesTreeChildrenInfo[key].type = 'content';
         customizedCoursesTreeParentInfo['root']['childContent'].push(key);
       }
-      // for (let key in customizedCoursesTreeParentInfo) {
-      //   if(key !== 'root') {
-      //     customizedCoursesTreeParentInfo[key].childContent = [];
-      //     customizedCoursesTreeParentInfo[key].childFolders = [];
-      //     customizedCoursesTreeParentInfo[key].childUrls = [];
-      //   }
-      // }
-      // console.log('customizedContentTreeChildrenInfo', customizedContentTreeChildrenInfo);
+
       console.log('customizedContentTreeParentInfo', customizedContentTreeParentInfo);
       // console.log('customizedCoursesTreeParentInfo', customizedCoursesTreeParentInfo);
       // console.log('customizedCoursesTreeChildrenInfo', customizedCoursesTreeChildrenInfo);
+
+
+
+const customizedTreeNodeItem = ({title, icon}) => {
+  return <div>
+    {icon}
+    {/* <span style={{ padding:"5px"
+  
+    }}
+    >{title}</span> */}
+    <Link to={`/go/?path=${title}`} style={{textDecoration:"none",color:"white",paddingLeft:"5px"}}>{title}</Link>
+  </div>
+};
       this.customizedTree = <div className="tree-column">
         <Accordion>
-          <div label="Content" activeChild={this.state.contentActiveChild}>
+          <div label="CONTENT" activeChild={this.state.contentActiveChild}>
             <TreeView
               containerId={treeContainerId}
               containerType={treeContainerType}
               loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
               parentsInfo={customizedContentTreeParentInfo}
               childrenInfo={{}}
-              specialNodes={this.tempSet}
+              specialNodes={this.customizedTempSet}
               hideRoot={true}
+              parentNodeItem={customizedTreeNodeItem}
+              leafNodeItem={customizedTreeNodeItem}
               treeNodeIcons={(itemType) => {
                 let map = {
-                  // folder: <FontAwesomeIcon icon={faDotCircle}
-                  //   style={{ fontSize: "16px", color: "#737373" }} />,
-                  // content: <FontAwesomeIcon icon={faTimesCircle} />
                 }
                 return map[itemType]
               }}
-              // hideRoot={true}
-              // specialNodes={this.tempSet}
-              treeStyles={{
-                specialChildNode: {
-                  "title": { color: "gray" },
-                  "frame": { color: "#2675ff", backgroundColor: "hsl(206, 66%, 85%)", paddingLeft: "5px" },
-                },
-                specialParentNode: {
-                  "title": {
-                    color: "#2675ff",
-                    //  background: "#e6efff",
-                    
-                    paddingLeft: "5px"
-                  },
-                  "frame": { color: "#2675ff", backgroundColor: "white", opacity:"0.7", paddingLeft: "5px", borderLeft: '10px solid #087fc4' },
 
-                },
+              treeStyles={{
+          
                 parentNode: {
-                  "title": { color: "#d9eefa" },
-                  "frame": {
-                    width: "100%",
+                  "title": { color: "white" , paddingLeft:'5px'},
+                  "node":{
+                    width:"100%",
+                    height:"2.6em"
                   },
-                  "contentContainer": {
-                    border: "none",
-                  }
                 },
                 childNode: {
                   "title": {
-                    color: "gray",
-                    // border: "1px green solid",
+                    color:"white",
+                    paddingLeft: "5px"
                   },
-                  // "frame": { border: "1px #a4a4a4 solid" },
+                  "node":{
+                    backgroundColor:"rgba(192, 220, 242,0.3)",
+                    color: "white",
+                    // marginRight:"10px",
+                    borderLeft:'8px solid #1b216e',
+                    height:"2.6em",
+                    width:"100%"
+                  }
+                },
+                specialChildNode: {
+                  "title": { color: "gray" },
+                },
+                specialParentNode: {
+                  "title": {
+                    color:"white",
+                    paddingLeft: "5px"
+                  },
+                  "node":{
+                    backgroundColor:"rgba(192, 220, 242,0.3)",
+                    color: "white",
+                    // marginRight:"10px",
+                    borderLeft:'8px solid #1b216e',
+                    height:"2.6em",
+                    width:"100%"
+                  }
                 },
 
-                // expanderIcon: <FontAwesomeIcon icon={faPlus}/>
-                emptyParentExpanderIcon: <span style={{ padding: '5px' }}></span>
+                // emptyParentExpanderIcon: <span style={{ padding: '5px' }}></span>,
+                expanderIcons:{
+                  opened: <FontAwesomeIcon icon={faChevronDown} 
+                  style={{ 
+                    padding: '1px' ,
+                    width:'1.3em',
+                    height:'1.2em', 
+                    border:"1px solid darkblue" , 
+                    borderRadius:'2px',
+                    marginLeft:"5px"
+
+                  }}
+                  />,
+                  closed:<FontAwesomeIcon icon={faChevronRight} 
+                  style={{ 
+                    padding: '1px' ,
+                    width:'1.3em',
+                    height:'1.2em', 
+                    border:"1px solid darkblue", 
+                    borderRadius:"2px",
+                    marginLeft:"5px"
+                  }}/>,
+                }
 
               }}
               onLeafNodeClick={(nodeId) => {
@@ -2527,14 +2597,10 @@ class DoenetChooser extends Component {
                 this.forceUpdate();
                 this.selectDrive("Courses", nodeId)
               }}
-              // onLeafNodeClick={(nodeId) => {
-              //   this.tempSet.clear();
-              //   this.tempSet.add(nodeId); 
-              //   this.forceUpdate()
-              // }}
+
               onParentNodeClick={(nodeId) => {
-                this.tempSet.clear();
-                this.tempSet.add(nodeId);
+                this.customizedTempSet.clear();
+                this.customizedTempSet.add(nodeId);
                 this.goToFolder(nodeId, customizedContentTreeParentInfo);
                 if (!this.state.splitPanelLayout) {
                   this.splitPanelGoToFolder(nodeId, customizedContentTreeParentInfo);
@@ -2542,14 +2608,12 @@ class DoenetChooser extends Component {
                 this.setState({ contentActiveChild: true });
                 this.forceUpdate();
               }}
-            // onParentNodeDoubleClick={(nodeId) => {
-            //   console.log(`${nodeId} double clicked!`)
-            // }}
+
             />
           </div>
         </Accordion>
         <Accordion>
-          <div label="Courses" activeChild={this.state.courseActiveChild}>
+          <div label="COURSES" activeChild={this.state.courseActiveChild}>
             <TreeView
               containerId={treeContainerId}
               containerType={treeContainerType}
@@ -2557,35 +2621,37 @@ class DoenetChooser extends Component {
               parentsInfo={customizedCoursesTreeParentInfo}
               childrenInfo={customizedCoursesTreeChildrenInfo}
               hideRoot={true}
+              parentNodeItem={customizedTreeNodeItem}
+              leafNodeItem={customizedTreeNodeItem}
               treeNodeIcons={(itemType) => {
                 let map = {
-                  // folder: <FontAwesomeIcon icon={faDotCircle}
-                  //   style={{ fontSize: "16px", color: "#737373" }} />,
-                  // content: <FontAwesomeIcon icon={faTimesCircle} />
                 }
                 return map[itemType]
               }}
               treeStyles={{
                 parentNode: {
-                  "title": { color: "#d9eefa" },
-                  "frame": {
-                    width: "100%",
+                  "title": { color: "white" , paddingLeft:'5px'},
+                  "node":{
+                    width:"100%",
+                    height:"30px"
                   },
-                  "contentContainer": {
-                    border: "none",
-                  }
+             
                 },
                 childNode: {
                   "title": {
-                    color: "#d9eefa",
-                    "frame": {
-                      width: "100%",
-                    },
+                    color:"white",
+                    paddingLeft: "5px"
                   },
-                  // "frame": { border: "1px #a4a4a4 solid" },
+                  "node":{
+                    backgroundColor:"rgba(192, 220, 242,0.3)",
+                    color: "white",
+                    // marginRight:"10px",
+                    borderLeft:'8px solid #1b216e',
+                    height:"30px",
+                    width:"100%"
+                  }
                 },
                 specialChildNode: {
-                  // "frame": { background: "#a7a7a7" },
                 },
                 specialParentNode: {
                   "title": { color: "#d9eefa", background: "#e6efff", paddingLeft: "5px" },
@@ -2610,8 +2676,7 @@ class DoenetChooser extends Component {
           </div>
         </Accordion>
       </div>
-        //   />
-        // </div>
+
 
       // DEPRECIATED
       // this.customizedTree = <div className="tree" style={{ paddingLeft: "1em", marginLeft: "4em" }}>
@@ -2862,6 +2927,7 @@ class DoenetChooser extends Component {
     const middlePanelMenuControls = [splitPanelButton];
     const rightPanelMenuControls = [ dropDownSelectButton, splitSwitchPanelButton];
     const createMiddlePanelContent = (match) => {
+      console.log('match', match);
       return (<ToolLayoutPanel
         panelName="Main Panel"
         splitPanel={this.state.splitPanelLayout}
@@ -2897,6 +2963,7 @@ class DoenetChooser extends Component {
     return (<React.Fragment>
       <ToastProvider>
         <this.ToastWrapper />
+        <Router>
         <ToolLayout
           toolName="Chooser"
           leftPanelWidth="235"
@@ -2904,25 +2971,26 @@ class DoenetChooser extends Component {
           >
 
           <ToolLayoutPanel panelName="Navigation Panel" key={'left'}>
-            <div >
+            <div>
+              <div style={{padding:"10px", marginBottom:"30px"}}>
               <input
                 className="search-input"
                 onChange={this.handleLeftNavSearch.bind(this)}
                 placeholder="Search..."
-                style={{width:"235px", minHeight:"40px"}}
+                style={{width:"200px", minHeight:"40px",padding:"10px"}}
                 
               />
+              </div>
+              
               {this.customizedTree}
             </div>
           </ToolLayoutPanel>
 
 
-          <Router>
             <Switch>
               <Route exact path="/" render={({ match }) => createMiddlePanelContent(match)} />
-              <Route exact path="/:leftNavRoute" render={({ match }) => createMiddlePanelContent(match)} />
+              <Route path="/go/" render={({ match }) => createMiddlePanelContent(match)} />
             </Switch>
-          </Router>
 
           <ToolLayoutPanel panelName="Info Panel" key={'right'}>
             <InfoPanel
@@ -2940,7 +3008,7 @@ class DoenetChooser extends Component {
             />
           </ToolLayoutPanel>
         </ToolLayout>
-
+        </Router>
       </ToastProvider>
     </React.Fragment>);
 
