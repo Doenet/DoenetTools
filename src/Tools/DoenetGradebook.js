@@ -710,7 +710,6 @@ export default class DoenetGradebook extends Component {
                         let map = {};
                         return map[itemType]
                     }}
-                    // hideRoot={true}
                     treeStyles={{
                         specialChildNode: {
                             "title": { color: "gray" },
@@ -754,29 +753,8 @@ export default class DoenetGradebook extends Component {
                         },
 
                       
-                        // emptyParentExpanderIcon: <span style={{ padding: '5px' }}></span>,
-                        //    expanderIcons:{
-                        //     opened: <FontAwesomeIcon icon={faChevronDown} 
-                        //     style={{ 
-                        //       padding: '1px' ,
-                        //       width:'1.3em',
-                        //       height:'1.2em', 
-                        //       border:"1px solid darkblue" , 
-                        //       borderRadius:'2px',
-                        //       marginLeft:"5px"
-
-                        //     }}
-                        //     />,
-                        //     closed:<FontAwesomeIcon icon={faChevronRight} 
-                        //     style={{ 
-                        //       padding: '1px' ,
-                        //       width:'1.3em',
-                        //       height:'1.2em', 
-                        //       border:"1px solid darkblue", 
-                        //       borderRadius:"2px",
-                        //       marginLeft:"5px"
-                        //     }}/>,
-                        //   }
+                        emptyParentExpanderIcon: <span style={{ padding: '5px' }}></span>,
+                  
 
 
                     }}

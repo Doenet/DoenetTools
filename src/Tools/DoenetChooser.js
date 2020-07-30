@@ -4,6 +4,7 @@ axios.defaults.withCredentials = true;
 import crypto from 'crypto';
 import nanoid from 'nanoid';
 import "./chooser.css";
+import "../imports/doenet.css";
 import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
