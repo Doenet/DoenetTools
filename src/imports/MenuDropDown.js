@@ -64,14 +64,37 @@ const DropdownLabelLink = styled.div`
         color: ${props => props.selected ? 'white' : 'black'};    
     }
 `
+
 const DropdownCustomLabelLink = styled.div`
-    padding: 5px 5px;
-    min-height: 40px;
+    padding: 6px 5px 0px 5px;
+    min-height: 20px;
+    justify-content: center;
+    align-items: center;
+    display:flex;
+    color: 'black';
+    font-weight: 500;
+    font-size:16px;
+    letter-spacing:0.29px;
+    a {
+        width: 190px;
+        padding: 20px 0px;
+        text-decoration: none !important;
+        background-color: transperant;
+        color: 'black';    
+    }
+`
+const DropdownSubLabel = styled.div`
+    padding: 0px 5px 10px 5px;
+    min-height: 8px;
     justify-content: center;
     align-items: center;
     display:flex;
     color: 'black';
     border-bottom:1px solid #E2E2E2;
+    font-weight: 100;
+    font-size:15px;
+    letter-spacing:normal;
+
     a {
         width: 190px;
         padding: 20px 0px;
@@ -197,12 +220,17 @@ const MenuDropDown = ({
                                 <DropdownCustomLabelLink>
                                     {!!o.link ? <a href={o.link}>
                                         {o['label']}</a> : o['label']}
-                                </DropdownCustomLabelLink></> :
-                            <DropdownLabelLink
-                                selected={currentItemDisplay && currentItemDisplay.id === o['id']}>
-                                {!!o.link ? <a href={o.link}>
-                                    {o['label']}</a> : o['label']}
-                            </DropdownLabelLink>}
+                                </DropdownCustomLabelLink>
+                                {o['subLabel'] && <DropdownSubLabel>{o['subLabel']}</DropdownSubLabel>}
+                            </> :
+                            <>
+                                <DropdownLabelLink
+                                    selected={currentItemDisplay && currentItemDisplay.id === o['id']}>
+                                    {!!o.link ? <a href={o.link}>
+                                        {o['label']}</a> : o['label']}
+                                </DropdownLabelLink>
+                                {o['subLabel'] && <DropdownSubLabel>{o['subLabel']}</DropdownSubLabel>}
+                            </>}
                     </DropDownContentItem>
                     ))}
             </DropDownContent>
