@@ -52,10 +52,47 @@ export default class Accordion extends Component {
       onClick(label);
     };
       return (
-        <div style={{ "width": "100%", "cursor": 'pointer', "fontWeight": "bold"}}>
-          <div onClick={handleOnClick} data-cy="coursesAccordion" style={{display: 'flex', justifyContent: 'flex-start', alignItems:'center', color: "darkblue",opacity:'0.5', backgroundColor: isOpen && !activeChild && ' rgb(192, 220, 242)' , borderLeft: isOpen && !activeChild && '6px solid #1b216e'}}>
-            {isOpen ?  <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronDown} style={{width:'100%',fontSize:'15px', color:'#03a1fc', border:'1px solid #03a1fc', borderRadius:'2px', width:'15px',height:'15px'}}/> :
-              <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronRight} style={{width:'100%',fontSize:'15px', color:'#03a1fc', border:'1px solid #03a1fc',borderRadius:'2px', width:'15px',height:'15px'}} />}
+        <div style={{ 
+             "width": "100%",
+              "cursor": 'pointer',
+               "fontWeight": "bold",
+               margin:"5px 0px 5px 0px"
+               }}>
+          <div onClick={handleOnClick} 
+               data-cy="coursesAccordion" 
+               style={{
+                       display: 'flex', 
+                       justifyContent: 'flex-start', 
+                       alignItems:'center', 
+                       color: "darkblue", 
+                       backgroundColor: isOpen && !activeChild && ' rgba(192, 220, 242,0.3)' , 
+                       borderLeft: isOpen && !activeChild && '8px solid #1b216e', 
+                      //  paddingLeft: !isOpen && !activeChild && '10px', 
+                      paddingLeft:"10px",
+                       height:"2.6em"}}>
+            {isOpen ?  <FontAwesomeIcon 
+                          icon={faChevronDown} 
+                          style={{ 
+                            color:'white', 
+                            border:'1px solid darkblue', 
+                            borderRadius:'2px', 
+                            width:'1.3em',
+                            height:'1.2em',
+                            padding:"1px",
+                            marginRight:"5px"
+                          }}/> :
+                        <FontAwesomeIcon 
+                          icon={faChevronRight} 
+                          style={{ 
+                            color:'darkblue', 
+                            border:'1px solid darkblue',
+                            borderRadius:'2px', 
+                            width:'1.3em',
+                            height:'1.2em',
+                            padding:"1px",
+                            marginRight:"5px"
+
+                            }} />}
             {label}
           </div>
           {isOpen && (
