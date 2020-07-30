@@ -183,31 +183,8 @@ class DoenetHeader extends Component {
       });
     }
     
-    this.populateMenuToolbox(props.profile.toolAccess)
     this.profilePicture = this.props.profile.profilePicture;
     this.prepareProfileDropDown(this.profilePicture);
-
-    this.menuToolBoxItems = [
-      {
-        id: "Chooser",
-        label: "Chooser",
-        link: "/chooser/"
-      },
-      {
-        id: "Course",
-        label: "Course",
-        link: "/course/"
-      },
-      {
-        id: "Documentation",
-        label: "Documentation",
-        link: "/docs/"
-      },
-      {
-        id: "Gradebook",
-        label: "Gradebook",
-        link: "/gradebook/"
-      }];
     
   }
 
@@ -271,13 +248,7 @@ class DoenetHeader extends Component {
       });
     }
   }  
-  componentWillReceiveProps(props) {
-    if (props.headerChangesFromLayout && props.headerChangesFromLayout.toolAccess){
-      this.populateMenuToolbox(props.headerChangesFromLayout.toolAccess);
-      this.profilePicture = props.headerChangesFromLayout.profilePicture;
-    }
- 
-  }
+
 
   componentWillReceiveProps(props) {
     if (props.headerChangesFromLayout && props.headerChangesFromLayout.toolAccess){
