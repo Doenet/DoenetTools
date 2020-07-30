@@ -1,4 +1,4 @@
-name: CI
+name: Lint and CI
 
 # To Do
 # 2. Try out Cypress Dashboard
@@ -21,6 +21,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - run: npm install -g eslint
+    - name: Linting
+      run: eslint $(git diff --name-only --cached master | grep -E -- '^src|^cypress' | xargs ls -d 2>/dev/null)
 
   lint-and-test:
 
@@ -33,11 +36,9 @@ jobs:
       with:
         node-version: '10.x'
     - name: Install Dependencies
-      run: npm install && npm install -g wait-on eslint
+      run: npm install && npm install -g wait-on
     # - name: Make dist_local Folder
     #   run: mkdir -m 777 dist_local 
-    - name: Linting
-      run: eslint src
     - name: Build the Containers
       run: npm run docker:build
     - name: Start the Server
