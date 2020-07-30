@@ -1,9 +1,16 @@
 import React, { Component } from 'react';
+import {
+  HashRouter as Router,
+  Switch,
+  Route,
+  Link,
+} from "react-router-dom";
 import './docs.css';
 import componentDocs from '../../docs/complete-docs.json';
 import ToolLayout from './ToolLayout/ToolLayout.js';
 import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel.js';
 import { TreeView } from './TreeView/TreeView';
+import query from '../queryParamFuncs';
 
 
 
@@ -70,12 +77,20 @@ class DoenetDocs extends Component {
       parentsInfo.root.childFolders.push(f);
     });
 
-    const searchBar = [<SearchBox onSearchChange={this.onSearchChange} />];
+    // const searchBar = [<SearchBox onSearchChange={this.onSearchChange} />];
+    const treeNodeItem = ({ title, icon }) => {
+      return <div>
+        {icon}
+        <Link to={`/id/?docId=${title}`} style={{ color: 'white', textDecoration: 'none',fontWeight:"700" ,paddingLeft:"5px", fontSize:"20px"}}>{title}</Link>
+      </div>
+    };
     const leftNav = <TreeView
       containerId={'documentation'}
       containerType={'course_assignments'}
       loading={false}
       parentsInfo={parentsInfo}
+      parentNodeItem={treeNodeItem}
+      leafNodeItem={treeNodeItem}
       childrenInfo={{}}
       specialNodes={this.tempSet}
       hideRoot={true}
@@ -86,77 +101,92 @@ class DoenetDocs extends Component {
       }}
       hideRoot={true}
       treeStyles={{
-        specialChildNode: {
-          "title": { color: "gray" },
-          "frame": { color: "#2675ff", backgroundColor: "rgb(192, 220, 242)", paddingLeft: "5px" },
-        },
+        // specialChildNode: {
+        //   "title": { color: "gray" },
+        //   "frame": { color: "#2675ff", backgroundColor: "rgb(192, 220, 242)", paddingLeft: "5px" },
+        // },
         specialParentNode: {
-          "title": { color: "gray", paddingLeft: "5px" },
-          "frame": { color: "#2675ff", backgroundColor: "rgb(192, 220, 242)", opacity:"0.5",paddingLeft: "5px", borderLeft: '10px solid #1b216e' },
-
+          "title": {
+            color:"white",
+            paddingLeft: "5px"
+          },
+          "node":{
+            backgroundColor:"rgba(192, 220, 242,0.3)",
+            color: "white",
+            // marginRight:"10px",
+            borderLeft:'8px solid #1b216e',
+            height:"2.6em",
+            width:"100%"
+          }
         },
         parentNode: {
-          "title": { color: "#d9eefa" },
-
-          "contentContainer": {
-            border: "none",
-
-          }
+          "title": { color: "white" , paddingLeft:'5px',fontWeight:"700"},
+          "node":{
+            width:"100%",
+            height:"2.6em",
+          },
+      
         },
         childNode: {
           "title": {
+            color:"white",
+            paddingLeft: "5px"
+          },
+          "node":{
+            backgroundColor:"rgba(192, 220, 242,0.3)",
             color: "white",
+            // marginRight:"10px",
+            borderLeft:'8px solid #1b216e',
+            height:"2.6em",
+            width:"100%"
           }
-
         },
-        specialChildNode: {
-          "frame": { backgroundColor: "hsl(206, 66%, 85%)", color: "#d9eefa" },
-        },
-        emptyParentExpanderIcon: <span style={{paddingLeft:"5px"}}></span>
+        // specialChildNode: {
+        //   "frame": { backgroundColor: "hsl(206, 66%, 85%)", color: "#d9eefa" },
+        // },
+        emptyParentExpanderIcon: <span style={{ paddingLeft: "5px" }}></span>
       }}
       onLeafNodeClick={(nodeId) => {
-        this.tempSet.clear();
-        this.tempSet.add(nodeId);
-        this.forceUpdate()
-        // if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
-        // else this.tempSet.add(nodeId);
-        // this.forceUpdate();
+        // this.tempSet.clear();
+        // this.tempSet.add(nodeId);
+        // this.forceUpdate()
+        if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
+        else this.tempSet.add(nodeId);
+        this.forceUpdate();
         // this.selectDrive("Courses", nodeId)
       }}
       onParentNodeClick={(nodeId) => {
         this.tempSet.clear();
         this.tempSet.add(nodeId);
-        this.forceUpdate()
-        // this.tempSet.clear();
-        // this.tempSet.add(nodeId);
-        // this.goToFolder(nodeId, customizedContentTreeParentInfo);
-        // if (!this.state.splitPanelLayout) {
-        //     this.splitPanelGoToFolder(nodeId, customizedContentTreeParentInfo);
-        // }
-        // this.forceUpdate();
-        // window.location.href = `/gradebook/assignment/?assignmentId=${nodeId}`;
-        this.onSelectComponent(nodeId);
       }}
     />;
 
 
     return (
-      <ToolLayout className="docs-container" toolName="Documentation" headingTitle="Documentation">
-        <ToolLayoutPanel className="side-panel" key="one" panelName="Dicitonary">
-          <div>
-            <SearchBox onSearchChange={this.onSearchChange} />
-            {/* <Sidebar
+      <Router basename="/docs">
+        <ToolLayout className="docs-container" toolName="Documentation" headingTitle="Documentation">
+          <ToolLayoutPanel className="side-panel" key="one" panelName="Dicitonary">
+            <div >
+          
+             <div style={{padding:"10px", marginBottom:"30px"}}> 
+                <SearchBox onSearchChange={this.onSearchChange} /></div>
+              {/* <Sidebar
               filteredComponents={filteredComponents}
               onSelectComponent={this.onSelectComponent}
               selectedComponent={this.state.selectedComponent} /> */}
               {leftNav}
-          </div>
-        </ToolLayoutPanel>
+            </div>
+          </ToolLayoutPanel>
 
-        <ToolLayoutPanel key="two" headingTitle="Viewer">
-          {this.state.selectedComponent && <DocsContent onSelectComponent={this.onSelectComponent} selectedComponent={this.state.selectedComponent} />}
-        </ToolLayoutPanel>
-      </ToolLayout>
+          <ToolLayoutPanel key="two" headingTitle="Viewer">
+            {/* {this.state.selectedComponent && <DocsContent onSelectComponent={this.onSelectComponent} selectedComponent={this.state.selectedComponent} />} */}
+            <Switch>
+              <Route sensitive exact path="/" component={DocsOverview} />
+              <Route sensitive exact path="/id/" component={DocsContent} />
+            </Switch>
+          </ToolLayoutPanel>
+        </ToolLayout>
+      </Router>
     )
   }
 }
@@ -191,21 +221,28 @@ class Sidebar extends Component {
 }
 
 class DocsContent extends Component {
-
+constructor(props) {
+  super(props);
+  // this.state = {
+  //   docId: query.getURLSearchParam(this.props.location.search, "docId")
+  // }
+}
   render() {
+    const docId = query.getURLSearchParam(this.props.location.search, "docId");
+    console.log(docId);
     return (
       <div className="docs-content">
         <div className="docs-content-heading">
-          <h1>{this.props.selectedComponent}</h1>
+          <h1>{docId}</h1>
         </div>
         <div className="properties-container">
           <h2>Properties</h2>
           <ul>
-            {Object.keys(componentDocs[this.props.selectedComponent]["properties"]).map(property => {
+            {Object.keys(componentDocs[docId]["properties"]).map(property => {
               return (<li className="properties-name" key={property} >
                 <p>{property}: {
-                  componentDocs[this.props.selectedComponent]["properties"][property]["default"] !== undefined &&
-                  componentDocs[this.props.selectedComponent]["properties"][property]["default"].toString()
+                  componentDocs[docId]["properties"][property]["default"] !== undefined &&
+                  componentDocs[docId]["properties"][property]["default"].toString()
                 }</p>
               </li>)
             })}
@@ -214,9 +251,11 @@ class DocsContent extends Component {
         <div className="child-components-container">
           <h2>Child Components</h2>
           <div className="child-components">
-            {componentDocs[this.props.selectedComponent]["childComponents"].map(childComponent => {
+            {componentDocs[docId]["childComponents"].map(childComponent => {
               return <div className="child-component-wrapper" key={childComponent}>
-                <button className="child-component-name" onClick={() => this.props.onSelectComponent(childComponent)}>
+                <button className="child-component-name" 
+                // onClick={() => this.props.onSelectComponent(childComponent)}
+                >
                   {childComponent}
                 </button>
               </div>
@@ -237,14 +276,25 @@ class SearchBox extends Component {
   render() {
     return (
       // <form className="search">
-        <input
-          // className="search-input"
-          onChange={this.handleChange}
-          placeholder="Search components..."
-          style={{width:"235px", paddingLeft: "5px",minHeight:"30px"}}
+      <input
+        // className="search-input"
+        onChange={this.handleChange}
+        placeholder="Search components..."
+        style={{ width: "200px", padding: "10px", 
+        // minHeight: "40px" 
+      }}
 
-        />
+      />
       // </form>
+    );
+  }
+};
+
+class DocsOverview extends Component {
+
+  render() {
+    return (
+      <span></span>
     );
   }
 };
