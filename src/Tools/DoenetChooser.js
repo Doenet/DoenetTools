@@ -32,7 +32,6 @@ import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import SplitLayoutPanel from "./ToolLayout/SplitLayoutPanel";
 import DropDownSelect from '../imports/PanelHeaderComponents/DropDownSelect';
 import ButtonGroup from '../imports/PanelHeaderComponents/ButtonGroup';
-import { throws } from 'assert';
 
 import {
   HashRouter as Router,
@@ -63,8 +62,8 @@ class DoenetChooser extends Component {
       splitPanelCurrentDraggedObject: { id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null },
       panelsCollection: { "first": { values: ["browser", "tree"], activeContainer: "browser" } },
       splitPanelsCollection: { "second": { values: ["browser", "tree"], activeContainer: "browser" } },
-      splitPanelLayout: false
-
+      splitPanelLayout: false,
+      isSignedIn: false,
     };
 
     this.containerCache = {};
