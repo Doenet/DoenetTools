@@ -149,8 +149,6 @@ export default class FunctionOperator extends Function {
       }),
       definition: function ({ dependencyValues }) {
 
-        console.log(dependencyValues)
-
         if (!dependencyValues.operatorBasedOnFormulaIfAvailable
           || dependencyValues.functionChild.length === 0
           || dependencyValues.functionChild[0].stateValues.formula.tree === "\uff3f"

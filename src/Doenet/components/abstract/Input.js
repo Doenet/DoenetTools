@@ -14,6 +14,12 @@ export default class Input extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    // how many values an input returns
+    stateVariableDefinitions.nValues = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { nValues: 1 } })
+    }
+
     stateVariableDefinitions.creditAchieved = {
       defaultValue: 0,
       public: true,
@@ -52,7 +58,6 @@ export default class Input extends InlineComponent {
         }
       }
     }
-
 
     stateVariableDefinitions.includeCheckWork = {
       forRenderer: true,

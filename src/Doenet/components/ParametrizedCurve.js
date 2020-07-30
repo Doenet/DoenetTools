@@ -1,5 +1,6 @@
 import Curve from './Curve';
 import me from 'math-expressions';
+import { returnNVariables } from '../utils/math';
 
 export default class ParametrizedCurve extends Curve {
   static componentType = "parametrizedcurve";
@@ -18,13 +19,27 @@ export default class ParametrizedCurve extends Curve {
 
     childLogic.deleteAllLogic();
 
-    childLogic.newLeaf({
+    let atLeastOneFunction = childLogic.newLeaf({
       name: "atLeastOneFunction",
       componentType: 'function',
       comparison: "atLeast",
       number: 1,
+    });
+
+    let atMostOneVariables = childLogic.newLeaf({
+      name: "atMostOneVariables",
+      componentType: 'variables',
+      comparison: 'atMost',
+      number: 1
+    });
+
+    childLogic.newOperator({
+      name: "parametrizedCurveLogic",
+      operator: 'and',
+      propositions: [atLeastOneFunction, atMostOneVariables],
       setAsBase: true,
     });
+
 
     return childLogic;
   }
@@ -53,23 +68,92 @@ export default class ParametrizedCurve extends Curve {
       })
     }
 
+    stateVariableDefinitions.variables = {
+      isArray: true,
+      public: true,
+      componentType: "variable",
+      entryPrefixes: ["var"],
+      returnArraySizeDependencies: () => ({
+        nVariables: {
+          dependencyType: "stateVariable",
+          variableName: "nVariables",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nVariables];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          variablesChild: {
+            dependencyType: "childStateVariables",
+            childLogicName: "atMostOneVariables",
+            variableNames: ["variables"],
+          },
+          parentVariables: {
+            dependencyType: "parentStateVariable",
+            variableName: "variables"
+          }
+        };
+
+        return { globalDependencies }
+      },
+      arrayDefinitionByKey({ globalDependencyValues, arraySize }) {
+
+        let variablesSpecified = [];
+        if (globalDependencyValues.variablesChild.length === 1) {
+          variablesSpecified = globalDependencyValues.variablesChild[0].stateValues.variables;
+        } else if (globalDependencyValues.parentVariables !== null) {
+          variablesSpecified = globalDependencyValues.parentVariables
+        }
+
+        return {
+          newValues: {
+            variables: returnNVariables(arraySize[0], variablesSpecified)
+          }
+        }
+
+      }
+    }
+
 
     stateVariableDefinitions.fs = {
       forRenderer: true,
       isArray: true,
       entryPrefixes: ["f"],
-      returnDependencies: () => ({
-        functionChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastOneFunction",
-          variableNames: ["numericalf"]
+      returnArraySizeDependencies: () => ({
+        nVariables: {
+          dependencyType: "stateVariable",
+          variableName: "nVariables",
         },
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          fs: dependencyValues.functionChildren.map(x => x.stateValues.numericalf)
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nVariables];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            functionChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "atLeastOneFunction",
+              variableNames: ["numericalf"],
+              childIndices: [arrayKey]
+            }
+          };
         }
-      })
+        return { dependenciesByKey };
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+        let fs = {};
+        for (let arrayKey of arrayKeys) {
+          let functionChild = dependencyValuesByKey[arrayKey].functionChild;
+          if (functionChild.length === 1) {
+            fs[arrayKey] = functionChild[0].stateValues.numericalf;
+          }
+        }
+        return { newValues: { fs } }
+
+      }
     }
 
     stateVariableDefinitions.parmaxNumeric = {
