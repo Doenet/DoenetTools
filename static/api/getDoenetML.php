@@ -78,7 +78,7 @@ if ($branchId == ""){
 			FROM folder_content AS fc
 			LEFT JOIN repo_access AS ra
 			ON fc.rootId = ra.repoId
-			WHERE fc.childId = 'Efg9g5jLABCKexVFxK0np' 
+			WHERE fc.childId = '$branchId' 
 			AND ra.userId = '$userId'
 			";
 
@@ -91,8 +91,8 @@ if ($branchId == ""){
 				$sql = "
 				SELECT userId 
 			FROM user_content
-			WHERE userId = '4VYp5dOrVWGz0OKB2hkLW'
-			AND branchId = 'oqUuyupD-SfL3arUpHsvv'
+			WHERE userId = '$userId'
+			AND branchId = '$branchId'
 			";
 				$result = $conn->query($sql);
 				if ($result->num_rows > 0){
