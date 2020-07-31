@@ -26,6 +26,12 @@ class DoenetDocs extends Component {
     this.onSelectComponent = this.onSelectComponent.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
     this.tempSet = new Set();
+    const splitPath = window.location.hash.split("=");
+    if(splitPath.length) {
+      const pathDocId = splitPath[splitPath.length-1];
+      this.tempSet.add(pathDocId);
+    }
+    // debugger;
   }
 
   onSelectComponent = (componentName) => {
@@ -81,7 +87,7 @@ class DoenetDocs extends Component {
     const treeNodeItem = ({ title, icon }) => {
       return <div>
         {icon}
-        <Link to={`/id/?docId=${title}`} style={{ color: 'white', textDecoration: 'none',fontWeight:"700" ,paddingLeft:"5px", fontSize:"20px"}}>{title}</Link>
+        <Link to={`/id/?docId=${title}`} style={{ color: 'white', textDecoration: 'none', fontWeight: "700", paddingLeft: "5px", fontSize: "20px" }}>{title}</Link>
       </div>
     };
     const leftNav = <TreeView
@@ -107,38 +113,38 @@ class DoenetDocs extends Component {
         // },
         specialParentNode: {
           "title": {
-            color:"white",
+            color: "white",
             paddingLeft: "5px"
           },
-          "node":{
-            backgroundColor:"rgba(192, 220, 242,0.3)",
+          "node": {
+            backgroundColor: "rgba(192, 220, 242,0.3)",
             color: "white",
             // marginRight:"10px",
-            borderLeft:'8px solid #1b216e',
-            height:"2.6em",
-            width:"100%"
+            borderLeft: '8px solid #1b216e',
+            height: "2.6em",
+            width: "100%"
           }
         },
         parentNode: {
-          "title": { color: "white" , paddingLeft:'5px',fontWeight:"700"},
-          "node":{
-            width:"100%",
-            height:"2.6em",
+          "title": { color: "white", paddingLeft: '5px', fontWeight: "700" },
+          "node": {
+            width: "100%",
+            height: "2.6em",
           },
-      
+
         },
         childNode: {
           "title": {
-            color:"white",
+            color: "white",
             paddingLeft: "5px"
           },
-          "node":{
-            backgroundColor:"rgba(192, 220, 242,0.3)",
+          "node": {
+            backgroundColor: "rgba(192, 220, 242,0.3)",
             color: "white",
             // marginRight:"10px",
-            borderLeft:'8px solid #1b216e',
-            height:"2.6em",
-            width:"100%"
+            borderLeft: '8px solid #1b216e',
+            height: "2.6em",
+            width: "100%"
           }
         },
         // specialChildNode: {
@@ -167,8 +173,8 @@ class DoenetDocs extends Component {
         <ToolLayout className="docs-container" toolName="Documentation" headingTitle="Documentation">
           <ToolLayoutPanel className="side-panel" key="one" panelName="Dicitonary">
             <div >
-          
-             <div style={{padding:"10px", marginBottom:"30px"}}> 
+
+              <div style={{ padding: "10px", marginBottom: "30px" }}>
                 <SearchBox onSearchChange={this.onSearchChange} /></div>
               {/* <Sidebar
               filteredComponents={filteredComponents}
@@ -221,15 +227,14 @@ class Sidebar extends Component {
 }
 
 class DocsContent extends Component {
-constructor(props) {
-  super(props);
-  // this.state = {
-  //   docId: query.getURLSearchParam(this.props.location.search, "docId")
-  // }
-}
+  constructor(props) {
+    super(props);
+    // this.state = {
+    //   docId: query.getURLSearchParam(this.props.location.search, "docId")
+    // }
+  }
   render() {
     const docId = query.getURLSearchParam(this.props.location.search, "docId");
-    console.log(docId);
     return (
       <div className="docs-content">
         <div className="docs-content-heading">
@@ -253,7 +258,7 @@ constructor(props) {
           <div className="child-components">
             {componentDocs[docId]["childComponents"].map(childComponent => {
               return <div className="child-component-wrapper" key={childComponent}>
-                <button className="child-component-name" 
+                <button className="child-component-name"
                 // onClick={() => this.props.onSelectComponent(childComponent)}
                 >
                   {childComponent}
@@ -268,7 +273,6 @@ constructor(props) {
 }
 
 class SearchBox extends Component {
-
   handleChange = e => {
     this.props.onSearchChange(e.target.value);
   };
@@ -280,9 +284,10 @@ class SearchBox extends Component {
         // className="search-input"
         onChange={this.handleChange}
         placeholder="Search components..."
-        style={{ width: "200px", padding: "10px", 
-        // minHeight: "40px" 
-      }}
+        style={{
+          width: "200px", padding: "10px",
+          // minHeight: "40px" 
+        }}
 
       />
       // </form>
@@ -291,7 +296,6 @@ class SearchBox extends Component {
 };
 
 class DocsOverview extends Component {
-
   render() {
     return (
       <span></span>
