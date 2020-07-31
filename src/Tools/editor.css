@@ -2,7 +2,7 @@ body{
   background-color: rgb(246, 248, 255);
   padding: 0;
   margin: 0;
-  font-family: 'Droid Serif','Georgia', 'Times New Roman', 'Times', 'serif';
+  /* font-family: 'Droid Serif','Georgia', 'Times New Roman', 'Times', 'serif'; */
 }
 
 .button:hover {

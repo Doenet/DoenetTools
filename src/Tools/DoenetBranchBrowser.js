@@ -434,7 +434,7 @@ class DoenetBranchBrowser extends Component {
   handleContentItemDoubleClick(branchId) {
     if (!this.disableEditing) {
       // redirect to editor
-      window.location.href=`/editor?branchId=${branchId}`;
+      // window.location.href=`/editor?branchId=${branchId}`;
       this.props.updateSelectedItems([branchId], ["content"]);
     }
   }

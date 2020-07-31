@@ -23,8 +23,10 @@ class DoenetEditor extends Component {
     this.doenetML = "";
     let url_string = window.location.href;
     var url = new URL(url_string);
-    this.contentId = url.searchParams.get("contentId");
-    this.branchId = url.searchParams.get("branchId");
+    // this.contentId = url.searchParams.get("contentId");
+    // this.branchId = url.searchParams.get("branchId");
+    this.contentId = props.contentId;
+    this.branchId = props.branchId;
     this.updateNumber = 0;
 
     var errorMsg = null;
@@ -81,7 +83,7 @@ class DoenetEditor extends Component {
         })
     } else {
       //Redirect to chooser if no branch id
-      window.location.href = "/chooser";
+      // window.location.href = "/chooser";
     }
 
     this.state = {
