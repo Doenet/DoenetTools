@@ -70,8 +70,6 @@ export default class Core {
     this.setUpRng();
 
 
-    this.idRng = new MersenneTwister('47');
-
     let serializedState;
 
     if (doenetState) {
@@ -120,7 +118,6 @@ export default class Core {
         serializedState,
         componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
         allComponentClasses: this.allComponentClasses,
-        idRng: this.idRng
       });
     } else {
       if (serializedState[0].doenetAttributes === undefined) {
@@ -742,7 +739,15 @@ export default class Core {
       if (componentName === undefined) {
         // Note: assuming that document always has a name
         // so we never get here without an ancestor
-        let longNameId = ancestors[0].componentName + createNameContext + componentInd;
+        let longNameId = ancestors[0].componentName + "|" + createNameContext + "|";
+
+        if (serializedComponent.uniqueIdentifier) {
+          longNameId += serializedComponent.uniqueIdentifier;
+        } else {
+          longNameId += componentInd;
+        }
+
+        console.log(`longNameId: ${longNameId}`)
 
         componentName = createUniqueName(serializedComponent.componentType, longNameId);
       }
@@ -1442,7 +1447,8 @@ export default class Core {
       applySugar: true,
       shadow: true,
       updatesNeeded,
-      compositesBeingExpanded
+      compositesBeingExpanded,
+      createNameContext: component.componentName + "|replacements"
     });
 
     this.parameterStack.pop();
@@ -1521,8 +1527,18 @@ export default class Core {
           let namespace = instruction.namespace;
 
           if (namespace === undefined) {
+            let longNameId = component.ancestors[0].componentName + "|"
+              + component.componentName + "|assignNamespace|";
+            if (replacementsToAdd.length > 0 && replacementsToAdd[0].uniqueIdentifier) {
+              longNameId += replacementsToAdd[0].uniqueIdentifier;
+            } else {
+              longNameId += JSON.stringify(replacementInstruction.instructions)
+            }
+
+            console.log(`longNameId for assignNameSpace: ${longNameId}`)
+
             namespace = createUniqueName(component.componentType,
-              this.idRng);
+              longNameId);
           }
 
           let namespacePieces = component.componentName.split('/');
@@ -1553,7 +1569,7 @@ export default class Core {
             namespaceStack,
             componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
             allComponentClasses: this.allComponentClasses,
-            idRng: this.idRng
+            parentDoenetAttributes: { componentName: component.ancestors[0].componentName }
           });
         }
         else if (instruction.operation === "assignName") {
@@ -1569,20 +1585,43 @@ export default class Core {
           // make a deep copy to get rid of the readonly proxy
           // TODO: test if deepClone is faster
           replacementsToAdd = JSON.parse(JSON.stringify(replacementsToAdd), me.reviver);
+          let theReplacement = replacementsToAdd[0];
           let name = instruction.name;
 
+
           if (name === undefined) {
+            let longNameId = component.ancestors[0].componentName + "|"
+              + component.componentName + "|assignName|";
+            if (theReplacement.uniqueIdentifier) {
+              longNameId += theReplacement.uniqueIdentifier;
+            } else {
+              longNameId += JSON.stringify(replacementInstruction.instructions)
+            }
+
+            console.log(`longNameId for assignName: ${longNameId}`)
+
             name = createUniqueName(component.componentType,
-              this.idRng);
+              longNameId);
           }
 
-          let theReplacement = replacementsToAdd[0];
 
           if (Array.isArray(name)) {
             // if name is an array, then it refers to names of the grandchildren
+            // must create unique name for child
+
+            let longNameId = component.ancestors[0].componentName + "|"
+              + component.componentName + "|nameForChild|";
+            if (theReplacement.uniqueIdentifier) {
+              longNameId += theReplacement.uniqueIdentifier;
+            } else {
+              longNameId += JSON.stringify(replacementInstruction.instructions)
+            }
+
+            console.log(`longNameId for assignName nameForChild: ${longNameId}`)
 
             let nameForChild = createUniqueName(component.componentType,
-              this.idRng);
+              longNameId);
+
             if (!theReplacement.doenetAttributes) {
               theReplacement.doenetAttributes = {}
             }
@@ -1598,8 +1637,15 @@ export default class Core {
                 ind++;
                 let nameForGrandchild = name[ind];
                 if (nameForGrandchild === undefined) {
+                  let longNameId = nameForChild + "|"
+                    + component.componentName + "|nameForGrandchild|";
+                  if (grandchild.uniqueIdentifier) {
+                    longNameId += grandchild.uniqueIdentifier;
+                  } else {
+                    longNameId += ind;
+                  }
                   nameForGrandchild = createUniqueName(component.componentType,
-                    this.idRng);
+                    longNameId);
                 }
                 if (!grandchild.doenetAttributes) {
                   grandchild.doenetAttributes = {}
@@ -1644,7 +1690,7 @@ export default class Core {
             namespaceStack,
             componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
             allComponentClasses: this.allComponentClasses,
-            idRng: this.idRng
+            parentDoenetAttributes: { componentName: component.ancestors[0].componentName }
           });
         }
         else {
@@ -1658,7 +1704,8 @@ export default class Core {
         applySugar: true,
         shadow: true,
         updatesNeeded,
-        compositesBeingExpanded
+        compositesBeingExpanded,
+        createNameContext: component.componentName + "|replacements"
       });
       replacements.push(...replacementResult.components);
 
@@ -1792,6 +1839,7 @@ export default class Core {
             shadow: true,
             ancestors: originalChild.ancestors,
             updatesNeeded,
+            createNameContext: originalChild.componentName + "|adapter"
           });
 
           adapter = newChildrenResult.components[0];
@@ -1855,7 +1903,8 @@ export default class Core {
       separateSugarInputs: childLogicComponent.separateSugarInputs,
       replacementFunction: childLogicComponent.replacementFunction,
       dependencyValues,
-      idRng: this.idRng,
+      parentName: component.componentName,
+      childLogicName,
     });
 
     if (!sugarResults.success) {
@@ -10787,9 +10836,10 @@ export default class Core {
       workspace: component.replacementsWorkspace,
     });
 
-    // console.log("replacement changes for " + component.componentName);
-    // console.log(replacementChanges);
-    // console.log(component.replacements.map(x => x.componentName));
+    console.log("replacement changes for " + component.componentName);
+    console.log(replacementChanges);
+    console.log(component.replacements.map(x => x.componentName));
+    console.log(component.replacements);
     // console.log(component.unresolvedState);
     // console.log(component.unresolvedDependencies);
 

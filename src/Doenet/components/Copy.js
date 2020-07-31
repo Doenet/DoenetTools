@@ -2,6 +2,7 @@ import CompositeComponent from './abstract/CompositeComponent';
 import * as serializeFunctions from '../utils/serializedStateProcessing';
 import { postProcessCopy } from '../utils/copy';
 import { flattenDeep, flattenLevels } from '../utils/array';
+import { getUniqueIdentifierFromBase } from '../utils/naming';
 
 
 export default class Copy extends CompositeComponent {
@@ -1110,7 +1111,7 @@ export default class Copy extends CompositeComponent {
 
     serializeFunctions.createComponentsFromProps(serializedState, this.standardComponentClasses);
 
-    // need idRng
+    // need to redo to include parentDoenetAttributes
     serializeFunctions.createComponentNames({ serializedState, componentTypesTakingComponentNames: this.componentTypesTakingComponentNames, allComponentClasses: this.allComponentClasses });
 
     this.componentNameToPreserializedName(serializedState, this.componentTypesTakingComponentNames);
@@ -1274,8 +1275,15 @@ export default class Copy extends CompositeComponent {
     if (component.stateValues.useProp) {
       let componentOrReplacementNames = component.stateValues.componentIdentitiesForProp.map(x => x.componentName);
 
+
+      if (!workspace.uniqueIdentifierBase) {
+        workspace.uniqueIdentifiersUsed = [];
+      }
+
+      let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsed;
+
       let results = replacementFromProp({
-        component, components, componentOrReplacementNames
+        component, components, componentOrReplacementNames, uniqueIdentifiersUsed
       });
 
       workspace.propVariablesCopied = results.propVariablesCopied;
@@ -1311,9 +1319,15 @@ export default class Copy extends CompositeComponent {
     // console.log("serializedCopy");
     // console.log(serializedCopy);
 
+
+    if (!workspace.uniqueIdentifiersUsed) {
+      workspace.uniqueIdentifiersUsed = []
+    }
+
     let serializedReplacements = postProcessCopy({
       serializedComponents: serializedCopy,
-      componentName: component.componentName
+      componentName: component.componentName,
+      uniqueIdentifiersUsed: workspace.uniqueIdentifiersUsed
     })
 
     return {
@@ -1462,7 +1476,19 @@ export default class Copy extends CompositeComponent {
       // the number of components or their component types changed
       let testReplacementChanges = [];
 
-      let { propVariablesCopied } = this.recreateReplacements({ component, replacementChanges: testReplacementChanges, components });
+      if (!workspace.uniqueIdentifiersUsed) {
+        workspace.uniqueIdentifiersUsed = [];
+      }
+
+      // create shallow copy of uniqueIdentifiersUsed so that can throw away if don't redo replacements
+      let uniqueIdentifiersUsed = [];
+
+      let { propVariablesCopied } = this.recreateReplacements({
+        component,
+        replacementChanges: testReplacementChanges,
+        components,
+        uniqueIdentifiersUsed
+      });
 
       let newSerializedReplacements = [];
       let redoReplacements = false;
@@ -1547,6 +1573,11 @@ export default class Copy extends CompositeComponent {
       }
 
       if (redoReplacements) {
+        // actually using the replacement changes
+
+        // add uniqueIdentifiersUsed to workspace
+        workspace.uniqueIdentifiersUsed = uniqueIdentifiersUsed;
+
         replacementChanges.push(...testReplacementChanges);
       }
 
@@ -1569,7 +1600,7 @@ export default class Copy extends CompositeComponent {
       componentChanges: componentChanges,
       componentName: component.componentName,
       downstreamDependencies: component.downstreamDependencies,
-      components: components
+      components: components, workspace
     })
     replacementChanges.push(...additionalReplacementChanges);
 
@@ -1578,7 +1609,7 @@ export default class Copy extends CompositeComponent {
     return replacementChanges;
   }
 
-  static recreateReplacements({ component, replacementChanges, components }) {
+  static recreateReplacements({ component, replacementChanges, components, uniqueIdentifiersUsed }) {
     // // give instructions to move dependency to component.state.targetComponent
     // if (component.state.previousRefTarget !== undefined &&
     //   component.state.previousRefTarget.componentName in component.downstreamDependencies) {
@@ -1622,7 +1653,7 @@ export default class Copy extends CompositeComponent {
       let componentOrReplacementNames = component.stateValues.componentIdentitiesForProp.map(x => x.componentName);
 
       let results = replacementFromProp({
-        component, components, componentOrReplacementNames
+        component, components, componentOrReplacementNames, uniqueIdentifiersUsed
       });
 
       propVariablesCopied = results.propVariablesCopied;
@@ -1636,7 +1667,15 @@ export default class Copy extends CompositeComponent {
       newSerializedChildren = target.serialize({ forCopy: true });
       newSerializedChildren = [newSerializedChildren];
 
-      newSerializedChildren = postProcessCopy({ serializedComponents: newSerializedChildren, componentName: component.componentName });
+      if (!workspace.uniqueIdentifiersUsed) {
+        workspace.uniqueIdentifiersUsed = []
+      }
+
+      newSerializedChildren = postProcessCopy({
+        serializedComponents: newSerializedChildren,
+        componentName: component.componentName,
+        uniqueIdentifiersUsed: workspace.uniqueIdentifiersUsed
+      });
     }
 
     if (newSerializedChildren.length > 0) {
@@ -1665,7 +1704,7 @@ export default class Copy extends CompositeComponent {
 
 }
 
-export function replacementFromProp({ component, components, componentOrReplacementNames }) {
+export function replacementFromProp({ component, components, componentOrReplacementNames, uniqueIdentifiersUsed }) {
 
 
   let serializedReplacements = [];
@@ -1737,27 +1776,39 @@ export function replacementFromProp({ component, components, componentOrReplacem
                   }
                 }
 
+                let uniqueIdentifierBase = componentToCopy.componentName + "|copy";
+                let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
                 serializedReplacements.push({
                   componentType: "copy",
                   children: [{
                     componentType: "tname",
                     state: { targetName: componentToCopy.componentName },
                   }],
-                  state: stateForReplacementCopy
+                  state: stateForReplacementCopy,
+                  uniqueIdentifier,
                 });
 
                 propVariablesCopied.push(componentToCopy.componentName)
 
               } else {
                 // just give an empty component of componentType
+
+                let uniqueIdentifierBase = componentType + "|empty";
+                let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
                 serializedReplacements.push({
                   componentType,
+                  uniqueIdentifier,
                 })
                 propVariablesCopied.push(null)
 
               }
 
             } else {
+              let uniqueIdentifierBase = targetName + "|shadow|" + propVariable;
+              let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
               serializedReplacements.push({
                 componentType: componentType,
                 downstreamDependencies: {
@@ -1766,13 +1817,18 @@ export function replacementFromProp({ component, components, componentOrReplacem
                     compositeName: component.componentName,
                     propVariable
                   }]
-                }
+                },
+                uniqueIdentifier,
               })
             }
           } else {
             // didn't match an array key, so just add an empty component of componentType
+            let uniqueIdentifierBase = componentType + "|empty";
+            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
             serializedReplacements.push({
               componentType,
+              uniqueIdentifier,
             })
           }
         }
@@ -1813,26 +1869,38 @@ export function replacementFromProp({ component, components, componentOrReplacem
                     }
                   }
 
+
+                  let uniqueIdentifierBase = componentToCopy.componentName + "|copy";
+                  let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
                   pieces.push({
                     componentType: "copy",
                     children: [{
                       componentType: "tname",
                       state: { targetName: componentToCopy.componentName },
                     }],
-                    state: stateForReplacementCopy
+                    state: stateForReplacementCopy,
+                    uniqueIdentifier
                   });
                   propVariablesCopied.push(componentToCopy.componentName)
 
                 } else {
                   // just give an empty component of componentType
+                  let uniqueIdentifierBase = arrayStateVarObj.componentType + "|empty";
+                  let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
                   pieces.push({
-                    componentType: arrayStateVarObj.componentType
+                    componentType: arrayStateVarObj.componentType,
+                    uniqueIdentifier,
                   })
                   propVariablesCopied.push(null)
 
                 }
 
               } else {
+
+                let uniqueIdentifierBase = targetName + "|shadow|" + propVariable;
+                let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
                 pieces.push({
                   componentType: arrayStateVarObj.componentType,
@@ -1842,7 +1910,8 @@ export function replacementFromProp({ component, components, componentOrReplacem
                       compositeName: component.componentName,
                       propVariable
                     }]
-                  }
+                  },
+                  uniqueIdentifier,
                 })
               }
             }
@@ -1852,9 +1921,13 @@ export function replacementFromProp({ component, components, componentOrReplacem
           let wrapCs = wrappingComponents[nDimensionsLeft - 1];
           if (pieces.length > 0 && wrapCs && wrapCs.length > 0) {
             for (let ind = wrapCs.length - 1; ind >= 0; ind--) {
+              let uniqueIdentifierBase = wrapCs[ind] + "|wrapper";
+              let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
               pieces = [{
                 componentType: wrapCs[ind],
-                children: pieces
+                children: pieces,
+                uniqueIdentifier,
               }]
             }
           }
@@ -1865,7 +1938,8 @@ export function replacementFromProp({ component, components, componentOrReplacem
 
         let newReplacements = createReplacementPiece(unflattenedArrayKeys, stateVarObj.nDimensions);
 
-        // add downstream dependencies to replacements
+        // add downstream dependencies to top level replacements
+        // (which are wrappers, so didn't get downstream dependencies originally)
         for (let replacement of newReplacements) {
           replacement.downstreamDependencies = {
             [targetName]: [{
@@ -1895,8 +1969,13 @@ export function replacementFromProp({ component, components, componentOrReplacem
             let componentType = replacementClass.componentType.toLowerCase();
 
             // just add an empty component of componentType
+
+            let uniqueIdentifierBase = componentType + "|empty";
+            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
             serializedReplacements.push({
               componentType,
+              uniqueIdentifier,
             })
           }
 
@@ -1936,23 +2015,34 @@ export function replacementFromProp({ component, components, componentOrReplacem
               }
             }
 
+            let uniqueIdentifierBase = componentToCopy.componentName + "|copy";
+            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
             serializedReplacements.push({
               componentType: "copy",
               children: [{
                 componentType: "tname",
                 state: { targetName: componentToCopy.componentName },
               }],
-              state: stateForReplacementCopy
+              state: stateForReplacementCopy,
+              uniqueIdentifier,
             });
           } else {
             // just give an empty component of componentType
+            let uniqueIdentifierBase = componentType + "|empty";
+            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
             serializedReplacements.push({
               componentType,
+              uniqueIdentifier,
             })
           }
 
         } else {
           propVariablesCopied.push(propVariableObj.varName);
+
+          let uniqueIdentifierBase = targetName + "|shadow|" + propVariableObj.varName;
+          let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
           serializedReplacements.push({
             componentType,
@@ -1962,7 +2052,8 @@ export function replacementFromProp({ component, components, componentOrReplacem
                 compositeName: component.componentName,
                 propVariable: propVariableObj.varName,
               }]
-            }
+            },
+            uniqueIdentifier,
           })
         }
       }
@@ -1979,7 +2070,7 @@ export function replacementFromProp({ component, components, componentOrReplacem
 
 
 export function processChangesForReplacements({ componentChanges, componentName,
-  downstreamDependencies, components }) {
+  downstreamDependencies, components, workspace }) {
   let replacementChanges = [];
 
   for (let change of componentChanges) {
@@ -2183,7 +2274,15 @@ export function processChangesForReplacements({ componentChanges, componentName,
         continue;
       }
 
-      newSerializedChildren = postProcessCopy({ serializedComponents: newSerializedChildren, componentName });
+      if (!workspace.uniqueIdentifiersUsed) {
+        workspace.uniqueIdentifiersUsed = []
+      }
+
+      newSerializedChildren = postProcessCopy({
+        serializedComponents: newSerializedChildren,
+        componentName,
+        uniqueIdentifiersUsed: workspace.uniqueIdentifiersUsed,
+      });
       let replacementInstruction = {
         changeType: "add",
         parent: parentShadow,
@@ -2241,7 +2340,15 @@ export function processChangesForReplacements({ componentChanges, componentName,
         continue;
       }
 
-      newSerializedChildren = postProcessCopy({ serializedComponents: newSerializedChildren, componentName });
+      if (!workspace.uniqueIdentifiersUsed) {
+        workspace.uniqueIdentifiersUsed = []
+      }
+
+      newSerializedChildren = postProcessCopy({
+        serializedComponents: newSerializedChildren,
+        componentName,
+        uniqueIdentifiersUsed: workspace.uniqueIdentifiersUsed
+      });
 
       // check if parent of replacements is being shadowed
 

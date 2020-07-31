@@ -38,7 +38,7 @@ export default class Answer extends InlineComponent {
     let childLogic = super.returnChildLogic(args);
 
 
-    let replaceFromOneString = function ({ activeChildrenMatched, dependencyValues, idRng }) {
+    let replaceFromOneString = function ({ activeChildrenMatched, dependencyValues, parentName, childLogicName }) {
       // answer where only child is a string (other than activeChildren from properties)
       // create two activeChildren for the answer:
       // <[defaultType]input/>
@@ -82,7 +82,8 @@ export default class Answer extends InlineComponent {
         }
       }
 
-      let componentName = createUniqueName(inputType, idRng)
+      let longNameId = parentName + "|sugarReplacement|" + childLogicName;
+      let componentName = createUniqueName(inputType, longNameId)
 
       let whenChildren = [
         {
@@ -165,13 +166,14 @@ export default class Answer extends InlineComponent {
     });
 
 
-    let replaceFromOneMath = function ({ activeChildrenMatched, dependencyValues, idRng }) {
+    let replaceFromOneMath = function ({ activeChildrenMatched, dependencyValues, parentName, childLogicName }) {
       // answer where only child is a math (other than activeChildren from properties)
       // create two activeChildren for the answer:
       // <mathinput/>
       // <award><when><copy prop="value" tname="[themathinput]"/>=[originalMath]</when></award>
 
-      let componentName = createUniqueName("mathinput", idRng)
+      let longNameId = parentName + "|sugarReplacement|" + childLogicName;
+      let componentName = createUniqueName("mathinput", longNameId)
 
       let inputChild = {
         componentType: 'mathinput',
@@ -229,13 +231,14 @@ export default class Answer extends InlineComponent {
     });
 
 
-    let replaceFromOneText = function ({ activeChildrenMatched, dependencyValues, idRng }) {
+    let replaceFromOneText = function ({ activeChildrenMatched, dependencyValues, parentName, childLogicName }) {
       // answer where only child is a text (other than activeChildren from properties)
       // create two activeChildren for the answer:
       // <textinput/>
       // <award><when><copy prop="value" tname="[thetextinput]"/>=[originaltext]</when></award>
 
-      let componentName = createUniqueName("textinput", idRng)
+      let longNameId = parentName + "|sugarReplacement|" + childLogicName;
+      let componentName = createUniqueName("textinput", longNameId)
 
       let inputChild = {
         componentType: 'textinput',
@@ -294,7 +297,7 @@ export default class Answer extends InlineComponent {
     });
 
 
-    let replaceFromJustChoices = function ({ activeChildrenMatched, idRng }) {
+    let replaceFromJustChoices = function ({ activeChildrenMatched, parentName, childLogicName }) {
       // answer where only children are choices (other than activeChildren from properties)
       // wrap choices in a choiceinput
       // and for each choice
@@ -309,7 +312,8 @@ export default class Answer extends InlineComponent {
         componentName: x.componentName
       }));
 
-      let componentName = createUniqueName("choiceinput", idRng)
+      let longNameId = parentName + "|sugarReplacement|" + childLogicName;
+      let componentName = createUniqueName("choiceinput", longNameId)
 
       let choiceinputComponent = {
         componentType: "choiceinput",
@@ -338,7 +342,7 @@ export default class Answer extends InlineComponent {
     });
 
 
-    let replaceFromIncompleteAwards = function ({ activeChildrenMatched, dependencyValues, idRng }) {
+    let replaceFromIncompleteAwards = function ({ activeChildrenMatched, dependencyValues, parentName, childLogicName }) {
       // answer where only activeChildren (other than from properties) are incomplete awards
       // (meaning awards with a <string> child rather than an <when> child)
       // create an input and replace the <string> child of each award with
@@ -384,7 +388,8 @@ export default class Answer extends InlineComponent {
         typeForStrings = dependencyValues.type;
       }
 
-      let componentName = createUniqueName(inputType, idRng)
+      let longNameId = parentName + "|sugarReplacement|" + childLogicName;
+      let componentName = createUniqueName(inputType, longNameId)
 
       let inputChild = {
         componentType: inputType,

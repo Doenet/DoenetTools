@@ -1,8 +1,24 @@
 export function createUniqueName(componentType, longNameId) {
 
-  console.log(longNameId)
+  console.log(componentType, longNameId)
 
-  return "__" + componentType + "_" + hashStringToInteger(longNameId);
+  return "__" + componentType + "_" + hashStringToInteger(longNameId).toString(36);
+
+}
+
+export function getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed) {
+
+  let postfix = 1;
+  let uniqueIdentifier = uniqueIdentifierBase + postfix;
+
+  while (uniqueIdentifiersUsed.includes(uniqueIdentifier)) {
+    postfix += 1;
+    uniqueIdentifier = uniqueIdentifierBase + postfix;
+  }
+
+  uniqueIdentifiersUsed.push(uniqueIdentifier);
+
+  return uniqueIdentifier;
 
 }
 
