@@ -129,175 +129,99 @@ export default class InterpolatedFunction extends Function {
       }
     }
 
-    stateVariableDefinitions.prescribedPoints = {
-      isArray: true,
-      entryPrefixes: ["prescribedPoint"],
+
+    stateVariableDefinitions.nPrescribedPoints = {
+      additionalStateVariablesDefined: ["throughInfoForArrayKey"],
       returnDependencies: () => ({
         throughChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "atLeastZeroThroughs",
-          variableNames: ["points", "slope", "nPoints"]
+          variableNames: ["nPoints"]
         }
       }),
-      getPreviousDependencyValuesForMarkStale: true,
-      markStale: function ({ freshnessInfo, changes, arrayKeys, previousDependencyValues }) {
-        let freshByKey = freshnessInfo.prescribedPoints.freshByKey;
+      definition({ dependencyValues }) {
 
-        // console.log('mark stale for prescribed points');
-        // console.log(JSON.parse(JSON.stringify(freshByKey)));
-        // console.log(JSON.parse(JSON.stringify(changes)))
-        // console.log(arrayKeys);
-        // console.log(previousDependencyValues);
-
-        if (changes.throughChildren) {
-          if (changes.throughChildren.componentIdentitiesChanged) {
-
-            // if any through children changed, everything is stale
-            freshnessInfo.prescribedPoints.freshByKey = {};
-            return { fresh: { prescribedPoints: false } }
-
-          } else {
-            let valuesChanged = changes.throughChildren.valuesChanged;
-
-            if (valuesChanged.some(x => x.nPoints)) {
-              // if number of points changed for any through points,
-              // everything is stale
-              freshnessInfo.prescribedPoints.freshByKey = {};
-              return { fresh: { prescribedPoints: false } }
-            }
-
-            // through children didn't change
-            // and the points for each through child didn't change
-
-            // To determine which arrayKey each point corresponds to
-            // need to know how many points for each through child
-            // which we can determine from their previous value
-            let numberKeysSoFar = 0;
-
-            for (let [throughInd, throughChange] of valuesChanged.entries()) {
-
-              let previousThrough = previousDependencyValues.throughChildren[throughInd];
-              let nPointsInThrough = previousThrough.stateValues.points.length;
-
-              if (throughChange) {
-
-                let pointsChanged = "points" in throughChange;
-
-                let pointFreshByKey;
-
-                if (pointsChanged) {
-                  pointFreshByKey = throughChange.points.freshnessInfo.freshByKey;
-                }
-
-                let slopeChanged = "slope" in throughChange;
-
-                for (let throughArrayKey = 0; throughArrayKey < nPointsInThrough; throughArrayKey++) {
-                  let thisArrayKey = numberKeysSoFar + throughArrayKey;
-                  if (slopeChanged || pointsChanged && !pointFreshByKey[throughArrayKey]) {
-                    delete freshByKey[thisArrayKey];
-                  }
-                }
-              }
-
-              numberKeysSoFar += nPointsInThrough;
-
-            }
-
+        let nPrescribedPoints = 0;
+        let throughInfoForArrayKey = [];
+        for (let [throughIndex, throughChild] of dependencyValues.throughChildren.entries()) {
+          let nPoints = throughChild.stateValues.nPoints;
+          nPrescribedPoints += nPoints;
+          for (let i = 0; i < nPoints; i++) {
+            throughInfoForArrayKey.push({
+              throughIndex,
+              pointVariable: "point" + (i + 1)
+            })
           }
         }
-
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = Number(arrayKeys[0]);
-        }
-
-
-        if (arrayKey === undefined) {
-          if (Object.keys(freshByKey).length === 0) {
-            // asked for entire array and it is all stale
-            return { fresh: { prescribedPoints: false } }
-          } else {
-            // asked for entire array, but it has some fresh elements
-            return { partiallyFresh: { prescribedPoints: true } }
+        return {
+          newValues: {
+            nPrescribedPoints, throughInfoForArrayKey
           }
-        } else {
-          // asked for just one component
-          return { fresh: { prescribedPoints: freshByKey[arrayKey] === true } }
         }
+      }
+    }
 
-
+    stateVariableDefinitions.prescribedPoints = {
+      isArray: true,
+      entryPrefixes: ["prescribedPoint"],
+      stateVariablesDeterminingDependencies: ["throughInfoForArrayKey"],
+      returnArraySizeDependencies: () => ({
+        nPrescribedPoints: {
+          dependencyType: "stateVariable",
+          variableName: "nPrescribedPoints",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nPrescribedPoints];
       },
-      definition: function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
-        let freshByKey = freshnessInfo.prescribedPoints.freshByKey;
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
+        let globalDependencies = {
+          throughInfoForArrayKey: {
+            dependencyType: "stateVariable",
+            variableName: "throughInfoForArrayKey"
+          }
+        }
 
-        // console.log('definition of prescribed points')
-        // console.log(dependencyValues);
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          let pointVariable = stateValues.throughInfoForArrayKey[arrayKey].pointVariable;
+          let throughIndex = stateValues.throughInfoForArrayKey[arrayKey].throughIndex;
+          dependenciesByKey[arrayKey] = {
+            throughChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "atLeastZeroThroughs",
+              variableNames: [pointVariable, "slope"],
+              childIndices: [throughIndex]
+            },
+          }
+
+        }
+
+        return { globalDependencies, dependenciesByKey }
+      },
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+
+        // console.log('array definition of prescribed points')
+        // console.log(dependencyValuesByKey);
         // console.log(arrayKeys)
-        // console.log(freshByKey);
-        // console.log(changes);
 
-        let identitiesChanged = false;
-        if (changes.throughChildren.componentIdentitiesChanged) {
-          identitiesChanged = true;
-        } else {
-          for (let ind in changes.throughChildren.valuesChanged) {
-            if (changes.throughChildren.valuesChanged[ind].nPoints) {
-              identitiesChanged = true;
-              break;
+        let prescribedPoints = {};
+
+        for (let arrayKey of arrayKeys) {
+          let pointVariable = globalDependencyValues.throughInfoForArrayKey[arrayKey].pointVariable;
+          let throughChild = dependencyValuesByKey[arrayKey].throughChild;
+          if (throughChild.length === 1) {
+            let point = throughChild[0].stateValues[pointVariable];
+            let slope = throughChild[0].stateValues.slope;
+
+            prescribedPoints[arrayKey] = {
+              x: point[0],
+              y: point[1],
+              slope
             }
           }
         }
-
-        if (identitiesChanged) {
-
-          // identities of points changed, so create prescribedPoints
-          // make it be an array to indicate starting over
-
-          let prescribedPoints = [];
-
-          for (let throughChild of dependencyValues.throughChildren) {
-            let slope = throughChild.stateValues.slope;
-            for (let point of throughChild.stateValues.points) {
-              freshByKey[prescribedPoints.length] = true;
-
-              prescribedPoints.push({
-                x: point.get_component(0),
-                y: point.get_component(1),
-                slope,
-              })
-
-            }
-          }
-
-          return { newValues: { prescribedPoints } }
-
-        } else {
-
-          // since identities of points didn't change
-          // presribedPoints will be object just containing changed components
-          let prescribedPoints = {};
-
-          let numberKeysSoFar = 0;
-
-          for (let throughChild of dependencyValues.throughChildren) {
-            let slope = throughChild.stateValues.slope;
-            for (let point of throughChild.stateValues.points) {
-              if (!freshByKey[numberKeysSoFar]) {
-                freshByKey[numberKeysSoFar] = true;
-                prescribedPoints[numberKeysSoFar] = {
-                  x: point.get_component(0),
-                  y: point.get_component(1),
-                  slope,
-                }
-              }
-              numberKeysSoFar++;
-            }
-          }
-
-          return { newValues: { prescribedPoints } }
-
-        }
-
+        return { newValues: { prescribedPoints } }
       }
     }
 
@@ -589,9 +513,73 @@ export default class InterpolatedFunction extends Function {
 
     stateVariableDefinitions.minima = {
       public: true,
-      componentType: "point",
+      componentType: "number",
       isArray: true,
-      entryPrefixes: ["minimum"],
+      entireArrayAtOnce: true,
+      nDimensions: 2,
+      entryPrefixes: ["minimum", "minimumLocations", "minimumLocation", "minimumValues", "minimumValue"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "minimum" || prefix === undefined) {
+          // minimum or entire array
+          // These are points,
+          // wrap inner dimension by both <point> and <xs>
+          // don't wrap outer dimension (for entire array)
+          return [["point", "xs"]];
+        } else {
+          // don't wrap minimumLocation(s) or minimumValues(s)
+          return [];
+        }
+      },
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (["minimum", "minimumLocation", "minimumValue"].includes(arrayEntryPrefix)) {
+          let pointInd = Number(varEnding) - 1;
+          if (Number.isInteger(pointInd) && pointInd >= 0) {
+            // if don't know array size, just guess that the entry is OK
+            // It will get corrected once array size is known.
+            // TODO: better to return empty array?
+            if (!arraySize || pointInd < arraySize[0]) {
+              if (arrayEntryPrefix === "minimum") {
+                return [pointInd + ",0", pointInd + ",1"];
+              } else if (arrayEntryPrefix === "minimumLocation") {
+                return [pointInd + ",0"]
+              } else {
+                return [pointInd + ",1"]
+              }
+            } else {
+              return []
+            }
+          } else {
+            return [];
+          }
+        } else if (arrayEntryPrefix === "minimumLocations") {
+          // can't guess at arrayKeys if don't have arraySize
+          if (!arraySize || varEnding !== "") {
+            return [];
+          }
+          // array of "i,0"", where i=0, ..., arraySize[0]-1
+          return Array.from(Array(arraySize[0]), (_, i) => i + ",0")
+        } else if (arrayEntryPrefix === "minimumValues") {
+
+          // can't guess at arrayKeys if don't have arraySize
+          if (!arraySize || varEnding !== "") {
+            return [];
+          }
+          // array of "i,1"", where i=0, ..., arraySize[0]-1
+          return Array.from(Array(arraySize[0]), (_, i) => i + ",1")
+        } else {
+          return [];
+        }
+
+      },
+      arrayVarNameFromArrayKey(arrayKey) {
+        let [ind1, ind2] = arrayKey.split(',');
+
+        if (ind2 === "0") {
+          return "minimumLocation" + (Number(ind1) + 1)
+        } else {
+          return "minimumValue" + (Number(ind1) + 1)
+        }
+      },
       returnDependencies: () => ({
         xs: {
           dependencyType: "stateVariable",
@@ -602,21 +590,7 @@ export default class InterpolatedFunction extends Function {
           variableName: "coeffs"
         },
       }),
-      markStale: function ({ freshnessInfo, arrayKeys, changes }) {
-
-        // with any change, mark whole array as stale
-        freshnessInfo.minima.freshByKey = {}
-        return { fresh: { minima: false } }
-
-      },
-      definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
-
-        let freshByKey = freshnessInfo.minima.freshByKey;
-
-        if (Object.keys(freshByKey).length > 0) {
-          // if anything is fresh, it all is fresh
-          return {};
-        }
+      entireArrayDefinition: function ({ dependencyValues }) {
 
         let xs = dependencyValues.xs;
         let coeffs = dependencyValues.coeffs;
@@ -640,7 +614,7 @@ export default class InterpolatedFunction extends Function {
           if (c[2] > 0) {
             let x = -c[1] / (2 * c[2]);
             if (x <= dx - eps) {
-              minimaList.push(me.fromAst(["tuple", x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+              minimaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
             } else if (Math.abs(x - dx) < eps) {
               minimumAtPreviousRight = true;
             }
@@ -655,7 +629,7 @@ export default class InterpolatedFunction extends Function {
             // critical point where choose +sqrtdiscrim is minimum
             let x = (-2 * c[2] + sqrtdiscrim) / (6 * c[3]);
             if (x <= dx - eps) {
-              minimaList.push(me.fromAst(["tuple", x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+              minimaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
             } else if (Math.abs(x - dx) < eps) {
               minimumAtPreviousRight = true;
             }
@@ -672,10 +646,10 @@ export default class InterpolatedFunction extends Function {
               let x = -c[1] / (2 * c[2]);
               if (Math.abs(x) < eps) {
                 if (minimumAtPreviousRight) {
-                  minimaList.push(me.fromAst(["tuple", x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+                  minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
               } else if (x >= eps && x <= dx - eps) {
-                minimaList.push(me.fromAst(["tuple", x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+                minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
               }
               minimumAtPreviousRight = (Math.abs(x - dx) < eps);
 
@@ -693,10 +667,10 @@ export default class InterpolatedFunction extends Function {
               let x = (-2 * c[2] + sqrtdiscrim) / (6 * c[3]);
               if (Math.abs(x) < eps) {
                 if (minimumAtPreviousRight) {
-                  minimaList.push(me.fromAst(["tuple", x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+                  minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
               } else if (x >= eps && x <= dx - eps) {
-                minimaList.push(me.fromAst(["tuple", x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+                minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
               }
               minimumAtPreviousRight = (Math.abs(x - dx) < eps);
 
@@ -715,10 +689,10 @@ export default class InterpolatedFunction extends Function {
             let x = -c[1] / (2 * c[2]);
             if (Math.abs(x) < eps) {
               if (minimumAtPreviousRight) {
-                minimaList.push(me.fromAst(["tuple", x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+                minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
               }
             } else if (x >= eps) {
-              minimaList.push(me.fromAst(["tuple", x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+              minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
             }
           }
         } else {
@@ -731,19 +705,13 @@ export default class InterpolatedFunction extends Function {
             // critical point where choose +sqrtdiscrim is minimum
             let x = (-2 * c[2] + sqrtdiscrim) / (6 * c[3]);
             if (x >= eps) {
-              minimaList.push(me.fromAst(["tuple", x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+              minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
             } else if (Math.abs(x) < eps) {
               if (minimumAtPreviousRight) {
-                minimaList.push(me.fromAst(["tuple", x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+                minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
               }
             }
           }
-        }
-
-
-        // mark everything fresh
-        for (let key in minimaList) {
-          freshByKey[key] = true;
         }
 
         return { newValues: { minima: minimaList } }
@@ -753,9 +721,73 @@ export default class InterpolatedFunction extends Function {
 
     stateVariableDefinitions.maxima = {
       public: true,
-      componentType: "point",
+      componentType: "number",
       isArray: true,
-      entryPrefixes: ["maximum"],
+      entireArrayAtOnce: true,
+      nDimensions: 2,
+      entryPrefixes: ["maximum", "maximumLocations", "maximumLocation", "maximumValues", "maximumValue"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "maximum" || prefix === undefined) {
+          // maximum or entire array
+          // These are points,
+          // wrap inner dimension by both <point> and <xs>
+          // don't wrap outer dimension (for entire array)
+          return [["point", "xs"]];
+        } else {
+          // don't wrap maximumLocation(s) or maximumValues(s)
+          return [];
+        }
+      },
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (["maximum", "maximumLocation", "maximumValue"].includes(arrayEntryPrefix)) {
+          let pointInd = Number(varEnding) - 1;
+          if (Number.isInteger(pointInd) && pointInd >= 0) {
+            // if don't know array size, just guess that the entry is OK
+            // It will get corrected once array size is known.
+            // TODO: better to return empty array?
+            if (!arraySize || pointInd < arraySize[0]) {
+              if (arrayEntryPrefix === "maximum") {
+                return [pointInd + ",0", pointInd + ",1"];
+              } else if (arrayEntryPrefix === "maximumLocation") {
+                return [pointInd + ",0"]
+              } else {
+                return [pointInd + ",1"]
+              }
+            } else {
+              return []
+            }
+          } else {
+            return [];
+          }
+        } else if (arrayEntryPrefix === "maximumLocations") {
+          // can't guess at arrayKeys if don't have arraySize
+          if (!arraySize || varEnding !== "") {
+            return [];
+          }
+          // array of "i,0"", where i=0, ..., arraySize[0]-1
+          return Array.from(Array(arraySize[0]), (_, i) => i + ",0")
+        } else if (arrayEntryPrefix === "maximumValues") {
+
+          // can't guess at arrayKeys if don't have arraySize
+          if (!arraySize || varEnding !== "") {
+            return [];
+          }
+          // array of "i,1"", where i=0, ..., arraySize[0]-1
+          return Array.from(Array(arraySize[0]), (_, i) => i + ",1")
+        } else {
+          return [];
+        }
+
+      },
+      arrayVarNameFromArrayKey(arrayKey) {
+        let [ind1, ind2] = arrayKey.split(',');
+
+        if (ind2 === "0") {
+          return "maximumLocation" + (Number(ind1) + 1)
+        } else {
+          return "maximumValue" + (Number(ind1) + 1)
+        }
+      },
       returnDependencies: () => ({
         xs: {
           dependencyType: "stateVariable",
@@ -766,21 +798,7 @@ export default class InterpolatedFunction extends Function {
           variableName: "coeffs"
         },
       }),
-      markStale: function ({ freshnessInfo, arrayKeys, changes }) {
-
-        // with any change, mark whole array as stale
-        freshnessInfo.maxima.freshByKey = {}
-        return { fresh: { maxima: false } }
-
-      },
-      definition: function ({ dependencyValues, freshnessInfo, arrayKeys }) {
-
-        let freshByKey = freshnessInfo.maxima.freshByKey;
-
-        if (Object.keys(freshByKey).length > 0) {
-          // if anything is fresh, it all is fresh
-          return {};
-        }
+      entireArrayDefinition: function ({ dependencyValues }) {
 
         let xs = dependencyValues.xs;
         let coeffs = dependencyValues.coeffs;
@@ -804,7 +822,7 @@ export default class InterpolatedFunction extends Function {
           if (c[2] < 0) {
             let x = -c[1] / (2 * c[2]);
             if (x <= dx - eps) {
-              maximaList.push(me.fromAst(["tuple", x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+              maximaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
             } else if (Math.abs(x - dx) < eps) {
               maximumAtPreviousRight = true;
             }
@@ -819,7 +837,7 @@ export default class InterpolatedFunction extends Function {
             // critical point where choose -sqrtdiscrim is maximum
             let x = (-2 * c[2] - sqrtdiscrim) / (6 * c[3]);
             if (x <= dx - eps) {
-              maximaList.push(me.fromAst(["tuple", x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+              maximaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
             } else if (Math.abs(x - dx) < eps) {
               maximumAtPreviousRight = true;
             }
@@ -836,10 +854,10 @@ export default class InterpolatedFunction extends Function {
               let x = -c[1] / (2 * c[2]);
               if (Math.abs(x) < eps) {
                 if (maximumAtPreviousRight) {
-                  maximaList.push(me.fromAst(["tuple", x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+                  maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
               } else if (x >= eps && x <= dx - eps) {
-                maximaList.push(me.fromAst(["tuple", x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+                maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
               }
               maximumAtPreviousRight = (Math.abs(x - dx) < eps);
 
@@ -857,10 +875,10 @@ export default class InterpolatedFunction extends Function {
               let x = (-2 * c[2] - sqrtdiscrim) / (6 * c[3]);
               if (Math.abs(x) < eps) {
                 if (maximumAtPreviousRight) {
-                  maximaList.push(me.fromAst(["tuple", x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+                  maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
               } else if (x >= eps && x <= dx - eps) {
-                maximaList.push(me.fromAst(["tuple", x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+                maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
               }
               maximumAtPreviousRight = (Math.abs(x - dx) < eps);
 
@@ -879,10 +897,10 @@ export default class InterpolatedFunction extends Function {
             let x = -c[1] / (2 * c[2]);
             if (Math.abs(x) < eps) {
               if (maximumAtPreviousRight) {
-                maximaList.push(me.fromAst(["tuple", x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+                maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
               }
             } else if (x >= eps) {
-              maximaList.push(me.fromAst(["tuple", x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+              maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
             }
           }
         } else {
@@ -895,72 +913,19 @@ export default class InterpolatedFunction extends Function {
             // critical point where choose -sqrtdiscrim is maximum
             let x = (-2 * c[2] - sqrtdiscrim) / (6 * c[3]);
             if (x >= eps) {
-              maximaList.push(me.fromAst(["tuple", x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+              maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
             } else if (Math.abs(x) < eps) {
               if (maximumAtPreviousRight) {
-                maximaList.push(me.fromAst(["tuple", x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]));
+                maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
               }
             }
           }
-        }
-
-
-        // mark everything fresh
-        for (let key in maximaList) {
-          freshByKey[key] = true;
         }
 
         return { newValues: { maxima: maximaList } }
 
       }
     }
-
-    stateVariableDefinitions.extrema = {
-      public: true,
-      componentType: "point",
-      isArray: true,
-      entryPrefixes: ["extremum"],
-      returnDependencies: () => ({
-        minima: {
-          dependencyType: "stateVariable",
-          variableName: "minima"
-        },
-        maxima: {
-          dependencyType: "stateVariable",
-          variableName: "maxima"
-        }
-      }),
-      markStale: function ({ freshnessInfo }) {
-
-        // with any change, mark whole array as stale
-        freshnessInfo.extrema.freshByKey = {}
-        return { fresh: { extrema: false } }
-
-      },
-      definition: function ({ dependencyValues, freshnessInfo }) {
-
-        let freshByKey = freshnessInfo.extrema.freshByKey;
-
-        // freshByKey is all or nothing
-        // so if it contains anything, then everything is fresh
-        if (Object.keys(freshByKey).length > 0) {
-          // since is array, don't need to indicate noChanges
-          return {}
-        }
-
-        let extrema = [...dependencyValues.minima, ...dependencyValues.maxima]
-          .sort((a, b) => a.get_component(0) - b.get_component(0));
-
-        // mark everything fresh
-        for (let key in extrema) {
-          freshByKey[key] = true;
-        }
-
-        return { newValues: { extrema } }
-
-      }
-    }
-
 
     return stateVariableDefinitions;
 
