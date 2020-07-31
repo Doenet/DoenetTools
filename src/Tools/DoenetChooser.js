@@ -480,7 +480,6 @@ class DoenetChooser extends Component {
         this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
         this.courseContentInfo = Object.assign({}, this.courseContentInfo, { [courseId]: resp.data.branchInfo });
         this.courseFolderInfo = Object.assign({}, this.courseFolderInfo, { [courseId]: resp.data.folderInfo });
-        //console.log('courseFolderInfo', this.courseFolderInfo);
         this.courseUrlInfo = Object.assign({}, this.courseUrlInfo, { [courseId]: resp.data.urlInfo });
         this.folders_loaded = true;
         this.branches_loaded = true;
@@ -2126,6 +2125,7 @@ class DoenetChooser extends Component {
         treeContainerType = ChooserConstants.USER_CONTENT_TYPE;
         treeParentsInfo = this.userFolderInfo;
         treeChildrenInfo = { ...this.userContentInfo, ...this.userUrlInfo };
+        console.log(treeParentsInfo)
       } else if (this.state.selectedDrive == "Courses") {
         folderList = this.courseInfo[this.state.selectedCourse].folders;
         contentList = this.courseInfo[this.state.selectedCourse].content;
@@ -2135,10 +2135,6 @@ class DoenetChooser extends Component {
         treeParentsInfo = this.courseFolderInfo[this.state.selectedCourse];
         treeChildrenInfo = { ...this.courseContentInfo[this.state.selectedCourse], ...this.courseUrlInfo[this.state.selectedCourse] };
       }
-
-
-      //console.log('treeParentsInfo', treeParentsInfo);
-      //console.log('treeChildrenInfo', treeChildrenInfo);
 
 
       this.tree = <div className="tree" style={{ paddingLeft: "1em" }}>
@@ -2259,10 +2255,14 @@ class DoenetChooser extends Component {
        }}
      />
    </div>
-      let customizedContentTreeParentInfo = JSON.parse(JSON.stringify(treeParentsInfo));
-      let customizedContentTreeChildrenInfo = JSON.parse(JSON.stringify(treeChildrenInfo));
-      customizedContentTreeParentInfo.root.title = "Content";
-      customizedContentTreeParentInfo.root.childContent = [];
+      let customizedContentTreeParentInfo = {};
+      let customizedContentTreeChildrenInfo = {};
+      if (treeParentsInfo && treeChildrenInfo) {
+        customizedContentTreeParentInfo = JSON.parse(JSON.stringify(treeParentsInfo));
+        customizedContentTreeChildrenInfo = JSON.parse(JSON.stringify(treeChildrenInfo));
+        customizedContentTreeParentInfo.root.title = "Content";
+        customizedContentTreeParentInfo.root.childContent = [];
+      }
 
       for (let key in customizedContentTreeParentInfo) {
         if (key !== 'root') {
@@ -2271,7 +2271,6 @@ class DoenetChooser extends Component {
           customizedContentTreeParentInfo[key].childUrls = [];
         }
       }
-
 
       let customizedCoursesTreeParentInfo = {
         root: {
@@ -2354,13 +2353,19 @@ class DoenetChooser extends Component {
             
                 //   expanderIcon: <FontAwesomeIcon icon={faPlus}/>
                 // emptyParentExpanderIcon: <span style={{padding:'5px'}}></span>
+                emptyParentExpanderIcon: <FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "18px", "color": "#a7a7a7", "marginRight": "18px" }} />,
+                expanderIcon: {
+                  closed:<FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "18px", "color": "#a7a7a7", "marginRight": "18px" }} />,
+                  opened:<FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "18px", "color": "#a7a7a7", "marginRight": "18px" }} />
+                } 
+                  
 
               }}
               onLeafNodeClick={(nodeId) => {
                 if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
                 else this.tempSet.add(nodeId);
                 this.forceUpdate();
-                this.selectDrive("Courses", nodeId)
+                this.selectDrive("Content", nodeId)
               }}
               // onLeafNodeClick={(nodeId) => {
               //   this.tempSet.clear();
@@ -2429,9 +2434,10 @@ class DoenetChooser extends Component {
               onLeafNodeClick={(nodeId) => {
                 this.tempSet.clear();
                 this.tempSet.add(nodeId);
-                this.forceUpdate()
+                this.forceUpdate();
+                this.selectDrive("Courses", nodeId)
               }}
-              onParentNodeClick={(nodeId) => {
+              onParentNodeClick={(nodeId, type) => {
                 this.tempSet.clear();
                 this.tempSet.add(nodeId);
                 this.forceUpdate()

@@ -339,7 +339,6 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
       })
     }
   }
-
   const itemType = parentsInfo[parentHeadingId]["type"];
   const childrenList = [...parentsInfo[parentHeadingId]["childContent"], ...parentsInfo[parentHeadingId]["childUrls"]];
   const baseItemStyleAndIcon = getBaseItemStyleAndIcon(currentDraggedObject, itemType, parentNodeHeadingId, parentHeadingId);
