@@ -1,4 +1,5 @@
 import BaseComponent from './abstract/BaseComponent';
+import { mapDeep } from '../utils/array';
 
 export default class Prop extends BaseComponent {
   static componentType = "prop";
@@ -114,17 +115,34 @@ export default class Prop extends BaseComponent {
 
           // need a case insensitive match to variable name
           let variableNames = Object.keys(stateVarDescrip);
-          let matchedObj = null, componentType = null;
+          let matchedObj = null;
+          let componentType = null;
           for (let varName of variableNames) {
             if (variableName === varName.toLowerCase()) {
               matchedObj = { varName };
-              if (stateVarDescrip[varName].isArray) {
+              let theDescrip = stateVarDescrip[varName];
+              if (theDescrip.isArray) {
                 matchedObj.isArray = true;
+                matchedObj.nDimensions = theDescrip.nDimensions;
               }
-              if(stateVarDescrip[varName].containsComponentNamesToCopy) {
+              if (theDescrip.containsComponentNamesToCopy) {
                 matchedObj.containsComponentNamesToCopy = true;
               }
-              componentType = stateVarDescrip[varName].componentType;
+              if (theDescrip.wrappingComponents) {
+                matchedObj.wrappingComponents = mapDeep(theDescrip.wrappingComponents.slice(0, theDescrip.nDimensions), x => x.toLowerCase());
+                // find outermost wrapping that has at least one entry
+                // which will supercede componentType if provided
+                for (let ind = matchedObj.wrappingComponents.length - 1; ind >= 0; ind--) {
+                  let wrapping = matchedObj.wrappingComponents[ind];
+                  if (wrapping && wrapping[0]) {
+                    componentType = wrapping[0];
+                    break;
+                  }
+                }
+              }
+              if (!componentType) {
+                componentType = theDescrip.componentType;
+              }
               break;
             }
           }
@@ -140,13 +158,28 @@ export default class Prop extends BaseComponent {
                 let targetVarName = publicStateVariablesInfo.aliases[aliasName];
                 let targetDescription = stateVarDescrip[targetVarName];
                 if (targetDescription && targetDescription.public) {
-                  componentType = targetDescription.componentType;
                   matchedObj = { varName: targetVarName };
                   if (targetDescription.isArray) {
                     matchedObj.isArray = true;
+                    matchedObj.nDimensions = targetDescription.nDimensions;
                   }
-                  if(targetDescription.containsComponentNamesToCopy) {
+                  if (targetDescription.containsComponentNamesToCopy) {
                     matchedObj.containsComponentNamesToCopy = true;
+                  }
+                  if (targetDescription.wrappingComponents) {
+                    matchedObj.wrappingComponents = mapDeep(targetDescription.wrappingComponents.slice(0, targetDescription.nDimensions), x => x.toLowerCase());
+                    // find outermost wrapping that has at least one entry
+                    // which will supercede componentType if provided
+                    for (let ind = matchedObj.wrappingComponents.length - 1; ind >= 0; ind--) {
+                      let wrapping = matchedObj.wrappingComponents[ind];
+                      if (wrapping && wrapping[0]) {
+                        componentType = wrapping[0];
+                        break;
+                      }
+                    }
+                  }
+                  if (!componentType) {
+                    componentType = targetDescription.componentType;
                   }
                 } else {
                   propToMatch = targetVarName.toLowerCase();
@@ -161,7 +194,8 @@ export default class Prop extends BaseComponent {
               // match with longest first, so get maximal match
               for (let prefix of arrayEntryPrefixesLongestToShortest) {
                 if (propToMatch.substring(0, prefix.length) === prefix.toLowerCase()) {
-                  let arrayVarName = publicStateVariablesInfo.arrayEntryPrefixes[prefix].arrayVariableName;
+                  let arrayEntryDescription = publicStateVariablesInfo.arrayEntryPrefixes[prefix];
+                  let arrayVarName = arrayEntryDescription.arrayVariableName;
                   let varEnding = propToMatch.substring(prefix.length);
                   let varName = prefix + varEnding;
                   matchedObj = {
@@ -170,11 +204,26 @@ export default class Prop extends BaseComponent {
                     arrayVarName,
                     arrayEntryPrefix: prefix,
                     varEnding,
+                    nDimensions: arrayEntryDescription.nDimensions,
                   };
-                  if(stateVarDescrip[arrayVarName].containsComponentNamesToCopy) {
+                  if (stateVarDescrip[arrayVarName].containsComponentNamesToCopy) {
                     matchedObj.containsComponentNamesToCopy = true;
                   }
-                  componentType = stateVarDescrip[arrayVarName].componentType;
+                  if (arrayEntryDescription.wrappingComponents) {
+                    matchedObj.wrappingComponents = mapDeep(arrayEntryDescription.wrappingComponents.slice(0, arrayEntryDescription.nDimensions), x => x.toLowerCase());
+                    // find outermost wrapping that has at least one entry
+                    // which will supercede componentType if provided
+                    for (let ind = matchedObj.wrappingComponents.length - 1; ind >= 0; ind--) {
+                      let wrapping = matchedObj.wrappingComponents[ind];
+                      if (wrapping && wrapping[0]) {
+                        componentType = wrapping[0];
+                        break;
+                      }
+                    }
+                  }
+                  if (!componentType) {
+                    componentType = stateVarDescrip[arrayVarName].componentType;
+                  }
                   break;
                 }
               }

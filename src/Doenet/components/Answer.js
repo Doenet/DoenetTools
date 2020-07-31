@@ -4,12 +4,6 @@ import { createUniqueName } from '../utils/naming';
 import { deepCompare } from '../utils/deepFunctions';
 
 export default class Answer extends InlineComponent {
-  constructor(args) {
-    super(args);
-    this.submitAnswer = this.submitAnswer.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    );
-  }
   static componentType = "answer";
 
   static createPropertiesObject(args) {
@@ -604,104 +598,97 @@ export default class Answer extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.responseComponents = {
+    stateVariableDefinitions.nResponses = {
       returnDependencies: () => ({
         awardChildren: {
           dependencyType: "childStateVariables",
           childLogicName: "atLeastZeroCompleteAwards",
-          variableNames: ["responseComponents"]
+          variableNames: ["nResponses"]
+        },
+        inputChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneInput",
+          variableNames: ["nValues"]
         }
       }),
-      definition: function ({ dependencyValues }) {
-        let responseComponents = [];
-        if (dependencyValues.awardChildren.length === 0) {
-          if (dependencyValues.inputChild) {
-            responseComponents.push(dependencyValues.inputChild)
-          }
-        } else {
-          for (let awardChild of dependencyValues.awardChildren) {
-            responseComponents.push(...awardChild.stateValues.responseComponents)
-          }
+      definition({ dependencyValues }) {
+        let nResponses = 0;
+        for (let awardChild of dependencyValues.awardChildren) {
+          nResponses += awardChild.stateValues.nResponses;
+        }
+        if (nResponses === 0 && dependencyValues.inputChild.length === 1) {
+          nResponses = dependencyValues.inputChild[0].stateValues.nValues;
         }
         return {
           newValues: {
-            responseComponents
+            nResponses
           }
         }
       }
     }
+
+
 
     stateVariableDefinitions.currentResponses = {
       public: true,
       isArray: true,
       entryPrefixes: ["currentResponse"],
       defaultEntryValue: '\uFF3F',
-      returnDependencies: () => ({
-        responseComponents: {
+      returnArraySizeDependencies: () => ({
+        nResponses: {
           dependencyType: "stateVariable",
-          variableName: "responseComponents"
-        },
-        inputChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atMostOneInput",
-          variableNames: ["value", "componentType", "values"],
-          variablesOptional: "true",
+          variableName: "nResponses",
         },
       }),
-      definition: function ({ dependencyValues, arrayKeys }) {
-
-        let componentType = dependencyValues.responseComponents.map(x => x.componentType);
-        let componentsForResponses = dependencyValues.responseComponents;
-        
-        if(dependencyValues.responseComponents.length === 0 && dependencyValues.inputChild.length === 1) {
-          let inputChild = dependencyValues.inputChild[0];
-          componentType = [inputChild.stateValues.componentType];
-          componentsForResponses = [inputChild];
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nResponses];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          awardChildren: {
+            dependencyType: "childStateVariables",
+            childLogicName: "atLeastZeroCompleteAwards",
+            variableNames: ["responses"]
+          },
+          inputChild: {
+            dependencyType: "childStateVariables",
+            childLogicName: "atMostOneInput",
+            variableNames: ["value", "componentType", "values"],
+            variablesOptional: "true",
+          },
         }
 
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = arrayKeys[0];
-        }
+        return { globalDependencies };
 
-        let currentResponses;
-        if(arrayKey === undefined) {
-          currentResponses = [];
-        } else {
-          currentResponses = {};
-        }
+      },
+      arrayDefinitionByKey({ globalDependencyValues }) {
 
-        let numberValuesSoFar = 0;
-        let matchedArrayKey = false;
+        let currentResponses = [];
+        let componentType = [];
 
-        for (let [responseNumber, responseComponent] of componentsForResponses.entries()) {
-
-          let values;
-          // if have a values state variable that is an array
-          // then each component is considered a response
-          if (Array.isArray(responseComponent.stateValues.values)) {
-            values = responseComponent.stateValues.values
-          } else {
-            values = [responseComponent.stateValues.value];
-          }
-
-          for (let [ind, value] of values.entries()) {
-            let valueKey = String(numberValuesSoFar + ind);
-            if (arrayKey === valueKey || arrayKey === undefined) {
-              currentResponses[valueKey] = value;
-              if (arrayKey !== undefined) {
-                componentType = componentType[responseNumber];
-                matchedArrayKey = true;
-              }
+        for (let awardChild of globalDependencyValues.awardChildren) {
+          for (let response of awardChild.stateValues.responses) {
+            let values = response.values;
+            if (Array.isArray(values)) {
+              currentResponses.push(...values)
+              componentType.push(...Array(values.length).fill(responses.componentType))
+            } else {
+              currentResponses.push(response.value)
+              componentType.push(response.componentType)
             }
           }
 
-          numberValuesSoFar += values.length;
-
         }
 
-        if (arrayKey !== undefined && !matchedArrayKey) {
-          componentType = [];
+        if (currentResponses.length === 0 && globalDependencyValues.inputChild.length === 1) {
+          let values = globalDependencyValues.inputChild[0].stateValues.values;
+          if (Array.isArray(values)) {
+            currentResponses.push(...values)
+            componentType.push(...Array(values.length).fill(globalDependencyValues.inputChild[0].stateValues.componentType))
+          } else {
+            currentResponses.push(globalDependencyValues.inputChild[0].stateValues.value)
+            componentType.push(globalDependencyValues.inputChild[0].stateValues.componentType)
+          }
         }
 
         return {
@@ -716,55 +703,85 @@ export default class Answer extends InlineComponent {
       targetVariableName: "currentResponse1"
     };
 
+
+    stateVariableDefinitions.nSubmittedResponses = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        nResponses: {
+          dependencyType: "stateVariable",
+          variableName: "nResponses"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        useEssentialOrDefaultValue: {
+          nSubmittedResponses: {
+            variablesToCheck: ["nSubmittedResponses"],
+            defaultValue: Math.max(1, dependencyValues.nResponses)
+          }
+        }
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "nSubmittedResponses",
+            value: desiredStateVariableValues.nSubmittedResponses
+          }]
+        }
+      }
+    }
+
     stateVariableDefinitions.submittedResponses = {
       public: true,
       isArray: true,
       entryPrefixes: ["submittedResponse"],
       defaultEntryValue: '\uFF3F',
-      essential: true,
-      returnDependencies: () => ({
-        responseComponents: {
+      // essential: true,
+      returnArraySizeDependencies: () => ({
+        nSubmittedResponses: {
           dependencyType: "stateVariable",
-          variableName: "responseComponents",
-        },
-        inputChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atMostOneInput",
-          variableNames: ["value", "componentType", "values"],
-          variablesOptional: "true",
+          variableName: "nSubmittedResponses",
         },
       }),
-      definition: function ({ dependencyValues, arrayKeys, freshnessInfo }) {
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nSubmittedResponses];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          currentResponsesComponentType: {
+            dependencyType: "stateVariableComponentType",
+            variableName: "currentResponses"
+          },
+          nSubmittedResponses: {
+            dependencyType: "stateVariable",
+            variableName: "nSubmittedResponses"
+          },
+        }
+        return { globalDependencies }
+      },
+      arrayDefinitionByKey({ globalDependencyValues }) {
 
-        let freshByKey = freshnessInfo.submittedResponses.freshByKey;
+        let componentType = [];
 
-        let componentType = dependencyValues.responseComponents.map(x => x.componentType);
-        
-        if(dependencyValues.responseComponents.length === 0 && dependencyValues.inputChild.length === 1) {
-          let inputChild = dependencyValues.inputChild[0];
-          componentType = [inputChild.stateValues.componentType];
+        if (globalDependencyValues.currentResponsesComponentType) {
+          componentType.push(...globalDependencyValues.currentResponsesComponentType.slice(0, globalDependencyValues.nSubmittedResponses))
         }
 
         let essentialSubmittedResponses = {};
 
-        let arrayKey;
-        if (arrayKeys) {
-          arrayKey = arrayKeys[0];
-        }
+        for (let ind = 0; ind < globalDependencyValues.nSubmittedResponses; ind++) {
 
-        for (let ind in componentType) {
-          // Note: ind is a string, starting with "0"
-
-          // Note: since we never unset freshByKey (there is no markStale function)
-          // this function doesn't return anything once the values are set for the first time
+          // this function doesn't change the values once they set for the first time
           // (The values will just be changed using the inverse function)
-          if (!freshByKey[ind]) {
-            freshByKey[ind] = true;
-            essentialSubmittedResponses[ind] = {
-              variablesToCheck: [
-                { variableName: "submittedResponses", arrayIndex: ind }
-              ],
-            }
+          essentialSubmittedResponses[ind] = {
+            variablesToCheck: [
+              { variableName: "submittedResponses", arrayIndex: ind }
+            ],
+          }
+
+          if (!componentType[ind]) {
+            componentType[ind] = "text"
           }
 
         }
@@ -775,15 +792,21 @@ export default class Answer extends InlineComponent {
             submittedResponses: essentialSubmittedResponses,
           },
           setComponentType: { submittedResponses: componentType },
+          makeEssential: ["submittedResponses"]
         }
       },
-      inverseDefinition: function ({ desiredStateVariableValues }) {
+      inverseArrayDefinitionByKey: function ({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
             setStateVariable: "submittedResponses",
             value: [...desiredStateVariableValues.submittedResponses]
-          }]
+          },
+          {
+            setDependency: "nSubmittedResponses",
+            desiredValue: desiredStateVariableValues.submittedResponses.length
+          }
+          ]
         };
       }
     }
@@ -985,6 +1008,7 @@ export default class Answer extends InlineComponent {
       public: true,
       componentType: "feedbacktext",
       isArray: true,
+      entireArrayAtOnce: true,
       entryPrefixes: ["feedback"],
       returnDependencies: () => ({
         awardChildren: {
@@ -992,22 +1016,22 @@ export default class Answer extends InlineComponent {
           childLogicName: "atLeastZeroCompleteAwards",
           variableNames: ["feedbacks"]
         },
-        responseComponents: {
+        feedbackComponents: {
           dependencyType: "descendantStateVariables",
           componentTypes: ["_input"],
           variableNames: ["feedbacks"],
           variablesOptional: true,
         },
       }),
-      definition: function ({ dependencyValues }) {
+      entireArrayDefinition: function ({ dependencyValues }) {
         let feedbacks = [];
 
         for (let award of dependencyValues.awardChildren) {
           feedbacks.push(...award.stateValues.feedbacks);
         }
-        for (let responseComponent of dependencyValues.responseComponents) {
-          if (Array.isArray(responseComponent.stateValues.feedbacks)) {
-            feedbacks.push(...responseComponent.stateValues.feedbacks)
+        for (let feedbackComponent of dependencyValues.feedbackComponents) {
+          if (Array.isArray(feedbackComponent.stateValues.feedbacks)) {
+            feedbacks.push(...feedbackComponent.stateValues.feedbacks)
           }
         }
         return {

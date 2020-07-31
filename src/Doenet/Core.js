@@ -9,9 +9,10 @@ import { createUniqueName } from './utils/naming';
 import * as serializeFunctions from './utils/serializedStateProcessing';
 import { gatherDescendants } from './utils/descendants';
 import crypto from 'crypto';
-import { deepCompare } from './utils/deepFunctions';
+import { deepCompare, deepClone } from './utils/deepFunctions';
 import createStateProxyHandler from './StateProxyHandler';
 import { postProcessCopy } from './utils/copy';
+import { flattenDeep, mapDeep } from './utils/array';
 
 // string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -141,6 +142,7 @@ export default class Core {
 
     this.downstreamDependencies = {};
     this.upstreamDependencies = {};
+    this.circularCheckPassed = {};
 
     this._renderComponents = [];
     this._renderComponentsByName = {};
@@ -660,6 +662,9 @@ export default class Core {
     }
 
 
+    this.updateDependencies(updatesNeeded, compositesBeingExpanded);
+
+
     if (Object.keys(updatesNeeded.unresolvedDependencies).length > 0) {
       console.log("have some unresolved");
       console.log(updatesNeeded.unresolvedDependencies);
@@ -680,8 +685,6 @@ export default class Core {
         return { success: false, message: childLogicMessage, updatesNeeded }
       }
     }
-
-    this.updateDependencies(updatesNeeded, compositesBeingExpanded);
 
     return {
       success: true,
@@ -1073,10 +1076,23 @@ export default class Core {
           if (!updatesNeeded.unresolvedByDependent[dep.componentName][dep.stateVariable]) {
             updatesNeeded.unresolvedByDependent[dep.componentName][dep.stateVariable] = [];
           }
-          updatesNeeded.unresolvedByDependent[dep.componentName][dep.stateVariable].push({
-            componentName: component.componentName,
-            stateVariable: varName,
-          });
+
+          // since a state variable could get re-designated as unresolved
+          // while in the middle of it getting resolved,
+          // it is possible that the dependency is already in unresolvedByDependent
+          let alreadyIn = false;
+          for (let oDep of updatesNeeded.unresolvedByDependent[dep.componentName][dep.stateVariable]) {
+            if (oDep.componentName === component.componentName && oDep.stateVariable === varName) {
+              alreadyIn = true;
+              break;
+            }
+          }
+          if (!alreadyIn) {
+            updatesNeeded.unresolvedByDependent[dep.componentName][dep.stateVariable].push({
+              componentName: component.componentName,
+              stateVariable: varName,
+            });
+          }
         }
       }
     }
@@ -1266,7 +1282,16 @@ export default class Core {
           component: shadowedComposite,
           updatesNeeded, compositesBeingExpanded
         });
+
+
         if (!result.success) {
+          // record that are finished expanding the composite
+          let targetInd = compositesBeingExpanded.indexOf(component.componentName);
+          if (targetInd === -1) {
+            throw Error(`Something is wrong as we lost track that we were expanding ${component.componentName}`);
+          }
+          compositesBeingExpanded.splice(targetInd, 1)
+
           return { sucess: false, readyToExpand: true };
         }
 
@@ -1298,7 +1323,7 @@ export default class Core {
         compositesBeingExpanded,
       });
 
-      this.markReplacementDependenciesChanged(component, updatesNeeded);
+      this.updateReplacementDependencies(component, updatesNeeded);
 
       // record that are finished expanding the composite
       let targetInd = compositesBeingExpanded.indexOf(component.componentName);
@@ -1360,7 +1385,7 @@ export default class Core {
       throw Error(`Invalid createSerializedReplacements of ${component.componentName}`);
     }
 
-    this.markReplacementDependenciesChanged(component, updatesNeeded);
+    this.updateReplacementDependencies(component, updatesNeeded);
 
     // record that are finished expanding the composite
     let targetInd = compositesBeingExpanded.indexOf(component.componentName);
@@ -1960,30 +1985,19 @@ export default class Core {
           for (let varName in this.upstreamDependencies[childName]) {
             for (let [ind, upDep] of this.upstreamDependencies[childName][varName].entries()) {
               if (upDep.dependencyType !== "childStateVariables" && upDep.dependencyType !== "childIdentity") {
-                if (upDep.dependencyName === "targetVariable" || upDep.dependencyName == "targetReadyToExpand"
-                  || upDep.dependencyName.slice(0, 17) == "__composites_for_") {
+                // TODO: do we just delete these types of dependencies
+                // or should we delete all?
+                // Not sure why just looking for these.  Just added ones found so far.
+                if (upDep.dependencyName === "targetVariable" || upDep.dependencyName === "targetReadyToExpand"
+                  || upDep.dependencyName.slice(0, 17) === "__composites_for_"
+                  || upDep.upstreamVariableNames.every(x => x.slice(0, 24) === "__determine_dependencies")
+                ) {
 
-                  let upstreamComponentName = upDep.upstreamComponentName;
-                  if (upDep.downstreamComponentNames && upDep.downstreamComponentNames.length > 1) {
-                    // if the dependency depends on other downstream components
-                    // just delete component from the array
-                    let ind = upDep.downstreamComponentNames.indexOf(componentName);
-                    upDep.downstreamComponentNames.splice(ind, 1);
-                  } else {
-                    if (this.downstreamDependencies[upstreamComponentName]) {
-                      // Note: all downstream dependencies for upstreamVariablesNames are the same object
-                      // so just need to delete items from the first object
-                      delete this.downstreamDependencies[upstreamComponentName][upDep.upstreamVariableNames[0]][upDep.dependencyName];
-                      if (Object.keys(this.downstreamDependencies[upstreamComponentName][upDep.upstreamVariableNames[0]]).length == 0) {
-                        for (let upVarName of upDep.upstreamVariableNames) {
-                          delete this.downstreamDependencies[upstreamComponentName][upVarName];
-                        }
-                      }
-                    }
-                  }
-
-                  // also delete from child's upstream dependencies
-                  this.upstreamDependencies[childName][varName].splice(ind, 1);
+                  this.deleteDownstreamDependency({
+                    downDeps: this.downstreamDependencies[upDep.upstreamComponentName][upDep.upstreamVariableNames[0]],
+                    downDepName: upDep.dependencyName,
+                    downstreamComponentName: childName
+                  });
 
                 } else {
                   console.warn(`In deleting ${childName} as child of ${component.componentName} via sugar, found an unexpected dependency`)
@@ -2248,6 +2262,7 @@ export default class Core {
               propVariable: dep.propVariable,
               arrayStateVariable: dep.arrayStateVariable,
               arrayKey: dep.arrayKey,
+              ignorePrimaryStateVariable: dep.ignorePrimaryStateVariable,
             }
           } else if (dep.dependencyType === "adapter") {
             redefineDependencies = {
@@ -2665,7 +2680,7 @@ export default class Core {
         "requireChildLogicInitiallySatisfied",
         "useDefaultForShadows",
         "propagateToProps",
-        "disallowOverwiteOnCopy",
+        "disallowOverwriteOnCopy",
       ]
 
       for (let attribute of propertyAttributesToCopy) {
@@ -2807,7 +2822,7 @@ export default class Core {
       let defaultValue = propertySpecification.default;
       let thisDependencies = {};
 
-      if (property in compositeComponent.state && !propertySpecification.disallowOverwiteOnCopy) {
+      if (property in compositeComponent.state && !propertySpecification.disallowOverwriteOnCopy) {
         thisDependencies.compositeComponentVariable = {
           dependencyType: "componentStateVariable",
           componentIdentity: {
@@ -2829,8 +2844,19 @@ export default class Core {
           },
           variableName: property,
         };
+        if ("targetPropertiesToIgnore" in compositeComponent.state) {
+          thisDependencies.targetPropertiesToIgnore = {
+            dependencyType: "componentStateVariable",
+            componentIdentity: {
+              componentName: compositeComponent.componentName,
+              componentType: compositeComponent.componentType
+            },
+            variableName: "targetPropertiesToIgnore",
+          };
+        }
       }
 
+      // TODO: do we really want to overwrite targetVariable here?
       if (additionalPropertiesFromStateVariables[property]) {
         thisDependencies.targetVariable = {
           dependencyType: "componentStateVariable",
@@ -2872,10 +2898,15 @@ export default class Core {
             })
             return { newValues: { [property]: propertyValue } };
 
-          } else if (dependencyValues.targetVariable !== undefined && (
-            !usedDefault.targetVariable
-            || targetComponent.state[property].useDefaultForShadows
-          )) {
+          } else if (dependencyValues.targetVariable !== undefined
+            && !(
+              dependencyValues.targetPropertiesToIgnore &&
+              dependencyValues.targetPropertiesToIgnore.map(x => x.toLowerCase()).includes(property.toLowerCase())
+            )
+            && (
+              !usedDefault.targetVariable
+              || targetComponent.state[property].useDefaultForShadows
+            )) {
             // else if target has property, use that value
             return { newValues: { [property]: dependencyValues.targetVariable } };
 
@@ -2926,7 +2957,9 @@ export default class Core {
               }]
             };
 
-          } else if (dependencyValues.targetVariable !== undefined && !usedDefault.targetVariable) {
+          } else if (dependencyValues.targetVariable !== undefined &&
+            !dependencyValues.targetPropertiesToIgnore.map(x => x.toLowerCase()).includes(property.toLowerCase()) &&
+            !usedDefault.targetVariable) {
             // else if target has property, set that value
             return {
               success: true,
@@ -2982,55 +3015,58 @@ export default class Core {
     }
 
     if (redefineDependencies.propVariable) {
-      // primaryStateVariableForDefinition is the state variable that the componentClass
-      // being created has specified should be given the value when it
-      // is created from an outside source like a reference to a prop or an adapter
-      let primaryStateVariableForDefinition = "value";
-      if (componentClass.primaryStateVariableForDefinition) {
-        primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
-      }
-      let stateDef = stateVariableDefinitions[primaryStateVariableForDefinition];
-      if (!stateDef) {
-        throw Error(`Cannot have a public state variable with componentType ${componentClass.componentType} as the class doesn't have a primary state variable for definition`)
-      }
-      stateDef.returnDependencies = () => ({
-        targetVariable: {
-          dependencyType: "componentStateVariable",
-          componentIdentity: {
-            componentName: targetComponent.componentName,
-            componentType: targetComponent.componentType
+
+      if (!redefineDependencies.ignorePrimaryStateVariable) {
+        // primaryStateVariableForDefinition is the state variable that the componentClass
+        // being created has specified should be given the value when it
+        // is created from an outside source like a reference to a prop or an adapter
+        let primaryStateVariableForDefinition = "value";
+        if (componentClass.primaryStateVariableForDefinition) {
+          primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+        }
+        let stateDef = stateVariableDefinitions[primaryStateVariableForDefinition];
+        if (!stateDef) {
+          throw Error(`Cannot have a public state variable with componentType ${componentClass.componentType} as the class doesn't have a primary state variable for definition`)
+        }
+        stateDef.returnDependencies = () => ({
+          targetVariable: {
+            dependencyType: "componentStateVariable",
+            componentIdentity: {
+              componentName: targetComponent.componentName,
+              componentType: targetComponent.componentType
+            },
+            variableName: redefineDependencies.propVariable,
           },
-          variableName: redefineDependencies.propVariable,
-        },
-      });
-      if (stateDef.set) {
-        stateDef.definition = function ({ dependencyValues }) {
-          return {
-            newValues: {
-              [primaryStateVariableForDefinition]: stateDef.set(dependencyValues.targetVariable),
-            },
-            alwaysShadow: [primaryStateVariableForDefinition],
+        });
+        if (stateDef.set) {
+          stateDef.definition = function ({ dependencyValues }) {
+            return {
+              newValues: {
+                [primaryStateVariableForDefinition]: stateDef.set(dependencyValues.targetVariable),
+              },
+              alwaysShadow: [primaryStateVariableForDefinition],
+            };
           };
-        };
-      } else {
-        stateDef.definition = function ({ dependencyValues }) {
+        } else {
+          stateDef.definition = function ({ dependencyValues }) {
+            return {
+              newValues: {
+                [primaryStateVariableForDefinition]: dependencyValues.targetVariable,
+              },
+              alwaysShadow: [primaryStateVariableForDefinition],
+            };
+          };
+        }
+        stateDef.inverseDefinition = function ({ desiredStateVariableValues }) {
           return {
-            newValues: {
-              [primaryStateVariableForDefinition]: dependencyValues.targetVariable,
-            },
-            alwaysShadow: [primaryStateVariableForDefinition],
+            success: true,
+            instructions: [{
+              setDependency: "targetVariable",
+              desiredValue: desiredStateVariableValues[primaryStateVariableForDefinition],
+            }]
           };
         };
       }
-      stateDef.inverseDefinition = function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setDependency: "targetVariable",
-            desiredValue: desiredStateVariableValues[primaryStateVariableForDefinition],
-          }]
-        };
-      };
 
       // for referencing a prop variable, don't shadow standard state variables
       // so just return now
@@ -3047,7 +3083,7 @@ export default class Core {
       foundReadyToExpand = true;
 
       let stateDef = stateVariableDefinitions.readyToExpand;
-      let originalReturnDependencies = stateDef.returnDependencies;
+      let originalReturnDependencies = stateDef.returnDependencies.bind(stateDef);
       let originalDefinition = stateDef.definition;
 
       stateDef.returnDependencies = function (args) {
@@ -3095,34 +3131,38 @@ export default class Core {
         // evaluate so know if it is essential
         stateObj.value;
       }
-      if (stateObj.essential || stateObj.alwaysShadow) {
-        stateVariablesToShadow.push(varName);
-      } else if (!stateObj.isResolved) {
-        if (!stateVariablesToShadowIfEssential.includes(varName)) {
-
-          let stateDef = stateVariableDefinitions[varName];
-
-          // some state variables, like determine dependency state variables
-          // won't be in shadowing component, so skip those
-          if (!stateDef) {
-            continue;
+      if (!stateObj.neverShadow) {
+        if (stateObj.essential || stateObj.alwaysShadow || stateObj.isShadow) {
+          if (!stateVariablesToShadow.includes(varName)) {
+            stateVariablesToShadow.push(varName);
           }
+        } else if (!stateObj.isResolved) {
+          if (!stateVariablesToShadowIfEssential.includes(varName)) {
 
-          let allStateVariablesAffected = [varName];
-          if (stateDef.additionalStateVariablesDefined) {
-            allStateVariablesAffected.push(...stateDef.additionalStateVariablesDefined)
+            let stateDef = stateVariableDefinitions[varName];
+
+            // some state variables, like determine dependency state variables
+            // won't be in shadowing component, so skip those
+            if (!stateDef) {
+              continue;
+            }
+
+            let allStateVariablesAffected = [varName];
+            if (stateDef.additionalStateVariablesDefined) {
+              allStateVariablesAffected.push(...stateDef.additionalStateVariablesDefined)
+            }
+
+            let determineIfShadowData = {
+              targetComponent,
+              foundReadyToExpand
+            }
+
+            for (let varName2 of allStateVariablesAffected) {
+              stateVariableDefinitions[varName2].determineIfShadowData = determineIfShadowData;
+            }
+            stateVariablesToShadowIfEssential.push(...allStateVariablesAffected)
+
           }
-
-          let determineIfShadowData = {
-            targetComponent,
-            foundReadyToExpand
-          }
-
-          for (let varName2 of allStateVariablesAffected) {
-            stateVariableDefinitions[varName2].determineIfShadowData = determineIfShadowData;
-          }
-          stateVariablesToShadowIfEssential.push(...allStateVariablesAffected)
-
         }
 
       }
@@ -3137,6 +3177,17 @@ export default class Core {
     let deleteStateVariablesFromDefinition = {};
     for (let varName of stateVariablesToShadow) {
       let stateDef = stateVariableDefinitions[varName];
+
+      if (stateDef === undefined) {
+        if (varName.slice(0, 8) === "__array_") {
+          // have an array variable name that is created on the fly
+          // rather than being specified in original definition.
+          stateDef = stateVariableDefinitions[varName] = {};
+        }
+      }
+
+      stateDef.isShadow = true;
+
       if (stateDef.additionalStateVariablesDefined) {
         for (let varName2 of stateDef.additionalStateVariablesDefined) {
           if (!stateVariablesToShadow.includes(varName2)) {
@@ -3150,7 +3201,6 @@ export default class Core {
         }
       }
       delete stateDef.additionalStateVariablesDefined;
-      let originalReturnDependencies = stateDef.returnDependencies;
       if (!foundReadyToExpand) {
         // if didn't find a readyToExpand,
         // then won't use original dependencies so can delete any
@@ -3160,83 +3210,87 @@ export default class Core {
 
       let copyComponentType = stateDef.public && stateDef.componentType === undefined;
 
-      stateDef.returnDependencies = function (args) {
-        let dependencies = {};
-        if (foundReadyToExpand) {
-          // even though won't use original dependencies
-          // if found a readyToExpand
-          // keep original dependencies so that readyToExpand
-          // won't be resolved until all its dependent variables are resolved
-          dependencies = originalReturnDependencies(args);
-        }
-        if (args.arrayKeys) {
-          for (let key of args.arrayKeys) {
-            dependencies[key] = {
-              dependencyType: "componentStateVariable",
+      if (stateDef.isArray) {
+        stateDef.returnArrayDependenciesByKey = function ({ arrayKeys }) {
+          let dependenciesByKey = {};
+
+          for (let key of arrayKeys) {
+            dependenciesByKey[key] = {
+              targetVariable: {
+                dependencyType: "componentStateVariable",
+                componentIdentity: {
+                  componentName: targetComponent.componentName,
+                  componentType: targetComponent.componentType
+                },
+                variableName: this.arrayVarNameFromArrayKey(key),
+              }
+            };
+          }
+
+          let globalDependencies = {}
+
+          if (copyComponentType) {
+            globalDependencies.targetVariableComponentType = {
+              dependencyType: "componentStateVariableComponentType",
               componentIdentity: {
                 componentName: targetComponent.componentName,
                 componentType: targetComponent.componentType
               },
-              variableName: this.arrayVarNameFromArrayKey(key),
-            };
+              variableName: varName,
+            }
           }
-        } else {
-          dependencies.targetVariable = {
-            dependencyType: "componentStateVariable",
-            componentIdentity: {
-              componentName: targetComponent.componentName,
-              componentType: targetComponent.componentType
-            },
-            variableName: varName,
-          };
+          return { globalDependencies, dependenciesByKey }
         }
-        if (copyComponentType) {
-          dependencies.targetVariableComponentType = {
-            dependencyType: "componentStateVariableComponentType",
-            componentIdentity: {
-              componentName: targetComponent.componentName,
-              componentType: targetComponent.componentType
-            },
-            variableName: varName,
-          }
-        }
-        return dependencies;
-      };
-      stateDef.definition = function ({ dependencyValues }) {
-        let result = {
-          alwaysShadow: [varName]
-        }
-        if ("targetVariableComponentType" in dependencyValues) {
-          result.setComponentType = {
-            [varName]: dependencyValues.targetVariableComponentType
-          }
-        }
-        if ("targetVariable" in dependencyValues) {
-          result.newValues = { [varName]: dependencyValues.targetVariable }
-        } else {
-          let varNewValues = Object.assign({}, dependencyValues);
-          delete varNewValues.targetVariableComponentType;
-          result.newValues = { [varName]: varNewValues };
-        }
-        return result;
 
-      };
-      stateDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues }) {
 
-        if ("targetVariable" in dependencyValues) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "targetVariable",
-              desiredValue: desiredStateVariableValues[varName],
-              shadowedVariable: true,
-            }]
+        stateDef.arrayDefinitionByKey = function ({
+          globalDependencyValues, dependencyValuesByKey, arrayKeys
+        }) {
+          // console.log(`shadow array definition by key`)
+          // console.log(JSON.parse(JSON.stringify(globalDependencyValues)))
+          // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
+          // console.log(JSON.parse(JSON.stringify(arrayKeys)))
+
+          let newEntries = {};
+
+          for (let arrayKey of arrayKeys) {
+            if ("targetVariable" in dependencyValuesByKey[arrayKey]) {
+              newEntries[arrayKey] = dependencyValuesByKey[arrayKey].targetVariable;
+            } else {
+              // put in a placeholder value until this can be rerun
+              // with the updated dependencies
+              newEntries[arrayKey] = stateDef.defaultEntryValue;
+            }
+          }
+
+          let result = {
+            newValues: { [varName]: newEntries },
+            alwaysShadow: [varName]
           };
-        } else {
+
+          // TODO: how do we make it do this just once?
+          if ("targetVariableComponentType" in globalDependencyValues) {
+            result.setComponentType = {
+              [varName]: globalDependencyValues.targetVariableComponentType
+            }
+          }
+
+          return result;
+        }
+
+
+        stateDef.inverseArrayDefinitionByKey = function ({ desiredStateVariableValues,
+          dependencyValuesByKey, dependencyNamesByKey, arraySize
+        }) {
+
           let instructions = [];
-          for (let key in dependencyValues) {
+          for (let key in desiredStateVariableValues[varName]) {
+            if (!dependencyValuesByKey[key]) {
+              continue;
+            }
+
             instructions.push({
-              setDependency: key,
+              setDependency: dependencyNamesByKey[key].targetVariable,
               desiredValue: desiredStateVariableValues[varName][key],
               shadowedVariable: true,
             });
@@ -3245,8 +3299,72 @@ export default class Core {
             success: true,
             instructions
           };
+
         }
-      };
+      } else {
+
+        let dependenciesStart = {};
+
+        if (foundReadyToExpand) {
+          // even though won't use original dependencies
+          // if found a readyToExpand
+          // keep original dependencies so that readyToExpand
+          // won't be resolved until all its dependent variables are resolved
+          dependenciesStart = stateDef.returnDependencies.bind(stateDef);
+        }
+
+        stateDef.returnDependencies = function (args) {
+          let dependencies = Object.assign({}, dependenciesStart);
+
+          dependencies.targetVariable = {
+            dependencyType: "componentStateVariable",
+            componentIdentity: {
+              componentName: targetComponent.componentName,
+              componentType: targetComponent.componentType
+            },
+            variableName: varName,
+          };
+          if (copyComponentType) {
+            dependencies.targetVariableComponentType = {
+              dependencyType: "componentStateVariableComponentType",
+              componentIdentity: {
+                componentName: targetComponent.componentName,
+                componentType: targetComponent.componentType
+              },
+              variableName: varName,
+            }
+          }
+          return dependencies;
+        };
+        stateDef.definition = function ({ dependencyValues }) {
+          let result = {
+            alwaysShadow: [varName]
+          }
+
+          // TODO: how do we make it do this just once?
+          if ("targetVariableComponentType" in dependencyValues) {
+            result.setComponentType = {
+              [varName]: dependencyValues.targetVariableComponentType
+            }
+          }
+          result.newValues = { [varName]: dependencyValues.targetVariable }
+
+          return result;
+
+        };
+        stateDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues }) {
+
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "targetVariable",
+              desiredValue: desiredStateVariableValues[varName],
+              shadowedVariable: true,
+            }]
+          };
+
+        };
+      }
     }
     for (let varName in deleteStateVariablesFromDefinition) {
       this.modifyStateDefToDeleteVariableReferences({
@@ -3329,7 +3447,7 @@ export default class Core {
       // is satisfied
 
 
-      // if already hvae apply sugar state variable,
+      // if already have apply sugar state variable,
       // there is nothing more to do
       if (component.state.__apply_sugar) {
         return {};
@@ -3372,7 +3490,6 @@ export default class Core {
 
     }
 
-    let componentVarsDeleted = {};
     let varsUnresolved = {};
 
     for (let childLogicName in childLogic.logicResult.sugarResults) {
@@ -3402,7 +3519,7 @@ export default class Core {
 
         // if already created this apply sugar state variable,
         // there is nothing more to do
-        if (component[applySugarStateVariable]) {
+        if (component.state[applySugarStateVariable]) {
           continue;
         }
 
@@ -3505,7 +3622,14 @@ export default class Core {
                 }
               }
             }
-            return { componentVarsDeleted: { [component.componentName]: [applySugarStateVariable] } }
+
+            if (!updatesNeeded.deletedStateVariables[component.componentName]) {
+              updatesNeeded.deletedStateVariables[component.componentName] = [];
+            }
+            updatesNeeded.deletedStateVariables[component.componentName].push(applySugarStateVariable);
+
+
+            return {}
 
           }
         }
@@ -3531,14 +3655,6 @@ export default class Core {
 
           Object.assign(varsUnresolved, result.varsUnresolved);
 
-          for (let cName in result.componentVarsDeleted) {
-            if (!componentVarsDeleted[cName]) {
-              componentVarsDeleted[cName] = [];
-            }
-            componentVarsDeleted[cName].push(...result.componentVarsDeleted[cName]);
-          }
-
-
         }
 
       } else {
@@ -3554,7 +3670,7 @@ export default class Core {
 
     }
 
-    return { componentVarsDeleted, varsUnresolved }
+    return { varsUnresolved }
 
   }
 
@@ -3574,7 +3690,12 @@ export default class Core {
     }
   }
 
-  initializeStateVariable({ component, stateVariable, arrayKeys, arrayStateVariable }) {
+  initializeStateVariable({ component, stateVariable,
+    arrayStateVariable, arrayEntryPrefix, updatesNeeded
+  }) {
+
+    // Note: updatesNeeded is required only when have arrayEntryPrefix
+
     let getStateVar = this.getStateVariableValue;
     if (!component.state[stateVariable]) {
       component.state[stateVariable] = {};
@@ -3583,15 +3704,19 @@ export default class Core {
     stateVarObj.isResolved = false;
     Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component, stateVariable }), configurable: true });
 
-    if (arrayKeys !== undefined) {
-      this.initializeArrayEntryStateVariable({ stateVarObj, arrayStateVariable, arrayKeys, component, stateVariable });
+    if (arrayEntryPrefix !== undefined) {
+      this.initializeArrayEntryStateVariable({
+        stateVarObj, arrayStateVariable, arrayEntryPrefix,
+        component, stateVariable, updatesNeeded
+      });
     } else if (stateVarObj.isArray) {
       this.initializeArrayStateVariable({ stateVarObj, component, stateVariable });
     }
 
   }
 
-  initializeArrayEntryStateVariable({ stateVarObj, arrayStateVariable, arrayKeys, component, stateVariable }) {
+  initializeArrayEntryStateVariable({ stateVarObj, arrayStateVariable,
+    arrayEntryPrefix, component, stateVariable, updatesNeeded }) {
     // This function used for initializing array entry variables
     // (not the original array variable)
     // It adds many attributes to state variables corresponding to
@@ -3603,7 +3728,8 @@ export default class Core {
     // - getValueFromArrayValues: function used to get this entry's value
 
     stateVarObj.isArrayEntry = true;
-    stateVarObj.arrayKeys = arrayKeys;
+
+    stateVarObj.neverShadow = true;
 
     stateVarObj.arrayStateVariable = arrayStateVariable;
     let arrayStateVarObj = component.state[arrayStateVariable];
@@ -3613,26 +3739,51 @@ export default class Core {
     stateVarObj.freshnessInfo = arrayStateVarObj.freshnessInfo;
     stateVarObj.getPreviousDependencyValuesForMarkStale = arrayStateVarObj.getPreviousDependencyValuesForMarkStale;
 
+    stateVarObj.nDimensions = arrayStateVarObj.returnEntryDimensions(arrayEntryPrefix);
+    stateVarObj.wrappingComponents = mapDeep(arrayStateVarObj.returnWrappingComponents(arrayEntryPrefix), x => x.toLowerCase());
+    stateVarObj.entryPrefix = arrayEntryPrefix;
+    stateVarObj.varEnding = stateVariable.slice(arrayEntryPrefix.length)
+
     // if any of the additional state variables defined are arrays,
     // (which should be all of them)
     // transform to their array entry
     if (arrayStateVarObj.additionalStateVariablesDefined) {
       stateVarObj.additionalStateVariablesDefined = [];
 
+      let entryPrefixInd = arrayStateVarObj.entryPrefixes.indexOf(arrayEntryPrefix);
+
       for (let varName of arrayStateVarObj.additionalStateVariablesDefined) {
-        // Note: assume that all additional state variables are also arrays
         let sObj = component.state[varName];
-        // TODO: what about array entries that have more than one array key?
-        let arrayEntryVarName = sObj.arrayVarNameFromArrayKey(arrayKeys[0]);
-        stateVarObj.additionalStateVariablesDefined.push(arrayEntryVarName);
+
+        if (sObj.isArray) {
+
+          // find the same array entry prefix in the other array state variable
+          let newArrayEntryPrefix = sObj.entryPrefixes[entryPrefixInd];
+          let arrayEntryVarName = newArrayEntryPrefix + stateVarObj.varEnding;
+
+          stateVarObj.additionalStateVariablesDefined.push(arrayEntryVarName);
+        } else {
+          stateVarObj.additionalStateVariablesDefined.push(varName);
+        }
       }
     }
 
     // add this entry name to the array's list of its entries
-    if (!arrayStateVarObj.arrayEntryNames) {
-      arrayStateVarObj.arrayEntryNames = [];
-    }
-    arrayStateVarObj.arrayEntryNames.push(stateVariable);
+    // directly manipulate the value attribute of the state variable
+    // (as it is essential with no dependencies)
+    // Mark it as stale and changed
+    let arrayEntryNamesStateVariable = arrayStateVarObj.arrayEntryNamesStateVariable;
+    let arrayEntryNames = component.state[arrayEntryNamesStateVariable].value;
+    arrayEntryNames.push(stateVariable);
+    this.markUpstreamDependentsStale({
+      component,
+      varName: arrayEntryNamesStateVariable,
+      updatesNeeded
+    });
+
+    this.recordActualChangeInUpstreamDependencies({
+      component, varName: arrayEntryNamesStateVariable,
+    })
 
     // Each arrayEntry state variable will have a function getValueFromArrayValue
     // that will be used to retrieve the actual value of the components
@@ -3654,6 +3805,9 @@ export default class Core {
       // It uses the function getArrayValue, which gets the values
       // from arrayValues of the corresponding array state variable
       stateVarObj.getValueFromArrayValues = function () {
+        if (stateVarObj.arrayKeys.length === 0) {
+          return;
+        }
         let value = [];
         for (let arrayKey of stateVarObj.arrayKeys) {
           value.push(arrayStateVarObj.getArrayValue({ arrayKey }));
@@ -3666,6 +3820,99 @@ export default class Core {
         }
       };
     }
+
+    stateVarObj.arraySizeStateVariable = arrayStateVarObj.arraySizeStateVariable;
+
+    this.createArrayKeysStateVariable({ stateVarObj, component, stateVariable, arrayStateVarObj });
+
+    Object.defineProperty(stateVarObj, 'arrayKeys', {
+      get: () => component.stateValues[stateVarObj.arrayKeysStateVariable]
+    });
+
+    Object.defineProperty(stateVarObj, 'arraySize', {
+      get: () => component.stateValues[stateVarObj.arraySizeStateVariable]
+    });
+
+    // don't need separate state variable for unflattenedArrayKeys
+    // since it will be defined if arrayKeys is defined
+    // (plus it is used infrequently, so we don't need extra overhead for efficiency gain)
+    Object.defineProperty(stateVarObj, 'unflattenedArrayKeys', {
+      get: () => arrayStateVarObj.getArrayKeysFromVarName({
+        arrayEntryPrefix: stateVarObj.entryPrefix,
+        varEnding: stateVarObj.varEnding,
+        arraySize: stateVarObj.arraySize,
+        nDimensions: arrayStateVarObj.nDimensions,
+      })
+    })
+
+    Object.defineProperty(stateVarObj, 'arrayEntrySize', {
+      get: function () {
+        // assume array is rectangular, so just look at first subarray of each dimension
+        let unflattenedArrayKeys = stateVarObj.unflattenedArrayKeys;
+        let arrayEntrySize = [];
+        let subArray = [unflattenedArrayKeys];
+        for (let i = 0; i < stateVarObj.nDimensions; i++) {
+          subArray = subArray[0];
+          arrayEntrySize.push(subArray.length);
+        }
+        arrayEntrySize.reverse();   // so starts with inner dimension
+        return arrayEntrySize;
+      }
+    })
+
+    if (arrayStateVarObj.stateVariablesDeterminingDependencies) {
+      for (let varName of arrayStateVarObj.stateVariablesDeterminingDependencies) {
+        if (!stateVarObj.stateVariablesDeterminingDependencies.includes(varName)) {
+          stateVarObj.stateVariablesDeterminingDependencies.push(varName);
+        }
+      }
+    }
+
+
+    if (arrayStateVarObj.entireArrayAtOnce) {
+      stateVarObj.entireArrayAtOnce = true;
+
+      // if set set entire array at once, we just make return dependencies
+      // be identical to the array's
+      stateVarObj.returnDependencies = arrayStateVarObj.returnDependencies.bind(arrayStateVarObj);
+
+    } else {
+
+      // add a returnDependencies function based on the array returnDependencies
+      // In createArrayKeysStateVariable, we added array keys and array size
+      // to stateVariablesDeterminingDependencies
+      // Now make the state variable itself depends on them.
+      let arrayReturnDependencies = arrayStateVarObj.returnDependencies.bind(arrayStateVarObj);
+      stateVarObj.returnDependencies = function (args) {
+        // add array size to argument of return dependencies
+        args.arraySize = stateVarObj.arraySize;
+        args.arrayKeys = stateVarObj.arrayKeys;
+        let dependencies = arrayReturnDependencies(args);
+        // make sure array keys is a dependency
+        dependencies.__array_keys = {
+          dependencyType: "stateVariable",
+          variableName: stateVarObj.arrayKeysStateVariable
+        }
+
+        // We keep track of how many names were defined when we calculate dependencies
+        // If this number changes, it should be treated as dependencies changing
+        // so that we recalculate the value of the arrayEntry variable
+        // TODO: we are communicating this to updateDependencies by adding
+        // an attribute to the arguments?  Is there a better way of doing it.
+        // Didn't want to add to the return value, as that would add complexity
+        // to how we normally define returnDependencies
+        // We could change returnDependencies to output an object.
+        // That would probably be cleaner.
+        let numNames = Object.keys(arrayStateVarObj.dependencyNames.namesByKey).length;
+        if (stateVarObj.numberNamesInPreviousReturnDep !== numNames) {
+          args.changedDependency = true;
+        }
+        stateVarObj.numberNamesInPreviousReturnDep = numNames;
+
+        return dependencies
+      }
+    }
+
   }
 
   initializeArrayStateVariable({ stateVarObj, component, stateVariable }) {
@@ -3690,7 +3937,9 @@ export default class Core {
     //   never deleted, but entries are marked as stale using freshnessInfo
     // - freshnessInfo: this object can be used to track information about the
     //   freshness of the array entries or other array features, such as size.
-    //   freshnessInfo is prepopulated with a freshByKey object for tracking by key
+    //   freshnessInfo is prepopulated with
+    //     - a freshByKey object for tracking by key
+    //     - a freshArraySize for tracking array size
     //   To take advantage of this object, a component can read and modify
     //   freshnessInfo (as core will pass it in as an argument) in
     //   - the state variable's definition function
@@ -3706,11 +3955,14 @@ export default class Core {
     //   to a given variable name of an array entry
     // - arrayVarNameFromArrayKey: returns the variable name of an array entry
     //   that contains a given array key (if there are many, just return one)
-    // - allVarNamesThatIncludeArrayKey: returns an array of the variable names
-    //   of all array entries that contain a given array key
+    //   This variable may not yet be created.
 
     stateVarObj.arrayValues = [];
-    stateVarObj.freshnessInfo = { freshByKey: {} };
+
+
+    if (stateVarObj.nDimensions === undefined) {
+      stateVarObj.nDimensions = 1;
+    }
 
     if (stateVarObj.nDimensions > 1) {
       // for multiple dimensions, have to convert from arrayKey
@@ -3722,43 +3974,71 @@ export default class Core {
       // If it has more dimensinos than nDimensions, behavior isn't determined
       // (it should throw an error, assuming the array entries aren't arrays)
       stateVarObj.keyToIndex = key => key.split(',').map(x => Number(x));
-      stateVarObj.setArrayValue = function ({ value, arrayKey }) {
+      stateVarObj.setArrayValue = function ({ value, arrayKey, arraySize }) {
         let index = stateVarObj.keyToIndex(arrayKey);
-        let aVals = stateVarObj.arrayValues;
+        let nDimensionsInArrayKey = index.length;
+        if (!nDimensionsInArrayKey > stateVarObj.nDimensions) {
+          console.warn('Cannot set array value.  Number of dimensions is too large.')
+          return;
+        }
+        let arrayValuesDrillDown = stateVarObj.arrayValues;
+        let arraySizeDrillDown = arraySize;
         for (let indComponent of index.slice(0, index.length - 1)) {
-          if (!aVals[indComponent]) {
-            aVals[indComponent] = [];
+          if (indComponent >= 0 && indComponent < arraySizeDrillDown[0]) {
+            if (!arrayValuesDrillDown[indComponent]) {
+              arrayValuesDrillDown[indComponent] = [];
+            }
+            arrayValuesDrillDown = arrayValuesDrillDown[indComponent];
+            arraySizeDrillDown = arraySizeDrillDown.slice(1);
+          } else {
+            console.warn('ignore setting array value out of bounds')
+            return;
           }
-          aVals = aVals[indComponent];
         }
 
-        if (value === undefined) {
-          // if undefined, then shrink (or don't extend) length of array
-          // by getting rid of undefineds at the end
-          // Note: one could still get arrays ending in undefineds if
-          // pass in arrayKey with fewer dimensions with value that
-          // is an array including undefineds.
-          // (Inconsistent behavior, but don't check for this possibility here)
-          let lastInd = index[index.length - 1];
-          if (aVals.length > lastInd + 1) {
-            // we're in the middle of the array so add the undefined entry
-            aVals[lastInd] = value;
-          } else if (aVals.length === lastInd + 1) {
-            // we would be setting the last value to undefined
-            // instead, just shrink the array to the defined entries
-            let lastUndefinedInd = aVals.length - 1;
-            for (let ind = lastUndefinedInd - 1; ind >= 0; ind--) {
-              if (aVals[ind] === undefined) {
-                lastUndefinedInd = ind;
+        if (nDimensionsInArrayKey < stateVarObj.nDimensions) {
+          // if dimensions from arrayKey is less than number of dimensions
+          // then attempt to get additional dimensions from 
+          // array indices of value
+
+          function setArrayValuesPiece(desiredValue, arrayValuesPiece, arraySizePiece) {
+            // try to set value of entries of arrayValuePiece to entries of desiredValue
+            // given that size of arrayValuesPieces is arraySizePiece
+
+            if (!Array.isArray(desiredValue)) {
+              console.warn('ignoring array values with insufficient dimensions')
+              return;
+            }
+
+            let currentSize = arraySizePiece[0];
+            if (desiredValue.length > currentSize) {
+              console.warn('ignoring array values of out bounds')
+              desiredValue = desiredValue.slice(0, currentSize);
+            }
+
+            if (arraySizePiece.length === 1) {
+              // down to last dimension
+              for (let [ind, val] of desiredValue.entries()) {
+                arrayValuesPiece[ind] = val;
+              }
+            } else {
+              for (let [ind, val] of desiredValue.entries()) {
+                if (!arrayValuesPiece[ind]) {
+                  arrayValuesPiece = []
+                }
+                setArrayValuesPiece(val, arrayValuesPiece[ind], arraySizePiece[ind])
               }
             }
-            aVals.length = lastUndefinedInd;
-
           }
 
+
+          setArrayValuesPiece(value, arrayValuesDrillDown, arraySizeDrillDown)
+
         } else {
-          aVals[index[index.length - 1]] = value;
+          arrayValuesDrillDown[index[index.length - 1]] = value;
+
         }
+
       };
       stateVarObj.getArrayValue = function ({ arrayKey, arrayValues = stateVarObj.arrayValues }) {
         let index = stateVarObj.keyToIndex(arrayKey);
@@ -3775,14 +4055,57 @@ export default class Core {
         // the default function for getArrayKeysFromVarName ignores the
         // array entry prefix, but is just based on the variable ending.
         // A component class's function could use arrayEntryPrefix
-        stateVarObj.getArrayKeysFromVarName = function ({ arrayEntryPrefix, varEnding }) {
-          let nums = varEnding.split('_').map(x => Number(x))
-          if (nums.length === stateVarObj.nDimensions && nums.every(x => Number.isInteger(x))) {
-            return [String(nums.map(x => x - 1))];
+        stateVarObj.getArrayKeysFromVarName = function ({
+          arrayEntryPrefix, varEnding, arraySize, nDimensions
+        }) {
+          let indices = varEnding.split('_').map(x => Number(x) - 1)
+          if (indices.length === nDimensions && indices.every(
+            (x, i) => Number.isInteger(x) && x >= 0
+          )) {
+            if (arraySize) {
+              if (indices.every((x, i) => x < arraySize[i])) {
+                return [String(indices)];
+              } else {
+                return [];
+              }
+            } else {
+              // if don't know array size, just guess that the entry is OK
+              // It will get corrected once array size is known.
+              // TODO: better to return empty array?
+              return [String(indices)];
+            }
           } else {
-            return;
+            return [];
           }
         };
+      }
+
+      stateVarObj.getAllArrayKeys = function (arraySize, flatten = true) {
+        function getAllArrayKeysSub(subArraySize) {
+          if (subArraySize.length === 1) {
+            // array of numbers from 0 to subArraySize[0], cast to strings
+            return Array.from(Array(subArraySize[0]), (_, i) => String(i));
+          } else {
+            let currentSize = subArraySize[0];
+            let subSubKeys = getAllArrayKeysSub(subArraySize.slice(1));
+            let subKeys = [];
+            for (let ind = 0; ind < currentSize; ind++) {
+              if (flatten) {
+                subKeys.push(...subSubKeys.map(x => ind + "," + x))
+              } else {
+                subKeys.push(subSubKeys.map(x => ind + "," + x))
+              }
+            }
+            return subKeys;
+          }
+        }
+
+        if (!arraySize || arraySize.length === 0) {
+          return []
+        } else {
+          return getAllArrayKeysSub(arraySize);
+        }
+
       }
 
       if (!stateVarObj.arrayVarNameFromArrayKey) {
@@ -3790,40 +4113,40 @@ export default class Core {
           return entryPrefixes[0] + arrayKey.split(',').map(x => Number(x) + 1).join('_')
         };
       }
-      if (!stateVarObj.allVarNamesThatIncludeArrayKey) {
-        stateVarObj.allVarNamesThatIncludeArrayKey = function (arrayKey) {
-          return [entryPrefixes[0] + arrayKey.split(',').map(x => Number(x) + 1).join('_')];
-        };
-      }
-    }
-    else {
-      // for a single dimension, can just use arrayKey directly
-      // since it is just the string version of the index
-      stateVarObj.keyToIndex = key => Number(key);
-      stateVarObj.setArrayValue = function ({ value, arrayKey }) {
-        if (value === undefined) {
-          // if undefined, then shrink (or don't extend) length of array
-          // by getting rid of undefineds at the end
-          let keyPlus = Number(arrayKey) + 1;
-          let arrayLength = stateVarObj.arrayValues.length;
-          if (arrayLength > keyPlus) {
-            // we're in the middle of the array so add the undefined entry
-            stateVarObj.arrayValues[arrayKey] = value;
-          } else if (arrayLength === keyPlus) {
-            // we would be setting the last value to undefined
-            // instead, just shrink the array to the defined entries
-            let lastUndefinedInd = arrayLength - 1;
-            for (let ind = lastUndefinedInd - 1; ind >= 0; ind--) {
-              if (stateVarObj.arrayValues[ind] === undefined) {
-                lastUndefinedInd = ind;
-              }
-            }
-            stateVarObj.arrayValues.length = lastUndefinedInd;
 
+      stateVarObj.adjustArrayToNewArraySize = function () {
+        function resizeSubArray(subArray, subArraySize) {
+
+          subArray.length = subArraySize[0];
+
+          if (subArraySize.length > 1) {
+            let subSubArraySize = subArraySize.slice(1);
+            for (let [ind, subSubArray] of subArray.entries()) {
+              if (!subSubArray) {
+                // add in any empty entries
+                subSubArray = subArray[ind] = [];
+              }
+              resizeSubArray(subSubArray, subSubArraySize)
+            }
           }
-        } else {
-          stateVarObj.arrayValues[arrayKey] = value;
         }
+
+        resizeSubArray(stateVarObj.arrayValues, stateVarObj.arraySize);
+
+      }
+
+    } else {
+
+      // have just one dimension
+      stateVarObj.keyToIndex = key => Number(key);
+      stateVarObj.setArrayValue = function ({ value, arrayKey, arraySize }) {
+        let ind = stateVarObj.keyToIndex(arrayKey);
+        if (ind >= 0 && ind < arraySize[0]) {
+          stateVarObj.arrayValues[ind] = value;
+        } else {
+          console.warn(`Ignoring setting array values out of bounds: ${arrayKey} of ${stateVariable}`)
+        }
+
       };
       stateVarObj.getArrayValue = function ({ arrayKey, arrayValues = stateVarObj.arrayValues }) {
         return arrayValues[arrayKey];
@@ -3833,14 +4156,34 @@ export default class Core {
         // the default function for getArrayKeysFromVarName ignores the
         // array entry prefix, but is just based on the variable ending.
         // A component class's function could use arrayEntryPrefix
-        stateVarObj.getArrayKeysFromVarName = function ({ arrayEntryPrefix, varEnding }) {
-          let num = Number(varEnding);
-          if (Number.isInteger(num)) {
-            return [String(num - 1)];
+        stateVarObj.getArrayKeysFromVarName = function ({ arrayEntryPrefix, varEnding, arraySize }) {
+          let index = Number(varEnding) - 1;
+          if (Number.isInteger(index) && index >= 0) {
+            if (arraySize) {
+              if (index < arraySize[0]) {
+                return [String(index)];
+              } else {
+                return [];
+              }
+            } else {
+              // if don't know array size, just guess that the entry is OK
+              // It will get corrected once array size is known.
+              // TODO: better to return empty array?
+              return [String(index)];
+            }
           } else {
-            return;
+            return [];
           }
         };
+      }
+
+      stateVarObj.getAllArrayKeys = function (arraySize) {
+        if (!arraySize || arraySize.length === 0) {
+          return []
+        } else {
+          // array of numbers from 0 to arraySize[0], cast to strings
+          return Array.from(Array(arraySize[0]), (_, i) => String(i));
+        }
       }
 
       if (!stateVarObj.arrayVarNameFromArrayKey) {
@@ -3848,10 +4191,11 @@ export default class Core {
           return entryPrefixes[0] + String(Number(arrayKey) + 1);
         };
       }
-      if (!stateVarObj.allVarNamesThatIncludeArrayKey) {
-        stateVarObj.allVarNamesThatIncludeArrayKey = function (arrayKey) {
-          return [entryPrefixes[0] + String(Number(arrayKey) + 1)];
-        };
+
+
+      stateVarObj.adjustArrayToNewArraySize = function () {
+        // console.log(`adjust array ${stateVariable} of ${component.componentName} to new array size: ${stateVarObj.arraySize[0]}`);
+        stateVarObj.arrayValues.length = stateVarObj.arraySize[0];
       }
     }
 
@@ -3873,8 +4217,693 @@ export default class Core {
       component.arrayEntryPrefixes[prefix] = stateVariable;
     }
 
+    if (!stateVarObj.returnEntryDimensions) {
+      stateVarObj.returnEntryDimensions = () => 1;
+    }
+
+    // function that returns wrapping components for whole array or entries (if given prefix)
+    if (!stateVarObj.returnWrappingComponents) {
+      stateVarObj.returnWrappingComponents = prefix => [];
+    }
+
+    stateVarObj.wrappingComponents = mapDeep(stateVarObj.returnWrappingComponents(), x => x.toLowerCase());
+
     // for array, keep track if each arrayKey is essential
     stateVarObj.essentialByArrayKey = {};
+
+
+    // create the definition, etc., functions for the array stsate variable
+    if (stateVarObj.entireArrayAtOnce) {
+      // don't change returnDependencies
+
+      stateVarObj.getCurrentFreshness = function ({ freshnessInfo }) {
+        return { fresh: { [stateVariable]: freshnessInfo.arrayFresh } }
+      }
+
+      stateVarObj.markStale = function ({ freshnessInfo }) {
+        freshnessInfo.arrayFresh = false;
+        return { fresh: { [stateVariable]: false } };
+      }
+
+      stateVarObj.freshenOnNoChanges = function ({ freshnessInfo }) {
+        freshnessInfo.arrayFresh = true;
+      }
+
+      function getSubArraySize(subArray, nDimensionsLeft) {
+        if (subArray === undefined) {
+          return Array(nDimensionsLeft).fill(0);
+        }
+        let subArraySize = [subArray.length]
+        if (nDimensionsLeft > 1) {
+          subArraySize.push(...getSubArraySize(subArray[0], nDimensionsLeft - 1));
+        }
+        return subArraySize;
+      }
+
+      stateVarObj.definition = function (args) {
+
+        // console.log(`definition of array ${stateVariable} of ${component.componentName}`)
+
+        if (args.freshnessInfo.arrayFresh) {
+          // have to return no changes for array size state variable,
+          // as it isn't an array
+          return { noChanges: [stateVarObj.arraySizeStateVariable] };
+        }
+
+        args.freshnessInfo.arrayFresh = true;
+
+        let result = stateVarObj.entireArrayDefinition(args);
+
+        let newArrayValues = result.newValues[stateVariable];
+
+        let arraySize = getSubArraySize(newArrayValues, stateVarObj.nDimensions);
+
+        result.newValues[stateVarObj.arraySizeStateVariable] = arraySize;
+
+        if (!result.checkForActualChange) {
+          result.checkForActualChange = {};
+        }
+        result.checkForActualChange[stateVarObj.arraySizeStateVariable] = true;
+
+        // always mark as array size having changed,
+        // although we'll verify if that's the case for entireArrayAtOnce ccase
+        result.arraySizeChanged = [stateVariable];
+
+        return result;
+
+      }
+
+      // don't need to change inverseDefinition
+
+    } else {
+      // create returnDependencies function from returnArrayDependenciesByKey
+      stateVarObj.returnDependencies = function (args) {
+        // console.log(`return dependencies for array ${stateVariable} of ${component.componentName}`)
+        // console.log(JSON.parse(JSON.stringify(args)));
+
+        args.arraySize = stateVarObj.arraySize
+
+        // delete the interally added dependencies from args.stateValues
+        for (let key in args.stateValues) {
+          if (key.slice(0, 8) === "__array_") {
+            delete args.stateValues[key];
+          }
+        }
+
+        if (args.arrayKeys === undefined) {
+          args.arrayKeys = stateVarObj.getAllArrayKeys(args.arraySize);
+        }
+
+
+        let arrayDependencies = stateVarObj.returnArrayDependenciesByKey(args);
+
+        // link all dependencyNames of additionalStateVariablesDefined
+        // to the same object, as they will share the same freshnessinfo
+        // TODO: a better idea?  This seems like it could lead to confusion.
+        if (!stateVarObj.dependencyNames) {
+          stateVarObj.dependencyNames = {
+            namesByKey: {}, keysByName: {}, global: [],
+          };
+          if (stateVarObj.additionalStateVariablesDefined) {
+            for (let vName of stateVarObj.additionalStateVariablesDefined) {
+              component.state[vName].dependencyNames = stateVarObj.dependencyNames;
+            }
+          }
+        }
+
+        let dependencies = {};
+        if (arrayDependencies.globalDependencies) {
+          stateVarObj.dependencyNames.global = Object.keys(arrayDependencies.globalDependencies);
+          Object.assign(dependencies, arrayDependencies.globalDependencies);
+        }
+
+        if (!arrayDependencies.dependenciesByKey) {
+          arrayDependencies.dependenciesByKey = {};
+        }
+
+        for (let arrayKey of args.arrayKeys) {
+          // namesByKey also functions to indicate that dependencies
+          // have been returned for that arrayKey
+
+          // If had additional nameByKey, it should be treated as dependencies changing
+          // so that we recalculate the value of the array variable
+          // TODO: we are communicating this to updateDependencies by adding
+          // an attribute to the arguments?  Is there a better way of doing it.
+          // Didn't want to add to the return value, as that would add complexity
+          // to how we normally define returnDependencies
+          // We could change returnDependencies to output an object.
+          // That would probably be cleaner.
+          if (!(arrayKey in stateVarObj.dependencyNames.namesByKey)) {
+            args.changedDependency = true;
+          }
+          stateVarObj.dependencyNames.namesByKey[arrayKey] = {};
+          for (let depName in arrayDependencies.dependenciesByKey[arrayKey]) {
+            let extendedDepName = "__" + arrayKey + "_" + depName;
+            dependencies[extendedDepName] = arrayDependencies.dependenciesByKey[arrayKey][depName];
+            stateVarObj.dependencyNames.namesByKey[arrayKey][depName] = extendedDepName;
+            if (!stateVarObj.dependencyNames.keysByName[extendedDepName]) {
+              stateVarObj.dependencyNames.keysByName[extendedDepName] = [];
+            }
+            stateVarObj.dependencyNames.keysByName[extendedDepName].push(arrayKey);
+          }
+        }
+
+        // make sure array size is a dependency
+        dependencies.__array_size = {
+          dependencyType: "stateVariable",
+          variableName: stateVarObj.arraySizeStateVariable
+        };
+        stateVarObj.dependencyNames.global.push("__array_size");
+
+        // console.log(`resulting dependencies for ${stateVariable} of ${component.componentName}`)
+        // console.log(dependencies)
+        return dependencies;
+
+      }
+
+      stateVarObj.getCurrentFreshness = function ({ freshnessInfo, arrayKeys, arraySize }) {
+
+        // console.log(`getCurrentFreshness for array ${stateVariable} of ${component.componentName}`)
+        // console.log(arrayKeys, arraySize);
+        // console.log(JSON.parse(JSON.stringify(freshnessInfo)))
+
+        if (arrayKeys === undefined) {
+          arrayKeys = stateVarObj.getAllArrayKeys(arraySize);
+        }
+
+        let freshByKey = freshnessInfo.freshByKey;
+
+        let numberFresh = freshnessInfo.freshArraySize ? 1 : 0;
+        for (let arrayKey of arrayKeys) {
+          if (freshByKey[arrayKey]) {
+            numberFresh += 1;
+          }
+        }
+
+        if (numberFresh > 0) {
+          if (numberFresh === arrayKeys.length + 1) {
+            return { fresh: { [stateVariable]: true } }
+          } else {
+            return { partiallyFresh: { [stateVariable]: numberFresh } }
+          }
+        } else {
+          return { fresh: { [stateVariable]: false } }
+        }
+
+      }
+
+      stateVarObj.markStale = function ({ freshnessInfo, changes, arrayKeys, arraySize }) {
+
+        // console.log(`markStale for array ${stateVariable} of ${component.componentName}`)
+        // console.log(changes, arrayKeys, arraySize);
+        // console.log(JSON.parse(JSON.stringify(freshnessInfo)))
+
+        if (arrayKeys === undefined) {
+          arrayKeys = stateVarObj.getAllArrayKeys(arraySize);
+        }
+
+        let freshByKey = freshnessInfo.freshByKey;
+
+        if (changes.__array_size) {
+          freshnessInfo.freshArraySize = false;
+          // everything is stale
+          freshnessInfo.freshByKey = {};
+          return { fresh: { [stateVariable]: false } };
+        }
+
+
+
+        if (changes.__array_keys || Object.keys(freshByKey).length === 0) {
+          // everything is stale, except possibly array size
+          // (check for nothing fresh as a shortcut, as mark stale could
+          // be called repeated if size doesn't change, given that it's partially fresh)
+          freshnessInfo.freshByKey = {};
+          if (freshnessInfo.freshArraySize) {
+            return { partiallyFresh: { [stateVariable]: 1 } }
+          } else {
+            return { fresh: { [stateVariable]: false } };
+          }
+        }
+
+        for (let changeName in changes) {
+          if (stateVarObj.dependencyNames.global.includes(changeName)
+          ) {
+            // everything is stale, except possible array size
+            freshnessInfo.freshByKey = {};
+            if (freshnessInfo.freshArraySize) {
+              return { partiallyFresh: { [stateVariable]: 1 } }
+            } else {
+              return { fresh: { [stateVariable]: false } };
+            }
+          }
+
+          for (let key of stateVarObj.dependencyNames.keysByName[changeName]) {
+            delete freshByKey[key];
+          }
+
+        }
+
+        // check if the array keys requested are fresh
+        let numberFresh = freshnessInfo.freshArraySize ? 1 : 0;
+        for (let arrayKey of arrayKeys) {
+          if (freshByKey[arrayKey]) {
+            numberFresh += 1;
+          }
+        }
+
+        // console.log(`ending freshness`)
+        // console.log(JSON.parse(JSON.stringify(freshnessInfo)))
+
+        if (numberFresh > 0) {
+          if (numberFresh === arrayKeys.length + 1) {
+            return { fresh: { [stateVariable]: true } }
+          } else {
+            return { partiallyFresh: { [stateVariable]: numberFresh } }
+          }
+        } else {
+          return { fresh: { [stateVariable]: false } }
+        }
+
+      }
+
+      stateVarObj.freshenOnNoChanges = function ({ arrayKeys, freshnessInfo, arraySize }) {
+        // console.log(`freshenOnNoChanges for ${stateVariable} of ${component.componentName}`)
+        let freshByKey = freshnessInfo.freshByKey;
+
+        if (arrayKeys === undefined) {
+          arrayKeys = stateVarObj.getAllArrayKeys(arraySize);
+        }
+
+        for (let arrayKey of arrayKeys) {
+          freshByKey[arrayKey] = true;
+        }
+      }
+
+      function extractArrayDependencies(dependencyValues, arrayKeys) {
+        // console.log(`extract array dependencies`, dependencyValues, arrayKeys)
+        // console.log(JSON.parse(JSON.stringify(arrayKeys)))
+
+        let globalDependencyValues = {};
+        for (let dependencyName of stateVarObj.dependencyNames.global) {
+          globalDependencyValues[dependencyName] = dependencyValues[dependencyName];
+        }
+
+        let dependencyValuesByKey = {};
+        let foundAllDependencyValuesForKey = {};
+        for (let arrayKey of arrayKeys) {
+          dependencyValuesByKey[arrayKey] = {};
+          if (arrayKey in stateVarObj.dependencyNames.namesByKey) {
+            foundAllDependencyValuesForKey[arrayKey] = true;
+            for (let dependencyName in stateVarObj.dependencyNames.namesByKey[arrayKey]) {
+              let extendedDepName = stateVarObj.dependencyNames.namesByKey[arrayKey][dependencyName];
+              if (extendedDepName in dependencyValues) {
+                dependencyValuesByKey[arrayKey][dependencyName] = dependencyValues[extendedDepName];
+              } else {
+                foundAllDependencyValuesForKey[arrayKey] = false;
+              }
+            }
+
+          }
+        }
+
+        return { globalDependencyValues, dependencyValuesByKey, foundAllDependencyValuesForKey };
+
+      }
+
+
+      stateVarObj.definition = function (args) {
+        // console.log(`definition in array ${stateVariable} of ${component.componentName}`)
+        // console.log(JSON.parse(JSON.stringify(args)));
+        // console.log(args.arrayKeys)
+
+        if (args.arrayKeys === undefined) {
+          args.arrayKeys = stateVarObj.getAllArrayKeys(args.arraySize);
+        }
+
+        let extractedDeps = extractArrayDependencies(args.dependencyValues, args.arrayKeys);
+        let globalDependencyValues = extractedDeps.globalDependencyValues;
+        let dependencyValuesByKey = extractedDeps.dependencyValuesByKey;
+        let foundAllDependencyValuesForKey = extractedDeps.foundAllDependencyValuesForKey;
+
+        delete args.dependencyValues;
+        args.globalDependencyValues = globalDependencyValues;
+        args.dependencyValuesByKey = dependencyValuesByKey;
+
+        let arrayKeysToRecalculate = [];
+        let freshByKey = args.freshnessInfo.freshByKey;
+        for (let arrayKey of args.arrayKeys) {
+          // only recalculate if
+          // - arrayKey isn't fresh, and
+          // - found all dependency values for array key (i.e., have calculated dependencies for arrayKey)
+          if (!freshByKey[arrayKey] && foundAllDependencyValuesForKey[arrayKey]) {
+            freshByKey[arrayKey] = true;
+            arrayKeysToRecalculate.push(arrayKey);
+          }
+        }
+
+        let result;
+        if (arrayKeysToRecalculate.length === 0) {
+          // console.log(`nothing to recalculate`)
+          // console.log(`was going to recalculate`, args.arrayKeys)
+          // console.log(JSON.parse(JSON.stringify(args.freshnessInfo)))
+          // console.log(JSON.parse(JSON.stringify(stateVarObj.dependencyNames)))
+          result = {};
+        } else {
+
+          args.arrayKeys = arrayKeysToRecalculate;
+
+          if (!stateVarObj.arrayDefinitionByKey) {
+            throw Error(`For ${stateVariable} of ${component.componentType}, arrayDefinitionByKey must be a function`)
+          }
+
+          result = stateVarObj.arrayDefinitionByKey(args);
+
+          // in case definition returns additional array entries,
+          // mark all array keys received as fresh as well
+          if (result.newValues && result.newValues[stateVariable]) {
+            for (let arrayKey in result.newValues[stateVariable]) {
+              freshByKey[arrayKey] = true;
+            }
+          }
+          if (result.useEssentialOrDefaultValue && result.useEssentialOrDefaultValue[stateVariable]) {
+            for (let arrayKey in result.useEssentialOrDefaultValue[stateVariable]) {
+              freshByKey[arrayKey] = true;
+            }
+          }
+        }
+
+        if (!args.freshnessInfo.freshArraySize) {
+          // TODO: add additional state variables defined
+          if (args.changes.__array_size) {
+            result.arraySizeChanged = [stateVariable];
+          }
+          args.freshnessInfo.freshArraySize = true;
+        }
+
+        // console.log(`result of array definition of ${stateVariable} of ${component.componentName}`)
+        // console.log(JSON.parse(JSON.stringify(result)))
+        // console.log(JSON.parse(JSON.stringify(args.freshnessInfo)))
+        return result;
+
+      }
+
+      stateVarObj.inverseDefinition = function (args) {
+
+        if (!stateVarObj.inverseArrayDefinitionByKey) {
+          return { success: false }
+        }
+
+        if (args.arrayKeys === undefined) {
+          args.arrayKeys = stateVarObj.getAllArrayKeys(args.arraySize);
+        }
+
+        let extractedDeps = extractArrayDependencies(args.dependencyValues, args.arrayKeys);
+        let globalDependencyValues = extractedDeps.globalDependencyValues;
+        let dependencyValuesByKey = extractedDeps.dependencyValuesByKey;
+        // let foundAllDependencyValuesForKey = extractedDeps.foundAllDependencyValuesForKey;
+
+        delete args.dependencyValues;
+        args.globalDependencyValues = globalDependencyValues;
+        args.dependencyValuesByKey = dependencyValuesByKey;
+
+        args.dependencyNamesByKey = stateVarObj.dependencyNames.namesByKey;
+        // args.arraySize = stateVarObj.arraySize;
+
+        // let arrayKeysToInvert = [];
+        // for (let arrayKey of args.arrayKeys) {
+        //   // only invert if
+        //   // - found all dependency values for array key (i.e., have calculated dependencies for arrayKey)
+        //   if (foundAllDependencyValuesForKey[arrayKey]) {
+        //     arrayKeysToInvert.push(arrayKey);
+        //   }
+        // }
+
+        // if (arrayKeysToInvert.length === 0) {
+        //   return {};
+        // }
+
+        // args.arrayKeys = arrayKeysToInvert;
+
+        let result = stateVarObj.inverseArrayDefinitionByKey(args);
+        // console.log(`result of inverse definition of array`)
+        // console.log(JSON.parse(JSON.stringify(result)))
+        return result;
+      }
+    }
+
+
+    this.createArraySizeStateVariable({ stateVarObj, component, stateVariable });
+
+
+    Object.defineProperty(stateVarObj, 'arraySize', {
+      get: () => component.stateValues[stateVarObj.arraySizeStateVariable]
+    });
+
+
+    this.createArrayEntryNamesStateVariable({ stateVarObj, component, stateVariable });
+
+    Object.defineProperty(stateVarObj, 'arrayEntryNames', {
+      get: () => component.stateValues[stateVarObj.arrayEntryNamesStateVariable]
+    });
+
+    this.createVarNamesIncludingArrayKeyStateVariable({ stateVarObj, component, stateVariable });
+
+    Object.defineProperty(stateVarObj, 'varNamesIncludingArrayKey', {
+      get: () => component.stateValues[stateVarObj.varNamesIncludingArrayKeyStateVariable]
+    });
+
+
+    // link all freshnessInfo of additionalStateVariablesDefined
+    // to the same object, as they will share the same freshnessinfo
+    // TODO: a better idea?  This seems like it could lead to confusion.
+    if (!stateVarObj.freshnessInfo) {
+      if (stateVarObj.entireArrayAtOnce) {
+        stateVarObj.freshnessInfo = { arrayFresh: false };
+      } else {
+        stateVarObj.freshnessInfo = { freshByKey: {} };
+      }
+      if (stateVarObj.additionalStateVariablesDefined) {
+        for (let vName of stateVarObj.additionalStateVariablesDefined) {
+          if (!component.state[vName]) {
+            component.state[vName] = {};
+          }
+          component.state[vName].freshnessInfo = stateVarObj.freshnessInfo;
+        }
+      }
+    }
+
+
+  }
+
+  createArraySizeStateVariable({ stateVarObj, component, stateVariable }) {
+
+    let arraySizeStateVar = `__array_size_${stateVariable}`;
+    stateVarObj.arraySizeStateVariable = arraySizeStateVar;
+
+    let originalStateVariablesDeterminingDependencies;
+    let originalAdditionalStateVariablesDefined;
+
+
+    if (stateVarObj.entireArrayAtOnce) {
+      // if entireArrayAtOnce, array size is calculated after the fact,
+      // so we don't add it to stateVariablesDeterminingDependencies
+      // Instead, add it to additionalStateVariablesDefined
+      if (stateVarObj.additionalStateVariablesDefined) {
+        originalAdditionalStateVariablesDefined = [...stateVarObj.additionalStateVariablesDefined];
+        stateVarObj.additionalStateVariablesDefined.push(arraySizeStateVar);
+      } else {
+        stateVarObj.additionalStateVariablesDefined = [arraySizeStateVar];
+      }
+
+    } else {
+
+      // Make the array's dependencies depend on the array size state variable
+      if (stateVarObj.stateVariablesDeterminingDependencies) {
+        originalStateVariablesDeterminingDependencies = [...stateVarObj.stateVariablesDeterminingDependencies];
+        stateVarObj.stateVariablesDeterminingDependencies.push(arraySizeStateVar);
+      } else {
+        stateVarObj.stateVariablesDeterminingDependencies = [arraySizeStateVar];
+      }
+    }
+
+    if (stateVarObj.entireArrayAtOnce) {
+
+      component.state[arraySizeStateVar] = {
+        returnDependencies: stateVarObj.returnDependencies.bind(stateVarObj),
+        getCurrentFreshness: stateVarObj.getCurrentFreshness.bind(stateVarObj),
+        markStale: stateVarObj.markStale.bind(stateVarObj),
+        freshenOnNoChanges: stateVarObj.freshenOnNoChanges.bind(stateVarObj),
+        definition: stateVarObj.definition.bind(stateVarObj),
+      }
+
+      if (stateVarObj.inverseDefinition) {
+        component.state[arraySizeStateVar].inverseDefinition = stateVarObj.inverseDefinition.bind(stateVarObj);
+      }
+
+      if (stateVarObj.stateVariablesDeterminingDependencies) {
+        component.state[arraySizeStateVar].stateVariablesDeterminingDependencies = stateVarObj.stateVariablesDeterminingDependencies;
+      }
+
+      if (originalAdditionalStateVariablesDefined) {
+        component.state[arraySizeStateVar].additionalStateVariablesDefined = originalAdditionalStateVariablesDefined;
+      } else {
+        component.state[arraySizeStateVar].additionalStateVariablesDefined = [];
+      }
+      component.state[arraySizeStateVar].additionalStateVariablesDefined.push(stateVariable)
+
+    } else {
+
+      // if state variable is a shadow,
+      // then the array size state variable has already been created
+      // to shadow target array size state variable
+      if (stateVarObj.isShadow) {
+        return;
+      }
+
+      component.state[arraySizeStateVar] = {
+        alwaysShadow: true,
+        returnDependencies: stateVarObj.returnArraySizeDependencies,
+        definition({ dependencyValues }) {
+          let arraySize = stateVarObj.returnArraySize({ dependencyValues });
+          for (let [ind, value] of arraySize.entries()) {
+            if (!(Number.isInteger(value) && value >= 0)) {
+              arraySize[ind] = 0;
+            }
+          }
+          return { newValues: { [arraySizeStateVar]: arraySize } }
+        },
+      };
+
+      // Make the array size state variable's dependencies depend on
+      // anything that the array state variable's dependencies depend on
+      // (as the returnArraySizeDependencies function could use those).
+      if (originalStateVariablesDeterminingDependencies) {
+        component.state[arraySizeStateVar].stateVariablesDeterminingDependencies = originalStateVariablesDeterminingDependencies;
+      }
+    }
+
+    this.initializeStateVariable({ component, stateVariable: arraySizeStateVar });
+
+  }
+
+  createArrayEntryNamesStateVariable({ stateVarObj, component, stateVariable }) {
+
+    let arrayEntryNamesStateVar = `__array_entry_names_${stateVariable}`;
+    stateVarObj.arrayEntryNamesStateVariable = arrayEntryNamesStateVar;
+
+    component.state[arrayEntryNamesStateVar] = {
+      neverShadow: true,
+      defaultValue: [],
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          [arrayEntryNamesStateVar]: { variablesToCheck: [arrayEntryNamesStateVar] }
+        }
+      })
+    };
+
+
+    this.initializeStateVariable({ component, stateVariable: arrayEntryNamesStateVar });
+
+    // mark it as resolved right away, as it has no dependencies
+    component.state[arrayEntryNamesStateVar].isResolved = true;
+
+  }
+
+  createVarNamesIncludingArrayKeyStateVariable({ stateVarObj, component, stateVariable }) {
+
+    let varNamesIncludingArrayKeyStateVar = `__array_var_names_including_array_key_${stateVariable}`;
+    stateVarObj.varNamesIncludingArrayKeyStateVariable = varNamesIncludingArrayKeyStateVar;
+
+    component.state[varNamesIncludingArrayKeyStateVar] = {
+      never: true,
+      stateVariablesDeterminingDependencies: [stateVarObj.arrayEntryNamesStateVariable],
+      returnDependencies({ stateValues }) {
+        let dependencies = {};
+        for (let arrayEntryName of stateValues[stateVarObj.arrayEntryNamesStateVariable]) {
+          dependencies[arrayEntryName] = {
+            dependencyType: "stateVariable",
+            variableName: "__array_keys_" + arrayEntryName
+          }
+        }
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+        let varNamesIncluding = {};
+        for (let arrayEntryName in dependencyValues) {
+          let arrayKeys = dependencyValues[arrayEntryName];
+          // for each arrayKey, add this entry name to the array's list variables
+          for (let arrayKey of flattenDeep(arrayKeys)) {
+            if (!varNamesIncluding[arrayKey]) {
+              varNamesIncluding[arrayKey] = [];
+            }
+            varNamesIncluding[arrayKey].push(arrayEntryName);
+          }
+        }
+
+        return {
+          newValues: {
+            [varNamesIncludingArrayKeyStateVar]: varNamesIncluding
+          }
+        }
+      }
+    };
+
+
+    this.initializeStateVariable({ component, stateVariable: varNamesIncludingArrayKeyStateVar });
+
+  }
+
+  createArrayKeysStateVariable({ stateVarObj, component, stateVariable, arrayStateVarObj }) {
+
+    let arrayKeysStateVar = `__array_keys_${stateVariable}`;
+
+    component.state[arrayKeysStateVar] = {
+      neverShadow: true,
+      returnDependencies: () => ({
+        arraySize: {
+          dependencyType: "stateVariable",
+          variableName: arrayStateVarObj.arraySizeStateVariable
+        },
+      }),
+      definition({ dependencyValues }) {
+        let arrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
+          arrayEntryPrefix: stateVarObj.entryPrefix,
+          varEnding: stateVarObj.varEnding,
+          arraySize: dependencyValues.arraySize,
+          nDimensions: arrayStateVarObj.nDimensions,
+        });
+        return {
+          newValues: { [arrayKeysStateVar]: flattenDeep(arrayKeys) }
+        }
+      },
+    };
+
+
+    if (arrayStateVarObj.entireArrayAtOnce) {
+      // if we're setting entire array at once, we don't use array keys or array size
+      // in the definition of arrays or array entries 
+      // (as array size is calculate after the fact)
+      // But, make sure stateVariablesDeterminingDependencies exists
+      // so that we don't have to check later
+      if (!stateVarObj.stateVariablesDeterminingDependencies) {
+        stateVarObj.stateVariablesDeterminingDependencies = [];
+      }
+    } else {
+      // make the array entry's dependencies depend on the array keys state variable
+      // and on the array's array size state variable
+      let arraySizeStateVar = arrayStateVarObj.arraySizeStateVariable
+      if (stateVarObj.stateVariablesDeterminingDependencies) {
+        stateVarObj.stateVariablesDeterminingDependencies.push(arrayKeysStateVar);
+        stateVarObj.stateVariablesDeterminingDependencies.push(arraySizeStateVar);
+      } else {
+        stateVarObj.stateVariablesDeterminingDependencies = [arrayKeysStateVar, arraySizeStateVar];
+      }
+    }
+
+    stateVarObj.arrayKeysStateVariable = arrayKeysStateVar;
+
+    this.initializeStateVariable({ component, stateVariable: arrayKeysStateVar });
 
   }
 
@@ -3942,6 +4971,10 @@ export default class Core {
         }
       };
     } else {
+      // Note: arrays now always have a state variable determining dependencies
+      // (the array size state variable)
+      // so we don't have to deal with them here
+
       dependencies = stateVarObj.returnDependencies({
         componentInfoObjects: this.componentInfoObjects,
         sharedParameters: component.sharedParameters,
@@ -3953,63 +4986,12 @@ export default class Core {
       allStateVariablesAffected
     });
 
-    if (stateVarObj.isArray) {
-      let dependencyOverride;
-      if (stateVarObj.stateVariablesDeterminingDependencies) {
-        dependencyOverride = dependencies;
-      }
-      this.setUpDependenciesOfArrayEntries({
-        component, stateVariable, dependencyOverride,
-        allStateVariablesAffected
-      });
-    }
-  }
-
-  setUpDependenciesOfArrayEntries({ component, dependencyOverride, stateVariable,
-    stateValues, allStateVariablesAffected
-  }) {
-    let stateVarObj = component.state[stateVariable];
-
-    let setUpArrayEntryDependencies = function (entryVarName) {
-      let dependencies = dependencyOverride;
-      if (!dependencies) {
-        let arrayKeys = component.state[entryVarName].arrayKeys;
-        dependencies = stateVarObj.returnDependencies({
-          arrayKeys,
-          componentInfoObjects: this.componentInfoObjects,
-          sharedParameters: component.sharedParameters,
-          stateValues
-        })
-      }
-      let allEntryStateVariablesAffected = [entryVarName];
-      if (component.state[entryVarName].additionalStateVariablesDefined) {
-        allEntryStateVariablesAffected.push(...component.state[entryVarName].additionalStateVariablesDefined)
-      }
-      this.setUpStateVariableDependencies({
-        dependencies, component,
-        stateVariable: entryVarName,
-        allStateVariablesAffected: allEntryStateVariablesAffected
-      });
-    }.bind(this);
-
-    for (let varName of allStateVariablesAffected) {
-      if (!component.state[varName]) {
-        component.state[varName] = {};
-      }
-      component.state[varName].setUpArrayEntryDependencies = setUpArrayEntryDependencies;
-    }
-
-    if (component.state[stateVariable].arrayEntryNames) {
-      // array entries are already created, set them up now
-      // (Do this only for original stateVariable,
-      // as it will set up any additional array entries defined)
-      for (let arrayEntryStateVariable of component.state[stateVariable].arrayEntryNames) {
-        component.state[stateVariable].setUpArrayEntryDependencies(arrayEntryStateVariable);
-      }
-    }
   }
 
   deleteAllDownstreamDependencies({ component, stateVariables = '__all__' }) {
+    // console.log(`delete all downstream dependencies of ${component.componentName}, ${stateVariables.toString()}`)
+    // console.log(deepClone(this.downstreamDependencies[component.componentName]))
+    // console.log(deepClone(this.upstreamDependencies))
 
     let componentName = component.componentName;
 
@@ -4038,37 +5020,93 @@ export default class Core {
     }
   }
 
-  deleteDownstreamDependency({ downDeps, downDepName }) {
+  deleteDownstreamDependency({ downDeps, downDepName, downstreamComponentName = null }) {
+
+    // console.log('delete downstream dependency')
+    // console.log(JSON.parse(JSON.stringify(downDeps)))
+    // console.log(downDepName);
+    // console.log(downDeps[downDepName].upstreamComponentName)
+
+    // if downstreamComponentName is specified, then just delete that componentName
+    // from the downstream dependency, leaving the others, if there are more than
+    // one downstream component name
+    // Note: we don't check to see if that componentName is actually in the list
+    // or is the single downstream component from the dependency
+
     let depToDelete = downDeps[downDepName];
 
+    let partialDeletion = false;
+    let deletedIndex;
+
     let downstreamComponentNames = [];
-    let mappedDownstreamVariableNames = [];
+    let mappedDownstreamVariableNamesByComponent = [];
     if (depToDelete.downstreamComponentNames) {
       downstreamComponentNames = depToDelete.downstreamComponentNames;
-      if (depToDelete.mappedDownstreamVariableNames) {
-        mappedDownstreamVariableNames = depToDelete.mappedDownstreamVariableNames;
+      if (downstreamComponentName !== null && downstreamComponentNames.length > 1) {
+        partialDeletion = true;
+
+        // for effiency, should we not check if index is valid?
+        deletedIndex = downstreamComponentNames.indexOf(downstreamComponentName);
+        if (deletedIndex === -1) {
+          throw Error('bad deleted index in dependency')
+        }
+        depToDelete.downstreamComponentNames.splice(deletedIndex, 1);
+        downstreamComponentNames = [downstreamComponentName];
+      }
+      if (depToDelete.mappedDownstreamVariableNamesByComponent) {
+        if (partialDeletion) {
+          mappedDownstreamVariableNamesByComponent = [depToDelete.mappedDownstreamVariableNamesByComponent[deletedIndex]];
+          depToDelete.mappedDownstreamVariableNamesByComponent.splice(deletedIndex, 1);
+        } else {
+          mappedDownstreamVariableNamesByComponent = depToDelete.mappedDownstreamVariableNamesByComponent;
+        }
+        if (depToDelete.variablesOptional) {
+          // if variablesOptional, it is possible that no variables were found
+          // in which case, the downstream variable name would become __identity
+          let newVarNames = [];
+          for (let [ind, cName] of downstreamComponentNames.entries()) {
+            let varNamesForComponent = [];
+            for (let vName of mappedDownstreamVariableNamesByComponent[ind]) {
+              if (this.components[cName].state[vName]) {
+                varNamesForComponent.push(vName);
+              }
+            }
+            if (varNamesForComponent.length > 0) {
+              newVarNames.push(varNamesForComponent);
+            } else {
+              newVarNames.push(['__identity']);
+            }
+          }
+          mappedDownstreamVariableNamesByComponent = newVarNames;
+        }
       }
       else if (depToDelete.dependencyType === "childLogicSatisfied") {
-        mappedDownstreamVariableNames = ['__childLogic'];
+        mappedDownstreamVariableNamesByComponent = Array(downstreamComponentNames.length).fill(['__childLogic']);
+      }
+      else if (depToDelete.dependencyType === "expandedComposites") {
+        mappedDownstreamVariableNamesByComponent = Array(downstreamComponentNames.length).fill(['__replacements']);
       }
       else {
-        mappedDownstreamVariableNames = ['__identity'];
+        mappedDownstreamVariableNamesByComponent = Array(downstreamComponentNames.length).fill(['__identity']);
       }
     }
     else if (depToDelete.downstreamComponentName) {
       downstreamComponentNames = [depToDelete.downstreamComponentName];
       if (depToDelete.mappedDownstreamVariableName) {
-        mappedDownstreamVariableNames = [depToDelete.mappedDownstreamVariableName];
+        mappedDownstreamVariableNamesByComponent = [[depToDelete.mappedDownstreamVariableName]];
       }
       else if (depToDelete.dependencyType === "childLogicSatisfied") {
-        mappedDownstreamVariableNames = ['__childLogic'];
+        mappedDownstreamVariableNamesByComponent = [['__childLogic']];
+      }
+      else if (depToDelete.dependencyType === "expandedComposites") {
+        mappedDownstreamVariableNamesByComponent = [['__replacements']];
       }
       else {
-        mappedDownstreamVariableNames = ['__identity'];
+        mappedDownstreamVariableNamesByComponent = [['__identity']];
       }
     }
-    for (let cName of downstreamComponentNames) {
-      for (let vName of mappedDownstreamVariableNames) {
+    for (let [cInd, cName] of downstreamComponentNames.entries()) {
+      for (let vName of mappedDownstreamVariableNamesByComponent[cInd]) {
         let upDeps = this.upstreamDependencies[cName][vName];
         if (upDeps) {
           let ind = upDeps.indexOf(depToDelete);
@@ -4082,13 +5120,25 @@ export default class Core {
             }
           }
         }
+
+
+        if (!['__childLogic', '__identity'].includes(vName)) {
+          for (let upstreamVarName of depToDelete.upstreamVariableNames) {
+            this.resetCircularCheckPassed(depToDelete.upstreamComponentName, upstreamVarName);
+          }
+        }
       }
     }
 
-    delete downDeps[downDepName];
+    if (!partialDeletion) {
+      delete downDeps[downDepName];
+    }
   }
 
   deleteAllUpstreamDependencies({ component, stateVariables = '__all__', updatesNeeded }) {
+    // console.log(`delete all upstream dependencies of ${component.componentName}, ${stateVariables.toString()}`)
+    // console.log(deepClone(this.downstreamDependencies))
+    // console.log(deepClone(this.upstreamDependencies))
 
     let componentName = component.componentName;
 
@@ -4101,17 +5151,24 @@ export default class Core {
 
     for (let stateVariable of stateVariablesToAdddress) {
       if (this.upstreamDependencies[componentName][stateVariable]) {
-        for (let upDep of this.upstreamDependencies[componentName][stateVariable]) {
+        // loop over shallow copy, as upstream dependencies are changed in deleteDownstreamDependency
+        for (let upDep of [...this.upstreamDependencies[componentName][stateVariable]]) {
           let upstreamComponentName = upDep.upstreamComponentName;
           if (upDep.downstreamComponentNames) {
-            // if the dependency depends on multiple downstream components
-            // just delete component from the array
-            let ind = upDep.downstreamComponentNames.indexOf(componentName);
-            upDep.downstreamComponentNames.splice(ind, 1);
+            this.deleteDownstreamDependency({
+              downDeps: this.downstreamDependencies[upstreamComponentName][upDep.upstreamVariableNames[0]],
+              downDepName: upDep.dependencyName,
+              downstreamComponentName: componentName
+            })
+
           } else {
             // Note: all downstream dependencies for upstreamVariablesNames are the same object
             // so just need to delete items from the first object
-            delete this.downstreamDependencies[upstreamComponentName][upDep.upstreamVariableNames[0]][upDep.dependencyName];
+            this.deleteDownstreamDependency({
+              downDeps: this.downstreamDependencies[upstreamComponentName][upDep.upstreamVariableNames[0]],
+              downDepName: upDep.dependencyName,
+            })
+            // delete this.downstreamDependencies[upstreamComponentName][upDep.upstreamVariableNames[0]][upDep.dependencyName];
           }
           // note: markStateVariableAndUpstreamDependentsStale includes
           // any additionalStateVariablesDefined with stateVariable
@@ -4123,6 +5180,8 @@ export default class Core {
 
         }
       }
+
+      // clean up by deleting entries that should now be empty objects
       delete this.upstreamDependencies[componentName][stateVariable];
     }
 
@@ -4152,6 +5211,7 @@ export default class Core {
     if (Object.keys(stateVariableDependencies).length > 0) {
       for (let varName of allStateVariablesAffected) {
         thisDownstream[varName] = stateVariableDependencies;
+        this.resetCircularCheckPassed(component.componentName, varName);
       }
       for (let varName of allStateVariablesAffected) {
         this.checkForCircularDependency({ componentName: component.componentName, varName });
@@ -4241,7 +5301,7 @@ export default class Core {
       else {
         let children = [];
         let valuesChanged = [];
-        let mappedDownstreamVariableNames = []
+        let mappedDownstreamVariableNamesByComponent = []
         for (let childIndex of activeChildrenIndices) {
           let childName = component.activeChildren[childIndex].componentName;
           children.push(childName);
@@ -4252,21 +5312,21 @@ export default class Core {
               stateVariables: newDep.originalDownstreamVariableNames,
               componentClass: this._components[childName].constructor
             });
-            mappedDownstreamVariableNames.push(mappedVarNames)
+            mappedDownstreamVariableNamesByComponent.push(mappedVarNames)
 
             for (let vName of newDep.originalDownstreamVariableNames) {
               valsChanged[vName] = { changed: true }
             }
             valuesChanged.push(valsChanged);
           } else {
-            mappedDownstreamVariableNames.push(['__identity'])
+            mappedDownstreamVariableNamesByComponent.push(['__identity'])
           }
 
         }
         newDep.downstreamComponentNames = children;
         if (requestStateVariables) {
           newDep.valuesChanged = valuesChanged;
-          newDep.mappedDownstreamVariableNames = mappedDownstreamVariableNames;
+          newDep.mappedDownstreamVariableNamesByComponent = mappedDownstreamVariableNamesByComponent;
         }
 
         if (dependencyDefinition.markChildrenAsProperties) {
@@ -4280,11 +5340,11 @@ export default class Core {
           if (!childUp) {
             childUp = this.upstreamDependencies[childName] = {};
           }
-          // mappedDownstreamVariableNames[childInd] is ['__identity'] if child identity
-          let childVarNames = mappedDownstreamVariableNames[childInd];
+          // mappedDownstreamVariableNamesByComponent[childInd] is ['__identity'] if child identity
+          let childVarNames = mappedDownstreamVariableNamesByComponent[childInd];
           if (dependencyDefinition.variablesOptional && requestStateVariables) {
             childVarNames = [];
-            for (let varName of mappedDownstreamVariableNames[childInd]) {
+            for (let varName of mappedDownstreamVariableNamesByComponent[childInd]) {
               if (varName in this._components[childName].state ||
                 this.checkIfArrayEntry({
                   stateVariable: varName,
@@ -4338,8 +5398,7 @@ export default class Core {
       }
 
 
-    }
-    else if (["descendantStateVariables", "descendantIdentity", "componentDescendantStateVariables", "componentDescendantIdentity"].includes(dependencyDefinition.dependencyType)) {
+    } else if (["descendantStateVariables", "descendantIdentity", "componentDescendantStateVariables", "componentDescendantIdentity"].includes(dependencyDefinition.dependencyType)) {
 
       let ancestor = component;
       if (["componentDescendantStateVariables", "componentDescendantIdentity"].includes(dependencyDefinition.dependencyType)) {
@@ -4396,7 +5455,7 @@ export default class Core {
       newDep.componentIdentitiesChanged = true;
       newDep.downstreamComponentNames = descendants;
       let valuesChanged = [];
-      let mappedDownstreamVariableNames = []
+      let mappedDownstreamVariableNamesByComponent = []
       if (requestStateVariables) {
         for (let descendantName of descendants) {
           let valsChanged = {}
@@ -4404,7 +5463,7 @@ export default class Core {
             stateVariables: newDep.originalDownstreamVariableNames,
             componentClass: this._components[descendantName].constructor
           });
-          mappedDownstreamVariableNames.push(mappedVarNames)
+          mappedDownstreamVariableNamesByComponent.push(mappedVarNames)
 
           for (let vName of newDep.originalDownstreamVariableNames) {
             valsChanged[vName] = { changed: true }
@@ -4414,10 +5473,10 @@ export default class Core {
         }
 
         newDep.valuesChanged = valuesChanged;
-        newDep.mappedDownstreamVariableNames = mappedDownstreamVariableNames;
+        newDep.mappedDownstreamVariableNamesByComponent = mappedDownstreamVariableNamesByComponent;
       }
       else {
-        mappedDownstreamVariableNames = descendants.map(() => ['__identity'])
+        mappedDownstreamVariableNamesByComponent = descendants.map(() => ['__identity'])
       }
 
 
@@ -4427,11 +5486,11 @@ export default class Core {
           descendantUp = this.upstreamDependencies[descendantName] = {};
         }
 
-        // mappedDownstreamVariableNames[descendantInd] is ['__identity'] if descendant identity
-        let descendantVarNames = mappedDownstreamVariableNames[descendantInd];
+        // mappedDownstreamVariableNamesByComponent[descendantInd] is ['__identity'] if descendant identity
+        let descendantVarNames = mappedDownstreamVariableNamesByComponent[descendantInd];
         if (dependencyDefinition.variablesOptional && requestStateVariables) {
           descendantVarNames = [];
-          for (let varName of mappedDownstreamVariableNames[descendantInd]) {
+          for (let varName of mappedDownstreamVariableNamesByComponent[descendantInd]) {
             if (varName in this._components[descendantName].state ||
               this.checkIfArrayEntry({
                 stateVariable: varName,
@@ -4455,8 +5514,9 @@ export default class Core {
 
       }
 
-    }
-    else if (dependencyDefinition.dependencyType === "stateVariable") {
+    } else if (dependencyDefinition.dependencyType === "stateVariable" ||
+      dependencyDefinition.dependencyType === "stateVariableComponentType"
+    ) {
       newDep.downstreamComponentName = component.componentName;
       if (dependencyDefinition.variableName === undefined) {
         throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${dependencyName}: variableName is not defined`);
@@ -4474,8 +5534,7 @@ export default class Core {
       if (dependencyDefinition.variableOptional) {
         newDep.variableOptional = true;
       }
-    }
-    else if (dependencyDefinition.dependencyType === "recursiveDependencyValues") {
+    } else if (dependencyDefinition.dependencyType === "recursiveDependencyValues") {
       newDep.downstreamComponentName = component.componentName;
       if (dependencyDefinition.variableName === undefined) {
         throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${dependencyName}: variableName is not defined`);
@@ -4492,8 +5551,7 @@ export default class Core {
         thisUpstream[newDep.mappedDownstreamVariableName] = [];
       }
       thisUpstream[newDep.mappedDownstreamVariableName].push(newDep);
-    }
-    else if (dependencyDefinition.dependencyType === "componentStateVariable" ||
+    } else if (dependencyDefinition.dependencyType === "componentStateVariable" ||
       dependencyDefinition.dependencyType === "componentStateVariableComponentType"
     ) {
       newDep.downstreamComponentName = dependencyDefinition.componentIdentity.componentName;
@@ -4518,8 +5576,7 @@ export default class Core {
       if (dependencyDefinition.variableOptional) {
         newDep.variableOptional = true;
       }
-    }
-    else if (dependencyDefinition.dependencyType === "parentStateVariable") {
+    } else if (dependencyDefinition.dependencyType === "parentStateVariable") {
       if (!component.parentName) {
         throw Error(`cannot have state variable ${stateVariable} of ${component.componentName} depend on parentStateVariables when parent isn't defined.`);
       }
@@ -4558,8 +5615,7 @@ export default class Core {
       // depending on parent (which a component can't control)
       newDep.variableOptional = true;
 
-    }
-    else if (dependencyDefinition.dependencyType === "ancestorStateVariables" || dependencyDefinition.dependencyType === "ancestorIdentity") {
+    } else if (dependencyDefinition.dependencyType === "ancestorStateVariables" || dependencyDefinition.dependencyType === "ancestorIdentity") {
 
       newDep.descendant = component.componentName;
 
@@ -4587,10 +5643,12 @@ export default class Core {
         for (let vName of newDep.originalDownstreamVariableNames) {
           valsChanged[vName] = { changed: true }
         }
-        newDep.valuesChanged = valsChanged;
+        newDep.valuesChanged = [valsChanged];
       }
 
       ancestorResults.componentName = component.componentName;
+
+      // TODO: why is stateVariables an array of arrays?
       ancestorResults.stateVariables = [allStateVariablesAffected];
       ancestorResults.dependencyName = dependencyName;
 
@@ -4606,7 +5664,7 @@ export default class Core {
 
       if (ancestorResults.ancestorFound) {
 
-        newDep.downstreamComponentName = ancestorResults.ancestorFound.componentName;
+        newDep.downstreamComponentNames = [ancestorResults.ancestorFound.componentName];
 
         let depUp = this.upstreamDependencies[ancestorResults.ancestorFound.componentName];
         if (!depUp) {
@@ -4620,7 +5678,7 @@ export default class Core {
             stateVariables: newDep.originalDownstreamVariableNames,
             componentClass: ancestorResults.ancestorFound.componentClass
           });
-          newDep.mappedDownstreamVariableNames = mappedVarNames;
+          newDep.mappedDownstreamVariableNamesByComponent = [mappedVarNames];
         } else {
           mappedVarNames = ['__identity'];
         }
@@ -4631,10 +5689,9 @@ export default class Core {
           depUp[varName].push(newDep);
         }
       } else {
-        newDep.downstreamComponentName = null;
+        newDep.downstreamComponentNames = [];
       }
-    }
-    else if (dependencyDefinition.dependencyType === "componentIdentity") {
+    } else if (dependencyDefinition.dependencyType === "componentIdentity") {
 
       newDep.downstreamComponentName = dependencyDefinition.componentName;
       newDep.componentIdentityChanged = true;
@@ -4650,8 +5707,9 @@ export default class Core {
         depUp['__identity'] = [];
       }
       depUp['__identity'].push(newDep);
-    }
-    else if (dependencyDefinition.dependencyType === "replacementStateVariables" || dependencyDefinition.dependencyType === "replacementIdentity") {
+    } else if (dependencyDefinition.dependencyType === "replacementStateVariables" ||
+      dependencyDefinition.dependencyType === "replacementIdentity"
+    ) {
 
       let replacements = component.replacements;
       if (replacements === undefined) {
@@ -4709,7 +5767,7 @@ export default class Core {
       else {
         let replacementNames = [];
         let valuesChanged = [];
-        let mappedDownstreamVariableNames = []
+        let mappedDownstreamVariableNamesByComponent = []
         for (let replacement of replacements) {
           replacementNames.push(replacement.componentName);
 
@@ -4719,14 +5777,14 @@ export default class Core {
               stateVariables: newDep.originalDownstreamVariableNames,
               componentClass: replacement.constructor
             });
-            mappedDownstreamVariableNames.push(mappedVarNames)
+            mappedDownstreamVariableNamesByComponent.push(mappedVarNames)
 
             for (let vName of newDep.originalDownstreamVariableNames) {
               valsChanged[vName] = { changed: true }
             }
             valuesChanged.push(valsChanged);
           } else {
-            mappedDownstreamVariableNames.push(['__identity'])
+            mappedDownstreamVariableNamesByComponent.push(['__identity'])
           }
 
         }
@@ -4734,7 +5792,7 @@ export default class Core {
         newDep.downstreamComponentNames = replacementNames;
         if (requestStateVariables) {
           newDep.valuesChanged = valuesChanged;
-          newDep.mappedDownstreamVariableNames = mappedDownstreamVariableNames;
+          newDep.mappedDownstreamVariableNamesByComponent = mappedDownstreamVariableNamesByComponent;
         }
 
 
@@ -4743,11 +5801,11 @@ export default class Core {
           if (!replacementUp) {
             replacementUp = this.upstreamDependencies[replacementName] = {};
           }
-          // mappedDownstreamVariableNames[replacementInd] is ['__identity'] if replacement identity
-          let replacementVarNames = mappedDownstreamVariableNames[replacementInd];
+          // mappedDownstreamVariableNamesByComponent[replacementInd] is ['__identity'] if replacement identity
+          let replacementVarNames = mappedDownstreamVariableNamesByComponent[replacementInd];
           if (dependencyDefinition.variablesOptional && requestStateVariables) {
             replacementVarNames = [];
-            for (let varName of mappedDownstreamVariableNames[replacementInd]) {
+            for (let varName of mappedDownstreamVariableNamesByComponent[replacementInd]) {
               if (varName in this._components[replacementName].state ||
                 this.checkIfArrayEntry({
                   stateVariable: varName,
@@ -4798,20 +5856,41 @@ export default class Core {
       // console.log(`added second dependency: ${dependencyName2}`)
       // console.log(dep2);
 
-    }
-    else if (dependencyDefinition.dependencyType == "doenetAttribute") {
+    } else if (dependencyDefinition.dependencyType === "componentStateVariableArraySize") {
+      newDep.downstreamComponentName = dependencyDefinition.componentIdentity.componentName;
+      if (dependencyDefinition.variableName === undefined) {
+        throw Error(`Invalid state variable ${stateVariable} of ${component.componentName}, dependency ${dependencyName}: variableName is not defined`);
+      }
+      newDep.originalDownstreamArrayVariableName = dependencyDefinition.variableName;
+      newDep.mappedDownstreamArrayVariableName = this.substituteAliases({
+        stateVariables: [newDep.originalDownstreamArrayVariableName],
+        componentClass: this.allComponentClasses[dependencyDefinition.componentIdentity.componentType.toLowerCase()]
+      })[0];
+      newDep.originalDownstreamVariableName = "__array_size_" + newDep.mappedDownstreamArrayVariableName;
+      newDep.mappedDownstreamVariableName = newDep.originalDownstreamVariableName;
+
+      newDep.valuesChanged = { [newDep.originalDownstreamVariableName]: { changed: true } };
+
+      let depUp = this.upstreamDependencies[newDep.downstreamComponentName];
+      if (!depUp) {
+        depUp = this.upstreamDependencies[newDep.downstreamComponentName] = {};
+      }
+      if (depUp[newDep.mappedDownstreamVariableName] === undefined) {
+        depUp[newDep.mappedDownstreamVariableName] = [];
+      }
+      depUp[newDep.mappedDownstreamVariableName].push(newDep);
+      if (dependencyDefinition.variableOptional) {
+        newDep.variableOptional = true;
+      }
+    } else if (dependencyDefinition.dependencyType === "doenetAttribute") {
       newDep.attributeName = dependencyDefinition.attributeName;
-    }
-    else if (dependencyDefinition.dependencyType === "flag") {
+    } else if (dependencyDefinition.dependencyType === "flag") {
       newDep.flagName = dependencyDefinition.flagName;
-    }
-    else if (dependencyDefinition.dependencyType === "value") {
+    } else if (dependencyDefinition.dependencyType === "value") {
       newDep.value = dependencyDefinition.value;
-    }
-    else if (dependencyDefinition.dependencyType === "potentialEssentialVariable") {
+    } else if (dependencyDefinition.dependencyType === "potentialEssentialVariable") {
       newDep.variableName = dependencyDefinition.variableName;
-    }
-    else if (dependencyDefinition.dependencyType === "childLogicSatisfied") {
+    } else if (dependencyDefinition.dependencyType === "childLogicSatisfied") {
 
       newDep.downstreamComponentName = component.componentName;
       newDep.valueChanged = true;
@@ -4820,8 +5899,7 @@ export default class Core {
       }
       thisUpstream['__childLogic'].push(newDep);
 
-    }
-    else if (dependencyDefinition.dependencyType !== "serializedChildren"
+    } else if (dependencyDefinition.dependencyType !== "serializedChildren"
       && dependencyDefinition.dependencyType !== "variants"
     ) {
       throw Error(`Unrecognized dependency type ${dependencyDefinition.dependencyType}`);
@@ -5015,11 +6093,29 @@ export default class Core {
 
         }
 
-        let newDependencies = changedStateVarObj.returnDependencies({
-          stateValues: dependencyValues,
-          componentInfoObjects: core.componentInfoObjects,
-          sharedParameters: component.sharedParameters,
-        });
+        let newDependencies;
+        if (changedStateVarObj.isArray && !changedStateVarObj.entireArrayAtOnce) {
+          newDependencies = changedStateVarObj.returnDependencies({
+            stateValues: dependencyValues,
+            componentInfoObjects: core.componentInfoObjects,
+            sharedParameters: component.sharedParameters,
+            arraySize: changedStateVarObj.arraySize,  // we know this must be resolved now
+          });
+        } else if (changedStateVarObj.isArrayEntry && !changedStateVarObj.entireArrayAtOnce) {
+          newDependencies = changedStateVarObj.returnDependencies({
+            stateValues: dependencyValues,
+            componentInfoObjects: core.componentInfoObjects,
+            sharedParameters: component.sharedParameters,
+            arraySize: changedStateVarObj.arraySize,  // we know this must be resolved now
+            arrayKeys: changedStateVarObj.arrayKeys // we know this must be resolved now
+          });
+        } else {
+          newDependencies = changedStateVarObj.returnDependencies({
+            stateValues: dependencyValues,
+            componentInfoObjects: core.componentInfoObjects,
+            sharedParameters: component.sharedParameters,
+          });
+        }
 
         core.setUpStateVariableDependencies({
           dependencies: newDependencies,
@@ -5027,15 +6123,6 @@ export default class Core {
           stateVariable: varName,
           allStateVariablesAffected: stateVarObj.dependenciesForStateVariables
         });
-
-        if (changedStateVarObj.isArray) {
-          core.setUpDependenciesOfArrayEntries({
-            component,
-            stateValues: dependencyValues,
-            stateVariable: varName,
-            allStateVariablesAffected: stateVarObj.dependenciesForStateVariables
-          });
-        }
 
         return {};
       },
@@ -5104,26 +6191,10 @@ export default class Core {
 
     let definitionArgs = this.getStateVariableDependencyValues({ component, stateVariable });
     definitionArgs.componentInfoObjects = this.componentInfoObjects;
-    let varNameForFreshness = stateVariable;
 
-    if (stateVarObj.isArrayEntry) {
-      varNameForFreshness = stateVarObj.arrayStateVariable
-      definitionArgs.arrayKeys = stateVarObj.arrayKeys;
-    }
-
-    definitionArgs.freshnessInfo = { [varNameForFreshness]: stateVarObj.freshnessInfo };
+    definitionArgs.freshnessInfo = stateVarObj.freshnessInfo;
 
     let additionalStateVariablesDefined = stateVarObj.additionalStateVariablesDefined;
-    if (additionalStateVariablesDefined) {
-      for (let varName of additionalStateVariablesDefined) {
-        let vNameForFreshness = varName;
-        let sObj = component.state[varName];
-        if (sObj.isArrayEntry) {
-          vNameForFreshness = sObj.arrayStateVariable;
-        }
-        definitionArgs.freshnessInfo[vNameForFreshness] = sObj.freshnessInfo;
-      }
-    }
 
     if (component instanceof this.allComponentClasses._composite) {
       definitionArgs.replacementsWorkspace = new Proxy(component.replacementsWorkspace, readOnlyProxyHandler);
@@ -5132,7 +6203,7 @@ export default class Core {
     let result;
 
     if (Object.keys(definitionArgs.changes).length === 0 &&
-      stateVarObj._previousValue !== undefined
+      stateVarObj._previousValue !== undefined && !stateVarObj.forceRecalculation
     ) {
       let noChanges = [stateVariable];
       if (additionalStateVariablesDefined) {
@@ -5146,6 +6217,7 @@ export default class Core {
         stateVarObj.freshenOnNoChanges(definitionArgs);
       }
     } else {
+      delete stateVarObj.forceRecalculation;
       result = stateVarObj.definition(definitionArgs);
     }
 
@@ -5200,39 +6272,54 @@ export default class Core {
       }
 
       if (component.state[varName].isArray) {
-        // if new value is an array, then reset arrayValues to be empty
-        // TODO: how should this work with multi-dimensional arrays?
-        valuesChanged[varName] = { arrayKeysChanged: {} };
-        if (Array.isArray(result.newValues[varName])) {
-          component.state[varName]._previousArrayValues = component.state[varName].arrayValues;
-          component.state[varName].arrayValues = [];
-          valuesChanged[varName].changedEntireArray = true;
-        }
-        let checkForActualChange = {};
-        if (result.checkForActualChange && result.checkForActualChange[varName]) {
-          checkForActualChange = result.checkForActualChange[varName];
-        }
-        for (let arrayKey in result.newValues[varName]) {
-          if (checkForActualChange[arrayKey]) {
-            let prevValue = component.state[varName].getArrayValue({ arrayKey });
-            let newValue = result.newValues[varName][arrayKey];
-            if (prevValue !== newValue) {
+
+        if (component.state[varName].entireArrayAtOnce) {
+
+          // if specify entire array at once, then expect to get an array
+          // of all the array values
+          // We bypass setArrayValue and set arrayValues directly
+          component.state[varName].arrayValues = result.newValues[varName];
+
+          // we don't support checkForActualChange in this case
+          valuesChanged[varName] = { arrayKeysChanged: {}, allArrayKeysChanged: true };
+
+        } else {
+          valuesChanged[varName] = { arrayKeysChanged: {} };
+          let checkForActualChange = {};
+          if (result.checkForActualChange && result.checkForActualChange[varName]) {
+            checkForActualChange = result.checkForActualChange[varName];
+          }
+
+          let arraySize = component.state[varName].arraySize;
+
+          for (let arrayKey in result.newValues[varName]) {
+            if (checkForActualChange[arrayKey]) {
+              let prevValue = component.state[varName].getArrayValue({ arrayKey });
+              let newValue = result.newValues[varName][arrayKey];
+              if (prevValue !== newValue) {
+                component.state[varName].setArrayValue({
+                  value: result.newValues[varName][arrayKey],
+                  arrayKey,
+                  arraySize,
+                });
+                valuesChanged[varName].arrayKeysChanged[arrayKey] = true;
+              }
+            } else {
               component.state[varName].setArrayValue({
                 value: result.newValues[varName][arrayKey],
                 arrayKey,
+                arraySize,
               });
               valuesChanged[varName].arrayKeysChanged[arrayKey] = true;
             }
-          } else {
-            component.state[varName].setArrayValue({
-              value: result.newValues[varName][arrayKey],
-              arrayKey,
-            });
-            valuesChanged[varName].arrayKeysChanged[arrayKey] = true;
           }
         }
       } else {
         // not an array
+
+        // if (!(Object.getOwnPropertyDescriptor(component.state[varName], 'value').get || component.state[varName].immutable)) {
+        //   throw Error(`${varName} of ${component.componentName} is not stale, but still setting its valuae!!`)
+        // }
 
         // delete before assigning value to remove any getter for the property
         delete component.state[varName].value;
@@ -5240,9 +6327,22 @@ export default class Core {
         delete component.state[varName].usedDefault;
 
         if (result.checkForActualChange && result.checkForActualChange[varName]) {
-          // TODO: should this be a deep comparison?
-          if (component.state[varName].value === component.state[varName]._previousValue) {
+          let newValue = component.state[varName].value;
+          let previousValue = component.state[varName]._previousValue;
+
+          if (newValue === previousValue) {
             delete valuesChanged[varName];
+          } else if (Array.isArray(newValue) && Array.isArray(previousValue)) {
+
+            // for arrays, do a shallow comparison along first dimension
+            // TODO: is there a reason to check deeper?
+            // Probably, not as have array state variables that would usually handle this
+            // (Need this shallow check for arraySize for entireArrayAtOnce case)
+            if (newValue.length === previousValue.length &&
+              newValue.every((v, i) => v === previousValue[i])
+            ) {
+              delete valuesChanged[varName];
+            }
           }
         }
 
@@ -5289,27 +6389,31 @@ export default class Core {
 
       if (byArrayEntries) {
 
+        let arraySize = component.state[varName].arraySize;
+
         for (let arrayKey in result.useEssentialOrDefaultValue[varName]) {
           if (!haveEssentialValue[arrayKey]) {
             if ("defaultValue" in result.useEssentialOrDefaultValue[varName][arrayKey]) {
               component.state[varName].setArrayValue({
                 value: result.useEssentialOrDefaultValue[varName][arrayKey].defaultValue,
                 arrayKey,
+                arraySize,
               });
               component.state[varName].essentialByArrayKey[arrayKey] = true;
             } else if ("defaultEntryValue" in component.state[varName]) {
               component.state[varName].setArrayValue({
                 value: component.state[varName].defaultEntryValue,
                 arrayKey,
+                arraySize,
               });
               component.state[varName].essentialByArrayKey[arrayKey] = true;
             }
           }
           if (!valueUnchanged[arrayKey]) {
-            if (valuesChanged[varName] == undefined) {
-              valuesChanged[varName] = {}
+            if (valuesChanged[varName] === undefined) {
+              valuesChanged[varName] = { arrayKeysChanged: {} }
             }
-            valuesChanged[varName][arrayKey] = true;
+            valuesChanged[varName].arrayKeysChanged[arrayKey] = true;
           }
         }
       } else {
@@ -5360,10 +6464,13 @@ export default class Core {
 
         receivedValue[varName] = true;
 
-        // delete before assigning value to remove any getter for the property
-        // then assign previous value
-        delete component.state[varName].value;
-        component.state[varName].value = component.state[varName]._previousValue;
+        if (Object.getOwnPropertyDescriptor(component.state[varName], 'value').get || component.state[varName].immutable) {
+          // have getter, so state variable was marked as stale
+          // delete getter then assign previous value
+          delete component.state[varName].value;
+          component.state[varName].value = component.state[varName]._previousValue;
+        }
+
       }
     }
 
@@ -5476,6 +6583,35 @@ export default class Core {
       }
     }
 
+    if (result.arraySizeChanged) {
+      for (let varName of result.arraySizeChanged) {
+
+        if (component.state[varName].entireArrayAtOnce) {
+          // check if arraySizeVariables is in varsChanged, since we already
+          // compared to see if it changed
+          if (valuesChanged[component.state[varName].arraySizeStateVariable]) {
+            if (valuesChanged[varName] === undefined) {
+              valuesChanged[varName] = { arrayKeysChanged: {} }
+            } else if (valuesChanged[varName] === true) {
+              valuesChanged[varName] = { allArrayKeysChanged: true, arrayKeysChanged: {} }
+            }
+            valuesChanged[varName].arraySizeChanged = true;
+          }
+        } else {
+
+          component.state[varName].adjustArrayToNewArraySize();
+
+          if (valuesChanged[varName] === undefined) {
+            valuesChanged[varName] = { arrayKeysChanged: {} }
+          } else if (valuesChanged[varName] === true) {
+            valuesChanged[varName] = { allArrayKeysChanged: true, arrayKeysChanged: {} }
+          }
+          valuesChanged[varName].arraySizeChanged = true;
+        }
+      }
+
+    }
+
 
     for (let varName in receivedValue) {
       if (!(receivedValue[varName] ||
@@ -5489,10 +6625,24 @@ export default class Core {
         // delete before assigning value to remove any getter for the property
         delete component.state[varName].value;
         component.state[varName].value = component.state[varName].arrayValues;
-        // _previousArrayValues is just temporarily used if setting entire array
-        delete component.state[varName]._previousArrayValues;
       } else if (component.state[varName].isArrayEntry) {
         delete component.state[varName].value;
+        if (component.state[varName].entireArrayAtOnce) {
+
+          // if value of arraySize has changed, need to record its actual change now
+          // before we try to access the value of arrayKeys
+          // (Otherwise, arrayKey won't be told that arraySize changed)
+          let arraySizeVarName = component.state[varName].arraySizeStateVariable;
+          if (valuesChanged[arraySizeVarName]) {
+            this.recordActualChangeInUpstreamDependencies({
+              component, varName: arraySizeVarName,
+              changes: valuesChanged[arraySizeVarName]
+            });
+
+            delete valuesChanged[arraySizeVarName]
+          }
+
+        }
         component.state[varName].value = component.state[varName].getValueFromArrayValues();
       }
 
@@ -5506,13 +6656,18 @@ export default class Core {
 
       if (component.state[varName].isArray) {
         let arrayVarNamesChanged = [];
-        if (valuesChanged[varName].changedEntireArray) {
+        if (valuesChanged[varName].allArrayKeysChanged || valuesChanged.arraySizeChanged) {
           if (component.state[varName].arrayEntryNames) {
             arrayVarNamesChanged = component.state[varName].arrayEntryNames;
           }
         } else {
+          let varNamesStateVar = component.state[varName].varNamesIncludingArrayKeyStateVariable;
+          let varNamesByArrayKey = component.stateValues[varNamesStateVar];
           for (let arrayKeyChanged in valuesChanged[varName].arrayKeysChanged) {
-            arrayVarNamesChanged.push(...component.state[varName].allVarNamesThatIncludeArrayKey(arrayKeyChanged))
+            let additionalVarNamesChanged = varNamesByArrayKey[arrayKeyChanged];
+            if (additionalVarNamesChanged) {
+              arrayVarNamesChanged.push(...additionalVarNamesChanged)
+            }
           }
         }
         for (let arrayVarName of arrayVarNamesChanged) {
@@ -5562,18 +6717,14 @@ export default class Core {
     }
     if (component.potentialEssentialState) {
       if (byArrayEntries) {
+        let arraySize = component.state[varName].arraySize;
         for (let arrayKey in useEssentialInfo) {
           if (component.state[varName].essentialByArrayKey[arrayKey] || component.state[varName].essential) {
             // if already essential, no need to do more
-            // unless new value is undefined
-            let result = this.restorePreviousArrayEntryValue({ component, varName, arrayKey });
-            if (result.restoredValue) {
-              component.state[varName].essentialByArrayKey[arrayKey] = true;
-              haveEssentialValue[arrayKey] = true;
-              valueUnchanged[arrayKey] = true;
-            }
-          }
-          if (!haveEssentialValue[arrayKey]) {
+            haveEssentialValue[arrayKey] = true;
+            valueUnchanged[arrayKey] = true;
+
+          } else {
             let variablesToCheck = useEssentialInfo[arrayKey].variablesToCheck;
             if (!Array.isArray(variablesToCheck)) {
               variablesToCheck = [variablesToCheck];
@@ -5587,6 +6738,7 @@ export default class Core {
               component.state[varName].setArrayValue({
                 value,
                 arrayKey,
+                arraySize
               });
               component.state[varName].essentialByArrayKey[arrayKey] = true;
               haveEssentialValue[arrayKey] = true;
@@ -5623,52 +6775,14 @@ export default class Core {
       // still check if arrayKeys are already essential
       for (let arrayKey in useEssentialInfo) {
         if (component.state[varName].essentialByArrayKey[arrayKey] || component.state[varName].essential) {
-          // if already essential, no need to do more
-          // unless new value is undefined
-          let result = this.restorePreviousArrayEntryValue({ component, varName, arrayKey });
-          if (result.restoredValue) {
-            component.state[varName].essentialByArrayKey[arrayKey] = true;
-            haveEssentialValue[arrayKey] = true;
-            valueUnchanged[arrayKey] = true;
-          }
+          haveEssentialValue[arrayKey] = true;
+          valueUnchanged[arrayKey] = true;
         }
       }
     }
     return { haveEssentialValue, valueUnchanged, byArrayEntries };
   }
 
-  restorePreviousArrayEntryValue({ component, varName, arrayKey }) {
-    // if current value of array entry is undefined
-    // and a previous value from _previousArrayValue exists
-    // then restore that previous value
-
-    // returns restoredValue = true if succeeded or if current value existed
-    // returns restoredValue if value is still undefined
-
-    let currentValue = component.state[varName].getArrayValue({ arrayKey });
-    if (currentValue === undefined) {
-      if (component.state[varName]._previousArrayValues) {
-        let previousValue = component.state[varName].getArrayValue({
-          arrayKey,
-          arrayValues: component.state[varName]._previousArrayValues
-        });
-        if (previousValue !== undefined) {
-          // revert to previous value
-          component.state[varName].setArrayValue({
-            value: previousValue,
-            arrayKey,
-          });
-          return { restoredValue: true }
-        }
-      } else {
-        return { restoredValue: false }
-      }
-    } else {
-      // if have current value, then nothing to do
-      return { restoredValue: true }
-
-    }
-  }
 
   findPotentialEssentialValue({ variablesToCheck, potentialEssentialState }) {
     for (let essentialVarInfo of variablesToCheck) {
@@ -5749,7 +6863,7 @@ export default class Core {
 
           if (dep.originalDownstreamVariableNames) {
             for (let [varInd, originalVarName] of dep.originalDownstreamVariableNames.entries()) {
-              let mappedVarName = dep.mappedDownstreamVariableNames[childInd][varInd];
+              let mappedVarName = dep.mappedDownstreamVariableNamesByComponent[childInd][varInd];
 
               if (!dep.variablesOptional || mappedVarName in depComponent.state) {
                 if (!depComponent.state[mappedVarName].deferred) {
@@ -5793,8 +6907,8 @@ export default class Core {
           dep.componentIdentityChanged = false;
         }
 
-        if (dep.downstreamComponentName !== null) {
-          let depComponent = this.components[dep.downstreamComponentName];
+        if (dep.downstreamComponentNames.length === 1) {
+          let depComponent = this.components[dep.downstreamComponentNames[0]];
 
           let ancestorObj = {
             componentName: depComponent.componentName,
@@ -5804,18 +6918,18 @@ export default class Core {
 
           if (dep.originalDownstreamVariableNames) {
             for (let [varInd, originalVarName] of dep.originalDownstreamVariableNames.entries()) {
-              let mappedVarName = dep.mappedDownstreamVariableNames[varInd];
+              let mappedVarName = dep.mappedDownstreamVariableNamesByComponent[0][varInd];
 
               if (!dep.variablesOptional || mappedVarName in depComponent.state) {
                 if (!depComponent.state[mappedVarName].deferred) {
                   ancestorObj.stateValues[originalVarName] = depComponent.stateValues[mappedVarName];
-                  if (dep.valuesChanged && dep.valuesChanged[originalVarName] &&
-                    dep.valuesChanged[originalVarName].changed
+                  if (dep.valuesChanged && dep.valuesChanged[0] && dep.valuesChanged[0][originalVarName] &&
+                    dep.valuesChanged[0][originalVarName].changed
                   ) {
                     if (!newChanges.valuesChanged) {
-                      newChanges.valuesChanged = {}
+                      newChanges.valuesChanged = [{}]
                     }
-                    newChanges.valuesChanged[originalVarName] = dep.valuesChanged[originalVarName];
+                    newChanges.valuesChanged[0][originalVarName] = dep.valuesChanged[0][originalVarName];
                   }
                 }
               }
@@ -5835,7 +6949,8 @@ export default class Core {
 
       } else if (dep.dependencyType === "stateVariable" ||
         dep.dependencyType === "componentStateVariable" ||
-        dep.dependencyType === "parentStateVariable") {
+        dep.dependencyType === "parentStateVariable" ||
+        dep.dependencyType === "componentStateVariableArraySize") {
 
         let depComponent = this.components[dep.downstreamComponentName];
 
@@ -5856,17 +6971,20 @@ export default class Core {
           // variable is optional and doesn't exist
           value = null;
         }
-      } else if (dep.dependencyType === "componentStateVariableComponentType") {
+      } else if (dep.dependencyType === "componentStateVariableComponentType" ||
+        dep.dependencyType === "stateVariableComponentType"
+      ) {
         let depComponent = this.components[dep.downstreamComponentName];
         // call getter to make sure component type is set
         depComponent.state[dep.mappedDownstreamVariableName].value;
         value = depComponent.state[dep.mappedDownstreamVariableName].componentType;
-        if (dep.valuesChanged && dep.valuesChanged.changed) {
+        // if have valuesChanged, then must have dep.originalDownstreamVariableName
+        // so don't bother checking if it exists
+        if (dep.valuesChanged && dep.valuesChanged[dep.originalDownstreamVariableName].changed) {
           changes[dep.dependencyName] = { valuesChanged: dep.valuesChanged };
           delete dep.valuesChanged;
         }
-      }
-      else if (dep.dependencyType === "componentIdentity") {
+      } else if (dep.dependencyType === "componentIdentity") {
 
         let depComponent = this.components[dep.downstreamComponentName];
         value = {
@@ -5878,8 +6996,7 @@ export default class Core {
           changes[dep.dependencyName] = { componentIdentitiesChanged: true };
           dep.componentIdentitiesChanged = false;
         }
-      }
-      else if (dep.dependencyType === "recursiveDependencyValues") {
+      } else if (dep.dependencyType === "recursiveDependencyValues") {
         // first calculate value of state variable
         // since dependencies are created as though depended on state variable itself
         this.components[dep.downstreamComponentName].stateValues[dep.mappedDownstreamVariableName]
@@ -5896,31 +7013,23 @@ export default class Core {
           changes[dep.dependencyName] = { valuesChanged: dep.valuesChanged };
           delete dep.valuesChanged;
         }
-      }
-
-      else if (dep.dependencyType === "doenetAttribute") {
+      } else if (dep.dependencyType === "doenetAttribute") {
         value = component.doenetAttributes[dep.attributeName];
-      }
-      else if (dep.dependencyType === "flag") {
+      } else if (dep.dependencyType === "flag") {
         value = this.flags[dep.flagName];
-      }
-      else if (dep.dependencyType === "value") {
+      } else if (dep.dependencyType === "value") {
         value = dep.value;
-      }
-      else if (dep.dependencyType === "serializedChildren") {
+      } else if (dep.dependencyType === "serializedChildren") {
         value = component.serializedChildren;
-      }
-      else if (dep.dependencyType === "variants") {
+      } else if (dep.dependencyType === "variants") {
         value = component.variants;
-      }
-      else if (dep.dependencyType === "potentialEssentialVariable") {
+      } else if (dep.dependencyType === "potentialEssentialVariable") {
         if (component.potentialEssentialState) {
           value = component.potentialEssentialState[dep.variableName];
         } else {
           value = null;
         }
-      }
-      else if (dep.dependencyType === "childLogicSatisfied" ||
+      } else if (dep.dependencyType === "childLogicSatisfied" ||
         dep.dependencyType === "unresolvedUntilChildLogicSatisfied"
       ) {
 
@@ -5931,8 +7040,7 @@ export default class Core {
           delete dep.valueChanged;
         }
 
-      }
-      else {
+      } else {
         throw Error(`unrecognized dependency type ${dep.dependencyType}`);
       }
 
@@ -5942,10 +7050,21 @@ export default class Core {
 
       dependencyValues[dep.dependencyName] = value;
     }
-    return {
+
+    let args = {
       dependencyValues,
       changes, usedDefault,
     }
+
+    let stateVarObj = component.state[stateVariable];
+    if (stateVarObj.isArrayEntry && !stateVarObj.entireArrayAtOnce) {
+      args.arrayKeys = stateVarObj.arrayKeys;
+      args.arraySize = stateVarObj.arraySize;
+    } else if (stateVarObj.isArray && !stateVarObj.entireArrayAtOnce) {
+      args.arraySize = stateVarObj.arraySize;
+    }
+
+    return args;
   }
 
   // gets all dependency values that are state variables themselves
@@ -5974,12 +7093,12 @@ export default class Core {
       let dep = downDeps[dependencyName];
 
       let cNames = [];
-      let multipleComponents = false;
+      let multipleComponentsAndVariables = false;
       if (dep.downstreamComponentName) {
         cNames = [dep.downstreamComponentName];
       } else if (dep.downstreamComponentNames) {
         cNames = dep.downstreamComponentNames;
-        multipleComponents = true;
+        multipleComponentsAndVariables = true;
       }
 
       for (let [cInd, cName] of cNames.entries()) {
@@ -5991,15 +7110,10 @@ export default class Core {
         let changedValuesForCName = this.changedStateVariables[cName];
 
         let vNames = [];
-        let multipleVariables = false;
         if (dep.mappedDownstreamVariableName) {
           vNames = [dep.mappedDownstreamVariableName];
-        } else if (dep.mappedDownstreamVariableNames) {
-          vNames = dep.mappedDownstreamVariableNames;
-          if (multipleComponents) {
-            vNames = vNames[cInd];
-          }
-          multipleVariables = true;
+        } else if (dep.mappedDownstreamVariableNamesByComponent) {
+          vNames = dep.mappedDownstreamVariableNamesByComponent[cInd];
           if (dep.variablesOptional) {
             let mappedVNames = vNames;
             vNames = [];
@@ -6027,12 +7141,10 @@ export default class Core {
 
               let value = dependencyValues[dependencyName];
 
-              if (multipleComponents) {
-                value = value[cInd];
+              if (multipleComponentsAndVariables) {
+                value = value[cInd].stateValues[vName];
               }
-              if (multipleVariables) {
-                value = value.stateValues[vName]
-              }
+
               if (!changedValuesOnly || changedValuesForCName.has(vName)) {
                 dependencyValuesForCName[vName] = value;
               }
@@ -6075,6 +7187,8 @@ export default class Core {
   recordActualChangeInUpstreamDependencies({
     component, varName, changes
   }) {
+    // console.log(`record actual change in ${varName} of ${component.componentName}`)
+    // console.log(deepClone(changes))
 
     let componentName = component.componentName
 
@@ -6106,7 +7220,7 @@ export default class Core {
             }
           }
 
-          // if still don't hvae record of change, create new change object
+          // if still don't have record of change, create new change object
           // (Should only be needed when have array entry variables,
           // where original change was recorded in array)
           if (!upValuesChanged) {
@@ -6120,11 +7234,14 @@ export default class Core {
             if (upValuesChanged.changed === undefined) {
               upValuesChanged.changed = { arrayKeysChanged: {} };
             } else if (upValuesChanged.changed === true) {
-              upValuesChanged.changed = { changedEntireArray: true, arrayKeysChanged: {} };
+              upValuesChanged.changed = { allArrayKeysChanged: true, arraySizeChanged: true, arrayKeysChanged: {} };
             }
             if (changes) {
-              if (changes.changedEntireArray) {
-                upValuesChanged.changed.changedEntireArray = true;
+              if (changes.allArrayKeysChanged) {
+                upValuesChanged.changed.allArrayKeysChanged = true;
+              }
+              if (changes.arraySizeChanged) {
+                upValuesChanged.changed.arraySizeChanged = true;
               }
               Object.assign(upValuesChanged.changed.arrayKeysChanged, changes.arrayKeysChanged);
             }
@@ -6144,7 +7261,6 @@ export default class Core {
     let componentName = component.componentName;
 
     let varsUnresolved = {};
-    let componentVarsDeleted = {};
 
     let numInternalUnresolved = Infinity;
     let prevUnresolved = [];
@@ -6166,8 +7282,8 @@ export default class Core {
       let onlyInternalDependenciesUnresolved = [];
 
       for (let varName of prevUnresolved) {
-        if (componentVarsDeleted[componentName] &&
-          componentVarsDeleted[componentName].includes(varName)
+        if (updatesNeeded.deletedStateVariables[componentName] &&
+          updatesNeeded.deletedStateVariables[componentName].includes(varName)
         ) {
           continue;
         }
@@ -6188,22 +7304,20 @@ export default class Core {
           }
 
           let downstreamComponentNames = dep.downstreamComponentNames;
-          let multipleComponents = true;
           if (!downstreamComponentNames) {
-            multipleComponents = false;
             if (dep.downstreamComponentName) {
               downstreamComponentNames = [dep.downstreamComponentName]
             } else {
               downstreamComponentNames = [];
             }
           }
-          let mappedDownstreamVariableNames = dep.mappedDownstreamVariableNames;
-          if (!mappedDownstreamVariableNames) {
+          let mappedDownstreamVariableNamesByComponent = dep.mappedDownstreamVariableNamesByComponent;
+          if (!mappedDownstreamVariableNamesByComponent) {
             if (dep.mappedDownstreamVariableName) {
-              mappedDownstreamVariableNames = [dep.mappedDownstreamVariableName];
+              mappedDownstreamVariableNamesByComponent = [[dep.mappedDownstreamVariableName]];
             }
-            // don't make mappedDownstreamVariableNames = [] if no variables
-            // as below check downstreamAttribute only if mappedDownstreamVariableNames is undefined
+            // don't make mappedDownstreamVariableNamesByComponent = [] if no variables
+            // as below check downstreamAttribute only if mappedDownstreamVariableNamesByComponent is undefined
           }
           for (let [componentInd, downstreamComponentName] of downstreamComponentNames.entries()) {
             let depComponent = this._components[downstreamComponentName];
@@ -6218,11 +7332,9 @@ export default class Core {
               });
             } else {
 
-              if (mappedDownstreamVariableNames) {
-                let variableNames = mappedDownstreamVariableNames;
-                if (multipleComponents) {
-                  variableNames = variableNames[componentInd];
-                }
+              if (mappedDownstreamVariableNamesByComponent) {
+                let variableNames = mappedDownstreamVariableNamesByComponent[componentInd];
+
                 for (let downVar of variableNames) {
                   let thisDownVarResolved = false;
 
@@ -6245,13 +7357,6 @@ export default class Core {
                       updatesNeeded,
                       compositesBeingExpanded
                     });
-
-                    for (let cName in result.componentVarsDeleted) {
-                      if (!componentVarsDeleted[cName]) {
-                        componentVarsDeleted[cName] = [];
-                      }
-                      componentVarsDeleted[cName].push(...result.componentVarsDeleted[cName])
-                    }
 
                     if (Object.keys(result.varsUnresolved).length > 0) {
                       this.addUnresolvedDependencies({
@@ -6333,14 +7438,6 @@ export default class Core {
             let result = component.state[varName].resolvedAction(actionArgs);
 
             if (result) {
-              if (result.componentVarsDeleted) {
-                for (let cName in result.componentVarsDeleted) {
-                  if (!componentVarsDeleted[cName]) {
-                    componentVarsDeleted[cName] = [];
-                  }
-                  componentVarsDeleted[cName].push(...result.componentVarsDeleted[cName]);
-                }
-              }
 
               if (result.varsUnresolved) {
                 Object.assign(varsUnresolved, result.varsUnresolved);
@@ -6358,7 +7455,15 @@ export default class Core {
           }
 
         } else {
-          varsUnresolved[varName] = unresolvedDependencies;
+          // need to deduplicate unresolvedDependencies
+          // as it is possible that a single dependency shows up multiple times
+          // (for example, in an array where multiple arrayKeys
+          // have the same dependency)
+          let uniqueVariableIdentifiers = [...new Set(unresolvedDependencies.map(x => x.componentName + "|" + x.stateVariable))];
+          varsUnresolved[varName] = uniqueVariableIdentifiers.map(function (x) {
+            let y = x.split("|");
+            return { componentName: y[0], stateVariable: y[1] };
+          });
           if (externalDependenciesResolved) {
             onlyInternalDependenciesUnresolved.push(varName);
           }
@@ -6372,7 +7477,7 @@ export default class Core {
 
     }
 
-    return { varsUnresolved, componentVarsDeleted, triggerParentChildLogic };
+    return { varsUnresolved, triggerParentChildLogic };
 
   }
 
@@ -6409,11 +7514,10 @@ export default class Core {
   }
 
   createFromArrayEntry({ stateVariable, component, updatesNeeded,
-    compositesBeingExpanded, initializeOnly = false
+    compositesBeingExpanded, initializeOnly = false,
   }) {
 
     let varsUnresolved = {};
-    let componentVarsDeleted = {};
 
     let foundArrayEntry = false;
 
@@ -6421,75 +7525,97 @@ export default class Core {
       throw Error(`Unknown state variable ${stateVariable} of ${component.componentName}`);
     }
 
-    let arrayEntryPrefixesLongestToShortest = Object.keys(component.arrayEntryPrefixes).sort((a, b) => b.length - a.length)
+    let arrayEntryPrefixesLongestToShortest = Object.keys(component.arrayEntryPrefixes)
+      .sort((a, b) => b.length - a.length)
 
     // check if stateVariable begins when an arrayEntry
     for (let arrayEntryPrefix of arrayEntryPrefixesLongestToShortest) {
-      if (stateVariable.substring(0, arrayEntryPrefix.length) === arrayEntryPrefix) {
+      if (stateVariable.substring(0, arrayEntryPrefix.length) === arrayEntryPrefix
+      ) {
         // found a reference to an arrayEntry that hasn't been created yet
         // attempt to resolve this arrayEntry
 
-        let varEnding = stateVariable.substring(arrayEntryPrefix.length);
-        if (varEnding === "") {
-          continue;
-        }
-
         let arrayStateVariable = component.arrayEntryPrefixes[arrayEntryPrefix];
 
-        let arrayKeys = component.state[arrayStateVariable].getArrayKeysFromVarName({
-          varEnding,
-          arrayEntryPrefix,
+        this.initializeStateVariable({
+          component, stateVariable,
+          arrayStateVariable, arrayEntryPrefix,
+          updatesNeeded
         });
 
-        if (arrayKeys !== undefined) {
+        if (initializeOnly) {
+          return { varsUnresolved }
+        }
 
-          this.initializeStateVariable({ component, stateVariable, arrayKeys, arrayStateVariable });
-          if (initializeOnly) {
-            return { varsUnresolved, componentVarsDeleted };
-          }
-
-          let allStateVariablesAffected = [stateVariable];
-          // create an additional array entry state variables
-          // specified as additional state variables defined
-          if (component.state[stateVariable].additionalStateVariablesDefined) {
-            allStateVariablesAffected.push(...component.state[stateVariable].additionalStateVariablesDefined);
-            for (let additionalVar of component.state[stateVariable].additionalStateVariablesDefined) {
-              if (!component.state[additionalVar]) {
-                this.createFromArrayEntry({
-                  stateVariable: additionalVar,
-                  component, updatesNeeded,
-                  compositesBeingExpanded,
-                  initializeOnly: true
-                });
-              }
+        let allStateVariablesAffected = [stateVariable];
+        // create an additional array entry state variables
+        // specified as additional state variables defined
+        if (component.state[stateVariable].additionalStateVariablesDefined) {
+          allStateVariablesAffected.push(...component.state[stateVariable].additionalStateVariablesDefined);
+          for (let additionalVar of component.state[stateVariable].additionalStateVariablesDefined) {
+            if (!component.state[additionalVar]) {
+              this.createFromArrayEntry({
+                stateVariable: additionalVar,
+                component, updatesNeeded,
+                compositesBeingExpanded,
+                initializeOnly: true
+              });
             }
           }
+        }
 
-          component.state[arrayStateVariable].setUpArrayEntryDependencies(stateVariable);
-          for (let varName of allStateVariablesAffected) {
-            this.checkForCircularDependency({ componentName: component.componentName, varName });
+
+        this.processStateVariableDependencies({
+          component, stateVariable,
+          allStateVariablesAffected
+        });
+
+        let newStateVariablesToResolve = [];
+
+        for (let varName of allStateVariablesAffected) {
+          let arrayKeysStateVariable;
+
+          if (component.state[varName].isArrayEntry) {
+            // also process state variable dependencies of the array key state varible
+            arrayKeysStateVariable = component.state[varName].arrayKeysStateVariable
+            this.processStateVariableDependencies({
+              component, stateVariable: arrayKeysStateVariable,
+              allStateVariablesAffected: [arrayKeysStateVariable]
+            });
           }
 
-          // console.log(component.state)
-
-          let result = this.resolveStateVariables({
-            component,
-            stateVariables: allStateVariablesAffected,
-            updatesNeeded,
-            compositesBeingExpanded,
+          this.checkForCircularDependency({
+            componentName: component.componentName,
+            varName
           });
 
-          Object.assign(varsUnresolved, result.varsUnresolved);
-          for (let cName in result.componentVarsDeleted) {
-            if (!componentVarsDeleted[cName]) {
-              componentVarsDeleted[cName] = [];
-            }
-            componentVarsDeleted[cName].push(...results.componentVarsDeleted[cName])
-          }
-          foundArrayEntry = true;
+          newStateVariablesToResolve.push(varName);
 
-          break;
+          if (component.state[varName].determineDependenciesStateVariable) {
+            newStateVariablesToResolve.push(component.state[varName].determineDependenciesStateVariable)
+          }
+
+          if (component.state[varName].isArrayEntry) {
+            newStateVariablesToResolve.push(arrayKeysStateVariable);
+
+            if (component.state[arrayKeysStateVariable].determineDependenciesStateVariable) {
+              newStateVariablesToResolve.push(component.state[arrayKeysStateVariable].determineDependenciesStateVariable)
+            }
+          }
         }
+
+        let result = this.resolveStateVariables({
+          component,
+          stateVariables: newStateVariablesToResolve,
+          updatesNeeded,
+          compositesBeingExpanded,
+        });
+
+        Object.assign(varsUnresolved, result.varsUnresolved);
+
+        foundArrayEntry = true;
+
+        break;
       }
     }
 
@@ -6497,7 +7623,7 @@ export default class Core {
       throw Error(`Unknown state variable ${stateVariable} of ${component.componentName}`);
     }
 
-    return { varsUnresolved, componentVarsDeleted };
+    return { varsUnresolved };
   }
 
   resolveAllDependencies(updatesNeeded, compositesBeingExpanded) {
@@ -6525,9 +7651,6 @@ export default class Core {
 
 
     console.log('resolving all dependencies');
-
-    // for each component, keep an array of state variables deleted
-    let componentVarsDeleted = updatesNeeded.deletedStateVariables;
 
     // keep track of unresolved references to component names
     // so that can give an appropriate error message
@@ -6572,8 +7695,8 @@ export default class Core {
             continue;
           }
 
-          let stateVariableDeleted = componentVarsDeleted[componentName] &&
-            componentVarsDeleted[componentName].includes(varName);
+          let stateVariableDeleted = updatesNeeded.deletedStateVariables[componentName] &&
+            updatesNeeded.deletedStateVariables[componentName].includes(varName);
 
           if (varName !== "__identity" && varName !== "__replacements"
             && varName !== "__childLogic" && !componentDeleted
@@ -6602,8 +7725,8 @@ export default class Core {
                 // if already resolved (by another dependency), skip
                 continue;
               }
-              if (componentVarsDeleted[dep.componentName] &&
-                componentVarsDeleted[dep.componentName].includes(dep.stateVariable)) {
+              if (updatesNeeded.deletedStateVariables[dep.componentName] &&
+                updatesNeeded.deletedStateVariables[dep.componentName].includes(dep.stateVariable)) {
                 // if depComponent's variable was already deleted
                 // (from when we processed another dependency)
                 // remove it from unresolvedDepenencies and skip
@@ -6623,13 +7746,6 @@ export default class Core {
                 compositesBeingExpanded,
               });
 
-              for (let cName in resolveResult.componentVarsDeleted) {
-                if (!componentVarsDeleted[cName]) {
-                  componentVarsDeleted[cName] = [];
-                }
-                componentVarsDeleted[cName].push(...resolveResult.componentVarsDeleted[cName])
-              }
-
               // check to see if we can update replacements of any composites
               if (updatesNeeded.compositesToUpdateReplacements.length > 0) {
                 this.replacementChangesFromCompositesToUpdate({
@@ -6637,6 +7753,29 @@ export default class Core {
                   compositesBeingExpanded,
                 });
               }
+
+              // check if have any additional unresolved state variables
+              // other than dep.stateVariable, which we just set off to resolve
+              if (Object.keys(resolveResult.varsUnresolved).length > 0) {
+                let otherUnresolved = Object.assign({}, resolveResult.varsUnresolved);
+                delete otherUnresolved[dep.stateVariable];
+
+                if (Object.keys(otherUnresolved).length > 0) {
+                  this.addUnresolvedDependencies({
+                    varsUnresolved: otherUnresolved,
+                    component: depComponent,
+                    updatesNeeded
+                  });
+
+                  for (let newVarName in otherUnresolved) {
+                    // delete from resolve result, so it will end up with just
+                    // dep.stateVariable, if dep.stateVariable isn't resolved
+                    delete resolveResult.varsUnresolved[newVarName];
+                  }
+                }
+
+              }
+
 
 
               if (Object.keys(resolveResult.varsUnresolved).length === 0) {
@@ -6696,11 +7835,12 @@ export default class Core {
                     compositesBeingExpanded
                   });
 
-                  for (let cName in sugarResult.componentVarsDeleted) {
-                    if (!componentVarsDeleted[cName]) {
-                      componentVarsDeleted[cName] = [];
-                    }
-                    componentVarsDeleted[cName].push(...sugarResult.componentVarsDeleted[cName])
+                  if (sugarResult.varsUnresolved) {
+                    this.addUnresolvedDependencies({
+                      varsUnresolved: sugarResult.varsUnresolved,
+                      component: this._components[depComponent.parentName],
+                      updatesNeeded
+                    });
                   }
 
                   // check to see if we can update replacements of any composites
@@ -6728,11 +7868,17 @@ export default class Core {
 
             // We finished processing the array of state variables that we being blocked
             // by componentName/varName
-            // Delete the records that componentName/varName is blocking any variables
 
-            delete updatesNeeded.unresolvedByDependent[componentName][varName];
-            if (Object.keys(updatesNeeded.unresolvedByDependent[componentName]).length === 0) {
-              delete updatesNeeded.unresolvedByDependent[componentName];
+            // Assuming that componentName/varName still qualifies as resolved,
+            // delete the records that componentName/varName is blocking any variables
+            if (!(componentName in updatesNeeded.unresolvedDependencies) ||
+              componentDeleted || stateVariableDeleted ||
+              !(varName in updatesNeeded.unresolvedDependencies[componentName])
+            ) {
+              delete updatesNeeded.unresolvedByDependent[componentName][varName];
+              if (Object.keys(updatesNeeded.unresolvedByDependent[componentName]).length === 0) {
+                delete updatesNeeded.unresolvedByDependent[componentName];
+              }
             }
 
           }
@@ -6755,18 +7901,11 @@ export default class Core {
           compositesBeingExpanded,
         });
 
-        let sugarResult = this.applySugarOrAddSugarCreationStateVariables({
+        this.applySugarOrAddSugarCreationStateVariables({
           component: this._components[composite.parentName],
           updatesNeeded,
           compositesBeingExpanded,
         });
-
-        for (let cName in sugarResult.componentVarsDeleted) {
-          if (!componentVarsDeleted[cName]) {
-            componentVarsDeleted[cName] = [];
-          }
-          componentVarsDeleted[cName].push(...sugarResult.componentVarsDeleted[cName])
-        }
 
         if (updatesNeeded.compositesToExpand.size < nUnexpanded) {
           resolvedAnotherDependency = true;
@@ -6904,9 +8043,10 @@ export default class Core {
   }
 
 
-  markChildAndDescendantDependenciesChanged(component, updatesNeeded, compositesBeingExpanded) {
+  updateChildAndDescendantDependencies(component, updatesNeeded, compositesBeingExpanded) {
 
-    // console.log(`mark child and descendant deps changed for ${component.componentName}`)
+    // console.log(`update child and descendant deps for ${component.componentName}`)
+    // console.log(JSON.parse(JSON.stringify(this.downstreamDependencies[component.componentName])))
 
     if (!component.childLogicSatisfied) {
       return;
@@ -6917,25 +8057,25 @@ export default class Core {
     if (componentName in this.downstreamDependencies) {
       // only need to change child dependencies if the component already has dependencies
 
-      this.markChildDependenciesChanged(component, updatesNeeded, compositesBeingExpanded);
+      this.updateChildDependencies(component, updatesNeeded, compositesBeingExpanded);
 
     }
 
     if (component.ancestors) {
 
-      this.markParentDependenciesChanged(component, updatesNeeded, compositesBeingExpanded);
+      this.updateParentDependencies(component, updatesNeeded, compositesBeingExpanded);
 
-      this.markDescendantDependenciesChanged(component, updatesNeeded, compositesBeingExpanded);
+      this.updateDescendantDependencies(component, updatesNeeded, compositesBeingExpanded);
 
-      this.markAncestorDependenciesChanged(component, updatesNeeded, compositesBeingExpanded);
+      this.updateAncestorDependencies(component, updatesNeeded, compositesBeingExpanded);
 
     }
 
   }
 
-  markChildDependenciesChanged(parent, updatesNeeded, compositesBeingExpanded) {
+  updateChildDependencies(parent, updatesNeeded, compositesBeingExpanded) {
 
-    // console.log(`mark child dependencies changed for ${parent.componentName}`)
+    // console.log(`update child dependencies for ${parent.componentName}`)
 
     let componentName = parent.componentName;
 
@@ -6950,8 +8090,11 @@ export default class Core {
 
       for (let depDescription of childDependencies) {
         let dependencyName = depDescription.dependencyName;
-        let currentDep = this.downstreamDependencies[componentName][depDescription.stateVariables[0]][dependencyName];
 
+        let currentDep;
+        if (this.downstreamDependencies[componentName][depDescription.stateVariables[0]]) {
+          currentDep = this.downstreamDependencies[componentName][depDescription.stateVariables[0]][dependencyName];
+        }
 
         if (!currentDep) {
           childDepsToDelete.push(depDescription);
@@ -6966,7 +8109,7 @@ export default class Core {
         // if childIndices specified, filter out just those indices
         // Note: indices are relative to the selected ones
         // (not actual index in activeChildren)
-        // so filter uses the i argument, not the x argument
+        // so filter uses the i (index) argument, not the x (value) argument
         if (currentDep.childIndices !== undefined) {
           activeChildrenIndices = activeChildrenIndices
             .filter((x, i) => currentDep.childIndices.includes(i));
@@ -7010,8 +8153,8 @@ export default class Core {
 
               let childUpDep = this.upstreamDependencies[currentChild];
               let depNamesToCheck = ['__identity'];
-              if (currentDep.mappedDownstreamVariableNames) {
-                depNamesToCheck.push(...currentDep.mappedDownstreamVariableNames[childInd]);
+              if (currentDep.mappedDownstreamVariableNamesByComponent) {
+                depNamesToCheck.push(...currentDep.mappedDownstreamVariableNamesByComponent[childInd]);
               }
               for (let vName of depNamesToCheck) {
 
@@ -7025,17 +8168,22 @@ export default class Core {
                   }
                 }
               }
+
+              if (currentDep.mappedDownstreamVariableNamesByComponent) {
+                this.resetCircularCheckPassed(currentDep.upstreamComponentName, currentDep.upstreamVariableNames[0]);
+              }
+
             }
           }
 
-          let newMappedDownstreamVariableNames = [];
+          let newMappedDownstreamVariableNamesByComponent = [];
 
           for (let newChildName of children) {
             let originalIndex = currentDep.downstreamComponentNames.indexOf(newChildName)
             if (originalIndex !== -1) {
 
               if (currentDep.originalDownstreamVariableNames) {
-                newMappedDownstreamVariableNames.push(currentDep.mappedDownstreamVariableNames[originalIndex]);
+                newMappedDownstreamVariableNamesByComponent.push(currentDep.mappedDownstreamVariableNamesByComponent[originalIndex]);
               }
 
             } else {
@@ -7052,7 +8200,7 @@ export default class Core {
                   stateVariables: currentDep.originalDownstreamVariableNames,
                   componentClass: this._components[newChildName].constructor
                 });
-                newMappedDownstreamVariableNames.push(mappedVarNames)
+                newMappedDownstreamVariableNamesByComponent.push(mappedVarNames)
 
                 let childVarNames = mappedVarNames;
                 if (currentDep.variablesOptional) {
@@ -7116,6 +8264,13 @@ export default class Core {
                     //unresolved dependencies upstream
                     for (let varName of depDescription.stateVariables) {
                       if (parent.state[varName].isResolved) {
+                        this.markStateVariableAndUpstreamDependentsStale({
+                          component: parent,
+                          varName,
+                          updatesNeeded,
+                          forceRecalculation: true
+                        });
+
                         parent.state[varName].isResolved = false;
                         this.resetUpstreamDependentsUnresolved({
                           component: parent,
@@ -7128,6 +8283,9 @@ export default class Core {
                   }
 
                 }
+
+                this.resetCircularCheckPassed(currentDep.upstreamComponentName, currentDep.upstreamVariableNames[0]);
+
               }
               else if (currentDep.dependencyType === "childIdentity") {
                 if (childUpDep['__identity'] === undefined) {
@@ -7140,7 +8298,7 @@ export default class Core {
 
           currentDep.downstreamComponentNames = children;
           if (currentDep.originalDownstreamVariableNames) {
-            currentDep.mappedDownstreamVariableNames = newMappedDownstreamVariableNames;
+            currentDep.mappedDownstreamVariableNamesByComponent = newMappedDownstreamVariableNamesByComponent;
             currentDep.valuesChanged = valuesChanged;
           }
         }
@@ -7174,7 +8332,10 @@ export default class Core {
 
   }
 
-  markDescendantDependenciesChanged(parent, updatesNeeded, compositesBeingExpanded) {
+  updateDescendantDependencies(parent, updatesNeeded, compositesBeingExpanded) {
+
+    // console.log(`update descendant dependencies for ${parent.componentName}`)
+
     let parentAndAncestors = [
       {
         componentName: parent.componentName,
@@ -7247,8 +8408,8 @@ export default class Core {
                 updatesNeeded.componentsTouched.push(currentDescendant);
                 let descendantUpDep = this.upstreamDependencies[currentDescendant];
                 let depNamesToCheck = [];
-                if (currentDep.mappedDownstreamVariableNames) {
-                  depNamesToCheck.push(...currentDep.mappedDownstreamVariableNames[descendantInd]);
+                if (currentDep.mappedDownstreamVariableNamesByComponent) {
+                  depNamesToCheck.push(...currentDep.mappedDownstreamVariableNamesByComponent[descendantInd]);
                 }
                 else {
                   depNamesToCheck = ['__identity'];
@@ -7264,10 +8425,15 @@ export default class Core {
                     }
                   }
                 }
+
+                if (currentDep.mappedDownstreamVariableNamesByComponent) {
+                  this.resetCircularCheckPassed(currentDep.upstreamComponentName, currentDep.upstreamVariableNames[0]);
+                }
+
               }
             }
 
-            let newMappedDownstreamVariableNames = [];
+            let newMappedDownstreamVariableNamesByComponent = [];
 
 
             for (let newDescendantName of descendants) {
@@ -7275,7 +8441,7 @@ export default class Core {
               if (originalIndex !== -1) {
 
                 if (currentDep.originalDownstreamVariableNames) {
-                  newMappedDownstreamVariableNames.push(currentDep.mappedDownstreamVariableNames[originalIndex]);
+                  newMappedDownstreamVariableNamesByComponent.push(currentDep.mappedDownstreamVariableNamesByComponent[originalIndex]);
                 }
 
               } else {
@@ -7291,7 +8457,7 @@ export default class Core {
                     stateVariables: currentDep.originalDownstreamVariableNames,
                     componentClass: this._components[newDescendantName].constructor
                   });
-                  newMappedDownstreamVariableNames.push(mappedVarNames)
+                  newMappedDownstreamVariableNamesByComponent.push(mappedVarNames)
 
                   let descendantVarNames = mappedVarNames;
                   if (currentDep.variablesOptional) {
@@ -7356,6 +8522,13 @@ export default class Core {
                       //unresolved dependencies upstream
                       for (let varName of depDescription.stateVariables) {
                         if (upstreamComponent.state[varName].isResolved) {
+                          this.markStateVariableAndUpstreamDependentsStale({
+                            component: upstreamComponent,
+                            varName,
+                            updatesNeeded,
+                            forceRecalculation: true
+                          });
+
                           upstreamComponent.state[varName].isResolved = false;
                           this.resetUpstreamDependentsUnresolved({
                             component: upstreamComponent,
@@ -7368,6 +8541,9 @@ export default class Core {
                     }
 
                   }
+
+                  this.resetCircularCheckPassed(currentDep.upstreamComponentName, currentDep.upstreamVariableNames[0]);
+
                 }
                 else if (currentDep.dependencyType === "descendantIdentity") {
                   if (descendantUpDep['__identity'] === undefined) {
@@ -7380,7 +8556,7 @@ export default class Core {
 
             currentDep.downstreamComponentNames = descendants;
             if (currentDep.originalDownstreamVariableNames) {
-              currentDep.mappedDownstreamVariableNames = newMappedDownstreamVariableNames;
+              currentDep.mappedDownstreamVariableNamesByComponent = newMappedDownstreamVariableNamesByComponent;
               currentDep.valuesChanged = valuesChanged;
             }
 
@@ -7412,9 +8588,11 @@ export default class Core {
 
   }
 
-  markParentDependenciesChanged(parent, updatesNeeded, compositesBeingExpanded) {
+  updateParentDependencies(parent, updatesNeeded, compositesBeingExpanded) {
 
     // TODO: test this code
+
+    // TODO: need to add logic for adding an unresolved dependency to a resolved variable
 
     let parentName = parent.componentName;
 
@@ -7507,6 +8685,8 @@ export default class Core {
           depUp[currentDep.mappedDownstreamVariableName].push(currentDep);
         }
 
+        this.resetCircularCheckPassed(cName, currentDep.upstreamVariableNames[0]);
+
         for (let varName of depDescription.stateVariables) {
           this.checkForCircularDependency({ componentName: cName, varName });
         }
@@ -7529,7 +8709,7 @@ export default class Core {
 
   }
 
-  markAncestorDependenciesChanged(parent, updatesNeeded, compositesBeingExpanded) {
+  updateAncestorDependencies(parent, updatesNeeded, compositesBeingExpanded) {
 
     // TODO: test this code
 
@@ -7622,14 +8802,14 @@ export default class Core {
             for (let vName of currentDep.originalDownstreamVariableNames) {
               valsChanged[vName] = { changed: true }
             }
-            currentDep.valuesChanged = valsChanged;
+            currentDep.valuesChanged = [valsChanged];
           }
 
           // delete updep from previous ancestor
           let ancestorUpDep = this.upstreamDependencies[depDescription.ancestorFound.componentName];
           let depNamesToCheck = [];
-          if (currentDep.mappedDownstreamVariableNames) {
-            depNamesToCheck = currentDep.mappedDownstreamVariableNames;
+          if (currentDep.mappedDownstreamVariableNamesByComponent) {
+            depNamesToCheck = currentDep.mappedDownstreamVariableNamesByComponent[0];
           }
           else {
             depNamesToCheck = ['__identity'];
@@ -7646,7 +8826,12 @@ export default class Core {
             }
           }
 
-          currentDep.downstreamComponentName = ancestorResults.ancestorFound.componentName;
+
+          if (currentDep.mappedDownstreamVariableNamesByComponent) {
+            this.resetCircularCheckPassed(currentDep.upstreamComponentName, currentDep.upstreamVariableNames[0]);
+          }
+
+          currentDep.downstreamComponentNames = [ancestorResults.ancestorFound.componentName];
           depDescription.ancestorFound = ancestorResults.ancestorFound;
 
 
@@ -7658,15 +8843,15 @@ export default class Core {
 
 
           if (currentDep.originalDownstreamVariableNames) {
-            currentDep.mappedDownstreamVariableNames = this.substituteAliases({
+            currentDep.mappedDownstreamVariableNamesByComponent = [this.substituteAliases({
               stateVariables: currentDep.originalDownstreamVariableNames,
               componentClass: ancestorResults.ancestorFound.componentClass
-            });
+            })];
 
-            let ancestorVarNames = currentDep.mappedDownstreamVariableNames;
+            let ancestorVarNames = currentDep.mappedDownstreamVariableNamesByComponent[0];
             if (currentDep.variablesOptional) {
               ancestorVarNames = [];
-              for (let varName of currentDep.mappedDownstreamVariableNames) {
+              for (let varName of currentDep.mappedDownstreamVariableNamesByComponent[0]) {
                 if (varName in this._components[ancestorResults.ancestorFound.componentName].state ||
                   this.checkIfArrayEntry({
                     stateVariable: varName,
@@ -7701,7 +8886,54 @@ export default class Core {
                 ancestorUpDep[vName] = [];
               }
               ancestorUpDep[vName].push(currentDep);
+
+              if (vName !== "__identity" && !this._components[ancestorResults.ancestorFound.componentName].state[vName].isResolved) {
+                // just added a dependency to descendant/stateVariables that is not resolved
+                // add unresolved dependencies
+
+                let upstreamComponent = this._components[currentDep.upstreamComponentName]
+
+                let varsUnresolved = {};
+                for (let varName of depDescription.stateVariables) {
+                  varsUnresolved[varName] = [{
+                    componentName: ancestorResults.ancestorFound.componentName,
+                    stateVariable: vName
+                  }]
+                }
+
+                this.addUnresolvedDependencies({
+                  varsUnresolved,
+                  component: upstreamComponent,
+                  updatesNeeded
+                });
+
+                // if upstreamComponent/stateVariables was previously resolved
+                // mark it as unresolved and recursively add 
+                //unresolved dependencies upstream
+                for (let varName of depDescription.stateVariables) {
+                  if (upstreamComponent.state[varName].isResolved) {
+                    this.markStateVariableAndUpstreamDependentsStale({
+                      component: upstreamComponent,
+                      varName,
+                      updatesNeeded,
+                      forceRecalculation: true
+                    });
+
+                    upstreamComponent.state[varName].isResolved = false;
+                    this.resetUpstreamDependentsUnresolved({
+                      component: upstreamComponent,
+                      varName,
+                      updatesNeeded
+                    })
+                  }
+                }
+
+              }
+
             }
+
+            this.resetCircularCheckPassed(currentDep.upstreamComponentName, currentDep.upstreamVariableNames[0]);
+
           }
           else {
             if (ancestorUpDep['__identity'] === undefined) {
@@ -7736,12 +8968,12 @@ export default class Core {
 
   }
 
-  markReplacementDependenciesChanged(composite, updatesNeeded, compositesBeingExpanded) {
+  updateReplacementDependencies(composite, updatesNeeded, compositesBeingExpanded) {
     // composite's replacements have changed
     // find all replacement dependencies that include that composite
     // and check for changes in the components
 
-    // console.log(`mark replacement dependencies change for composite ${composite.componentName}`)
+    // console.log(`update replacement dependencies for composite ${composite.componentName}`)
 
 
     if (this.componentIdentityDependencies.replacementDependenciesByComposite[composite.componentName]) {
@@ -7811,13 +9043,13 @@ export default class Core {
 
           // change upstream dependencies
           for (let [replacementInd, currentReplacementName] of currentDep.downstreamComponentNames.entries()) {
-            if (replacementNames.includes(currentReplacementName)) {
+            if (!replacementNames.includes(currentReplacementName)) {
               // lost a replacement.  remove dependency
               updatesNeeded.componentsTouched.push(currentReplacementName);
               let replacementUpDep = this.upstreamDependencies[currentReplacementName];
               let depNamesToCheck = [];
-              if (currentDep.mappedDownstreamVariableNames) {
-                depNamesToCheck.push(...currentDep.mappedDownstreamVariableNames[replacementInd]);
+              if (currentDep.mappedDownstreamVariableNamesByComponent) {
+                depNamesToCheck.push(...currentDep.mappedDownstreamVariableNamesByComponent[replacementInd]);
               }
               else {
                 depNamesToCheck = ['__identity'];
@@ -7833,16 +9065,21 @@ export default class Core {
                   }
                 }
               }
+
+              if (currentDep.mappedDownstreamVariableNamesByComponent) {
+                this.resetCircularCheckPassed(currentDep.upstreamComponentName, currentDep.upstreamVariableNames[0]);
+              }
+
             }
           }
 
-          let newMappedDownstreamVariableNames = [];
+          let newMappedDownstreamVariableNamesByComponent = [];
           for (let newReplacementName of replacementNames) {
             let originalIndex = currentDep.downstreamComponentNames.indexOf(newReplacementName)
             if (originalIndex !== -1) {
 
               if (currentDep.originalDownstreamVariableNames) {
-                newMappedDownstreamVariableNames.push(currentDep.mappedDownstreamVariableNames[originalIndex]);
+                newMappedDownstreamVariableNamesByComponent.push(currentDep.mappedDownstreamVariableNamesByComponent[originalIndex]);
               }
 
             } else {
@@ -7858,7 +9095,7 @@ export default class Core {
                   stateVariables: currentDep.originalDownstreamVariableNames,
                   componentClass: this._components[newReplacementName].constructor
                 });
-                newMappedDownstreamVariableNames.push(mappedVarNames)
+                newMappedDownstreamVariableNamesByComponent.push(mappedVarNames)
 
                 let replacementVarNames = mappedVarNames;
 
@@ -7900,7 +9137,54 @@ export default class Core {
                     replacementUpDep[vName] = [];
                   }
                   replacementUpDep[vName].push(currentDep);
+
+                  if (vName !== "__identity" && !this._components[newReplacementName].state[vName].isResolved) {
+                    // just added a dependency upstreamComponent/stateVariables that is not resolved
+                    // add unresolved dependencies
+
+                    let varsUnresolved = {};
+                    for (let varName of depDescription.stateVariables) {
+                      varsUnresolved[varName] = [{
+                        componentName: newReplacementName,
+                        stateVariable: vName
+                      }]
+                    }
+
+                    let upstreamComponent = this.components[currentDep.upstreamComponentName];
+
+                    this.addUnresolvedDependencies({
+                      varsUnresolved,
+                      component: upstreamComponent,
+                      updatesNeeded
+                    });
+
+                    // if upstreamComponent/stateVariables was previously resolved
+                    // mark it as unresolved and recursively add 
+                    //unresolved dependencies upstream
+                    for (let varName of depDescription.stateVariables) {
+                      if (upstreamComponent.state[varName].isResolved) {
+                        this.markStateVariableAndUpstreamDependentsStale({
+                          component: upstreamComponent,
+                          varName,
+                          updatesNeeded,
+                          forceRecalculation: true
+                        });
+
+                        upstreamComponent.state[varName].isResolved = false;
+                        this.resetUpstreamDependentsUnresolved({
+                          component: upstreamComponent,
+                          varName,
+                          updatesNeeded
+                        })
+                      }
+                    }
+
+                  }
+
                 }
+
+                this.resetCircularCheckPassed(currentDep.upstreamComponentName, currentDep.upstreamVariableNames[0]);
+
               }
               else if (currentDep.dependencyType === "replacementIdentity") {
                 if (replacementUpDep['__identity'] === undefined) {
@@ -7911,11 +9195,9 @@ export default class Core {
             }
           }
 
-
-
           currentDep.downstreamComponentNames = replacementNames;
           if (currentDep.originalDownstreamVariableNames) {
-            currentDep.mappedDownstreamVariableNames = newMappedDownstreamVariableNames;
+            currentDep.mappedDownstreamVariableNamesByComponent = newMappedDownstreamVariableNamesByComponent;
             currentDep.valuesChanged = valuesChanged;
           }
 
@@ -8061,13 +9343,16 @@ export default class Core {
 
   checkForCircularDependency({ componentName, varName, previouslyVisited = [] }) {
 
-    let varNameKey = `${componentName}__|__${varName}`
+    let stateVariableIdentifier = `${componentName}:${varName}`
 
-    if (previouslyVisited.includes(varNameKey)) {
+    if (previouslyVisited.includes(stateVariableIdentifier)) {
       // Found circular dependency
       // Create error message with list of component names involved
 
-      let componentNameRe = /^(.*)__\|__/
+      console.log('found circular', stateVariableIdentifier, previouslyVisited)
+
+
+      let componentNameRe = /^(.*):/
       let componentNamesInvolved = previouslyVisited
         .map(x => x.match(componentNameRe)[1])
 
@@ -8097,51 +9382,74 @@ export default class Core {
 
     } else {
       // shallow copy so don't change original
-      previouslyVisited = [...previouslyVisited, varNameKey];
+      previouslyVisited = [...previouslyVisited, stateVariableIdentifier];
     }
 
-    if (componentName in this.downstreamDependencies) {
 
-      let downDeps = this.downstreamDependencies[componentName][varName];
-      for (let dependencyName in downDeps) {
-        let dep = downDeps[dependencyName];
+    if (!this.circularCheckPassed[stateVariableIdentifier]) {
+      this.circularCheckPassed[stateVariableIdentifier] = true;
 
-        let downstreamComponentNames = dep.downstreamComponentNames;
-        let multipleComponents = true;
-        if (!downstreamComponentNames) {
-          if (dep.downstreamComponentName) {
-            multipleComponents = false;
-            downstreamComponentNames = [dep.downstreamComponentName];
-          } else {
-            continue;
-          }
-        }
-        let mappedDownstreamVariableNames = dep.mappedDownstreamVariableNames;
-        if (!mappedDownstreamVariableNames) {
-          if (dep.mappedDownstreamVariableName) {
-            mappedDownstreamVariableNames = [dep.mappedDownstreamVariableName];
-          } else {
-            continue;
-          }
-        }
 
-        for (let [ind, cname] of downstreamComponentNames.entries()) {
-          let varNames = mappedDownstreamVariableNames;
-          if (multipleComponents) {
-            varNames = varNames[ind];
+      if (componentName in this.downstreamDependencies) {
+
+        let downDeps = this.downstreamDependencies[componentName][varName];
+        for (let dependencyName in downDeps) {
+          let dep = downDeps[dependencyName];
+
+          let downstreamComponentNames = dep.downstreamComponentNames;
+          if (!downstreamComponentNames) {
+            if (dep.downstreamComponentName) {
+              downstreamComponentNames = [dep.downstreamComponentName];
+            } else {
+              continue;
+            }
           }
-          for (let vname of varNames) {
-            this.checkForCircularDependency({
-              componentName: cname, varName: vname,
-              previouslyVisited
-            });
+          let mappedDownstreamVariableNamesByComponent = dep.mappedDownstreamVariableNamesByComponent;
+          if (!mappedDownstreamVariableNamesByComponent) {
+            if (dep.mappedDownstreamVariableName) {
+              mappedDownstreamVariableNamesByComponent = [[dep.mappedDownstreamVariableName]];
+            } else {
+              continue;
+            }
+          }
+
+          for (let [ind, cname] of downstreamComponentNames.entries()) {
+            let varNames = mappedDownstreamVariableNamesByComponent[ind];
+            for (let vname of varNames) {
+              this.checkForCircularDependency({
+                componentName: cname, varName: vname,
+                previouslyVisited
+              });
+            }
           }
         }
       }
     }
   }
 
-  markStateVariableAndUpstreamDependentsStale({ component, varName, updatesNeeded }) {
+
+  resetCircularCheckPassed(componentName, varName) {
+    let stateVariableIdentifier = componentName + ":" + varName;
+    if (this.circularCheckPassed[stateVariableIdentifier]) {
+      delete this.circularCheckPassed[stateVariableIdentifier];
+
+      let upstream = this.upstreamDependencies[componentName][varName];
+
+      if (upstream) {
+        for (let upDep of upstream) {
+          for (let vName of upDep.upstreamVariableNames) {
+            if (vName !== '__childLogic' && vName !== "__identity") {
+              this.resetCircularCheckPassed(upDep.upstreamComponentName, vName)
+            }
+          }
+        }
+      }
+    }
+
+  }
+
+
+  markStateVariableAndUpstreamDependentsStale({ component, varName, updatesNeeded, forceRecalculation = false }) {
 
     // console.log(`mark state variable ${varName} of ${component.componentName} and updeps stale`)
 
@@ -8152,29 +9460,63 @@ export default class Core {
       component.state[varName].additionalStateVariablesDefined.forEach(x => allStateVariablesAffectedObj[x] = component.state[x]);
     }
 
-    // if don't have a getter set, this indicates that, before this markStale function,
-    // stateVarObj was fresh.
-    let aVarWasFresh = Object.values(allStateVariablesAffectedObj).some(x => !(Object.getOwnPropertyDescriptor(x, 'value').get || x.immutable));
 
-    // record whether or not stateVarObj was partially fresh before we do any more processing
-    // as we might change the attribute partiallyFresh from the result of markStale
-    let aVarWasPartiallyFresh = aVarWasFresh || Object.values(allStateVariablesAffectedObj).some(x => x.partiallyFresh);
+    let currentFreshnessInfo = this.lookUpCurrentFreshness({ component, varName, allStateVariablesAffectedObj });
+    let previouslyFreshVars = [];
+    let previouslyEffectivelyFresh = [];
+    let sumPreviouslyPartiallyFresh = 0;
+
+    for (let vName in allStateVariablesAffectedObj) {
+      let stateVarObj = allStateVariablesAffectedObj[vName]
+      // if don't have a getter set, this indicates that, before this markStale function,
+      // a state variable was fresh.
+      if (!(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)) {
+        previouslyFreshVars.push(vName);
+      } else if (currentFreshnessInfo) {
+        if (currentFreshnessInfo.fresh && currentFreshnessInfo.fresh[vName]) {
+          previouslyEffectivelyFresh.push(vName);
+        } else if (currentFreshnessInfo.partiallyFresh && currentFreshnessInfo.partiallyFresh[vName]) {
+          sumPreviouslyPartiallyFresh += currentFreshnessInfo.partiallyFresh[vName];
+        }
+      }
+    }
+
+    previouslyEffectivelyFresh.push(...previouslyFreshVars)
+
+    let aVarWasFreshOrPartiallyFresh = previouslyEffectivelyFresh.length > 0 || sumPreviouslyPartiallyFresh > 0;
 
     let varsChanged = {};
     for (let vName in allStateVariablesAffectedObj) {
       varsChanged[vName] = true;
     }
 
-    if (aVarWasPartiallyFresh) {
+    let freshnessDecreased = false;
+
+    if (aVarWasFreshOrPartiallyFresh || forceRecalculation) {
 
       let result = this.processMarkStale({ component, varName, allStateVariablesAffectedObj });
 
-      if (result.fresh) {
+      if (result.fresh && !forceRecalculation) {
         for (let vName in result.fresh) {
           if (result.fresh[vName]) {
             delete varsChanged[vName];
           }
         }
+      }
+
+      let sumNewPartiallyFresh = 0;
+      for (let vName in allStateVariablesAffectedObj) {
+        if (previouslyEffectivelyFresh.includes(vName) && !(result.fresh && result.fresh[vName])) {
+          freshnessDecreased = true;
+          break;
+        }
+        if (result.partiallyFresh && result.partiallyFresh[vName]) {
+          sumNewPartiallyFresh += result.partiallyFresh[vName];
+        }
+      }
+
+      if (sumNewPartiallyFresh < sumPreviouslyPartiallyFresh) {
+        freshnessDecreased = true;
       }
 
       if (result.updateReplacements) {
@@ -8192,12 +9534,12 @@ export default class Core {
 
     for (let vName in varsChanged) {
 
-      let stateVarObj = component.state[vName];
+      let stateVarObj = allStateVariablesAffectedObj[vName];
 
       // delete recursive dependency values, if they exist
       delete stateVarObj.recursiveDependencyValues;
 
-      if (aVarWasFresh) {
+      if (previouslyFreshVars.includes(vName)) {
 
         // save old value
         // mark stale by putting getter back in place to get a new value next time it is requested
@@ -8206,17 +9548,106 @@ export default class Core {
         let getStateVar = this.getStateVariableValue;
         Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component, stateVariable: vName }), configurable: true });
       }
-    }
 
-    for (let vName in varsChanged) {
-
-      // if stateVarObj was fresh (and also if stateVarObj was marked partiallyFresh before started processing),
-      // we recurse on upstream dependents
-      if (aVarWasPartiallyFresh) {
-        this.markUpstreamDependentsStale({ component, varName: vName, updatesNeeded });
+      if (forceRecalculation) {
+        // The reason for a forceRecalculation is that, if a dependency is removed,
+        // that wouldn't be detected by the algorithm
+        // that looks for changes in dependencies
+        stateVarObj.forceRecalculation = true;
       }
     }
 
+    // we recurse on upstream dependents
+    if (freshnessDecreased || forceRecalculation) {
+      for (let vName in varsChanged) {
+        this.markUpstreamDependentsStale({ component, varName: vName, updatesNeeded, forceRecalculation });
+      }
+    }
+
+  }
+
+
+  lookUpCurrentFreshness({ component, varName, allStateVariablesAffectedObj }) {
+
+
+    let stateVarObj = component.state[varName];
+
+    if (!stateVarObj.getCurrentFreshness) {
+      return;
+    }
+
+    let freshnessInfo = stateVarObj.freshnessInfo;
+
+    let arrayKeys, arraySize;
+
+    if (stateVarObj.isArrayEntry) {
+      // have to use old value of arrayKeys
+      // because can't evaluate state variable in middle of marking stale
+      let arrayKeysStateVar = component.state[stateVarObj.arrayKeysStateVariable];
+      arrayKeys = arrayKeysStateVar._previousValue;
+      let varWasFresh = !(Object.getOwnPropertyDescriptor(arrayKeysStateVar, 'value').get || arrayKeysStateVar.immutable);
+      if (varWasFresh) {
+        arrayKeys = arrayKeysStateVar.value;
+      }
+
+      arrayKeys = new Proxy(arrayKeys, readOnlyProxyHandler);
+
+    }
+
+    if (stateVarObj.isArrayEntry || stateVarObj.isArray) {
+      // have to use old value of arraySize
+      // because can't evaluate state variable in middle of marking stale
+
+      let arraySizeStateVar = component.state[stateVarObj.arraySizeStateVariable];
+      arraySize = arraySizeStateVar._previousValue;
+      let varWasFresh = !(Object.getOwnPropertyDescriptor(arraySizeStateVar, 'value').get || arraySizeStateVar.immutable);
+      if (varWasFresh) {
+        arraySize = arraySizeStateVar.value;
+      }
+
+      if (Array.isArray(arraySize)) {
+        arraySize = new Proxy(arraySize, readOnlyProxyHandler);
+      } else {
+        arraySize = [];
+      }
+
+    }
+
+    let result = stateVarObj.getCurrentFreshness({
+      freshnessInfo,
+      arrayKeys, arraySize,
+    });
+
+    if (result.partiallyFresh) {
+      // if have array entry, then intrepret partiallyfresh as indicating
+      // freshness of array entry, not whole array
+      for (let vName in allStateVariablesAffectedObj) {
+        if (allStateVariablesAffectedObj[vName].isArrayEntry) {
+          let arrayName = allStateVariablesAffectedObj[vName].arrayStateVariable;
+          result.partiallyFresh[vName] = result.partiallyFresh[arrayName];
+          delete result.partiallyFresh[arrayName];
+        }
+      }
+    }
+
+    if (result.fresh) {
+      // if have array entry, then intrepret fresh as indicating
+      // freshness of array entry, not whole array
+      for (let vName in allStateVariablesAffectedObj) {
+        if (allStateVariablesAffectedObj[vName].isArrayEntry) {
+          let arrayName = allStateVariablesAffectedObj[vName].arrayStateVariable;
+          if (arrayName in result.fresh) {
+            result.fresh[vName] = result.fresh[arrayName];
+            delete result.fresh[arrayName];
+          }
+        }
+      }
+    }
+
+    // console.log(`result of lookUpCurrentFreshness of ${varName} of ${component.componentName}`)
+    // console.log(JSON.parse(JSON.stringify(result)))
+
+    return result;
   }
 
   processMarkStale({ component, varName, allStateVariablesAffectedObj }) {
@@ -8246,7 +9677,6 @@ export default class Core {
 
     let changes = {};
     let downDeps = this.downstreamDependencies[component.componentName][varName];
-    let previousDependencyValues = {};
 
     for (let dependencyName in downDeps) {
       let dep = downDeps[dependencyName];
@@ -8268,146 +9698,87 @@ export default class Core {
         changes[dependencyName] = depChanges;
       }
 
-      if (stateVarObj.getPreviousDependencyValuesForMarkStale) {
-
-        let foundPreviousDependencyValues = false;
-        let previousValuesForThisDep;
-
-        let cNames = [];
-        let multipleComponents = false;
-        if (dep.downstreamComponentName) {
-          cNames = [dep.downstreamComponentName];
-        } else if (dep.downstreamComponentNames) {
-          cNames = dep.downstreamComponentNames;
-          multipleComponents = true;
-          previousValuesForThisDep = [];
-        }
-
-        for (let [ind, cName] of cNames.entries()) {
-          let vNames = [];
-          let multipleVariables = false;
-          if (dep.mappedDownstreamVariableName) {
-            vNames = [dep.mappedDownstreamVariableName];
-          } else if (dep.mappedDownstreamVariableNames) {
-            vNames = dep.mappedDownstreamVariableNames;
-            if (multipleComponents) {
-              vNames = vNames[ind];
-            }
-            multipleVariables = true;
-          }
-
-          let compState = this._components[cName].state;
-
-          let prevValForThisComp;
-
-          if (multipleVariables) {
-            prevValForThisComp = { stateValues: {} };
-          }
-
-          for (let vName of vNames) {
-            let stObj = compState[vName];
-
-            if (!stObj) {
-              continue;
-            }
-
-            foundPreviousDependencyValues = true;
-
-            let prevVal = stObj._previousValue;
-
-            let varWasFresh = !(Object.getOwnPropertyDescriptor(stObj, 'value').get || stObj.immutable);
-            if (varWasFresh) {
-              prevVal = stObj.value;
-            }
-
-            if (typeof prevVal === "object" && prevVal !== null) {
-              prevVal = new Proxy(prevVal, readOnlyProxyHandler);
-            }
-
-            if (multipleVariables) {
-              prevValForThisComp.stateValues[vName] = prevVal;
-            } else {
-              prevValForThisComp = prevVal;
-            }
-
-          }
-
-          if (multipleComponents) {
-            previousValuesForThisDep.push(prevValForThisComp);
-          } else {
-            previousValuesForThisDep = prevValForThisComp;
-          }
-
-        }
-
-        if (foundPreviousDependencyValues) {
-          previousDependencyValues[dependencyName] = previousValuesForThisDep;
-        }
-
-      }
     }
 
-    let freshnessInfo = {};
-    for (let vName in allStateVariablesAffectedObj) {
-      let vNameForFreshness = vName;
-      if (stateVarObj.isArrayEntry) {
-        vNameForFreshness = allStateVariablesAffectedObj[vName].arrayStateVariable
+    let freshnessInfo = stateVarObj.freshnessInfo;
+
+    let arrayKeys, arraySize;
+
+    if (stateVarObj.isArrayEntry && !stateVarObj.entireArrayAtOnce) {
+      // have to use old value of arrayKeys
+      // because can't evaluate state variable in middle of marking stale
+      let arrayKeysStateVar = component.state[stateVarObj.arrayKeysStateVariable];
+      arrayKeys = arrayKeysStateVar._previousValue;
+      let varWasFresh = !(Object.getOwnPropertyDescriptor(arrayKeysStateVar, 'value').get || arrayKeysStateVar.immutable);
+      if (varWasFresh) {
+        arrayKeys = arrayKeysStateVar.value;
       }
 
-      freshnessInfo[vNameForFreshness] = allStateVariablesAffectedObj[vName].freshnessInfo;
+      arrayKeys = new Proxy(arrayKeys, readOnlyProxyHandler);
+
     }
 
+    if ((stateVarObj.isArrayEntry || stateVarObj.isArray) && !stateVarObj.entireArrayAtOnce) {
+      // have to use old value of arraySize
+      // because can't evaluate state variable in middle of marking stale
+
+      let arraySizeStateVar = component.state[stateVarObj.arraySizeStateVariable];
+      arraySize = arraySizeStateVar._previousValue;
+      let varWasFresh = !(Object.getOwnPropertyDescriptor(arraySizeStateVar, 'value').get || arraySizeStateVar.immutable);
+      if (varWasFresh) {
+        arraySize = arraySizeStateVar.value;
+      }
+
+      if (Array.isArray(arraySize)) {
+        arraySize = new Proxy(arraySize, readOnlyProxyHandler);
+      } else {
+        arraySize = [];
+      }
+
+    }
 
     let result = stateVarObj.markStale({
       freshnessInfo,
       changes,
-      arrayKeys: stateVarObj.arrayKeys,
-      previousDependencyValues,
+      arrayKeys, arraySize,
     });
 
+    // console.log(`result of mark stale`, deepClone(result))
 
-    // if stateVarObj is partially fresh, we do want to recurse to upstream dependencies
-    // we also want to mark stateVarObj as partiallyFresh so that if we reach stateVarObj
-    // again while marking stale, we will still recurse on its dependencies
-    // (needed because its getter will have been deleted, which is usually
-    // the indication that we don't need to recurse)
-    //
     if (result.partiallyFresh) {
-      for (let vName in allStateVariablesAffectedObj) {
-        if (result.partiallyFresh[vName]) {
-          allStateVariablesAffectedObj[vName].partiallyFresh = true;
-        } else {
-          delete allStateVariablesAffectedObj[vName].partiallyFresh;
-        }
-      }
-    } else {
-      for (let vName in allStateVariablesAffectedObj) {
-        delete allStateVariablesAffectedObj[vName].partiallyFresh;
-      }
-    }
-
-    if (stateVarObj.isArrayEntry) {
-      // if have array entry, then intrepret fresh as indiciating
+      // if have array entry, then intrepret partiallyfresh as indicating
       // freshness of array entry, not whole array
-      let translatedFresh = {};
-      // TODO: what about array entries that have more than one array key?
-      let arrayKey = stateVarObj.arrayKeys[0];
-      for (let vName in result.fresh) {
-        let sVarObj = component.state[vName];
-        if (sVarObj.isArray) {
-          let arrayEntryVarName = sVarObj.arrayVarNameFromArrayKey(arrayKey);
-          translatedFresh[arrayEntryVarName] = result.fresh[vName];
-        } else {
-          translatedFresh[vName] = result.fresh[vName]
+      for (let vName in allStateVariablesAffectedObj) {
+        if (allStateVariablesAffectedObj[vName].isArrayEntry) {
+          let arrayName = allStateVariablesAffectedObj[vName].arrayStateVariable;
+          result.partiallyFresh[vName] = result.partiallyFresh[arrayName];
+          delete result.partiallyFresh[arrayName];
         }
       }
-
-      result.fresh = translatedFresh;
     }
+
+
+    if (result.fresh) {
+      // if have array entry, then intrepret fresh as indicating
+      // freshness of array entry, not whole array
+      for (let vName in allStateVariablesAffectedObj) {
+        if (allStateVariablesAffectedObj[vName].isArrayEntry) {
+          let arrayName = allStateVariablesAffectedObj[vName].arrayStateVariable;
+          if (arrayName in result.fresh) {
+            result.fresh[vName] = result.fresh[arrayName];
+            delete result.fresh[arrayName];
+          }
+        }
+      }
+    }
+
+    // console.log(`result of process mark stale of ${varName} of ${component.componentName}`)
+    // console.log(JSON.parse(JSON.stringify(result)))
+
     return result;
   }
 
-  markUpstreamDependentsStale({ component, varName, updatesNeeded }) {
+  markUpstreamDependentsStale({ component, varName, updatesNeeded, forceRecalculation = false }) {
     // Recursively mark every upstream dependency of component/varName as stale
     // If a state variable is already stale (has a getter in place)
     // then don't recurse
@@ -8444,7 +9815,7 @@ export default class Core {
 
           // if have multiple components, there must be multiple variables
           // ensure that varName is one of them
-          let varInd = upDep.mappedDownstreamVariableNames[componentInd].indexOf(varName);
+          let varInd = upDep.mappedDownstreamVariableNamesByComponent[componentInd].indexOf(varName);
           if (varInd === -1) {
             throw Error(`something went wrong as ${varName} not a downstreamVariable of ${upDep.dependencyName}`);
           }
@@ -8463,7 +9834,7 @@ export default class Core {
           }
           upDep.valuesChanged[componentInd][originalVarName].potentialChange = true;
 
-          // any any additional information about the stalename of component/originalVarName
+          // add any additional information about the stalename of component/originalVarName
           if (freshnessInfo) {
             upDep.valuesChanged[componentInd][originalVarName].freshnessInfo
               = new Proxy(freshnessInfo, readOnlyProxyHandler);
@@ -8500,34 +9871,6 @@ export default class Core {
 
             foundVarChange = true;
 
-          } else if (upDep.mappedDownstreamVariableNames) {
-
-            // if have multiple downstream variables (and only one component)
-            // verify varName is one of the variables
-            let varInd = upDep.mappedDownstreamVariableNames.indexOf(varName)
-            if (varInd === -1) {
-              throw Error(`something went wrong as ${varName} not a downstreamVariable of ${upDep.dependencyName}`);
-
-            }
-
-            let originalVarName = upDep.originalDownstreamVariableNames[varInd];
-
-            // record that componentName/originalVarName have changed
-            // and any additional stale information
-            if (!upDep.valuesChanged) {
-              upDep.valuesChanged = {};
-            }
-            if (!upDep.valuesChanged[originalVarName]) {
-              upDep.valuesChanged[originalVarName] = {};
-            }
-
-            upDep.valuesChanged[originalVarName].potentialChange = true;
-            if (freshnessInfo) {
-              upDep.valuesChanged[originalVarName].freshnessInfo
-                = new Proxy(freshnessInfo, readOnlyProxyHandler);
-            }
-
-            foundVarChange = true;
           }
 
         }
@@ -8543,20 +9886,42 @@ export default class Core {
           let allStateVariablesAffectedObj = {};
           upDep.upstreamVariableNames.forEach(x => allStateVariablesAffectedObj[x] = upDepComponent.state[x]);
 
-          // if don't have a getter set, this indicates that, before this markStale function,
-          // stateVarObj was fresh.
-          let aVarWasFresh = Object.values(allStateVariablesAffectedObj).some(x => !(Object.getOwnPropertyDescriptor(x, 'value').get || x.immutable));
+          let currentFreshnessInfo = this.lookUpCurrentFreshness({
+            component: upDepComponent,
+            varName: upVarName,
+            allStateVariablesAffectedObj,
+          });
 
-          // record whether or not stateVarObj was partially fresh before we do any more processing
-          // as we might change the attribute partiallyFresh from the result of markStale
-          let aVarWasPartiallyFresh = aVarWasFresh || Object.values(allStateVariablesAffectedObj).some(x => x.partiallyFresh);
+          let previouslyFreshVars = [];
+          let previouslyEffectivelyFresh = [];
+          let sumPreviouslyPartiallyFresh = 0;
+          for (let vName in allStateVariablesAffectedObj) {
+            let stateVarObj = allStateVariablesAffectedObj[vName]
+            // if don't have a getter set, this indicates that, before this markStale function,
+            // a state variable was fresh.
+            if (!(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)) {
+              previouslyFreshVars.push(vName);
+            } else if (currentFreshnessInfo) {
+              if (currentFreshnessInfo.fresh && currentFreshnessInfo.fresh[vName]) {
+                previouslyEffectivelyFresh.push(vName);
+              } else if (currentFreshnessInfo.partiallyFresh && currentFreshnessInfo.partiallyFresh[vName]) {
+                sumPreviouslyPartiallyFresh += currentFreshnessInfo.partiallyFresh[vName];
+              }
+            }
+          }
+
+          previouslyEffectivelyFresh.push(...previouslyFreshVars)
+
+          let aVarWasFreshOrPartiallyFresh = previouslyEffectivelyFresh.length > 0 || sumPreviouslyPartiallyFresh > 0;
 
           let varsChanged = {};
           for (let vName in allStateVariablesAffectedObj) {
             varsChanged[vName] = true;
           }
 
-          if (aVarWasPartiallyFresh) {
+          let freshnessDecreased = false;
+
+          if (aVarWasFreshOrPartiallyFresh || forceRecalculation) {
 
             let result = this.processMarkStale({
               component: upDepComponent,
@@ -8564,13 +9929,29 @@ export default class Core {
               allStateVariablesAffectedObj,
             });
 
-            if (result.fresh) {
+            if (result.fresh && !forceRecalculation) {
               for (let vName in result.fresh) {
                 if (result.fresh[vName]) {
                   delete varsChanged[vName];
                 }
               }
             }
+
+            let sumNewPartiallyFresh = 0;
+            for (let vName in allStateVariablesAffectedObj) {
+              if (previouslyEffectivelyFresh.includes(vName) && !(result.fresh && result.fresh[vName])) {
+                freshnessDecreased = true;
+                break;
+              }
+              if (result.partiallyFresh && result.partiallyFresh[vName]) {
+                sumNewPartiallyFresh += result.partiallyFresh[vName];
+              }
+            }
+
+            if (sumNewPartiallyFresh < sumPreviouslyPartiallyFresh) {
+              freshnessDecreased = true;
+            }
+
 
             if (result.updateReplacements) {
               updatesNeeded.compositesToUpdateReplacements.push(upDep.upstreamComponentName);
@@ -8585,15 +9966,14 @@ export default class Core {
 
           }
 
-
           for (let vName in varsChanged) {
 
-            let stateVarObj = upDepComponent.state[vName];
+            let stateVarObj = allStateVariablesAffectedObj[vName];
 
             // delete recursive dependency values, if they exist
             delete stateVarObj.recursiveDependencyValues;
 
-            if (aVarWasFresh) {
+            if (previouslyFreshVars.includes(vName)) {
 
               // save old value
               // mark stale by putting getter back in place to get a new value next time it is requested
@@ -8602,17 +9982,23 @@ export default class Core {
               Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component: upDepComponent, stateVariable: vName }), configurable: true });
             }
 
+            if (forceRecalculation) {
+              // The reason for a forceRecalculation is that, if a dependency is removed,
+              // that wouldn't be detected by the algorithm
+              // that looks for changes in dependencies
+              stateVarObj.forceRecalculation = true;
+            }
+
           }
 
-          for (let vName in varsChanged) {
-
-            // if upVar was fresh (and also if upVar was marked partiallyFresh before started processing),
-            // we recurse on upstream dependents
-            if (aVarWasPartiallyFresh) {
+          // we recurse on upstream dependents
+          if (freshnessDecreased || forceRecalculation) {
+            for (let vName in varsChanged) {
               this.markUpstreamDependentsStale({
                 component: upDepComponent,
                 varName: vName,
-                updatesNeeded
+                updatesNeeded,
+                forceRecalculation
               });
             }
           }
@@ -8695,61 +10081,34 @@ export default class Core {
           if (Object.keys(definitionArgs.changes).length === 0 &&
             stateVarObj._previousValue !== undefined
           ) {
+            // console.log(`no changes for ${stateVariable}`)
             // no changes
             continue;
           }
 
-          let newDependencies = stateVarObj.returnDependencies({
+
+          // TODO: should we change the output of returnDependencies
+          // to be an object with one key being dependencies?
+          // That wway, we could add another attribute to the return value
+          // rather than having returnDependencies add the attribute
+          // changedDependency to the arguments
+          let returnDepArgs = {
             stateValues: definitionArgs.dependencyValues,
             componentInfoObjects: this.componentInfoObjects,
             sharedParameters: component.sharedParameters,
-          });
-
+          }
+          let newDependencies = stateVarObj.returnDependencies(returnDepArgs);
 
           let changedDependency = this.replaceDependenciesIfChanged({
             component, stateVariable, newDependencies, allStateVariablesAffected
           });
 
-          if (changedDependency) {
+          if (changedDependency || returnDepArgs.changedDependency) {// || arraySizeChanged) {
             dependencyChanges.push({
               componentName: component.componentName,
               stateVariable,
               allStateVariablesAffected,
             })
-          }
-
-          // TODO: test that this works
-          if (stateVarObj.isArray && stateVarObj.arrayEntryNames) {
-
-            for (let arrayEntryStateVariable of stateVarObj.arrayEntryNames) {
-
-              let newDependencies = stateVarObj.returnDependencies({
-                stateValues: definitionArgs.dependencyValues,
-                componentInfoObjects: this.componentInfoObjects,
-                sharedParameters: component.sharedParameters,
-                arrayKeys: component.state[arrayEntryStateVariable].arrayKeys
-              });
-
-              let allArrayEntryStateVariablesAffected = [arrayEntryStateVariable];
-              if (component.state[arrayEntryStateVariable].additionalStateVariablesDefined) {
-                allArrayEntryStateVariablesAffected.push(...component.state[arrayEntryStateVariable].additionalStateVariablesDefined)
-              }
-
-              let changedEntryDependency = this.replaceDependenciesIfChanged({
-                component,
-                stateVariable: arrayEntryStateVariable,
-                newDependencies,
-                allStateVariablesAffected: allArrayEntryStateVariablesAffected
-              });
-
-              if (changedEntryDependency) {
-                dependencyChanges.push({
-                  componentName: component.componentName,
-                  stateVariable: arrayEntryStateVariable,
-                  allStateVariablesAffected: allArrayEntryStateVariablesAffected
-                })
-              }
-            }
           }
 
         }
@@ -8764,28 +10123,7 @@ export default class Core {
       // more dependencies that get marked for needing updates
       updatesNeeded.componentsToUpdateDependencies = dependenciesCouldNotUpdate;
 
-
-      for (let updateObj of dependencyChanges) {
-
-        for (let varName of updateObj.allStateVariablesAffected) {
-          this.checkForCircularDependency({
-            componentName: updateObj.componentName,
-            varName,
-          });
-        }
-
-        // note: markStateVariableAndUpstreamDependentsStale includes
-        // any additionalStateVariablesDefined with stateVariable
-        this.markStateVariableAndUpstreamDependentsStale({
-          component: this._components[updateObj.componentName],
-          varName: updateObj.stateVariable,
-          updatesNeeded
-        })
-
-      }
-
-
-      let haveUnresolved = false;
+      let haveUnresolved = Object.keys(updatesNeeded.unresolvedDependencies).length > 0;
       for (let updateObj of dependencyChanges) {
 
         let component = this._components[updateObj.componentName];
@@ -8794,18 +10132,24 @@ export default class Core {
           component.state[varName].isResolved = false;
         }
 
-        this.resolveStateVariables({
+        let resolveResult = this.resolveStateVariables({
           component,
           stateVariables: updateObj.allStateVariablesAffected,
           updatesNeeded,
           compositesBeingExpanded,
         })
 
+        this.addUnresolvedDependencies({
+          varsUnresolved: resolveResult.varsUnresolved,
+          component,
+          updatesNeeded
+        });
+
         for (let varName of updateObj.allStateVariablesAffected) {
           if (!component.state[varName].isResolved) {
             haveUnresolved = true;
             this.resetUpstreamDependentsUnresolved({
-              component: parent,
+              component,
               varName,
               updatesNeeded
             })
@@ -8825,6 +10169,35 @@ export default class Core {
         stateVarObj.value;
       }
 
+      for (let updateObj of dependencyChanges) {
+
+        for (let varName of updateObj.allStateVariablesAffected) {
+          this.checkForCircularDependency({
+            componentName: updateObj.componentName,
+            varName,
+          });
+        }
+
+        // note: markStateVariableAndUpstreamDependentsStale includes
+        // any additionalStateVariablesDefined with stateVariable
+        this.markStateVariableAndUpstreamDependentsStale({
+          component: this._components[updateObj.componentName],
+          varName: updateObj.stateVariable,
+          updatesNeeded,
+          forceRecalculation: true,
+        })
+
+      }
+
+    }
+
+    // check more more time for unresolved
+    // (Encountered case where composite wasn't ready to expand
+    // until after the final mark stale step, above.
+    // resolveAllDependencies tries to expand composites.)
+
+    if (Object.keys(updatesNeeded.unresolvedDependencies).length > 0) {
+      this.resolveAllDependencies(updatesNeeded, compositesBeingExpanded);
     }
 
     this.replacementChangesFromCompositesToUpdate({ updatesNeeded, compositesBeingExpanded })
@@ -8832,7 +10205,7 @@ export default class Core {
     if (updatesNeeded.componentsToUpdateDependencies.length > 0) {
       // TODO: address case where have continued dependencies to update
       // How do we make sure don't have infinite loop?
-      console.log(`since found more components to updated dependencies, will try to recurse`)
+      console.log(`since found more components to update dependencies, will try to recurse`)
       console.log(updatesNeeded.componentsToUpdateDependencies)
       this.updateDependencies(updatesNeeded, compositesBeingExpanded);
       // throw Error("Need to address further updates to dependencies caused by composite changes")
@@ -8876,6 +10249,10 @@ export default class Core {
             allStateVariablesAffected,
           });
           Object.assign(currentDeps, newStateVariableDependencies);
+
+          for (let varName of allStateVariablesAffected) {
+            this.resetCircularCheckPassed(component.componentName, varName);
+          }
         }
       }
       else {
@@ -8888,6 +10265,11 @@ export default class Core {
           allStateVariablesAffected,
         });
         Object.assign(currentDeps, newStateVariableDependencies);
+
+        for (let varName of allStateVariablesAffected) {
+          this.resetCircularCheckPassed(component.componentName, varName);
+        }
+
       }
     }
     return changedDependency;
@@ -8987,13 +10369,6 @@ export default class Core {
     if (sugarResult.varsUnresolved) {
       throw Error(`need to implement resolving additional state variables in addChildren`)
     }
-    // for (let cName in sugarResult.componentVarsDeleted) {
-    //   if (!componentVarsDeleted[cName]) {
-    //     componentVarsDeleted[cName] = [];
-    //   }
-    //   componentVarsDeleted[cName].push(...sugarResult.componentVarsDeleted[cName])
-    // }
-
 
     let addedComponents = {};
     let deletedComponents = {};
@@ -9035,7 +10410,7 @@ export default class Core {
       this.setAncestors(unproxiedChild, ancestorsForChildren);
     }
 
-    this.markChildAndDescendantDependenciesChanged(parent, updatesNeeded, compositesBeingExpanded);
+    this.updateChildAndDescendantDependencies(parent, updatesNeeded, compositesBeingExpanded);
 
     return childResult;
 
@@ -9187,6 +10562,9 @@ export default class Core {
 
       if (deletedADefiningChild) {
 
+        // TODO: need to rethink processing new defining child with fake children
+        // What does that do to dependencies?  Do we need a dry run mode?
+
         // with new defining children and adjusted replacements
         // determine if parent can accept the active children that result
         let childResult = this.processNewDefiningChildren({
@@ -9251,6 +10629,23 @@ export default class Core {
       let parentObj = parentsOfPotentiallyDeleted[parentName];
       let parent = parentObj.parent;
       allParents.push(parent);
+
+      // processing new defining children again,
+      // as even if changed composite replacements rather than actual defining children
+      // we still need to process new defining children to get the change
+      // TODO: currently doing extra work if did process new defining childrean already, above
+      // Need to refine.
+      this.processNewDefiningChildren({
+        parent, updatesNeeded, compositesBeingExpanded
+      })
+    }
+
+    for (let compositeName in replacementsDeleted) {
+      if (!(compositeName in componentsToDelete)) {
+        this.updateReplacementDependencies(
+          this._components[compositeName], updatesNeeded, compositesBeingExpanded
+        );
+      }
     }
 
     for (let componentName in componentsToDelete) {
@@ -9287,13 +10682,6 @@ export default class Core {
 
     }
 
-    for (let compositeName in replacementsDeleted) {
-      if (!(compositeName in componentsToDelete)) {
-        this.markReplacementDependenciesChanged(
-          this._components[compositeName], updatesNeeded, compositesBeingExpanded
-        );
-      }
-    }
 
     // remove deleted components from updatesNeeded arrays
     updatesNeeded.componentsTouched = [... new Set(updatesNeeded.componentsTouched)].filter(x => !(x in componentsToDelete))
@@ -9379,7 +10767,6 @@ export default class Core {
       return results;
     }
 
-    compositesBeingExpanded.push(component.componentName);
 
     let proxiedComponent = this.components[component.componentName];
 
@@ -9688,22 +11075,14 @@ export default class Core {
     }
 
     if (changedReplacementIdentities) {
-      this.markReplacementDependenciesChanged(component, updatesNeeded, compositesBeingExpanded);
+      this.updateReplacementDependencies(component, updatesNeeded, compositesBeingExpanded);
 
       // TODO: make this more specific so just updates descendants
       // of direct parent of composite, as that's the only one that would see
       // replacements as a descendant?
-      this.markDescendantDependenciesChanged(component, updatesNeeded, compositesBeingExpanded);
+      this.updateDescendantDependencies(component, updatesNeeded, compositesBeingExpanded);
 
     }
-
-    // record that are finished expanding the composite
-    let targetInd = compositesBeingExpanded.indexOf(component.componentName);
-    if (targetInd === -1) {
-      throw Error(`Something is wrong as we lost track that we were updating composite ${component.componentName}`);
-    }
-    compositesBeingExpanded.splice(targetInd, 1);
-
 
     let results = {
       success: true,
@@ -9772,6 +11151,7 @@ export default class Core {
       let replacementsToDelete = composite.replacements.slice(firstIndex, firstIndex + numberToDelete);
       // delete from replacements
       composite.replacements.splice(firstIndex, numberToDelete);
+
       // TODO: why does this delete delete upstream components
       // but the non toplevel delete doesn't?
       let deleteResults = this.deleteComponents({
@@ -9780,6 +11160,7 @@ export default class Core {
         sourceOfUpdate: sourceOfUpdate,
         updatesNeeded,
       });
+
       if (deleteResults.success === false) {
         throw Error("Couldn't delete components on composite update");
       }
@@ -9808,11 +11189,6 @@ export default class Core {
       componentChanges.push(newChange);
       Object.assign(deletedComponents, deleteResults.deletedComponents);
       let parent = this._components[composite.parentName];
-      this.processNewDefiningChildren({
-        parent,
-        updatesNeeded,
-        compositesBeingExpanded
-      });
       updatesNeeded.componentsTouched.push(...this.componentAndRenderedDescendants(parent));
     }
     else {
@@ -9899,10 +11275,6 @@ export default class Core {
       throw Error(`circular reference involving ${componentToShadow.componentName}`);
     }
 
-    if (compositesBeingExpanded.length > 3) {
-      throw Error('too long')
-    }
-
     // use compositesBeingExpanded to look for circular dependence
     compositesBeingExpanded.push(componentToShadow.componentName);
 
@@ -9915,9 +11287,7 @@ export default class Core {
       }
 
       if (shadowingComponent.shadowedBy) {
-        currentShadowedBy[shadowingComponent.componentName] = shadowingComponent.shadowedBy.map(
-          x => x.componentName
-        )
+        currentShadowedBy[shadowingComponent.componentName] = calculateAllComponentsShadowing(shadowingComponent);
       }
 
       let newSerializedReplacements = replacementsToShadow.map(x => x.serialize({ forCopy: true }))
@@ -10123,7 +11493,7 @@ export default class Core {
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
   }
 
-  requestUpdate({ updateInstructions, saveSerializedState }) {
+  requestUpdate({ updateInstructions, transient = false }) {
 
     let updatesNeeded = {
       componentsTouched: [],
@@ -10136,7 +11506,6 @@ export default class Core {
       deletedComponents: {},
     }
 
-    let compositesBeingExpanded = [];
 
     let newStateVariableValues = {};
     let sourceInformation = {};
@@ -10187,7 +11556,8 @@ export default class Core {
         contentId: this.contentId,
         sourceOfUpdate: {
           sourceInformation
-        }
+        },
+        transient,
       });
     }
 
@@ -10196,8 +11566,6 @@ export default class Core {
     this.executeUpdateStateVariables({
       newStateVariableValues,
       updatesNeeded,
-      compositesBeingExpanded,
-      saveSerializedState,
       sourceOfUpdate: {
         sourceInformation,
         local: true,
@@ -10209,9 +11577,12 @@ export default class Core {
   }
 
   executeUpdateStateVariables({ newStateVariableValues,
-    updatesNeeded, compositesBeingExpanded,
-    saveSerializedState = true, sourceOfUpdate
+    updatesNeeded,
+    sourceOfUpdate
   }) {
+
+
+    let compositesBeingExpanded = [];
 
     // merge keys of newStateVariableValues into changedStateVariables
     for (let cName in newStateVariableValues) {
@@ -10226,8 +11597,6 @@ export default class Core {
 
     }
 
-
-    let saveSerializedStateImmediately = false;
 
     // if executeUpdateStateVariables is called from an external source
     // then it may not have updatesNeeded initialized
@@ -10306,12 +11675,12 @@ export default class Core {
     console.log("**** Components after updateValue");
     console.log(this._components);
 
-    if (sourceOfUpdate !== undefined && sourceOfUpdate.instructionsByComponent !== undefined) {
-      let updateKeys = Object.keys(sourceOfUpdate.instructionsByComponent);
-      if (updateKeys.length === 1 && updateKeys[0] === this.documentName) {
-        saveSerializedStateImmediately = true;
-      }
-    }
+    // if (sourceOfUpdate !== undefined && sourceOfUpdate.instructionsByComponent !== undefined) {
+    //   let updateKeys = Object.keys(sourceOfUpdate.instructionsByComponent);
+    //   if (updateKeys.length === 1 && updateKeys[0] === this.documentName) {
+    //     saveSerializedStateImmediately = true;
+    //   }
+    // }
 
 
     // TODO: implement saving serialized state
@@ -10413,12 +11782,14 @@ export default class Core {
 
           arrayVarObj.setArrayValue({
             value: newValueInfo.value,
-            arrayKey: newValueInfo.arrayKey
+            arrayKey: newValueInfo.arrayKey,
+            arraySize: arrayVarObj.arraySize
           });
 
-          for (let arrayVarName of arrayVarObj.allVarNamesThatIncludeArrayKey(newValueInfo.arrayKey)) {
-            if (comp.state[arrayVarName]) {
-              // arrayVarName might not actually be a state variable created in comp
+          let varNamesStateVar = arrayVarObj.varNamesIncludingArrayKeyStateVariable;
+          let arrayVarNamesAffected = comp.stateValues[varNamesStateVar][newValueInfo.arrayKey];
+          if (arrayVarNamesAffected) {
+            for (let arrayVarName of arrayVarNamesAffected) {
               // delete value before assigning new value to remove any getter
               delete comp.state[arrayVarName].value;
               Object.defineProperty(comp.state[arrayVarName], 'value', { get: () => getStateVar({ component: comp, stateVariable: arrayVarName }), configurable: true });
@@ -10475,7 +11846,9 @@ export default class Core {
               // since were not given array, instead just set the components
               if (compStateObj.set) {
                 // TODO: use a different .set function here?
-                compStateObj.arrayValues[key] = compStateObj.set(newComponentStateVariables[vName][key]);
+                for (let key in newComponentStateVariables[vName]) {
+                  compStateObj.arrayValues[key] = compStateObj.set(newComponentStateVariables[vName][key]);
+                }
               } else {
                 for (let key in newComponentStateVariables[vName]) {
                   compStateObj.arrayValues[key] = newComponentStateVariables[vName][key]
@@ -10484,7 +11857,17 @@ export default class Core {
             }
             if (compStateObj.arrayEntryNames) {
               for (let arrayEntryName of compStateObj.arrayEntryNames) {
-                this.markStateVariableAndUpstreamDependentsStale({
+                let entryStateVarObj = comp.state[arrayEntryName];
+
+                // is array entry was fresh, mark it stale
+                if (!(Object.getOwnPropertyDescriptor(entryStateVarObj, 'value').get || entryStateVarObj.immutable)) {
+                  entryStateVarObj._previousValue = entryStateVarObj.value;
+                  delete entryStateVarObj.value;
+                  let getStateVar = this.getStateVariableValue;
+                  Object.defineProperty(entryStateVarObj, 'value', { get: () => getStateVar({ component: comp, stateVariable: arrayEntryName }), configurable: true });
+                }
+
+                this.markUpstreamDependentsStale({
                   component: comp, varName: arrayEntryName, updatesNeeded
                 });
                 this.recordActualChangeInUpstreamDependencies({
@@ -10493,8 +11876,6 @@ export default class Core {
               }
             }
           } else {
-            // delete value before assigning new value to remove any getter
-            delete compStateObj.value;
             if (compStateObj.set) {
               compStateObj.value = compStateObj.set(newComponentStateVariables[vName]);
             } else {
@@ -10545,16 +11926,23 @@ export default class Core {
       let arrayStateVariable = stateVarObj.arrayStateVariable;
       stateVariableForWorkspace = arrayStateVariable;
 
+      if (stateVarObj.entireArrayAtOnce) {
+        // if have entireARrayAtOnce, we didn't add arrayKeys
+        // in getStateVariableDependencyValues
+        // because, in the forward direction, we don't know arrayKeys ahead of time
+        // So, add then manually now
+        inverseDefinitionArgs.arrayKeys = stateVarObj.arrayKeys;
+      }
+
       let desiredValuesForArray = {};
-      if (stateVarObj.arrayKeys.length === 1) {
-        desiredValuesForArray[stateVarObj.arrayKeys[0]] = instruction.value
+      if (inverseDefinitionArgs.arrayKeys.length === 1) {
+        desiredValuesForArray[inverseDefinitionArgs.arrayKeys[0]] = instruction.value
       } else {
-        for (let [ind, arrayKey] of stateVarObj.arrayKeys) {
+        for (let [ind, arrayKey] of inverseDefinitionArgs.arrayKeys.entries()) {
           desiredValuesForArray[arrayKey] = instruction.value[ind];
         }
       }
       inverseDefinitionArgs.desiredStateVariableValues = { [arrayStateVariable]: desiredValuesForArray };
-      inverseDefinitionArgs.arrayKeys = stateVarObj.arrayKeys;
 
     } else {
       inverseDefinitionArgs.desiredStateVariableValues = { [stateVariable]: instruction.value };
@@ -10663,7 +12051,7 @@ export default class Core {
           if (!cName) {
             throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: ${dependencyName} child of index ${newInstruction.childIndex} does not exist.`)
           }
-          let varName = dep.mappedDownstreamVariableNames[newInstruction.childIndex][newInstruction.variableIndex];
+          let varName = dep.mappedDownstreamVariableNamesByComponent[newInstruction.childIndex][newInstruction.variableIndex];
           if (!varName) {
             throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: ${dependencyName} variable of index ${newInstruction.variableIndex} does not exist.`)
           }
@@ -10743,7 +12131,7 @@ export default class Core {
             throw Error(`Invalid for deferSettingDependency in inverse definition of ${stateVariable} of ${component.componentName}: ${dependencyName} child of index ${newInstruction.childIndex} does not exist.`)
           }
 
-          let varName = dep.mappedDownstreamVariableNames[newInstruction.childIndex][newInstruction.variableIndex];
+          let varName = dep.mappedDownstreamVariableNamesByComponent[newInstruction.childIndex][newInstruction.variableIndex];
           if (!varName) {
             throw Error(`Invalid for deferSettingDependency in inverse definition of ${stateVariable} of ${component.componentName}: ${dependencyName} variable of index ${newInstruction.variableIndex} does not exist..`)
           }
@@ -10812,7 +12200,7 @@ export default class Core {
           if (!cName) {
             throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: ${dependencyName} child of index ${newInstruction.childIndex} does not exist.`)
           }
-          let varName = dep.mappedDownstreamVariableNames[newInstruction.childIndex][newInstruction.variableIndex];
+          let varName = dep.mappedDownstreamVariableNamesByComponent[newInstruction.childIndex][newInstruction.variableIndex];
           if (!varName) {
             throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: ${dependencyName} variable of index ${newInstruction.variableIndex} does not exist..`)
           }

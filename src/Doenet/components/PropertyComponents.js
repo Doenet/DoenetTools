@@ -17,6 +17,7 @@ import Variable from './Variable';
 import MathWithVariable from './abstract/MathWithVariable';
 import TextList from './TextList';
 import NumberList from './NumberList';
+import MathList from './MathList';
 
 export class Hide extends BooleanComponent {
   static componentType = "hide";
@@ -247,12 +248,12 @@ export class Step extends MathComponent {
 }
 
 export class MinNumRows extends Integer {
-  static componentType = "minNumRows";
+  static componentType = "minnumrows";
   static rendererType = "number";
 }
 
 export class MinNumColumns extends Integer {
-  static componentType = "minNumColumns";
+  static componentType = "minnumcolumns";
   static rendererType = "number";
 }
 
@@ -547,6 +548,11 @@ export class Z extends MathComponent {
   static rendererType = "math";
 }
 
+export class Xs extends MathList {
+  static componentType = "xs";
+  static rendererType = "aslist";
+}
+
 export class Layer extends Integer {
   static componentType = "layer";
   static rendererType = "number";
@@ -805,6 +811,11 @@ export class ContentId extends TextComponent {
 export class Target extends TextComponent {
   static componentType = "target";
   static rendererType = "text";
+}
+
+export class targetPropertiesToIgnore extends TextList {
+  static componentType = "targetPropertiesToIgnore";
+  static rendererType = "textlist";
 }
 
 export class PluralForm extends TextComponent {

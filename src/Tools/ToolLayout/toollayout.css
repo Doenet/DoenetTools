@@ -14,7 +14,10 @@ button{
   flex-direction: column;
   min-height: 1vh;
   overflow: hidden;
-
+  width:100%;
+  background-color: #288ae9;
+  /* background-repeat: repeat-y; */
+  /* background-image: url('../../media/doenet_bg.png'); */
 }
 
 .middlepanel{
@@ -23,6 +26,7 @@ button{
   flex-direction: column;
   min-height: 1vh;
   overflow: hidden;
+  background-color: white;
 }
 
 .rightpanel{
@@ -31,6 +35,7 @@ button{
   flex-direction: column;
   min-height: 1vh; 
   overflow: hidden;
+  background-color: white;
 }
 
 .column-resizer{
@@ -98,7 +103,7 @@ button{
   order:1;
 }
 .custom{
-  color: rgb(67, 170, 144);
+  color: #288ae9;
   border-radius: 20px 0px 0px 20px;
  height:40px;
  width:28px;

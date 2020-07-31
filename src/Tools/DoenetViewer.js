@@ -7,6 +7,7 @@ class DoenetViewer extends Component {
     super(props);
     this.update = this.update.bind(this);
     this.coreReady = this.coreReady.bind(this);
+    this.localStateChanged = this.localStateChanged.bind(this);
 
     this.rendererUpdateMethods = {};
 
@@ -14,14 +15,24 @@ class DoenetViewer extends Component {
       coreReadyCallback: this.coreReady,
       coreUpdatedCallback: this.update,
       doenetML: props.doenetML,
+      externalFunctions: { localStateChanged: this.localStateChanged },
     });
 
     this.documentRenderer = <>Loading...</>
     // this.doenetRenderers = {};
 
+    // this.databaseItemsToReload = props.databaseItemsToReload;
+
   }
 
   coreReady() {
+
+    // Replay any updates
+    // Call core.executeUpdateStateVariables on each row of database
+    // for(let line of this.databaseItemsToReload) {
+    //   core.executeUpdateStateVariables(....)
+    // }
+
     let renderPromises = [];
     let rendererClassNames = [];
     console.log('rendererTypesInDocument');
@@ -53,7 +64,47 @@ class DoenetViewer extends Component {
 
   }
 
+  localStateChanged({
+    newStateVariableValues,
+    contentId, sourceOfUpdate, transient = false
+  }) {
 
+    // TODO: what should we do with transient updates?
+    if (transient) {
+      return;
+    }
+
+    // console.log('local state changed')
+
+    // console.log(newStateVariableValues, contentId, sourceOfUpdate)
+
+    // newStateVariableValues = {
+    //   component1: {
+    //     x: 3,
+    //     y: 3,
+    //   },
+    //   comonent2: {
+    //     q: 3,
+    //     y: 5
+    //   }
+    // }
+
+
+    // for(let componentName in newStateVariableValues) {
+    //   if(!myValues[componentName]) {
+    //     myValues[componentName] = {}
+    //   }
+    //   Object.assign(myValues[componentName], newStateVariableValues[componentName])
+    // }
+
+
+    // save to database
+    // check the cookie to see if allowed to record
+    // display warning if is assignment for class and have returned off recording
+    // maybe that's shown when enroll in class, and you cannot turn it off
+    // without disenrolling from class
+
+  }
 
   //offscreen then postpone that one
   update(instructions) {

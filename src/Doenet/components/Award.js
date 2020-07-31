@@ -189,6 +189,7 @@ export default class Award extends BaseComponent {
       public: true,
       componentType: "feedbacktext",
       isArray: true,
+      entireArrayAtOnce: true,
       entryPrefixes: ['feedback'],
       returnDependencies: () => ({
         feedbackText: {
@@ -208,7 +209,7 @@ export default class Award extends BaseComponent {
           variableName: "awarded"
         }
       }),
-      definition: function ({ dependencyValues }) {
+      entireArrayDefinition: function ({ dependencyValues }) {
 
         if (!dependencyValues.awarded) {
           return { newValues: { feedbacks: [] } }
@@ -235,21 +236,44 @@ export default class Award extends BaseComponent {
       }
     };
 
-    stateVariableDefinitions.responseComponents = {
+    stateVariableDefinitions.nResponses = {
       returnDependencies: () => ({
         whenChild: {
           dependencyType: "childStateVariables",
           childLogicName: "exactlyOneWhen",
-          variableNames: ["responseComponents"]
+          variableNames: ["nResponses"]
         }
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.whenChild.length === 1) {
           return {
             newValues: {
-              responseComponents: dependencyValues.whenChild[0].stateValues.responseComponents
+              nResponses: dependencyValues.whenChild[0].stateValues.nResponses
             }
           }
+        } else {
+          return { newValues: { nResponses: 0 } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.responses = {
+      returnDependencies: () => ({
+        whenChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneWhen",
+          variableNames: ["responses"]
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.whenChild.length === 1) {
+          return {
+            newValues: {
+              responses: dependencyValues.whenChild[0].stateValues.responses
+            }
+          }
+        } else {
+          return { newValues: { responses: [] } }
         }
       }
     }

@@ -59,34 +59,57 @@ export default class Variants extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.nVariants = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        variantChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroVariants",
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { nVariants: dependencyValues.variantChildren.length } }
+      }
+    }
+
     stateVariableDefinitions.variants = {
       public: true,
       componentType: "variant",
       isArray: true,
       entryPrefixes: ["variant"],
-      returnDependencies: () => ({
-        variantChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroVariants",
-          variableNames: ["value"],
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return { newValues: { variants: dependencyValues.variantChildren.map(x => x.stateValues.value.toLowerCase()) } }
-      }
-    }
-
-    stateVariableDefinitions.nVariants = {
-      public: true,
-      componentType: "number",
-      returnDependencies: () => ({
-        variants: {
+      returnArraySizeDependencies: () => ({
+        nVariants: {
           dependencyType: "stateVariable",
-          variableName: "variants"
-        }
+          variableName: "nVariants",
+        },
       }),
-      definition: function ({ dependencyValues }) {
-        return { newValues: { nVariants: dependencyValues.variants.length } }
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nVariants];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            variantChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "atLeastZeroVariants",
+              variableNames: ["value"],
+              childIndices: [arrayKey]
+            }
+          }
+        }
+        return { dependenciesByKey }
+      },
+      arrayDefinitionByKey: function ({ dependencyValuesByKey, arrayKeys }) {
+        let variants = {};
+        for (let arrayKey of arrayKeys) {
+          if (dependencyValuesByKey[arrayKey].variantChild.length === 1) {
+            variants[arrayKey] = dependencyValuesByKey[arrayKey].variantChild[0]
+              .stateValues.value.toLowerCase()
+          }
+        }
+        return { newValues: { variants } }
       }
     }
 

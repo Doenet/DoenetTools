@@ -82,44 +82,169 @@ export default class TextList extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+
+    stateVariableDefinitions.nComponents = {
+      public: true,
+      componentType: "number",
+      additionalStateVariablesDefined: ["childIndexByArrayKey"],
+      returnDependencies() {
+        return {
+          maximumNumber: {
+            dependencyType: "stateVariable",
+            variableName: "maximumNumber",
+          },
+          textAndTextlistChildren: {
+            dependencyType: "childStateVariables",
+            childLogicName: "textAndTextLists",
+            variableNames: ["nComponents"],
+            variablesOptional: true,
+          }
+        }
+      },
+      definition: function ({ dependencyValues }) {
+
+        let nComponents = 0;
+        let childIndexByArrayKey = [];
+
+        for (let [childInd, child] of dependencyValues.textAndTextlistChildren.entries()) {
+          if (child.stateValues.nComponents !== undefined) {
+            for (let i = 0; i < child.stateValues.nComponents; i++) {
+              childIndexByArrayKey[nComponents + i] = [childInd, i];
+            }
+            nComponents += child.stateValues.nComponents;
+          } else {
+            childIndexByArrayKey[nComponents] = [childInd, 0];
+            nComponents += 1;
+          }
+        }
+
+        let maxNum = dependencyValues.maximumNumber;
+        if (maxNum !== null && nComponents > maxNum) {
+          nComponents = maxNum;
+          childIndexByArrayKey = childIndexByArrayKey.slice(0, maxNum);
+        }
+
+        return {
+          newValues: { nComponents, childIndexByArrayKey },
+          checkForActualChange: { nComponents: true }
+        }
+      }
+    }
+
     stateVariableDefinitions.texts = {
       public: true,
       componentType: "text",
       isArray: true,
       entryPrefixes: ["text"],
-      returnDependencies: () => ({
-        textAndTextlistChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "textAndTextLists",
-          variableNames: ["value", "texts"],
-          variablesOptional: true,
-        },
-        maximumNumber: {
+      stateVariablesDeterminingDependencies: ["childIndexByArrayKey"],
+      returnArraySizeDependencies: () => ({
+        nComponents: {
           dependencyType: "stateVariable",
-          variableName: "maximumNumber",
-        }
+          variableName: "nComponents",
+        },
       }),
-      definition: function ({ dependencyValues }) {
-        let texts = [];
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nComponents];
+      },
 
-        for (let child of dependencyValues.textAndTextlistChildren) {
-          if (child.stateValues.texts) {
-            texts.push(...child.stateValues.texts);
-          } else {
-            texts.push(child.stateValues.value);
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
+        let dependenciesByKey = {}
+        let globalDependencies = {
+          childIndexByArrayKey: {
+            dependencyType: "stateVariable",
+            variableName: "childIndexByArrayKey"
+          }
+        };
+
+        for (let arrayKey of arrayKeys) {
+          let childIndices = [];
+          let textIndex = "1";
+          if (stateValues.childIndexByArrayKey[arrayKey]) {
+            childIndices = [stateValues.childIndexByArrayKey[arrayKey][0]];
+            textIndex = stateValues.childIndexByArrayKey[arrayKey][1] + 1;
+          }
+          dependenciesByKey[arrayKey] = {
+            textAndTextlistChildren: {
+              dependencyType: "childStateVariables",
+              childLogicName: "textAndTextLists",
+              variableNames: ["value", "text" + textIndex],
+              variablesOptional: true,
+              childIndices,
+            },
           }
         }
 
-        let maxNum = dependencyValues.maximumNumber;
-        if (maxNum !== null && texts.length > maxNum) {
-          maxNum = Math.max(0, Math.floor(maxNum));
-          texts = texts.slice(0, maxNum)
+        return { globalDependencies, dependenciesByKey }
+
+      },
+      arrayDefinitionByKey({
+        globalDependencyValues, dependencyValuesByKey, arrayKeys,
+      }) {
+
+        let texts = {};
+
+        for (let arrayKey of arrayKeys) {
+          let child = dependencyValuesByKey[arrayKey].textAndTextlistChildren[0];
+
+          if (child) {
+            if (child.stateValues.value !== undefined) {
+              texts[arrayKey] = child.stateValues.value;
+            } else {
+              let textIndex = globalDependencyValues.childIndexByArrayKey[arrayKey][1] + 1;
+              texts[arrayKey] = child.stateValues["text" + textIndex];
+            }
+
+          }
+
         }
 
         return { newValues: { texts } }
 
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
+        dependencyValuesByKey, dependencyNamesByKey, arraySize
+      }) {
+
+        let instructions = [];
+
+        for (let arrayKey in desiredStateVariableValues.texts) {
+
+          if (!dependencyValuesByKey[arrayKey]) {
+            continue;
+          }
+
+          let child = dependencyValuesByKey[arrayKey].textAndTextlistChildren[0];
+
+          if (child) {
+            if (child.stateValues.value !== undefined) {
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].textAndTextlistChildren,
+                desiredValue: desiredStateVariableValues.texts[arrayKey],
+                childIndex: 0,
+                variableIndex: 0,
+              });
+
+            } else {
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].textAndTextlistChildren,
+                desiredValue: desiredStateVariableValues.texts[arrayKey],
+                childIndex: 0,
+                variableIndex: 1,
+              });
+
+            }
+          }
+        }
+
+        return {
+          success: true,
+          instructions
+        }
+
+
       }
     }
+
 
     stateVariableDefinitions.text = {
       public: true,
@@ -135,19 +260,6 @@ export default class TextList extends InlineComponent {
       })
     }
 
-    stateVariableDefinitions.nComponents = {
-      public: true,
-      componentType: "number",
-      returnDependencies: () => ({
-        texts: {
-          dependencyType: "stateVariable",
-          variableName: "texts"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return { newValues: { nComponents: dependencyValues.texts.length } }
-      }
-    }
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({

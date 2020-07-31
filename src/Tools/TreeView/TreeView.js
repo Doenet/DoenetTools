@@ -8,7 +8,6 @@ import ChooserConstants from "../chooser/ChooserConstants";
 import styled from 'styled-components'
 
 /*
-
   Data and fields:
     mandatory fields:
       - loading       (set to false if loaders not async)
@@ -32,12 +31,11 @@ import styled from 'styled-components'
               parentId: "root"
             }
           }
-
     optional fields:
       - hideRoot    (set to true to hide root node of tree)
       - treeNodeIcons
         - example: 
-          const Icons = (iconName) => { 
+          const Icons = ({iconName}) => { 
             map = { folder: <FontAwesomeIcon icon={faFolder}/>,
               content: <FontAwesomeIcon icon={faFileAlt}/> }
             return map[iconName]
@@ -64,21 +62,18 @@ import styled from 'styled-components'
               title: {},
               frame: {},
             },
-            expanderIcon:          
+            expanderIcons:          
           }
       - parentNodeOnClick
 			- childNodeOnClickCallback
-
   Callbacks and functions:
 		**Only enable one of onClick or Drag-and-Drop feature to avoid conflicts** 
-
     onClick callback for leaf nodes, leave empty if onclick actions not needed
     - onLeafNodeClick
       - example:
         const onLeafNodeClick = (leafNodeId) => {
           console.log(`leaf node ${leafNodeId} clicked`);
         }
-
     Drag and Drop functions, leave empty if DnD is not needed:
       - containerId
       - containerType
@@ -89,7 +84,6 @@ import styled from 'styled-components'
       - onDrop
       - onDropEnter
       - onDropLeave
-
 Example customized tree:
 <TreeView
   containerId={treeContainerId}
@@ -106,6 +100,7 @@ Example customized tree:
       return map[itemType]
   }} 
   hideRoot={true}
+  disableSearch={true}
   specialNodes={this.tempSet}
   treeStyles={{
     parentNode: {
@@ -116,7 +111,8 @@ Example customized tree:
       },
       "contentContainer": {
         border: "none",
-      }
+      },
+      "node": { background: "rgba(58,172,144)" },
     },
     childNode: {
       "title": {
@@ -127,7 +123,7 @@ Example customized tree:
     specialChildNode: {
       "frame": { background: "#a7a7a7" },
     },
-    expanderIcon: <FontAwesomeIcon icon={faPlus} style={{paddingRight: "8px"}}/>
+    emptyParentExpanderIcon: <span></span>
   }}
   onLeafNodeClick={(nodeId) => {
     if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
@@ -146,6 +142,8 @@ export const TreeView = ({
   treeNodeIcons={},
   directoryData=[],
   specialNodes=new Set(),
+  parentNodeItem={},
+  leafNodeItem={},
 	treeStyles={},
 	onLeafNodeClick=(()=>{}),
 	onParentNodeClick=(()=>{}),
@@ -201,7 +199,7 @@ export const TreeView = ({
 	}
 
   const buildControlButtons = (folderId) => {
-    if (disableSearch) return;
+    if (disableSearch || parentsInfo[folderId]["numChild"] == 0) return;
     if (folderId == currentHovered || folderId == currentSearchingFolder) {
       const onClickCb = (e) => {
         setCurrentSearchingFolder(currentSearchingFolder == folderId ? null : folderId);
@@ -275,6 +273,8 @@ export const TreeView = ({
         treeNodeIcons: treeNodeIcons, 
         specialNodes: specialNodes,
         directoryData: directoryData,
+        parentNodeItem: parentNodeItem,
+        leafNodeItem: leafNodeItem,
 				treeStyles: treeStyles,
 				onLeafNodeClick: onLeafNodeClick,
 				onParentNodeClick: onParentNodeClick,
@@ -300,11 +300,12 @@ export const TreeView = ({
 function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, hideRoot, treeNodeIcons, treeStyles,
   specialNodes, onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
    currentDraggedOverContainerId, onParentNodeClick, onParentNodeDoubleClick, onLeafNodeClick, currentSearchingFolder, 
-   buildControlButtons, buildSearchComponent, setCurrentHovered, directoryData }) {
+   buildControlButtons, buildSearchComponent, setCurrentHovered, directoryData, parentNodeItem, leafNodeItem }) {
      
   const getBaseItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
+    const isPublic = itemType == "folder" ? parentsInfo[currentItemId].isPublic : parentsInfo[childrenInfo[currentItemId].rootId].isPublic;
     if (itemType == "folder") itemType = parentsInfo[currentItemId].isRepo ? "repo" : "folder";
-    const icon = currentItemId == "root" ? "" : treeNodeIcons(itemType);
+    const icon = currentItemId == "root" ? "" : treeNodeIcons({iconName: itemType, isPublic: isPublic});
     let itemDragged = currentDraggedObject.id == currentItemId;
     let isShadow = itemDragged && 
       currentDraggedObject.dataObject.parentId == parentNodeHeadingId &&
@@ -349,7 +350,9 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
   // set style to user-defined styles
   let itemStyle = specialNodes.has(parentHeadingId) ? treeStyles["specialParentNode"] : treeStyles["parentNode"];
   // if user-defined styles undefined, fallback to default style
-  itemStyle = itemStyle || {"title" :Object.assign({marginLeft: '5px', color: "rgba(0,0,0,0.8)"},  baseItemStyleAndIcon.style)};
+  itemStyle = itemStyle || 
+    {"title" : Object.assign({marginLeft: '5px', color: "rgba(0,0,0,0.8)"},  
+      baseItemStyleAndIcon.style)};
 
   let defaultOpen = parentHeadingId == "root";
   if (directoryData.length != 0 && directoryData[0] == parentHeadingId) {
@@ -360,12 +363,11 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
   let subTree = <ParentNode 
     id={parentHeadingId}
     key={parentHeadingId} 
-    title={parentsInfo[parentHeadingId]["title"]}
     type={itemType}
     hide={hideRoot && parentHeadingId == "root"}
     defaultOpen={defaultOpen}
-    itemIcon={baseItemStyleAndIcon.icon}
-    expanderIcon={treeStyles["expanderIcon"]}
+    nodeItem={parentNodeItem({title: parentsInfo[parentHeadingId]["title"], icon: baseItemStyleAndIcon.icon})}
+    expanderIcon={parentsInfo[parentHeadingId]["numChild"] == 0 ? treeStyles["emptyParentExpanderIcon"] : treeStyles["expanderIcons"]}
     onClick={parentHeadingId != "root" ? onParentNodeClick : ()=>{}}
     onDoubleClick={parentHeadingId != "root" ? onParentNodeDoubleClick : ()=>{}}
     onDrop={onDrop}
@@ -393,6 +395,8 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           treeNodeIcons: treeNodeIcons,
           specialNodes: specialNodes,
           directoryData: directoryData,
+          parentNodeItem: parentNodeItem,
+          leafNodeItem: leafNodeItem,
           treeStyles: treeStyles,
           onParentNodeClick: onParentNodeClick,
           onParentNodeDoubleClick: onParentNodeDoubleClick,
@@ -425,9 +429,8 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           index={index}
           id={childId} 
           key={childId} 
-          title={childrenInfo[childId]["title"]}
+          nodeItem={leafNodeItem({title: childrenInfo[childId]["title"], icon: baseItemStyleAndIcon.icon})}
           type={itemType}
-					itemIcon = {baseItemStyleAndIcon.icon}
           styles={itemStyle}
 					onClick={onLeafNodeClick}
           onDragStart={onDragStart} 
