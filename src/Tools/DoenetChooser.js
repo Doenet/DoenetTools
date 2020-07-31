@@ -2492,7 +2492,7 @@ class DoenetChooser extends Component {
             const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId);
             // select item and switch to directory            
             this.setState({
-              selectedItems: [id], 
+              selectedItems: [id],
               selectedItemsType: [type],
               directoryStack: pathToSelectedFolder
             })
@@ -2512,9 +2512,10 @@ class DoenetChooser extends Component {
               selectedItemsType: [type],
               directoryStack: pathToSelectedFolder
             })
-            this.tempSet = new Set([id]);
             this.customizedTempSet.clear();
             this.customizedTempSet.add(id);
+            this.tempSet.clear();
+            this.tempSet.add(id);
             this.setState({});
             this.forceUpdate();
           }}
@@ -2536,6 +2537,7 @@ const TreeNodeItemSplit = ({title, icon}) => {
     >{title}</span>
   </div>
 };
+   
       this.splitPanelTree =  <div className="tree" style={{ paddingLeft: "1em" }}>
         <TreeView
           containerId={treeContainerId}
@@ -2597,19 +2599,20 @@ const TreeNodeItemSplit = ({title, icon}) => {
           }}
         />
       </div>
-      let contentParentInfo = treeParentsInfo;
-      if(!!Object.keys(this.state.userFolderInfo).length) {
+      let contentParentInfo = treeParentsInfo || {};
+      if (!!Object.keys(this.state.userFolderInfo).length) {
         contentParentInfo = this.state.userFolderInfo
       }
       let coursesParentInfo = treeParentsInfo;
-      if(!!Object.keys(this.state.userFolderInfo).length) {
+      if (!!Object.keys(this.state.userFolderInfo).length) {
         coursesParentInfo = this.state.userFolderInfo
       }
       let customizedContentTreeParentInfo = JSON.parse(JSON.stringify(contentParentInfo));
       let customizedContentTreeChildrenInfo = JSON.parse(JSON.stringify(treeChildrenInfo));
-      customizedContentTreeParentInfo.root.title = "Content";
-      customizedContentTreeParentInfo.root.childContent = [];
-
+      if (!!Object.keys(customizedContentTreeParentInfo).length) {
+        customizedContentTreeParentInfo["root"]["title"] = "Content";
+        customizedContentTreeParentInfo["root"]["childContent"] = [];
+      }
       for (let key in customizedContentTreeParentInfo) {
         if (key !== 'root') {
           customizedContentTreeParentInfo[key].childContent = [];
@@ -2710,28 +2713,52 @@ const customizedTreeNodeItem = ({title, icon}) => {
                   }
                 },
 
-                // emptyParentExpanderIcon: <span style={{ padding: '5px' }}></span>,
-                expanderIcons:{
-                  opened: <FontAwesomeIcon icon={faChevronDown} 
-                  style={{ 
-                    padding: '1px' ,
-                    width:'1.3em',
-                    height:'1.2em', 
-                    border:"1px solid darkblue" , 
-                    borderRadius:'2px',
-                    marginLeft:"5px"
+                emptyParentExpanderIcon: {
+                  opened: <FontAwesomeIcon  
+                  style={{
+                    padding: '1px',
+                    width: '1.3em',
+                    height: '1.2em',
+                    border: "1px solid darkblue",
+                    borderRadius: '2px',
+                    marginLeft: "5px"
+
+                  }} 
+                  icon={faChevronDown}/>,
+                  closed: <FontAwesomeIcon  
+                  style={{
+                    padding: '1px',
+                    width: '1.3em',
+                    height: '1.2em',
+                    border: "1px solid darkblue",
+                    borderRadius: '2px',
+                    marginLeft: "5px"
 
                   }}
+                  icon={faChevronRight}/>,
+                },
+                // <span style={{ padding: '5px' }}></span>,
+                expanderIcons: {
+                  opened: <FontAwesomeIcon icon={faChevronDown}
+                    style={{
+                      padding: '1px',
+                      width: '1.3em',
+                      height: '1.2em',
+                      border: "1px solid darkblue",
+                      borderRadius: '2px',
+                      marginLeft: "5px"
+
+                    }}
                   />,
-                  closed:<FontAwesomeIcon icon={faChevronRight} 
-                  style={{ 
-                    padding: '1px' ,
-                    width:'1.3em',
-                    height:'1.2em', 
-                    border:"1px solid darkblue", 
-                    borderRadius:"2px",
-                    marginLeft:"5px"
-                  }}/>,
+                  closed: <FontAwesomeIcon icon={faChevronRight}
+                    style={{
+                      padding: '1px',
+                      width: '1.3em',
+                      height: '1.2em',
+                      border: "1px solid darkblue",
+                      borderRadius: "2px",
+                      marginLeft: "5px"
+                    }} />,
                 }
 
               }}
@@ -2745,6 +2772,8 @@ const customizedTreeNodeItem = ({title, icon}) => {
               onParentNodeClick={(nodeId) => {
                 this.customizedTempSet.clear();
                 this.customizedTempSet.add(nodeId);
+                this.tempSet.clear();
+                this.tempSet.add(nodeId);
                 this.goToFolder(nodeId, customizedContentTreeParentInfo);
                 if (!this.state.splitPanelLayout) {
                   this.splitPanelGoToFolder(nodeId, customizedContentTreeParentInfo);

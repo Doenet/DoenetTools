@@ -10,142 +10,126 @@ export default class Triangle extends Polygon {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.vertices.definition = function ({ dependencyValues, arrayKeys, freshnessInfo, changes }) {
-      let freshByKey = freshnessInfo.vertices.freshByKey;
 
-      // console.log('definition of triangle vertices');
-      // console.log(dependencyValues)
-      // console.log(arrayKeys);
-      // console.log(JSON.parse(JSON.stringify(freshByKey)));
-      // console.log(changes)
-
-      let arrayKey;
-      if (arrayKeys) {
-        arrayKey = Number(arrayKeys[0]);
-      }
+    stateVariableDefinitions.vertices.returnArraySizeDependencies = () => ({
+      nDimensions: {
+        dependencyType: "stateVariable",
+        variableName: "nDimensions",
+      },
+    });
+    stateVariableDefinitions.vertices.returnArraySize = function ({ dependencyValues }) {
+      return [3, dependencyValues.nDimensions];
+    };
 
 
-      if (arrayKey === undefined) {
-        let vertexPoints;
-        if (dependencyValues.verticesChild.length === 1) {
-          vertexPoints = dependencyValues.verticesChild[0].stateValues.points;
+    stateVariableDefinitions.vertices.arrayDefinitionByKey = function ({ dependencyValuesByKey, arrayKeys }) {
+
+      console.log('array definition of triangle vertices');
+      console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
+      console.log(arrayKeys);
+
+      let vertices = {};
+      let useEssential = {};
+
+      for (let arrayKey of arrayKeys) {
+
+        let [pointInd, dimInd] = arrayKey.split(",");
+        let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+
+        let verticesChild = dependencyValuesByKey[arrayKey].verticesChild;
+        if (verticesChild.length === 1
+          && verticesChild[0].stateValues["pointX" + varEnding]
+        ) {
+          vertices[arrayKey] = verticesChild[0].stateValues["pointX" + varEnding];
         } else {
-          vertexPoints = [];
-        }
 
-        if (vertexPoints.length > 3) {
-          console.warn('Extra vertices for triangle ignored');
-          vertexPoints = vertexPoints.slice(0, 3);
-        }
+          let defaultValue;
 
-        let newVertexValues = {};
-        for (let key in vertexPoints) {
-          if (!freshByKey[key]) {
-            freshByKey[key] = true;
-            newVertexValues[key] = vertexPoints[key]
-          }
-        }
-
-        if (vertexPoints.length === 3) {
-          return {
-            newValues: { vertices: newVertexValues }
-          }
-        }
-
-        let useEssential = {};
-
-        if (!freshByKey[2]) {
-          freshByKey[2] = true;
-          useEssential[2] = {
-            variablesToCheck: ["vertex3"],
-            defaultValue: me.fromAst(["vector", 0, 0])
-          }
-        }
-
-        if (vertexPoints.length < 2) {
-
-          if (!freshByKey[1]) {
-            freshByKey[1] = true;
-            useEssential[1] = {
-              variablesToCheck: ["vertex2"],
-              defaultValue: me.fromAst(["vector", 1, 0])
-            }
-          }
-
-          if (vertexPoints.length === 0) {
-
-            if (!freshByKey[0]) {
-              freshByKey[0] = true;
-              useEssential[0] = {
-                variablesToCheck: ["vertex1"],
-                defaultValue: me.fromAst(["vector", 0, 1])
-              }
-            }
-          }
-        }
-
-        return {
-          newValues: { vertices: newVertexValues },
-          useEssentialOrDefaultValue: { vertices: useEssential }
-        };
-
-      } else {
-        // have an arrayKey defined
-
-        if (arrayKey > 2) {
-          return {
-            newValues: {
-              vertices: {
-                [arrayKey]: undefined
-              }
-            }
-          }
-        }
-
-        if (!freshByKey[arrayKey]) {
-          freshByKey[arrayKey] = true;
-          let coords;
-          if (dependencyValues.verticesChild.length === 1) {
-            coords = dependencyValues.verticesChild[0].stateValues["point" + (arrayKey + 1)];
-          }
-
-          if (coords === undefined) {
-            let defaultValue;
-            if (arrayKey === 0) {
-              defaultValue = me.fromAst(["vector", 0, 1]);
-            } else if (arrayKey === 1) {
-              defaultValue = me.fromAst(["vector", 1, 0]);
+          if (pointInd === "0") {
+            if (dimInd === "1") {
+              defaultValue = me.fromAst(1);
             } else {
-              defaultValue = me.fromAst(["vector", 0, 0]);
+              defaultValue = me.fromAst(0);
             }
-            return {
-              useEssentialOrDefaultValue: {
-                vertices: {
-                  [arrayKey]: {
-                    variablesToCheck: ["vertices" + (arrayKey + 1)],
-                    defaultValue
-                  }
-                }
-              }
+          } else if (pointInd === "1") {
+            if (dimInd === "0") {
+              defaultValue = me.fromAst(1);
+            } else {
+              defaultValue = me.fromAst(0);
             }
           } else {
-            return {
-              newValues: {
-                vertices: {
-                  [arrayKey]: coords
-                }
-              }
-            }
+            defaultValue = me.fromAst(0);
           }
-        } else {
-          // arrayKey asked for didn't change
-          // don't need to report noChanges for array state variable
-          return {};
+          useEssential[arrayKey] = {
+            variablesToCheck: ["vertexX" + varEnding],
+            defaultValue
+          }
         }
+      }
+
+      console.log({
+        newValues: { vertices },
+        useEssentialOrDefaultValue: { vertices: useEssential }
+
+      })
+
+      return {
+        newValues: { vertices },
+        useEssentialOrDefaultValue: { vertices: useEssential }
+
       }
 
     }
 
+    stateVariableDefinitions.vertices.inverseArrayDefinitionByKey = function ({
+      desiredStateVariableValues,
+      dependencyValuesByKey, dependencyNamesByKey,
+      initialChange, stateValues,
+    }) {
+
+      // console.log(`inverseArrayDefinition of vertices of triangle`);
+      // console.log(desiredStateVariableValues)
+      // console.log(JSON.parse(JSON.stringify(stateValues)))
+      // console.log(dependencyValuesByKey);
+
+
+      // if not draggable, then disallow initial change 
+      if (initialChange && !stateValues.draggable) {
+        return { success: false };
+      }
+
+      let instructions = [];
+      for (let arrayKey in desiredStateVariableValues.vertices) {
+        let [pointInd, dimInd] = arrayKey.split(",");
+        let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+
+        if (dependencyValuesByKey[arrayKey].verticesChild.length === 1
+          && dependencyValuesByKey[arrayKey].verticesChild[0].stateValues["pointX" + varEnding]
+        ) {
+          instructions.push({
+            setDependency: dependencyNamesByKey[arrayKey].verticesChild,
+            desiredValue: desiredStateVariableValues.vertices[arrayKey],
+            childIndex: 0,
+            variableIndex: 0,
+          })
+
+        } else {
+
+          instructions.push({
+            setStateVariable: "vertices",
+            value: desiredStateVariableValues.vertices[arrayKey].simplify(),
+            arrayKey,
+          })
+        }
+
+      }
+
+      return {
+        success: true,
+        instructions
+      }
+
+    }
     stateVariableDefinitions.vertices.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues,
       stateValues, initialChange, arrayKeys, workspace,
     }) {

@@ -1,3 +1,5 @@
+import { flattenDeep } from "./utils/array";
+
 export default class childLogic {
   constructor({ properties, parentComponentType,
     allComponentClasses, standardComponentClasses, components }) {
@@ -1356,9 +1358,4 @@ class ChildLogicOperator extends ChildLogicBase {
     return this.propositions.some(x => x.checkIfChildInLogic(child, allowInheritance));
   }
 
-}
-
-// from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat
-function flattenDeep(arr1) {
-  return arr1.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
 }
