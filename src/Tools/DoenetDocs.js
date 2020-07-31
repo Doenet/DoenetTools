@@ -11,6 +11,8 @@ import ToolLayout from './ToolLayout/ToolLayout.js';
 import ToolLayoutPanel from './ToolLayout/ToolLayoutPanel.js';
 import { TreeView } from './TreeView/TreeView';
 import query from '../queryParamFuncs';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 
 
@@ -150,8 +152,31 @@ class DoenetDocs extends Component {
         // specialChildNode: {
         //   "frame": { backgroundColor: "hsl(206, 66%, 85%)", color: "#d9eefa" },
         // },
-        emptyParentExpanderIcon: <span style={{ paddingLeft: "5px" }}></span>
-      }}
+        emptyParentExpanderIcon: {
+          opened: <FontAwesomeIcon  
+          style={{
+            padding: '1px',
+            width: '1.3em',
+            height: '1.2em',
+            border: "1px solid darkblue",
+            borderRadius: '2px',
+            marginLeft: "5px"
+
+          }} 
+          icon={faChevronDown}/>,
+          closed: <FontAwesomeIcon  
+          style={{
+            padding: '1px',
+            width: '1.3em',
+            height: '1.2em',
+            border: "1px solid darkblue",
+            borderRadius: '2px',
+            marginLeft: "5px"
+
+          }}
+          icon={faChevronRight}/>,
+        },      
+       }}
       onLeafNodeClick={(nodeId) => {
         // this.tempSet.clear();
         // this.tempSet.add(nodeId);
