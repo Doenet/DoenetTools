@@ -2713,15 +2713,30 @@ const customizedTreeNodeItem = ({title, icon}) => {
                   }
                 },
 
-                emptyParentExpanderIcon: <FontAwesomeIcon icon={faChevronRight}
+                emptyParentExpanderIcon: {
+                  opened: <FontAwesomeIcon  
                   style={{
                     padding: '1px',
                     width: '1.3em',
                     height: '1.2em',
                     border: "1px solid darkblue",
-                    borderRadius: "2px",
+                    borderRadius: '2px',
                     marginLeft: "5px"
-                  }} />,
+
+                  }} 
+                  icon={faChevronDown}/>,
+                  closed: <FontAwesomeIcon  
+                  style={{
+                    padding: '1px',
+                    width: '1.3em',
+                    height: '1.2em',
+                    border: "1px solid darkblue",
+                    borderRadius: '2px',
+                    marginLeft: "5px"
+
+                  }}
+                  icon={faChevronRight}/>,
+                },
                 // <span style={{ padding: '5px' }}></span>,
                 expanderIcons: {
                   opened: <FontAwesomeIcon icon={faChevronDown}
