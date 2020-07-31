@@ -2537,6 +2537,7 @@ const TreeNodeItemSplit = ({title, icon}) => {
     >{title}</span>
   </div>
 };
+   
       this.splitPanelTree =  <div className="tree" style={{ paddingLeft: "1em" }}>
         <TreeView
           containerId={treeContainerId}

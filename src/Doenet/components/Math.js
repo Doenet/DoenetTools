@@ -1,6 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { convertValueToMathExpression } from '../utils/math';
+import { flattenDeep } from '../utils/array';
 
 
 export default class MathComponent extends InlineComponent {
@@ -1204,9 +1205,4 @@ function getExpressionPieces({ expression, stateValues }) {
   }
   return pieces;
 
-}
-
-// from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat
-function flattenDeep(arr1) {
-  return arr1.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
 }

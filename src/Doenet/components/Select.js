@@ -884,12 +884,6 @@ let countOptions = function (numOptionsByItem, numItems) {
   return numOptions;
 }
 
-
-// from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat
-function flattenDeep(arr1) {
-  return arr1.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
-}
-
 function extractVariants(serializedComponent) {
   let variantsChild, variantsInd;
   for (let [ind, child] of serializedComponent.children.entries()) {

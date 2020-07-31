@@ -1333,7 +1333,7 @@ describe('Mathinput Tag Tests', function () {
 
 
 
-  it('preview input', () => {
+  it.skip('preview input', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
