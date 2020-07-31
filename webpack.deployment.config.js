@@ -13,6 +13,7 @@ module.exports = {
     "admin/index.js": "./src/admin/index.js",
     "chooser/index.js":"./src/chooser/index.js",
     "course/index.js": "./src/course/index.js",
+    "dashboard/index.js": "./src/dashboard/index.js",
     "docs/index.js": "./src/docs/index.js",
     "editor/index.js": "./src/editor/index.js",
     "exam/index.js": "./src/exam/index.js",
@@ -104,6 +105,12 @@ module.exports = {
       filename: "./course/index.html",
       favicon: "./src/Tools/favicon.ico",
 
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ['dashboard/index.js'],
+      template: "./src/dashboard/index.html",
+      filename: "./dashboard/index.html",
+      favicon: "./src/Tools/favicon.ico",
     }),
     
     new HtmlWebPackPlugin({

@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[24,0],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[26,0],{
 
-/***/ 702:
+/***/ 731:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -183,7 +183,7 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 727:
+/***/ 758:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -191,7 +191,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Point; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(702);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(731);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -281,7 +281,10 @@ var Point = /*#__PURE__*/function (_DoenetRenderer) {
       this.pointJXG = this.props.board.create('point', coords, jsxPointAttributes);
       this.pointJXG.on('drag', function () {
         //board.suspendUpdate();
-        this.onDragHandler(); //board.unsuspendUpdate();
+        this.onDragHandler(true); //board.unsuspendUpdate();
+      }.bind(this));
+      this.pointJXG.on('up', function () {
+        this.onDragHandler(false);
       }.bind(this));
       this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
       return this.pointJXG;
@@ -379,10 +382,11 @@ var Point = /*#__PURE__*/function (_DoenetRenderer) {
     }
   }, {
     key: "onDragHandler",
-    value: function onDragHandler() {
+    value: function onDragHandler(_transient) {
       this.actions.movePoint({
         x: this.pointJXG.X(),
-        y: this.pointJXG.Y()
+        y: this.pointJXG.Y(),
+        "transient": _transient
       });
     }
   }, {

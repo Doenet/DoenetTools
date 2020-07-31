@@ -23,7 +23,6 @@ for ($i = 0; $i < $number_content; $i++){
   VALUES
   ('$branchId','$title','$doenetML',NOW(),NOW(),'$contentId')
   ";
-  echo $sql;
   $result = $conn->query($sql); 
   if ($result === TRUE) {
     // set response code - 200 OK
@@ -38,7 +37,6 @@ for ($i = 0; $i < $number_content; $i++){
   VALUES
   ('devuser','$branchId')
   ";
-  echo $sql;
   $result = $conn->query($sql); 
   if ($result === TRUE) {
     // set response code - 200 OK
@@ -53,7 +51,6 @@ for ($i = 0; $i < $number_content; $i++){
   VALUES
   ('$doenetML','$branchId','$title','$contentId',NOW(),1)
   ";
-  echo $sql;
   $result = $conn->query($sql); 
   if ($result === TRUE) {
     // set response code - 200 OK
@@ -71,12 +68,15 @@ for ($i = 0; $i < $number_folders; $i++){
   $folderId = mysqli_real_escape_string($conn,$_POST["folderSeeds"]["folderId"][$i]);
   $title =  mysqli_real_escape_string($conn,$_POST["folderSeeds"]["title"][$i]);
   $parentId = mysqli_real_escape_string($conn,$_POST["folderSeeds"]["parentId"][$i]);
+  $rootId = mysqli_real_escape_string($conn,$_POST["folderSeeds"]["rootId"][$i]);
+  $isRepo = mysqli_real_escape_string($conn,$_POST["folderSeeds"]["isRepo"][$i]);
+  $isPublic = mysqli_real_escape_string($conn,$_POST["folderSeeds"]["isPublic"][$i]);
   
   $sql = "
   INSERT INTO folder
-  (folderId,title ,parentId, creationDate)
+  (folderId,title ,parentId, creationDate, isRepo, public)
   VALUES
-  ('$folderId','$title','$parentId' ,NOW())
+  ('$folderId','$title','$parentId' ,NOW(), '$isRepo', '$isPublic')
   ";
   $result = $conn->query($sql);
   if ($result === TRUE) {
@@ -86,22 +86,57 @@ for ($i = 0; $i < $number_folders; $i++){
     echo "Error: " . $sql . "<br>" . $conn->error;
   }
 
-  if ($parentId !== "root") {
-    $sql = "
+  $sql = "
     INSERT INTO folder_content
-    (folderId, childId, childType, timestamp)
+    (rootId, folderId, childId, childType, timestamp)
     VALUES
-    ('$parentId','$folderId' ,'folder', NOW())
+    ('$rootId', '$parentId','$folderId' ,'folder', NOW())
     ";
-    $result = $conn->query($sql); 
-  } else {
-    $sql = "
+  $result = $conn->query($sql); 
+  
+  $sql = "
     INSERT INTO user_folders
     (username, folderId)
     VALUES
     ('devuser','$folderId')
     ";
-    $result = $conn->query($sql); 
+    echo $sql;
+    $result = $conn->query($sql);   
+}
+
+// Url
+$numberUrls = count($_POST["urlSeeds"]["urlId"]);
+
+for ($i = 0; $i < $numberUrls; $i++){
+  $urlId =  mysqli_real_escape_string($conn,$_POST["urlSeeds"]["urlId"][$i]);
+  $title = mysqli_real_escape_string($conn,$_POST["urlSeeds"]["title"][$i]);
+  $url = mysqli_real_escape_string($conn,$_POST["urlSeeds"]["url"][$i]);
+
+  $sql = "
+  INSERT INTO url
+  (urlId, title ,url, description, timestamp, usesDoenetAPI)
+  VALUES
+  ('$urlId','$title','$url', '', NOW(), false)
+  ";
+  $result = $conn->query($sql); 
+  if ($result === TRUE) {
+    http_response_code(200);
+  }else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+  }
+
+  $sql = "
+    INSERT INTO user_urls
+    (username, urlId)
+    VALUES
+    ('devuser','$urlId')
+  ";
+  $result = $conn->query($sql); 
+  if ($result === TRUE) {
+    // set response code - 200 OK
+    http_response_code(200);
+  }else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
   }
 }
 
