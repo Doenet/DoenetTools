@@ -63,10 +63,10 @@ if ($row['minutes'] > 10){
             $expirationTime = 2147483647;    
         }
         $path = '/';
-        $domain = $ini_array['dbhost']; 
+        //$domain = $ini_array['dbhost']; 
+        $domain = $_SERVER["SERVER_NAME"];
         $isSecure = true;  
-        if ($domain=="127.0.0.1"){
-          $domain = 'localhost'; 
+        if ($domain=="localhost"){
         $isSecure = false;  
         }
         $isHttpOnly = true;

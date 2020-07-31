@@ -61,11 +61,11 @@ $roleAccessList = array(
   //Send back not signed in profile
   $toolAccessList = array("Chooser", "Course", "Documentation");
   $profile = array(
-    "screenName" => "Anonymous",
+    "screenName" => "anonymous",
     "email" => "",
     "firstName" => "",
     "lastName" => "",
-    "profilePicture" => "Anonymous",
+    "profilePicture" => "anonymous",
     "trackingConsent" => true,
     "roleStudent" => "0",
     "roleInstructor" => "0",

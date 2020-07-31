@@ -19,10 +19,10 @@ $result = $conn->query($sql);
 // set response code - 200 OK
 http_response_code(200);
 
-$domain = $ini_array['dbhost']; 
+// $domain = $ini_array['dbhost']; 
+$domain = $_SERVER["SERVER_NAME"];
 $isSecure = true;  
-if ($domain=="127.0.0.1"){
-  $domain = 'localhost'; 
+if ($domain=="localhost"){
   $isSecure = false;  
 }
 $isHttpOnly = true;
