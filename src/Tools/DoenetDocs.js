@@ -195,7 +195,7 @@ class DoenetDocs extends Component {
 
     return (
       <Router basename="/docs">
-        <ToolLayout className="docs-container" toolName="Documentation" headingTitle="Documentation">
+        <ToolLayout className="docs-container" toolName="Documentation" headingTitle="Documentation" leftPanelWidth="300">
           <ToolLayoutPanel className="side-panel" key="one" panelName="Dicitonary">
             <div >
 
