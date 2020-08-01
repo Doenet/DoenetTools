@@ -30,7 +30,7 @@ jobs:
         node-version: '10.x'
     - run: npm install -g eslint && npm install eslint-plugin-react
     - name: Fetch upstream/master
-      run: git remote add upstream ... && git fetch upstream master
+      run: git remote add upstream https://github.com/Doenet/DoenetTools.git && git fetch upstream master
     - name: Linting src
       run: eslint $(git diff --name-only master | grep -E -- '^src' | xargs ls -d 2>/dev/null)
     - name: Linting cypress
