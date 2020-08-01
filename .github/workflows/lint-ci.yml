@@ -23,33 +23,35 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/checkout@master
+      with:
+        ref: ${{ github.head_ref }}
     - uses: actions/setup-node@v1
       with: 
         node-version: '10.x'
     - run: npm install -g eslint && npm install eslint-plugin-react
     - name: Linting src
-      run: git fetch upstream master:master && eslint $(git diff --name-only master | grep -E -- '^src' | xargs ls -d 2>/dev/null)
+      run: git fetch upstream/master:master && eslint $(git diff --name-only master | grep -E -- '^src' | xargs ls -d 2>/dev/null)
     - name: Linting cypress
-      run: git fetch upstream master:master && eslint $(git diff --name-only master | grep -E -- '^cypress' | xargs ls -d 2>/dev/null)
+      run: git fetch upstream/master:master && eslint $(git diff --name-only master | grep -E -- '^cypress' | xargs ls -d 2>/dev/null)
 
-  test:
+  # test:
 
-    runs-on: ubuntu-latest
+  #   runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@master
-      with:
-        ref: ${{ github.head_ref }}
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '10.x'
-    - name: Install Dependencies
-      run: npm install -g wait-on cypress && npm install
-    # - name: Make dist_local Folder
-    #   run: mkdir -m 777 dist_local 
-    - name: Build the Containers
-      run: npm run docker:build
-    - name: Start the Server
-      run: npm run deploy & wait-on http://localhost:3000
-    - name: Run tagSpecific Tests
-      run: cypress run -b 'chrome' --config video=false --spec "cypress/integration/tagSpecific/**"
+  #   steps:
+      # - uses: actions/checkout@v2
+
+  #   - uses: actions/setup-node@v1
+  #     with:
+  #       node-version: '10.x'
+  #   - name: Install Dependencies
+  #     run: npm install -g wait-on cypress && npm install
+  #   # - name: Make dist_local Folder
+  #   #   run: mkdir -m 777 dist_local 
+  #   - name: Build the Containers
+  #     run: npm run docker:build
+  #   - name: Start the Server
+  #     run: npm run deploy & wait-on http://localhost:3000
+  #   - name: Run tagSpecific Tests
+  #     run: cypress run -b 'chrome' --config video=false --spec "cypress/integration/tagSpecific/**"
