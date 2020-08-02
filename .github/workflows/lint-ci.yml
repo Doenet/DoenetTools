@@ -1,11 +1,5 @@
 name: Lint and CI
 
-# To Do
-# 2. Try out Cypress Dashboard
-# 3. Look into differential testing
-# 4. Caching Containers? 
-# 5. Status Checks
-
 # Runs on ubuntu because macOS is not licensed to have docker-compose
 
 on:
@@ -16,15 +10,13 @@ on:
 
 jobs:
   lint:
+    # Only lints the file differences between the current branch and upstream/master
     runs-on: ubuntu-latest
 
     # Can crash if the number of modified files is extremely large
     # In most cases this is due to the user not merging in upstream/master before committing
 
     steps:
-    # - uses: actions/checkout@master
-    #   with:
-    #     ref: ${{ github.head_ref }}
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
       with: 
@@ -39,23 +31,20 @@ jobs:
     - name: Linting cypress
       run: eslint $(git diff --name-only upstream/master | grep -E -- '^cypress' | xargs ls -d 2>/dev/null)
 
-  # test:
+  test:
+    # Only runs the tests found in 'tagSpecific'
+    runs-on: ubuntu-latest
 
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-      # - uses: actions/checkout@v2
-
-  #   - uses: actions/setup-node@v1
-  #     with:
-  #       node-version: '10.x'
-  #   - name: Install Dependencies
-  #     run: npm install -g wait-on cypress && npm install
-  #   # - name: Make dist_local Folder
-  #   #   run: mkdir -m 777 dist_local 
-  #   - name: Build the Containers
-  #     run: npm run docker:build
-  #   - name: Start the Server
-  #     run: npm run deploy & wait-on http://localhost:3000
-  #   - name: Run tagSpecific Tests
-  #     run: cypress run -b 'chrome' --config video=false --spec "cypress/integration/tagSpecific/**"
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - name: Install Dependencies
+      run: npm install -g wait-on cypress && npm install
+    - name: Build the Containers
+      run: npm run docker:build
+    - name: Start the Server
+      run: npm run deploy & wait-on http://localhost:3000
+    - name: Run tagSpecific Tests
+      run: cypress run -b 'chrome' --config video=false --spec "cypress/integration/tagSpecific/**"
