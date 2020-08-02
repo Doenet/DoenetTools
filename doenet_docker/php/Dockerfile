@@ -25,7 +25,11 @@ RUN apt-get install -y p7zip \
     cabextract \
     file-roller \
     && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /usr/local/apache2/htdocs/api/
+
 RUN composer require firebase/php-jwt
+
 
 #Test for php-jwt
 # COPY example.php /var/www/html/example.php

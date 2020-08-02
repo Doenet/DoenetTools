@@ -1657,9 +1657,24 @@ a:hover {
 }
 button{
     height:20px;
+    text-decoration:none;
+    outline-style: hidden;
+
 }
 select{
     height:20px;
+}
+.menuCustomTwirlIcon{
+  font-size: 12px;
+  color: #03a1fc;
+  margin-right: 8px;
+  margin-left: 6px;
+  border:1px solid #03a1fc;
+  border-radius: 2px;
+  /* padding-left: 2px;
+  padding-right:2px; */
+  width: 15px !important;
+  height: 15px !important;
 }
 .headingContainer{
   display: flex;
@@ -1669,7 +1684,7 @@ select{
   background-color: white;
   border-bottom: 1px solid #E3E2E2;
   justify-content: space-between;
-  padding: 6px;
+  /* padding: 6px; */
   width: 100%;
   height: 50px;
   z-index: 5;
@@ -1735,7 +1750,7 @@ select{
 }
 
 #doenetLogo {
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 /* #previousPageButton {
@@ -1973,7 +1988,7 @@ select{
 
   #doenetLogo {
     height: 35px;
-    cursor: pointer;
+    /* cursor: pointer; */
     vertical-align: middle;
   }
 
@@ -2067,7 +2082,10 @@ button{
   flex-direction: column;
   min-height: 1vh;
   overflow: hidden;
-
+  width:100%;
+  background-color: #288ae9;
+  /* background-repeat: repeat-y; */
+  /* background-image: url('../../media/doenet_bg.png'); */
 }
 
 .middlepanel{
@@ -2076,6 +2094,7 @@ button{
   flex-direction: column;
   min-height: 1vh;
   overflow: hidden;
+  background-color: white;
 }
 
 .rightpanel{
@@ -2084,6 +2103,7 @@ button{
   flex-direction: column;
   min-height: 1vh; 
   overflow: hidden;
+  background-color: white;
 }
 
 .column-resizer{
@@ -2151,7 +2171,7 @@ button{
   order:1;
 }
 .custom{
-  color: rgb(67, 170, 144);
+  color: #288ae9;
   border-radius: 20px 0px 0px 20px;
  height:40px;
  width:28px;
@@ -2239,3 +2259,106 @@ display: none;
 }
  
 
+.container {
+  width: 50%;
+  height: 100%;
+  position: relative;
+  background: #dfe3e6;
+  border-radius: 5px;
+  margin-right: 40px;
+  padding: 10px;
+  min-height: 30px;
+}
+
+h3 {
+  text-align: left;
+  padding-left: 10px;
+  margin: 10px 0;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.App {
+  font-family: sans-serif;
+  text-align: center;
+  overflow-y: scroll;
+}
+
+.elem {
+  height: 50px;
+  width: 50px;
+  border: 1px solid magenta;
+}
+.box {
+  display: flex;
+  width: 100%;
+}
+
+.area {
+  width: 70%;
+  margin-left: 100px;
+  border: 1px dotted;
+}
+
+.item {
+  background: white;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 10px;
+  text-align: left;
+  box-shadow: 0 1px 0 rgba(9, 45, 66, 0.25);
+}
+
+.item:hover {
+  cursor: pointer;
+  background: #f5f6f7;
+}
+
+.container {
+  width: 50%;
+  height: 100%;
+  position: relative;
+  background: #dfe3e6;
+  border-radius: 5px;
+  margin-right: 40px;
+  padding: 10px;
+  min-height: 30px;
+}
+.item {
+  background: white;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 10px;
+  text-align: left;
+  box-shadow: 0 1px 0 rgba(9, 45, 66, 0.25);
+}
+
+.item:hover {
+  cursor: pointer;
+  background: #f5f6f7;
+}
+
+@keyframes spin {
+  from {transform:rotate(0deg);}
+  to {transform:rotate(360deg);}
+}
+
+@keyframes spinnerColor {
+  0% { color: #40ebbe; }
+  25% { color: #2fb390; }
+  50% { color: #2a9b7d; }
+  75% { color: #3ddab0; }
+  100% { color: #40ebbe; }
+}
