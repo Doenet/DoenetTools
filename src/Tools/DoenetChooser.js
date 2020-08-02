@@ -2352,12 +2352,11 @@ class DoenetChooser extends Component {
                 },
             
                 //   expanderIcon: <FontAwesomeIcon icon={faPlus}/>
-                // emptyParentExpanderIcon: <span style={{padding:'5px'}}></span>
-                emptyParentExpanderIcon: <FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "18px", "color": "#a7a7a7", "marginRight": "18px" }} />,
-                expanderIcon: {
-                  closed:<FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "18px", "color": "#a7a7a7", "marginRight": "18px" }} />,
-                  opened:<FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "18px", "color": "#a7a7a7", "marginRight": "18px" }} />
-                } 
+                emptyParentExpanderIcon: <span style={{padding:'5px'}}></span>
+                // expanderIcon: {
+                //   closed:<FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "18px", "color": "#a7a7a7", "marginRight": "18px" }} />,
+                //   opened:<FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "18px", "color": "#a7a7a7", "marginRight": "18px" }} />
+                // } 
                   
 
               }}
