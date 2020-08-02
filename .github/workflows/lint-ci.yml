@@ -4,9 +4,9 @@ name: Lint and CI
 
 on:
   push:
-    branches: [ master, Implement-CI ]
+    branches: [ upstream/master ]
   pull_request:
-    branches: [ master ]
+    branches: [ upstream/master ]
 
 jobs:
   lint:
