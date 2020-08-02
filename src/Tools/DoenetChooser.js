@@ -1191,6 +1191,7 @@ class DoenetChooser extends Component {
         if (resp.data[itemId]["type"] == "folder") {
           tempHeadingsInfo[itemId] = resp.data[itemId];
           tempHeadingsInfo[itemId]["type"] = "folder";
+          tempHeadingsInfo[itemId]["isRepo"] = false;
           // if (itemId == "root") tempHeadingsInfo[itemId]["title"] = this.courseInfo[courseId]["courseName"];
           // process children
           for (let i in resp.data[itemId]["childrenId"]) {
@@ -2110,6 +2111,10 @@ class DoenetChooser extends Component {
       />;
     }
     else {
+      let loading = true;
+      let browserContentInfo = {}
+      let browserFolderInfo = {}
+      let browserUrlInfo = {}
       let folderList = [];
       let contentList = [];
       let urlList = [];
@@ -2117,25 +2122,40 @@ class DoenetChooser extends Component {
       let treeContainerType = "";
       let treeParentsInfo = {};
       let treeChildrenInfo = {};
+
       if (this.state.selectedDrive == "Content" || this.state.selectedDrive == "Global") {
+        loading = !this.folders_loaded || !this.branches_loaded || !this.urls_loaded;
+
+        // browser data
         folderList = this.folderIds;
         contentList = this.sort_order;
         urlList = this.urlIds;
+        browserFolderInfo = this.folderInfo;
+        browserContentInfo= this.branchId_info;
+        browserUrlInfo = this.urlInfo;
+
+        // tree data
         treeContainerId = "user";
         treeContainerType = ChooserConstants.USER_CONTENT_TYPE;
         treeParentsInfo = this.userFolderInfo;
         treeChildrenInfo = { ...this.userContentInfo, ...this.userUrlInfo };
-        console.log(treeParentsInfo)
+
       } else if (this.state.selectedDrive == "Courses") {
-        folderList = this.courseInfo[this.state.selectedCourse].folders;
-        contentList = this.courseInfo[this.state.selectedCourse].content;
-        urlList = this.courseInfo[this.state.selectedCourse].urls;
+        loading = !this.assignments_and_headings_loaded;
+
+        // browser data
+        console.log(this.headingsInfo)
+        folderList = this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]["root"]["childFolders"];  // TODO: set to root folders
+        contentList = this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]["root"]["childContent"]; // TODO: set to root content
+        browserFolderInfo = this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]
+        browserContentInfo = this.assignmentsInfo["aI8sK4vmEhC5sdeSP3vNW"]
+
+        // tree data
         treeContainerId = this.state.selectedCourse;
         treeContainerType = ChooserConstants.COURSE_CONTENT_TYPE;
         treeParentsInfo = this.courseFolderInfo[this.state.selectedCourse];
         treeChildrenInfo = { ...this.courseContentInfo[this.state.selectedCourse], ...this.courseUrlInfo[this.state.selectedCourse] };
       }
-
 
       this.tree = <div className="tree" style={{ paddingLeft: "1em" }}>
         <TreeView
@@ -2451,31 +2471,31 @@ class DoenetChooser extends Component {
 
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
-          loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
+          loading={loading}
           containerId={"browser"}
-          allContentInfo={this.branchId_info}
-          allFolderInfo={this.folderInfo}
-          allUrlInfo={this.urlInfo}
+          allFolderInfo={browserFolderInfo}
+          allContentInfo={browserContentInfo}
+          allUrlInfo={browserUrlInfo}
           folderList={folderList}
           contentList={contentList}
           urlList={urlList}
-          ref={this.browser}                                      // optional
-          key={"browser" + this.updateNumber}                       // optional
-          selectedDrive={this.state.selectedDrive}                // optional
-          selectedCourse={this.state.selectedCourse}              // optional
-          allCourseInfo={this.courseInfo}                         // optional
-          updateSelectedItems={this.updateSelectedItems}          // optional
-          updateDirectoryStack={this.updateDirectoryStack}        // optional
-          addContentToFolder={this.addContentToFolder}            // optional
-          addContentToRepo={this.addContentToRepo}               // optional
-          removeContentFromCourse={this.removeContentFromCourse}  // optional
-          removeContentFromFolder={this.removeContentFromFolder}  // optional                  
-          directoryData={this.state.directoryStack}               // optional
-          selectedItems={this.state.selectedItems}                // optional
-          selectedItemsType={this.state.selectedItemsType}        // optional
-          renameFolder={this.renameFolder}                        // optional
-          openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
-          publicizeRepo={this.publicizeRepo}                      // optional
+          ref={this.browser}         
+          key={"browser" + this.updateNumber}                     
+          selectedDrive={this.state.selectedDrive}                
+          selectedCourse={this.state.selectedCourse}             
+          allCourseInfo={this.courseInfo}                        
+          updateSelectedItems={this.updateSelectedItems}         
+          updateDirectoryStack={this.updateDirectoryStack}       
+          addContentToFolder={this.addContentToFolder}           
+          addContentToRepo={this.addContentToRepo}               
+          removeContentFromCourse={this.removeContentFromCourse} 
+          removeContentFromFolder={this.removeContentFromFolder} 
+          directoryData={this.state.directoryStack}              
+          selectedItems={this.state.selectedItems}               
+          selectedItemsType={this.state.selectedItemsType}       
+          renameFolder={this.renameFolder}                       
+          openEditCourseForm={() => this.toggleManageCourseForm("edit_course")}
+          publicizeRepo={this.publicizeRepo}                     
           onDragStart={this.onBrowserDragStart}
           onDragEnd={this.onBrowserDragEnd}
           onDraggableDragOver={() => { }}
@@ -2693,7 +2713,7 @@ class DoenetChooser extends Component {
           </Router>
 
           <ToolLayoutPanel panelName="Info Panel" key={'right'}>
-            <InfoPanel
+            {/* <InfoPanel
               selectedItems={this.state.selectedItems}
               selectedItemsType={this.state.selectedItemsType}
               selectedDrive={this.state.selectedDrive}
@@ -2705,7 +2725,7 @@ class DoenetChooser extends Component {
               publicizeRepo={this.publicizeRepo}
               openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
               openEditUrlForm={() => this.toggleManageUrlForm("edit_url")}
-            />
+            /> */}
           </ToolLayoutPanel>
         </ToolLayout>
 

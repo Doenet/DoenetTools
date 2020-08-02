@@ -206,7 +206,8 @@ class DoenetBranchBrowser extends Component {
       let isRepo = this.props.allFolderInfo[folderId].isRepo;
       let isPublic = this.props.allFolderInfo[folderId].isPublic;
       let isPinned = this.props.allFolderInfo[folderId].isPinned;
-      let isShared = this.props.allFolderInfo[this.props.allFolderInfo[folderId].rootId].isRepo;
+      let isShared = this.props.allFolderInfo[folderId].rootId == "root" ? false :
+        this.props.allFolderInfo[this.props.allFolderInfo[folderId].rootId].isRepo;
       let classes = this.state.selectedItems.includes(folderId) || folderId == this.state.currentDraggedOverFolder ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
 
