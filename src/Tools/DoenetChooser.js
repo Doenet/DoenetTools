@@ -516,10 +516,11 @@ class DoenetChooser extends Component {
         selectedCourse: courseId,
         directoryStack: []
       });
-      this.folders_loaded = false;
-      this.branches_loaded = false;
+      // this.folders_loaded = false;
+      // this.branches_loaded = false;
       this.updateIndexedDBCourseContent(courseId);
-      this.loadCourseContent(courseId);
+      // this.loadCourseContent(courseId);
+      this.loadCourseHeadingsAndAssignments(courseId);
     } else if (drive === "Global") {
       this.setState({
         selectedItems: [],
@@ -2145,10 +2146,12 @@ class DoenetChooser extends Component {
 
         // browser data
         console.log(this.headingsInfo)
-        folderList = this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]["root"]["childFolders"];  // TODO: set to root folders
-        contentList = this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]["root"]["childContent"]; // TODO: set to root content
-        browserFolderInfo = this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]
-        browserContentInfo = this.assignmentsInfo["aI8sK4vmEhC5sdeSP3vNW"]
+        if (this.headingsInfo[this.state.selectedCourse]["root"]) {
+          folderList = this.headingsInfo[this.state.selectedCourse]["root"]["childFolders"]; 
+          contentList = this.headingsInfo[this.state.selectedCourse]["root"]["childContent"]; 
+        }
+        browserFolderInfo = this.headingsInfo[this.state.selectedCourse]
+        browserContentInfo = this.assignmentsInfo[this.state.selectedCourse]
 
         // tree data
         treeContainerId = this.state.selectedCourse;
