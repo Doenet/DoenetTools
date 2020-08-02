@@ -4,9 +4,9 @@ name: Lint and CI
 
 on:
   push:
-    branches: [ upstream/master ]
+    branches: [ master ]
   pull_request:
-    branches: [ upstream/master ]
+    branches: [ master ]
 
 jobs:
   lint:
