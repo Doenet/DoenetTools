@@ -22,9 +22,10 @@ jobs:
     # In most cases this is due to the user not merging in upstream/master before committing
 
     steps:
-    - uses: actions/checkout@master
-      with:
-        ref: ${{ github.head_ref }}
+    # - uses: actions/checkout@master
+    #   with:
+    #     ref: ${{ github.head_ref }}
+    - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
       with: 
         node-version: '10.x'
