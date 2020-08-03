@@ -27,7 +27,7 @@ export default function DoenetSignOut(props) {
   const vanillaCookies = document.cookie.split(';');
 
   removeCookie('TrackingConsent', { path: "/" })
-  removeCookie('JWT_JS', { path: "/" })
+  // removeCookie('JWT_JS', { path: "/" })
   removeCookie('Stay', { path: "/" })
   removeCookie('Device', { path: "/" })
 
