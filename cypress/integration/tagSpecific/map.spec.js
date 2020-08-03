@@ -550,21 +550,21 @@ describe('Map Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let coords1 = components['/_copy1'].replacements[0];
-      let coords1Anchor = '#' + coords1.componentName;
+      let coords1Anchor = cesc('#' + coords1.componentName);
       let coords2 = components['/_copy2'].replacements[0];
-      let coords2Anchor = '#' + coords2.componentName;
+      let coords2Anchor = cesc('#' + coords2.componentName);
       let coords3 = components['/_copy3'].replacements[0];
-      let coords3Anchor = '#' + coords3.componentName;
+      let coords3Anchor = cesc('#' + coords3.componentName);
       let coords4 = components['/_copy4'].replacements[0];
-      let coords4Anchor = '#' + coords4.componentName;
+      let coords4Anchor = cesc('#' + coords4.componentName);
       let coords5 = components['/_copy5'].replacements[0];
-      let coords5Anchor = '#' + coords5.componentName;
+      let coords5Anchor = cesc('#' + coords5.componentName);
       let coords6 = components['/_copy6'].replacements[0];
-      let coords6Anchor = '#' + coords6.componentName;
+      let coords6Anchor = cesc('#' + coords6.componentName);
       let coords7 = components['/_copy7'].replacements[0];
-      let coords7Anchor = '#' + coords7.componentName;
+      let coords7Anchor = cesc('#' + coords7.componentName);
       let coords8 = components['/_copy8'].replacements[0];
-      let coords8Anchor = '#' + coords8.componentName;
+      let coords8Anchor = cesc('#' + coords8.componentName);
 
       cy.log('Test values displayed in browser')
       cy.get(`${coords1Anchor} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -966,11 +966,11 @@ describe('Map Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let coords1 = components['/_copy1'].replacements[0];
-      let coords1Anchor = '#' + coords1.componentName;
+      let coords1Anchor = cesc('#' + coords1.componentName);
       let coords2 = components['/_copy2'].replacements[0];
-      let coords2Anchor = '#' + coords2.componentName;
+      let coords2Anchor = cesc('#' + coords2.componentName);
       let coords3 = components['/_copy3'].replacements[0];
-      let coords3Anchor = '#' + coords3.componentName;
+      let coords3Anchor = cesc('#' + coords3.componentName);
 
       let replacements = components['/hi/_map1'].replacements;
 
@@ -1182,11 +1182,11 @@ describe('Map Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let p4 = components['/copymapthroughp'].replacements[0];
-      let p4Anchor = '#' + p4.componentName;
+      let p4Anchor = cesc('#' + p4.componentName);
       let p5 = components['/copymapthroughp2'].replacements[0].replacements[0];
-      let p5Anchor = '#' + p5.componentName;
+      let p5Anchor = cesc('#' + p5.componentName);
       let p6 = components['/copymapthroughp3'].replacements[0].replacements[0].replacements[0];
-      let p6Anchor = '#' + p6.componentName;
+      let p6Anchor = cesc('#' + p6.componentName);
 
 
       cy.log('At beginning, nothing shown')
@@ -1779,8 +1779,8 @@ describe('Map Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let coords1Anchor = '#' + components["/_collect1"].replacements[0].adapterUsed.componentName;
-      let coords2Anchor = '#' + components["/_collect1"].replacements[1].adapterUsed.componentName;
+      let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
+      let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
 
       cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,1)');
@@ -1827,10 +1827,10 @@ describe('Map Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let coords1Anchor = '#' + components["/_collect1"].replacements[0].adapterUsed.componentName;
-      let coords2Anchor = '#' + components["/_collect1"].replacements[1].adapterUsed.componentName;
-      let coords3Anchor = '#' + components["/_collect1"].replacements[2].adapterUsed.componentName;
-      let coords4Anchor = '#' + components["/_collect1"].replacements[3].adapterUsed.componentName;
+      let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
+      let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
+      let coords3Anchor = cesc('#' + components["/_collect1"].replacements[2].adapterUsed.componentName);
+      let coords4Anchor = cesc('#' + components["/_collect1"].replacements[3].adapterUsed.componentName);
 
       cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,1)');
@@ -1877,10 +1877,10 @@ describe('Map Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let coords1Anchor = '#' + components["/_collect1"].replacements[0].adapterUsed.componentName;
-      let coords2Anchor = '#' + components["/_collect1"].replacements[1].adapterUsed.componentName;
-      let coords3Anchor = '#' + components["/_collect1"].replacements[2].adapterUsed.componentName;
-      let coords4Anchor = '#' + components["/_collect1"].replacements[3].adapterUsed.componentName;
+      let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
+      let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
+      let coords3Anchor = cesc('#' + components["/_collect1"].replacements[2].adapterUsed.componentName);
+      let coords4Anchor = cesc('#' + components["/_collect1"].replacements[3].adapterUsed.componentName);
 
       cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,9)');
@@ -1940,12 +1940,12 @@ describe('Map Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let coords1Anchor = '#' + components["/_collect1"].replacements[0].adapterUsed.componentName;
-      let coords2Anchor = '#' + components["/_collect1"].replacements[1].adapterUsed.componentName;
-      let coords3Anchor = '#' + components["/_collect1"].replacements[2].adapterUsed.componentName;
-      let coords4Anchor = '#' + components["/_collect1"].replacements[3].adapterUsed.componentName;
-      let coords5Anchor = '#' + components["/_collect1"].replacements[4].adapterUsed.componentName;
-      let coords6Anchor = '#' + components["/_collect1"].replacements[5].adapterUsed.componentName;
+      let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
+      let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
+      let coords3Anchor = cesc('#' + components["/_collect1"].replacements[2].adapterUsed.componentName);
+      let coords4Anchor = cesc('#' + components["/_collect1"].replacements[3].adapterUsed.componentName);
+      let coords5Anchor = cesc('#' + components["/_collect1"].replacements[4].adapterUsed.componentName);
+      let coords6Anchor = cesc('#' + components["/_collect1"].replacements[5].adapterUsed.componentName);
 
 
       cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {

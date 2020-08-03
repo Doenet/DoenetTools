@@ -1,4 +1,13 @@
 import me from 'math-expressions';
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
 
 describe('Sequence Tag Tests', function () {
 
@@ -978,7 +987,7 @@ describe('Sequence Tag Tests', function () {
       let replacements = components['/_sequence1'].replacements;
 
       for (let i = 0; i < 11; i++) {
-        cy.get('#' + replacements[i].componentName).invoke('text').then((text) => {
+        cy.get(cesc('#' + replacements[i].componentName)).invoke('text').then((text) => {
           expect(text.trim()).equal((i / 10).toString());
         })
       }
@@ -1015,7 +1024,7 @@ describe('Sequence Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let replacements = components['/_sequence1'].replacements;
       for (let i = 0; i < 9; i++) {
-        cy.get('#' + replacements[i].componentName).invoke('text').then((text) => {
+        cy.get(cesc('#' + replacements[i].componentName)).invoke('text').then((text) => {
           expect(text.trim()).equal((i + 5).toString());
         })
       }
@@ -1055,7 +1064,7 @@ describe('Sequence Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let number1 = components['/_sequence1'].replacements[0];
       let number1Name = number1.componentName;
-      let number1Anchor = '#' + number1Name;
+      let number1Anchor = cesc('#' + number1Name);
 
       cy.get(number1Anchor).should('have.text', '2')
 

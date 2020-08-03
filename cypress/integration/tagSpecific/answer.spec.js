@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Answer Tag Tests', function () {
 
   beforeEach(() => {
@@ -21,14 +31,14 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy1'].replacements[0];
-      let math1Anchor = '#' + math1.componentName;
+      let math1Anchor = cesc('#' + math1.componentName);
       let math2 = components['/_copy2'].replacements[0];
-      let math2Anchor = '#' + math2.componentName;
+      let math2Anchor = cesc('#' + math2.componentName);
       let number1 = components['/_copy3'].replacements[0];
-      let number1Anchor = '#' + number1.componentName;
+      let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
       cy.get(mathinputAnchor).should('have.value', '');
@@ -162,14 +172,14 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let textinputAnchor = '#' + textinputName + '_input';
-      let textinputSubmitAnchor = '#' + textinputName + '_submit';
+      let textinputAnchor = cesc('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let text1 = components['/_copy1'].replacements[0];
-      let text1Anchor = '#' + text1.componentName;
+      let text1Anchor = cesc('#' + text1.componentName);
       let text2 = components['/_copy2'].replacements[0];
-      let text2Anchor = '#' + text2.componentName;
+      let text2Anchor = cesc('#' + text2.componentName);
       let number1 = components['/_copy3'].replacements[0];
-      let number1Anchor = '#' + number1.componentName;
+      let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
@@ -283,14 +293,14 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let textinputAnchor = '#' + textinputName + '_input';
-      let textinputSubmitAnchor = '#' + textinputName + '_submit';
+      let textinputAnchor = cesc('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let text1 = components['/_copy2'].replacements[0];
-      let text1Anchor = '#' + text1.componentName;
+      let text1Anchor = cesc('#' + text1.componentName);
       let text2 = components['/_copy3'].replacements[0];
-      let text2Anchor = '#' + text2.componentName;
+      let text2Anchor = cesc('#' + text2.componentName);
       let number1 = components['/_copy4'].replacements[0];
-      let number1Anchor = '#' + number1.componentName;
+      let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
@@ -400,14 +410,14 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy1'].replacements[0];
-      let math1Anchor = '#' + math1.componentName;
+      let math1Anchor = cesc('#' + math1.componentName);
       let math2 = components['/_copy2'].replacements[0];
-      let math2Anchor = '#' + math2.componentName;
+      let math2Anchor = cesc('#' + math2.componentName);
       let number1 = components['/_copy3'].replacements[0];
-      let number1Anchor = '#' + number1.componentName;
+      let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
       cy.get(mathinputAnchor).should('have.value', '');
@@ -547,14 +557,14 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy2'].replacements[0];
-      let math1Anchor = '#' + math1.componentName;
+      let math1Anchor = cesc('#' + math1.componentName);
       let math2 = components['/_copy3'].replacements[0];
-      let math2Anchor = '#' + math2.componentName;
+      let math2Anchor = cesc('#' + math2.componentName);
       let number1 = components['/_copy4'].replacements[0];
-      let number1Anchor = '#' + number1.componentName;
+      let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
       cy.get(mathinputAnchor).should('have.value', '');
@@ -687,14 +697,14 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let textinputAnchor = '#' + textinputName + '_input';
-      let textinputSubmitAnchor = '#' + textinputName + '_submit';
+      let textinputAnchor = cesc('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let text1 = components['/_copy1'].replacements[0];
-      let text1Anchor = '#' + text1.componentName;
+      let text1Anchor = cesc('#' + text1.componentName);
       let text2 = components['/_copy2'].replacements[0];
-      let text2Anchor = '#' + text2.componentName;
+      let text2Anchor = cesc('#' + text2.componentName);
       let number1 = components['/_copy3'].replacements[0];
-      let number1Anchor = '#' + number1.componentName;
+      let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
@@ -814,14 +824,14 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let textinputAnchor = '#' + textinputName + '_input';
-      let textinputSubmitAnchor = '#' + textinputName + '_submit';
+      let textinputAnchor = cesc('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let text1 = components['/_copy2'].replacements[0];
-      let text1Anchor = '#' + text1.componentName;
+      let text1Anchor = cesc('#' + text1.componentName);
       let text2 = components['/_copy3'].replacements[0];
-      let text2Anchor = '#' + text2.componentName;
+      let text2Anchor = cesc('#' + text2.componentName);
       let number1 = components['/_copy4'].replacements[0];
-      let number1Anchor = '#' + number1.componentName;
+      let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
@@ -932,14 +942,14 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy1'].replacements[0];
-      let math1Anchor = '#' + math1.componentName;
+      let math1Anchor = cesc('#' + math1.componentName);
       let math2 = components['/_copy2'].replacements[0];
-      let math2Anchor = '#' + math2.componentName;
+      let math2Anchor = cesc('#' + math2.componentName);
       let number1 = components['/_copy3'].replacements[0];
-      let number1Anchor = '#' + number1.componentName;
+      let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
       cy.get(mathinputAnchor).should('have.value', '');
@@ -1129,14 +1139,14 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy3'].replacements[0];
-      let math1Anchor = '#' + math1.componentName;
+      let math1Anchor = cesc('#' + math1.componentName);
       let math2 = components['/_copy4'].replacements[0];
-      let math2Anchor = '#' + math2.componentName;
+      let math2Anchor = cesc('#' + math2.componentName);
       let number1 = components['/_copy5'].replacements[0];
-      let number1Anchor = '#' + number1.componentName;
+      let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
       cy.get(mathinputAnchor).should('have.value', '');
@@ -1318,14 +1328,14 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let textinputAnchor = '#' + textinputName + '_input';
-      let textinputSubmitAnchor = '#' + textinputName + '_submit';
+      let textinputAnchor = cesc('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let text1 = components['/_copy1'].replacements[0];
-      let text1Anchor = '#' + text1.componentName;
+      let text1Anchor = cesc('#' + text1.componentName);
       let text2 = components['/_copy2'].replacements[0];
-      let text2Anchor = '#' + text2.componentName;
+      let text2Anchor = cesc('#' + text2.componentName);
       let number1 = components['/_copy3'].replacements[0];
-      let number1Anchor = '#' + number1.componentName;
+      let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
@@ -1472,14 +1482,14 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let textinputAnchor = '#' + textinputName + '_input';
-      let textinputSubmitAnchor = '#' + textinputName + '_submit';
+      let textinputAnchor = cesc('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let text1 = components['/_copy1'].replacements[0];
-      let text1Anchor = '#' + text1.componentName;
+      let text1Anchor = cesc('#' + text1.componentName);
       let text2 = components['/_copy2'].replacements[0];
-      let text2Anchor = '#' + text2.componentName;
+      let text2Anchor = cesc('#' + text2.componentName);
       let number1 = components['/_copy3'].replacements[0];
-      let number1Anchor = '#' + number1.componentName;
+      let number1Anchor = cesc('#' + number1.componentName);
 
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
@@ -1637,27 +1647,27 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let cr = components['/cr'].replacements[0];
-      let crAnchor = '#' + cr.componentName;
+      let crAnchor = cesc('#' + cr.componentName);
       let cr1 = components['/cr1'].replacements[0];
-      let cr1Anchor = '#' + cr1.componentName;
+      let cr1Anchor = cesc('#' + cr1.componentName);
       let cr2 = components['/cr2'].replacements[0];
-      let cr2Anchor = '#' + cr2.componentName;
+      let cr2Anchor = cesc('#' + cr2.componentName);
       let crsa = components['/crs'].replacements[0];
-      let crsaAnchor = '#' + crsa.componentName;
+      let crsaAnchor = cesc('#' + crsa.componentName);
       let crsb = components['/crs'].replacements[1];
-      let crsbAnchor = '#' + crsb.componentName;
+      let crsbAnchor = cesc('#' + crsb.componentName);
       let sr = components['/sr'].replacements[0];
-      let srAnchor = '#' + sr.componentName;
+      let srAnchor = cesc('#' + sr.componentName);
       let sr1 = components['/sr1'].replacements[0];
-      let sr1Anchor = '#' + sr1.componentName;
+      let sr1Anchor = cesc('#' + sr1.componentName);
       let sr2 = components['/sr2'].replacements[0];
-      let sr2Anchor = '#' + sr2.componentName;
+      let sr2Anchor = cesc('#' + sr2.componentName);
       let srsa = components['/srs'].replacements[0];
-      let srsaAnchor = '#' + srsa.componentName;
+      let srsaAnchor = cesc('#' + srsa.componentName);
       let srsb = components['/srs'].replacements[1];
-      let srsbAnchor = '#' + srsb.componentName;
+      let srsbAnchor = cesc('#' + srsb.componentName);
       let ca = components['/ca'].replacements[0];
-      let caAnchor = '#' + ca.componentName;
+      let caAnchor = cesc('#' + ca.componentName);
 
       cy.log('Test value displayed in browser')
       cy.get('#\\/_mathinput1_input').should('have.value', '');
@@ -2152,27 +2162,27 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let cr = components['/cr'].replacements[0];
-      let crAnchor = '#' + cr.componentName;
+      let crAnchor = cesc('#' + cr.componentName);
       let cr1 = components['/cr1'].replacements[0];
-      let cr1Anchor = '#' + cr1.componentName;
+      let cr1Anchor = cesc('#' + cr1.componentName);
       let cr2 = components['/cr2'].replacements[0];
-      let cr2Anchor = '#' + cr2.componentName;
+      let cr2Anchor = cesc('#' + cr2.componentName);
       let crsa = components['/crs'].replacements[0];
-      let crsaAnchor = '#' + crsa.componentName;
+      let crsaAnchor = cesc('#' + crsa.componentName);
       let crsb = components['/crs'].replacements[1];
-      let crsbAnchor = '#' + crsb.componentName;
+      let crsbAnchor = cesc('#' + crsb.componentName);
       let sr = components['/sr'].replacements[0];
-      let srAnchor = '#' + sr.componentName;
+      let srAnchor = cesc('#' + sr.componentName);
       let sr1 = components['/sr1'].replacements[0];
-      let sr1Anchor = '#' + sr1.componentName;
+      let sr1Anchor = cesc('#' + sr1.componentName);
       let sr2 = components['/sr2'].replacements[0];
-      let sr2Anchor = '#' + sr2.componentName;
+      let sr2Anchor = cesc('#' + sr2.componentName);
       let srsa = components['/srs'].replacements[0];
-      let srsaAnchor = '#' + srsa.componentName;
+      let srsaAnchor = cesc('#' + srsa.componentName);
       let srsb = components['/srs'].replacements[1];
-      let srsbAnchor = '#' + srsb.componentName;
+      let srsbAnchor = cesc('#' + srsb.componentName);
       let ca = components['/ca'].replacements[0];
-      let caAnchor = '#' + ca.componentName;
+      let caAnchor = cesc('#' + ca.componentName);
 
       cy.log('Test value displayed in browser')
       cy.get('#\\/_textinput1_input').should('have.value', '');
@@ -2878,38 +2888,38 @@ describe('Answer Tag Tests', function () {
       let answer1 = components['/_map1'].replacements[0].activeChildren[3];
       let mathinput1Name = answer1.stateValues.inputChild.componentName;
       let mathinput1 = components[mathinput1Name]
-      let mathinput1Anchor = '#' + mathinput1Name + '_input';
-      let mathinput1SubmitAnchor = '#' + mathinput1Name + '_submit';
+      let mathinput1Anchor = cesc('#' + mathinput1Name + '_input');
+      let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
       let ca1 = components['/_map1'].replacements[1].activeChildren[1];
-      let ca1Anchor = '#' + ca1.componentName;
+      let ca1Anchor = cesc('#' + ca1.componentName);
       let cr1 = components['/_map1'].replacements[2].activeChildren[1];
-      let cr1Anchor = '#' + cr1.componentName;
+      let cr1Anchor = cesc('#' + cr1.componentName);
       let sr1 = components['/_map1'].replacements[3].activeChildren[1];
-      let sr1Anchor = '#' + sr1.componentName;
+      let sr1Anchor = cesc('#' + sr1.componentName);
 
       let answer2 = components['/_map1'].replacements[4].activeChildren[3];
       let mathinput2Name = answer2.stateValues.inputChild.componentName;
       let mathinput2 = components[mathinput2Name]
-      let mathinput2Anchor = '#' + mathinput2Name + '_input';
-      let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
+      let mathinput2Anchor = cesc('#' + mathinput2Name + '_input');
+      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let ca2 = components['/_map1'].replacements[5].activeChildren[1];
-      let ca2Anchor = '#' + ca2.componentName;
+      let ca2Anchor = cesc('#' + ca2.componentName);
       let cr2 = components['/_map1'].replacements[6].activeChildren[1];
-      let cr2Anchor = '#' + cr2.componentName;
+      let cr2Anchor = cesc('#' + cr2.componentName);
       let sr2 = components['/_map1'].replacements[7].activeChildren[1];
-      let sr2Anchor = '#' + sr2.componentName;
+      let sr2Anchor = cesc('#' + sr2.componentName);
 
       let answer3 = components['/_map1'].replacements[8].activeChildren[3];
       let mathinput3Name = answer3.stateValues.inputChild.componentName;
       let mathinput3 = components[mathinput3Name]
-      let mathinput3Anchor = '#' + mathinput3Name + '_input';
-      let mathinput3SubmitAnchor = '#' + mathinput3Name + '_submit';
+      let mathinput3Anchor = cesc('#' + mathinput3Name + '_input');
+      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
       let ca3 = components['/_map1'].replacements[9].activeChildren[1];
-      let ca3Anchor = '#' + ca3.componentName;
+      let ca3Anchor = cesc('#' + ca3.componentName);
       let cr3 = components['/_map1'].replacements[10].activeChildren[1];
-      let cr3Anchor = '#' + cr3.componentName;
+      let cr3Anchor = cesc('#' + cr3.componentName);
       let sr3 = components['/_map1'].replacements[11].activeChildren[1];
-      let sr3Anchor = '#' + sr3.componentName;
+      let sr3Anchor = cesc('#' + sr3.componentName);
 
 
       cy.log('Test value displayed in browser')
@@ -3188,12 +3198,12 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinputAnchor = '#' + mathinputName + '_input';
-      let mathinputPreviewAnchor = '#' + mathinputName + '_input_preview';
-      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
-      let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
-      let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
-      let mathinputPartialAnchor = '#' + mathinputName + '_partial';
+      let mathinputAnchor = cesc('#' + mathinputName + '_input');
+      let mathinputPreviewAnchor = cesc('#' + mathinputName + '_input_preview');
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
 
       cy.get(mathinputAnchor).should('have.value', '');
       cy.get(mathinputPreviewAnchor).should('not.be.visible')
@@ -3414,11 +3424,11 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let textinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let textinputAnchor = '#' + textinputName + '_input';
-      let textinputSubmitAnchor = '#' + textinputName + '_submit';
-      let textinputCorrectAnchor = '#' + textinputName + '_correct';
-      let textinputIncorrectAnchor = '#' + textinputName + '_incorrect';
-      let textinputPartialAnchor = '#' + textinputName + '_partial';
+      let textinputAnchor = cesc('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputCorrectAnchor = cesc('#' + textinputName + '_correct');
+      let textinputIncorrectAnchor = cesc('#' + textinputName + '_incorrect');
+      let textinputPartialAnchor = cesc('#' + textinputName + '_partial');
 
       cy.get(textinputAnchor).should('have.value', '');
       cy.get(textinputSubmitAnchor).should('be.visible');
@@ -6360,17 +6370,17 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinput1Name = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinput1Anchor = '#' + mathinput1Name + '_input';
+      let mathinput1Anchor = cesc('#' + mathinput1Name + '_input');
       let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
-      let mathinput2Anchor = '#' + mathinput2Name + '_input';
+      let mathinput2Anchor = cesc('#' + mathinput2Name + '_input');
       let ca1 = components['/ca1'].replacements[0];
-      let ca1Anchor = '#' + ca1.componentName;
+      let ca1Anchor = cesc('#' + ca1.componentName);
       let ca2 = components['/ca2'].replacements[0];
-      let ca2Anchor = '#' + ca2.componentName;
+      let ca2Anchor = cesc('#' + ca2.componentName);
       let sr1 = components['/sr1'].replacements[0];
-      let sr1Anchor = '#' + sr1.componentName;
+      let sr1Anchor = cesc('#' + sr1.componentName);
       let sr2 = components['/sr2'].replacements[0];
-      let sr2Anchor = '#' + sr2.componentName;
+      let sr2Anchor = cesc('#' + sr2.componentName);
 
       cy.get(mathinput1Anchor).should('have.value', '');
       cy.get(mathinput2Anchor).should('have.value', '');
@@ -6469,17 +6479,17 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let textinput1Name = components['/_answer1'].stateValues.inputChild.componentName
-      let textinput1Anchor = '#' + textinput1Name + '_input';
+      let textinput1Anchor = cesc('#' + textinput1Name + '_input');
       let textinput2Name = components['/_answer2'].stateValues.inputChild.componentName
-      let textinput2Anchor = '#' + textinput2Name + '_input';
+      let textinput2Anchor = cesc('#' + textinput2Name + '_input');
       let ca1 = components['/ca1'].replacements[0];
-      let ca1Anchor = '#' + ca1.componentName;
+      let ca1Anchor = cesc('#' + ca1.componentName);
       let ca2 = components['/ca2'].replacements[0];
-      let ca2Anchor = '#' + ca2.componentName;
+      let ca2Anchor = cesc('#' + ca2.componentName);
       let sr1 = components['/sr1'].replacements[0];
-      let sr1Anchor = '#' + sr1.componentName;
+      let sr1Anchor = cesc('#' + sr1.componentName);
       let sr2 = components['/sr2'].replacements[0];
-      let sr2Anchor = '#' + sr2.componentName;
+      let sr2Anchor = cesc('#' + sr2.componentName);
 
       cy.get(textinput1Anchor).should('have.value', '');
       cy.get(textinput2Anchor).should('have.value', '');
@@ -6562,20 +6572,20 @@ describe('Answer Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinput1Name = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinput1Anchor = '#' + mathinput1Name + '_input';
-      let mathinput1SubmitAnchor = '#' + mathinput1Name + '_submit';
-      let mathinput1CorrectAnchor = '#' + mathinput1Name + '_correct';
-      let mathinput1IncorrectAnchor = '#' + mathinput1Name + '_incorrect';
+      let mathinput1Anchor = cesc('#' + mathinput1Name + '_input');
+      let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
+      let mathinput1CorrectAnchor = cesc('#' + mathinput1Name + '_correct');
+      let mathinput1IncorrectAnchor = cesc('#' + mathinput1Name + '_incorrect');
       let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
-      let mathinput2Anchor = '#' + mathinput2Name + '_input';
-      let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
-      let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
-      let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
+      let mathinput2Anchor = cesc('#' + mathinput2Name + '_input');
+      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
+      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
       let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
-      let mathinput3Anchor = '#' + mathinput3Name + '_input';
-      let mathinput3SubmitAnchor = '#' + mathinput3Name + '_submit';
-      let mathinput3CorrectAnchor = '#' + mathinput3Name + '_correct';
-      let mathinput3IncorrectAnchor = '#' + mathinput3Name + '_incorrect';
+      let mathinput3Anchor = cesc('#' + mathinput3Name + '_input');
+      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
+      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
       cy.get(mathinput1Anchor).should('have.value', '');
       cy.get(mathinput2Anchor).should('have.value', '');
@@ -6767,9 +6777,9 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let sr1Anchor = '#' + components['/sr1'].replacements[0].componentName;
-      let sr2Anchor = '#' + components['/sr2'].replacements[0].componentName;
-      let caAnchor = '#' + components['/ca'].replacements[0].componentName;
+      let sr1Anchor = cesc('#' + components['/sr1'].replacements[0].componentName);
+      let sr2Anchor = cesc('#' + components['/sr2'].replacements[0].componentName);
+      let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName);
 
       cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
@@ -6851,8 +6861,8 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let srAnchor = '#' + components['/sr'].replacements[0].componentName;
-      let caAnchor = '#' + components['/ca'].replacements[0].componentName;
+      let srAnchor = cesc('#' + components['/sr'].replacements[0].componentName);
+      let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName);
       let point = components["/_point1"];
 
       cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {

@@ -439,14 +439,17 @@ export default class Extract extends CompositeComponent {
 
     workspace.propVariablesCopiedBySource = [];
 
+    workspace.uniqueIdentifiersUsedBySource = {};
+
     for (let sourceNum = 0; sourceNum < component.stateValues.sourceComponents.length; sourceNum++) {
       if (component.stateValues.sourceComponents[sourceNum] !== undefined) {
+        let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedBySource[sourceNum] = [];
         let results = this.createReplacementForSource({
           component,
           sourceNum,
           components,
           numReplacementsSoFar,
-          workspace,
+          uniqueIdentifiersUsed,
         });
         workspace.propVariablesCopiedBySource.push(results.propVariablesCopied);
 
@@ -467,17 +470,12 @@ export default class Extract extends CompositeComponent {
   }
 
 
-  static createReplacementForSource({ component, components, sourceNum, numReplacementsSoFar, workspace }) {
+  static createReplacementForSource({ component, components, sourceNum, numReplacementsSoFar, uniqueIdentifiersUsed }) {
 
     // console.log(`create replacement for source ${sourceNum}, ${numReplacementsSoFar}`)
 
     let serializedReplacements = [];
     let propVariablesCopied = [];
-
-    if (!workspace.uniqueIdentifiersUsed) {
-      workspace.uniqueIdentifiersUsed = []
-    }
-    let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsed;
 
     let replacementInd = numReplacementsSoFar - 1;
     let propVariableObj = component.stateValues.propVariableObjs[sourceNum];
@@ -494,8 +492,6 @@ export default class Extract extends CompositeComponent {
     let stateVarObj = sourceComponent.state[propVariableObj.varName];
 
     if (propVariableObj.isArray || propVariableObj.isArrayEntry) {
-
-      let stateVarObj = sourceComponent.state[propVariableObj.varName];
 
       let arrayStateVarObj, unflattenedArrayKeys;
       if (stateVarObj.isArray) {
@@ -548,7 +544,9 @@ export default class Extract extends CompositeComponent {
                   }
                 }
 
-                let uniqueIdentifierBase = componentToCopy.componentName + "|copy";
+                // use sourceNum in unique identifier
+                // as we have separate uniqueIdentifiersUsed for each source
+                let uniqueIdentifierBase = componentToCopy.componentName + "|" + sourceNum + "|copy";
                 let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
                 serializedReplacements.push({
@@ -565,8 +563,9 @@ export default class Extract extends CompositeComponent {
 
               } else {
                 // just give an empty component of componentType
-
-                let uniqueIdentifierBase = componentType + "|empty";
+                // use sourceNum in unique identifier
+                // as we have separate uniqueIdentifiersUsed for each source
+                let uniqueIdentifierBase = componentType + "|" + sourceNum + "|empty";
                 let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
                 serializedReplacements.push({
@@ -579,6 +578,9 @@ export default class Extract extends CompositeComponent {
 
             } else {
 
+              // don't need to use sourceNum in unique identifier
+              // even though we have separate uniqueIdentifiersUsed for each source
+              // as sourceName will be unique
               let uniqueIdentifierBase = sourceName + "|shadow|" + propVariable;
               let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
@@ -596,7 +598,9 @@ export default class Extract extends CompositeComponent {
             }
           } else {
             // didn't match an array key, so just add an empty component of componentType
-            let uniqueIdentifierBase = componentType + "|empty";
+            // use sourceNum in unique identifier
+            // as we have separate uniqueIdentifiersUsed for each source
+            let uniqueIdentifierBase = componentType + "|" + sourceNum + "|empty";
             let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
             serializedReplacements.push({
@@ -643,7 +647,9 @@ export default class Extract extends CompositeComponent {
                     }
                   }
 
-                  let uniqueIdentifierBase = componentToCopy.componentName + "|copy";
+                  // use sourceNum in unique identifier
+                  // as we have separate uniqueIdentifiersUsed for each source
+                  let uniqueIdentifierBase = componentToCopy.componentName + "|" + sourceNum + "|copy";
                   let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
                   pieces.push({
@@ -659,7 +665,9 @@ export default class Extract extends CompositeComponent {
 
                 } else {
                   // just give an empty component of componentType
-                  let uniqueIdentifierBase = arrayStateVarObj.componentType + "|empty";
+                  // use sourceNum in unique identifier
+                  // as we have separate uniqueIdentifiersUsed for each source
+                  let uniqueIdentifierBase = componentType + "|" + sourceNum + "|empty";
                   let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
                   pieces.push({
@@ -672,6 +680,9 @@ export default class Extract extends CompositeComponent {
 
               } else {
 
+                // don't need to use sourceNum in unique identifier
+                // even though we have separate uniqueIdentifiersUsed for each source
+                // as sourceName will be unique
                 let uniqueIdentifierBase = sourceName + "|shadow|" + propVariable;
                 let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
@@ -694,7 +705,10 @@ export default class Extract extends CompositeComponent {
           let wrapCs = wrappingComponents[nDimensionsLeft - 1];
           if (wrapCs && wrapCs.length > 0) {
             for (let ind = wrapCs.length - 1; ind >= 0; ind--) {
-              let uniqueIdentifierBase = wrapCs[ind] + "|wrapper";
+
+              // use sourceNum in unique identifier
+              // as we have separate uniqueIdentifiersUsed for each source
+              let uniqueIdentifierBase = wrapCs[ind] + "|" + sourceNum + "|wrapper";
               let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
               pieces = [{
@@ -742,8 +756,9 @@ export default class Extract extends CompositeComponent {
             let componentType = replacementClass.componentType.toLowerCase();
 
             // just add an empty component of componentType
-
-            let uniqueIdentifierBase = componentType + "|empty";
+            // use sourceNum in unique identifier
+            // as we have separate uniqueIdentifiersUsed for each source
+            let uniqueIdentifierBase = componentType + "|" + sourceNum + "|empty";
             let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
             serializedReplacements.push({
@@ -780,16 +795,16 @@ export default class Extract extends CompositeComponent {
               componentToCopy = componentToCopy.replacementOf;
             }
 
-            let stateForReplacementCopy;
             if (stateVarObj.targetPropertiesToIgnoreOnCopy) {
               stateForReplacementCopy = {
                 targetPropertiesToIgnore: stateVarObj.targetPropertiesToIgnoreOnCopy
               }
             }
 
-            let uniqueIdentifierBase = componentToCopy.componentName + "|copy";
-            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase,uniqueIdentifiersUsed);
-
+            // use sourceNum in unique identifier
+            // as we have separate uniqueIdentifiersUsed for each source
+            let uniqueIdentifierBase = componentToCopy.componentName + "|" + sourceNum + "|copy";
+            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
             serializedReplacements.push({
               componentType: "copy",
@@ -801,8 +816,10 @@ export default class Extract extends CompositeComponent {
             });
           } else {
             // just give an empty component of componentType
-            let uniqueIdentifierBase = componentType + "|empty";
-            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase,uniqueIdentifiersUsed);
+            // use sourceNum in unique identifier
+            // as we have separate uniqueIdentifiersUsed for each source
+            let uniqueIdentifierBase = componentType + "|" + sourceNum + "|empty";
+            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
             serializedReplacements.push({
               componentType,
@@ -813,9 +830,11 @@ export default class Extract extends CompositeComponent {
         } else {
           propVariablesCopied.push(propVariableObj.varName);
 
-
+          // don't need to use sourceNum in unique identifier
+          // even though we have separate uniqueIdentifiersUsed for each source
+          // as sourceName will be unique
           let uniqueIdentifierBase = sourceName + "|shadow|" + propVariableObj.varName;
-          let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase,uniqueIdentifiersUsed);
+          let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
           serializedReplacements.push({
             componentType,
@@ -878,6 +897,8 @@ export default class Extract extends CompositeComponent {
           replacementChanges.push(replacementInstruction);
 
           numReplacementsBySource[sourceNum] = 0;
+
+          delete workspace.uniqueIdentifiersUsedBySource[sourceNum];
         }
 
         propVariablesCopiedBySource.push([]);
@@ -894,6 +915,7 @@ export default class Extract extends CompositeComponent {
         if (prevSourceName !== undefined) {
           prevNumReplacements = workspace.numReplacementsBySource[sourceNum];
         }
+        let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedBySource[sourceNum] = [];
         let results = this.recreateReplacements({
           component,
           sourceNum,
@@ -901,7 +923,7 @@ export default class Extract extends CompositeComponent {
           prevNumReplacements,
           replacementChanges,
           components,
-          workspace,
+          uniqueIdentifiersUsed
         });
 
         numReplacementsSoFar += results.numReplacements;
@@ -917,6 +939,9 @@ export default class Extract extends CompositeComponent {
       let testReplacementChanges = [];
       let results;
 
+      // use new uniqueIdentifiersUsed for recreateReplacements
+      // so will get the same names for pieces that match
+      let uniqueIdentifiersUsed = [];
 
       // don't change replacements unless
       // the number of components or their component types changed
@@ -927,7 +952,7 @@ export default class Extract extends CompositeComponent {
         prevNumReplacements: workspace.numReplacementsBySource[sourceNum],
         replacementChanges: testReplacementChanges,
         components,
-        workspace,
+        uniqueIdentifiersUsed,
       });
 
       let changeInstruction = testReplacementChanges[testReplacementChanges.length - 1];
@@ -955,6 +980,9 @@ export default class Extract extends CompositeComponent {
 
         numReplacementsSoFar += results.numReplacements;
         numReplacementsBySource[sourceNum] = results.numReplacements;
+
+        // add uniqueIdentifiersUsed to workspace
+        workspace.uniqueIdentifiersUsedBySource[sourceNum] = uniqueIdentifiersUsed;
       } else {
         numReplacementsSoFar += workspace.numReplacementsBySource[sourceNum];
         numReplacementsBySource[sourceNum] = workspace.numReplacementsBySource[sourceNum];
@@ -976,7 +1004,7 @@ export default class Extract extends CompositeComponent {
   }
 
   static recreateReplacements({ component, sourceNum, numReplacementsSoFar, prevNumReplacements,
-    replacementChanges, workspace, components
+    replacementChanges, uniqueIdentifiersUsed, components
   }) {
     // if (prevNumReplacements > 0) {
     //   // give instructions to move dependency to new source
@@ -1008,7 +1036,7 @@ export default class Extract extends CompositeComponent {
     //   }
     // }
     let results = this.createReplacementForSource({
-      component, sourceNum, numReplacementsSoFar, components, workspace
+      component, sourceNum, numReplacementsSoFar, components, uniqueIdentifiersUsed
     });
 
     let propVariablesCopied = results.propVariablesCopied;

@@ -167,7 +167,8 @@ export default class SelectFromSequence extends Sequence {
       }
       let instruction = {
         operation: "assignName",
-        name
+        name,
+        uniqueIdentifier: ind.toString()
       }
 
       // if selectfromsequence is specified to be hidden

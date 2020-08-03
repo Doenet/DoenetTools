@@ -1275,18 +1275,13 @@ export default class Copy extends CompositeComponent {
     if (component.stateValues.useProp) {
       let componentOrReplacementNames = component.stateValues.componentIdentitiesForProp.map(x => x.componentName);
 
-
-      if (!workspace.uniqueIdentifierBase) {
-        workspace.uniqueIdentifiersUsed = [];
-      }
-
-      let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsed;
+      let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsed = [];
 
       let results = replacementFromProp({
         component, components, componentOrReplacementNames, uniqueIdentifiersUsed
       });
 
-      workspace.propVariablesCopied = results.propVariablesCopied;
+      workspace.propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
 
       return {
         replacements: results.serializedReplacements
@@ -1472,116 +1467,63 @@ export default class Copy extends CompositeComponent {
     // unless have an array
     if (component.stateValues.useProp) {
 
-      // don't change replacements unless
-      // the number of components or their component types changed
-      let testReplacementChanges = [];
-
-      if (!workspace.uniqueIdentifiersUsed) {
-        workspace.uniqueIdentifiersUsed = [];
-      }
-
-      // create shallow copy of uniqueIdentifiersUsed so that can throw away if don't redo replacements
+      // use new uniqueIdentifiersUsed for recreateReplacements
+      // so will get the same names for pieces that match
       let uniqueIdentifiersUsed = [];
 
-      let { propVariablesCopied } = this.recreateReplacements({
-        component,
-        replacementChanges: testReplacementChanges,
-        components,
-        uniqueIdentifiersUsed
+      let componentOrReplacementNames = component.stateValues.componentIdentitiesForProp.map(x => x.componentName);
+
+      let results = replacementFromProp({
+        component, components, componentOrReplacementNames, uniqueIdentifiersUsed
       });
 
-      let newSerializedReplacements = [];
-      let redoReplacements = false;
+      let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
 
-      if (testReplacementChanges.length > 0) {
-        let changeInstruction = testReplacementChanges[0];
-        newSerializedReplacements = changeInstruction.serializedReplacements;
-        if (newSerializedReplacements === undefined) {
-          // first instruction isn't an add
-          // (but a moveDependency, addDependency, or delete)
-          redoReplacements = true;
-        } else {
+      let newSerializedReplacements = results.serializedReplacements;
 
-          if (newSerializedReplacements.length !== component.replacements.length ||
-            propVariablesCopied.length !== workspace.propVariablesCopied.length ||
-            workspace.propVariablesCopied.some((v, i) => v !== propVariablesCopied[i])
-          ) {
-            redoReplacements = true;
-          } else {
-            for (let ind = 0; ind < newSerializedReplacements.length; ind++) {
-              if (newSerializedReplacements[ind].componentType !==
-                component.replacements[ind].componentType) {
-                redoReplacements = true;
-                break;
-              } else if (newSerializedReplacements[ind].componentType === "copy") {
-                let currentTargetName = component.replacements[ind].stateValues.targetName;
-                for (let child of newSerializedReplacements[ind].children) {
-                  if (child.componentType === "tname" && child.state.targetName !== currentTargetName) {
-                    redoReplacements = true;
-                    break;
-                  }
-                }
-                if (redoReplacements) {
-                  break;
-                }
-              }
-            }
-          }
+      let nNewReplacements = newSerializedReplacements.length;
+      let nOldReplacements = component.replacements.length;
+
+
+      let replacementChanges = [];
+
+      for (let ind = 0; ind < Math.min(nNewReplacements, nOldReplacements); ind++) {
+        if (propVariablesCopiedByReplacement[ind].length !== workspace.propVariablesCopiedByReplacement[ind].length ||
+          workspace.propVariablesCopiedByReplacement[ind].some((v, i) => v !== propVariablesCopiedByReplacement[ind][i])
+        ) {
+
+          let replacementInstruction = {
+            changeType: "add",
+            changeTopLevelReplacements: true,
+            firstReplacementInd: ind,
+            numberReplacementsToReplace: 1,
+            serializedReplacements: [newSerializedReplacements[ind]],
+          };
+          replacementChanges.push(replacementInstruction);
         }
       }
 
-      // check if have a version that changed
-      if (!redoReplacements) {
-        if (newSerializedReplacements.length > 0) {
-          let firstNew = newSerializedReplacements[0];
-          let firstOld = component.replacements[0];
-          let newVersion;
-          if (firstNew.state) {
-            newVersion = firstNew.state._version;
-          }
-          let oldVersion = firstOld.state._version;
-          if (newVersion !== oldVersion) {
-            redoReplacements = true;
-          }
+      if (nNewReplacements > nOldReplacements) {
+        let replacementInstruction = {
+          changeType: "add",
+          changeTopLevelReplacements: true,
+          firstReplacementInd: nOldReplacements,
+          numberReplacementsToReplace: 0,
+          serializedReplacements: newSerializedReplacements.slice(nOldReplacements),
+        };
+        replacementChanges.push(replacementInstruction);
+      } else if (nNewReplacements < nOldReplacements) {
+        let replacementInstruction = {
+          changeType: "delete",
+          changeTopLevelReplacements: true,
+          firstReplacementInd: nNewReplacements,
+          numberReplacementsToDelete: nOldReplacements - nNewReplacements,
         }
-      }
-      // check next level, i.e., children of replacements
-      // TODO: how many levels should we check?
-      // should that be a parameter of the replacement?
-      // TODO: should check component type of children?
-      if (!redoReplacements) {
-        for (let ind = 0; ind < newSerializedReplacements.length; ind++) {
-          if (newSerializedReplacements[ind].children === undefined ||
-            newSerializedReplacements[ind].children.length === 0) {
-            if (component.replacements[ind].definingChildren !== undefined &&
-              component.replacements[ind].definingChildren.length !== 0) {
-              redoReplacements = true;
-              break;
-            }
-          } else if (component.replacements[ind].definingChildren === undefined ||
-            component.replacements[ind].definingChildren.length === 0) {
-            redoReplacements = true;
-            break;
-          } else {
-            if (newSerializedReplacements[ind].children.length !==
-              component.replacements[ind].definingChildren.length) {
-              redoReplacements = true;
-              break;
-            }
-          }
-        }
+
+        replacementChanges.push(replacementInstruction);
       }
 
-      if (redoReplacements) {
-        // actually using the replacement changes
-
-        // add uniqueIdentifiersUsed to workspace
-        workspace.uniqueIdentifiersUsed = uniqueIdentifiersUsed;
-
-        replacementChanges.push(...testReplacementChanges);
-      }
-
-      workspace.propVariablesCopied = propVariablesCopied;
+      workspace.propVariablesCopiedByReplacement = propVariablesCopiedByReplacement;
 
       // console.log(replacementChanges);
       return replacementChanges;
@@ -1647,7 +1589,7 @@ export default class Copy extends CompositeComponent {
     //   replacementChanges.push(replacementInstruction);
     // }
 
-    let newSerializedChildren, propVariablesCopied;
+    let newSerializedChildren, propVariablesCopiedByReplacement;
 
     if (component.stateValues.useProp) {
       let componentOrReplacementNames = component.stateValues.componentIdentitiesForProp.map(x => x.componentName);
@@ -1656,7 +1598,7 @@ export default class Copy extends CompositeComponent {
         component, components, componentOrReplacementNames, uniqueIdentifiersUsed
       });
 
-      propVariablesCopied = results.propVariablesCopied;
+      propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
 
       newSerializedChildren = results.serializedReplacements
 
@@ -1698,7 +1640,7 @@ export default class Copy extends CompositeComponent {
 
       replacementChanges.push(replacementInstruction);
     }
-    return { propVariablesCopied };
+    return { propVariablesCopiedByReplacement };
 
   }
 
@@ -1708,7 +1650,7 @@ export function replacementFromProp({ component, components, componentOrReplacem
 
 
   let serializedReplacements = [];
-  let propVariablesCopied = [];
+  let propVariablesCopiedByReplacement = [];
 
   let replacementInd = -1;
   for (let [targetInd, componentType] of component.stateValues.componentTypeByTarget.entries()) {
@@ -1724,7 +1666,6 @@ export function replacementFromProp({ component, components, componentOrReplacem
     let stateVarObj = targetComponent.state[propVariableObj.varName];
 
     if (propVariableObj.isArray || propVariableObj.isArrayEntry) {
-
 
       let arrayStateVarObj, unflattenedArrayKeys;
       if (stateVarObj.isArray) {
@@ -1745,6 +1686,7 @@ export function replacementFromProp({ component, components, componentOrReplacem
 
         for (let ind = 0; ind < numReplacementsForTarget; ind++) {
           replacementInd++;
+          let propVariablesCopied = propVariablesCopiedByReplacement[replacementInd] = [];
 
           let replacementClass = component.stateValues.replacementClasses[replacementInd];
 
@@ -1837,18 +1779,22 @@ export function replacementFromProp({ component, components, componentOrReplacem
         let createReplacementPiece = function (subArrayKeys, nDimensionsLeft) {
 
           let pieces = [];
+          let propVariablesCopiedByPiece = [];
+
           if (nDimensionsLeft > 1) {
             // since nDimensionsLeft > 1, each component of subArray should be an array
             for (let subSubArrayKeys of subArrayKeys) {
               // recurse down to previous dimension
-              pieces.push(...createReplacementPiece(subSubArrayKeys, nDimensionsLeft - 1))
+              let result = createReplacementPiece(subSubArrayKeys, nDimensionsLeft - 1);
+              pieces.push(...result.pieces);
+              propVariablesCopiedByPiece.push(...result.propVariablesCopiedByPiece);
             }
 
           } else {
             // down to last piece
             for (let arrayKey of subArrayKeys) {
               let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
-              propVariablesCopied.push(propVariable);
+              let propVariablesCopiedForThisPiece = [propVariable];
 
               if (propVariableObj.containsComponentNamesToCopy) {
 
@@ -1882,7 +1828,7 @@ export function replacementFromProp({ component, components, componentOrReplacem
                     state: stateForReplacementCopy,
                     uniqueIdentifier
                   });
-                  propVariablesCopied.push(componentToCopy.componentName)
+                  propVariablesCopiedForThisPiece.push(componentToCopy.componentName)
 
                 } else {
                   // just give an empty component of componentType
@@ -1893,7 +1839,7 @@ export function replacementFromProp({ component, components, componentOrReplacem
                     componentType: arrayStateVarObj.componentType,
                     uniqueIdentifier,
                   })
-                  propVariablesCopied.push(null)
+                  propVariablesCopiedForThisPiece.push(null)
 
                 }
 
@@ -1914,6 +1860,8 @@ export function replacementFromProp({ component, components, componentOrReplacem
                   uniqueIdentifier,
                 })
               }
+
+              propVariablesCopiedByPiece.push(propVariablesCopiedForThisPiece);
             }
           }
 
@@ -1930,13 +1878,18 @@ export function replacementFromProp({ component, components, componentOrReplacem
                 uniqueIdentifier,
               }]
             }
+            propVariablesCopiedByPiece = [flattenDeep(propVariablesCopiedByPiece)];
           }
 
-          return pieces;
+          return { pieces, propVariablesCopiedByPiece };
 
         }
 
-        let newReplacements = createReplacementPiece(unflattenedArrayKeys, stateVarObj.nDimensions);
+        let result = createReplacementPiece(unflattenedArrayKeys, stateVarObj.nDimensions);
+
+        let newReplacements = result.pieces;
+        propVariablesCopiedByReplacement = result.propVariablesCopiedByPiece;
+
 
         // add downstream dependencies to top level replacements
         // (which are wrappers, so didn't get downstream dependencies originally)
@@ -1964,6 +1917,7 @@ export function replacementFromProp({ component, components, componentOrReplacem
 
           for (let ind = newReplacements.length; ind < numReplacementsForTarget; ind++) {
             replacementInd++;
+            propVariablesCopiedByReplacement[replacementInd] = [];
 
             let replacementClass = component.stateValues.replacementClasses[replacementInd];
             let componentType = replacementClass.componentType.toLowerCase();
@@ -1991,10 +1945,13 @@ export function replacementFromProp({ component, components, componentOrReplacem
 
       for (let ind = 0; ind < numReplacementsForTarget; ind++) {
         replacementInd++;
+        let propVariablesCopied = propVariablesCopiedByReplacement[replacementInd] = [];
 
         let replacementClass = component.stateValues.replacementClasses[replacementInd];
 
         let componentType = replacementClass.componentType.toLowerCase();
+
+        propVariablesCopied.push(propVariableObj.varName);
 
         if (propVariableObj.containsComponentNamesToCopy) {
 
@@ -2027,6 +1984,9 @@ export function replacementFromProp({ component, components, componentOrReplacem
               state: stateForReplacementCopy,
               uniqueIdentifier,
             });
+
+            propVariablesCopied.push(componentToCopy.componentName)
+
           } else {
             // just give an empty component of componentType
             let uniqueIdentifierBase = componentType + "|empty";
@@ -2036,10 +1996,12 @@ export function replacementFromProp({ component, components, componentOrReplacem
               componentType,
               uniqueIdentifier,
             })
+
+            propVariablesCopied.push(null);
+
           }
 
         } else {
-          propVariablesCopied.push(propVariableObj.varName);
 
           let uniqueIdentifierBase = targetName + "|shadow|" + propVariableObj.varName;
           let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
@@ -2063,7 +2025,7 @@ export function replacementFromProp({ component, components, componentOrReplacem
   // console.log("serializedReplacements")
   // console.log(serializedReplacements)
 
-  return { serializedReplacements, propVariablesCopied };
+  return { serializedReplacements, propVariablesCopiedByReplacement };
 
 }
 

@@ -974,6 +974,9 @@ export default class Core {
       componentName,
     });
 
+    // in case component with same name was deleted before, delete from deleteComponents and deletedStateVariable
+    delete updatesNeeded.deletedComponents[componentName];
+    delete updatesNeeded.deletedStateVariables[componentName];
 
     // create component itself
     let newComponent = new componentClass({
@@ -1318,10 +1321,14 @@ export default class Core {
       // 2. the shadowed composite
       // 3. the composite mediating the shadowing 
       //    (of which shadowing composite is the replacement)
+
+      let uniqueIdentifiersUsed = component.replacementsWorkspace.uniqueIdentifiersUsed = [];
+
       let nameOfCompositeMediatingTheShadow = component.shadows.compositeName;
       serializedReplacements = postProcessCopy({
         serializedComponents: serializedReplacements,
-        componentName: nameOfCompositeMediatingTheShadow
+        componentName: nameOfCompositeMediatingTheShadow,
+        uniqueIdentifiersUsed
       });
 
 
@@ -1529,8 +1536,8 @@ export default class Core {
           if (namespace === undefined) {
             let longNameId = component.ancestors[0].componentName + "|"
               + component.componentName + "|assignNamespace|";
-            if (replacementsToAdd.length > 0 && replacementsToAdd[0].uniqueIdentifier) {
-              longNameId += replacementsToAdd[0].uniqueIdentifier;
+            if (instruction.uniqueIdentifier) {
+              longNameId += instruction.uniqueIdentifier;
             } else {
               longNameId += JSON.stringify(replacementInstruction.instructions)
             }
@@ -1585,15 +1592,14 @@ export default class Core {
           // make a deep copy to get rid of the readonly proxy
           // TODO: test if deepClone is faster
           replacementsToAdd = JSON.parse(JSON.stringify(replacementsToAdd), me.reviver);
-          let theReplacement = replacementsToAdd[0];
           let name = instruction.name;
 
 
           if (name === undefined) {
             let longNameId = component.ancestors[0].componentName + "|"
               + component.componentName + "|assignName|";
-            if (theReplacement.uniqueIdentifier) {
-              longNameId += theReplacement.uniqueIdentifier;
+            if (instruction.uniqueIdentifier) {
+              longNameId += instruction.uniqueIdentifier;
             } else {
               longNameId += JSON.stringify(replacementInstruction.instructions)
             }
@@ -1604,6 +1610,7 @@ export default class Core {
               longNameId);
           }
 
+          let theReplacement = replacementsToAdd[0];
 
           if (Array.isArray(name)) {
             // if name is an array, then it refers to names of the grandchildren
@@ -1611,8 +1618,8 @@ export default class Core {
 
             let longNameId = component.ancestors[0].componentName + "|"
               + component.componentName + "|nameForChild|";
-            if (theReplacement.uniqueIdentifier) {
-              longNameId += theReplacement.uniqueIdentifier;
+            if (instruction.uniqueIdentifier) {
+              longNameId += instruction.uniqueIdentifier;
             } else {
               longNameId += JSON.stringify(replacementInstruction.instructions)
             }
@@ -2121,7 +2128,8 @@ export default class Core {
       serializedState: sugarResults.newChildren,
       applySugar: true,
       ancestors: ancestorsForChildren,
-      shadow, updatesNeeded, compositesBeingExpanded
+      shadow, updatesNeeded, compositesBeingExpanded,
+      createNameContext: component.componentName + "|sugar"
     });
 
     this.parameterStack.pop();
@@ -3012,9 +3020,12 @@ export default class Core {
               }]
             };
 
-          } else if (dependencyValues.targetVariable !== undefined &&
-            !dependencyValues.targetPropertiesToIgnore.map(x => x.toLowerCase()).includes(property.toLowerCase()) &&
-            !usedDefault.targetVariable) {
+          } else if (dependencyValues.targetVariable !== undefined
+            && !(
+              dependencyValues.targetPropertiesToIgnore &&
+              dependencyValues.targetPropertiesToIgnore.map(x => x.toLowerCase()).includes(property.toLowerCase())
+            )
+            && !usedDefault.targetVariable) {
             // else if target has property, set that value
             return {
               success: true,
@@ -10867,6 +10878,63 @@ export default class Core {
           [component.componentName]: calculateAllComponentsShadowing(component)
         }
 
+        let numberToDelete = change.numberReplacementsToReplace;
+        let firstIndex = change.firstReplacementInd;
+
+        if (numberToDelete > 0 && change.changeTopLevelReplacements) {
+
+          // delete replacements before creating new replacements so that can reuse componentNames
+          let compositesToDeleteFrom = [component.componentName];
+
+          // gather the name of all shadowing composites, as we'll delete from all their replacements
+          if (component.shadowedBy) {
+            let getShadowingComponents = function (comp) {
+              let shadowingComponents = [];
+              if (comp.shadowedBy) {
+                for (let shadowingComp of comp.shadowedBy) {
+                  shadowingComponents.push(shadowingComp.componentName);
+                  shadowingComponents.push(...getShadowingComponents(shadowingComp));
+                }
+              }
+              return shadowingComponents;
+            }
+
+            compositesToDeleteFrom.push(...getShadowingComponents(component));
+
+          }
+
+          for (let compositeName of compositesToDeleteFrom) {
+
+            let composite = this._components[compositeName];
+
+            // remove the replacements from composite's replacements
+            let replacementsToDelete = composite.replacements.splice(firstIndex, numberToDelete);
+
+            let deleteResults = this.deleteComponents({
+              components: replacementsToDelete,
+              componentChanges,
+              updatesNeeded,
+              compositesBeingExpanded,
+              // sourceOfUpdate: sourceOfUpdate,
+            });
+
+
+            if (deleteResults.success === false) {
+              throw Error("Couldn't delete components on composite update");
+            }
+
+            // note: already assigned to addComponents, above
+            Object.assign(deletedComponents, deleteResults.deletedComponents);
+
+            for (let parent2 of deleteResults.parentsOfDeleted) {
+              parentsOfDeleted.add(parent2.componentName);
+            }
+
+
+          }
+
+        }
+
         if (change.serializedReplacements) {
 
           let serializedReplacements = change.serializedReplacements;
@@ -10877,6 +10945,7 @@ export default class Core {
             ancestors: component.ancestors,
             updatesNeeded,
             compositesBeingExpanded,
+            createNameContext: component.componentName + "|replacements"
           });
 
           newComponents = createResult.components;
@@ -10957,40 +11026,15 @@ export default class Core {
           }
 
           if (change.changeTopLevelReplacements === true) {
-            let firstIndex = change.firstReplacementInd;
-            let numberToDelete = change.numberReplacementsToReplace;
-            let replacementsToDelete = composite.replacements.slice(firstIndex, firstIndex + numberToDelete);
 
             let parent = this._components[composite.parentName];
 
             // splice in new replacements
-            composite.replacements.splice(firstIndex, numberToDelete, ...newReplacements);
+            composite.replacements.splice(firstIndex, 0, ...newReplacements);
 
             // record for top level replacement that they are a replacement of composite
             for (let comp of newReplacements) {
               comp.replacementOf = composite;
-            }
-
-            if (replacementsToDelete.length > 0) {
-              let deleteResults = this.deleteComponents({
-                components: replacementsToDelete,
-                componentChanges: componentChanges,
-                updatesNeeded,
-                compositesBeingExpanded,
-                // sourceOfUpdate: sourceOfUpdate,
-              });
-
-              if (deleteResults.success === false) {
-                throw Error("Couldn't delete components on composite update");
-              }
-
-              // note: already assigned to addComponents, above
-              Object.assign(deletedComponents, deleteResults.deletedComponents);
-
-              for (let parent2 of deleteResults.parentsOfDeleted) {
-                parentsOfDeleted.add(parent2.componentName);
-              }
-
             }
 
             let newChange = {
@@ -11360,6 +11404,7 @@ export default class Core {
         ancestors: shadowingComponent.ancestors,
         updatesNeeded,
         compositesBeingExpanded,
+        createNameContext: shadowingComponent.componentName + "|replacements"
       });
 
       newComponents = createResult.components;

@@ -1,6 +1,8 @@
 import { getUniqueIdentifierFromBase } from "./naming";
 
-export function postProcessCopy({ serializedComponents, componentName, addShadowDependencies = true, uniqueIdentifiersUsed }) {
+export function postProcessCopy({ serializedComponents, componentName,
+  addShadowDependencies = true, uniqueIdentifiersUsed, identifierPrefix = ""
+}) {
   // add downstream dependencies to original component
   // put internal and external references in right form
 
@@ -10,7 +12,7 @@ export function postProcessCopy({ serializedComponents, componentName, addShadow
   postProcessCopySub({
     serializedComponents,
     preserializedNamesFound, targetNamesFound,
-    componentName, addShadowDependencies, uniqueIdentifiersUsed
+    componentName, addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
   });
 
   for (let targetName in targetNamesFound) {
@@ -35,7 +37,9 @@ export function postProcessCopy({ serializedComponents, componentName, addShadow
 
 
 function postProcessCopySub({ serializedComponents, preserializedNamesFound,
-  targetNamesFound, componentName, addShadowDependencies = true, uniqueIdentifiersUsed }) {
+  targetNamesFound, componentName, addShadowDependencies = true,
+  uniqueIdentifiersUsed = [], identifierPrefix = ""
+}) {
   // recurse through serializedComponents
   //   - to add downstream dependencies to original component
   //   - collect names and tnames
@@ -48,7 +52,7 @@ function postProcessCopySub({ serializedComponents, preserializedNamesFound,
     if (component.preserializedName) {
 
       preserializedNamesFound[component.preserializedName] = component;
-      uniqueIdentifierBase = component.preserializedName + "|shadow";
+      uniqueIdentifierBase = identifierPrefix + component.preserializedName + "|shadow";
 
       if (addShadowDependencies) {
         let downDep = {
@@ -76,7 +80,7 @@ function postProcessCopySub({ serializedComponents, preserializedNamesFound,
       }
 
     } else {
-      uniqueIdentifierBase = component.componentType + "|shadowUnnamed";
+      uniqueIdentifierBase = identifierPrefix + component.componentType + "|shadowUnnamed";
     }
 
     component.uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
@@ -106,7 +110,7 @@ function postProcessCopySub({ serializedComponents, preserializedNamesFound,
       preserializedNamesFound,
       targetNamesFound,
       componentName,
-      addShadowDependencies, uniqueIdentifiersUsed,
+      addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
     });
 
     if (component.replacements) {
@@ -115,7 +119,7 @@ function postProcessCopySub({ serializedComponents, preserializedNamesFound,
         preserializedNamesFound,
         targetNamesFound,
         componentName,
-        addShadowDependencies, uniqueIdentifiersUsed,
+        addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
       });
     }
 

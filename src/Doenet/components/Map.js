@@ -11,7 +11,7 @@ export default class Map extends CompositeComponent {
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let exactlyOneTemplate = childLogic.newLeaf({
@@ -232,11 +232,13 @@ export default class Map extends CompositeComponent {
     if (assignNamespaces !== undefined) {
       namespace = assignNamespaces[iter]
     }
-    // Note: undefined namespace signals to core to create a unique unreachable namespace
 
+    // Note: undefined namespace signals to core to create an unreachable namespace
+    // that will be unique if uniqueIdentifier is unique
     let instruction3 = {
       operation: "assignNamespace",
-      namespace
+      namespace,
+      uniqueIdentifier: iter.toString(),
     }
     return {
       instructions: [instruction1, instruction2, instruction3],
@@ -272,11 +274,13 @@ export default class Map extends CompositeComponent {
           namespace = assignNamespaces[iterateNumber]
         }
 
-        // Note: undefined namespace signals to core to create a unique unreachable namespace
+        // Note: undefined namespace signals to core to create an unreachable namespace
+        // that will be unique if uniqueIdentifier is unique
 
         let instruction3 = {
           operation: "assignNamespace",
-          namespace
+          namespace,
+          uniqueIdentifier: substitutionsNumber + '|' + iterateNumber
         }
 
         replacementsWithInstructions.push({
@@ -438,7 +442,7 @@ export default class Map extends CompositeComponent {
     let prevMinNIterates = lrp.minNIterates;
     let newReplacementsToWithhold = 0;
     let currentReplacementsToWithhold = component.replacementsToWithhold;
-    if(!currentReplacementsToWithhold) {
+    if (!currentReplacementsToWithhold) {
       currentReplacementsToWithhold = 0;
     }
     let withheldSubstitutionChildNames = lrp.withheldSubstitutionChildNames;
@@ -602,10 +606,10 @@ export default class Map extends CompositeComponent {
       }
     }
 
-    if(this.replacements) {
-      for(let replacement of this.replacements) {
-        for(let rendererType of replacement.allPotentialRendererTypes) {
-          if(!allPotentialRendererTypes.includes(rendererType)) {
+    if (this.replacements) {
+      for (let replacement of this.replacements) {
+        for (let rendererType of replacement.allPotentialRendererTypes) {
+          if (!allPotentialRendererTypes.includes(rendererType)) {
             allPotentialRendererTypes.push(rendererType);
           }
         }

@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Textinput Tag Tests', function () {
 
   beforeEach(() => {
@@ -29,11 +39,11 @@ describe('Textinput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let textinput1a = components['/_copy1'].replacements[0];
-      let textinput1aAnchor = '#' + textinput1a.componentName + '_input';
+      let textinput1aAnchor = cesc('#' + textinput1a.componentName + '_input');
       let text1 = components['/_copy2'].replacements[0];
-      let text1Anchor = '#' + text1.componentName;
+      let text1Anchor = cesc('#' + text1.componentName);
       let text2 = components['/_copy3'].replacements[0];
-      let text2Anchor = '#' + text2.componentName;
+      let text2Anchor = cesc('#' + text2.componentName);
 
       cy.log('Test values displayed in browser')
       cy.get('#\\/_textinput1_input').should('have.value', 'hello');

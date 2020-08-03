@@ -463,7 +463,8 @@ export default class Select extends CompositeComponent {
       }
       let instruction = {
         operation: "assignName",
-        name
+        name,
+        uniqueIdentifier: replacementNumber.toString()
       }
 
       let serializedChild = component.stateValues.childrenToSelect[childIndex];

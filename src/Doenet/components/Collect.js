@@ -1,6 +1,7 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { postProcessCopy } from '../utils/copy';
 import { flattenLevels, flattenDeep } from '../utils/array';
+import { getUniqueIdentifierFromBase } from '../utils/naming';
 
 
 export default class Collect extends CompositeComponent {
@@ -415,7 +416,7 @@ export default class Collect extends CompositeComponent {
           } else if (propVariableObj.isArrayEntry) {
 
             let arrayLength = 1;
-            if(!(`targetArray${ind}` in dependencyValues)) {
+            if (!(`targetArray${ind}` in dependencyValues)) {
               propDependenciesSetUp = false;
               continue;
             }
@@ -571,20 +572,25 @@ export default class Collect extends CompositeComponent {
 
     let numReplacementsByCollected = [];
     let numReplacementsSoFar = 0;
-    let propVariablesCopiedByCollected = [];
+
+    workspace.propVariablesCopiedByCollected = [];
+
+    workspace.uniqueIdentifiersUsedByCollected = {};
 
     for (let collectedNum = 0; collectedNum < component.stateValues.collectedComponents.length; collectedNum++) {
       if (component.stateValues.collectedComponents[collectedNum] !== undefined) {
+        let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedByCollected[collectedNum] = [];
         let results = this.createReplacementForCollected({
           component,
           collectedNum,
           components,
-          numReplacementsSoFar
+          numReplacementsSoFar,
+          uniqueIdentifiersUsed,
         });
 
-        propVariablesCopiedByCollected[collectedNum] = results.propVariablesCopied;
-        let collectedReplacements = results.serializedReplacements;
+        workspace.propVariablesCopiedByCollected[collectedNum] = results.propVariablesCopied;
 
+        let collectedReplacements = results.serializedReplacements;
         numReplacementsByCollected[collectedNum] = collectedReplacements.length;
         numReplacementsSoFar += collectedReplacements.length;
         replacements.push(...collectedReplacements);
@@ -595,14 +601,14 @@ export default class Collect extends CompositeComponent {
 
     workspace.numReplacementsByCollected = numReplacementsByCollected;
     workspace.collectedNames = component.stateValues.collectedComponents.map(x => x.componentName)
-    workspace.propVariablesCopiedByCollected = propVariablesCopiedByCollected;
+
     return { replacements };
 
   }
 
 
 
-  static createReplacementForCollected({ component, components, collectedNum, numReplacementsSoFar }) {
+  static createReplacementForCollected({ component, components, collectedNum, numReplacementsSoFar, uniqueIdentifiersUsed }) {
 
     // console.log(`create replacement for collected ${collectedNum}, ${numReplacementsSoFar}`)
 
@@ -612,7 +618,13 @@ export default class Collect extends CompositeComponent {
 
       let serializedCopy = [target.serialize({ forCopy: true })];
 
-      return { serializedReplacements: postProcessCopy({ serializedComponents: serializedCopy, componentName: component.componentName }) };
+      return {
+        serializedReplacements: postProcessCopy({
+          serializedComponents: serializedCopy,
+          componentName: component.componentName,
+          uniqueIdentifiersUsed, identifierPrefix: collectedNum + "|"
+        })
+      };
     }
 
     let serializedReplacements = [];
@@ -630,9 +642,9 @@ export default class Collect extends CompositeComponent {
     let collectedName = component.stateValues.collectedComponents[collectedNum].componentName;
     let collectedComponent = components[collectedName];
 
-    if (propVariableObj.isArray || propVariableObj.isArrayEntry) {
+    let stateVarObj = collectedComponent.state[propVariableObj.varName];
 
-      let stateVarObj = collectedComponent.state[propVariableObj.varName];
+    if (propVariableObj.isArray || propVariableObj.isArrayEntry) {
 
       let arrayStateVarObj, unflattenedArrayKeys;
       if (stateVarObj.isArray) {
@@ -666,20 +678,87 @@ export default class Collect extends CompositeComponent {
 
             propVariablesCopied.push(propVariable);
 
-            serializedReplacements.push({
-              componentType,
-              downstreamDependencies: {
-                [collectedName]: [{
-                  dependencyType: "referenceShadow",
-                  compositeName: component.componentName,
-                  propVariable
-                }]
+            if (propVariableObj.containsComponentNamesToCopy) {
+
+              let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
+              let componentToCopy = components[componentNameToCopy];
+
+              if (componentToCopy) {
+                while (componentToCopy.replacementOf
+                  && componentToCopy.replacementOf.replacements.length === 1
+                ) {
+                  componentToCopy = componentToCopy.replacementOf;
+                }
+
+                let stateForReplacementCopy;
+                if (arrayStateVarObj.targetPropertiesToIgnoreOnCopy) {
+                  stateForReplacementCopy = {
+                    targetPropertiesToIgnore: arrayStateVarObj.targetPropertiesToIgnoreOnCopy
+                  }
+                }
+
+                // use collectedNum in unique identifier
+                // as we have separate uniqueIdentifiersUsed for each source
+                let uniqueIdentifierBase = componentToCopy.componentName + "|" + collectedNum + "|copy";
+                let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
+                serializedReplacements.push({
+                  componentType: "copy",
+                  children: [{
+                    componentType: "tname",
+                    state: { targetName: componentToCopy.componentName },
+                  }],
+                  state: stateForReplacementCopy,
+                  uniqueIdentifier,
+                });
+
+                propVariablesCopied.push(componentToCopy.componentName)
+
+              } else {
+                // just give an empty component of componentType
+                // use collectedNum in unique identifier
+                // as we have separate uniqueIdentifiersUsed for each source
+                let uniqueIdentifierBase = componentType + "|" + collectedNum + "|empty";
+                let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
+                serializedReplacements.push({
+                  componentType,
+                  uniqueIdentifier,
+                })
+                propVariablesCopied.push(null)
+
               }
-            })
+
+            } else {
+
+              // don't need to use collectedNum in unique identifier
+              // even though we have separate uniqueIdentifiersUsed for each source
+              // as collectedName will be unique
+              let uniqueIdentifierBase = collectedName + "|shadow|" + propVariable;
+              let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
+              serializedReplacements.push({
+                componentType,
+                downstreamDependencies: {
+                  [collectedName]: [{
+                    dependencyType: "referenceShadow",
+                    compositeName: component.componentName,
+                    propVariable
+                  }]
+                },
+                uniqueIdentifier
+              })
+            }
           } else {
             // didn't match an array key, so just add an empty component of componentType
+            // use collectedNum in unique identifier
+            // as we have separate uniqueIdentifiersUsed for each source
+            let uniqueIdentifierBase = componentType + "|" + collectedNum + "|empty";
+            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
             serializedReplacements.push({
               componentType,
+              uniqueIdentifier,
             })
 
           }
@@ -702,16 +781,76 @@ export default class Collect extends CompositeComponent {
               let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
               propVariablesCopied.push(propVariable);
 
-              pieces.push({
-                componentType: arrayStateVarObj.componentType,
-                downstreamDependencies: {
-                  [collectedName]: [{
-                    dependencyType: "referenceShadow",
-                    compositeName: component.componentName,
-                    propVariable
-                  }]
+              if (propVariableObj.containsComponentNamesToCopy) {
+
+                let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
+                let componentToCopy = components[componentNameToCopy];
+
+                if (componentToCopy) {
+                  while (componentToCopy.replacementOf
+                    && componentToCopy.replacementOf.replacements.length === 1
+                  ) {
+                    componentToCopy = componentToCopy.replacementOf;
+                  }
+
+                  let stateForReplacementCopy;
+                  if (arrayStateVarObj.targetPropertiesToIgnoreOnCopy) {
+                    stateForReplacementCopy = {
+                      targetPropertiesToIgnore: arrayStateVarObj.targetPropertiesToIgnoreOnCopy
+                    }
+                  }
+
+                  // use collectedNum in unique identifier
+                  // as we have separate uniqueIdentifiersUsed for each source
+                  let uniqueIdentifierBase = componentToCopy.componentName + "|" + collectedNum + "|copy";
+                  let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
+                  pieces.push({
+                    componentType: "copy",
+                    children: [{
+                      componentType: "tname",
+                      state: { targetName: componentToCopy.componentName },
+                    }],
+                    state: stateForReplacementCopy,
+                    uniqueIdentifier
+                  });
+                  propVariablesCopied.push(componentToCopy.componentName)
+
+                } else {
+                  // just give an empty component of componentType
+                  // use collectedNum in unique identifier
+                  // as we have separate uniqueIdentifiersUsed for each source
+                  let uniqueIdentifierBase = componentType + "|" + collectedNum + "|empty";
+                  let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
+                  pieces.push({
+                    componentType: arrayStateVarObj.componentType,
+                    uniqueIdentifier,
+                  })
+                  propVariablesCopied.push(null)
+
                 }
-              })
+
+              } else {
+
+                // don't need to use collectedNum in unique identifier
+                // even though we have separate uniqueIdentifiersUsed for each source
+                // as collectedName will be unique
+                let uniqueIdentifierBase = collectedName + "|shadow|" + propVariable;
+                let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
+                pieces.push({
+                  componentType: arrayStateVarObj.componentType,
+                  downstreamDependencies: {
+                    [collectedName]: [{
+                      dependencyType: "referenceShadow",
+                      compositeName: component.componentName,
+                      propVariable
+                    }]
+                  },
+                  uniqueIdentifier
+                })
+              }
             }
           }
 
@@ -719,9 +858,16 @@ export default class Collect extends CompositeComponent {
           let wrapCs = wrappingComponents[nDimensionsLeft - 1];
           if (wrapCs && wrapCs.length > 0) {
             for (let ind = wrapCs.length - 1; ind >= 0; ind--) {
+
+              // use collectedNum in unique identifier
+              // as we have separate uniqueIdentifiersUsed for each source
+              let uniqueIdentifierBase = wrapCs[ind] + "|" + collectedNum + "|wrapper";
+              let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
               pieces = [{
                 componentType: wrapCs[ind],
-                children: pieces
+                children: pieces,
+                uniqueIdentifier
               }]
             }
           }
@@ -731,6 +877,19 @@ export default class Collect extends CompositeComponent {
         }
 
         let newReplacements = createReplacementPiece(unflattenedArrayKeys, stateVarObj.nDimensions);
+
+        // add downstream dependencies to top level replacements
+        // (which are wrappers, so didn't get downstream dependencies originally)
+        for (let replacement of newReplacements) {
+          replacement.downstreamDependencies = {
+            [collectedName]: [{
+              dependencyType: "referenceShadow",
+              compositeName: component.componentName,
+              propVariable: propVariableObj.varName,
+              ignorePrimaryStateVariable: true,
+            }]
+          }
+        }
 
         replacementInd += newReplacements.length;
 
@@ -750,8 +909,14 @@ export default class Collect extends CompositeComponent {
             let componentType = replacementClass.componentType.toLowerCase();
 
             // just add an empty component of componentType
+            // use collectedNum in unique identifier
+            // as we have separate uniqueIdentifiersUsed for each source
+            let uniqueIdentifierBase = componentType + "|" + collectedNum + "|empty";
+            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
             serializedReplacements.push({
               componentType,
+              uniqueIdentifier
             })
           }
 
@@ -762,6 +927,7 @@ export default class Collect extends CompositeComponent {
       }
 
     } else {
+      // if not array or array entry
 
       for (let ind = 0; ind < numReplacementsForCollected; ind++) {
         replacementInd++;
@@ -770,16 +936,71 @@ export default class Collect extends CompositeComponent {
 
         let componentType = replacementClass.componentType
 
-        serializedReplacements.push({
-          componentType,
-          downstreamDependencies: {
-            [collectedName]: [{
-              dependencyType: "referenceShadow",
-              compositeName: component.componentName,
-              propVariable: propVariableObj.varName,
-            }]
+        if (propVariableObj.containsComponentNamesToCopy) {
+
+          let componentNameToCopy = sourceComponent.state[propVariableObj.varName].value
+          let componentToCopy = components[componentNameToCopy];
+
+          if (componentToCopy) {
+            while (componentToCopy.replacementOf
+              && componentToCopy.replacementOf.replacements.length === 1
+            ) {
+              componentToCopy = componentToCopy.replacementOf;
+            }
+
+            if (stateVarObj.targetPropertiesToIgnoreOnCopy) {
+              stateForReplacementCopy = {
+                targetPropertiesToIgnore: stateVarObj.targetPropertiesToIgnoreOnCopy
+              }
+            }
+
+            // use collectedNum in unique identifier
+            // as we have separate uniqueIdentifiersUsed for each source
+            let uniqueIdentifierBase = componentToCopy.componentName + "|" + collectedNum + "|copy";
+            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
+            serializedReplacements.push({
+              componentType: "copy",
+              children: [{
+                componentType: "tname",
+                state: { targetName: componentToCopy.componentName },
+              }],
+              uniqueIdentifier
+            });
+          } else {
+            // just give an empty component of componentType
+            // use collectedNum in unique identifier
+            // as we have separate uniqueIdentifiersUsed for each source
+            let uniqueIdentifierBase = componentType + "|" + collectedNum + "|empty";
+            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
+            serializedReplacements.push({
+              componentType,
+              uniqueIdentifier,
+            })
           }
-        })
+
+        } else {
+          propVariablesCopied.push(propVariableObj.varName);
+
+          // don't need to use collectedNum in unique identifier
+          // even though we have separate uniqueIdentifiersUsed for each source
+          // as collectedName will be unique
+          let uniqueIdentifierBase = collectedName + "|shadow|" + propVariableObj.varName;
+          let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+
+          serializedReplacements.push({
+            componentType,
+            downstreamDependencies: {
+              [collectedName]: [{
+                dependencyType: "referenceShadow",
+                compositeName: component.componentName,
+                propVariable: propVariableObj.varName,
+              }]
+            },
+            uniqueIdentifier
+          })
+        }
       }
     }
 
@@ -794,8 +1015,8 @@ export default class Collect extends CompositeComponent {
 
     // evaluate needsReplacementsUpdatedWhenStale to make it fresh
     component.stateValues.needsReplacementsUpdatedWhenStale;
-    
-    if(!component.stateValues.propDependenciesSetUp) {
+
+    if (!component.stateValues.propDependenciesSetUp) {
       return [];
     }
 
@@ -828,7 +1049,13 @@ export default class Collect extends CompositeComponent {
           replacementChanges.push(replacementInstruction);
 
           numReplacementsByCollected[collectedNum] = 0;
+
+          delete workspace.uniqueIdentifiersUsedByCollected[collectedNum];
+
         }
+
+        propVariablesCopiedByCollected.push([]);
+
         continue;
       }
 
@@ -841,6 +1068,7 @@ export default class Collect extends CompositeComponent {
         if (prevCollectedName !== undefined) {
           prevNumReplacements = workspace.numReplacementsByCollected[collectedNum];
         }
+        let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedByCollected[collectedNum] = [];
         let results = this.recreateReplacements({
           component,
           collectedNum,
@@ -848,7 +1076,7 @@ export default class Collect extends CompositeComponent {
           prevNumReplacements,
           replacementChanges,
           components,
-          workspace,
+          uniqueIdentifiersUsed
         });
 
         numReplacementsSoFar += results.numReplacements;
@@ -864,6 +1092,11 @@ export default class Collect extends CompositeComponent {
       let testReplacementChanges = [];
       let results;
 
+      // use new uniqueIdentifiersUsed for recreateReplacements
+      // so will get the same names for pieces that match
+      let uniqueIdentifiersUsed = [];
+
+
       if (component.stateValues.useProp) {
 
         // don't change replacements unless
@@ -875,14 +1108,16 @@ export default class Collect extends CompositeComponent {
           prevNumReplacements: workspace.numReplacementsByCollected[collectedNum],
           replacementChanges: testReplacementChanges,
           components,
+          uniqueIdentifiersUsed,
         });
 
         let changeInstruction = testReplacementChanges[testReplacementChanges.length - 1];
         let newSerializedReplacements = changeInstruction.serializedReplacements;
+        propVariablesCopiedByCollected.push(results.propVariablesCopied);
 
         if (newSerializedReplacements.length !== workspace.numReplacementsByCollected[collectedNum] ||
-          results.propVariablesCopied.length !== workspace.propVariablesCopiedByCollected[collectedNum].length ||
-          workspace.propVariablesCopiedByCollected[collectedNum].some((v, i) => v != results.propVariablesCopied[i])
+          propVariablesCopiedByCollected[collectedNum].length !== workspace.propVariablesCopiedByCollected[collectedNum].length ||
+          workspace.propVariablesCopiedByCollected[collectedNum].some((v, i) => v != propVariablesCopiedByCollected[collectedNum][i])
         ) {
           redoReplacements = true;
         } else {
@@ -902,11 +1137,13 @@ export default class Collect extends CompositeComponent {
 
         numReplacementsSoFar += results.numReplacements;
         numReplacementsByCollected[collectedNum] = results.numReplacements;
-        propVariablesCopiedByCollected[collectedNum] = results.propVariablesCopied;
+
+        // add uniqueIdentifiersUsed to workspace
+        workspace.uniqueIdentifiersUsedByCollected[collectedNum] = uniqueIdentifiersUsed;
+
       } else {
         numReplacementsSoFar += workspace.numReplacementsByCollected[collectedNum];
         numReplacementsByCollected[collectedNum] = workspace.numReplacementsByCollected[collectedNum];
-        propVariablesCopiedByCollected[collectedNum] = workspace.propVariablesCopiedByCollected[collectedNum];
       }
 
     }
@@ -922,33 +1159,36 @@ export default class Collect extends CompositeComponent {
 
   }
 
-  getReferenceFromCollected(component) {
-    let collectedDeps = {};
+  // getReferenceFromCollected(component) {
+  //   let collectedDeps = {};
 
-    let thisDep = this.downstreamDependencies[component.componentName];
-    if (thisDep === undefined) {
-      return {};
-    }
+  //   let thisDep = this.downstreamDependencies[component.componentName];
+  //   if (thisDep === undefined) {
+  //     return {};
+  //   }
 
-    collectedDeps[component.componentName] = thisDep;
+  //   collectedDeps[component.componentName] = thisDep;
 
-    if (!(component instanceof this.allComponentClasses['_composite'])) {
-      for (let child of component.definingChildren) {
-        Object.assign(collectedDeps, this.getReferenceFromCollected(child));
-      }
-    }
+  //   if (!(component instanceof this.allComponentClasses['_composite'])) {
+  //     for (let child of component.definingChildren) {
+  //       Object.assign(collectedDeps, this.getReferenceFromCollected(child));
+  //     }
+  //   }
 
-    return collectedDeps;
-  }
+  //   return collectedDeps;
+  // }
 
 
-  static recreateReplacements({ component, collectedNum, numReplacementsSoFar, prevNumReplacements, replacementChanges, components }) {
+  static recreateReplacements({ component, collectedNum, numReplacementsSoFar, prevNumReplacements,
+    replacementChanges, uniqueIdentifiersUsed, components }) {
 
-    let results = this.createReplacementForCollected({ component, collectedNum, components, numReplacementsSoFar });
-
-    let newSerializedChildren = results.serializedReplacements;
+    let results = this.createReplacementForCollected({
+      component, collectedNum, components, numReplacementsSoFar, uniqueIdentifiersUsed
+    });
 
     let propVariablesCopied = results.propVariablesCopied;
+
+    let newSerializedChildren = results.serializedReplacements;
 
     let replacementInstruction = {
       changeType: "add",

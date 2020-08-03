@@ -839,7 +839,8 @@ export default class Sequence extends CompositeComponent {
 
       let serializedComponent = {
         componentType: component.stateValues.selectedType,
-        state: { value: componentValue, fixed: true }
+        state: { value: componentValue, fixed: true },
+        uniqueIdentifier: ind.toString()
       }
       replacements.push(serializedComponent);
     }
@@ -1020,7 +1021,8 @@ export default class Sequence extends CompositeComponent {
 
           let serializedComponent = {
             componentType: component.stateValues.selectedType,
-            state: { value: componentValue, fixed: true }
+            state: { value: componentValue, fixed: true },
+            uniqueIdentifier: ind.toString(),
           }
           newSerializedReplacements.push(serializedComponent);
         }

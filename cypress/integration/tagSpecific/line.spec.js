@@ -1,4 +1,13 @@
 import me from 'math-expressions';
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
 
 describe('Line Tag Tests', function () {
 
@@ -450,9 +459,9 @@ describe('Line Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let math1 = components['/_copy1'].replacements[0];
-      let math1Anchor = '#' + math1.componentName;
+      let math1Anchor = cesc('#' + math1.componentName);
       let math2 = components['/_copy2'].replacements[0];
-      let math2Anchor = '#' + math2.componentName;
+      let math2Anchor = cesc('#' + math2.componentName);
 
       cy.log('equation and line variable are what they should be')
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1221,15 +1230,15 @@ describe('Line Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let var1 = components['/_copy1'].replacements[0];
-      let var1Anchor = '#' + var1.componentName;
+      let var1Anchor = cesc('#' + var1.componentName);
       let var2 = components['/_copy2'].replacements[0];
-      let var2Anchor = '#' + var2.componentName;
+      let var2Anchor = cesc('#' + var2.componentName);
       let xintercept = components['/_copy3'].replacements[0];
-      let xinterceptAnchor = '#' + xintercept.componentName;
+      let xinterceptAnchor = cesc('#' + xintercept.componentName);
       let yintercept = components['/_copy4'].replacements[0];
-      let yinterceptAnchor = '#' + yintercept.componentName;
+      let yinterceptAnchor = cesc('#' + yintercept.componentName);
       let slope = components['/_copy5'].replacements[0];
-      let slopeAnchor = '#' + slope.componentName;
+      let slopeAnchor = cesc('#' + slope.componentName);
       let equation = components['/_copy6'].replacements[0];
 
       cy.get(var1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {

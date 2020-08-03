@@ -1,4 +1,13 @@
 import me from 'math-expressions';
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
 
 describe('Point Tag Tests', function () {
 
@@ -1588,7 +1597,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point is on line`);
       cy.window().then((win) => {
@@ -1658,7 +1667,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point is not on line`);
       cy.window().then((win) => {
@@ -1734,7 +1743,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point is on line`);
       cy.window().then((win) => {
@@ -1809,7 +1818,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point is in original location`);
       cy.window().then((win) => {
@@ -1904,7 +1913,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point on grid`);
       cy.window().then((win) => {
@@ -1986,7 +1995,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point in original location`);
       cy.window().then((win) => {
@@ -2105,7 +2114,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`point in original location`);
       cy.window().then((win) => {
@@ -2272,7 +2281,7 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let constraintUsed1 = components['/constraintUsed'].replacements[0];
-      let constraintUsed1Anchor = '#' + constraintUsed1.componentName;
+      let constraintUsed1Anchor = cesc('#' + constraintUsed1.componentName);
 
       cy.log(`on x=y`);
       cy.window().then((win) => {
@@ -3921,20 +3930,20 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let point1Anchor = '#' + components["/_point1"].adapterUsed.componentName;
+      let point1Anchor = cesc('#' + components["/_point1"].adapterUsed.componentName);
       let point2 = components["/point2"].replacements[0];
-      let point2Anchor = '#' + point2.adapterUsed.componentName;
+      let point2Anchor = cesc('#' + point2.adapterUsed.componentName);
       let point3 = components["/point3"].replacements[0].replacements[0];
-      let point3Anchor = '#' + point3.adapterUsed.componentName;
-      let nDimensions1Anchor = "#" + components["/nDimensions1"].replacements[0].componentName;
-      let nDimensions2Anchor = "#" + components["/nDimensions2"].replacements[0].componentName;
-      let nDimensions3Anchor = "#" + components["/nDimensions3"].replacements[0].componentName;
-      let point1x1Anchor = "#" + components["/point1x1"].replacements[0].componentName;
-      let point2x1Anchor = "#" + components["/point2x1"].replacements[0].componentName;
-      let point3x1Anchor = "#" + components["/point3x1"].replacements[0].componentName;
-      let coords1Anchor = "#" + components["/coords1"].replacements[0].componentName;
-      let coords2Anchor = "#" + components["/coords2"].replacements[0].componentName;
-      let coords3Anchor = "#" + components["/coords3"].replacements[0].componentName;
+      let point3Anchor = cesc('#' + point3.adapterUsed.componentName);
+      let nDimensions1Anchor = cesc("#" + components["/nDimensions1"].replacements[0].componentName);
+      let nDimensions2Anchor = cesc("#" + components["/nDimensions2"].replacements[0].componentName);
+      let nDimensions3Anchor = cesc("#" + components["/nDimensions3"].replacements[0].componentName);
+      let point1x1Anchor = cesc("#" + components["/point1x1"].replacements[0].componentName);
+      let point2x1Anchor = cesc("#" + components["/point2x1"].replacements[0].componentName);
+      let point3x1Anchor = cesc("#" + components["/point3x1"].replacements[0].componentName);
+      let coords1Anchor = cesc("#" + components["/coords1"].replacements[0].componentName);
+      let coords2Anchor = cesc("#" + components["/coords2"].replacements[0].componentName);
+      let coords3Anchor = cesc("#" + components["/coords3"].replacements[0].componentName);
 
       cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
@@ -4027,9 +4036,9 @@ describe('Point Tag Tests', function () {
 
       cy.window().then((win) => {
 
-        let point1x2Anchor = "#" + components["/point1x2"].replacements[0].componentName;
-        let point2x2Anchor = "#" + components["/point2x2"].replacements[0].componentName;
-        let point3x2Anchor = "#" + components["/point3x2"].replacements[0].componentName;
+        let point1x2Anchor = cesc("#" + components["/point1x2"].replacements[0].componentName);
+        let point2x2Anchor = cesc("#" + components["/point2x2"].replacements[0].componentName);
+        let point3x2Anchor = cesc("#" + components["/point3x2"].replacements[0].componentName);
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(a,b)')
@@ -4248,12 +4257,12 @@ describe('Point Tag Tests', function () {
 
       cy.window().then((win) => {
 
-        let point1x2Anchor = "#" + components["/point1x2"].replacements[0].componentName;
-        let point2x2Anchor = "#" + components["/point2x2"].replacements[0].componentName;
-        let point3x2Anchor = "#" + components["/point3x2"].replacements[0].componentName;
-        let point1x3Anchor = "#" + components["/point1x3"].replacements[0].componentName;
-        let point2x3Anchor = "#" + components["/point2x3"].replacements[0].componentName;
-        let point3x3Anchor = "#" + components["/point3x3"].replacements[0].componentName;
+        let point1x2Anchor = cesc("#" + components["/point1x2"].replacements[0].componentName);
+        let point2x2Anchor = cesc("#" + components["/point2x2"].replacements[0].componentName);
+        let point3x2Anchor = cesc("#" + components["/point3x2"].replacements[0].componentName);
+        let point1x3Anchor = cesc("#" + components["/point1x3"].replacements[0].componentName);
+        let point2x3Anchor = cesc("#" + components["/point2x3"].replacements[0].componentName);
+        let point3x3Anchor = cesc("#" + components["/point3x3"].replacements[0].componentName);
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(2x,uv,w2)')
@@ -5504,9 +5513,9 @@ describe('Point Tag Tests', function () {
 
       cy.window().then((win) => {
 
-        let point1x2Anchor = "#" + components["/point1x2"].replacements[0].componentName;
-        let point2x2Anchor = "#" + components["/point2x2"].replacements[0].componentName;
-        let point3x2Anchor = "#" + components["/point3x2"].replacements[0].componentName;
+        let point1x2Anchor = cesc("#" + components["/point1x2"].replacements[0].componentName);
+        let point2x2Anchor = cesc("#" + components["/point2x2"].replacements[0].componentName);
+        let point3x2Anchor = cesc("#" + components["/point3x2"].replacements[0].componentName);
 
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {

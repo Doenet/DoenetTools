@@ -1,8 +1,14 @@
+import crypto from 'crypto';
+
+
 export function createUniqueName(componentType, longNameId) {
 
-  console.log(componentType, longNameId)
+  const hash = crypto.createHash('sha1');
+  hash.update(longNameId);
 
-  return "__" + componentType + "_" + hashStringToInteger(longNameId).toString(36);
+  let hashStringShortened = hash.digest('base64').slice(0, 10);
+
+  return "__" + componentType + "_" + hashStringShortened;
 
 }
 
