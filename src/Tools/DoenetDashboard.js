@@ -13,7 +13,7 @@ export default function DoenetDashboard(props){
   const {add, getAll } = useIndexedDB('CourseList');
 
   function addCourse(){
-    add({ name : 'first', courseId : 'id' }).then(
+    add({ name : 'first2', courseId : 'id2' }).then(
       event => {
         // console.log('ID', event.target.result);
         console.log('ID', event);
