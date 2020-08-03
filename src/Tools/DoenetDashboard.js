@@ -2,25 +2,30 @@ import React, { useState } from "react";
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import styled from "styled-components";
+import { useIndexedDB } from 'react-indexed-db';
 
-const Button = styled.button`
-  width: 60px;
-  height: 30px;
-  border: 1px solid lightgrey;
-  position: relative;
-  top: 5px;
-  left: 20px;
-`;
 
-const alphabet =
-  "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z ";
+
+
+
 export default function DoenetDashboard(props){
- 
 
-   let [x, setX] = useState(0);
-    const menuControls = [<Button>Search</Button>];
-    const menuControlsEditor = [<Button>Edit</Button>];
-    const menuControlsViewer = [<Button>Update</Button>];
+  const {add, getAll } = useIndexedDB('CourseList');
+
+  function addCourse(){
+    add({ name : 'first2', courseId : 'id2' }).then(
+      event => {
+        // console.log('ID', event.target.result);
+        console.log('ID', event);
+      },
+      error => {
+        console.log(error);
+      }
+    )
+  }
+  getAll().then(courses => {
+    console.log(courses);
+  })
 
     return (
       <>
@@ -30,23 +35,15 @@ export default function DoenetDashboard(props){
             // menuControls={menuControls}
             panelName="context"
           >
-            {x}
-          <button onClick={()=>setX(x + 1)}>Count</button>
+
           <p>test</p>
+          <button onClick={()=>{addCourse()}}>Add to db</button>
           </ToolLayoutPanel> 
 
        <ToolLayoutPanel
             // menuControls={menuControlsEditor}
             panelName="Editor">
-
-            {alphabet} {alphabet} {alphabet} {alphabet} {alphabet} {alphabet}
-            {alphabet}
-            {alphabet}
-            {alphabet}
-            {alphabet} {alphabet} {alphabet} {alphabet} {alphabet} {alphabet}
-            {alphabet}
-            {alphabet}
-            {alphabet}
+TEST
           </ToolLayoutPanel>
 
           {/* <ToolLayoutPanel menuControls={menuControlsViewer} panelName="Viewer">
