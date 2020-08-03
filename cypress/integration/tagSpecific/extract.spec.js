@@ -102,7 +102,10 @@ describe('Extract Tag Tests', function () {
     <text>a</text>
     <graph>
       <copy name="copy" tname="original" />
-      <point name="transformed">(<copy prop="y" tname="copy2" />, <extract prop="x1"><copy name="copy2" tname="copy" /></extract>)</point>
+      <point name="transformed">
+        <x><copy prop="y" tname="copy2" /></x>
+        <y><extract prop="x1"><copy name="copy2" tname="copy" /></extract></y>
+      </point>
     </graph>
 
     <graph>

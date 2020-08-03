@@ -5,23 +5,11 @@ export default class Image extends BlockComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.width = {default: undefined};
-    properties.height = {default: undefined};
-    properties.description = {default: undefined};
-    properties.source = {required: true};
+    properties.width = { default: null, forRenderer: true };
+    properties.height = { default: null, forRenderer: true };
+    properties.description = { default: null, forRenderer: true };
+    properties.source = { required: true, forRenderer: true };
     return properties;
-  }
-
-  initializeRenderer(){
-    if(this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.image({
-        key: this.componentName,
-        source: this.state.source,
-        width: this.state.width,
-        height: this.state.height,
-        description: this.state.description,
-      });
-    }
   }
 
 }

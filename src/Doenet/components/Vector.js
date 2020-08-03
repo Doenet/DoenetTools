@@ -1,5 +1,6 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
+import { breakEmbeddedStringByCommas, breakIntoVectorComponents } from './commonsugar/breakstrings';
 
 export default class Vector extends GraphicalComponent {
   constructor(args) {
@@ -14,11 +15,13 @@ export default class Vector extends GraphicalComponent {
   static componentType = "vector";
 
   // used when referencing this component without prop
-  // reference via the head/tail plus keep track of how defined
+  // reference via the head/tail/displacement plus keep track of how defined
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() {
     return [
-      "head", "tail", "displacement", "basedOnHead", "basedOnTail", "basedOnDisplacement"
+      "head", "tail", "displacement",
+      "basedOnHead", "basedOnTail", "basedOnDisplacement",
+      "nDimensions",
     ]
   };
 
@@ -33,66 +36,198 @@ export default class Vector extends GraphicalComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let addHead = function ({ activeChildrenMatched }) {
-      // add <head> around point
-      return {
-        success: true,
-        newChildren: [{
+    let exactlyOneX = childLogic.newLeaf({
+      name: "exactlyOneX",
+      componentType: 'x',
+      number: 1,
+    });
+
+    let exactlyOneY = childLogic.newLeaf({
+      name: "exactlyOneY",
+      componentType: 'y',
+      number: 1,
+    });
+
+    let exactlyOneZ = childLogic.newLeaf({
+      name: "exactlyOneZ",
+      componentType: 'z',
+      number: 1,
+    });
+
+    let exactlyOneXs = childLogic.newLeaf({
+      name: "exactlyOneXs",
+      componentType: "xs",
+      number: 1
+    })
+
+    let displacementViaComponents = childLogic.newOperator({
+      name: "displacementViaComponents",
+      operator: "or",
+      propositions: [exactlyOneX, exactlyOneY, exactlyOneZ],
+    })
+
+    let exactlyOneDisplacement = childLogic.newLeaf({
+      name: "exactlyOneDisplacement",
+      componentType: 'vector',
+      number: 1
+    });
+
+    let displacementOptions = childLogic.newOperator({
+      name: "displacementOptions",
+      operator: "xor",
+      propositions: [exactlyOneDisplacement, exactlyOneXs, displacementViaComponents]
+    })
+
+    let exactlyOneHead = childLogic.newLeaf({
+      name: "exactlyOneHead",
+      componentType: 'head',
+      number: 1
+    });
+
+    let exactlyOneTail = childLogic.newLeaf({
+      name: "exactlyOneTail",
+      componentType: 'tail',
+      number: 1
+    });
+
+    let vectorDefiningPieces = childLogic.newOperator({
+      name: "vectorDefiningPieces",
+      operator: "or",
+      propositions: [displacementOptions, exactlyOneHead, exactlyOneTail]
+    })
+
+    let addHeadTail = function ({ activeChildrenMatched }) {
+      // if there are two points, add <tail> around first and <head> around second
+      // if there is one point, add <head> around it
+      let newChildren;
+      if (activeChildrenMatched.length === 2) {
+        newChildren = [
+          {
+            componentType: "tail",
+            children: [{
+              createdComponent: true,
+              componentName: activeChildrenMatched[0].componentName
+            }],
+          },
+          {
+            componentType: "head",
+            children: [{
+              createdComponent: true,
+              componentName: activeChildrenMatched[1].componentName
+            }],
+          }
+        ]
+
+      } else {
+        newChildren = [{
           componentType: "head",
           children: [{
             createdComponent: true,
             componentName: activeChildrenMatched[0].componentName
           }],
-        }],
-      }
-    }
-
-    let addTail = function ({ activeChildrenMatched }) {
-      // add <tail> around point
-      return {
-        success: true,
-        newChildren: [{
-          componentType: "tail",
-          children: [{
-            createdComponent: true,
-            componentName: activeChildrenMatched[0].componentName
-          }],
-        }],
-      }
-    }
-
-    let addEndpoints = function ({ activeChildrenMatched }) {
-      // add <endpoints> around points
-      let endpointChildren = [];
-      for (let child of activeChildrenMatched) {
-        endpointChildren.push({
-          createdComponent: true,
-          componentName: child.componentName
-        });
+        }]
       }
       return {
         success: true,
-        newChildren: [{ componentType: "endpoints", children: endpointChildren }],
+        newChildren,
       }
+    }
+
+    let createHeadTailList = function ({ dependencyValues }) {
+
+      let results = breakEmbeddedStringByCommas({
+        childrenList: dependencyValues.stringsAndMaths,
+      });
+
+      if (results.success !== true) {
+        return { success: false }
+      }
+
+      let pieces = results.pieces;
+      let toDelete = results.toDelete;
+
+      let newChildren = [];
+
+
+      if (pieces.length < 0 || pieces.length > 2) {
+        return { success: false }
+      }
+
+      for (let ind = 0; ind < pieces.length; ind++) {
+        let piece = pieces[ind];
+
+        // each piece must be a vector (if not, we won't sugar)
+        // the next step is to find the vector components
+        // so that we can see if the components themselves are vectors
+
+        let result = breakIntoVectorComponents(piece);
+        if (result.foundVector !== true) {
+          return { success: false };
+        }
+
+        let vectorComponents = result.vectorComponents;
+
+
+        // since we're actually breaking it up,
+        // add any more strings to delete
+        // that we encountered in the initial breaking into components
+        toDelete = [...toDelete, ...result.toDelete];
+
+        let children = vectorComponents.map(x => ({
+          componentType: "x",
+          children: x
+        }));
+
+        if (pieces.length === 2 && ind == 0) {
+          newChildren.push({
+            componentType: "tail",
+            children: [{
+              componentType: "xs",
+              children
+            }]
+          })
+        } else {
+          newChildren.push({
+            componentType: "head",
+            children: [{
+              componentType: "xs",
+              children
+            }]
+          })
+        }
+
+      }
+
+      return {
+        success: true,
+        newChildren: newChildren,
+        toDelete: toDelete,
+      }
+
     }
 
     let exactlyOnePoint = childLogic.newLeaf({
       name: "exactlyOnePoint",
       componentType: 'point',
       number: 1,
-      isSugar: true,
-      logicToWaitOnSugar: ["exactlyOneHead"],
-      replacementFunction: addHead,
     });
 
-    let exactlyTwoPoints = childLogic.newLeaf({
+    let atMostOnePoint = childLogic.newLeaf({
       name: "exactlyTwoPoints",
       componentType: 'point',
-      number: 2,
-      isSugar: true,
-      logicToWaitOnSugar: ["exactlyOneEndpoints"],
-      replacementFunction: addEndpoints,
+      comparison: "atMost",
+      number: 1,
     });
+
+    let oneOrTwoPoints = childLogic.newOperator({
+      name: "oneOrTwoPoints",
+      operator: "and",
+      propositions: [exactlyOnePoint, atMostOnePoint],
+      isSugar: true,
+      allowSpillover: false,
+      logicToWaitOnSugar: ["exactlyOneHead", "exactlyOneTail"],
+      replacementFunction: addHeadTail,
+    })
 
     let atLeastOneString = childLogic.newLeaf({
       name: "atLeastOneString",
@@ -114,8 +249,15 @@ export default class Vector extends GraphicalComponent {
       propositions: [atLeastOneString, atLeastOneMath],
       requireConsecutive: true,
       isSugar: true,
-      logicToWaitOnSugar: ["exactlyOneEndpoints"],
-      replacementFunction: addEndpoints,
+      returnSugarDependencies: () => ({
+        stringsAndMaths: {
+          dependencyType: "childStateVariables",
+          childLogicName: "stringsAndMaths",
+          variableNames: ["value"]
+        }
+      }),
+      logicToWaitOnSugar: ["oneOrTwoPoints"],
+      replacementFunction: createHeadTailList,
     });
 
     let noPoints = childLogic.newLeaf({
@@ -124,85 +266,12 @@ export default class Vector extends GraphicalComponent {
       number: 0
     });
 
-    let exactlyOneEndpoints = childLogic.newLeaf({
-      name: "exactlyOneEndpoints",
-      componentType: 'endpoints',
-      number: 1
-    });
-
-    let exactlyOneHead = childLogic.newLeaf({
-      name: "exactlyOneHead",
-      componentType: 'head',
-      number: 1
-    });
-
-    let exactlyOneTail = childLogic.newLeaf({
-      name: "exactlyOneTail",
-      componentType: 'tail',
-      number: 1
-    });
-
-    let headAndOrTail = childLogic.newOperator({
-      name: "headAndOrTail",
-      operator: 'or',
-      propositions: [exactlyOneHead, exactlyOneTail],
-    });
-
-    let exactlyOneDisplacement = childLogic.newLeaf({
-      name: "exactlyOneDisplacement",
-      componentType: 'vector',
-      number: 1
-    });
-
-    let exactlyOneTailForDisplacement = childLogic.newLeaf({
-      name: "exactlyOneTailForDisplacement",
-      componentType: 'tail',
-      number: 1
-    });
-
-    let exactlyOneHeadForDisplacement = childLogic.newLeaf({
-      name: "exactlyOneHeadForDisplacement",
-      componentType: 'head',
-      number: 1
-    });
-
-    let exactlyOnePointForDisplacement = childLogic.newLeaf({
-      name: "exactlyOnePointForDisplacement",
-      componentType: 'point',
-      number: 1,
-      isSugar: true,
-      logicToWaitOnSugar: ["exactlyOneTailForDisplacement"],
-      replacementFunction: addTail,
-    });
-
-    let noPointsForDisplacement = childLogic.newLeaf({
-      name: "noPointsForDisplacement",
-      componentType: 'point',
-      number: 0
-    });
-
-    let displacementCompanions = childLogic.newOperator({
-      name: "displacementCompanions",
-      operator: 'xor',
-      propositions: [exactlyOneHeadForDisplacement, exactlyOneTailForDisplacement,
-        exactlyOnePointForDisplacement, noPointsForDisplacement],
-    });
-
-    let displacementPlus = childLogic.newOperator({
-      name: "displacementPlus",
-      operator: 'and',
-      propositions: [exactlyOneDisplacement, displacementCompanions],
-    });
-
     childLogic.newOperator({
       name: "vectorOptions",
       operator: 'xor',
       propositions: [
-        displacementPlus,
-        exactlyOneEndpoints,
-        headAndOrTail,
-        exactlyTwoPoints,
-        exactlyOnePoint,
+        vectorDefiningPieces,
+        oneOrTwoPoints,
         stringsAndMaths,
         noPoints
       ],
@@ -317,7 +386,7 @@ export default class Vector extends GraphicalComponent {
     }
 
 
-    // if a ref shadow, the basedOnX definitions will be overwritten
+    // if a copy shadow, the basedOnX definitions will be overwritten
     // so we don't have to consider that case here
 
     stateVariableDefinitions.basedOnHead = {
@@ -326,36 +395,46 @@ export default class Vector extends GraphicalComponent {
           dependencyType: "childIdentity",
           childLogicName: "exactlyOneHead"
         },
-        headChildForDisplacement: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneHeadForDisplacement"
-        },
-        endpointsChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneEndpoints",
-          variableNames: ["nPoints"]
-        },
         headShadow: {
           dependencyType: "stateVariable",
           variableName: "headShadow"
         },
+        tailChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneTail"
+        },
+        displacementOptions: {
+          dependencyType: "childIdentity",
+          childLogicName: "displacementOptions"
+        },
       }),
       definition: function ({ dependencyValues }) {
 
-        if (dependencyValues.headChild.length === 1 ||
-          dependencyValues.headChildForDisplacement.length === 1
+        if (dependencyValues.tailChild.length === 1 &&
+          dependencyValues.displacementOptions.length > 0
         ) {
-          return { newValues: { basedOnHead: true } }
-        }
-        if (dependencyValues.endpointsChild.length === 1) {
-          if (dependencyValues.endpointsChild[0].stateValues.nPoints >= 1) {
-            return { newValues: { basedOnHead: true } }
-          } else {
-            return { newValues: { basedOnHead: false } }
+          if (dependencyValues.headChild.length === 1) {
+            // if overprescribed by specifying head, tail, and displacement
+            // we ignore head
+            console.warn(`Vector is prescribed by head, tail, and displacement.  Ignoring specified head.`);
+          }
+          return {
+            newValues: { basedOnHead: false },
+            checkForActualChange: { basedOnHead: true }
           }
         }
 
-        return { newValues: { basedOnHead: dependencyValues.headShadow !== null } }
+        if (dependencyValues.headChild.length === 1) {
+          return {
+            newValues: { basedOnHead: true },
+            checkForActualChange: { basedOnHead: true }
+          }
+        }
+
+        return {
+          newValues: { basedOnHead: dependencyValues.headShadow !== null },
+          checkForActualChange: { basedOnHead: true }
+        }
 
       }
     }
@@ -366,15 +445,6 @@ export default class Vector extends GraphicalComponent {
           dependencyType: "childIdentity",
           childLogicName: "exactlyOneTail"
         },
-        tailChildForDisplacement: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneTailForDisplacement"
-        },
-        endpointsChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneEndpoints",
-          variableNames: ["nPoints"]
-        },
         tailShadow: {
           dependencyType: "stateVariable",
           variableName: "tailShadow"
@@ -382,29 +452,26 @@ export default class Vector extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        if (dependencyValues.tailChild.length === 1 ||
-          dependencyValues.tailChildForDisplacement.length === 1
-        ) {
-          return { newValues: { basedOnTail: true } }
-        }
-        if (dependencyValues.endpointsChild.length === 1) {
-          if (dependencyValues.endpointsChild[0].stateValues.nPoints >= 2) {
-            return { newValues: { basedOnTail: true } }
-          } else {
-            return { newValues: { basedOnTail: false } }
+        if (dependencyValues.tailChild.length === 1) {
+          return {
+            newValues: { basedOnTail: true },
+            checkForActualChange: { basedOnTail: true }
           }
         }
 
-        return { newValues: { basedOnTail: dependencyValues.tailShadow !== null } }
+        return {
+          newValues: { basedOnTail: dependencyValues.tailShadow !== null },
+          checkForActualChange: { basedOnTail: true }
+        }
 
       }
     }
 
     stateVariableDefinitions.basedOnDisplacement = {
       returnDependencies: () => ({
-        displacementChild: {
+        displacementOptions: {
           dependencyType: "childIdentity",
-          childLogicName: "exactlyOneDisplacement"
+          childLogicName: "displacementOptions"
         },
         displacementShadow: {
           dependencyType: "stateVariable",
@@ -412,681 +479,209 @@ export default class Vector extends GraphicalComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.displacementChild.length === 1) {
-          return { newValues: { basedOnDisplacement: true } }
+        if (dependencyValues.displacementOptions.length > 0) {
+          return {
+            newValues: { basedOnDisplacement: true },
+            checkForActualChange: { basedOnDisplacement: true }
+          }
         }
-        return { newValues: { basedOnDisplacement: dependencyValues.displacementShadow !== null } }
+        return {
+          newValues: { basedOnDisplacement: dependencyValues.displacementShadow !== null },
+          checkForActualChange: { basedOnDisplacement: true }
+        }
 
       }
     }
 
-    stateVariableDefinitions.endpointNPoints = {
+
+    // Note: if vector created via a copy (with no prop) of another vector
+    // definition of nDimensions will be overwritten to shadow nDimensions
+    // of the other vector
+    // (based on static variable stateVariablesShadowedForReference)
+    stateVariableDefinitions.nDimensions = {
+      public: true,
+      componentType: "number",
       returnDependencies: () => ({
-        endpointsChild: {
+        basedOnHead: {
+          dependencyType: "stateVariable",
+          variableName: "basedOnHead",
+        },
+        basedOnTail: {
+          dependencyType: "stateVariable",
+          variableName: "basedOnTail",
+        },
+        basedOnDisplacement: {
+          dependencyType: "stateVariable",
+          variableName: "basedOnDisplacement",
+        },
+        displacementShadow: {
+          dependencyType: "stateVariable",
+          variableName: "displacementShadow",
+        },
+        displacementChild: {
           dependencyType: "childStateVariables",
-          childLogicName: "exactlyOneEndpoints",
-          variableNames: ["nPoints"]
+          childLogicName: "exactlyOneDisplacement",
+          variableNames: ["nDimensions"],
+        },
+        xChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneX",
+        },
+        yChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneY",
+        },
+        zChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "exactlyOneZ",
+        },
+        xsChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneXs",
+          variableNames: ["nComponents"]
+        },
+        headShadow: {
+          dependencyType: "stateVariable",
+          variableName: "headShadow",
+        },
+        headChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneHead",
+          variableNames: ["nDimensions"],
+        },
+        tailShadow: {
+          dependencyType: "stateVariable",
+          variableName: "tailShadow",
+        },
+        tailChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneTail",
+          variableNames: ["nDimensions"],
         },
       }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.endpointsChild.length === 1) {
-          return { newValues: { endpointNPoints: dependencyValues.endpointsChild[0].stateValues.nPoints } }
-        } else {
-          return { newValues: { endpointNPoints: null } }
+      definition: function ({ dependencyValues, changes }) {
+        // console.log(`nDimensions definition`)
+        // console.log(dependencyValues)
+
+        let displacementNDimensions, headNDimensions, tailNDimensions;
+
+        if (dependencyValues.basedOnDisplacement) {
+          if (dependencyValues.displacementChild.length === 1) {
+            displacementNDimensions = dependencyValues.displacementChild[0].stateValues.nDimensions;
+          } else if (dependencyValues.xsChild.length === 1) {
+            displacementNDimensions = dependencyValues.xsChild[0].stateValues.nComponents;
+          } else if (dependencyValues.zChild.length === 1) {
+            displacementNDimensions = 3;
+          } else if (dependencyValues.yChild.length === 1) {
+            displacementNDimensions = 2;
+          } else if (dependencyValues.xChild.length === 1) {
+            displacementNDimensions = 1;
+          } else if (dependencyValues.displacementShadow) {
+            let displacementTree = dependencyValues.displacementShadow.tree;
+            if (Array.isArray(displacementTree) && ["tuple", "vector"].includes(displacementTree[0])) {
+              displacementNDimensions = displacementTree.length - 1;
+            } else {
+              displacementNDimensions = 2;
+            }
+          }
         }
+
+        if (dependencyValues.basedOnHead) {
+          if (dependencyValues.headChild.length === 1) {
+            headNDimensions = dependencyValues.headChild[0].stateValues.nDimensions;
+          } else if (headShadow) {
+            let headTree = headShadow.tree;
+            if (Array.isArray(headTree) && ["tuple", "vector"].includes(headTree[0])) {
+              headNDimensions = headTree.length - 1;
+            } else {
+              headNDimensions = 2;
+            }
+          }
+        }
+
+        if (dependencyValues.basedOnTail) {
+          if (dependencyValues.tailChild.length === 1) {
+            tailNDimensions = dependencyValues.tailChild[0].stateValues.nDimensions;
+          } else if (tailShadow) {
+            let tailTree = tailShadow.tree;
+            if (Array.isArray(tailTree) && ["tuple", "vector"].includes(tailTree[0])) {
+              tailNDimensions = tailTree.length - 1;
+            } else {
+              tailNDimensions = 2;
+            }
+          }
+        }
+
+        let nDimensions
+        if (dependencyValues.basedOnDisplacement) {
+          if (dependencyValues.basedOnTail) {
+            // ignore head if have both displacement and tail
+            if (displacementNDimensions !== tailNDimensions) {
+              console.warn(`nDimensions mismatch in vector`)
+              return { newValues: { nDimensions: NaN } }
+            }
+          } else if (dependencyValues.basedOnHead) {
+            if (displacementNDimensions !== headNDimensions) {
+              console.warn(`nDimensions mismatch in vector`)
+              return { newValues: { nDimensions: NaN } }
+            }
+          }
+          nDimensions = displacementNDimensions;
+        } else if (dependencyValues.basedOnTail) {
+          if (dependencyValues.basedOnHead) {
+            if (tailNDimensions !== headNDimensions) {
+              console.warn(`nDimensions mismatch in vector`)
+              return { newValues: { nDimensions: NaN } }
+            }
+          }
+          nDimensions = tailNDimensions;
+        } else if (dependencyValues.basedOnHead) {
+          nDimensions = headNDimensions;
+        } else {
+          nDimensions = 2
+        }
+
+        return { newValues: { nDimensions }, checkForActualChange: { nDimensions: true } };
+
       }
     }
 
     // allowed possibilities for children
-    // head (tail set to zero, displacement set to head)
-    // head and tail (displacement set to head-tail)
-    // displacement (tail set to zero, head set to displacement)
-    // head and displacement (tail set to head-displacement)
-    // tail and displacement (head set to tail+displacement)
-    // endpoints: same as head (if one point) or tail and head (if two points)
-
-    stateVariableDefinitions.head = {
-      public: true,
-      componentType: "point",
-      stateVariablesDeterminingDependencies: [
-        "basedOnHead", "basedOnTail", "basedOnDisplacement", "endpointNPoints"
-      ],
-      returnDependencies: function ({ stateValues }) {
-
-        let dependencies = {
-          basedOnTail: {
-            dependencyType: "stateVariable",
-            variableName: "basedOnTail",
-          },
-          basedOnDisplacement: {
-            dependencyType: "stateVariable",
-            variableName: "basedOnDisplacement",
-          },
-          headShadow: {
-            dependencyType: "stateVariable",
-            variableName: "headShadow"
-          },
-          headChild: {
-            dependencyType: "childStateVariables",
-            childLogicName: "exactlyOneHead",
-            variableNames: ["coords"],
-          },
-          headChildForDisplacement: {
-            dependencyType: "childStateVariables",
-            childLogicName: "exactlyOneHeadForDisplacement",
-            variableNames: ["coords"],
-          },
-
-        };
-
-        if (stateValues.endpointNPoints === 1) {
-          dependencies.endpointsChild = {
-            dependencyType: "childStateVariables",
-            childLogicName: "exactlyOneEndpoints",
-            variableNames: ["point1", "nPoints"]
-          }
-        } else if (stateValues.endpointNPoints === 2) {
-          dependencies.endpointsChild = {
-            dependencyType: "childStateVariables",
-            childLogicName: "exactlyOneEndpoints",
-            variableNames: ["point2", "nPoints"]
-          }
-        } else {
-          dependencies.endpointsChild = {
-            dependencyType: "childStateVariables",
-            childLogicName: "exactlyOneEndpoints",
-            variableNames: ["nPoints"]
-          }
-        }
-
-        if (!stateValues.basedOnHead) {
-          // if not based on head, will always use tail value
-          // as, even if not based on tail,
-          // tail will be made essential (with default of zero)
-          dependencies.tail = {
-            dependencyType: "stateVariable",
-            variableName: "tail"
-          }
-
-          if (stateValues.basedOnDisplacement) {
-            dependencies.displacement = {
-              dependencyType: "stateVariable",
-              variableName: "displacement"
-            }
-          }
-        }
-        return dependencies;
-      },
-      definition: function ({ dependencyValues }) {
-
-        if (dependencyValues.headChild.length === 1) {
-          return { newValues: { head: dependencyValues.headChild[0].stateValues.coords } }
-        }
-        if (dependencyValues.headChildForDisplacement.length === 1) {
-          return { newValues: { head: dependencyValues.headChildForDisplacement[0].stateValues.coords } }
-        }
-        if (dependencyValues.endpointsChild.length === 1) {
-          if (dependencyValues.endpointsChild[0].stateValues.nPoints === 0) {
-            console.warn('vector cannot be determined from zero endpoints')
-            return { newValues: { head: me.fromAst(0) } }
-          } else if (dependencyValues.endpointsChild[0].stateValues.nPoints === 1) {
-            let head = dependencyValues.endpointsChild[0].stateValues.point1;
-            if (!head) {
-              // it is possible, when dependencies haven't been updated
-              // that don't have point1 set yet
-              head = me.fromAst(0);
-            }
-            return { newValues: { head } }
-          } else if (dependencyValues.endpointsChild[0].stateValues.nPoints === 2) {
-            let head = dependencyValues.endpointsChild[0].stateValues.point2;
-            if (!head) {
-              // it is possible, when dependencies haven't been updated
-              // that don't have point2 set yet
-              head = me.fromAst(0);
-            }
-            return { newValues: { head } }
-          } else if (dependencyValues.endpointsChild[0].stateValues.nPoints > 2) {
-            console.warn('vector cannot be determined from more than two endpoints')
-            return { newValues: { head: me.fromAst('\uff3f') } }
-          }
-        }
-        if (dependencyValues.headShadow !== null) {
-          return { newValues: { head: headShadow } }
-        }
-
-
-        // if made it to here, basedOnHead is false
-        // at this point, doesn't matter if based on tail
-        // as will use tail value anyway
-        // (tail will be made essential with default of zero
-        // if not based on head or tail)
-
-        if (dependencyValues.basedOnDisplacement) {
-
-          // displacement and tail: add to create head
-
-          let nDimDisplacement = 1, nDimTail = 1;
-          let displacementTree = dependencyValues.displacement.tree;
-          let tailTree = dependencyValues.tail.tree;
-
-          if (Array.isArray(tailTree) && (tailTree[0] === "tuple" || tailTree[0] === "vector")) {
-            nDimTail = tailTree.length - 1;
-          }
-          if (Array.isArray(displacementTree) && (displacementTree[0] === "tuple" || displacementTree[0] === "vector")) {
-            nDimDisplacement = displacementTree.length - 1;
-          }
-
-          if (nDimDisplacement !== nDimTail) {
-            console.warn("Dimensions of displacement and tail don't match for vector");
-            return { newValues: { head: me.fromAst('\uff3f') } }
-          }
-          if (nDimDisplacement === 1) {
-            return {
-              newValues: {
-                head:
-                  dependencyValues.tail.add(dependencyValues.displacement).simplify()
-              }
-            };
-          }
-          let headTree = ["vector"]
-          for (let i = 0; i < nDimDisplacement; i++) {
-            headTree.push(
-              dependencyValues.tail.get_component(i)
-                .add(dependencyValues.displacement.get_component(i))
-                .simplify()
-                .tree
-            );
-          }
-          return { newValues: { head: me.fromAst(headTree) } }
-
-        } else {
-
-          // if just based on tail, then head should default to
-          // zero of same dimension as tail
-          // (but it will use the resulting essential value after that
-          // so any changes will be saved)
-          // Note: headShadow will not be recalculated
-          // so will continue to have basedOnHead be false
-          // and this code will be continue to be reached
-          // But, since defaultValue is a getter, the defaultValue
-          // won't be recalculated when head is essential
-          return {
-            useEssentialOrDefaultValue: {
-              head: {
-                variablesToCheck: ["head"],
-                get defaultValue() {
-                  if (!["tuple", "vector"].includes(dependencyValues.tail.tree[0])) {
-                    return me.fromAst(0);
-                  }
-                  let headTree = ["vector"]
-                  for (let i = 1; i < dependencyValues.tail.tree.length; i++) {
-                    headTree.push(0);
-                  }
-                  return me.fromAst(headTree);
-                }
-              }
-            }
-          }
-
-
-        }
-
-      },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
-
-        if (dependencyValues.headChild.length === 1) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "headChild",
-              desiredValue: desiredStateVariableValues.head,
-              childIndex: 0,
-              variableIndex: 0,
-            }]
-          };
-        }
-        if (dependencyValues.headChildForDisplacement.length === 1) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "headChildForDisplacement",
-              desiredValue: desiredStateVariableValues.head,
-              childIndex: 0,
-              variableIndex: 0,
-            }]
-          };
-        }
-        if (dependencyValues.endpointsChild.length === 1) {
-          if (dependencyValues.endpointsChild[0].stateValues.nPoints === 0) {
-            return { success: false }
-          } else if (dependencyValues.endpointsChild[0].stateValues.nPoints === 1 ||
-            dependencyValues.endpointsChild[0].stateValues.nPoints === 2
-          ) {
-            return {
-              success: true,
-              instructions: [{
-                setDependency: "endpointsChild",
-                desiredValue: desiredStateVariableValues.head,
-                childIndex: 0,
-                variableIndex: 0,
-              }]
-            };
-          } else if (dependencyValues.endpointsChild[0].stateValues.nPoints > 2) {
-            return { success: false };
-          }
-        }
-        if (dependencyValues.headShadow !== null) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "headShadow",
-              desiredValue: desiredStateVariableValues.head,
-            }]
-          };
-        }
-
-
-        // not based on head
-
-        if (dependencyValues.basedOnDisplacement) {
-
-          // displacement and tail: set displacement to be desired head - tail
-
-          let nDimHead = 1, nDimTail = 1;
-          let headTree = desiredStateVariableValues.head.tree;
-          let tailTree = dependencyValues.tail.tree;
-
-          if (Array.isArray(tailTree) && (tailTree[0] === "tuple" || tailTree[0] === "vector")) {
-            nDimTail = tailTree.length - 1;
-          }
-          if (Array.isArray(headTree) && (headTree[0] === "tuple" || headTree[0] === "vector")) {
-            nDimHead = headTree.length - 1;
-          }
-
-          if (nDimHead !== nDimTail) {
-            return { success: false }
-          }
-          if (nDimHead === 1) {
-            return {
-              success: true,
-              instructions: [{
-                setDependency: "displacement",
-                desiredValue: desiredStateVariableValues.head.subtract(dependencyValues.tail).simplify()
-              }]
-            };
-          }
-          let displacementTree = ["vector"]
-          displacementTree.length = nDimHead + 1;
-          for (let i = 0; i < nDimHead; i++) {
-            if (desiredStateVariableValues.head.tree[i + 1] !== undefined) {
-              displacementTree[i + 1] =
-                desiredStateVariableValues.head.get_component(i)
-                  .subtract(dependencyValues.tail.get_component(i))
-                  .simplify()
-                  .tree
-            }
-          }
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "displacement",
-              desiredValue: me.fromAst(displacementTree)
-            }]
-          };
-
-        } else {
-
-          // if just based on tail, then head should have become
-          // an essential state variable
-          // set the value of the variable directly
-
-          return {
-            success: true,
-            instructions: [{
-              setStateVariable: "head",
-              value: desiredStateVariableValues.head.simplify(),
-            }]
-          }
-        }
-
-
-      }
-    }
-
-
-    stateVariableDefinitions.tail = {
-      public: true,
-      componentType: "point",
-      stateVariablesDeterminingDependencies: [
-        "basedOnHead", "basedOnTail", "basedOnDisplacement", "endpointNPoints"
-      ],
-      returnDependencies: function ({ stateValues }) {
-
-        let dependencies = {
-          basedOnHead: {
-            dependencyType: "stateVariable",
-            variableName: "basedOnHead",
-          },
-          basedOnDisplacement: {
-            dependencyType: "stateVariable",
-            variableName: "basedOnDisplacement",
-          },
-          tailShadow: {
-            dependencyType: "stateVariable",
-            variableName: "tailShadow"
-          },
-          tailChild: {
-            dependencyType: "childStateVariables",
-            childLogicName: "exactlyOneTail",
-            variableNames: ["coords"],
-          },
-          tailChildForDisplacement: {
-            dependencyType: "childStateVariables",
-            childLogicName: "exactlyOneTailForDisplacement",
-            variableNames: ["coords"],
-          },
-        };
-
-        if (stateValues.endpointNPoints === 2) {
-          dependencies.endpointsChild = {
-            dependencyType: "childStateVariables",
-            childLogicName: "exactlyOneEndpoints",
-            variableNames: ["point1", "nPoints"]
-          }
-        } else {
-          dependencies.endpointsChild = {
-            dependencyType: "childStateVariables",
-            childLogicName: "exactlyOneEndpoints",
-            variableNames: ["nPoints"]
-          }
-        }
-
-        if (!stateValues.basedOnTail) {
-          if (stateValues.basedOnHead) {
-            dependencies.head = {
-              dependencyType: "stateVariable",
-              variableName: "head"
-            }
-          }
-          if (stateValues.basedOnDisplacement) {
-            dependencies.displacement = {
-              dependencyType: "stateVariable",
-              variableName: "displacement"
-            }
-          }
-        }
-        return dependencies;
-
-      },
-      definition: function ({ dependencyValues }) {
-
-        if (dependencyValues.tailChild.length === 1) {
-          return { newValues: { tail: dependencyValues.tailChild[0].stateValues.coords } }
-        }
-        if (dependencyValues.tailChildForDisplacement.length === 1) {
-          return { newValues: { tail: dependencyValues.tailChildForDisplacement[0].stateValues.coords } }
-        }
-        if (dependencyValues.endpointsChild.length === 1) {
-          if (dependencyValues.endpointsChild[0].stateValues.nPoints === 0) {
-            console.warn('vector cannot be determined from zero endpoints')
-            return { newValues: { tail: me.fromAst(0) } }
-          } else if (dependencyValues.endpointsChild[0].stateValues.nPoints === 2) {
-            let tail = dependencyValues.endpointsChild[0].stateValues.point1;
-            if (!tail) {
-              // it is possible, when dependencies haven't been updated
-              // that don't have point1 set yet
-              tail = me.fromAst(0);
-            }
-            return { newValues: { tail } }
-          } else if (dependencyValues.endpointsChild[0].stateValues.nPoints > 2) {
-            console.warn('vector cannot be determined from more than two endpoints')
-            return { newValues: { tail: me.fromAst('\uff3f') } }
-          }
-        }
-        if (dependencyValues.tailShadow !== null) {
-          return { newValues: { tail: tailShadow } }
-        }
-
-        // if made it to here, basedOnTail is false
-
-
-        if (dependencyValues.basedOnHead) {
-          if (dependencyValues.basedOnDisplacement) {
-            // based on head and displacement,
-            // subtract displacement from head to get tail
-
-
-            let nDimDisplacement = 1, nDimHead = 1;
-            let displacementTree = dependencyValues.displacement.tree;
-            let headTree = dependencyValues.head.tree;
-
-            if (Array.isArray(headTree) && (headTree[0] === "tuple" || headTree[0] === "vector")) {
-              nDimHead = headTree.length - 1;
-            }
-            if (Array.isArray(displacementTree) && (displacementTree[0] === "tuple" || displacementTree[0] === "vector")) {
-              nDimDisplacement = displacementTree.length - 1;
-            }
-
-            if (nDimDisplacement !== nDimHead) {
-              console.warn("Dimensions of displacement and head don't match for vector");
-              return { newValues: { head: me.fromAst('\uff3f') } }
-            }
-            if (nDimDisplacement === 1) {
-              return {
-                newValues: {
-                  tail:
-                    dependencyValues.head.subtract(dependencyValues.displacement).simplify()
-                }
-              };
-            }
-            let tailTree = ["vector"]
-            for (let i = 0; i < nDimDisplacement; i++) {
-              tailTree.push(
-                dependencyValues.head.get_component(i)
-                  .subtract(dependencyValues.displacement.get_component(i))
-                  .simplify()
-                  .tree
-              );
-            }
-            return { newValues: { tail: me.fromAst(tailTree) } }
-
-          } else {
-
-            // head but no displacement
-            // tail defaults to zero of same dimension as head
-            // (but it will use the resulting essential value after that
-            // so any changes will be saved)
-            // Note: tailShadow will not be recalculated
-            // so will continue to have basedOnTail be false
-            // and this code will be continue to be reached
-            // But, since defaultValue is a getter, the defaultValue
-            // won't be recalculated when tail is essential
-            return {
-              useEssentialOrDefaultValue: {
-                tail: {
-                  variablesToCheck: ["tail"],
-                  get defaultValue() {
-                    if (!["tuple", "vector"].includes(dependencyValues.head.tree[0])) {
-                      return me.fromAst(0);
-                    }
-                    let tailTree = ["vector"]
-                    for (let i = 1; i < dependencyValues.head.tree.length; i++) {
-                      tailTree.push(0);
-                    }
-                    return me.fromAst(tailTree);
-                  }
-                }
-              }
-            }
-          }
-        } else {
-          if (dependencyValues.basedOnDisplacement) {
-            // displacement but no head
-            // tail default to zero of same size as displacement
-            return {
-              useEssentialOrDefaultValue: {
-                tail: {
-                  variablesToCheck: ["tail"],
-                  get defaultValue() {
-                    if (!["tuple", "vector"].includes(dependencyValues.displacement.tree[0])) {
-                      return me.fromAst(0);
-                    }
-                    let tailTree = ["vector"]
-                    for (let i = 1; i < dependencyValues.displacement.tree.length; i++) {
-                      tailTree.push(0);
-                    }
-                    return me.fromAst(tailTree);
-                  }
-                }
-              }
-            }
-
-          } else {
-            // no head or displacement
-            console.warn('need to set head, tail, or displacement of a vector')
-            return {
-              useEssentialOrDefaultValue: {
-                tail: {
-                  variablesToCheck: ["tail"],
-                  get defaultValue() {
-                    return me.fromAst(0);
-                  }
-                }
-              }
-            }
-
-          }
-        }
-      },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
-
-        if (dependencyValues.tailChild.length === 1) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "tailChild",
-              desiredValue: desiredStateVariableValues.tail,
-              childIndex: 0,
-              variableIndex: 0,
-            }]
-          };
-        }
-        if (dependencyValues.tailChildForDisplacement.length === 1) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "tailChildForDisplacement",
-              desiredValue: desiredStateVariableValues.tail,
-              childIndex: 0,
-              variableIndex: 0,
-            }]
-          };
-        }
-        if (dependencyValues.endpointsChild.length === 1) {
-          if (dependencyValues.endpointsChild[0].stateValues.nPoints === 0) {
-            return { success: false }
-          } else if (dependencyValues.endpointsChild[0].stateValues.nPoints === 2) {
-            return {
-              success: true,
-              instructions: [{
-                setDependency: "endpointsChild",
-                desiredValue: desiredStateVariableValues.tail,
-                childIndex: 0,
-                variableIndex: 0,
-              }]
-            };
-          } else if (dependencyValues.endpointsChild[0].stateValues.nPoints > 2) {
-            return { success: false }
-          }
-        }
-        if (dependencyValues.tailShadow !== null) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "tailShadow",
-              desiredValue: desiredStateVariableValues.tail,
-            }]
-          };
-        }
-
-        // if made it to here, basedOnTail is false
-
-        if (dependencyValues.basedOnHead && dependencyValues.basedOnDisplacement) {
-          // if based on head and displacement
-          // set displacement to be difference between head and desired tail
-
-          let nDimHead = 1, nDimTail = 1;
-          let headTree = dependencyValues.head.tree;
-          let tailTree = desiredStateVariableValues.tail.tree;
-
-          if (Array.isArray(tailTree) && (tailTree[0] === "tuple" || tailTree[0] === "vector")) {
-            nDimTail = tailTree.length - 1;
-          }
-          if (Array.isArray(headTree) && (headTree[0] === "tuple" || headTree[0] === "vector")) {
-            nDimHead = headTree.length - 1;
-          }
-
-          if (nDimHead !== nDimTail) {
-            return { success: false }
-          }
-          if (nDimHead === 1) {
-            return {
-              success: true,
-              instructions: [{
-                setDependency: "displacement",
-                desiredValue: dependencyValues.head.subtract(desiredStateVariableValues.tail).simplify()
-              }]
-            };
-          }
-          let displacementTree = ["vector"];
-          displacementTree.length = nDimHead + 1;
-          for (let i = 0; i < nDimHead; i++) {
-            if (desiredStateVariableValues.tail.tree[i + 1] !== undefined) {
-              displacementTree[i + 1] =
-                dependencyValues.head.get_component(i)
-                  .subtract(desiredStateVariableValues.tail.get_component(i))
-                  .simplify()
-                  .tree
-            }
-          }
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "displacement",
-              desiredValue: me.fromAst(displacementTree)
-            }]
-          };
-
-        } else {
-
-          // if not based on both head and displacement,
-          // then tail should have become
-          // an essential state variable
-          // set the value of the variable directly
-
-          return {
-            success: true,
-            instructions: [{
-              setStateVariable: "tail",
-              value: desiredStateVariableValues.tail.simplify(),
-            }]
-          }
-        }
-
-      }
-    }
+    // head (tail set to zero, displacement/xs set to head)
+    // head and tail (displacement/xs set to head-tail)
+    // displacement/xs (tail set to zero, head set to displacement)
+    // head and displacement/xs (tail set to head-displacement)
+    // tail and displacement/xs (head set to tail+displacement)
+    // If head, tail, and displacment/xs supplied, ignore head
 
 
     stateVariableDefinitions.displacement = {
-      forRenderer: true,
       public: true,
-      componentType: "vector",
-      stateVariablesDeterminingDependencies: [
-        "basedOnHead", "basedOnTail", "basedOnDisplacement"
-      ],
-      returnDependencies: function ({ stateValues }) {
+      componentType: "math",
+      isArray: true,
+      entryPrefixes: ["x"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "x") {
+          return [];
+        } else {
+          // entire array
+          // wrap by both <vector> and <xs>
+          return [["vector", "xs"]];
+        }
+      },
+      stateVariablesDeterminingDependencies: ["basedOnDisplacement"],
+      returnArraySizeDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nDimensions];
+      },
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
 
-        let dependencies = {
+        let globalDependencies = {
           basedOnHead: {
             dependencyType: "stateVariable",
             variableName: "basedOnHead",
@@ -1099,255 +694,182 @@ export default class Vector extends GraphicalComponent {
             dependencyType: "stateVariable",
             variableName: "displacementShadow"
           },
-          displacementChild: {
-            dependencyType: "childStateVariables",
-            childLogicName: "exactlyOneDisplacement",
-            variableNames: ["displacement"],
-          },
-        };
+        }
 
-        if (!stateValues.basedOnDisplacement) {
-          // if not based on displacement, will always use  head and tail values
-          // as, even if not based on head or tail,
-          // head or tail will be made essential (with default of zero)
-          dependencies.tail = {
-            dependencyType: "stateVariable",
-            variableName: "tail"
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          let varEnding = Number(arrayKey) + 1;
+          dependenciesByKey[arrayKey] = {
+            displacementChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneDisplacement",
+              variableNames: ["x" + varEnding],
+            },
+            xsChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneXs",
+              variableNames: ["math" + varEnding]
+            },
           }
-          dependencies.head = {
-            dependencyType: "stateVariable",
-            variableName: "head"
-          }
-        }
-        return dependencies;
-
-      },
-      definition: function ({ dependencyValues }) {
-
-        if (dependencyValues.displacementChild.length === 1) {
-          return { newValues: { displacement: dependencyValues.displacementChild[0].stateValues.displacement } }
-        }
-        if (dependencyValues.displacementShadow !== null) {
-          return { newValues: { displacement: dependencyValues.displacementShadow } }
-        }
-
-        // if made it to here, basedOnDisplacement is false
-
-        // calculate displacement from head and tail
-
-        let nDimTail = 1, nDimHead = 1;
-        let tailTree = dependencyValues.tail.tree;
-        let headTree = dependencyValues.head.tree;
-
-        if (Array.isArray(headTree) && (headTree[0] === "tuple" || headTree[0] === "vector")) {
-          nDimHead = headTree.length - 1;
-        }
-        if (Array.isArray(tailTree) && (tailTree[0] === "tuple" || tailTree[0] === "vector")) {
-          nDimTail = tailTree.length - 1;
-        }
-
-        if (nDimTail !== nDimHead) {
-          console.warn("Dimensions of tail and head don't match for vector");
-          return { newValues: { head: me.fromAst('\uff3f') } }
-        }
-        if (nDimTail === 1) {
-          return {
-            newValues: {
-              displacement:
-                dependencyValues.head.subtract(dependencyValues.tail).simplify()
+          if (arrayKey === "0") {
+            dependenciesByKey[arrayKey].componentChild = {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneX",
+              variableNames: ["value"],
             }
-          };
+          } else if (arrayKey === "1") {
+            dependenciesByKey[arrayKey].componentChild = {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneY",
+              variableNames: ["value"],
+            }
+          } else if (arrayKey === "2") {
+            dependenciesByKey[arrayKey].componentChild = {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneZ",
+              variableNames: ["value"],
+            }
+          }
+
+          if (!stateValues.basedOnDisplacement) {
+            // if not based on displacement, will always use head and tail values
+            // as, even if not based on head or tail,
+            // head or tail will be made essential (with default of zero)
+            dependenciesByKey[arrayKey].tailX = {
+              dependencyType: "stateVariable",
+              variableName: "tailX" + varEnding
+            }
+            dependenciesByKey[arrayKey].headX = {
+              dependencyType: "stateVariable",
+              variableName: "headX" + varEnding
+            }
+          }
         }
-        let displacementTree = ["vector"]
-        for (let i = 0; i < nDimTail; i++) {
-          displacementTree.push(
-            dependencyValues.head.get_component(i)
-              .subtract(dependencyValues.tail.get_component(i))
-              .simplify()
-              .tree
-          );
-        }
-        return { newValues: { displacement: me.fromAst(displacementTree) } }
+
+        return { globalDependencies, dependenciesByKey }
 
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
+      arrayDefinitionByKey: function ({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+        // console.log('array definition of vector displacement')
+        // console.log(globalDependencyValues, dependencyValuesByKey, arrayKeys)
 
-        if (dependencyValues.displacementChild.length === 1) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "displacementChild",
-              desiredValue: desiredStateVariableValues.displacement,
+        let displacement = {};
+
+        for (let arrayKey of arrayKeys) {
+          let varEnding = Number(arrayKey) + 1;
+
+          let displacementChild = dependencyValuesByKey[arrayKey].displacementChild;
+          if (displacementChild && displacementChild.length === 1) {
+            displacement[arrayKey] = displacementChild[0].stateValues["x" + varEnding];
+          } else {
+            let xsChild = dependencyValuesByKey[arrayKey].xsChild;
+            if (xsChild && xsChild.length === 1) {
+              displacement[arrayKey] = xsChild[0].stateValues["math" + varEnding].simplify();
+            } else {
+              let componentChild = dependencyValuesByKey[arrayKey].componentChild;
+              if (componentChild && componentChild.length === 1) {
+                displacement[arrayKey] = componentChild[0].stateValues.value.simplify();
+              } else if (globalDependencyValues.displacementShadow !== null) {
+                displacement[arrayKey] = globalDependencyValues.displacementShadow.get_component(Number(arrayKey));
+              } else {
+
+                // if made it to here, basedOnDisplacement is false
+                // calculate displacement from head and tail
+
+                displacement[arrayKey] = dependencyValuesByKey[arrayKey].headX.subtract(dependencyValuesByKey[arrayKey].tailX).simplify();
+              }
+            }
+          }
+        }
+        return { newValues: { displacement } }
+
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        globalDependencyValues, dependencyValuesByKey, dependencyNamesByKey, arraySize,
+      }) {
+
+        // console.log(`inverse array definition of displacement`)
+        // console.log(JSON.parse(JSON.stringify(desiredStateVariableValues)))
+        // console.log(JSON.parse(JSON.stringify(globalDependencyValues)))
+        // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
+
+        let instructions = [];
+
+        let updateDisplacementShadow = false;
+
+        for (let arrayKey in desiredStateVariableValues.displacement) {
+
+          let displacementChild = dependencyValuesByKey[arrayKey].displacementChild;
+          if (displacementChild && displacementChild.length === 1) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].displacementChild,
+              desiredValue: desiredStateVariableValues.displacement[arrayKey],
               childIndex: 0,
               variableIndex: 0,
-            }]
-          };
+            })
+          } else {
+            let xsChild = dependencyValuesByKey[arrayKey].xsChild;
+            if (xsChild && xsChild.length === 1) {
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].xsChild,
+                desiredValue: desiredStateVariableValues.displacement[arrayKey],
+                childIndex: 0,
+                variableIndex: 0,
+              });
+            } else {
+              let componentChild = dependencyValuesByKey[arrayKey].componentChild;
+              if (componentChild && componentChild.length === 1) {
+                instructions.push({
+                  setDependency: dependencyNamesByKey[arrayKey].componentChild,
+                  desiredValue: desiredStateVariableValues.displacement[arrayKey],
+                  childIndex: 0,
+                  variableIndex: 0,
+                });
+              } else if (globalDependencyValues.displacementShadow !== null) {
+                updateDisplacementShadow = true;
+              } else {
+
+                // if made it to here, basedOnDisplacement is false
+
+                // set head to be sum of tail and desired displacement
+                instructions.push({
+                  setDependency: dependencyNamesByKey[arrayKey].headX,
+                  desiredValue: dependencyValuesByKey[arrayKey].tailX.add(desiredStateVariableValues.displacement[arrayKey]).simplify()
+
+                })
+              }
+            }
+          }
         }
 
-        if (dependencyValues.displacementShadow !== null) {
-          return {
-            success: true,
-            instructions: [{
+        if (updateDisplacementShadow) {
+          if (arraySize[0] > 1) {
+            let desiredDisplacement = ["vector"];
+            for (let arrayKey in desiredStateVariableValues.displacement) {
+              desiredDisplacement[Number(arrayKey) + 1] = desiredStateVariableValues.displacement[arrayKey].tree;
+            }
+            desiredDisplacement.length = arraySize[0] + 1
+            instructions.push({
               setDependency: "displacementShadow",
-              desiredValue: desiredStateVariableValues.displacement,
-            }]
-          };
-        }
-
-        // if made it to here, basedOnDisplacement is false
-
-        // set head to be sum of tail and desired displacement
-
-        let nDimDisplacement = 1, nDimTail = 1;
-        let displacementTree = desiredStateVariableValues.displacement.tree;
-        let tailTree = dependencyValues.tail.tree;
-
-        if (Array.isArray(tailTree) && (tailTree[0] === "tuple" || tailTree[0] === "vector")) {
-          nDimTail = tailTree.length - 1;
-        }
-        if (Array.isArray(displacementTree) && (displacementTree[0] === "tuple" || displacementTree[0] === "vector")) {
-          nDimDisplacement = displacementTree.length - 1;
-        }
-
-        if (nDimDisplacement !== nDimTail) {
-          return { success: false }
-        }
-        if (nDimDisplacement === 1) {
-          return {
-            success: true,
-            instructions: [{
-              setDependency: "head",
-              desiredValue: dependencyValues.tail.add(desiredStateVariableValues.displacement).simplify()
-            }]
-          };
-        }
-        let headTree = ["vector"];
-        headTree.length = nDimDisplacement + 1;
-        for (let i = 0; i < nDimDisplacement; i++) {
-          if (desiredStateVariableValues.displacement.tree[i + 1] !== undefined) {
-            headTree[i + 1] =
-              dependencyValues.tail.get_component(i)
-                .add(desiredStateVariableValues.displacement.get_component(i))
-                .simplify()
-                .tree
+              desiredValue: me.fromAst(desiredDisplacement),
+            })
+          } else if (arraySize[0] === 1 && "0" in desiredStateVariableValues.displacement) {
+            instructions.push({
+              setDependency: "displacementShadow",
+              desiredValue: desiredStateVariableValues.displacement[0]
+            })
           }
         }
 
         return {
           success: true,
-          instructions: [{
-            setDependency: "head",
-            desiredValue: me.fromAst(headTree)
-          }]
+          instructions
         };
 
       }
     }
 
-    stateVariableDefinitions.nDimensions = {
-      public: true,
-      componentType: "number",
-      returnDependencies: () => ({
-        displacement: {
-          dependencyType: "stateVariable",
-          variableName: "displacement"
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        let nDimensions = 1;
-        let displacementTree = dependencyValues.displacement.tree;
-
-        if (Array.isArray(displacementTree) && (displacementTree[0] === "tuple" || displacementTree[0] === "vector")) {
-          nDimensions = displacementTree.length - 1;
-        }
-
-        // should check for actual change
-        // as frequently the dimension doesn't change
-        return { newValues: { nDimensions }, checkForActualChange: { nDimensions: true } };
-
-      }
-
-    }
-
-    stateVariableDefinitions.xs = {
-      public: true,
-      componentType: "math",
-      isArray: true,
-      entryPrefixes: ["x"],
-      returnDependencies: () => ({
-        displacement: {
-          dependencyType: "stateVariable",
-          variableName: "displacement"
-        },
-        nDimensions: {
-          dependencyType: "stateVariable",
-          variableName: "nDimensions"
-        }
-      }),
-      markStale: function ({ freshnessInfo }) {
-        // mark it all stake
-        freshnessInfo.xs.freshByKey = {};
-        return { fresh: false }
-      },
-      definition: function ({ dependencyValues, freshnessInfo }) {
-        let freshByKey = freshnessInfo.xs.freshByKey;
-
-        if (Object.keys(freshByKey).length > 0) {
-          // if anything is fresh, it all is fresh
-          return {};
-        }
-
-        for (let i = 0; i < dependencyValues.nDimensions; i++) {
-          freshByKey[i] = true;
-        }
-
-        // we'll build xs from displacement
-        if (dependencyValues.nDimensions === 1) {
-          return { newValues: { xs: [dependencyValues.displacement] } }
-        }
-
-        let xs = [];
-        for (let i = 0; i < dependencyValues.nDimensions; i++) {
-          xs.push(dependencyValues.displacement.get_component(i))
-        }
-
-        return { newValues: { xs } }
-
-      },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, workspace }) {
-
-        if (dependencyValues.nDimensions === 1) {
-          if ("0" in desiredStateVariableValues.xs) {
-            return {
-              success: true,
-              instructions: [{
-                setDependency: "displacement",
-                desiredValue: desiredStateVariableValues.xs[0],
-              }]
-            }
-          } else {
-            return { success: false }
-          }
-        }
-
-
-        let displacementTree = ["vector"];
-        displacementTree.length = dependencyValues.nDimensions + 1;
-
-
-        for (let key in desiredStateVariableValues.xs) {
-          displacementTree[Number(key) + 1] = desiredStateVariableValues.xs[key].tree;
-        }
-
-        return {
-          success: true,
-          instructions: [{
-            setDependency: "displacement",
-            desiredValue: me.fromAst(displacementTree),
-          }]
-        }
-      }
-    }
 
     stateVariableDefinitions.x = {
       isAlias: true,
@@ -1363,6 +885,458 @@ export default class Vector extends GraphicalComponent {
       isAlias: true,
       targetVariableName: "x3"
     };
+
+
+    stateVariableDefinitions.head = {
+      public: true,
+      componentType: "math",
+      isArray: true,
+      entryPrefixes: ["headX"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "headX") {
+          return [];
+        } else {
+          // entire array
+          // wrap by both <point> and <xs>
+          return [["point", "xs"]];
+        }
+      },
+      stateVariablesDeterminingDependencies: ["basedOnHead", "basedOnDisplacement"],
+      returnArraySizeDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nDimensions];
+      },
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
+
+        let globalDependencies = {
+          basedOnDisplacement: {
+            dependencyType: "stateVariable",
+            variableName: "basedOnDisplacement",
+          },
+          basedOnTail: {
+            dependencyType: "stateVariable",
+            variableName: "basedOnTail",
+          },
+          basedOnHead: {
+            dependencyType: "stateVariable",
+            variableName: "basedOnHead",
+          },
+          headShadow: {
+            dependencyType: "stateVariable",
+            variableName: "headShadow"
+          },
+        }
+
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          let varEnding = Number(arrayKey) + 1;
+          dependenciesByKey[arrayKey] = {
+            headChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneHead",
+              variableNames: ["x" + varEnding],
+            },
+          }
+
+          if (!stateValues.basedOnHead) {
+            // if not based on head, will always use tail value
+            // as, even if not based on tail,
+            // tail will be made essential (with default of zero)
+            dependenciesByKey[arrayKey].tailX = {
+              dependencyType: "stateVariable",
+              variableName: "tailX" + varEnding
+            }
+
+            if (stateValues.basedOnDisplacement) {
+              dependenciesByKey[arrayKey].x = {
+                dependencyType: "stateVariable",
+                variableName: "x" + varEnding
+              }
+            }
+          }
+        }
+
+        return { globalDependencies, dependenciesByKey }
+
+      },
+      arrayDefinitionByKey: function ({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+
+        // console.log('array definition of vector head')
+        // console.log(globalDependencyValues, dependencyValuesByKey, arrayKeys)
+
+        let head = {};
+        let essentialHeadXs = {};
+
+        for (let arrayKey of arrayKeys) {
+          let varEnding = Number(arrayKey) + 1;
+
+          if (globalDependencyValues.basedOnHead) {
+            if (dependencyValuesByKey[arrayKey].headChild.length === 1) {
+              head[arrayKey] = dependencyValuesByKey[arrayKey].headChild[0].stateValues["x" + varEnding];
+            } else if (globalDependencyValues.headShadow !== null) {
+              head[arrayKey] = globalDependencyValues.headShadow.get_component(Number(arrayKey));
+            }
+          } else {
+
+            // basedOnHead is false
+
+            if (globalDependencyValues.basedOnDisplacement) {
+
+              // displacement and tail: add to create head
+              // for this case, it doesn't matter if based on tail
+              // as will use tail value anyway
+              // (tail will be made essential with default of zero
+              // if not based on head or tail)
+
+              head[arrayKey] = dependencyValuesByKey[arrayKey].tailX.add(dependencyValuesByKey[arrayKey].x).simplify();
+            } else {
+
+              if (globalDependencyValues.basedOnTail) {
+                // if just based on tail, then head component should default 
+                // to the tail plut 1 in the first component and zero elsewhere
+                // (but it will use the resulting essential value after that
+                // so any changes will be saved)
+                essentialHeadXs[arrayKey] = {
+                  get defaultValue() {
+                    if (arrayKey === "0") {
+                      return dependencyValuesByKey[arrayKey].tailX.add(me.fromAst(1)).simplify()
+                    } else {
+                      return dependencyValuesByKey[arrayKey].tailX
+                    }
+                  },
+                  variablesToCheck: ["headX" + varEnding]
+                }
+              } else {
+                // if not based on anything, then head component should default
+                // to 1 in the first component and zeros elsewhere
+                // (but it will use the resulting essential value after that
+                // so any changes will be saved)
+                essentialHeadXs[arrayKey] = {
+                  get defaultValue() { return me.fromAst(arrayKey === "0" ? 1 : 0) },
+                  variablesToCheck: ["headX" + varEnding]
+                }
+              }
+            }
+          }
+        }
+
+        let result = {};
+        if (Object.keys(head).length > 0) {
+          result.newValues = { head }
+        }
+        if (Object.keys(essentialHeadXs).length > 0) {
+          result.useEssentialOrDefaultValue = { head: essentialHeadXs }
+        }
+
+        // console.log(`result of array definition of head of vector`)
+        // console.log(result);
+
+        return result;
+
+      },
+
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        globalDependencyValues, dependencyValuesByKey, dependencyNamesByKey, arraySize
+      }) {
+
+        // console.log(`inverse array definition of head`, desiredStateVariableValues,
+        //   globalDependencyValues, dependencyValuesByKey
+        // )
+
+        let instructions = [];
+
+        let updateHeadShadow = false;
+
+        for (let arrayKey in desiredStateVariableValues.head) {
+
+          if (globalDependencyValues.basedOnHead) {
+
+            if (dependencyValuesByKey[arrayKey].headChild &&
+              dependencyValuesByKey[arrayKey].headChild.length === 1
+            ) {
+
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].headChild,
+                desiredValue: desiredStateVariableValues.head[arrayKey],
+                childIndex: 0,
+                variableIndex: 0,
+              })
+            } else if (globalDependencyValues.headShadow !== null) {
+              updateHeadShadow = true;
+            }
+          } else {
+
+            // not based on head
+
+            if (globalDependencyValues.basedOnDisplacement) {
+
+              // displacement and tail: set displacement to be desired head - tail
+
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].x,
+                desiredValue: desiredStateVariableValues.head[arrayKey].subtract(dependencyValuesByKey[arrayKey].tailX).simplify()
+              })
+            } else {
+
+              // if just based on tail, then headX should have become
+              // an essential state variable
+              // set the value of the variable directly
+
+              instructions.push({
+                setStateVariable: "head",
+                value: desiredStateVariableValues.head[arrayKey],
+                arrayKey
+              })
+
+            }
+          }
+
+        }
+
+        if (updateHeadShadow) {
+          if (arraySize[0] > 1) {
+            let desiredHead = ["vector"];
+            for (let arrayKey in desiredStateVariableValues.head) {
+              desiredHead[Number(arrayKey) + 1] = desiredStateVariableValues.head[arrayKey].tree;
+            }
+            desiredHead.length = arraySize[0] + 1
+            instructions.push({
+              setDependency: "headShadow",
+              desiredValue: me.fromAst(desiredHead),
+            })
+          } else if (arraySize[0] === 1 && "0" in desiredStateVariableValues.head) {
+            instructions.push({
+              setDependency: "headShadow",
+              desiredValue: desiredStateVariableValues.head[0]
+            })
+          }
+
+        }
+
+        return {
+          success: true,
+          instructions
+        };
+
+      }
+    }
+
+
+
+    stateVariableDefinitions.tail = {
+      public: true,
+      componentType: "math",
+      isArray: true,
+      entryPrefixes: ["tailX"],
+      returnWrappingComponents(prefix) {
+        if (prefix === "tailX") {
+          return [];
+        } else {
+          // entire array
+          // wrap by both <point> and <xs>
+          return [["point", "xs"]];
+        }
+      },
+      stateVariablesDeterminingDependencies: ["basedOnHead", "basedOnDisplacement"],
+      returnArraySizeDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nDimensions];
+      },
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
+
+        let globalDependencies = {
+          basedOnDisplacement: {
+            dependencyType: "stateVariable",
+            variableName: "basedOnDisplacement",
+          },
+          basedOnHead: {
+            dependencyType: "stateVariable",
+            variableName: "basedOnHead",
+          },
+          tailShadow: {
+            dependencyType: "stateVariable",
+            variableName: "tailShadow"
+          },
+        }
+
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          let varEnding = Number(arrayKey) + 1;
+          dependenciesByKey[arrayKey] = {
+            tailChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "exactlyOneTail",
+              variableNames: ["x" + varEnding],
+            },
+          }
+
+          if (!stateValues.basedOnTail) {
+            if (stateValues.basedOnHead) {
+              dependenciesByKey[arrayKey].headX = {
+                dependencyType: "stateVariable",
+                variableName: "headX" + varEnding
+              }
+            }
+            if (stateValues.basedOnDisplacement) {
+              dependenciesByKey[arrayKey].x = {
+                dependencyType: "stateVariable",
+                variableName: "x" + varEnding
+              }
+            }
+          }
+        }
+
+        return { globalDependencies, dependenciesByKey }
+
+      },
+      arrayDefinitionByKey: function ({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+
+        // console.log('array definition of vector tail');
+        // console.log(JSON.parse(JSON.stringify(globalDependencyValues)))
+        // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
+        // console.log(JSON.parse(JSON.stringify(arrayKeys)))
+
+        let tail = {};
+        let essentialTailXs = {};
+
+        for (let arrayKey of arrayKeys) {
+          let varEnding = Number(arrayKey) + 1;
+
+          if (dependencyValuesByKey[arrayKey].tailChild.length === 1) {
+            tail[arrayKey] = dependencyValuesByKey[arrayKey].tailChild[0].stateValues["x" + varEnding];
+          } else if (globalDependencyValues.tailShadow !== null) {
+            tail[arrayKey] = globalDependencyValues.tailShadow.get_component(Number(arrayKey));
+          } else {
+
+            // if made it to here, basedOnTail is false
+
+            if (globalDependencyValues.basedOnHead && globalDependencyValues.basedOnDisplacement) {
+              // based on head and displacement,
+              // subtract displacement from head to get tail
+              tail[arrayKey] = dependencyValuesByKey[arrayKey].headX.subtract(dependencyValuesByKey[arrayKey].x).simplify();
+
+            } else {
+
+              // tail defaults to zero
+              // (but it will use the resulting essential value after that
+              // so any changes will be saved)
+              essentialTailXs[arrayKey] = {
+                get defaultValue() { return me.fromAst(0) },
+                variablesToCheck: ["tailX" + varEnding]
+              }
+            }
+
+          }
+        }
+
+        let result = {};
+        if (Object.keys(tail).length > 0) {
+          result.newValues = { tail }
+        }
+        if (Object.keys(essentialTailXs).length > 0) {
+          result.useEssentialOrDefaultValue = { tail: essentialTailXs }
+        }
+
+        return result;
+
+      },
+
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        globalDependencyValues, dependencyValuesByKey, dependencyNamesByKey, arraySize,
+      }) {
+
+        // console.log(`inverse array definition of tail`, desiredStateVariableValues,
+        //   globalDependencyValues, dependencyValuesByKey
+        // )
+
+        let instructions = [];
+
+        let updateTailShadow = false;
+
+        for (let arrayKey in desiredStateVariableValues.tail) {
+
+          if (dependencyValuesByKey[arrayKey].tailChild &&
+            dependencyValuesByKey[arrayKey].tailChild.length === 1
+          ) {
+
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].tailChild,
+              desiredValue: desiredStateVariableValues.tail[arrayKey],
+              childIndex: 0,
+              variableIndex: 0,
+            })
+          } else if (globalDependencyValues.tailShadow !== null) {
+            updateTailShadow = true;
+          } else {
+
+            // not based on tail
+
+            if (globalDependencyValues.basedOnHead && globalDependencyValues.basedOnDisplacement) {
+
+              // set displacement to be difference between head and desired tail
+
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].x,
+                desiredValue: dependencyValuesByKey[arrayKey].headX.subtract(desiredStateVariableValues.tail[arrayKey]).simplify()
+              })
+            } else {
+
+              // if not based on both head and displacement,
+              // then tail should have become
+              // an essential state variable
+              // set the value of the variable directly
+
+              instructions.push({
+                setStateVariable: "tail",
+                value: desiredStateVariableValues.tail[arrayKey],
+                arrayKey
+              })
+
+            }
+          }
+
+        }
+
+        if (updateTailShadow) {
+          if (arraySize[0] > 1) {
+            let desiredTail = ["vector"];
+            for (let arrayKey in desiredStateVariableValues.tail) {
+              desiredTail[Number(arrayKey) + 1] = desiredStateVariableValues.tail[arrayKey].tree;
+            }
+            desiredTail.length = arraySize[0] + 1
+            instructions.push({
+              setDependency: "tailShadow",
+              desiredValue: me.fromAst(desiredTail),
+            })
+          } else if (arraySize[0] === 1 && "0" in desiredStateVariableValues.tail) {
+            instructions.push({
+              setDependency: "tailShadow",
+              desiredValue: desiredStateVariableValues.tail[0]
+            })
+          }
+
+        }
+
+        return {
+          success: true,
+          instructions
+        };
+
+      }
+    }
+
 
 
     stateVariableDefinitions.numericalEndpoints = {
@@ -1399,13 +1373,13 @@ export default class Vector extends GraphicalComponent {
           numericalTail = [];
 
           for (let i = 0; i < dependencyValues.nDimensions; i++) {
-            let head = dependencyValues.head.get_component(i).evaluate_to_constant();
+            let head = dependencyValues.head[i].evaluate_to_constant();
             if (!Number.isFinite(head)) {
               head = NaN;
             }
             numericalHead.push(head);
 
-            let tail = dependencyValues.tail.get_component(i).evaluate_to_constant();
+            let tail = dependencyValues.tail[i].evaluate_to_constant();
             if (!Number.isFinite(tail)) {
               tail = NaN;
             }
@@ -1417,13 +1391,26 @@ export default class Vector extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.displacementCoords = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        displacement: {
+          dependencyType: "stateVariable",
+          variableName: "displacement"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            displacementCoords: me.fromAst(["vector", ...dependencyValues.displacement.map(x => x.tree)])
+          }
+        }
+      }
+    }
+
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
-        endpointsChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneEndpoints"
-        },
         headChild: {
           dependencyType: "childIdentity",
           childLogicName: "exactlyOneHead"
@@ -1432,37 +1419,18 @@ export default class Vector extends GraphicalComponent {
           dependencyType: "childIdentity",
           childLogicName: "exactlyOneTail"
         },
-        headChild2: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneHeadForDisplacement"
-        },
-        tailChild2: {
-          dependencyType: "childIdentity",
-          childLogicName: "exactlyOneTailForDisplacement"
-        },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.endpointsChild.length === 1) {
-          return {
-            newValues: {
-              childrenToRender: [dependencyValues.endpointsChild[0].componentName]
-            }
-          }
-        } else {
-          let childrenToRender = [];
-          if (dependencyValues.headChild.length === 1) {
-            childrenToRender.push(dependencyValues.headChild[0].componentName)
-          } else if (dependencyValues.headChild2.length === 1) {
-            childrenToRender.push(dependencyValues.headChild2[0].componentName)
-          }
-          if (dependencyValues.tailChild.length === 1) {
-            childrenToRender.push(dependencyValues.tailChild[0].componentName)
-          } else if (dependencyValues.tailChild2.length === 1) {
-            childrenToRender.push(dependencyValues.tailChild2[0].componentName)
-          }
 
-          return { newValues: { childrenToRender } }
+        let childrenToRender = [];
+        if (dependencyValues.headChild.length === 1) {
+          childrenToRender.push(dependencyValues.headChild[0].componentName)
         }
+        if (dependencyValues.tailChild.length === 1) {
+          childrenToRender.push(dependencyValues.tailChild[0].componentName)
+        }
+
+        return { newValues: { childrenToRender } }
       }
     }
 
@@ -1549,7 +1517,7 @@ export default class Vector extends GraphicalComponent {
 
 
   adapters = [{
-    stateVariable: "displacement",
+    stateVariable: "displacementCoords",
     componentType: "coords",
     stateVariableForNewComponent: "value",
   }];
@@ -1578,7 +1546,7 @@ export default class Vector extends GraphicalComponent {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "displacement",
-          value: me.fromAst(["vector", ...displacement])
+          value: displacement.map(x => me.fromAst(x))
         })
 
       } else {
@@ -1587,7 +1555,7 @@ export default class Vector extends GraphicalComponent {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "tail",
-          value: me.fromAst(["vector", ...tailcoords])
+          value: tailcoords.map(x => me.fromAst(x))
         })
       }
 
@@ -1601,7 +1569,7 @@ export default class Vector extends GraphicalComponent {
             updateType: "updateValue",
             componentName: this.componentName,
             stateVariable: "displacement",
-            value: me.fromAst(["vector", ...displacement])
+            value: displacement.map(x => me.fromAst(x))
           })
         }
       }
@@ -1616,7 +1584,7 @@ export default class Vector extends GraphicalComponent {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "head",
-          value: me.fromAst(["vector", ...headcoords])
+          value: headcoords.map(x => me.fromAst(x))
         })
       } else {
         // if based on displacement alone or displacement and tail
@@ -1630,7 +1598,7 @@ export default class Vector extends GraphicalComponent {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "displacement",
-          value: me.fromAst(["vector", ...displacement])
+          value: displacement.map(x => me.fromAst(x))
         })
       }
 
@@ -1645,7 +1613,7 @@ export default class Vector extends GraphicalComponent {
             updateType: "updateValue",
             componentName: this.componentName,
             stateVariable: "displacement",
-            value: me.fromAst(["vector", ...displacement])
+            value: displacement.map(x => me.fromAst(x))
           })
         }
       }

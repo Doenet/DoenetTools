@@ -204,7 +204,7 @@ export default class Vector extends DoenetRenderer {
       return <><a name={this.componentName} />{this.children}</>
     }
 
-    let mathJaxify = "\\(" + this.doenetSvData.displacement + "\\)";
+    let mathJaxify = "\\(" + this.doenetSvData.displacementCoords + "\\)";
     return <><a name={this.componentName} /><span id={this.componentName}>{mathJaxify}</span></>
   }
 }
