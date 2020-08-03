@@ -74,18 +74,19 @@ class DoenetChooser extends Component {
     this.courseFolderInfo = {};
     this.courseContentInfo = {};
     this.courseUrlInfo = {};
+    this.headingsInfo = {};
+    this.assignmentsInfo = {};
 
     this.loadUserContentBranches();
     this.loadUserFoldersAndRepo();
     this.loadUserUrls();
     this.loadAllCourses();
-    this.loadCourseHeadingsAndAssignments('aI8sK4vmEhC5sdeSP3vNW');
 
     this.branches_loaded = false;
     this.courses_loaded = false;
     this.folders_loaded = false;
     this.urls_loaded = false;
-    this.assignments_and_headings_loaded = false;
+    this.assignments_and_headings_loaded = true;
     this.userContentReloaded = false;
 
     this.updateNumber = 0;
@@ -1518,9 +1519,9 @@ class DoenetChooser extends Component {
         break;
       case ChooserConstants.COURSE_CONTENT_TYPE:
         data = {
-          "folder": this.courseFolderInfo[containerId],
-          "content": this.courseContentInfo[containerId],
-          "url": this.courseUrlInfo[containerId]
+          "folder": this.headingsInfo[containerId],
+          "content": this.assignmentsInfo[containerId],
+          "url": {}
         }
         break;
     }
@@ -1686,6 +1687,7 @@ class DoenetChooser extends Component {
     this.validDrop = true;
     this.lastDroppedContainerId = containerId;
   }
+
   splitPanelOnTreeDropEnter(listId, containerId, containerType) {
     console.log("onTreeDropEnter5", listId + '----'+containerId + '----'+containerType)
 
@@ -1855,7 +1857,7 @@ class DoenetChooser extends Component {
         this.saveContentTree({ folderInfo, callback: () => { } });
         break;
       case ChooserConstants.COURSE_CONTENT_TYPE:
-        //console.log("TODO")
+        this.saveAssignmentsTree({ courseId: courseId, headingsInfo: folderInfo, assignmentsInfo: contentInfo, callback: () => { } });
         break;
     }
   }
@@ -1898,13 +1900,17 @@ class DoenetChooser extends Component {
       // save data
     } else if (!this.validDrop) {
       // dropped outsize valid dropzone, reset all data
-      currParentsInfo = this.containerCache[containerId].parents;
-      currChildrenInfo = this.containerCache[containerId].leaves;
-      const newSourceContainerId = this.state.splitPanelCurrentDraggedObject.sourceContainerId;
-      if (newSourceContainerId != containerId) {
-        this.headingsInfo[newSourceContainerId] = this.containerCache[newSourceContainerId].parents;
-        this.assignmentsInfo[newSourceContainerId] = this.containerCache[newSourceContainerId].leaves;
-      }
+      // currParentsInfo = this.containerCache[containerId].parents;
+      // currChildrenInfo = this.containerCache[containerId].leaves;
+      // const newSourceContainerId = this.state.currentDraggedObject.sourceContainerId;
+      // if (newSourceContainerId != containerId) {
+      //   if (this.state.selectedDrive == "Content") {
+      //     // TODO: reset content from cache
+      //   } else if (this.state.selectedDrive == "Courses") {
+      //     this.headingsInfo[newSourceContainerId] = this.containerCache[newSourceContainerId].parents;
+      //     this.assignmentsInfo[newSourceContainerId] = this.containerCache[newSourceContainerId].leaves;
+      //   }
+      // }
     }
     this.folderInfo = currParentsInfo;
     this.branchId_info = currChildrenInfo;
@@ -1984,14 +1990,42 @@ class DoenetChooser extends Component {
         draggedItems.type.splice(i, 1);
       }
     }
+    let targetDroppedId = droppedId;
     if (droppedId == ChooserConstants.PREVIOUS_DIR_ID) {
       // add content to previous directory
-      let previousDirectoryId = this.state.directoryStack.slice(-2)[0];
-      if (this.state.directoryStack.length < 2) previousDirectoryId = "root";
-      this.addContentToFolder(draggedItems.id, draggedItems.type, previousDirectoryId);
-    } else {
-      // add draggedIds to folder with droppedId
-      this.addContentToFolder(draggedItems.id, draggedItems.type, droppedId);
+      targetDroppedId = this.state.directoryStack.slice(-2)[0];
+      if (this.state.directoryStack.length < 2) targetDroppedId = "root"; 
+    }
+
+    // add draggedIds to folder with targetDroppedId
+    if (this.state.selectedDrive == "Content") {
+      this.addContentToFolder(draggedItems.id, draggedItems.type, targetDroppedId);
+    } else if (this.state.selectedDrive == "Courses") {
+      const dataSource = this.getDataSource(containerId, ChooserConstants.COURSE_ASSIGNMENTS_TYPE);
+      const childrenListKeyMap = {
+        "folder": "childFolders",
+        "content": "childContent",
+        "url": "childUrls",
+      }
+      for (let i = 0; i < draggedItems.id.length; i++) {
+        const itemId = draggedItems.id[i]
+        const itemType = draggedItems.type[i];
+        const itemParentId = dataSource[itemType][itemId]["parentId"];
+        const folderListKey = childrenListKeyMap[itemType];
+        const indexInList = dataSource["folder"][itemParentId][folderListKey].findIndex(id => id == itemId);
+        if (indexInList > -1) {
+          dataSource["folder"][itemParentId][folderListKey].splice(indexInList, 1);
+        }
+        dataSource["folder"][targetDroppedId][folderListKey].push(itemId);
+        dataSource[itemType][itemId]["parentId"] = targetDroppedId;
+      }
+      this.updateTree({
+        containerType: ChooserConstants.COURSE_ASSIGNMENTS_TYPE,
+        folderInfo: dataSource["folder"],
+        contentInfo: dataSource["content"],
+        urlInfo: dataSource["url"],
+        courseId: containerId
+      })
     }
   }
 
@@ -2046,11 +2080,11 @@ class DoenetChooser extends Component {
       // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
     let assignmentsTree = <div className="tree" style={{padding: "5em 2em"}}>
       <TreeView
-        containerId={"aI8sK4vmEhC5sdeSP3vNW"}
+        containerId={this.state.selectedCourse}
         containerType={ChooserConstants.COURSE_ASSIGNMENTS_TYPE}
         loading={!this.assignments_and_headings_loaded}
-        parentsInfo={this.headingsInfo["aI8sK4vmEhC5sdeSP3vNW"]}
-        childrenInfo={this.assignmentsInfo["aI8sK4vmEhC5sdeSP3vNW"]}
+        parentsInfo={this.headingsInfo[this.state.selectedCourse]}
+        childrenInfo={this.assignmentsInfo[this.state.selectedCourse]}
         treeNodeIcons={TreeIcons}
         currentDraggedObject={this.state.currentDraggedObject}
         onDragStart={this.onTreeDragStart}
@@ -2113,6 +2147,7 @@ class DoenetChooser extends Component {
     }
     else {
       let loading = true;
+      let browserContainerId = ""
       let browserContentInfo = {}
       let browserFolderInfo = {}
       let browserUrlInfo = {}
@@ -2128,6 +2163,7 @@ class DoenetChooser extends Component {
         loading = !this.folders_loaded || !this.branches_loaded || !this.urls_loaded;
 
         // browser data
+        browserContainerId = "user";
         folderList = this.folderIds;
         contentList = this.sort_order;
         urlList = this.urlIds;
@@ -2146,6 +2182,7 @@ class DoenetChooser extends Component {
 
         // browser data
         console.log(this.headingsInfo)
+        browserContainerId = this.state.selectedCourse;
         if (this.headingsInfo[this.state.selectedCourse]["root"]) {
           folderList = this.headingsInfo[this.state.selectedCourse]["root"]["childFolders"]; 
           contentList = this.headingsInfo[this.state.selectedCourse]["root"]["childContent"]; 
@@ -2475,7 +2512,7 @@ class DoenetChooser extends Component {
       this.mainSection = <React.Fragment>
         <DoenetBranchBrowser
           loading={loading}
-          containerId={"browser"}
+          containerId={browserContainerId}
           allFolderInfo={browserFolderInfo}
           allContentInfo={browserContentInfo}
           allUrlInfo={browserUrlInfo}
