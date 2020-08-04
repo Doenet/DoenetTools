@@ -1,0 +1,51 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  html,
+  body,
+  #root {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    user-select: none;
+  }
+a, Link {
+  text-decoration: none;
+}
+  #root {
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    background: #f0f0f0;
+    padding: 15px;
+  }
+  
+  .list {
+    position: relative;
+    font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, ubuntu, roboto, noto,
+      segoe ui, arial, sans-serif;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .list > div {
+    position: absolute;
+    will-change: transform, width, height, opacity;
+    padding: 15px;
+  }
+  
+  .list > div > a > div {
+    position: relative;
+    background-size: cover;
+    background-position: center center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-size: 10px;
+    line-height: 12px;
+    border-radius: 4px;
+    box-shadow: 0px 10px 50px -10px rgba(0, 0, 0, 0.2);
+  }
+  
