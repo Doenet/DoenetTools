@@ -20,10 +20,28 @@ export default class Line extends DoenetRenderer {
   createGraphicalObject() {
 
 
+    if (this.doenetSvData.numericalVertices.length !== this.doenetSvData.nVertices ||
+      this.doenetSvData.numericalVertices.some(x => x.length !== 2)
+    ) {
+      return;
+    }
+
+
+    let validCoords = true;
+
+    for (let coords of this.doenetSvData.numericalVertices) {
+      if (!Number.isFinite(coords[0])) {
+        validCoords = false;
+      }
+      if (!Number.isFinite(coords[1])) {
+        validCoords = false;
+      }
+    }
+
     //things to be passed to JSXGraph as attributes
     this.jsxPolylineAttributes = {
       name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hide,
+      visible: !this.doenetSvData.hide && validCoords,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
       fixed: this.doenetSvData.draggable !== true,
       layer: 10 * this.doenetSvData.layer + 7,
@@ -47,7 +65,7 @@ export default class Line extends DoenetRenderer {
       highlightFillColor: 'lightgray',
       layer: 10 * this.doenetSvData.layer + 9,
     });
-    if (this.doenetSvData.draggable !== true) {
+    if (!this.doenetSvData.draggable && !this.doenetSvData.hide && validCoords) {
       this.jsxPointAttributes.visible = false;
     }
 

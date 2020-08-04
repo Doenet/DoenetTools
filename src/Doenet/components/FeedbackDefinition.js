@@ -96,22 +96,58 @@ export class FeedbackDefinitions extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.value = {
-      isArray: true,
-      entryPrefixes: ["feedbackDefinition"],
+    stateVariableDefinitions.nDefinitions = {
       returnDependencies: () => ({
         feedbackDefinitionChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "childIdentity",
           childLogicName: "atLeastZeroFeedbackDefinitions",
-          variableNames: ["value"]
         },
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          value: dependencyValues.feedbackDefinitionChildren
-            .map(x => x.stateValues.value)
+          nDefinitions: dependencyValues.feedbackDefinitionChildren.length
         }
       })
+    }
+
+    stateVariableDefinitions.value = {
+      isArray: true,
+      entryPrefixes: ["feedbackDefinition"],
+      returnArraySizeDependencies: () => ({
+        nDefinitions: {
+          dependencyType: "stateVariable",
+          variableName: "nDefinitions",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nDefinitions];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey.feedbackDefinitionChild = {
+            dependencyType: "childStateVariables",
+            childLogicName: "atLeastZeroFeedbackDefinitions",
+            variableNames: ["value"],
+            childIndices: [arrayKey]
+          };
+        }
+
+        return { dependenciesByKey };
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+        let value = {};
+
+        for (let arrayKey of arrayKeys) {
+          let feedbackDefinitionChild = dependencyValuesByKey[arrayKey].feedbackDefinitionChild;
+          if (feedbackDefinitionChild.length === 1) {
+            value[arrayKey] = feedbackDefinitionChild[0].stateValues.value;
+          }
+        }
+
+        return { newValues: { value } }
+      }
     }
 
     return stateVariableDefinitions;

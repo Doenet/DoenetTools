@@ -107,6 +107,7 @@ export default class Choice extends InlineComponent {
       public: true,
       componentType: "feedbacktext",
       isArray: true,
+      entireArrayAtOnce: true,
       entryPrefixes: ['feedback'],
       returnDependencies: () => ({
         feedbackText: {
@@ -126,7 +127,7 @@ export default class Choice extends InlineComponent {
           variableName: "submitted"
         }
       }),
-      definition: function ({ dependencyValues }) {
+      entireArrayDefinition({ dependencyValues }) {
 
         if (!dependencyValues.submitted) {
           return { newValues: { feedbacks: [] } }
@@ -136,15 +137,15 @@ export default class Choice extends InlineComponent {
 
         for (let feedbackCode of dependencyValues.feedbackCodes) {
           let code = feedbackCode.toLowerCase();
-          for(let feedbackDefinition of dependencyValues.feedbackDefinitions) {
-            if(code === feedbackDefinition.feedbackCode) {
+          for (let feedbackDefinition of dependencyValues.feedbackDefinitions) {
+            if (code === feedbackDefinition.feedbackCode) {
               feedbacks.push(feedbackDefinition.feedbackText);
               break;  // just take first match
             }
           }
         }
 
-        if(dependencyValues.feedbackText !== null) {
+        if (dependencyValues.feedbackText !== null) {
           feedbacks.push(dependencyValues.feedbackText);
         }
 

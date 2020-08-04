@@ -14,87 +14,87 @@ for ($i = 0; $i < $number_children; $i++) {
   $childId =  mysqli_real_escape_string($conn,$_POST["childIds"][$i]);
   $childType =  mysqli_real_escape_string($conn,$_POST["childType"][$i]);
   if ($childType == "content") {
-    //TEST if branch exists
-    $sql = "
-    SELECT id
-    FROM content_branch
-    WHERE branchId='$childId'
-    ";
-    $result = $conn->query($sql); 
-    if ($result->num_rows > 0){
-      if ($operationType == "insert") {
-        $sql = "
-        INSERT INTO user_content
-        (username, branchId)
-        VALUES
-        ('$remoteuser','$childId')
-        ";
-        echo $sql;
-        $result = $conn->query($sql);   
-      } else if($operationType == "remove") {
+    if ($operationType == "insert") {
+      $sql = "
+      INSERT INTO user_content
+      (username, branchId)
+      VALUES
+      ('$remoteuser','$childId')
+      ";
+      echo $sql;
+      $result = $conn->query($sql);   
+    } else if($operationType == "remove") {
+      //TEST if branch exists
+      $sql = "
+      SELECT id
+      FROM content_branch
+      WHERE branchId='$childId'
+      ";
+      $result = $conn->query($sql); 
+      if ($result->num_rows > 0){
         $sql = "
         DELETE FROM user_content
         WHERE username='$remoteuser' 
         AND branchId='$childId'
         ";
         echo $sql;
-        $result = $conn->query($sql);   
+        $result = $conn->query($sql);      
       }
     }
   } else if ($childType == "folder") {
-    //TEST if folder exists
-    $sql = "
-    SELECT id
-    FROM folder
-    WHERE folderId='$childId'
-    ";
-    $result = $conn->query($sql); 
-    if ($result->num_rows > 0){
-      if ($operationType == "insert") {
-        $sql = "
-        INSERT INTO user_folders
-        (username, folderId)
-        VALUES
-        ('$remoteuser','$childId')
-        ";
-        echo $sql;
-        $result = $conn->query($sql);   
-      } else if($operationType == "remove") {
+    if ($operationType == "insert") {
+      $sql = "
+      INSERT INTO user_folders
+      (username, folderId)
+      VALUES
+      ('$remoteuser','$childId')
+      ";
+      echo $sql;
+      $result = $conn->query($sql);   
+    } else if($operationType == "remove") {
+      //TEST if folder exists
+      $sql = "
+      SELECT id
+      FROM folder
+      WHERE folderId='$childId'
+      ";
+      $result = $conn->query($sql); 
+      if ($result->num_rows > 0){
         $sql = "
         DELETE FROM user_folders
         WHERE username='$remoteuser' 
         AND folderId='$childId'
         ";
         echo $sql;
-        $result = $conn->query($sql);   
+        $result = $conn->query($sql);     
       }
     }
   } else if ($childType == "url") {
-    //TEST if url exists
-    $sql = "
-    SELECT id
-    FROM url
-    WHERE urlId='$childId'
-    ";
-    $result = $conn->query($sql); 
-    if ($result->num_rows > 0){
-      if ($operationType == "insert") {
-        $sql = "
-        INSERT INTO user_urls
-        (username, urlId)
-        VALUES
-        ('$remoteuser','$childId')
-        ";
-        echo $sql;
-        $result = $conn->query($sql);   
-      } else if($operationType == "remove") {
+    if ($operationType == "insert") {
+      $sql = "
+      INSERT INTO user_urls
+      (username, urlId)
+      VALUES
+      ('$remoteuser','$childId')
+      ";
+      echo $sql;
+      $result = $conn->query($sql);   
+    } else if($operationType == "remove") {
+      //TEST if url exists
+      $sql = "
+      SELECT id
+      FROM url
+      WHERE urlId='$childId'
+      ";
+      $result = $conn->query($sql); 
+      if ($result->num_rows > 0){
         $sql = "
         DELETE FROM user_urls
         WHERE username='$remoteuser' 
         AND urlId='$childId'
         ";
         echo $sql;
-        $result = $conn->query($sql);   
+        $result = $conn->query($sql);     
       }
     }
   } 

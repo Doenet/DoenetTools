@@ -1473,20 +1473,20 @@ describe('Function Tag Tests', function () {
     </graph>
     
     <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" tname="_function1" /></p>
-    <p>Maxima locations: <copy prop="maximumlocation1" name="maximumlocation1" tname="_function1" />,
+    <p>Maximum locations: <copy prop="maximumlocation1" name="maximumlocation1" tname="_function1" />,
     <copy prop="maximumlocation2" name="maximumlocation2" tname="_function1" /></p>
-    <p>Maxima values: <copy prop="maximumvalue1" name="maximumvalue1" tname="_function1" />,
+    <p>Maximum values: <copy prop="maximumvalue1" name="maximumvalue1" tname="_function1" />,
     <copy prop="maximumvalue2" name="maximumvalue2" tname="_function1" /></p>
     <p>Number of minima: <copy prop="numberminima" name="numberminima" tname="_function1" /></p>
-    <p>Minima locations: <copy prop="minimumlocation1" name="minimumlocation1" tname="_function1" />,
+    <p>Minimum locations: <copy prop="minimumlocation1" name="minimumlocation1" tname="_function1" />,
     <copy prop="minimumlocation2" name="minimumlocation2" tname="_function1" /></p>
-    <p>Minima values: <copy prop="minimumvalue1" name="minimumvalue1" tname="_function1" />,
+    <p>Minimum values: <copy prop="minimumvalue1" name="minimumvalue1" tname="_function1" />,
     <copy prop="minimumvalue2" name="minimumvalue2" tname="_function1" /></p>
     <p>Number of extrema: <copy prop="numberextrema" name="numberextrema" tname="_function1" /></p>
-    <p>Extrema locations: <copy prop="extremumlocation1" name="extremumlocation1" tname="_function1" />,
+    <p>Extremum locations: <copy prop="extremumlocation1" name="extremumlocation1" tname="_function1" />,
     <copy prop="extremumlocation2" name="extremumlocation2" tname="_function1" />,
     <copy prop="extremumlocation3" name="extremumlocation3" tname="_function1" /></p>
-    <p>Extrema values: <copy prop="extremumvalue1" name="extremumvalue1" tname="_function1" />,
+    <p>Extremum values: <copy prop="extremumvalue1" name="extremumvalue1" tname="_function1" />,
     <copy prop="extremumvalue2" name="extremumvalue2" tname="_function1" />,
     <copy prop="extremumvalue3" name="extremumvalue3" tname="_function1" /></p>
     `}, "*");
@@ -1679,6 +1679,13 @@ describe('Function Tag Tests', function () {
     <function>sin(2*pi*x/<copy prop="value" tname="_mathinput1" />)</function>
     <copy prop="extrema" tname="_function1" />
     </graph>
+    <p><aslist><copy prop="maximumLocations" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="maximumValues" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumLocations" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumValues" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumLocations" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumValues" tname="_function1" /></aslist></p>
+
     `}, "*");
     });
 
@@ -1707,37 +1714,37 @@ describe('Function Tag Tests', function () {
 
       expect(f.stateValues.numberMaxima).eq(200 / period);
 
-      let maximaLocations = f.stateValues.maximaLocations;
-      for (let m of maximaLocations) {
+      let maximumLocations = f.stateValues.maximumLocations;
+      for (let m of maximumLocations) {
         expect(((m % period) + period) % period).closeTo(period / 4, 0.0001);
       }
 
-      let maximaValues = f.stateValues.maximaValues;
-      for (let m of maximaValues) {
+      let maximumValues = f.stateValues.maximumValues;
+      for (let m of maximumValues) {
         expect(m).closeTo(1, 0.0001);
       }
 
       expect(f.stateValues.numberMinima).eq(200 / period);
 
-      let minimalocations = f.stateValues.minimaLocations;
-      for (let m of minimalocations) {
+      let minimumLocations = f.stateValues.minimumLocations;
+      for (let m of minimumLocations) {
         expect(((m % period) + period) % period).closeTo(3 * period / 4, 0.0001);
       }
 
-      let minimaValues = f.stateValues.minimaValues;
-      for (let m of minimaValues) {
+      let minimumValues = f.stateValues.minimumValues;
+      for (let m of minimumValues) {
         expect(m).closeTo(-1, 0.0001);
       }
 
       expect(f.stateValues.numberExtrema).eq(400 / period);
 
-      let extremalocations = f.stateValues.minimaLocations;
-      for (let m of extremalocations) {
+      let extremumLocations = f.stateValues.minimumLocations;
+      for (let m of extremumLocations) {
         expect(((m % (period / 2)) + (period / 2)) % (period / 2)).closeTo(period / 4, 0.0001);
       }
 
-      let extremavalues = f.stateValues.minimaValues;
-      for (let m of extremavalues) {
+      let extremumValues = f.stateValues.minimumValues;
+      for (let m of extremumValues) {
         expect(Math.abs(m)).closeTo(1, 0.0001);
       }
 
@@ -1754,37 +1761,37 @@ describe('Function Tag Tests', function () {
 
       expect(f.stateValues.numberMaxima).eq(200 / period);
 
-      let maximaLocations = f.stateValues.maximaLocations;
-      for (let m of maximaLocations) {
+      let maximumLocations = f.stateValues.maximumLocations;
+      for (let m of maximumLocations) {
         expect(((m % period) + period) % period).closeTo(period / 4, 0.0001);
       }
 
-      let maximaValues = f.stateValues.maximaValues;
-      for (let m of maximaValues) {
+      let maximumValues = f.stateValues.maximumValues;
+      for (let m of maximumValues) {
         expect(m).closeTo(1, 0.0001);
       }
 
       expect(f.stateValues.numberMinima).eq(200 / period);
 
-      let minimalocations = f.stateValues.minimaLocations;
-      for (let m of minimalocations) {
+      let minimumLocations = f.stateValues.minimumLocations;
+      for (let m of minimumLocations) {
         expect(((m % period) + period) % period).closeTo(3 * period / 4, 0.0001);
       }
 
-      let minimaValues = f.stateValues.minimaValues;
-      for (let m of minimaValues) {
+      let minimumValues = f.stateValues.minimumValues;
+      for (let m of minimumValues) {
         expect(m).closeTo(-1, 0.0001);
       }
 
       expect(f.stateValues.numberExtrema).eq(400 / period);
 
-      let extremalocations = f.stateValues.minimaLocations;
-      for (let m of extremalocations) {
+      let extremumLocations = f.stateValues.minimumLocations;
+      for (let m of extremumLocations) {
         expect(((m % (period / 2)) + (period / 2)) % (period / 2)).closeTo(period / 4, 0.0001);
       }
 
-      let extremavalues = f.stateValues.minimaValues;
-      for (let m of extremavalues) {
+      let extremumValues = f.stateValues.minimumValues;
+      for (let m of extremumValues) {
         expect(Math.abs(m)).closeTo(1, 0.0001);
       }
 
@@ -1834,6 +1841,13 @@ describe('Function Tag Tests', function () {
     </function>
     <copy prop="extrema" tname="_function1" />
     </graph>
+    <p><aslist><copy prop="maximumLocations" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="maximumValues" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumLocations" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumValues" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumLocations" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumValues" tname="_function1" /></aslist></p>
+
     `}, "*");
     });
 
@@ -1846,20 +1860,22 @@ describe('Function Tag Tests', function () {
       let f = components['/_function1'];
 
       // values of extrema computed in Sage
-      let minimaLocations = [-2.29152990292159];
-      let minimaValues = [0.150710261517204];
-      let maximaLocations = [-11.6660173492088, 3.18454272065031, 9.77300453148004];
-      let maximaValues = [0.00247762462709702, -1.92014417815870, 0.0129202046449760]
+      let minimumLocations = [-2.29152990292159];
+      let minimumValues = [0.150710261517204];
+      let maximumLocations = [-11.6660173492088, 3.18454272065031, 9.77300453148004];
+      let maximumValues = [0.00247762462709702, -1.92014417815870, 0.0129202046449760]
 
       expect(f.stateValues.numberMaxima).eq(3);
       expect(f.stateValues.numberMinima).eq(1);
       expect(f.stateValues.numberExtrema).eq(4);
 
-      expect(f.stateValues.minimaValues[0]).closeTo(minimaValues[0], 0.000001);
-      expect(f.stateValues.minimaLocations[0]).closeTo(minimaLocations[0], 0.000001);
-      for (let i in maximaLocations) {
-        expect(f.stateValues.maximaValues[i]).closeTo(maximaValues[i], 0.000001);
-        expect(f.stateValues.maximaLocations[i]).closeTo(maximaLocations[i], 0.000001);
+      // Note: since just one value, the arrayEntries minimumValues and minimumLocations
+      // are not arrays.
+      expect(f.stateValues.minimumValues).closeTo(minimumValues[0], 0.000001);
+      expect(f.stateValues.minimumLocations).closeTo(minimumLocations[0], 0.000001);
+      for (let i in maximumLocations) {
+        expect(f.stateValues.maximumValues[i]).closeTo(maximumValues[i], 0.000001);
+        expect(f.stateValues.maximumLocations[i]).closeTo(maximumLocations[i], 0.000001);
       }
 
     });
@@ -1909,8 +1925,12 @@ describe('Function Tag Tests', function () {
     <copy prop="extrema" tname="_function1" />
     </graph>
 
-    <copy prop="extremalocations" tname="_function1" />,
-    <copy prop="extremavalues" tname="_function1" />
+    <p><aslist><copy prop="maximumLocations" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="maximumValues" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumLocations" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumValues" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumLocations" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumValues" tname="_function1" /></aslist></p>
 
     `}, "*");
     });
@@ -1927,8 +1947,8 @@ describe('Function Tag Tests', function () {
       expect(f.stateValues.numberMinima).eq(0);
       expect(f.stateValues.numberExtrema).eq(1);
 
-      expect(f.stateValues.maximaLocations[0]).closeTo(2.614, 0.001);
-      expect(f.stateValues.maximaValues[0]).closeTo(3.820, 0.001);
+      expect(f.stateValues.maximumLocations).closeTo(2.614, 0.001);
+      expect(f.stateValues.maximumValues).closeTo(3.820, 0.001);
 
     });
 
@@ -1966,6 +1986,13 @@ describe('Function Tag Tests', function () {
     <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" tname="_function2" /></p>
     <p>Number of minima: <copy prop="numberminima" name="numberminima" tname="_function2" /></p>
     
+    <p><aslist><copy prop="maximumLocations" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="maximumValues" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumLocations" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumValues" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumLocations" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumValues" tname="_function1" /></aslist></p>
+
     `}, "*");
     });
 
@@ -1990,8 +2017,8 @@ describe('Function Tag Tests', function () {
         expect(f2.stateValues.numberMinima).eq(1);
         expect(f2.stateValues.numberExtrema).eq(3);
 
-        expect(f1.stateValues.maximaLocations[0]).eq(2);
-        expect(f1.stateValues.maximaValues[0]).eq(1);
+        expect(f1.stateValues.maximumLocations).eq(2);
+        expect(f1.stateValues.maximumValues).eq(1);
 
         expect(f1.stateValues.xscale).eq(1);
         expect(f1.stateValues.yscale).eq(5);
@@ -2017,8 +2044,8 @@ describe('Function Tag Tests', function () {
         expect(f2.stateValues.numberMinima).eq(0);
         expect(f2.stateValues.numberExtrema).eq(1);
 
-        expect(f1.stateValues.maximaLocations[0]).eq(1);
-        expect(f1.stateValues.maximaValues[0]).eq(0);
+        expect(f1.stateValues.maximumLocations).eq(1);
+        expect(f1.stateValues.maximumValues).eq(0);
 
       });
 
@@ -2041,8 +2068,8 @@ describe('Function Tag Tests', function () {
         expect(f2.stateValues.numberMinima).eq(2);
         expect(f2.stateValues.numberExtrema).eq(4);
 
-        expect(f1.stateValues.maximaLocations[0]).eq(2);
-        expect(f1.stateValues.maximaValues[0]).eq(2);
+        expect(f1.stateValues.maximumLocations).eq(2);
+        expect(f1.stateValues.maximumValues).eq(2);
 
       });
 

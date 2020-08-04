@@ -54,8 +54,12 @@ export default class Point extends DoenetRenderer {
 
     this.pointJXG.on('drag', function () {
       //board.suspendUpdate();
-      this.onDragHandler();
+      this.onDragHandler(true);
       //board.unsuspendUpdate();
+    }.bind(this));
+
+    this.pointJXG.on('up', function () {
+      this.onDragHandler(false);
     }.bind(this));
 
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
@@ -153,8 +157,8 @@ export default class Point extends DoenetRenderer {
 
   }
 
-  onDragHandler() {
-    this.actions.movePoint({ x: this.pointJXG.X(), y: this.pointJXG.Y() });
+  onDragHandler(transient) {
+    this.actions.movePoint({ x: this.pointJXG.X(), y: this.pointJXG.Y(), transient });
   }
 
   componentDidMount() {

@@ -4,6 +4,8 @@ import {
   breakEmbeddedStringByCommas, breakIntoVectorComponents,
   breakPiecesByEquals
 } from './commonsugar/breakstrings';
+import { returnNVariables } from '../utils/math';
+
 import me from 'math-expressions';
 
 export default class Curve extends GraphicalComponent {
@@ -26,15 +28,15 @@ export default class Curve extends GraphicalComponent {
     properties.parmin = { default: me.fromAst(-10), propagateToDescendants: true };
     properties.parmax = { default: me.fromAst(10), propagateToDescendants: true };
 
-    properties.variables = {
-      componentType: "math",
-      entryPrefixes: ["var"],
-      dependentStateVariables: [{
-        dependencyName: "nVariables",
-        variableName: "nVariables"
-      }],
-      propagateToDescendants: true,
-    }
+    // properties.variables = {
+    //   componentType: "math",
+    //   entryPrefixes: ["var"],
+    //   dependentStateVariables: [{
+    //     dependencyName: "nVariables",
+    //     variableName: "nVariables"
+    //   }],
+    //   propagateToDescendants: true,
+    // }
 
     return properties;
   }
@@ -466,7 +468,7 @@ export default class Curve extends GraphicalComponent {
       number: 1,
     })
 
-    childLogic.newOperator({
+    let curveXorSugar = childLogic.newOperator({
       name: "curveXorSugar",
       operator: 'xor',
       propositions: [
@@ -474,7 +476,20 @@ export default class Curve extends GraphicalComponent {
         atLeastTwoFunctions, exactlyOneFunction,
         exactlyOneCurve
       ],
-      setAsBase: true
+    });
+
+    let atMostOneVariables = childLogic.newLeaf({
+      name: "atMostOneVariables",
+      componentType: 'variables',
+      comparison: 'atMost',
+      number: 1
+    });
+
+    childLogic.newOperator({
+      name: "curveLogic",
+      operator: 'and',
+      propositions: [curveXorSugar, atMostOneVariables],
+      setAsBase: true,
     });
 
     return childLogic;
@@ -590,6 +605,48 @@ export default class Curve extends GraphicalComponent {
 
       }
     }
+
+
+    stateVariableDefinitions.variables = {
+      isArray: true,
+      public: true,
+      componentType: "variable",
+      entryPrefixes: ["var"],
+      returnArraySizeDependencies: () => ({
+        nVariables: {
+          dependencyType: "stateVariable",
+          variableName: "nVariables",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nVariables];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          variablesChild: {
+            dependencyType: "childStateVariables",
+            childLogicName: "atMostOneVariables",
+            variableNames: ["variables"],
+          }
+        };
+
+        return { globalDependencies }
+      },
+      arrayDefinitionByKey({ globalDependencyValues, arraySize }) {
+        let variablesSpecified = [];
+        if (globalDependencyValues.variablesChild.length === 1) {
+          variablesSpecified = globalDependencyValues.variablesChild[0].stateValues.variables;
+        }
+
+        return {
+          newValues: {
+            variables: returnNVariables(arraySize[0], variablesSpecified)
+          }
+        }
+
+      }
+    }
+
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({

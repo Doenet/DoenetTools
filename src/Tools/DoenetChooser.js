@@ -4,6 +4,7 @@ axios.defaults.withCredentials = true;
 import crypto from 'crypto';
 import nanoid from 'nanoid';
 import "./chooser.css";
+import "../imports/doenet.css";
 import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -32,7 +33,6 @@ import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import SplitLayoutPanel from "./ToolLayout/SplitLayoutPanel";
 import DropDownSelect from '../imports/PanelHeaderComponents/DropDownSelect';
 import ButtonGroup from '../imports/PanelHeaderComponents/ButtonGroup';
-import { throws } from 'assert';
 
 import {
   HashRouter as Router,
@@ -63,8 +63,10 @@ class DoenetChooser extends Component {
       splitPanelCurrentDraggedObject: { id: null, type: null, sourceContainerId: null, dataObject: null, sourceParentId: null },
       panelsCollection: { "first": { values: ["browser", "tree"], activeContainer: "browser" } },
       splitPanelsCollection: { "second": { values: ["browser", "tree"], activeContainer: "browser" } },
-      splitPanelLayout: false
-
+      splitPanelLayout: false,
+      courseActiveChild: false,
+      contentActiveChild: false,
+      userFolderInfo: {}
     };
 
     this.containerCache = {};
@@ -150,13 +152,13 @@ class DoenetChooser extends Component {
     this.splitPanelUpdateDirectoryStack = this.splitPanelUpdateDirectoryStack.bind(this);
     this.onSplitPanelBrowserDragStart = this.onSplitPanelBrowserDragStart.bind(this);
     this.onSplitPanelBrowserDragEnd = this.onSplitPanelBrowserDragEnd.bind(this);
-    this.onSplitPanelBrowserDropEnter = this.onSplitPanelBrowserDropEnter.bind(this);
+    // this.onSplitPanelBrowserDropEnter = this.onSplitPanelBrowserDropEnter.bind(this);
     this.onSplitPanelBrowserDrop = this.onSplitPanelBrowserDrop.bind(this);
-    this.onSplitPanelBrowserFolderDrop = this.onSplitPanelBrowserFolderDrop.bind(this);
     this.tempSet = new Set();
+    this.customizedTempSet = new Set();
   }
 
-  buildCourseList() {
+  buildCourseList = () => {
     this.courseList = [];
     for (let courseId of this.courseIds) {
       let courseCode = this.courseInfo[courseId].courseCode;
@@ -181,7 +183,7 @@ class DoenetChooser extends Component {
     }
   }
 
-  buildLeftNavPanel() {
+  buildLeftNavPanel = () => {
     this.leftNavPanel = <React.Fragment>
       <div className="leftNavPanel">
         <div id="leftNavPanelMenu">
@@ -211,7 +213,7 @@ class DoenetChooser extends Component {
     </React.Fragment>
   }
 
-  buildTopToolbar() {
+  buildTopToolbar = () => {
     let toolbarTitle = "";
 
     if (this.state.activeSection === "chooser") {
@@ -244,7 +246,7 @@ class DoenetChooser extends Component {
     </React.Fragment>
   }
 
-  handleNewDocument() {
+  handleNewDocument = () => {
     let newBranchId = nanoid();
     let num = 1;
     let title = "Untitled Document " + num;
@@ -294,7 +296,7 @@ class DoenetChooser extends Component {
     }));
   }
 
-  toggleManageCourseForm(mode) {
+  toggleManageCourseForm = (mode) => { 
     if (this.state.activeSection !== mode) {
       this.setState({ activeSection: mode });
     } else {
@@ -302,7 +304,7 @@ class DoenetChooser extends Component {
     }
   }
 
-  handleNewCourseCreated({ courseId, courseName, courseCode, term, description, department, section }, callback = (() => { })) {
+  handleNewCourseCreated = ({courseId, courseName, courseCode, term, description, department, section}, callback=(()=>{})) => {
     // create new documents for overview and syllabus, get branchIds
     let overviewId = nanoid();
     let overviewDocumentName = courseName + " Overview";
@@ -311,19 +313,19 @@ class DoenetChooser extends Component {
     let syllabusDocumentName = courseName + " Syllabus";
 
     Promise.all([
-      this.saveContentToServer({
-        documentName: overviewDocumentName,
-        code: "",
-        branchId: overviewId,
-        publish: true
-      }),
-      this.saveContentToServer({
-        documentName: syllabusDocumentName,
-        code: "",
-        branchId: syllabusId,
-        publish: true
-      }),
-      this.saveCourse({
+      new Promise(resolve => this.saveContentToServer({
+        documentName:overviewDocumentName,
+        code:"",
+        branchId:overviewId,
+        publish:true
+      }, ()=>{resolve()})),
+      new Promise(resolve => this.saveContentToServer({
+        documentName:syllabusDocumentName,
+        code:"",
+        branchId:syllabusId,
+        publish:true
+      }, ()=>{resolve()})),
+      new Promise(resolve => this.saveCourse({
         courseName: courseName,
         courseId: courseId,
         courseCode: courseCode,
@@ -333,9 +335,9 @@ class DoenetChooser extends Component {
         section: section,
         overviewId: overviewId,
         syllabusId: syllabusId
-      }),
-      this.addContentToCourse(courseId, [overviewId, syllabusId], ["content", "content"]),
-      this.saveUserContent([overviewId, syllabusId], ["content", "content"], "insert")
+      }, ()=>{resolve()})),
+      new Promise(resolve => this.addContentToCourse(courseId, [overviewId, syllabusId], ["content", "content"], ()=>{resolve()})),
+      new Promise(resolve => this.saveUserContent([overviewId, syllabusId], ["content", "content"], "insert", ()=>{resolve()}))
     ])
       .then(() => {
         this.loadAllCourses(() => {
@@ -346,7 +348,7 @@ class DoenetChooser extends Component {
       })
   }
 
-  toggleManageUrlForm(mode) {
+  toggleManageUrlForm = (mode) => {
     if (this.state.activeSection !== mode) {
       this.setState({ activeSection: mode });
     } else {
@@ -354,40 +356,35 @@ class DoenetChooser extends Component {
     }
   }
 
-  handleNewUrlCreated({ urlId, title, url, description, usesDoenetAPI }, callback = (() => { })) {
+  handleNewUrlCreated = ({urlId, title, url, description, usesDoenetAPI}, callback=(()=>{})) => {
+    const currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
     Promise.all([
-      this.saveUrl({
+      new Promise(resolve => this.saveUrl({
         urlId: urlId,
         title: title,
         url: url,
         description: description,
         usesDoenetAPI: usesDoenetAPI
-      }, () => {
-        // add url to current folder
-        let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
-        this.addContentToFolder([urlId], ["url"], currentFolderId);
-
-        this.saveUserContent([urlId], ["url"], "insert", () => {  // add to user root
-          this.loadUserUrls(() => {
-            this.setState({
-              selectedItems: [urlId],
-              selectedItemsType: ["url"],
-              activeSection: "chooser",
-              selectedDrive: "Content"
-            }, () => {
-            });
-          });
-        })
-      }),
+      }, ()=>{resolve()})),
+      new Promise(resolve => this.addContentToFolder([urlId], ["url"], currentFolderId, ()=>{resolve()})), // add url to current folder
+      new Promise(resolve => this.saveUserContent([urlId], ["url"], "insert", ()=>{resolve()})), // add to user root
     ])
-      .then(() => {
-        callback();
-      })
+    .then(() => {
+      this.loadUserUrls(() => {
+        this.setState({
+          selectedItems: [urlId],
+          selectedItemsType: ["url"],
+          activeSection: "chooser",
+          selectedDrive: "Content"
+        });
+      });
+      callback();
+    })
   }
 
-  saveUrl({ urlId, title, url, description, usesDoenetAPI }, callback = (() => { })) {
-    const apiUrl = '/api/saveUrl.php';
-    const data = {
+  saveUrl = ({urlId, title, url, description, usesDoenetAPI}, callback=(()=>{})) => {
+    const apiUrl='/api/saveUrl.php';
+    const data={
       urlId: urlId,
       title: title,
       url: url,
@@ -403,7 +400,7 @@ class DoenetChooser extends Component {
       })
   }
 
-  loadUserUrls(callback = (() => { })) {
+  loadUserUrls = (callback=(()=>{})) => {
     this.urls_loaded = false;
 
     const loadUserUrlsUrl = '/api/loadUserUrls.php';
@@ -421,7 +418,7 @@ class DoenetChooser extends Component {
       });
   }
 
-  loadUserContentBranches(callback = (() => { })) {
+  loadUserContentBranches = (callback=(()=>{})) => {
     this.branches_loaded = false;
 
     let currentFolderId = this.state.directoryStack.length === 0 ?
@@ -444,10 +441,10 @@ class DoenetChooser extends Component {
       });
   }
 
-  saveContentToServer({ documentName, code, branchId, publish = false }, callback = (() => { })) {
-    const url = '/api/saveContent.php';
-    let ID = this.getContentId({ code: code }) //get contentid
-    const data = {
+  saveContentToServer = ({documentName,code,branchId,publish=false}, callback=(()=>{})) => {
+    const url='/api/saveContent.php';
+    let ID = this.getContentId({code:code}) //get contentid
+    const data={
       title: documentName,
       doenetML: code,
       branchId: branchId,
@@ -465,7 +462,7 @@ class DoenetChooser extends Component {
       })
   }
 
-  getContentId({ code }) {
+  getContentId = ({code}) => {
     const hash = crypto.createHash('sha256');
     if (code === undefined) {
       return;
@@ -476,9 +473,9 @@ class DoenetChooser extends Component {
     return contentId;
   }
 
-  saveCourse({ courseId, courseName, courseCode, term, description, department, section, overviewId, syllabusId }, callback = (() => { })) {
-    const url = '/api/saveCourse.php';
-    const data = {
+  saveCourse = ({courseId, courseName, courseCode, term, description, department, section, overviewId, syllabusId}, callback=(()=>{})) => {
+    const url='/api/saveCourse.php';
+    const data={
       longName: courseName,
       courseId: courseId,
       shortName: courseCode,
@@ -508,9 +505,9 @@ class DoenetChooser extends Component {
       })
   }
 
-  loadAllCourses(callback = (() => { })) {
-    const loadCoursesUrl = '/api/loadAllCourses.php';
-    const data = {
+  loadAllCourses = (callback=(()=>{})) => {
+    const loadCoursesUrl='/api/loadAllCourses.php';
+    const data={
     }
     const payload = {
       params: data
@@ -526,7 +523,7 @@ class DoenetChooser extends Component {
       });
   }
 
-  loadCourseContent(courseId, callback = (() => { })) {
+  loadCourseContent = (courseId, callback=(()=>{})) => {
     this.folders_loaded = false;
     this.branches_loaded = false;
     this.url_loaded = false;
@@ -555,9 +552,9 @@ class DoenetChooser extends Component {
       });
   }
 
-  saveCourseContent(courseId, itemIds, itemTypes, operationType, callback = (() => { })) {
-    const url = '/api/saveCourseContent.php';
-    const data = {
+  saveCourseContent = (courseId, itemIds, itemTypes, operationType, callback=(()=>{})) => {
+    const url='/api/saveCourseContent.php';
+    const data={
       courseId: courseId,
       itemIds: itemIds,
       itemTypes: itemTypes,
@@ -572,7 +569,7 @@ class DoenetChooser extends Component {
       })
   }
 
-  selectDrive(drive, courseId = null) {
+  selectDrive = (drive, courseId=null) => {
     if (drive === "Courses") {
       this.setState({
         selectedItems: [],
@@ -613,16 +610,17 @@ class DoenetChooser extends Component {
     this.updateNumber++;
   }
 
-  addContentToCourse(courseId, itemIds, itemTypes) {
+  addContentToCourse = (courseId, itemIds, itemTypes, callback=()=>{}) => {
     let operationType = "insert";
     this.saveCourseContent(courseId, itemIds, itemTypes, operationType, (courseId) => {
       this.loadAllCourses(() => {
         this.selectDrive("Courses", courseId);
+        callback();
       });
     });
   }
 
-  removeContentFromCourse(itemIds) {
+  removeContentFromCourse = (itemIds) => {
     let operationType = "remove";
     let courseId = this.state.selectedCourse;
     this.saveCourseContent(courseId, itemIds, [], operationType, (courseId) => {
@@ -630,7 +628,7 @@ class DoenetChooser extends Component {
     });
   }
 
-  saveFolder(folderId, title, childContent, childType, operationType, isRepo, isPublic, callback = (() => { })) {
+  saveFolder = (folderId, title, childContent, childType, operationType, isRepo, isPublic, callback=(()=>{})) => {
     // get current directory folderId/root
     let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
     // setup parent
@@ -671,7 +669,7 @@ class DoenetChooser extends Component {
       });
   }
 
-  loadUserFoldersAndRepo(callback = (() => { })) {
+  loadUserFoldersAndRepo = (callback=(()=>{})) => {
     this.folders_loaded = false;
 
     const loadUserFoldersAndRepoUrl = '/api/loadUserFoldersAndRepo.php';
@@ -689,7 +687,7 @@ class DoenetChooser extends Component {
       });
   }
 
-  addNewFolder(title) {
+  addNewFolder = (title) => {
     // generate new folderId
     let folderId = nanoid();
 
@@ -701,26 +699,26 @@ class DoenetChooser extends Component {
       isPublic = true;
     }
 
-    this.saveFolder(folderId, title, [], [], "insert", false, isPublic, () => {
-      let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
-      this.saveUserContent([folderId], ["folder"], "insert", () => {  // add to user root
-        this.addContentToFolder([folderId], ["folder"], currentFolderId, () => {  // add to folder
-          this.loadUserFoldersAndRepo(() => {
-            this.setState({
-              selectedItems: [folderId],
-              selectedItemsType: ["folder"],
-              activeSection: "chooser",
-              selectedDrive: "Content"
-            }, () => {
-              this.updateNumber++;
-            });
-          });
+    const currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
+    Promise.all([
+      new Promise(resolve => this.saveFolder(folderId, title, [], [], "insert", false, isPublic, ()=>{resolve()})), // add new folder
+      new Promise(resolve => this.saveUserContent([folderId], ["folder"], "insert", ()=>{resolve()})),  // add to user root
+      new Promise(resolve => this.addContentToFolder([folderId], ["folder"], currentFolderId, ()=>{resolve()})) // add to folder
+    ]).then(() => {
+      this.loadUserFoldersAndRepo(() => {
+        this.setState({
+          selectedItems: [folderId],
+          selectedItemsType: ["folder"],
+          activeSection: "chooser",
+          selectedDrive: "Content"
+        }, () => { 
+          this.updateNumber++;
         });
       });
-    });
+    })
   }
 
-  addContentToRepo(childIds, childType, repoId) {
+  addContentToRepo = (childIds, childType, repoId) => {
     let isPublic = this.folderInfo[repoId].isPublic;
 
     // modify public/private state if parent is repo
@@ -770,7 +768,7 @@ class DoenetChooser extends Component {
     }
   }
 
-  addContentToFolder(childIds, childType, folderId, callback = (() => { })) {
+  addContentToFolder = (childIds, childType, folderId, callback=(()=>{})) => {
     let operationType = "insert";
     let title = this.folderInfo[folderId].title;
     let isRepo = this.folderInfo[folderId].isRepo;
@@ -806,7 +804,6 @@ class DoenetChooser extends Component {
 
     // check if moving item out of public repo 
     const itemDataInfo = getDataObjects(childType[0])["info"]
-    // console.log(itemDataInfo[childIds[0]])
     if (itemDataInfo[childIds[0]] != undefined) {
       const firstParentId = itemDataInfo[childIds[0]].parentId;
       const movingOutOfPublicRepo = this.folderInfo[firstParentId].isRepo &&
@@ -879,7 +876,7 @@ class DoenetChooser extends Component {
     });
   }
 
-  removeContentFromFolder(childIds, childType, folderId, callback = (() => { })) {
+  removeContentFromFolder = (childIds, childType, folderId, callback=(()=>{})) => {
     let operationType = "remove";
     let title = this.folderInfo[folderId].title;
     let isRepo = this.folderInfo[folderId].isRepo;
@@ -915,7 +912,7 @@ class DoenetChooser extends Component {
     });
   }
 
-  publicizeRepo(repoId) {
+  publicizeRepo = (repoId) => {
     // display alert message
     if (window.confirm('This change is irreversible, proceed?')) {
       let repoChildren = [];
@@ -941,9 +938,9 @@ class DoenetChooser extends Component {
     }
   }
 
-  modifyPublicState(isPublic, itemIds, itemType, callback = (() => { })) {
-    const url = '/api/modifyPublicState.php';
-    const data = {
+  modifyPublicState = (isPublic, itemIds, itemType, callback=(()=>{})) => {
+    const url='/api/modifyPublicState.php';
+    const data={
       isPublic: isPublic,
       itemIds: itemIds,
       itemType: itemType
@@ -957,16 +954,16 @@ class DoenetChooser extends Component {
       })
   }
 
-  renameFolder(folderId, newTitle) {
-    this.saveFolder(folderId, newTitle, [], [], "",
+  renameFolder = (folderId, newTitle) => {
+    this.saveFolder(folderId, newTitle, [], [], "", 
       this.folderInfo[folderId].isRepo, this.folderInfo[folderId].isPublic, () => {
         this.loadUserFoldersAndRepo();
       });
   }
 
-  modifyFolderChildrenRoot(newRoot, itemIds, callback = (() => { })) {
-    const url = '/api/modifyFolderChildrenRoot.php';
-    const data = {
+  modifyFolderChildrenRoot = (newRoot, itemIds, callback=(()=>{})) => {
+    const url='/api/modifyFolderChildrenRoot.php';
+    const data={
       newRoot: newRoot,
       itemIds: itemIds
     }
@@ -979,7 +976,7 @@ class DoenetChooser extends Component {
       })
   }
 
-  flattenFolder(folderId) {
+  flattenFolder = (folderId) => {
     if (!this.folderInfo[folderId]) {
       let currItemType = this.branchId_info[folderId] === undefined ? "url" : "content";
       return { itemIds: [folderId], itemType: [currItemType] };
@@ -1002,9 +999,9 @@ class DoenetChooser extends Component {
     return { itemIds: itemIds, itemType: itemType };
   }
 
-  saveUserContent(childIds, childType, operationType, callback = (() => { })) {
-    const url = '/api/saveUserContent.php';
-    const data = {
+  saveUserContent = (childIds, childType, operationType, callback=(()=>{})) => {
+    const url='/api/saveUserContent.php';
+    const data={
       childIds: childIds,
       childType: childType,
       operationType: operationType
@@ -1018,7 +1015,7 @@ class DoenetChooser extends Component {
       })
   }
 
-  handleNewFolder() {
+  handleNewFolder = () => {
     // TODO: let user input folder title
     let num = 1;
     let title = "New Folder " + num;
@@ -1031,34 +1028,36 @@ class DoenetChooser extends Component {
     this.addNewFolder(title);
   }
 
-  handleNewRepo() {
+  handleNewRepo = () => {
     // TODO: let user input repo title
     let title = "New Repository"
     this.addNewRepo(title);
   }
 
-  addNewRepo(title) {
+  addNewRepo = (title) => {
     let folderId = nanoid();
-    this.saveFolder(folderId, title, [], [], "insert", true, false, () => {
-      this.modifyRepoAccess(folderId, "insert", true, () => {  // add user to repo_access
-        this.loadUserFoldersAndRepo(() => {
-          this.setState({
-            directoryStack: [],
-            selectedItems: [folderId],
-            selectedItemsType: ["folder"],
-            activeSection: "chooser",
-            selectedDrive: "Content"
-          }, () => {
-            this.updateNumber++;
-          });
+    Promise.all([
+      new Promise(resolve => this.saveFolder(folderId, title, [], [], "insert", true, false, ()=>{resolve()})),
+      new Promise(resolve => this.modifyRepoAccess(folderId, "insert", true, ()=>{resolve()}))
+    ])
+    .then(() => {
+      this.loadUserFoldersAndRepo(() => {
+        this.setState({
+          directoryStack: [],
+          selectedItems: [folderId],
+          selectedItemsType: ["folder"],
+          activeSection: "chooser",
+          selectedDrive: "Content"
+        }, () => { 
+          this.updateNumber++;
         });
       });
     })
   }
 
-  modifyRepoAccess(folderId, operationType, owner = false, callback = (() => { })) {
-    const url = '/api/modifyRepoAccess.php';
-    const data = {
+  modifyRepoAccess = (folderId, operationType, owner=false, callback=(()=>{})) => {
+    const url='/api/modifyRepoAccess.php';
+    const data={
       repoId: folderId,
       operationType: operationType,
       owner: owner
@@ -1072,7 +1071,7 @@ class DoenetChooser extends Component {
       })
   }
 
-  jumpToDirectory(directoryData) {
+  jumpToDirectory = (directoryData) => {
     this.setState({
       directoryStack: directoryData,
       selectedItems: directoryData,
@@ -1120,7 +1119,7 @@ class DoenetChooser extends Component {
     })
   }
 
-  updateSelectedItems(selectedItems, selectedItemsType) {
+  updateSelectedItems = (selectedItems, selectedItemsType) => {
     this.setState({
       selectedItems: selectedItems,
       selectedItemsType: selectedItemsType,
@@ -1136,7 +1135,7 @@ class DoenetChooser extends Component {
     this.tempSet = new Set([selectedItems[selectedItems.length - 1]]);
   }
 
-  updateDirectoryStack(directoryStack) {
+  updateDirectoryStack = (directoryStack) => {
     this.setState({
       directoryStack: directoryStack
     })
@@ -1153,7 +1152,7 @@ class DoenetChooser extends Component {
     this.browser.current.getAllSelectedItems();
   }
 
-  updateIndexedDBCourseContent(courseId) {
+  updateIndexedDBCourseContent = (courseId) => {
     // create a new database object
     let indexedDB = new IndexedDB();
 
@@ -1174,7 +1173,7 @@ class DoenetChooser extends Component {
     });
   }
 
-  loadFilteredContent(filters, callback = (() => { })) {
+  loadFilteredContent = (filters, callback=(()=>{})) => {
 
     const typeToSQLMap = {
       "Folder name": "title",
@@ -1238,7 +1237,7 @@ class DoenetChooser extends Component {
       })
   }
 
-  loadCourseHeadingsAndAssignments(courseId) {
+  loadCourseHeadingsAndAssignments = (courseId) => {
     this.assignments_and_headings_loaded = false;
     const url = "/api/getHeaderAndAssignmentInfo.php";
     const data = {
@@ -1282,7 +1281,7 @@ class DoenetChooser extends Component {
     });
   }
 
-  updateHeadingsAndAssignments(headingsInfo, assignmentsInfo) {
+  updateHeadingsAndAssignments = (headingsInfo, assignmentsInfo) => {
     this.headingsInfo = headingsInfo;
     this.assignmentsInfo = assignmentsInfo;
     this.saveAssignmentsTree(this.headingsInfo, this.assignmentsInfo);
@@ -1361,18 +1360,18 @@ class DoenetChooser extends Component {
       })
       .catch(error => { this.setState({ error: error }) });
   }
-
-  ToastWrapper() {
+ 
+  ToastWrapper = () => {
     const { add } = useToasts();
     this.addToast = add;
     return <React.Fragment></React.Fragment>
   }
 
-  displayToast(message) {
+  displayToast = (message) => { 
     this.addToast(message);
   }
 
-  onTreeDragStart(draggedId, draggedType, sourceContainerId, sourceContainerType) {
+  onTreeDragStart = (draggedId, draggedType, sourceContainerId, sourceContainerType) => {
     console.log("onTreeDragStart")
     console.log(draggedId, draggedType, sourceContainerId, sourceContainerType)
     // get dataObjectSource
@@ -1398,7 +1397,7 @@ class DoenetChooser extends Component {
     this.lastDroppedContainerId = null;
   }
 
-  onTreeDraggableDragOver(id, type, containerId, containerType) {
+  onTreeDraggableDragOver = (id, type, containerId, containerType) => {
     // draggedType must be equal to dragOver type
     if (type != this.state.currentDraggedObject.type || id == "root") return;
 
@@ -1461,9 +1460,8 @@ class DoenetChooser extends Component {
     this.lastDroppedContainerId = null;
   }
 
-  splitPanelOnTreeDraggableDragOver(id, type, containerId, containerType) {
-    // draggedType must be equal to dragOver type
-    if (type != this.state.splitPanelCurrentDraggedObject.type || id == "root") return;
+  onTreeDropEnter = (listId, containerId, containerType) => {
+    console.log("onTreeDropEnter5")
 
     const childrenListKeyMap = {
       "folder": "childFolders",
@@ -1561,7 +1559,7 @@ class DoenetChooser extends Component {
     this.forceUpdate();
   };
 
-  getDataSource(containerId, containerType) {
+  getDataSource = (containerId, containerType) => {
     let data = {};
     switch (containerType) {
       case ChooserConstants.COURSE_ASSIGNMENTS_TYPE:
@@ -1669,7 +1667,7 @@ class DoenetChooser extends Component {
     this.setState({ currentDraggedObject: currentDraggedObject })
   }
 
-  onTreeDropLeave() {
+  onTreeDropLeave = () => {
     // if not across containers, return
     // Content -> Course :  Reset course data, reset content data (object return to source content), reset draggedObj
     // Content -> Content :  Reset content data (object return to source content), reset draggedObj
@@ -1679,8 +1677,8 @@ class DoenetChooser extends Component {
     // console.log("onTreeDropLeave")
   }
 
-  onTreeDragEnd(containerId, containerType) {
-    // console.log("onTreeDragEnd")
+  onTreeDragEnd = (containerId, containerType) => {
+    console.log("onTreeDragEnd")
     // // dropped outsize valid dropzone
     // let currTreeHeadings = this.headingsInfo[containerId];
     // let currTreeAssignments = this.assignmentsInfo[containerId];
@@ -1701,8 +1699,8 @@ class DoenetChooser extends Component {
     this.lastDroppedContainerId = null;
   }
 
-  onTreeDrop(containerId, containerType) {
-    // console.log("onTreeDrop")
+  onTreeDrop = (containerId, containerType) => {
+    console.log("onTreeDrop")
     // update courseHeadingsInfo/courseAssignmentsInfo currentDraggedObject parentId
     // remove currentDraggedObject from sourceParentId children list
     // if (this.state.currentDraggedObject.type == "leaf") {
@@ -1750,6 +1748,165 @@ class DoenetChooser extends Component {
   }
   splitPanelOnTreeDropEnter(listId, containerId, containerType) {
     console.log("onTreeDropEnter5", listId + '----'+containerId + '----'+containerType)
+
+    const childrenListKeyMap = {
+      "folder": "childFolders",
+      "content": "childContent",
+      "url": "childUrls",
+    }
+
+    // get data
+    let data = this.getDataSource(containerId, containerType);
+    let parentDataSource = data["folder"];
+    let itemDataSource = data[this.state.splitPanelCurrentDraggedObject.type];
+    let childrenListKey = childrenListKeyMap[this.state.splitPanelCurrentDraggedObject.type];
+
+    // handle dragged object coming from different container
+    if (this.state.splitPanelCurrentDraggedObject.sourceContainerId != containerId) {
+      // create new item, handle type conversion:
+      // content -> assignments || create copy of object
+      // insert new object into data
+
+      // create backup of current tree data
+      this.containerCache = {
+        ...this.containerCache,
+        [sourceContainerId]: {
+          folders: JSON.parse(JSON.stringify(data["folder"])),
+          content: JSON.parse(JSON.stringify(data["content"])),
+          urls: JSON.parse(JSON.stringify(data["url"])),
+        }
+      }
+
+      // insert copy into current container at base level (parentId = listId) 
+      const draggedObjectInfo = this.state.splitPanelCurrentDraggedObject.dataObject;
+      let newObject = draggedObjectInfo;
+      let newObjectChildren = [];
+
+      if (this.state.splitPanelCurrentDraggedObject.type == "content") {
+        itemDataSource = Object.assign({}, itemDataSource, { [this.state.splitPanelCurrentDraggedObject.id]: newObject });
+        parentDataSource[listId]["childrenId"].push(newObject.branchId);
+        parentDataSource[listId][childrenListKey].push(newObject.branchId);
+        const splitPanelCurrentDraggedObject = this.state.splitPanelCurrentDraggedObject;
+        splitPanelCurrentDraggedObject.dataObject = newObject;
+        splitPanelCurrentDraggedObject.type = "leaf";
+        splitPanelCurrentDraggedObject.sourceParentId = listId;
+        splitPanelCurrentDraggedObject.sourceContainerId = containerId;
+        this.setState({ splitPanelCurrentDraggedObject: splitPanelCurrentDraggedObject });
+      } else {  // "folder" || "heading"
+        // insert new heading into headings
+        // if any objectChildren, insert into assignments
+      }
+      return;
+    }
+
+    const currentDraggedObjectInfo = this.state.splitPanelCurrentDraggedObject.dataObject;
+    const previousParentId = currentDraggedObjectInfo.parentId;
+
+    if (previousParentId == listId || listId == this.state.splitPanelCurrentDraggedObject.id) // prevent heading from becoming a child of itself 
+      return;
+
+    const previousList = parentDataSource[previousParentId][childrenListKey];
+    const currentList = parentDataSource[listId][childrenListKey];
+    // remove from previous list
+    if (previousParentId !== this.state.splitPanelCurrentDraggedObject.sourceParentId) {
+      const indexInList = previousList.findIndex(itemId => itemId == this.state.splitPanelCurrentDraggedObject.id);
+      if (indexInList > -1) {
+        previousList.splice(indexInList, 1);
+      }
+    }
+    if (listId !== this.state.splitPanelCurrentDraggedObject.sourceParentId) {
+      // add to current list
+      currentList.push(this.state.splitPanelCurrentDraggedObject.id);
+    }
+
+    parentDataSource[previousParentId][childrenListKey] = previousList;
+    parentDataSource[listId][childrenListKey] = currentList;
+    const splitPanelCurrentDraggedObject = this.state.splitPanelCurrentDraggedObject;
+    splitPanelCurrentDraggedObject.dataObject.parentId = listId;
+    this.setState({ splitPanelCurrentDraggedObject: splitPanelCurrentDraggedObject })
+  }
+
+  splitPanelOnTreeDropLeave() {
+    // if not across containers, return
+    // Content -> Course :  Reset course data, reset content data (object return to source content), reset draggedObj
+    // Content -> Content :  Reset content data (object return to source content), reset draggedObj
+    // Course -> Content : Not allowed
+    // Course -> Course : Reset both courses data (object return to source course), reset draggedObj
+
+    // console.log("onTreeDropLeave")
+  }
+
+  splitPanelOnTreeDragEnd(containerId, containerType) {
+    // console.log("onTreeDragEnd")
+    // // dropped outsize valid dropzone
+    // let currTreeHeadings = this.headingsInfo[containerId];
+    // let currTreeAssignments = this.assignmentsInfo[containerId];
+    // if (!this.validDrop) {
+    //   currTreeHeadings = this.containerCache[containerId]["folders"];
+    //   currTreeAssignments = this.containerCache[containerId]["content"];
+    // }
+    // // updateHeadingsAndAssignments(currTreeHeadings, currTreeAssignments);
+
+    // this.headingsInfo[containerId] = currTreeHeadings;
+    // this.assignmentsInfo[containerId] = currTreeAssignments;
+    this.setState({
+      splitPanelCurrentDraggedObject: { id: null, type: null, sourceContainerId: null },
+    });
+    this.containerCache = {};
+    this.cachedCurrentDraggedObject = null;
+    this.validDrop = true;
+    this.lastDroppedContainerId = null;
+  }
+
+  splitPanelOnTreeDrop(containerId, containerType) {
+    // console.log("onTreeDrop")
+    // update courseHeadingsInfo/courseAssignmentsInfo currentDraggedObject parentId
+    // remove currentDraggedObject from sourceParentId children list
+    // if (this.state.currentDraggedObject.type == "leaf") {
+    //   const newCourseAssignments = this.assignmentsInfo[containerId];
+    //   newCourseAssignments[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
+    //   this.assignmentsInfo[containerId] = newCourseAssignments;
+    // }
+
+    const childrenListKeyMap = {
+      "folder": "childFolders",
+      "content": "childContent",
+      "url": "childUrls",
+    }
+
+    // get data
+    let data = this.getDataSource(containerId, containerType);
+    let parentDataSource = data["folder"];
+    let childrenListKey = childrenListKeyMap[this.state.splitPanelCurrentDraggedObject.type];
+
+    const sourceParentChildrenList = parentDataSource[this.state.splitPanelCurrentDraggedObject.sourceParentId][childrenListKey];
+
+    if (this.state.splitPanelCurrentDraggedObject.dataObject.parentId !== this.state.splitPanelCurrentDraggedObject.sourceParentId) {
+      const indexInSourceParentChildrenList = sourceParentChildrenList.findIndex(itemId => itemId == this.state.splitPanelCurrentDraggedObject.id);
+      if (indexInSourceParentChildrenList > -1) {
+        sourceParentChildrenList.splice(indexInSourceParentChildrenList, 1);
+      }
+    }
+
+    this.updateTree({
+      containerType: containerType,
+      folderInfo: data["folder"],
+      contentInfo: data["content"],
+      urlInfo: data["url"],
+      courseId: containerId
+    })
+
+    // update headings
+    parentDataSource[this.state.splitPanelCurrentDraggedObject.sourceParentId][childrenListKey] = sourceParentChildrenList;
+    if (this.state.splitPanelCurrentDraggedObject.type == "header") parentDataSource[this.state.splitPanelCurrentDraggedObject.id] = this.state.splitPanelCurrentDraggedObject.dataObject;
+    this.setState({
+      currentDraggedObject: { id: null, type: null, sourceContainerId: null },
+    })
+    this.validDrop = true;
+    this.lastDroppedContainerId = containerId;
+  }
+  splitPanelOnTreeDropEnter(listId, containerId, containerType) {
+    console.log("onTreeDropEnter5", listId + '----' + containerId + '----' + containerType)
 
     const childrenListKeyMap = {
       "folder": "childFolders",
@@ -1970,17 +2127,12 @@ class DoenetChooser extends Component {
     this.validDrop = false;
   }
 
-  onBrowserDropEnter(listId) {
-    //console.log("onDropEnter")
-
-  }
-  onSplitPanelBrowserDropEnter(listId) {
-    //console.log("onDropEnter")
-
+  onBrowserDropEnter = (listId) => {
+    console.log("onDropEnter")
   }
 
-  onBrowserDragEnd({ containerId, parentsInfo, leavesInfo }) {
-    //console.log("onBrowserDragEnd")
+  onBrowserDragEnd = ({containerId, parentsInfo, leavesInfo}) => {
+    console.log("onBrowserDragEnd")
     let currParentsInfo = parentsInfo;
     let currChildrenInfo = leavesInfo;
     // dropped across containers && content -> content
@@ -1991,7 +2143,7 @@ class DoenetChooser extends Component {
       // dropped outsize valid dropzone, reset all data
       currParentsInfo = this.containerCache[containerId].parents;
       currChildrenInfo = this.containerCache[containerId].leaves;
-      const newSourceContainerId = this.state.currentDraggedObject.sourceContainerId;
+      const newSourceContainerId = this.state.splitPanelCurrentDraggedObject.sourceContainerId;
       if (newSourceContainerId != containerId) {
         this.headingsInfo[newSourceContainerId] = this.containerCache[newSourceContainerId].parents;
         this.assignmentsInfo[newSourceContainerId] = this.containerCache[newSourceContainerId].leaves;
@@ -2037,7 +2189,7 @@ class DoenetChooser extends Component {
     this.cachedCurrentDraggedObject = null;
   }
 
-  onBrowserDrop(containerId, parentsInfo, leavesInfo) {
+  onBrowserDrop = (containerId, parentsInfo, leavesInfo) => {
     //console.log("onBrowserDrop")
 
   }
@@ -2063,7 +2215,7 @@ class DoenetChooser extends Component {
   // }
 
 
-  switchPanelContainer(view) {
+  switchPanelContainer= (view) => {
     const values = this.state.panelsCollection['first'].values;
     const newPanelData = {
       values: values,
@@ -2094,7 +2246,7 @@ class DoenetChooser extends Component {
   }
 
 
-  onBrowserFolderDrop({ containerId, droppedId }) {
+  onBrowserFolderDrop = ({ containerId, droppedId }) =>{
     // handle dragging folder onto itself
     if (this.state.currentDraggedObject.id == droppedId) return;
     let draggedItems = {
@@ -2158,7 +2310,29 @@ class DoenetChooser extends Component {
     return pathToFolder;
   }
 
- 
+  handleLeftNavSearch(e) {
+    const searchTerm = e.target.value || '';
+    let filteredUserFolderInfo = {};
+    let filteredChildFolders = [];
+    const copyUserFolderInfo = JSON.parse(JSON.stringify(this.userFolderInfo));
+    for (let key in copyUserFolderInfo) {
+      if (copyUserFolderInfo[key].title.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 && key !== 'root') {
+        filteredUserFolderInfo[key] = copyUserFolderInfo[key];
+        if(copyUserFolderInfo[key].parentId === 'root'){
+        filteredChildFolders.push(key);
+        }
+        copyUserFolderInfo[key].childFolders.forEach((f)=> {
+          filteredUserFolderInfo[f] = copyUserFolderInfo[f];
+        });
+      }
+    }
+    copyUserFolderInfo['root'].childFolders = filteredChildFolders;
+    filteredUserFolderInfo['root'] = copyUserFolderInfo['root'];
+    console.log(filteredUserFolderInfo);
+    this.setState({ userFolderInfo: filteredUserFolderInfo });
+  }
+
+
 
   render() {
     if (!this.courses_loaded || !this.assignments_and_headings_loaded) {
@@ -2166,10 +2340,9 @@ class DoenetChooser extends Component {
         <SpinningLoader />
       </div>
     }
-    // console.log(this.folderInfo)
     // return <DoenetAssignmentTree treeHeadingsInfo={this.headingsInfo} treeAssignmentsInfo={this.assignmentsInfo} 
-      // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
-    let assignmentsTree = <div className="tree" style={{padding: "5em 2em"}}>
+    // updateHeadingsAndAssignments={this.updateHeadingsAndAssignments}/>
+    let assignmentsTree = <div className="tree" style={{ padding: "5em 2em" }}>
       <TreeView
         containerId={"aI8sK4vmEhC5sdeSP3vNW"}
         containerType={ChooserConstants.COURSE_ASSIGNMENTS_TYPE}
@@ -2265,6 +2438,19 @@ class DoenetChooser extends Component {
 
       //console.log('treeParentsInfo', treeParentsInfo);
       //console.log('treeChildrenInfo', treeChildrenInfo);
+      const TreeNodeItem = ({title, icon}) => {
+        return <div>
+          {icon}
+          {/* <span style={{
+            verticalAlign: 'middle',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+          }}
+          >{title}</span> */}
+          <Link to={`/go/?path=${title}`}>{title}</Link>
+        </div>
+      };
 
 
       this.tree = <div className="tree" style={{ paddingLeft: "1em" }}>
@@ -2282,6 +2468,93 @@ class DoenetChooser extends Component {
           onDropEnter={this.onTreeDropEnter}
           onDrop={this.onTreeDrop}
           directoryData={[...this.state.directoryStack]}
+          parentNodeItem={TreeNodeItem}
+          leafNodeItem={TreeNodeItem}
+          specialNodes={this.tempSet}
+          // specialNodes={new Set(this.tempSet).add(selectedItem.parentId)}
+          treeStyles={{
+            specialChildNode: {
+              "title": { color: "#2675ff" },
+              "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
+            },
+            specialParentNode: {
+              "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
+            },
+            // parentNode: {
+            //   "node": { background: "rgba(58,172,144)" },
+            // },
+            emptyParentExpanderIcon: <span></span>,
+          }}
+          onLeafNodeClick={(id, type) => {
+            // get path to item
+            const dataSource = this.getDataSource(treeContainerId, treeContainerType);
+            const itemParentId = dataSource[type][id]["parentId"];
+            const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId);
+            // select item and switch to directory            
+            this.setState({
+              selectedItems: [id],
+              selectedItemsType: [type],
+              directoryStack: pathToSelectedFolder
+            })
+            this.setState({ selectedItems: [id], selectedItemsType: [type] })
+            this.tempSet.clear()
+            this.tempSet.add(id);
+            this.customizedTempSet.clear();
+            this.customizedTempSet.add(itemParentId);
+            this.forceUpdate()
+          }}
+          onParentNodeClick={(id, type) => {
+            // get path to item
+            let pathToSelectedFolder = this.getPathToFolder(id);
+            // select item and switch to directory            
+            this.setState({
+              selectedItems: [id], 
+              selectedItemsType: [type],
+              directoryStack: pathToSelectedFolder
+            })
+            this.customizedTempSet.clear();
+            this.customizedTempSet.add(id);
+            this.tempSet.clear();
+            this.tempSet.add(id);
+            this.setState({});
+            this.forceUpdate();
+          }}
+          onParentNodeDoubleClick={(id) => {
+            // openSubtree
+          }}
+        />
+      </div>
+
+const TreeNodeItemSplit = ({title, icon}) => {
+  return <div>
+    {icon}
+    <span style={{
+      verticalAlign: 'middle',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+    }}
+    >{title}</span>
+  </div>
+};
+   
+      this.splitPanelTree =  <div className="tree" style={{ paddingLeft: "1em" }}>
+        <TreeView
+          containerId={treeContainerId}
+          containerType={treeContainerType}
+          loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
+          parentsInfo={treeParentsInfo}
+          childrenInfo={treeChildrenInfo}
+          parentNodeItem={TreeNodeItemSplit}
+          leafNodeItem={TreeNodeItemSplit}
+          treeNodeIcons={TreeIcons}
+          currentDraggedObject={this.state.splitPanelCurrentDraggedObject}
+          onDragStart={this.onTreeDragStart}
+          onDragEnd={this.onTreeDragEnd}
+          onDraggableDragOver={this.onTreeDraggableDragOver}
+          onDropEnter={this.onTreeDropEnter}
+          onDrop={this.onTreeDrop}
+          directoryData={[...this.state.splitPanelDirectoryStack]}
           specialNodes={this.tempSet}
           treeStyles={{
             specialChildNode: {
@@ -2300,11 +2573,11 @@ class DoenetChooser extends Component {
             const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId);
             // select item and switch to directory            
             this.setState({
-              selectedItems: [id], 
-              selectedItemsType: [type],
-              directoryStack: pathToSelectedFolder
+              splitPanelSelectedItems: [id],
+              splitPanelSelectedItemsType: [type],
+              splitPanelDirectoryStack: pathToSelectedFolder
             })
-            this.setState({selectedItems: [id], selectedItemsType: [type]})
+            this.setState({ splitPanelSelectedItems: [id], splitPanelSelectedItemsType: [type] })
             this.tempSet = new Set([id]);
             this.forceUpdate()
           }}
@@ -2313,9 +2586,9 @@ class DoenetChooser extends Component {
             let pathToSelectedFolder = this.getPathToFolder(id);
             // select item and switch to directory            
             this.setState({
-              selectedItems: [id], 
-              selectedItemsType: [type],
-              directoryStack: pathToSelectedFolder
+              splitPanelSelectedItems: [id],
+              splitPanelSelectedItemsType: [type],
+              splitPanelDirectoryStack: pathToSelectedFolder
             })
             this.tempSet = new Set([id]);
             this.setState({})
@@ -2326,70 +2599,20 @@ class DoenetChooser extends Component {
           }}
         />
       </div>
-     this.splitPanelTree =  <div className="tree" style={{ paddingLeft: "1em" }}>
-     <TreeView
-       containerId={treeContainerId}
-       containerType={treeContainerType}
-       loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
-       parentsInfo={treeParentsInfo}
-       childrenInfo={treeChildrenInfo}
-       treeNodeIcons={TreeIcons}
-       currentDraggedObject={this.state.splitPanelCurrentDraggedObject}
-       onDragStart={this.onTreeDragStart}
-       onDragEnd={this.onTreeDragEnd}
-       onDraggableDragOver={this.onTreeDraggableDragOver}
-       onDropEnter={this.onTreeDropEnter}
-       onDrop={this.onTreeDrop}
-       directoryData={[...this.state.splitPanelDirectoryStack]}
-       specialNodes={this.tempSet}
-       treeStyles={{
-         specialChildNode: {
-           "title": { color: "#2675ff" },
-           "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
-         },
-         specialParentNode: {
-           "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
-         },
-         emptyParentExpanderIcon: <span></span>
-       }}
-       onLeafNodeClick={(id, type) => {
-         // get path to item
-         const dataSource = this.getDataSource(treeContainerId, treeContainerType);
-         const itemParentId = dataSource[type][id]["parentId"];
-         const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId);
-         // select item and switch to directory            
-         this.setState({
-          splitPanelSelectedItems: [id],
-          splitPanelSelectedItemsType: [type],
-           splitPanelDirectoryStack: pathToSelectedFolder
-         })
-         this.setState({ splitPanelSelectedItems: [id], splitPanelSelectedItemsType: [type] })
-         this.tempSet = new Set([id]);
-         this.forceUpdate()
-       }}
-       onParentNodeClick={(id, type) => {
-         // get path to item
-         let pathToSelectedFolder = this.getPathToFolder(id);
-         // select item and switch to directory            
-         this.setState({
-          splitPanelSelectedItems: [id],
-          splitPanelSelectedItemsType: [type],
-          splitPanelDirectoryStack: pathToSelectedFolder
-         })
-         this.tempSet = new Set([id]);
-         this.setState({})
-         this.forceUpdate()
-       }}
-       onParentNodeDoubleClick={(id) => {
-         // openSubtree
-       }}
-     />
-   </div>
-      let customizedContentTreeParentInfo = JSON.parse(JSON.stringify(treeParentsInfo));
+      let contentParentInfo = treeParentsInfo || {};
+      if (!!Object.keys(this.state.userFolderInfo).length) {
+        contentParentInfo = this.state.userFolderInfo
+      }
+      let coursesParentInfo = treeParentsInfo;
+      if (!!Object.keys(this.state.userFolderInfo).length) {
+        coursesParentInfo = this.state.userFolderInfo
+      }
+      let customizedContentTreeParentInfo = JSON.parse(JSON.stringify(contentParentInfo));
       let customizedContentTreeChildrenInfo = JSON.parse(JSON.stringify(treeChildrenInfo));
-      customizedContentTreeParentInfo.root.title = "Content";
-      customizedContentTreeParentInfo.root.childContent = [];
-
+      if (!!Object.keys(customizedContentTreeParentInfo).length) {
+        customizedContentTreeParentInfo["root"]["title"] = "Content";
+        customizedContentTreeParentInfo["root"]["childContent"] = [];
+      }
       for (let key in customizedContentTreeParentInfo) {
         if (key !== 'root') {
           customizedContentTreeParentInfo[key].childContent = [];
@@ -2417,69 +2640,126 @@ class DoenetChooser extends Component {
         customizedCoursesTreeChildrenInfo[key].type = 'content';
         customizedCoursesTreeParentInfo['root']['childContent'].push(key);
       }
-      // for (let key in customizedCoursesTreeParentInfo) {
-      //   if(key !== 'root') {
-      //     customizedCoursesTreeParentInfo[key].childContent = [];
-      //     customizedCoursesTreeParentInfo[key].childFolders = [];
-      //     customizedCoursesTreeParentInfo[key].childUrls = [];
-      //   }
-      // }
-      // console.log('customizedContentTreeChildrenInfo', customizedContentTreeChildrenInfo);
+
       console.log('customizedContentTreeParentInfo', customizedContentTreeParentInfo);
       // console.log('customizedCoursesTreeParentInfo', customizedCoursesTreeParentInfo);
       // console.log('customizedCoursesTreeChildrenInfo', customizedCoursesTreeChildrenInfo);
+
+
+
+const customizedTreeNodeItem = ({title, icon}) => {
+  return <div>
+    {icon}
+    <Link to={`/go/?path=${title}`} style={{textDecoration:"none",color:"white",paddingLeft:"5px"}}>{title}</Link>
+  </div>
+};
       this.customizedTree = <div className="tree-column">
         <Accordion>
-          <div label="Content">
+          <div label="CONTENT" activeChild={this.state.contentActiveChild}>
             <TreeView
               containerId={treeContainerId}
               containerType={treeContainerType}
               loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
               parentsInfo={customizedContentTreeParentInfo}
               childrenInfo={{}}
-              specialNodes={this.tempSet}
+              specialNodes={this.customizedTempSet}
               hideRoot={true}
+              parentNodeItem={customizedTreeNodeItem}
+              leafNodeItem={customizedTreeNodeItem}
               treeNodeIcons={(itemType) => {
                 let map = {
-                  // folder: <FontAwesomeIcon icon={faDotCircle}
-                  //   style={{ fontSize: "16px", color: "#737373" }} />,
-                  // content: <FontAwesomeIcon icon={faTimesCircle} />
                 }
                 return map[itemType]
               }}
-              // hideRoot={true}
-              // specialNodes={this.tempSet}
-              treeStyles={{
-                specialChildNode: {
-                  "title": { color: "gray" },
-                  "frame": { color: "#2675ff",backgroundColor:"hsl(206, 66%, 85%)", paddingLeft: "5px" },
-                },
-                specialParentNode: {
-                  "title": { color: "gray",
-                  //  background: "#e6efff",
-                    paddingLeft: "5px" },
-                  "frame": { color: "#2675ff", backgroundColor:"hsl(206, 66%, 85%)", paddingLeft: "5px", borderLeft:'10px solid #0031f5' },
 
-                },
+              treeStyles={{
+          
                 parentNode: {
-                  "title": { color: "#d9eefa" },
-                  "frame": {
-                    width: "100%",
+                  "title": { color: "white" , paddingLeft:'5px'},
+                  "node":{
+                    width:"100%",
+                    height:"2.6em"
                   },
-                  "contentContainer": {
-                    border: "none",
-                  }
                 },
                 childNode: {
                   "title": {
-                    color: "gray",
-                    // border: "1px green solid",
+                    color:"white",
+                    paddingLeft: "5px"
                   },
-                  // "frame": { border: "1px #a4a4a4 solid" },
+                  "node":{
+                    backgroundColor:"rgba(192, 220, 242,0.3)",
+                    color: "white",
+                    // marginRight:"10px",
+                    borderLeft:'8px solid #1b216e',
+                    height:"2.6em",
+                    width:"100%"
+                  }
                 },
-            
-                //   expanderIcon: <FontAwesomeIcon icon={faPlus}/>
-                // emptyParentExpanderIcon: <span style={{padding:'5px'}}></span>
+                specialChildNode: {
+                  "title": { color: "gray" },
+                },
+                specialParentNode: {
+                  "title": {
+                    color:"white",
+                    paddingLeft: "5px"
+                  },
+                  "node":{
+                    backgroundColor:"rgba(192, 220, 242,0.3)",
+                    color: "white",
+                    // marginRight:"10px",
+                    borderLeft:'8px solid #1b216e',
+                    height:"2.6em",
+                    width:"100%"
+                  }
+                },
+
+                emptyParentExpanderIcon: {
+                  opened: <FontAwesomeIcon  
+                  style={{
+                    padding: '1px',
+                    width: '1.3em',
+                    height: '1.2em',
+                    border: "1px solid darkblue",
+                    borderRadius: '2px',
+                    marginLeft: "5px"
+
+                  }} 
+                  icon={faChevronDown}/>,
+                  closed: <FontAwesomeIcon  
+                  style={{
+                    padding: '1px',
+                    width: '1.3em',
+                    height: '1.2em',
+                    border: "1px solid darkblue",
+                    borderRadius: '2px',
+                    marginLeft: "5px"
+
+                  }}
+                  icon={faChevronRight}/>,
+                },
+                // <span style={{ padding: '5px' }}></span>,
+                expanderIcons: {
+                  opened: <FontAwesomeIcon icon={faChevronDown}
+                    style={{
+                      padding: '1px',
+                      width: '1.3em',
+                      height: '1.2em',
+                      border: "1px solid darkblue",
+                      borderRadius: '2px',
+                      marginLeft: "5px"
+
+                    }}
+                  />,
+                  closed: <FontAwesomeIcon icon={faChevronRight}
+                    style={{
+                      padding: '1px',
+                      width: '1.3em',
+                      height: '1.2em',
+                      border: "1px solid darkblue",
+                      borderRadius: "2px",
+                      marginLeft: "5px"
+                    }} />,
+                }
 
               }}
               onLeafNodeClick={(nodeId) => {
@@ -2488,28 +2768,25 @@ class DoenetChooser extends Component {
                 this.forceUpdate();
                 this.selectDrive("Courses", nodeId)
               }}
-              // onLeafNodeClick={(nodeId) => {
-              //   this.tempSet.clear();
-              //   this.tempSet.add(nodeId); 
-              //   this.forceUpdate()
-              // }}
+
               onParentNodeClick={(nodeId) => {
+                this.customizedTempSet.clear();
+                this.customizedTempSet.add(nodeId);
                 this.tempSet.clear();
                 this.tempSet.add(nodeId);
                 this.goToFolder(nodeId, customizedContentTreeParentInfo);
                 if (!this.state.splitPanelLayout) {
                   this.splitPanelGoToFolder(nodeId, customizedContentTreeParentInfo);
                 }
+                this.setState({ contentActiveChild: true });
                 this.forceUpdate();
               }}
-            // onParentNodeDoubleClick={(nodeId) => {
-            //   console.log(`${nodeId} double clicked!`)
-            // }}
+
             />
           </div>
         </Accordion>
         <Accordion>
-          <div label="Courses">
+          <div label="COURSES" activeChild={this.state.courseActiveChild}>
             <TreeView
               containerId={treeContainerId}
               containerType={treeContainerType}
@@ -2517,35 +2794,37 @@ class DoenetChooser extends Component {
               parentsInfo={customizedCoursesTreeParentInfo}
               childrenInfo={customizedCoursesTreeChildrenInfo}
               hideRoot={true}
+              parentNodeItem={customizedTreeNodeItem}
+              leafNodeItem={customizedTreeNodeItem}
               treeNodeIcons={(itemType) => {
                 let map = {
-                  // folder: <FontAwesomeIcon icon={faDotCircle}
-                  //   style={{ fontSize: "16px", color: "#737373" }} />,
-                  // content: <FontAwesomeIcon icon={faTimesCircle} />
                 }
                 return map[itemType]
               }}
               treeStyles={{
                 parentNode: {
-                  "title": { color: "#d9eefa" },
-                  "frame": {
-                    width: "100%",
+                  "title": { color: "white" , paddingLeft:'5px'},
+                  "node":{
+                    width:"100%",
+                    height:"30px"
                   },
-                  "contentContainer": {
-                    border: "none",
-                  }
+             
                 },
                 childNode: {
                   "title": {
-                    color: "#d9eefa",
-                    "frame": {
-                      width: "100%",
-                    },
+                    color:"white",
+                    paddingLeft: "5px"
                   },
-                  // "frame": { border: "1px #a4a4a4 solid" },
+                  "node":{
+                    backgroundColor:"rgba(192, 220, 242,0.3)",
+                    color: "white",
+                    // marginRight:"10px",
+                    borderLeft:'8px solid #1b216e',
+                    height:"30px",
+                    width:"100%"
+                  }
                 },
                 specialChildNode: {
-                  // "frame": { background: "#a7a7a7" },
                 },
                 specialParentNode: {
                   "title": { color: "#d9eefa", background: "#e6efff", paddingLeft: "5px" },
@@ -2560,6 +2839,7 @@ class DoenetChooser extends Component {
               onParentNodeClick={(nodeId) => {
                 this.tempSet.clear();
                 this.tempSet.add(nodeId);
+                this.setState({courseActiveChild: true});
                 this.forceUpdate()
               }}
               onParentNodeDoubleClick={(nodeId) => {
@@ -2636,7 +2916,7 @@ class DoenetChooser extends Component {
           onDragStart={this.onSplitPanelBrowserDragStart}
           onDragEnd={this.onSplitPanelBrowserDragEnd}
           onDraggableDragOver={() => { }}
-          onDropEnter={this.onSplitPanelBrowserDropEnter}
+          // onDropEnter={this.onSplitPanelBrowserDropEnter}
           onDrop={this.onSplitPanelBrowserDrop}
           onFolderDrop={this.onSplitPanelBrowserFolderDrop}
         />
@@ -2749,7 +3029,6 @@ class DoenetChooser extends Component {
 
     const dropDownSelectButton = <DropDownSelect data={dropdownData} />
 
-
     const testSaveContentTreeButton = <button style={{ background: "none", border: "none", cursor: "pointer", outline: "none" }}>
       <FontAwesomeIcon onClick={() => this.saveContentTree({ folderInfo: this.userFolderInfo })} icon={faEdit} style={{ fontSize: "17px" }} />
     </button>;
@@ -2760,6 +3039,7 @@ class DoenetChooser extends Component {
     const middlePanelMenuControls = [splitPanelButton];
     const rightPanelMenuControls = [ dropDownSelectButton, splitSwitchPanelButton];
     const createMiddlePanelContent = (match) => {
+      console.log('match', match);
       return (<ToolLayoutPanel
         panelName="Main Panel"
         splitPanel={this.state.splitPanelLayout}
@@ -2795,6 +3075,7 @@ class DoenetChooser extends Component {
     return (<React.Fragment>
       <ToastProvider>
         <this.ToastWrapper />
+        <Router>
         <ToolLayout
           toolName="Chooser"
           leftPanelWidth="235"
@@ -2802,16 +3083,26 @@ class DoenetChooser extends Component {
           >
 
           <ToolLayoutPanel panelName="Navigation Panel" key={'left'}>
-            {this.customizedTree}
+            <div>
+              <div style={{padding:"10px", marginBottom:"30px"}}>
+              <input
+                className="search-input"
+                onChange={this.handleLeftNavSearch.bind(this)}
+                placeholder="Search..."
+                style={{width:"200px", minHeight:"40px",padding:"10px"}}
+                
+              />
+              </div>
+              
+              {this.customizedTree}
+            </div>
           </ToolLayoutPanel>
 
 
-          <Router>
             <Switch>
               <Route exact path="/" render={({ match }) => createMiddlePanelContent(match)} />
-              <Route exact path="/:leftNavRoute" render={({ match }) => createMiddlePanelContent(match)} />
+              <Route path="/go/" render={({ match }) => createMiddlePanelContent(match)} />
             </Switch>
-          </Router>
 
           <ToolLayoutPanel panelName="Info Panel" key={'right'}>
             <InfoPanel
@@ -2829,7 +3120,7 @@ class DoenetChooser extends Component {
             />
           </ToolLayoutPanel>
         </ToolLayout>
-
+        </Router>
       </ToastProvider>
     </React.Fragment>);
 
@@ -2858,6 +3149,19 @@ const SplitPanelMainContent = ({ panelId, initialContainer, activeContainer, con
         </SwitchableContainerPanel>
       })}
     </SwitchableContainers>
+  </div>;
+}
+
+const TreeNodeItem = ({title, icon}) => {
+  return <div>
+    {icon}
+    <span style={{
+      verticalAlign: "middle",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+    }}
+    >{title}</span>
   </div>;
 }
 
@@ -2978,7 +3282,7 @@ class CourseForm extends React.Component {
       year: "",
       semester: "Spring",
       description: "",
-      roles: [],
+      roles: []
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -3170,7 +3474,7 @@ class AddRoleForm extends React.Component {
     this.addRole = this.addRole.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
-
+    
   addRole(event) {
     this.props.addRole(this.state.input);
     this.setState({ input: "" });
@@ -3191,75 +3495,6 @@ class AddRoleForm extends React.Component {
     )
   }
 }
-
-// class Accordion extends Component {
-
-//   constructor(props) {
-//     super(props);
-//     const openSections = {};
-//     this.state = { openSections };
-//   }
-
-//   onClick = label => {
-//     const {
-//       state: { openSections },
-//     } = this;
-
-//     const isOpen = !!openSections[label];
-
-//     this.setState({
-//       openSections: {
-//         [label]: !isOpen
-//       }
-//     });
-//   };
-
-//   render() {
-//     const {
-//       onClick,
-//       props: { children },
-//       state: { openSections },
-//     } = this;
-
-//     return (
-//       <AccordionSectionCustom
-//         isOpen={!!openSections[children.props.label]}
-//         label={children.props.label}
-//         onClick={onClick}>
-//         {children.props.children}
-//       </AccordionSectionCustom>
-//     );
-//   }
-// }
-// class AccordionSectionCustom extends Component {
-
-//   onClick = () => {
-//     this.props.onClick(this.props.label);
-//   };
-
-//   render() {
-//     const {
-//       onClick,
-//       props: { isOpen, label },
-//     } = this;
-
-//     return (
-//       <div style={{ "width": "100%", "cursor": 'pointer' }}>
-//         <div onClick={onClick} data-cy="coursesAccordion" style={{color: "#03a1fc" }}>
-//           {isOpen ?  <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronDown} /> :
-//             <FontAwesomeIcon className="menuCustomTwirlIcon" icon={faChevronRight} />}
-//           {label}
-//         </div>
-//         {isOpen && (
-//           <div>
-//             {this.props.children}
-//           </div>
-//         )}
-//       </div>
-//     );
-//   }
-// }
-
 class FilterPanel extends Component {
 
   constructor(props) {
@@ -3550,7 +3785,6 @@ class InfoPanel extends Component {
       // if file selected, show selectedFile/Folder info
       selectedItemId = this.props.selectedItems[this.props.selectedItems.length - 1];
       selectedItemType = this.props.selectedItemsType[this.props.selectedItemsType.length - 1];
-      // console.log()
       // get title
       if (selectedItemType === "folder") {
         itemTitle = this.props.allFolderInfo[selectedItemId].title;
@@ -3640,7 +3874,6 @@ class InfoPanel extends Component {
   }
 
   buildInfoPanelItemDetails(selectedItemId, selectedItemType) {
-    // console.log(selectedItemId)
     this.infoPanelDetails = [];
     let itemDetails = {};
     if (selectedItemType === "folder") {

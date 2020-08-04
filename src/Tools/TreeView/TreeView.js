@@ -62,7 +62,7 @@ import styled from 'styled-components'
               title: {},
               frame: {},
             },
-            expanderIcon:          
+            expanderIcons:          
           }
       - parentNodeOnClick
 			- childNodeOnClickCallback
@@ -111,7 +111,8 @@ Example customized tree:
       },
       "contentContainer": {
         border: "none",
-      }
+      },
+      "node": { background: "rgba(58,172,144)" },
     },
     childNode: {
       "title": {
@@ -122,7 +123,6 @@ Example customized tree:
     specialChildNode: {
       "frame": { background: "#a7a7a7" },
     },
-    expanderIcon: <FontAwesomeIcon icon={faPlus} style={{paddingRight: "8px"}}/>
     emptyParentExpanderIcon: <span></span>
   }}
   onLeafNodeClick={(nodeId) => {
@@ -142,6 +142,8 @@ export const TreeView = ({
   treeNodeIcons={},
   directoryData=[],
   specialNodes=new Set(),
+  parentNodeItem={},
+  leafNodeItem={},
 	treeStyles={},
 	onLeafNodeClick=(()=>{}),
 	onParentNodeClick=(()=>{}),
@@ -271,6 +273,8 @@ export const TreeView = ({
         treeNodeIcons: treeNodeIcons, 
         specialNodes: specialNodes,
         directoryData: directoryData,
+        parentNodeItem: parentNodeItem,
+        leafNodeItem: leafNodeItem,
 				treeStyles: treeStyles,
 				onLeafNodeClick: onLeafNodeClick,
 				onParentNodeClick: onParentNodeClick,
@@ -296,11 +300,9 @@ export const TreeView = ({
 function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, hideRoot, treeNodeIcons, treeStyles,
   specialNodes, onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
    currentDraggedOverContainerId, onParentNodeClick, onParentNodeDoubleClick, onLeafNodeClick, currentSearchingFolder, 
-   buildControlButtons, buildSearchComponent, setCurrentHovered, directoryData }) {
+   buildControlButtons, buildSearchComponent, setCurrentHovered, directoryData, parentNodeItem, leafNodeItem }) {
      
   const getBaseItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
-    // console.log(parentsInfo)
-    // console.log(childrenInfo)
     const isPublic = itemType == "folder" ? parentsInfo[currentItemId].isPublic : parentsInfo[childrenInfo[currentItemId].rootId].isPublic;
     if (itemType == "folder") itemType = parentsInfo[currentItemId].isRepo ? "repo" : "folder";
     const icon = currentItemId == "root" ? "" : treeNodeIcons({iconName: itemType, isPublic: isPublic});
@@ -361,12 +363,11 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
   let subTree = <ParentNode 
     id={parentHeadingId}
     key={parentHeadingId} 
-    title={parentsInfo[parentHeadingId]["title"]}
     type={itemType}
     hide={hideRoot && parentHeadingId == "root"}
     defaultOpen={defaultOpen}
-    itemIcon={baseItemStyleAndIcon.icon}
-    expanderIcon={parentsInfo[parentHeadingId]["numChild"] == 0 ? treeStyles["emptyParentExpanderIcon"] : treeStyles["expanderIcon"]}
+    nodeItem={parentNodeItem({title: parentsInfo[parentHeadingId]["title"], icon: baseItemStyleAndIcon.icon})}
+    expanderIcon={parentsInfo[parentHeadingId]["numChild"] == 0 ? treeStyles["emptyParentExpanderIcon"] : treeStyles["expanderIcons"]}
     onClick={parentHeadingId != "root" ? onParentNodeClick : ()=>{}}
     onDoubleClick={parentHeadingId != "root" ? onParentNodeDoubleClick : ()=>{}}
     onDrop={onDrop}
@@ -394,6 +395,8 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           treeNodeIcons: treeNodeIcons,
           specialNodes: specialNodes,
           directoryData: directoryData,
+          parentNodeItem: parentNodeItem,
+          leafNodeItem: leafNodeItem,
           treeStyles: treeStyles,
           onParentNodeClick: onParentNodeClick,
           onParentNodeDoubleClick: onParentNodeDoubleClick,
@@ -426,9 +429,8 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           index={index}
           id={childId} 
           key={childId} 
-          title={childrenInfo[childId]["title"]}
+          nodeItem={leafNodeItem({title: childrenInfo[childId]["title"], icon: baseItemStyleAndIcon.icon})}
           type={itemType}
-					itemIcon = {baseItemStyleAndIcon.icon}
           styles={itemStyle}
 					onClick={onLeafNodeClick}
           onDragStart={onDragStart} 
