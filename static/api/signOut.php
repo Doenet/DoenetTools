@@ -28,7 +28,7 @@ if ($domain=="localhost"){
 $isHttpOnly = true;
 $expirationTime = -10;
 setcookie("JWT", "", $expirationTime, "/", $domain, $isSecure, $isHttpOnly);
-
+setcookie("JWT_JS", "", $expirationTime, "/", $domain, $isSecure, false);
 // make it json format
 // echo json_encode($response_arr);
 
