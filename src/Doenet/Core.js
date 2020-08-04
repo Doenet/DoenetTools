@@ -747,8 +747,6 @@ export default class Core {
           longNameId += componentInd;
         }
 
-        console.log(`longNameId: ${longNameId}`)
-
         componentName = createUniqueName(serializedComponent.componentType, longNameId);
       }
 
@@ -1542,8 +1540,6 @@ export default class Core {
               longNameId += JSON.stringify(replacementInstruction.instructions)
             }
 
-            console.log(`longNameId for assignNameSpace: ${longNameId}`)
-
             namespace = createUniqueName(component.componentType,
               longNameId);
           }
@@ -1604,8 +1600,6 @@ export default class Core {
               longNameId += JSON.stringify(replacementInstruction.instructions)
             }
 
-            console.log(`longNameId for assignName: ${longNameId}`)
-
             name = createUniqueName(component.componentType,
               longNameId);
           }
@@ -1623,8 +1617,6 @@ export default class Core {
             } else {
               longNameId += JSON.stringify(replacementInstruction.instructions)
             }
-
-            console.log(`longNameId for assignName nameForChild: ${longNameId}`)
 
             let nameForChild = createUniqueName(component.componentType,
               longNameId);
@@ -10847,10 +10839,10 @@ export default class Core {
       workspace: component.replacementsWorkspace,
     });
 
-    console.log("replacement changes for " + component.componentName);
-    console.log(replacementChanges);
-    console.log(component.replacements.map(x => x.componentName));
-    console.log(component.replacements);
+    // console.log("replacement changes for " + component.componentName);
+    // console.log(replacementChanges);
+    // console.log(component.replacements.map(x => x.componentName));
+    // console.log(component.replacements);
     // console.log(component.unresolvedState);
     // console.log(component.unresolvedDependencies);
 
@@ -11390,55 +11382,59 @@ export default class Core {
         currentShadowedBy[shadowingComponent.componentName] = calculateAllComponentsShadowing(shadowingComponent);
       }
 
-      let newSerializedReplacements = replacementsToShadow.map(x => x.serialize({ forCopy: true }))
-      newSerializedReplacements = postProcessCopy({
-        serializedComponents: newSerializedReplacements,
-        componentName: shadowingComponent.shadows.compositeName
-      });
 
-      let newComponents;
+      if (shadowingComponent.isExpanded) {
 
-      let createResult = this.createIsolatedComponentsSub({
-        serializedState: newSerializedReplacements,
-        applySugar: true,
-        ancestors: shadowingComponent.ancestors,
-        updatesNeeded,
-        compositesBeingExpanded,
-        createNameContext: shadowingComponent.componentName + "|replacements"
-      });
+        let newSerializedReplacements = replacementsToShadow.map(x => x.serialize({ forCopy: true }))
+        newSerializedReplacements = postProcessCopy({
+          serializedComponents: newSerializedReplacements,
+          componentName: shadowingComponent.shadows.compositeName
+        });
 
-      newComponents = createResult.components;
+        let newComponents;
 
-      let shadowingParent;
-      if (parentToShadow) {
-        if (parentToShadow.shadowedBy) {
-          for (let pShadow of parentToShadow.shadowedBy) {
-            if (pShadow.shadows.compositeName === shadowingComponent.shadows.compositeName) {
-              shadowingParent = pShadow;
-              break;
-            }
-          }
-        }
-        if (!shadowingParent) {
-          console.error(`could not find shadowing parent of ${parentToShadow.componentName}`)
-        }
-      }
-
-      newComponentsForShadows[shadowingComponent.componentName] = {
-        newComponents,
-        parent: shadowingParent
-      };
-
-      if (shadowingComponent.shadowedBy) {
-        let recursionComponents = this.createShadowedReplacements({
-          replacementsToShadow: newComponents,
-          componentToShadow: shadowingComponent,
-          parentToShadow: shadowingParent,
+        let createResult = this.createIsolatedComponentsSub({
+          serializedState: newSerializedReplacements,
+          applySugar: true,
+          ancestors: shadowingComponent.ancestors,
           updatesNeeded,
           compositesBeingExpanded,
-          currentShadowedBy,
-        })
-        Object.assign(newComponentsForShadows, recursionComponents);
+          createNameContext: shadowingComponent.componentName + "|replacements"
+        });
+
+        newComponents = createResult.components;
+
+        let shadowingParent;
+        if (parentToShadow) {
+          if (parentToShadow.shadowedBy) {
+            for (let pShadow of parentToShadow.shadowedBy) {
+              if (pShadow.shadows.compositeName === shadowingComponent.shadows.compositeName) {
+                shadowingParent = pShadow;
+                break;
+              }
+            }
+          }
+          if (!shadowingParent) {
+            console.error(`could not find shadowing parent of ${parentToShadow.componentName}`)
+          }
+        }
+
+        newComponentsForShadows[shadowingComponent.componentName] = {
+          newComponents,
+          parent: shadowingParent
+        };
+
+        if (shadowingComponent.shadowedBy) {
+          let recursionComponents = this.createShadowedReplacements({
+            replacementsToShadow: newComponents,
+            componentToShadow: shadowingComponent,
+            parentToShadow: shadowingParent,
+            updatesNeeded,
+            compositesBeingExpanded,
+            currentShadowedBy,
+          })
+          Object.assign(newComponentsForShadows, recursionComponents);
+        }
       }
     }
 

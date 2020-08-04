@@ -434,7 +434,6 @@ export default class Extract extends CompositeComponent {
     let replacements = [];
 
     let numReplacementsBySource = [];
-
     let numReplacementsSoFar = 0;
 
     workspace.propVariablesCopiedBySource = [];
@@ -451,7 +450,8 @@ export default class Extract extends CompositeComponent {
           numReplacementsSoFar,
           uniqueIdentifiersUsed,
         });
-        workspace.propVariablesCopiedBySource.push(results.propVariablesCopied);
+
+        workspace.propVariablesCopiedBySource[sourceNum] = results.propVariablesCopiedByReplacement;
 
         let sourceReplacements = results.serializedReplacements;
         numReplacementsBySource[sourceNum] = sourceReplacements.length;
@@ -472,10 +472,10 @@ export default class Extract extends CompositeComponent {
 
   static createReplacementForSource({ component, components, sourceNum, numReplacementsSoFar, uniqueIdentifiersUsed }) {
 
-    // console.log(`create replacement for source ${sourceNum}, ${numReplacementsSoFar}`)
+    // console.log(`create replacement for source ${sourceNum}, ${numReplacementsSoFar} of ${component.componentName}`)
 
     let serializedReplacements = [];
-    let propVariablesCopied = [];
+    let propVariablesCopiedByReplacement = [];
 
     let replacementInd = numReplacementsSoFar - 1;
     let propVariableObj = component.stateValues.propVariableObjs[sourceNum];
@@ -512,6 +512,8 @@ export default class Extract extends CompositeComponent {
 
         for (let ind = 0; ind < numReplacementsForSource; ind++) {
           replacementInd++;
+
+          let propVariablesCopied = propVariablesCopiedByReplacement[ind] = [];
 
           let replacementClass = component.stateValues.replacementClasses[replacementInd];
 
@@ -615,18 +617,22 @@ export default class Extract extends CompositeComponent {
         let createReplacementPiece = function (subArrayKeys, nDimensionsLeft) {
 
           let pieces = [];
+          let propVariablesCopiedByPiece = [];
+
           if (nDimensionsLeft > 1) {
             // since nDimensionsLeft > 1, each component of subArray should be an array
             for (let subSubArrayKeys of subArrayKeys) {
               // recurse down to previous dimension
-              pieces.push(...createReplacementPiece(subSubArrayKeys, nDimensionsLeft - 1))
+              let result = createReplacementPiece(subSubArrayKeys, nDimensionsLeft - 1);
+              pieces.push(...result.pieces);
+              propVariablesCopiedByPiece.push(...result.propVariablesCopiedByPiece);
             }
 
           } else {
             // down to last piece
             for (let arrayKey of subArrayKeys) {
               let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
-              propVariablesCopied.push(propVariable);
+              let propVariablesCopiedForThisPiece = [propVariable];
 
               if (propVariableObj.containsComponentNamesToCopy) {
 
@@ -661,7 +667,7 @@ export default class Extract extends CompositeComponent {
                     state: stateForReplacementCopy,
                     uniqueIdentifier
                   });
-                  propVariablesCopied.push(componentToCopy.componentName)
+                  propVariablesCopiedForThisPiece.push(componentToCopy.componentName)
 
                 } else {
                   // just give an empty component of componentType
@@ -674,7 +680,7 @@ export default class Extract extends CompositeComponent {
                     componentType: arrayStateVarObj.componentType,
                     uniqueIdentifier,
                   })
-                  propVariablesCopied.push(null)
+                  propVariablesCopiedForThisPiece.push(null)
 
                 }
 
@@ -698,6 +704,8 @@ export default class Extract extends CompositeComponent {
                   uniqueIdentifier
                 })
               }
+              propVariablesCopiedByPiece.push(propVariablesCopiedForThisPiece);
+
             }
           }
 
@@ -716,14 +724,18 @@ export default class Extract extends CompositeComponent {
                 children: pieces,
                 uniqueIdentifier,
               }]
+              propVariablesCopiedByPiece = [flattenDeep(propVariablesCopiedByPiece)];
             }
           }
 
-          return pieces;
+          return { pieces, propVariablesCopiedByPiece };
 
         }
 
-        let newReplacements = createReplacementPiece(unflattenedArrayKeys, stateVarObj.nDimensions);
+        let result = createReplacementPiece(unflattenedArrayKeys, stateVarObj.nDimensions);
+
+        let newReplacements = result.pieces;
+        propVariablesCopiedByReplacement = result.propVariablesCopiedByPiece;
 
         // add downstream dependencies to top level replacements
         // (which are wrappers, so didn't get downstream dependencies originally)
@@ -751,6 +763,7 @@ export default class Extract extends CompositeComponent {
 
           for (let ind = newReplacements.length; ind < numReplacementsForSource; ind++) {
             replacementInd++;
+            propVariablesCopiedByReplacement[ind] = [];
 
             let replacementClass = component.stateValues.replacementClasses[replacementInd];
             let componentType = replacementClass.componentType.toLowerCase();
@@ -778,10 +791,13 @@ export default class Extract extends CompositeComponent {
 
       for (let ind = 0; ind < numReplacementsForSource; ind++) {
         replacementInd++;
+        let propVariablesCopied = propVariablesCopiedByReplacement[ind] = [];
 
         let replacementClass = component.stateValues.replacementClasses[replacementInd];
 
         let componentType = replacementClass.componentType
+
+        propVariablesCopied.push(propVariableObj.varName);
 
         if (propVariableObj.containsComponentNamesToCopy) {
 
@@ -814,6 +830,9 @@ export default class Extract extends CompositeComponent {
               }],
               uniqueIdentifier
             });
+
+            propVariablesCopied.push(componentToCopy.componentName);
+
           } else {
             // just give an empty component of componentType
             // use sourceNum in unique identifier
@@ -825,10 +844,12 @@ export default class Extract extends CompositeComponent {
               componentType,
               uniqueIdentifier,
             })
+
+            propVariablesCopied.push(null);
+
           }
 
         } else {
-          propVariablesCopied.push(propVariableObj.varName);
 
           // don't need to use sourceNum in unique identifier
           // even though we have separate uniqueIdentifiersUsed for each source
@@ -851,7 +872,7 @@ export default class Extract extends CompositeComponent {
         }
       }
     }
-    return { serializedReplacements, propVariablesCopied };
+    return { serializedReplacements, propVariablesCopiedByReplacement };
 
   }
 
@@ -930,63 +951,72 @@ export default class Extract extends CompositeComponent {
 
         numReplacementsBySource[sourceNum] = results.numReplacements;
 
-        propVariablesCopiedBySource.push(results.propVariablesCopied);
+        propVariablesCopiedBySource[sourceNum] = results.propVariablesCopiedByReplacement;
 
         continue;
       }
 
-      let redoReplacements = false;
-      let testReplacementChanges = [];
-      let results;
 
-      // use new uniqueIdentifiersUsed for recreateReplacements
+      // use new uniqueIdentifiersUsed
       // so will get the same names for pieces that match
-      let uniqueIdentifiersUsed = [];
+      let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedBySource[sourceNum] = [];
 
-      // don't change replacements unless
-      // the number of components or their component types changed
-      results = this.recreateReplacements({
+      let results = this.createReplacementForSource({
         component,
         sourceNum,
-        numReplacementsSoFar,
-        prevNumReplacements: workspace.numReplacementsBySource[sourceNum],
-        replacementChanges: testReplacementChanges,
         components,
+        numReplacementsSoFar,
         uniqueIdentifiersUsed,
       });
 
-      let changeInstruction = testReplacementChanges[testReplacementChanges.length - 1];
-      let newSerializedReplacements = changeInstruction.serializedReplacements;
-      propVariablesCopiedBySource.push(results.propVariablesCopied);
+      let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
 
-      if (newSerializedReplacements.length !== workspace.numReplacementsBySource[sourceNum] ||
-        propVariablesCopiedBySource[sourceNum].length !== workspace.propVariablesCopiedBySource[sourceNum].length ||
-        workspace.propVariablesCopiedBySource[sourceNum].some((v, i) => v !== propVariablesCopiedBySource[sourceNum][i])
-      ) {
-        redoReplacements = true;
-      } else {
-        for (let ind = 0; ind < newSerializedReplacements.length; ind++) {
-          if (newSerializedReplacements[ind].componentType !==
-            component.replacements[numReplacementsSoFar + ind].componentType) {
-            redoReplacements = true;
-            break;
-          }
+      let newSerializedReplacements = results.serializedReplacements;
+
+      let nNewReplacements = newSerializedReplacements.length;
+      let nOldReplacements = workspace.numReplacementsBySource[sourceNum];
+
+      for (let ind = 0; ind < Math.min(nNewReplacements, nOldReplacements); ind++) {
+        if (propVariablesCopiedByReplacement[ind].length !== workspace.propVariablesCopiedBySource[sourceNum][ind].length ||
+          workspace.propVariablesCopiedBySource[sourceNum][ind].some((v, i) => v !== propVariablesCopiedByReplacement[ind][i])
+        ) {
+
+          let replacementInstruction = {
+            changeType: "add",
+            changeTopLevelReplacements: true,
+            firstReplacementInd: numReplacementsSoFar + ind,
+            numberReplacementsToReplace: 1,
+            serializedReplacements: [newSerializedReplacements[ind]],
+          };
+          replacementChanges.push(replacementInstruction);
         }
       }
 
+      if (nNewReplacements > nOldReplacements) {
+        let replacementInstruction = {
+          changeType: "add",
+          changeTopLevelReplacements: true,
+          firstReplacementInd: numReplacementsSoFar + nOldReplacements,
+          numberReplacementsToReplace: 0,
+          serializedReplacements: newSerializedReplacements.slice(nOldReplacements),
+        };
+        replacementChanges.push(replacementInstruction);
+      } else if (nNewReplacements < nOldReplacements) {
+        let replacementInstruction = {
+          changeType: "delete",
+          changeTopLevelReplacements: true,
+          firstReplacementInd: numReplacementsSoFar + nNewReplacements,
+          numberReplacementsToDelete: nOldReplacements - nNewReplacements,
+        }
 
-      if (redoReplacements) {
-        replacementChanges.push(...testReplacementChanges);
-
-        numReplacementsSoFar += results.numReplacements;
-        numReplacementsBySource[sourceNum] = results.numReplacements;
-
-        // add uniqueIdentifiersUsed to workspace
-        workspace.uniqueIdentifiersUsedBySource[sourceNum] = uniqueIdentifiersUsed;
-      } else {
-        numReplacementsSoFar += workspace.numReplacementsBySource[sourceNum];
-        numReplacementsBySource[sourceNum] = workspace.numReplacementsBySource[sourceNum];
+        replacementChanges.push(replacementInstruction);
       }
+
+      numReplacementsSoFar += nNewReplacements;
+
+      numReplacementsBySource[sourceNum] = nNewReplacements;
+
+      propVariablesCopiedBySource[sourceNum] = propVariablesCopiedByReplacement;
 
     }
 
@@ -1006,40 +1036,12 @@ export default class Extract extends CompositeComponent {
   static recreateReplacements({ component, sourceNum, numReplacementsSoFar, prevNumReplacements,
     replacementChanges, uniqueIdentifiersUsed, components
   }) {
-    // if (prevNumReplacements > 0) {
-    //   // give instructions to move dependency to new source
-    //   let prevSourceName = workspace.previousSources[sourceNum];
-    //   let newSource = component.stateValues.sourceComponents[sourceNum];
-    //   if (prevSourceName !== undefined) {
-    //     if (prevSourceName !== newSource.componentName) {
-    //       let replacementInstruction = {
-    //         changeType: "moveDependency",
-    //         dependencyDirection: "downstream",
-    //         oldComponentName: prevSourceName,
-    //         newComponentName: newSource.componentName,
-    //         dependencyType: "reference",
-    //         otherAttributes: { shadowed: true, prop: component.state.propChild.componentName }
-    //       };
-    //       replacementChanges.push(replacementInstruction);
-    //     }
-    //   }
-    //   else {
-    //     // since no previous source, need to create new dependencies
-    //     let replacementInstruction = {
-    //       changeType: "addDependency",
-    //       dependencyDirection: "downstream",
-    //       newComponentName: newSource.componentName,
-    //       dependencyType: "reference",
-    //       otherAttributes: { shadowed: true, prop: component.state.propChild.componentName }
-    //     };
-    //     replacementChanges.push(replacementInstruction);
-    //   }
-    // }
+
     let results = this.createReplacementForSource({
       component, sourceNum, numReplacementsSoFar, components, uniqueIdentifiersUsed
     });
 
-    let propVariablesCopied = results.propVariablesCopied;
+    let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
 
     let newSerializedChildren = results.serializedReplacements
 
@@ -1052,7 +1054,7 @@ export default class Extract extends CompositeComponent {
     };
     replacementChanges.push(replacementInstruction);
 
-    return { numReplacements: newSerializedChildren.length, propVariablesCopied }
+    return { numReplacements: newSerializedChildren.length, propVariablesCopiedByReplacement }
   }
 
 }

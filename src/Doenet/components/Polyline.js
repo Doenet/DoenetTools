@@ -246,8 +246,8 @@ export default class Polyline extends GraphicalComponent {
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
-          let [pointInd, dimInd] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           dependenciesByKey[arrayKey] = {
             verticesChild: {
@@ -269,8 +269,8 @@ export default class Polyline extends GraphicalComponent {
 
         for (let arrayKey of arrayKeys) {
 
-          let [pointInd, dimInd] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           let verticesChild = dependencyValuesByKey[arrayKey].verticesChild;
           if (verticesChild.length === 1
@@ -302,8 +302,8 @@ export default class Polyline extends GraphicalComponent {
 
         let instructions = [];
         for (let arrayKey in desiredStateVariableValues.vertices) {
-          let [pointInd, dimInd] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           if (dependencyValuesByKey[arrayKey].verticesChild.length === 1
             && dependencyValuesByKey[arrayKey].verticesChild[0].stateValues["pointX" + varEnding]

@@ -220,8 +220,8 @@ export default class LineSegment extends GraphicalComponent {
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
-          let [pointInd, dimInd] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           dependenciesByKey[arrayKey] = {
             endpointsChild: {
@@ -245,8 +245,8 @@ export default class LineSegment extends GraphicalComponent {
 
         for (let arrayKey of arrayKeys) {
 
-          let [pointInd, dimInd] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           if (dependencyValuesByKey[arrayKey].endpointsChild.length === 1
             && dependencyValuesByKey[arrayKey].endpointsChild[0].stateValues["pointX" + varEnding]
@@ -292,8 +292,8 @@ export default class LineSegment extends GraphicalComponent {
 
         for (let arrayKey in desiredStateVariableValues.endpoints) {
 
-          let [pointInd, dimInd] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           if (dependencyValuesByKey[arrayKey].endpointsChild.length === 1
             && dependencyValuesByKey[arrayKey].endpointsChild[0].stateValues["pointX" + varEnding]

@@ -773,6 +773,111 @@ describe('Line Tag Tests', function () {
     })
   })
 
+  it('copied line based on equation', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <line>
+  y = 2x+1
+  </line>
+  </graph>
+  
+  <graph>
+  <copy tname="_line1" />
+  </graph>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let line2 = components['/_copy1'].replacements[0];
+
+      cy.log('line starts off correctly')
+      cy.window().then((win) => {
+        expect(components["/_line1"].stateValues.slope.evaluate_to_constant()).closeTo(2, 1E-12);
+        expect(components["/_line1"].stateValues.yintercept.evaluate_to_constant()).closeTo(1, 1E-12);
+        expect(line2.stateValues.slope.evaluate_to_constant()).closeTo(2, 1E-12);
+        expect(line2.stateValues.yintercept.evaluate_to_constant()).closeTo(1, 1E-12);
+
+      });
+
+
+      cy.log('move line1')
+      cy.window().then((win) => {
+
+        let point1coords = [
+          components['/_line1'].stateValues.points[0][0],
+          components['/_line1'].stateValues.points[0][1],
+        ];
+        let point2coords = [
+          components['/_line1'].stateValues.points[1][0],
+          components['/_line1'].stateValues.points[1][1],
+        ];
+
+        let moveX = -2;
+        let moveY = -1;
+
+        // 2(x+2)+1-1 = 2x+4
+
+        point1coords[0] = point1coords[0].add(moveX);
+        point1coords[1] = point1coords[1].add(moveY);
+        point2coords[0] = point2coords[0].add(moveX);
+        point2coords[1] = point2coords[1].add(moveY);
+
+        components['/_line1'].moveLine({
+          point1coords: point1coords,
+          point2coords: point2coords
+        });
+
+        expect(components["/_line1"].stateValues.slope.evaluate_to_constant()).closeTo(2, 1E-12);
+        expect(components["/_line1"].stateValues.yintercept.evaluate_to_constant()).closeTo(4, 1E-12);
+        expect(line2.stateValues.slope.evaluate_to_constant()).closeTo(2, 1E-12);
+        expect(line2.stateValues.yintercept.evaluate_to_constant()).closeTo(4, 1E-12);
+
+      });
+
+      cy.log('move line2')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let point1coords = [
+          components['/_line1'].stateValues.points[0][0],
+          components['/_line1'].stateValues.points[0][1],
+        ];
+        let point2coords = [
+          components['/_line1'].stateValues.points[1][0],
+          components['/_line1'].stateValues.points[1][1],
+        ];
+
+        let moveX = -5;
+        let moveY = -2;
+
+        // 2(x+5)+4-2 = 2x + 12
+
+        point1coords[0] = point1coords[0].add(moveX);
+        point1coords[1] = point1coords[1].add(moveY);
+        point2coords[0] = point2coords[0].add(moveX);
+        point2coords[1] = point2coords[1].add(moveY);
+
+        line2.moveLine({
+          point1coords: point1coords,
+          point2coords: point2coords
+        });
+
+        expect(components["/_line1"].stateValues.slope.evaluate_to_constant()).closeTo(2, 1E-12);
+        expect(components["/_line1"].stateValues.yintercept.evaluate_to_constant()).closeTo(12, 1E-12);
+        expect(line2.stateValues.slope.evaluate_to_constant()).closeTo(2, 1E-12);
+        expect(line2.stateValues.yintercept.evaluate_to_constant()).closeTo(12, 1E-12);
+
+      });
+
+    })
+  })
+
   it('line via copied through', () => {
     cy.window().then((win) => {
       win.postMessage({

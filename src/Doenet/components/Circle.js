@@ -204,8 +204,8 @@ export default class Circle extends Curve {
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
-          let [pointInd, dimInd] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
 
           dependenciesByKey[arrayKey] = {
@@ -228,8 +228,8 @@ export default class Circle extends Curve {
 
         for (let arrayKey of arrayKeys) {
 
-          let [pointInd, dimInd] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           let throughChild = dependencyValuesByKey[arrayKey].throughChild;
           if (throughChild.length === 1
@@ -262,8 +262,8 @@ export default class Circle extends Curve {
 
         let instructions = [];
         for (let arrayKey in desiredStateVariableValues.throughPoints) {
-          let [pointInd, dimInd] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           if (dependencyValuesByKey[arrayKey].throughChild.length === 1
             && dependencyValuesByKey[arrayKey].throughChild[0].stateValues["pointX" + varEnding]

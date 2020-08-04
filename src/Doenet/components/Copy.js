@@ -1985,7 +1985,7 @@ export function replacementFromProp({ component, components, componentOrReplacem
               uniqueIdentifier,
             });
 
-            propVariablesCopied.push(componentToCopy.componentName)
+            propVariablesCopied.push(componentToCopy.componentName);
 
           } else {
             // just give an empty component of componentType
