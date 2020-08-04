@@ -14,7 +14,7 @@ if (!isset($_GET["courseId"])) {
 	$courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 
 	$sql = "
-        SELECT ce.username, ce.firstName, ce.lastName, ce.courseCredit, ce.courseGrade, ce.overrideCourseGrade
+        SELECT ce.userId, ce.firstName, ce.lastName, ce.courseCredit, ce.courseGrade, ce.overrideCourseGrade
         FROM course_enrollment AS ce
         WHERE ce.courseId = '$courseId'
         ORDER BY ce.lastName
@@ -28,8 +28,8 @@ if (!isset($_GET["courseId"])) {
 		while ($row = $result->fetch_assoc()) {
 			array_push($response_arr,
 				array(
-					$row['username'],
-                    $row['firstName'],
+					$row['userId'],
+          $row['firstName'],
 					$row['lastName'],
 					$row['courseCredit'],
 					$row['courseGrade'],

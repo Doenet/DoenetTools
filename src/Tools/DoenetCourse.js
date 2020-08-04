@@ -22,11 +22,12 @@ export default function DoenetCourse(props){
 
   
   getCourses(updateCourseInfo);
+
   function updateCourseInfo(courseListArray,selectedCourseObj){
-    // console.log('called back');
+    // console.log('example****> called back');
     // console.log("courses",courseListArray);
     // console.log("selected",selectedCourseObj);
-    setSelected("NfzKqYtTgYRyPnmaxc7XB");
+    setSelected("aI8sK4vmEhC5sdeSP3vNW");
   }
 
     return (

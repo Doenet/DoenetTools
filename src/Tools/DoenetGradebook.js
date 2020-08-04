@@ -21,6 +21,8 @@ import { TreeView } from './TreeView/TreeView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
+import { getCourses, setSelected } from "../imports/courseInfo";
+
 function sortArraysByElementI(arrarr, i) {
     // TODO: finish
     arrarr.sort()
@@ -36,8 +38,10 @@ class GradebookOverview extends Component {
             overviewLoaded: false,
         }
 
-        this.courseId = "aI8sK4vmEhC5sdeSP3vNW"; // FIXME: value used for testing, this needs to be read from the url query
-
+        // this.courseId = "aI8sK4vmEhC5sdeSP3vNW"; // FIXME: value used for testing, this needs to be read from the url query
+        getCourses(this.updateCourseInfo);
+        // this.updateCourseInfo("one","two")
+        
         this.assignmentsLoaded = false;
         this.assignments = null;
         this.studentsLoaded = false;
@@ -47,68 +51,82 @@ class GradebookOverview extends Component {
         this.tempSet = new Set();
        
     }
+    updateCourseInfo = (courseListArray,selectedCourseObj) => {
+        // console.log('example****> called back');
+        // console.log("courses",courseListArray);
+        // console.log("selected",selectedCourseObj);
+        this.courseId = selectedCourseObj.courseId;
+        const phpUrl = '/api/loadGradebookEnrollment.php';
+        const data = {
+            courseId:this.courseId
+        }
+        const payload = {
+          params: data
+        }
+        axios.get(phpUrl, payload)
+            .then(resp => {
+                let data = resp.data
+                // From API:
+                // array_push($response_arr,
+                //     array(
+                //         $row['userId'],
+                //         $row['firstName'],
+                //         $row['lastName'],
+                //         $row['courseCredit'],
+                //         $row['courseGrade'],
+                //         $row['overrideCourseGrade'],
+                //     )
+                // );
+    
+                this.students = {}
+                for (let row of data) {
+                    let [userId,
+                        firstName,
+                        lastName,
+                        courseCredit,
+                        courseGrade,
+                        overrideCourseGrade] = row;
+    
+                    this.students[userId] = {
+                        firstName,
+                        lastName,
+                        courseCredit,
+                        courseGrade,
+                        overrideCourseGrade,
+                    };
+                }
+    
+                this.studentsLoaded = true;
+                if (this.assignmentsLoaded) {
+                    this.getOverviewData();
+                }
+            }).catch(err => console.log((err.response).toString()));
+    
+            axios.get("/api/loadAssignments.php?courseId=" + this.courseId).then(resp => {
+                let data = resp.data
+                // From API:
+                // array_push($response_arr,
+                //     array(
+                //         $row['assignmentId'],
+                //         $row['assignmentName']
+                //     )
+                // );
+    
+                this.assignments = {};
+                for (let row in data) {
+                    let [assignmentId, assignmentName] = data[row];
+                    this.assignments[row] = { assignmentId, assignmentName };
+                }
+                this.setState({assignmentList: this.assignments});
+                this.assignmentsLoaded = true;
+                if (this.studentsLoaded) {
+                    this.getOverviewData();
+                }
+            }).catch(err => console.log((err.response).toString()));
+      }
 
-    componentDidMount() {
-        axios.get(`/api/loadGradebookEnrollment.php?courseId=${this.courseId}`).then(resp => {
-            let data = resp.data
-            // From API:
-            // array_push($response_arr,
-            //     array(
-            //         $row['username'],
-            //         $row['firstName'],
-            //         $row['lastName'],
-            //         $row['courseCredit'],
-            //         $row['courseGrade'],
-            //         $row['overrideCourseGrade'],
-            //     )
-            // );
 
-            this.students = {}
-            for (let row of data) {
-                let [username,
-                    firstName,
-                    lastName,
-                    courseCredit,
-                    courseGrade,
-                    overrideCourseGrade] = row;
 
-                this.students[username] = {
-                    firstName,
-                    lastName,
-                    courseCredit,
-                    courseGrade,
-                    overrideCourseGrade,
-                };
-            }
-
-            this.studentsLoaded = true;
-            if (this.assignmentsLoaded) {
-                this.getOverviewData();
-            }
-        }).catch(err => console.log((err.response).toString()));
-
-        axios.get("/api/loadAssignments.php?courseId=" + this.courseId).then(resp => {
-            let data = resp.data
-            // From API:
-            // array_push($response_arr,
-            //     array(
-            //         $row['assignmentId'],
-            //         $row['assignmentName']
-            //     )
-            // );
-
-            this.assignments = {};
-            for (let row in data) {
-                let [assignmentId, assignmentName] = data[row];
-                this.assignments[row] = { assignmentId, assignmentName };
-            }
-            this.setState({assignmentList: this.assignments});
-            this.assignmentsLoaded = true;
-            if (this.studentsLoaded) {
-                this.getOverviewData();
-            }
-        }).catch(err => console.log((err.response).toString()));
-    }
 
     getOverviewData() {
         axios.get("/api/loadGradebookOverview.php?courseId=" + this.courseId).then(resp => {
