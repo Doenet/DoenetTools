@@ -76,6 +76,8 @@ class DoenetChooser extends Component {
     this.cachedCurrentDraggedObject = null;
     this.lastDroppedContainerId = null;
     this.validDrop = true;
+    this.selectedBranchId = '';
+    this.selectedContentId = '';
 
     this.courseFolderInfo = {};
     this.courseContentInfo = {};
@@ -1135,8 +1137,12 @@ class DoenetChooser extends Component {
     this.setState({ modalOpen: true });
   }
 
-  versionCallback(branchId, contentId) {
-
+  versionCallback(e, branchId, contentId) {
+    // e.preventDefault();
+    // e.stopPropagation();
+    this.selectedBranchId = branchId;
+    this.selectedContentId = contentId;
+    this.setState({ modalOpen: true });
   }
 
   splitPanelUpdateSelectedItems(selectedItems, selectedItemsType) {
@@ -3252,8 +3258,12 @@ const customizedTreeNodeItem = ({title, icon}) => {
         <Overlay 
              open={this.state.modalOpen} 
              body={
-           <DoenetEditor hideHeader={true} branchId={'GJqovNClEobHRxhtj4YCX'}
-              contentId={'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'} />
+          //  <DoenetEditor hideHeader={true} branchId={this.selectedBranchId}
+          //     contentId={this.selectedContentId} />
+          // <DoenetEditor hideHeader={true} branchId={'GJqovNClEobHRxhtj4YCX'}
+          // contentId={'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'} />
+          <DoenetEditor hideHeader={true} branchId={'U3_GUY9poJdTs-nABsmJB'}
+          contentId={'a22a2e97e1d853d385319e6cf24992eb2598cd2c597c68f249f0efa2c437dce7'} />
           }
           onClose={this.overlayOnClose.bind(this)} />
         <Router>
@@ -4202,7 +4212,10 @@ class InfoPanel extends Component {
             <div style={{ "display": "block" }} key={"version" + versionNumber}>
               <FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "14px", "color": "#3D6EC9", "marginRight": "10px" }} />
               {/* <a href={`/editor?branchId=${selectedItemId}&contentId=${contentIdObj.contentId}`}>{versionTitle}</a> */}
-              <a href='' onClick={this.props.versionCallback.bind(this, selectedItemId, contentIdObj.contentId)}>{versionTitle}</a>
+              <a onClick={(e)=>
+                {
+                  this.props.versionCallback(e, selectedItemId, contentIdObj.contentId);
+              }}>{versionTitle}</a>
             </div>
           );
         }
