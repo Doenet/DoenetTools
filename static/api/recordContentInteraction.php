@@ -18,14 +18,9 @@ $assignmentId =  mysqli_real_escape_string($conn,$_POST["assignmentId"]);
 $contentId =  mysqli_real_escape_string($conn,$_POST["contentId"]);
 $stateVariables =  mysqli_real_escape_string($conn,$_POST["stateVariables"]);
 
-$sql = "INSERT INTO content_interactions
-        SET userId='$userId', 
-        deviceName='$device',
-        assignmentId='$assignmentId',
-        contentId='$contentId',
-        stateVariables='$stateVariables',
-        timestamp=NOW()";
-        echo $sql;
+$sql = "INSERT INTO content_interactions (userId,deviceName,assignmentId,contentId,stateVariables,timestamp)
+VALUES ('$userId','$device','$assignmentId','$contentId','$stateVariables',NOW())";
+
 $result = $conn->query($sql);
 
 http_response_code(200);

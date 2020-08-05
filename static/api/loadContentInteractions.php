@@ -20,13 +20,15 @@ $sql = "SELECT stateVariables
         FROM content_interactions
         WHERE userId='$userId'
         AND contentId='$contentId'
-        ORDER BY timestamp";
+        ORDER BY timestamp DESC";
 
 $result = $conn->query($sql);
-$stateVariables = array();
-while ($row = $result->fetch_assoc()){
-        array_push($stateVariables,$row["stateVariables"]);
-}
+// $stateVariables = array();
+// while ($row = $result->fetch_assoc()){
+//         array_push($stateVariables,$row["stateVariables"]);
+// }
+$row = $result->fetch_assoc();
+$stateVariables = $row["stateVariables"];
 
 $response_arr = array(
         "success" => 0,
