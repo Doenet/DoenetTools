@@ -93,9 +93,6 @@ import Panel from './components/Panel';
 import ConstrainToAngles from './components/ConstrainToAngles';
 import AttractToAngles from './components/AttractToAngles';
 import ConditionalContent from './components/ConditionalContent';
-import ConditionalInlineContent from './components/ConditionalInlineContent';
-import ConditionalText from './components/ConditionalText';
-import ConditionalMath from './components/ConditionalMath';
 import AsList from './components/AsList';
 import Spreadsheet from './components/Spreadsheet';
 import Cell from './components/Cell';
@@ -232,9 +229,6 @@ const componentTypeArray = [
   UpdateValue, MathTarget, NewMathValue,
   ConstrainToAngles, AttractToAngles,
   ConditionalContent,
-  ConditionalInlineContent,
-  ConditionalText,
-  ConditionalMath,
   AsList,
   Problem,
   Seeds, Variants, VariantControl,

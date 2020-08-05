@@ -504,7 +504,7 @@ export default class Map extends CompositeComponent {
           (prevMinNIterates - currentMinNIterates) * component.stateValues.numberTemplateComponents;
 
         let replacementInstruction = {
-          changeType: "changedReplacementsToWithhold",
+          changeType: "changeReplacementsToWithhold",
           replacementsToWithhold: newReplacementsToWithhold,
         };
         replacementChanges.push(replacementInstruction);
@@ -533,7 +533,7 @@ export default class Map extends CompositeComponent {
           numReplacementsToAdd = 0;
 
           let replacementInstruction = {
-            changeType: "changedReplacementsToWithhold",
+            changeType: "changeReplacementsToWithhold",
             replacementsToWithhold: newReplacementsToWithhold,
           };
           replacementChanges.push(replacementInstruction);

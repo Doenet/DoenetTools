@@ -11149,7 +11149,7 @@ export default class Core {
         this.processNewStateVariableValues(newStateVariableValues, updatesNeeded);
 
 
-      } else if (change.changeType === "changedReplacementsToWithhold") {
+      } else if (change.changeType === "changeReplacementsToWithhold") {
 
         // don't change actual array of replacements
         // but just change those that will get added to activeChildren

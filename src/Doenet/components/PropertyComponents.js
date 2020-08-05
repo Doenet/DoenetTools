@@ -18,6 +18,7 @@ import MathWithVariable from './abstract/MathWithVariable';
 import TextList from './TextList';
 import NumberList from './NumberList';
 import MathList from './MathList';
+import When from './When';
 
 export class Hide extends BooleanComponent {
   static componentType = "hide";
@@ -906,4 +907,8 @@ export class FromSubstitutions extends NumberComponent {
 export class FromMapAncestor extends NumberComponent {
   static componentType = "fromMapAncestor";
   static rendererType = "number";
+}
+
+export class Condition extends When {
+  static componentType = "condition";
 }
