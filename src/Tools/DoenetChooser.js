@@ -546,7 +546,7 @@ class DoenetChooser extends Component {
         this.loadUserUrls();
       });
     }
-    this.updateNumber++;
+    // this.updateNumber++;
   }
 
   addContentToCourse = (courseId, itemIds, itemTypes, callback=()=>{}) => {
@@ -1194,7 +1194,7 @@ class DoenetChooser extends Component {
           tempHeadingsInfo[itemId] = resp.data[itemId];
           tempHeadingsInfo[itemId]["type"] = "folder";
           tempHeadingsInfo[itemId]["isRepo"] = false;
-          // if (itemId == "root") tempHeadingsInfo[itemId]["title"] = this.courseInfo[courseId]["courseName"];
+          if (itemId == "root") tempHeadingsInfo[itemId]["title"] = `${this.courseInfo[courseId]["courseCode"]} Assignments`;
           // process children
           for (let i in resp.data[itemId]["childrenId"]) {
             let childId = resp.data[itemId]["childrenId"][i];
@@ -2058,12 +2058,12 @@ class DoenetChooser extends Component {
     this.setState({ splitPanelLayout: !this.state.splitPanelLayout });
   }
 
-  getPathToFolder = (folderId) => {
+  getPathToFolder = (folderId, parentDataObject) => {
     let pathToFolder = [folderId];
-    let currentParentId = this.folderInfo[folderId].parentId;
+    let currentParentId = parentDataObject[folderId].parentId;
     while (currentParentId != "root") {
       pathToFolder.unshift(currentParentId);
-      currentParentId = this.folderInfo[currentParentId].parentId;
+      currentParentId = parentDataObject[currentParentId].parentId;
     }
     return pathToFolder;
   }
@@ -2126,6 +2126,18 @@ class DoenetChooser extends Component {
 
     // setup mainSection to be chooser / CourseForm
     this.mainSection;
+    let loading = true;
+    let browserContainerId = ""
+    let browserContentInfo = {}
+    let browserFolderInfo = {}
+    let browserUrlInfo = {}
+    let folderList = [];
+    let contentList = [];
+    let urlList = [];
+    let treeContainerId = "";
+    let treeContainerType = "";
+    let treeParentsInfo = {};
+    let treeChildrenInfo = {};
     if (this.state.activeSection === "add_course" || this.state.activeSection === "edit_course") {
       this.mainSection = <CourseForm
         mode={this.state.activeSection}
@@ -2146,19 +2158,6 @@ class DoenetChooser extends Component {
       />;
     }
     else {
-      let loading = true;
-      let browserContainerId = ""
-      let browserContentInfo = {}
-      let browserFolderInfo = {}
-      let browserUrlInfo = {}
-      let folderList = [];
-      let contentList = [];
-      let urlList = [];
-      let treeContainerId = "";
-      let treeContainerType = "";
-      let treeParentsInfo = {};
-      let treeChildrenInfo = {};
-
       if (this.state.selectedDrive == "Content" || this.state.selectedDrive == "Global") {
         loading = !this.folders_loaded || !this.branches_loaded || !this.urls_loaded;
 
@@ -2176,12 +2175,12 @@ class DoenetChooser extends Component {
         treeContainerType = ChooserConstants.USER_CONTENT_TYPE;
         treeParentsInfo = this.userFolderInfo;
         treeChildrenInfo = { ...this.userContentInfo, ...this.userUrlInfo };
+        console.log(treeParentsInfo)
 
       } else if (this.state.selectedDrive == "Courses") {
         loading = !this.assignments_and_headings_loaded;
 
         // browser data
-        console.log(this.headingsInfo)
         browserContainerId = this.state.selectedCourse;
         if (this.headingsInfo[this.state.selectedCourse]["root"]) {
           folderList = this.headingsInfo[this.state.selectedCourse]["root"]["childFolders"]; 
@@ -2192,9 +2191,9 @@ class DoenetChooser extends Component {
 
         // tree data
         treeContainerId = this.state.selectedCourse;
-        treeContainerType = ChooserConstants.COURSE_CONTENT_TYPE;
-        treeParentsInfo = this.courseFolderInfo[this.state.selectedCourse];
-        treeChildrenInfo = { ...this.courseContentInfo[this.state.selectedCourse], ...this.courseUrlInfo[this.state.selectedCourse] };
+        treeContainerType = ChooserConstants.COURSE_ASSIGNMENTS_TYPE;
+        treeParentsInfo = this.headingsInfo[this.state.selectedCourse];
+        treeChildrenInfo = this.assignmentsInfo[this.state.selectedCourse];
       }
 
       this.tree = <div className="tree" style={{ paddingLeft: "1em" }}>
@@ -2227,7 +2226,7 @@ class DoenetChooser extends Component {
             // get path to item
             const dataSource = this.getDataSource(treeContainerId, treeContainerType);
             const itemParentId = dataSource[type][id]["parentId"];
-            const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId);
+            const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId, treeParentsInfo);
             // select item and switch to directory            
             this.setState({
               selectedItems: [id], 
@@ -2240,7 +2239,7 @@ class DoenetChooser extends Component {
           }}
           onParentNodeClick={(id, type) => {
             // get path to item
-            let pathToSelectedFolder = this.getPathToFolder(id);
+            let pathToSelectedFolder = this.getPathToFolder(id, treeParentsInfo);
             // select item and switch to directory            
             this.setState({
               selectedItems: [id], 
@@ -2315,11 +2314,12 @@ class DoenetChooser extends Component {
        }}
      />
    </div>
-      let customizedContentTreeParentInfo = {};
+      let customizedContentTreeParentInfo = {"root": {}};
       let customizedContentTreeChildrenInfo = {};
+      
       if (treeParentsInfo && treeChildrenInfo) {
-        customizedContentTreeParentInfo = JSON.parse(JSON.stringify(treeParentsInfo));
-        customizedContentTreeChildrenInfo = JSON.parse(JSON.stringify(treeChildrenInfo));
+        customizedContentTreeParentInfo = JSON.parse(JSON.stringify({...this.userFolderInfo})),
+        customizedContentTreeChildrenInfo = JSON.parse(JSON.stringify({ ...this.userContentInfo, ...this.userUrlInfo }))
         customizedContentTreeParentInfo.root.title = "Content";
         customizedContentTreeParentInfo.root.childContent = [];
       }
@@ -2357,10 +2357,6 @@ class DoenetChooser extends Component {
       //     customizedCoursesTreeParentInfo[key].childUrls = [];
       //   }
       // }
-      // console.log('customizedContentTreeChildrenInfo', customizedContentTreeChildrenInfo);
-      console.log('customizedContentTreeParentInfo', customizedContentTreeParentInfo);
-      // console.log('customizedCoursesTreeParentInfo', customizedCoursesTreeParentInfo);
-      // console.log('customizedCoursesTreeChildrenInfo', customizedCoursesTreeChildrenInfo);
       this.customizedTree = <div className="tree-column">
         <Accordion>
           <div label="Content">
@@ -2424,7 +2420,6 @@ class DoenetChooser extends Component {
                 if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
                 else this.tempSet.add(nodeId);
                 this.forceUpdate();
-                this.selectDrive("Content", nodeId)
               }}
               // onLeafNodeClick={(nodeId) => {
               //   this.tempSet.clear();
@@ -2493,8 +2488,8 @@ class DoenetChooser extends Component {
               onLeafNodeClick={(nodeId) => {
                 this.tempSet.clear();
                 this.tempSet.add(nodeId);
-                this.forceUpdate();
                 this.selectDrive("Courses", nodeId)
+                this.forceUpdate();
               }}
               onParentNodeClick={(nodeId, type) => {
                 this.tempSet.clear();
@@ -2753,19 +2748,19 @@ class DoenetChooser extends Component {
           </Router>
 
           <ToolLayoutPanel panelName="Info Panel" key={'right'}>
-            {/* <InfoPanel
+            <InfoPanel
               selectedItems={this.state.selectedItems}
               selectedItemsType={this.state.selectedItemsType}
               selectedDrive={this.state.selectedDrive}
               selectedCourse={this.state.selectedCourse}
-              allFolderInfo={this.folderInfo}
-              allContentInfo={this.branchId_info}
-              allUrlInfo={this.urlInfo}
+              allFolderInfo={browserFolderInfo}
+              allContentInfo={browserContentInfo}
+              allUrlInfo={browserUrlInfo}
               allCourseInfo={this.courseInfo}
               publicizeRepo={this.publicizeRepo}
               openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
               openEditUrlForm={() => this.toggleManageUrlForm("edit_url")}
-            /> */}
+            />
           </ToolLayoutPanel>
         </ToolLayout>
 
@@ -3718,6 +3713,7 @@ class InfoPanel extends Component {
       let versions = [];
       let versionNumber = 1;
       // get and format versions
+      console.log(this.props.allContentInfo[selectedItemId])
       this.props.allContentInfo[selectedItemId].contentIds.reverse().forEach(contentIdObj => {
         if (contentIdObj.draft !== "1") {
           let versionTitle = "Version " + versionNumber++;
