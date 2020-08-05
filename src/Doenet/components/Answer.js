@@ -872,11 +872,11 @@ export default class Answer extends InlineComponent {
         } else {
           // awardUsed with be component name of first award
           // that gives the maximum credit (which will be creditAchieved)
-          // Always process awards if creditAchieved is still zero in case want to
+          // Always process awards if haven't matched an award in case want to
           // use an award with credit=0 to trigger feedback
           for (let child of dependencyValues.awardChildren) {
             let childMaxCredit = Math.max(0, Math.min(1, child.stateValues.credit))
-            if (childMaxCredit > creditAchieved || creditAchieved === 0) {
+            if (childMaxCredit > creditAchieved || awardUsed === "") {
               let creditFromChild = child.stateValues.creditAchieved;
               let fractionFromChild = child.stateValues.fractionSatisfied;
               if (fractionFromChild > 0 && (creditFromChild > creditAchieved || awardUsed === "")) {
