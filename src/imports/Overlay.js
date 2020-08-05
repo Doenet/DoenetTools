@@ -6,10 +6,14 @@ const OverlayWrapper = styled.div`
   position: fixed;
   z-index: 1;
   left: 0;
-  top: 0;
+  top: 50px;
   width: 100%;
   height: 100%;
-  overflow: auto;
+  position:absolute;
+  overflow-y: hidden ;
+	transition-property: all;
+	transition-duration: .5s;
+	transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
   background-color: rgba(0, 0, 0, 0.3);
 `;
 
