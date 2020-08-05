@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import styled from "styled-components";
 
-const Overlay = styled.div`
+const OverlayWrapper = styled.div`
   visibility: hidden;
   position: fixed;
   z-index: 1;
@@ -52,7 +52,7 @@ const OverlayClose = styled.button`
 
 export default function Overlay(props) {
     return (
-      <Overlay
+      <OverlayWrapper
         style={{ visibility: props.open ? 'visible': 'hidden' }}
       >
         <OverlayContent>
@@ -62,6 +62,6 @@ export default function Overlay(props) {
           </OverlayClose>
           <OverlayContainer>{props.body}</OverlayContainer>
         </OverlayContent>
-      </Overlay>
+      </OverlayWrapper>
     );
   }
