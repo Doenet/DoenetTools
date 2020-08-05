@@ -99,62 +99,63 @@ class DoenetChooser extends Component {
     this.browser = React.createRef();
     this.browserSec = React.createRef();
 
-    this.handleNewDocument = this.handleNewDocument.bind(this);
-    this.saveContentToServer = this.saveContentToServer.bind(this);
-    this.getContentId = this.getContentId.bind(this);
-    this.toggleManageCourseForm = this.toggleManageCourseForm.bind(this);
-    this.saveCourse = this.saveCourse.bind(this);
-    this.selectDrive = this.selectDrive.bind(this);
-    this.handleNewCourseCreated = this.handleNewCourseCreated.bind(this);
-    this.handleNewFolder = this.handleNewFolder.bind(this);
-    this.addNewFolder = this.addNewFolder.bind(this);
-    this.handleNewRepo = this.handleNewRepo.bind(this);
-    this.addNewRepo = this.addNewRepo.bind(this);
-    this.addContentToFolder = this.addContentToFolder.bind(this);
-    this.removeContentFromFolder = this.removeContentFromFolder.bind(this);
-    this.addContentToCourse = this.addContentToCourse.bind(this);
-    this.removeContentFromCourse = this.removeContentFromCourse.bind(this);
-    this.updateSelectedItems = this.updateSelectedItems.bind(this);
-    this.updateDirectoryStack = this.updateDirectoryStack.bind(this);
-    this.jumpToDirectory = this.jumpToDirectory.bind(this);
-    this.saveUserContent = this.saveUserContent.bind(this);
-    this.modifyRepoAccess = this.modifyRepoAccess.bind(this);
-    this.modifyFolderChildrenRoot = this.modifyFolderChildrenRoot.bind(this);
-    this.flattenFolder = this.flattenFolder.bind(this);
-    this.renameFolder = this.renameFolder.bind(this);
-    this.modifyPublicState = this.modifyPublicState.bind(this);
-    this.addContentToRepo = this.addContentToRepo.bind(this);
-    this.loadFilteredContent = this.loadFilteredContent.bind(this);
-    this.publicizeRepo = this.publicizeRepo.bind(this);
-    this.toggleManageUrlForm = this.toggleManageUrlForm.bind(this);
-    this.saveUrl = this.saveUrl.bind(this);
-    this.handleNewUrlCreated = this.handleNewUrlCreated.bind(this);
-    this.updateHeadingsAndAssignments = this.updateHeadingsAndAssignments.bind(this);
-    this.saveAssignmentsTree = this.saveAssignmentsTree.bind(this);
-    this.ToastWrapper = this.ToastWrapper.bind(this);
-    this.displayToast = this.displayToast.bind(this);
-    this.onTreeDragStart = this.onTreeDragStart.bind(this);
-    this.onTreeDragEnd = this.onTreeDragEnd.bind(this);
-    this.onTreeDraggableDragOver = this.onTreeDraggableDragOver.bind(this);
-    this.onTreeDropEnter = this.onTreeDropEnter.bind(this);
-    this.onTreeDropLeave = this.onTreeDropLeave.bind(this);
-    this.onTreeDrop = this.onTreeDrop.bind(this);
+    // this.handleNewDocument = this.handleNewDocument.bind(this);
+    // this.saveContentToServer = this.saveContentToServer.bind(this);
+    // this.getContentId = this.getContentId.bind(this);
+    // this.toggleManageCourseForm = this.toggleManageCourseForm.bind(this);
+    // this.saveCourse = this.saveCourse.bind(this);
+    // this.selectDrive = this.selectDrive.bind(this);
+    // this.handleNewCourseCreated = this.handleNewCourseCreated.bind(this);
+    // this.handleNewFolder = this.handleNewFolder.bind(this);
+    // this.addNewFolder = this.addNewFolder.bind(this);
+    // this.handleNewRepo = this.handleNewRepo.bind(this);
+    // this.addNewRepo = this.addNewRepo.bind(this);
+    // this.addContentToFolder = this.addContentToFolder.bind(this);
+    // this.removeContentFromFolder = this.removeContentFromFolder.bind(this);
+    // this.addContentToCourse = this.addContentToCourse.bind(this);
+    // this.removeContentFromCourse = this.removeContentFromCourse.bind(this);
+    // this.updateSelectedItems = this.updateSelectedItems.bind(this);
+    // this.updateDirectoryStack = this.updateDirectoryStack.bind(this);
+    // this.jumpToDirectory = this.jumpToDirectory.bind(this);
+    // this.saveUserContent = this.saveUserContent.bind(this);
+    // this.modifyRepoAccess = this.modifyRepoAccess.bind(this);
+    // this.modifyFolderChildrenRoot = this.modifyFolderChildrenRoot.bind(this);
+    // this.flattenFolder = this.flattenFolder.bind(this);
+    // this.renameFolder = this.renameFolder.bind(this);
+    // this.modifyPublicState = this.modifyPublicState.bind(this);
+    // this.addContentToRepo = this.addContentToRepo.bind(this);
+    // this.loadFilteredContent = this.loadFilteredContent.bind(this);
+    // this.publicizeRepo = this.publicizeRepo.bind(this);
+    // this.toggleManageUrlForm = this.toggleManageUrlForm.bind(this);
+    // this.saveUrl = this.saveUrl.bind(this);
+    // this.handleNewUrlCreated = this.handleNewUrlCreated.bind(this);
+    // this.updateHeadingsAndAssignments = this.updateHeadingsAndAssignments.bind(this);
+    // this.saveAssignmentsTree = this.saveAssignmentsTree.bind(this);
+    // this.ToastWrapper = this.ToastWrapper.bind(this);
+    // this.displayToast = this.displayToast.bind(this);
+    // this.onTreeDragStart = this.onTreeDragStart.bind(this);
+    // this.onTreeDragEnd = this.onTreeDragEnd.bind(this);
+    // this.onTreeDraggableDragOver = this.onTreeDraggableDragOver.bind(this);
+    // this.onTreeDropEnter = this.onTreeDropEnter.bind(this);
+    // this.onTreeDropLeave = this.onTreeDropLeave.bind(this);
+    // this.onTreeDrop = this.onTreeDrop.bind(this);
     this.onBrowserDragStart = this.onBrowserDragStart.bind(this);
-    this.onBrowserDragEnd = this.onBrowserDragEnd.bind(this);
-    this.onBrowserDropEnter = this.onBrowserDropEnter.bind(this);
-    this.onBrowserDrop = this.onBrowserDrop.bind(this);
-    this.onBrowserFolderDrop = this.onBrowserFolderDrop.bind(this);
+    // this.onBrowserDragEnd = this.onBrowserDragEnd.bind(this);
+    // this.onBrowserDropEnter = this.onBrowserDropEnter.bind(this);
+    // this.onBrowserDrop = this.onBrowserDrop.bind(this);
+    // this.onBrowserFolderDrop = this.onBrowserFolderDrop.bind(this);
     this.onSplitPanelBrowserFolderDrop = this.onSplitPanelBrowserFolderDrop.bind(this);
-    this.getDataSource = this.getDataSource.bind(this);
-    this.switchPanelContainer = this.switchPanelContainer.bind(this);
+    // this.getDataSource = this.getDataSource.bind(this);
+    // this.switchPanelContainer = this.switchPanelContainer.bind(this);
     this.toggleSplitPanel = this.toggleSplitPanel.bind(this);
     this.goToFolder = this.goToFolder.bind(this);
     this.splitPanelGoToFolder = this.splitPanelGoToFolder.bind(this);
     this.handleSplitPanelDropdownCallback = this.handleSplitPanelDropdownCallback.bind(this);
-    this.splitPanelUpdateSelectedItems =this.splitPanelUpdateSelectedItems.bind(this);
+    this.splitPanelUpdateSelectedItems = this.splitPanelUpdateSelectedItems.bind(this);
     this.splitPanelUpdateDirectoryStack = this.splitPanelUpdateDirectoryStack.bind(this);
     this.onSplitPanelBrowserDragStart = this.onSplitPanelBrowserDragStart.bind(this);
     this.onSplitPanelBrowserDragEnd = this.onSplitPanelBrowserDragEnd.bind(this);
+    this.handleContentItemDoubleClick = this.handleContentItemDoubleClick.bind(this);
     // this.onSplitPanelBrowserDropEnter = this.onSplitPanelBrowserDropEnter.bind(this);
     this.onSplitPanelBrowserDrop = this.onSplitPanelBrowserDrop.bind(this);
     this.tempSet = new Set();
@@ -1128,7 +1129,14 @@ class DoenetChooser extends Component {
       selectedItemsType: selectedItemsType,
     })
     this.tempSet = new Set([selectedItems[selectedItems.length - 1]]);
+  }
+
+  handleContentItemDoubleClick() {
     this.setState({ modalOpen: true });
+  }
+
+  versionCallback(branchId, contentId) {
+
   }
 
   splitPanelUpdateSelectedItems(selectedItems, selectedItemsType) {
@@ -3031,6 +3039,7 @@ const customizedTreeNodeItem = ({title, icon}) => {
           selectedCourse={this.state.selectedCourse}              // optional
           allCourseInfo={this.courseInfo}                         // optional
           updateSelectedItems={this.updateSelectedItems}          // optional
+          handleContentItemDoubleClick={this.handleContentItemDoubleClick}          // optional
           updateDirectoryStack={this.updateDirectoryStack}        // optional
           addContentToFolder={this.addContentToFolder}            // optional
           addContentToRepo={this.addContentToRepo}               // optional
@@ -3242,11 +3251,11 @@ const customizedTreeNodeItem = ({title, icon}) => {
         <this.ToastWrapper />
         <Overlay 
              open={this.state.modalOpen} 
-             body={<div style={{width:"1200px", height:"500px"}}>Overlay Editor</div>
-            //  <DoenetEditor branchId={'GJqovNClEobHRxhtj4YCX'} 
-            //  contentId={'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}/>
-            } 
-             onClose={this.overlayOnClose.bind(this)} />
+             body={
+           <DoenetEditor hideHeader={true} branchId={'GJqovNClEobHRxhtj4YCX'}
+              contentId={'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'} />
+          }
+          onClose={this.overlayOnClose.bind(this)} />
         <Router>
           <ToolLayout
             toolName="Chooser"
@@ -3288,6 +3297,7 @@ const customizedTreeNodeItem = ({title, icon}) => {
               publicizeRepo={this.publicizeRepo}
               openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
               openEditUrlForm={() => this.toggleManageUrlForm("edit_url")}
+              versionCallback={this.versionCallback.bind(this)}
             />
           </ToolLayoutPanel>
         </ToolLayout>
@@ -4191,7 +4201,8 @@ class InfoPanel extends Component {
           versions.push(
             <div style={{ "display": "block" }} key={"version" + versionNumber}>
               <FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "14px", "color": "#3D6EC9", "marginRight": "10px" }} />
-              <a href={`/editor?branchId=${selectedItemId}&contentId=${contentIdObj.contentId}`}>{versionTitle}</a>
+              {/* <a href={`/editor?branchId=${selectedItemId}&contentId=${contentIdObj.contentId}`}>{versionTitle}</a> */}
+              <a href='' onClick={this.props.versionCallback.bind(this, selectedItemId, contentIdObj.contentId)}>{versionTitle}</a>
             </div>
           );
         }

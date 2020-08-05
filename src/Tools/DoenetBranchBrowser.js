@@ -436,6 +436,7 @@ class DoenetBranchBrowser extends Component {
       // redirect to editor
       // window.location.href=`/editor?branchId=${branchId}`;
       this.props.updateSelectedItems([branchId], ["content"]);
+      this.props.handleContentItemDoubleClick([branchId], ["content"]);
     }
   }
 
