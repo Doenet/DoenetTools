@@ -386,7 +386,7 @@ export default function ToolLayout(props) {
 
   return (
     <>
-      <DoenetHeader
+      {!props.hideHeader && <DoenetHeader
         profile={profile}
         cookies={jwt}
         isSignedIn={isSignedIn}
@@ -395,7 +395,7 @@ export default function ToolLayout(props) {
         headerRoleFromLayout={props.headerRoleFromLayout}
         headerChangesFromLayout={props.headerChangesFromLayout}
         guestUser={props.guestUser}
-        onChange={showCollapseMenu} />
+        onChange={showCollapseMenu} />}
       {deviceType === "phone" ? <div ref={container}>
         <div className={footerClass}>
           {(phoneVisiblePanel === "left" || allParts.length === 1) &&

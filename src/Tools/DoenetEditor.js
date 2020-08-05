@@ -373,7 +373,7 @@ class DoenetEditor extends Component {
     
         // console.log('RENDER REFRESH')
       return (
-      <ToolLayout toolName="Editor" headingTitle={title_text} leftPanelWidth="100" rightPanelWidth="500">
+      <ToolLayout toolName="Editor" hideHeader={this.props.hideHeader} headingTitle={title_text} leftPanelClose={true} rightPanelWidth="500">
         <ToolLayoutPanel panelHeaderControls={[contextPanelMenu]} panelName="left nav">
         <div >Left Nav</div>
         </ToolLayoutPanel>
