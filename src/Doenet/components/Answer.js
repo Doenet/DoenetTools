@@ -590,8 +590,10 @@ export default class Answer extends InlineComponent {
       forRenderer: true,
       returnDependencies: () => ({
         inputChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "atMostOneInput"
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneInput",
+          variableNames: ["valueToRecordOnSubmit", "valueRecordedAtSubmit"],
+          variablesOptional: true,
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -841,7 +843,8 @@ export default class Answer extends InlineComponent {
     }
 
     stateVariableDefinitions.creditAchievedIfSubmit = {
-      additionalStateVariablesDefined: ["awardUsedIfSubmit", "awardChildren"],
+      additionalStateVariablesDefined: ["awardUsedIfSubmit", "awardChildren",
+        "inputUsedIfSubmit"],
       returnDependencies: () => ({
         awardChildren: {
           dependencyType: "childStateVariables",
@@ -858,15 +861,17 @@ export default class Answer extends InlineComponent {
       definition: function ({ dependencyValues }) {
 
         let creditAchieved = 0;
-        let awardUsed = "";
+        let awardUsed = null;
+        let inputUsed = null;
 
         if (dependencyValues.awardChildren.length === 0) {
           if (dependencyValues.inputChild.length === 1) {
             let inputCredit = dependencyValues.inputChild[0].stateValues.creditAchievedIfSubmit;
             // if input has a state variable creditAchievedIfSubmit
-            // that is a positive number, use that value
-            if (inputCredit > 0) {
+            // that is a non-negative number, use that value
+            if (inputCredit >= 0) {
               creditAchieved = inputCredit;
+              inputUsed = dependencyValues.inputChild[0].componentName;
             }
           }
         } else {
@@ -876,10 +881,10 @@ export default class Answer extends InlineComponent {
           // use an award with credit=0 to trigger feedback
           for (let child of dependencyValues.awardChildren) {
             let childMaxCredit = Math.max(0, Math.min(1, child.stateValues.credit))
-            if (childMaxCredit > creditAchieved || awardUsed === "") {
+            if (childMaxCredit > creditAchieved || awardUsed === null) {
               let creditFromChild = child.stateValues.creditAchieved;
               let fractionFromChild = child.stateValues.fractionSatisfied;
-              if (fractionFromChild > 0 && (creditFromChild > creditAchieved || awardUsed === "")) {
+              if (fractionFromChild > 0 && (creditFromChild > creditAchieved || awardUsed === null)) {
                 creditAchieved = creditFromChild;
                 awardUsed = child.componentName;
               }
@@ -890,7 +895,8 @@ export default class Answer extends InlineComponent {
           newValues: {
             creditAchievedIfSubmit: creditAchieved,
             awardUsedIfSubmit: awardUsed,
-            awardChildren: dependencyValues.awardChildren
+            awardChildren: dependencyValues.awardChildren,
+            inputUsedIfSubmit: inputUsed,
           }
         }
       }
@@ -1084,6 +1090,7 @@ export default class Answer extends InlineComponent {
 
     let creditAchieved = this.stateValues.creditAchievedIfSubmit;
     let awardUsed = this.stateValues.awardUsedIfSubmit;
+    let inputUsed = this.stateValues.inputUsedIfSubmit;
 
     // request to update credit
     let instructions = [{
@@ -1114,6 +1121,17 @@ export default class Answer extends InlineComponent {
         value: creditAchieved,
       });
 
+      if (inputUsed === this.stateValues.inputChild.componentName
+        && "valueToRecordOnSubmit" in this.stateValues.inputChild.stateValues
+        && "valueRecordedAtSubmit" in this.stateValues.inputChild.stateValues
+      ) {
+        instructions.push({
+          updateType: "updateValue",
+          componentName: this.stateValues.inputChild.componentName,
+          stateVariable: "valueRecordedAtSubmit",
+          value: this.stateValues.inputChild.stateValues.valueToRecordOnSubmit
+        })
+      }
 
       // if (this.stateValues.inputChild.componentType === "choiceinput") {
       //   instructions.push({

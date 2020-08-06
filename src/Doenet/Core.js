@@ -50,13 +50,30 @@ export default class Core {
 
     this._allPossibleProperties = this.createAllPossibleProperties();
 
+    this.stateVariableInfo = {};
+    for (let componentType in this.allComponentClasses) {
+      Object.defineProperty(this.stateVariableInfo, componentType, {
+        get: function () {
+          let info = this.allComponentClasses[componentType].returnStateVariableInfo({
+            standardComponentClasses: this.standardComponentClasses,
+            allComponentClasses: this.allComponentClasses,
+          });
+          delete this.stateVariableInfo[componentType];
+          return this.stateVariableInfo[componentType] = info;
+        }.bind(this),
+        configurable: true
+      })
+    }
+
+
     this.componentInfoObjects = {
       standardComponentClasses: this.standardComponentClasses,
       allComponentClasses: this.allComponentClasses,
       componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
       componentTypesCreatingVariants: this.componentTypesCreatingVariants,
       allPossibleProperties: this.allPossibleProperties,
-      isInheritedComponentType: this.isInheritedComponentType
+      isInheritedComponentType: this.isInheritedComponentType,
+      stateVariableInfo: this.stateVariableInfo,
     };
 
     this.animationIDs = {};
@@ -167,7 +184,8 @@ export default class Core {
       renderedComponentTypes: this.renderedComponentTypes,
       downstreamDependencies: this.downstreamDependencies,
       upstreamDependencies: this.upstreamDependencies,
-      core: this
+      core: this,
+      componentInfoObjects: this.componentInfoObjects,
     }
 
     this.changedStateVariables = {};
@@ -6007,10 +6025,11 @@ export default class Core {
 
     for (let ancestor of component.ancestors) {
       ancestorsExamined.push(ancestor.componentName);
-      let stateVarInfo = ancestor.componentClass.returnStateVariableInfo({
-        standardComponentClasses: this.standardComponentClasses,
-        allPossibleProperties: this.allPossibleProperties,
-      });
+      let stateVarInfo = this.componentInfoObjects.stateVariableInfo[ancestor.componentClass.componentType]
+      // let stateVarInfo = ancestor.componentClass.returnStateVariableInfo({
+      //   standardComponentClasses: this.standardComponentClasses,
+      //   allPossibleProperties: this.allPossibleProperties,
+      // });
 
       let arrayEntryPrefixesLongestToShortest = Object.keys(stateVarInfo.arrayEntryPrefixes).sort((a, b) => b.length - a.length)
 
@@ -7554,10 +7573,12 @@ export default class Core {
 
     let newVariables = [];
 
-    let stateVarInfo = componentClass.returnStateVariableInfo({
-      standardComponentClasses: this.standardComponentClasses,
-      allPossibleProperties: this.allPossibleProperties,
-    });
+    let stateVarInfo = this.componentInfoObjects.stateVariableInfo[componentClass.componentType]
+
+    // let stateVarInfo = componentClass.returnStateVariableInfo({
+    //   standardComponentClasses: this.standardComponentClasses,
+    //   allPossibleProperties: this.allPossibleProperties,
+    // });
 
     for (let stateVariable of stateVariables) {
       if (stateVariable in stateVarInfo.aliases) {
@@ -11641,6 +11662,16 @@ export default class Core {
         // })
       } else if (instruction.updateType === "deleteComponents") {
         console.log("delete component")
+      } else if (instruction.updateType === "executeUpdate") {
+        // this should be used only if further updates depend on having all
+        // state variables updated,
+        // i.e., the subsequent inverse definitions use stateValues
+        // in their calculations that need to be updated
+        this.executeUpdateStateVariables({
+          newStateVariableValues,
+          updatesNeeded,
+          preliminary: true,
+        });
       }
 
     }
@@ -11673,9 +11704,11 @@ export default class Core {
     return { success: true };
   }
 
-  executeUpdateStateVariables({ newStateVariableValues,
+  executeUpdateStateVariables({
+    newStateVariableValues,
     updatesNeeded,
-    sourceOfUpdate
+    sourceOfUpdate,
+    preliminary = false
   }) {
 
 
@@ -11749,9 +11782,10 @@ export default class Core {
     this.updateDependencies(updatesNeeded, compositesBeingExpanded);
 
 
-    // console.log("replacementResults")
-    // console.log(replacementResults)
-
+    // if preliminary, we don't update renderer instructions or display information
+    if (preliminary) {
+      return;
+    }
 
     // get unique list of components touched
     updatesNeeded.componentsTouched = [...new Set(updatesNeeded.componentsTouched)];
@@ -12001,7 +12035,11 @@ export default class Core {
     // console.log(JSON.parse(JSON.stringify(workspace)))
 
     let component = this._components[instruction.componentName];
-    let stateVariable = instruction.stateVariable;
+
+    let stateVariable = this.substituteAliases({
+      stateVariables: [instruction.stateVariable],
+      componentClass: component.constructor
+    })[0];
 
     if (workspace[instruction.componentName] === undefined) {
       workspace[instruction.componentName] = {};
@@ -12033,7 +12071,20 @@ export default class Core {
 
       let desiredValuesForArray = {};
       if (inverseDefinitionArgs.arrayKeys.length === 1) {
-        desiredValuesForArray[inverseDefinitionArgs.arrayKeys[0]] = instruction.value
+        if ("value" in instruction) {
+          desiredValuesForArray[inverseDefinitionArgs.arrayKeys[0]] = instruction.value
+        } else if ("valueOfStateVariable" in instruction) {
+          let otherStateVariable = this.substituteAliases({
+            stateVariables: [instruction.valueOfStateVariable],
+            componentClass: component.constructor
+          })[0];
+          let sObj = component.state[otherStateVariable];
+          if (sObj) {
+            desiredValuesForArray[inverseDefinitionArgs.arrayKeys[0]] = sObj.value
+          } else {
+            throw Error(`Invalid instruction to change ${instruction.stateVariable} of ${instruction.componentName}, value of state variable ${instruction.valueOfStateVariable} not found.`)
+          }
+        }
       } else {
         for (let [ind, arrayKey] of inverseDefinitionArgs.arrayKeys.entries()) {
           desiredValuesForArray[arrayKey] = instruction.value[ind];
@@ -12042,7 +12093,22 @@ export default class Core {
       inverseDefinitionArgs.desiredStateVariableValues = { [arrayStateVariable]: desiredValuesForArray };
 
     } else {
-      inverseDefinitionArgs.desiredStateVariableValues = { [stateVariable]: instruction.value };
+      if ("value" in instruction) {
+        inverseDefinitionArgs.desiredStateVariableValues = { [stateVariable]: instruction.value };
+      } else if ("valueOfStateVariable" in instruction) {
+        console.log(`found valueOfStateVariable in instruction: ${instruction.valueOfStateVariable}`)
+        let otherStateVariable = this.substituteAliases({
+          stateVariables: [instruction.valueOfStateVariable],
+          componentClass: component.constructor
+        })[0];
+        let sObj = component.state[otherStateVariable];
+        if (sObj) {
+          console.log(sObj, sObj.value)
+          inverseDefinitionArgs.desiredStateVariableValues = { [stateVariable]: sObj.value };
+        } else {
+          throw Error(`Invalid instruction to change ${instruction.stateVariable} of ${instruction.componentName}, value of state variable ${instruction.valueOfStateVariable} not found.`)
+        }
+      }
     }
 
 

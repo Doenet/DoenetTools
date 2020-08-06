@@ -20,7 +20,7 @@ $sql = "SELECT stateVariables
         FROM content_interactions
         WHERE userId='$userId'
         AND contentId='$contentId'
-        ORDER BY timestamp DESC";
+        ORDER BY timestamp DESC, id DESC";
 
 $result = $conn->query($sql);
 // $stateVariables = array();
