@@ -183,8 +183,10 @@ class DoenetHeader extends Component {
       });
     }
     
+    this.populateMenuToolbox(props.profile.toolAccess)
     this.profilePicture = this.props.profile.profilePicture;
     this.prepareProfileDropDown(this.profilePicture);
+
     
   }
 
@@ -227,7 +229,8 @@ class DoenetHeader extends Component {
       {
         optionElem: <ProfilePictureLrg pic={this.profilePicture} name="changeProfilePicture" id="changeProfilePicture"   />,
         id:'profile',
-        label: `${this.props.profile.screenName}`
+        label: `${this.props.profile.screenName}`,
+        subLabel: `${this.props.cookies.Device}`
       },
       {
         id: "Account",

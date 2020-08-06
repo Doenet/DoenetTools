@@ -53,52 +53,100 @@ export default class Evaluate extends MathComponent {
       definition: () => ({ newValues: { canBeModified: false } })
     }
 
+    stateVariableDefinitions.nResults = {
+      returnDependencies: () => ({
+        functionChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroFunctions",
+        },
+        mathChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "atMostOneMath",
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let nResults;
+
+        if (dependencyValues.functionChildren.length > 0
+          && dependencyValues.mathChild.length > 0
+        ) {
+          nResults = dependencyValues.functionChildren.length;
+        } else {
+          nResults = 0;
+        }
+
+        return { newValues: { nResults } }
+
+      }
+    }
+
     stateVariableDefinitions.evaluatedResults = {
       isArray: true,
       entryPrefixes: ["evaluatedResult"],
       public: true,
       componentType: "math",
-      returnDependencies: () => ({
-        symbolic: {
+      returnArraySizeDependencies: () => ({
+        nResults: {
           dependencyType: "stateVariable",
-          variableName: "symbolic",
+          variableName: "nResults",
         },
-        functionChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroFunctions",
-          variableNames: ["f", "numericalf"]
-        },
-        mathChild: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atMostOneMath",
-          variableNames: ["value"]
-        }
       }),
-      definition: function ({ dependencyValues, changes }) {
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nResults];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let globalDependencies = {
+          symbolic: {
+            dependencyType: "stateVariable",
+            variableName: "symbolic",
+          },
+          mathChild: {
+            dependencyType: "childStateVariables",
+            childLogicName: "atMostOneMath",
+            variableNames: ["value"]
+          }
+        }
 
-        if (dependencyValues.functionChildren.length == 0
-          || dependencyValues.mathChild.length == 0
-        ) {
-          return {
-            useEssentialOrDefaultValue: {
-              evaluatedResults: { variablesToCheck: ["evaluatedResults"] }
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            functionChild: {
+              dependencyType: "childStateVariables",
+              childLogicName: "atLeastZeroFunctions",
+              variableNames: ["f", "numericalf"],
+              childIndices: [arrayKey]
+            },
+          }
+        }
+
+        return { globalDependencies, dependenciesByKey }
+      },
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+
+        let evaluatedResults = {};
+
+        if (globalDependencyValues.mathChild.length > 0) {
+
+          if (globalDependencyValues.symbolic) {
+            let input = globalDependencyValues.mathChild[0].stateValues.value;
+            for(let arrayKey of arrayKeys) {
+              let functionChild = dependencyValuesByKey[arrayKey].functionChild[0];
+              if(functionChild) {
+                evaluatedResults[arrayKey] = functionChild.stateValues.f(input)
+              }
+            }
+          } else {
+            let numericInput = globalDependencyValues.mathChild[0].stateValues.value.evaluate_to_constant();
+            for(let arrayKey of arrayKeys) {
+              let functionChild = dependencyValuesByKey[arrayKey].functionChild[0];
+              if(functionChild) {
+                evaluatedResults[arrayKey] = me.fromAst(functionChild.stateValues.numericalf(numericInput))
+              }
             }
           }
-        }
 
-        let evaluatedResults = [];
-
-        if (dependencyValues.symbolic) {
-          let input = dependencyValues.mathChild[0].stateValues.value;
-          for (let fChild of dependencyValues.functionChildren) {
-            evaluatedResults.push(fChild.stateValues.f(input));
-          }
-        } else {
-          let numericInput = dependencyValues.mathChild[0].stateValues.value.evaluate_to_constant();
-          for (let fChild of dependencyValues.functionChildren) {
-            evaluatedResults.push(
-              me.fromAst(fChild.stateValues.numericalf(numericInput)))
-          }
         }
 
         return {

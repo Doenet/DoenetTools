@@ -682,21 +682,21 @@ describe('Collect Tag Tests',function() {
       let components = Object.assign({},win.state.components);
       expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
       expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
       expect(components['/_point3'].stateValues.coords.tree).eqls(["vector", y1, x1]);
       expect(components['/_point4'].stateValues.coords.tree).eqls(["vector", y2, x2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", y1, x1]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", y2, x2]);
+      expect(components['/_vector2'].stateValues.tail.map(x=>x.tree)).eqls([y1, x1]);
+      expect(components['/_vector2'].stateValues.head.map(x=>x.tree)).eqls([y2, x2]);
       expect(components['/_collect1'].replacements.length).eq(6);
       expect(components['/_collect1'].replacements[0].stateValues.coords.tree).eqls(["vector", x1, y1]);
       expect(components['/_collect1'].replacements[1].stateValues.coords.tree).eqls(["vector", x2, y2]);
-      expect(components['/_collect1'].replacements[2].stateValues.tail.tree).eqls(["vector", x1, y1]);
-      expect(components['/_collect1'].replacements[2].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_collect1'].replacements[2].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_collect1'].replacements[2].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
       expect(components['/_collect1'].replacements[3].stateValues.coords.tree).eqls(["vector", y1, x1]);
       expect(components['/_collect1'].replacements[4].stateValues.coords.tree).eqls(["vector", y2, x2]);
-      expect(components['/_collect1'].replacements[5].stateValues.tail.tree).eqls(["vector", y1, x1]);
-      expect(components['/_collect1'].replacements[5].stateValues.head.tree).eqls(["vector", y2, x2]);
+      expect(components['/_collect1'].replacements[5].stateValues.tail.map(x=>x.tree)).eqls([y1, x1]);
+      expect(components['/_collect1'].replacements[5].stateValues.head.map(x=>x.tree)).eqls([y2, x2]);
 
     })
 
@@ -711,21 +711,21 @@ describe('Collect Tag Tests',function() {
       components['/_collect1'].replacements[2].moveVector({tailcoords:[x1,y1], headcoords:[x2,y2]});
       expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
       expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
       expect(components['/_point3'].stateValues.coords.tree).eqls(["vector", y1, x1]);
       expect(components['/_point4'].stateValues.coords.tree).eqls(["vector", y2, x2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", y1, x1]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", y2, x2]);
+      expect(components['/_vector2'].stateValues.tail.map(x=>x.tree)).eqls([y1, x1]);
+      expect(components['/_vector2'].stateValues.head.map(x=>x.tree)).eqls([y2, x2]);
       expect(components['/_collect1'].replacements.length).eq(6);
       expect(components['/_collect1'].replacements[0].stateValues.coords.tree).eqls(["vector", x1, y1]);
       expect(components['/_collect1'].replacements[1].stateValues.coords.tree).eqls(["vector", x2, y2]);
-      expect(components['/_collect1'].replacements[2].stateValues.tail.tree).eqls(["vector", x1, y1]);
-      expect(components['/_collect1'].replacements[2].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_collect1'].replacements[2].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_collect1'].replacements[2].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
       expect(components['/_collect1'].replacements[3].stateValues.coords.tree).eqls(["vector", y1, x1]);
       expect(components['/_collect1'].replacements[4].stateValues.coords.tree).eqls(["vector", y2, x2]);
-      expect(components['/_collect1'].replacements[5].stateValues.tail.tree).eqls(["vector", y1, x1]);
-      expect(components['/_collect1'].replacements[5].stateValues.head.tree).eqls(["vector", y2, x2]);
+      expect(components['/_collect1'].replacements[5].stateValues.tail.map(x=>x.tree)).eqls([y1, x1]);
+      expect(components['/_collect1'].replacements[5].stateValues.head.map(x=>x.tree)).eqls([y2, x2]);
 
     })
 
@@ -740,21 +740,21 @@ describe('Collect Tag Tests',function() {
       components['/_collect1'].replacements[5].moveVector({tailcoords:[y1,x1], headcoords:[y2,x2]});
       expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
       expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
-      expect(components['/_vector1'].stateValues.tail.tree).eqls(["vector", x1, y1]);
-      expect(components['/_vector1'].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_vector1'].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_vector1'].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
       expect(components['/_point3'].stateValues.coords.tree).eqls(["vector", y1, x1]);
       expect(components['/_point4'].stateValues.coords.tree).eqls(["vector", y2, x2]);
-      expect(components['/_vector2'].stateValues.tail.tree).eqls(["vector", y1, x1]);
-      expect(components['/_vector2'].stateValues.head.tree).eqls(["vector", y2, x2]);
+      expect(components['/_vector2'].stateValues.tail.map(x=>x.tree)).eqls([y1, x1]);
+      expect(components['/_vector2'].stateValues.head.map(x=>x.tree)).eqls([y2, x2]);
       expect(components['/_collect1'].replacements.length).eq(6);
       expect(components['/_collect1'].replacements[0].stateValues.coords.tree).eqls(["vector", x1, y1]);
       expect(components['/_collect1'].replacements[1].stateValues.coords.tree).eqls(["vector", x2, y2]);
-      expect(components['/_collect1'].replacements[2].stateValues.tail.tree).eqls(["vector", x1, y1]);
-      expect(components['/_collect1'].replacements[2].stateValues.head.tree).eqls(["vector", x2, y2]);
+      expect(components['/_collect1'].replacements[2].stateValues.tail.map(x=>x.tree)).eqls([x1, y1]);
+      expect(components['/_collect1'].replacements[2].stateValues.head.map(x=>x.tree)).eqls([x2, y2]);
       expect(components['/_collect1'].replacements[3].stateValues.coords.tree).eqls(["vector", y1, x1]);
       expect(components['/_collect1'].replacements[4].stateValues.coords.tree).eqls(["vector", y2, x2]);
-      expect(components['/_collect1'].replacements[5].stateValues.tail.tree).eqls(["vector", y1, x1]);
-      expect(components['/_collect1'].replacements[5].stateValues.head.tree).eqls(["vector", y2, x2]);
+      expect(components['/_collect1'].replacements[5].stateValues.tail.map(x=>x.tree)).eqls([y1, x1]);
+      expect(components['/_collect1'].replacements[5].stateValues.head.map(x=>x.tree)).eqls([y2, x2]);
 
     })
   });

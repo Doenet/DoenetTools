@@ -404,23 +404,6 @@ export default class Document extends BaseComponent {
     return true;
   }
 
-  initializeRenderer() {
-    if (this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.section({
-        key: this.componentName,
-        title: this.stateValues.title,
-        level: 0,
-        // viewedSolution: this.state.viewedSolution,
-      });
-    }
-  }
-
-  updateRenderer() {
-    this.renderer.updateSection({
-      title: this.stateValues.title,
-      // viewedSolution: this.state.viewedSolution,
-    });
-  }
 
   static setUpVariant({ serializedComponent, sharedParameters, definingChildrenSoFar,
     allComponentClasses }) {
@@ -708,7 +691,7 @@ function returnDefaultStyleDefinitions() {
   {
     styleNumber: 2,
     lineColor: "green",
-    lineWidth: 1,
+    lineWidth: 2,
     lineStyle: "solid",
     markerColor: "green",
     markerStyle: "square",

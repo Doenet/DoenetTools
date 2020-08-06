@@ -124,22 +124,59 @@ export class StyleDefinitions extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.value = {
-      isArray: true,
-      entryPrefixes: ["styleDefinition"],
+    stateVariableDefinitions.nDefinitions = {
       returnDependencies: () => ({
         styleDefinitionChildren: {
-          dependencyType: "childStateVariables",
+          dependencyType: "childIdentity",
           childLogicName: "atLeastZeroStyleDefinitions",
-          variableNames: ["value"]
         },
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          value: dependencyValues.styleDefinitionChildren
-            .map(x => x.stateValues.value)
+          nDefinitions: dependencyValues.styleDefinitionChildren.length
         }
       })
+    }
+
+    stateVariableDefinitions.value = {
+      isArray: true,
+      entryPrefixes: ["styleDefinition"],
+      returnArraySizeDependencies: () => ({
+        nDefinitions: {
+          dependencyType: "stateVariable",
+          variableName: "nDefinitions",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nDefinitions];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey.styleDefinitionChild = {
+            dependencyType: "childStateVariables",
+            childLogicName: "atLeastZeroStyleDefinitions",
+            variableNames: ["value"],
+            childIndices: [arrayKey]
+          };
+        }
+
+        return { dependenciesByKey };
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+
+        let value = {};
+
+        for (let arrayKey of arrayKeys) {
+          let styleDefinitionChild = dependencyValuesByKey[arrayKey].styleDefinitionChild;
+          if (styleDefinitionChild.length === 1) {
+            value[arrayKey] = styleDefinitionChild[0].stateValues.value;
+          }
+        }
+
+        return { newValues: { value } }
+      }
     }
 
     return stateVariableDefinitions;

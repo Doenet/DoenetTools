@@ -3170,7 +3170,7 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it('integrated submit buttons', () => {
+  it.skip('integrated submit buttons', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -3573,7 +3573,7 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it('submit buttons with two answer blanks', () => {
+  it.skip('submit buttons with two answer blanks', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
