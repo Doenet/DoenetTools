@@ -3,18 +3,19 @@ import styled from "styled-components";
 
 const OverlayWrapper = styled.div`
   visibility: hidden;
-  position: fixed;
+  // position: fixed;
   z-index: 1;
   left: 0;
   top: 50px;
   width: 100%;
   height: 100%;
   position:absolute;
-  overflow-y: hidden ;
+  overflow-y: hidden;
 	transition-property: all;
-	transition-duration: .5s;
-	transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-  background-color: rgba(0, 0, 0, 0.3);
+  transition: all 0.1s ease-in-out;
+  // margin-bottom:-1000px;
+	// transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+  background-color:rgba(0,0,0,0.8);
 `;
 
 const OverlayContent = styled.div`
@@ -49,6 +50,7 @@ const OverlayClose = styled.button`
   padding: 0;
   position: relative;
   top: -0.25em;
+
 `;
 
 
@@ -61,11 +63,20 @@ export default function Overlay(props) {
       >
         <OverlayContent>
           <OverlayHeader>{props.header}</OverlayHeader>
-          <OverlayClose onClick={() => props.onClose()} name="closeProfilePictureOverlay">
+          <OverlayClose onClick={() => props.onClose()} name="closeOverlay">
             &times;
           </OverlayClose>
           <OverlayContainer>{props.body}</OverlayContainer>
         </OverlayContent>
       </OverlayWrapper>
     );
+  }
+
+  function OverlayWrappingContainer(props){
+    return (
+      <OverlayContentContainer style={{backgroundColor:"pink", width:"100%", height:"100%"}}>
+        {Overlay()}
+      </OverlayContentContainer>
+    )
+
   }
