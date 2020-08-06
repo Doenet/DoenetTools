@@ -7,9 +7,9 @@ import "./chooser.css";
 import "../imports/doenet.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown,
+  faPlus, faDotCircle, faFileAlt, faEdit,
   faChalkboard, faArrowCircleLeft, faTimesCircle, faPlusCircle, faFolder, faSave,
-  faLink, faRedoAlt, faAlignJustify, faStream, faColumns, faFolderOpen, faInfoCircle,
+  faLink, faAlignJustify, faStream, faColumns, faFolderOpen, faInfoCircle,
    faChevronDown, faChevronRight
 }
   from '@fortawesome/free-solid-svg-icons';
@@ -18,9 +18,9 @@ import DoenetBranchBrowser from './DoenetBranchBrowser';
 import SpinningLoader from './SpinningLoader';
 import { TreeView } from './TreeView/TreeView';
 import Accordion from "../imports/Accordion";
-import styled from 'styled-components';
 import { ToastContext, useToasts, ToastProvider } from './ToastManager';
 import ChooserConstants from './chooser/ChooserConstants';
+import InfoPanel from './chooser/InfoPanel';
 import {
   SwitchableContainers,
   SwitchableContainer,

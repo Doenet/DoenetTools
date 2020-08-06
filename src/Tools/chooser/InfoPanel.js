@@ -2,23 +2,9 @@ import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDotCircle, faFileAlt, faFolder, faInfoCircle, faEdit } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
-import { formatTimestamp } from './chooser/utility';
+import { formatTimestamp } from './utility';
 import styled from 'styled-components';
 import axios from 'axios';
-
-InfoPanel.propTypes = {
-  selectedItems: PropTypes.array,
-  selectedItemsType: PropTypes.array,
-  selectedDrive: PropTypes.string,
-  selectedCourse: PropTypes.string,
-  allFolderInfo: PropTypes.object,
-  allContentInfo: PropTypes.object,
-  allUrlInfo: PropTypes.object,
-  allCourseInfo: PropTypes.object,
-  publicizeRepo: PropTypes.func,
-  openEditCourseForm: PropTypes.func,
-  openEditUrlForm: PropTypes.func,
-}
 
 class InfoPanel extends Component {
   constructor(props) {
@@ -385,6 +371,20 @@ class InfoPanel extends Component {
       {this.infoPanel}
     </React.Fragment>);
   }
+}
+
+InfoPanel.propTypes = {
+  selectedItems: PropTypes.array,
+  selectedItemsType: PropTypes.array,
+  selectedDrive: PropTypes.string,
+  selectedCourse: PropTypes.string,
+  allFolderInfo: PropTypes.object,
+  allContentInfo: PropTypes.object,
+  allUrlInfo: PropTypes.object,
+  allCourseInfo: PropTypes.object,
+  publicizeRepo: PropTypes.func,
+  openEditCourseForm: PropTypes.func,
+  openEditUrlForm: PropTypes.func,
 }
 
 export default InfoPanel;
