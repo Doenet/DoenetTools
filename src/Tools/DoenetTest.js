@@ -11,7 +11,7 @@ class DoenetTest extends Component {
     this.state = {
       error: null,
       errorInfo: null,
-      showCorrectness: false,
+      showCorrectness: true,
       doenetML: doenetDefaultML,
     };
 
@@ -49,12 +49,16 @@ class DoenetTest extends Component {
       </React.Fragment>);
     }
 
+    let attemptNumber = 2;
+
     return (<React.Fragment>
       <DoenetViewer
         key={"doenetviewer" + this.updateNumber}
         doenetML={this.state.doenetML}
         // contentId={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
         flags={{ showCorrectness: this.state.showCorrectness }}
+        attemptNumber={attemptNumber}
+        assignmentId = {"myassignmentid"}
       // collaborate={true}
       // free={{doenetCode: this.state.code, requestedVariant: this.state.requestedVariant}} 
       // mode={{

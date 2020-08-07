@@ -14,6 +14,7 @@ $device = $jwtArray['deviceName'];
 
 $contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_REQUEST["attemptNumber"]);
+$assignmentId = mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
 
 // contentId='$contentId',
 
@@ -22,6 +23,7 @@ $sql = "SELECT stateVariables, variant
         WHERE userId='$userId'
         AND contentId='$contentId'
         AND attemptNumber='$attemptNumber'
+        AND assignmentId='$assignmentId'
         ORDER BY timestamp DESC, id DESC";
 
 $result = $conn->query($sql);

@@ -25,6 +25,9 @@ class DoenetViewer extends Component {
     if (this.attemptNumber === undefined) {
       this.attemptNumber = 1;
     }
+
+    this.assignmentId = props.assignmentId;
+
     this.requestedVariant = props.requestedVariant;
     if (this.requestedVariant === undefined) {
       this.requestedVariant = { index: 0 };
@@ -55,7 +58,7 @@ class DoenetViewer extends Component {
     this.contentId = contentId;
     this.doenetML = doenetML;
 
-    // load statevariables/variant if in database from contentId and attemptNumber
+    // load statevariables/variant if in database from contentId, assignmentId, attemptNumber
 
     this.loadState(this.createCore);
   }
@@ -181,6 +184,7 @@ class DoenetViewer extends Component {
       contentId,
       stateVariables: changeString,
       attemptNumber: this.attemptNumber,
+      assignmentId: this.assignmentId,
       variant: variantString,
     }
 
@@ -218,6 +222,7 @@ class DoenetViewer extends Component {
     const data = {
       contentId: this.contentId,
       attemptNumber: this.attemptNumber,
+      assignmentId: this.assignmentId,
     }
     const payload = {
       params: data
