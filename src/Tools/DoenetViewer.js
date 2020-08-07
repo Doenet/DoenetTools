@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Core from '../Doenet/Core';
 import axios from 'axios';
+import crypto from 'crypto';
+
 import { serializedStateReplacer, serializedStateReviver } from '../Doenet/utils/serializedStateProcessing';
 
 
@@ -9,45 +11,96 @@ class DoenetViewer extends Component {
     super(props);
     this.update = this.update.bind(this);
     this.coreReady = this.coreReady.bind(this);
-    this.loadedStateVariables = this.loadedStateVariables.bind(this);
+    this.createCore = this.createCore.bind(this);
+    this.haveDoenetML = this.haveDoenetML.bind(this);
     this.loadState = this.loadState.bind(this);
+    this.loadDoenetML = this.loadDoenetML.bind(this);
     this.localStateChanged = this.localStateChanged.bind(this);
 
     this.rendererUpdateMethods = {};
 
     this.cumulativeStateVariableChanges = {};
 
+    this.attemptNumber = props.attemptNumber;
+    if (this.attemptNumber === undefined) {
+      this.attemptNumber = 1;
+    }
+    this.requestedVariant = props.requestedVariant;
+    if (this.requestedVariant === undefined) {
+      this.requestedVariant = { index: 0 };
+    }
+
+    this.documentRenderer = <>Loading...</>
+
+    if (props.contentId === undefined) {
+      // use doenetML given via props
+      let doenetML = props.doenetML;
+
+      // calculate contentId from doenetML
+      const hash = crypto.createHash('sha256');
+      hash.update(doenetML);
+      let contentId = hash.digest('hex');
+
+      this.haveDoenetML({ contentId, doenetML });
+
+    } else {
+      // load doenetML from database using contentId
+      this.loadDoenetML(props.contentId, this.haveDoenetML)
+    }
+  }
+
+  haveDoenetML({ contentId, doenetML }) {
+
+
+    this.contentId = contentId;
+    this.doenetML = doenetML;
+
+    // load statevariables/variant if in database from contentId and attemptNumber
+
+    this.loadState(this.createCore);
+  }
+
+
+  createCore({ stateVariables, variant }) {
+
+    this.cumulativeStateVariableChanges = JSON.parse(stateVariables, serializedStateReviver)
+
+    // if loaded variant from database,
+    // then use that variant rather than requestedVariant from props
+    if (variant !== null) {
+      this.requestedVariant = JSON.parse(variant, serializedStateReviver);
+    }
+
+    // TODO: who is responsible for verifying that a contentId matches hash?
+    // Core or viewer?
+    // Argument for doing it in core: core will have to do it anyway for
+    // <copy uri="doenetML:abc" />
+    // Best option: viewer and the function passed in to retrieve content 
+    // should verify hash
+
+
+
     this.core = new Core({
       coreReadyCallback: this.coreReady,
       coreUpdatedCallback: this.update,
-      doenetML: props.doenetML,
+      doenetML: this.doenetML,
       externalFunctions: { localStateChanged: this.localStateChanged },
+      flags: this.props.flags,
+      requestedVariant: this.requestedVariant,
     });
 
-    this.documentRenderer = <>Loading...</>
-    // this.doenetRenderers = {};
-
-    // this.databaseItemsToReload = props.databaseItemsToReload;
 
   }
 
 
   coreReady() {
-    this.loadState(this.core.contentId, this.loadedStateVariables)
-
-  }
-
-
-  loadedStateVariables({ stateVariables }) {
-
-    this.cumulativeStateVariableChanges = JSON.parse(stateVariables, serializedStateReviver)
 
     if (this.cumulativeStateVariableChanges) {
       this.core.executeUpdateStateVariables({
         newStateVariableValues: this.cumulativeStateVariableChanges
       })
     } else {
-      // if database doesn't contain contentID, cumulativeStateVariableChanges is null
+      // if database doesn't contain contentId, cumulativeStateVariableChanges is null
       // so change to empty object
       this.cumulativeStateVariableChanges = {};
     }
@@ -105,6 +158,10 @@ class DoenetViewer extends Component {
     let changeString = JSON.stringify(this.cumulativeStateVariableChanges, serializedStateReplacer);
 
 
+    // TODO: determine actual variant selected in core
+    // for now, we're using requestedVariant
+    let variantString = JSON.stringify(this.requestedVariant, serializedStateReplacer);
+
     // save to database
     // check the cookie to see if allowed to record
     // display warning if is assignment for class and have returned off recording
@@ -123,43 +180,58 @@ class DoenetViewer extends Component {
       assignmentId: null,
       contentId,
       stateVariables: changeString,
+      attemptNumber: this.attemptNumber,
+      variant: variantString,
     }
 
     axios.post(phpUrl, data)
       .then(resp => {
-        console.log('save', resp.data);
+        // console.log('save', resp.data);
       });
 
 
 
   }
 
+  loadDoenetML(contentId, callback) {
 
-  loadState(contentId, callback) {
-
-    const phpUrl = '/api/loadContentInteractions.php';
+    const loadFromContentIdUrl = '/api/loadFromContentId.php';
     const data = {
       contentId,
     }
-    console.log('data', data)
+
+    axios.post(loadFromContentIdUrl, data)
+      .then(resp => {
+        if (callback) {
+          callback({
+            contentId, doenetML: resp.data.doenetML,
+          })
+        }
+      });
+
+  }
+
+
+  loadState(callback) {
+
+    const phpUrl = '/api/loadContentInteractions.php';
+    const data = {
+      contentId: this.contentId,
+      attemptNumber: this.attemptNumber,
+    }
     const payload = {
       params: data
     }
 
     axios.get(phpUrl, payload)
       .then(resp => {
-        console.log('load', resp.data);
         if (callback) {
-          callback({ stateVariables: resp.data.stateVariables })
+          callback({
+            stateVariables: resp.data.stateVariables,
+            variant: resp.data.variant
+          })
         }
-        // let divs = [];
-        // for (let stringified of resp.data.stateVariables){
-        //   divs.push(<div>{JSON.stringify(stringified)}</div>)
-        // }
-
-        // setContentInteractionsDivs(divs);
       });
-
 
   }
 

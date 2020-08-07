@@ -12096,7 +12096,6 @@ export default class Core {
       if ("value" in instruction) {
         inverseDefinitionArgs.desiredStateVariableValues = { [stateVariable]: instruction.value };
       } else if ("valueOfStateVariable" in instruction) {
-        console.log(`found valueOfStateVariable in instruction: ${instruction.valueOfStateVariable}`)
         let otherStateVariable = this.substituteAliases({
           stateVariables: [instruction.valueOfStateVariable],
           componentClass: component.constructor
