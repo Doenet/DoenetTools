@@ -13,8 +13,11 @@ jobs:
     # Only lints the file differences between the current branch and upstream/master
     runs-on: ubuntu-latest
 
-    # Can crash if the number of modified files is extremely large
-    # In most cases this is due to the user not merging in upstream/master before committing
+    # Might crash if the number of modified files is extremely large
+    # This is most likely due to the user not merging in upstream/master before committing
+
+    # If the linter throws up a failure, run the linting command locally and ctr+f for 
+    # "prettier-eslint [ERROR]" to figure out which file failed 
 
     steps:
     - uses: actions/checkout@v2
@@ -24,15 +27,17 @@ jobs:
     - run: npm install -g eslint && npm install eslint-plugin-react
     - name: Fetch upstream/master
       run: git remote add upstream https://github.com/Doenet/DoenetTools.git && git fetch upstream
-    - name: Show File Structure
-      run: ls -a
+    - name: What src files are being linted?
+      run: git diff --name-only upstream/master | grep -E -- '^src' | xargs ls -d 2>/dev/null
     - name: Linting src
       run: eslint $(git diff --name-only upstream/master | grep -E -- '^src' | xargs ls -d 2>/dev/null)
     - name: Linting cypress
       run: eslint $(git diff --name-only upstream/master | grep -E -- '^cypress' | xargs ls -d 2>/dev/null)
 
+# "lint": "prettier-eslint \"$(pwd)/src/**/*.js\" && prettier-eslint \"$(pwd)/cypress/**/*.js\"",
+
   test:
-    # Only runs the tests found in 'tagSpecific'
+    # Only runs the tests found in 'cypress/integration/tagSpecific'
     runs-on: ubuntu-latest
 
     steps:
@@ -44,7 +49,47 @@ jobs:
       run: npm install -g wait-on cypress && npm install
     - name: Build the Containers
       run: npm run docker:build
+    - name: Touch src/defaultCode.doenet
+      # The mere existence of this file is required for cypress tests to pass
+      run: touch src/defaultCode.doenet
     - name: Start the Server
-      run: npm run deploy & wait-on http://localhost:3000
+      run: npm run deploy & wait-on http://localhost:3001
     - name: Run tagSpecific Tests
-      run: cypress run -b 'chrome' --config video=false --spec "cypress/integration/tagSpecific/**"
+      run: cypress run -b 'chrome' --config video=false,screenshotOnRunFailure=false --spec "cypress/integration/tagSpecific/**"
+
+
+      module.exports = {
+        "env": {
+          "browser": true,
+          "es2020": true,
+          "node": true
+        },
+        "extends": [
+          "eslint:recommended",
+          "plugin:react/recommended",
+          "prettier"
+        ],
+        "parserOptions": {
+          "ecmaFeatures": {
+            "jsx": true
+          },
+          "ecmaVersion": 11,
+          "sourceType": "module"
+        },
+        "plugins": [
+          "react",
+          "prettier"
+        ],
+        "rules": {
+          "linebreak-style": [
+            "error",
+            "unix",
+          ],
+        },
+        "settings": {
+          "react": {
+            "version": "detect"
+          }
+        }
+      };
+      

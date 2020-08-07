@@ -6,7 +6,8 @@ module.exports = {
 	},
 	"extends": [
 		"eslint:recommended",
-		"plugin:react/recommended"
+		"plugin:react/recommended",
+		"prettier"
 	],
 	"parserOptions": {
 		"ecmaFeatures": {
@@ -16,14 +17,14 @@ module.exports = {
 		"sourceType": "module"
 	},
 	"plugins": [
-		"react"
+		"react",
+		"prettier"
 	],
 	"rules": {
 		"linebreak-style": [
 			"error",
-			"unix"
+			"unix",
 		],
-
 	},
 	"settings": {
 		"react": {
