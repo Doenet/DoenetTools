@@ -27,7 +27,7 @@ export default function DoenetCourse(props){
     // console.log('example****> called back');
     // console.log("courses",courseListArray);
     // console.log("selected",selectedCourseObj);
-    setSelected("aI8sK4vmEhC5sdeSP3vNW");
+    // setSelected("NfzKqYtTgYRyPnmaxc7XB");
   }
 
     return (
