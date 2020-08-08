@@ -37,40 +37,30 @@ class GradebookOverview extends Component {
         this.state = {
             overviewLoaded: false,
         }
-
-        getCourses(this.updateCourseInfo);
         
-        this.assignmentsLoaded = false;
-        this.assignments = null;
-        this.studentsLoaded = false;
         this.students = null;
         this.overviewData = null;
         this._assignmentsTable = null;
         this.tempSet = new Set();
-       
+
+        
+        this.assignments = {};
+        for (let row in props.assignment_data) {
+            let [assignmentId, assignmentName] = props.assignment_data[row];
+            this.assignments[row] = { assignmentId, assignmentName };
+        }
+
+        this.courseIdPayload = { params: { courseId:props.courseId } };
+        this.loadGradebookEnrollment();
     }
-    updateCourseInfo = (courseListArray,selectedCourseObj) => {
-        // console.log('example****> called back');
-        // console.log("courses",courseListArray);
-        // console.log("selected",selectedCourseObj);
-        this.courseId = selectedCourseObj.courseId;
-        this.courseIdPayload = { params: { courseId:this.courseId } };
+
+    //**produces 
+    //this.students
+    loadGradebookEnrollment = () => {
 
         axios.get('/api/loadGradebookEnrollment.php', this.courseIdPayload)
             .then(resp => {
                 let data = resp.data
-                console.log('enrollment',data)
-                // From API:
-                // array_push($response_arr,
-                //     array(
-                //         $row['userId'],
-                //         $row['firstName'],
-                //         $row['lastName'],
-                //         $row['courseCredit'],
-                //         $row['courseGrade'],
-                //         $row['overrideCourseGrade'],
-                //     )
-                // );
     
                 this.students = {}
                 for (let row of data) {
@@ -90,60 +80,21 @@ class GradebookOverview extends Component {
                     };
                 }
     
-                this.studentsLoaded = true;
+                this.getOverviewData();
 
-                if (this.assignmentsLoaded) {
-                    this.getOverviewData();
-                }
 
             }).catch(err => console.log((err.response).toString()));
-    
-
-            axios.get('/api/loadAssignments.php', this.courseIdPayload)
-            .then(resp => {
-                let data = resp.data
-                console.log('assignments',data)
-                // From API:
-                // array_push($response_arr,
-                //     array(
-                //         $row['assignmentId'],
-                //         $row['assignmentName']
-                //     )
-                // );
-    
-                this.assignments = {};
-                for (let row in data) {
-                    let [assignmentId, assignmentName] = data[row];
-                    this.assignments[row] = { assignmentId, assignmentName };
-                }
-                this.setState({assignmentList: this.assignments});
-                this.assignmentsLoaded = true;
-                if (this.studentsLoaded) {
-                    this.getOverviewData();
-                }
-            }).catch(err => console.log((err.response).toString()));
+            
       }
 
 
-
-
+    //**produces 
+    //this.overviewData
     getOverviewData() {
-        const phpUrl = '/api/loadGradebookOverview.php';
-        const data = { courseId:this.courseId }
-        const payload = { params: data }
-        axios.get(phpUrl, payload)
+
+        axios.get('/api/loadGradebookOverview.php', this.courseIdPayload)
         .then(resp => {
             let data = resp.data
-            console.log('overview',data)
-            // From API:
-            // array_push($response_arr,
-            //     array(
-            //         $row['assignmentId'],
-            //         $row['assignmentName'],
-            //         $row['credit'],
-            //         $row['userId']
-            //     )
-            // );
 
             this.overviewData = {}
             for (let userId in this.students) { // initialize object
@@ -618,7 +569,7 @@ export default class DoenetGradebook extends Component {
         this.assignments = null;
     }
     
-    //produces 
+    //**produces 
     //this.courseId
     //this.assignments
     loadAssignments = (courseListArray,selectedCourseObj) => {
@@ -629,7 +580,7 @@ export default class DoenetGradebook extends Component {
         axios.get('/api/loadAssignments.php', courseIdPayload)
         .then(resp => {
             let data = resp.data;
-            console.log('load assgnments main', data)
+            this.assignment_data = data;
             // From API:
             // array_push($response_arr,
             //     array(
@@ -867,7 +818,7 @@ export default class DoenetGradebook extends Component {
                     <ToolLayoutPanel key="two" panelName="Grades Panel">
                         <div style={{ padding: "5px" }}>
                             <Switch>
-                                <Route sensitive exact path="/" render={(props) => (<GradebookOverview  courseId={this.courseId} assignments={this.assignments} />)} />
+                                <Route sensitive exact path="/" render={(props) => (<GradebookOverview  courseId={this.courseId} assignment_data={this.assignment_data} />)} />
                                 <Route sensitive exact path="/assignment/" render={(props) => (<GradebookAssignmentView />)} />
                                 <Route sensitive exact path="/attempt/" render={(props) => (<GradebookAttemptView />)} />
                             </Switch>
