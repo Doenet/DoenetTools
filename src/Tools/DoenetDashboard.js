@@ -15,7 +15,7 @@ import {
   Link,
   useHistory
 } from "react-router-dom";
-
+import { getCourses, setSelected } from "../imports/courseInfo";
 
 const Button = styled.button`
   width: 60px;
@@ -31,7 +31,7 @@ const alphabet =
   "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z ";
 
   function compare (x, y) {
-    console.log("XY: ", x.shortName, y.shortName);
+    console.log("XY: ", x, y);
     if(x.order != null && y.order != null){
       return x.order - y.order
     }else if(x.order != null){
@@ -48,15 +48,32 @@ const alphabet =
     const [items, setItems] = useState(null);
   
     const [isLoaded, setIsLoaded] = useState(false)
+
+
     useEffect(() => {
-      axios.get(`/api/loadUserCourses.php?`).then(resp => {
+      getCourses(updateCourseInfo);
+    }, [])
+
+    function updateCourseInfo(courseListArray,selectedCourseObj){
+      console.log("courses",courseListArray);
+      //console.log("selected",selectedCourseObj);
+      //setSelected("NfzKqYtTgYRyPnmaxc7XB");
+      setItems(courseListArray.sort(compare))
+      if(courseListArray.length > 0){
+        setIsLoaded(true)
+      }
+    }
+
+
+    // useEffect(() => {
+    //   axios.get(`/api/loadUserCourses.php?`).then(resp => {
         
-        setItems(resp.data.sort(compare))
-        setIsLoaded(true);
-        //console.log(resp.data);
+    //     setItems(resp.data.sort(compare))
+    //     setIsLoaded(true);
+    //     //console.log(resp.data);
         
-      }).catch(err => console.log("error"));
-    }, []);
+    //   }).catch(err => console.log("error"));
+    // }, []);
 
     let [x, setX] = useState(0);
     const menuControls = [<Button>Search</Button>];
@@ -108,7 +125,7 @@ const alphabet =
     
 
 
-    const transitions = useTransition(gridItems, item => item.shortName, {
+    const transitions = useTransition(gridItems, item => item.shortname, {
       from: ({ xy, width, height }) => ({ xy, width, height, opacity: 0 }),
       enter: ({ xy, width, height }) => ({ xy, width, height, opacity: 1 }),
       update: ({ xy, width, height }) => ({ xy, width, height }),
@@ -147,7 +164,7 @@ const alphabet =
             <div {...bind} className="list" style={{ height: Math.max(...heights) }}>
               {transitions.map(({ item, props: { xy, ...rest }}, index) => (
                 <a.div key = {index} style={{ transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`), ...rest }}>
-                  {console.log(item)}
+                  {/* {console.log(item)} */}
                   <Link to = {`/${item.courseId}`} style = {{textDecoration: 'none'}}><CourseCard data = {item} /></Link>
                   {/* <CourseCard data = {item} /> */}
                 </a.div>

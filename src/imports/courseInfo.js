@@ -92,6 +92,8 @@ export function initialize(){
           { name: 'longname', keypath: 'longname', options: { unique: false } },
           { name: 'description', keypath: 'description', options: { unique: false } },
           { name: 'role', keypath: 'role', options: { unique: false } },
+          { name: 'color', keypath: 'color', options: { unique: false } },
+          { name: 'imageUrl', keypath: 'imageUrl', options: { unique: false } },
         ]
       },
       {
@@ -103,6 +105,8 @@ export function initialize(){
           { name: 'longname', keypath: 'longname', options: { unique: false } },
           { name: 'description', keypath: 'description', options: { unique: false } },
           { name: 'role', keypath: 'role', options: { unique: false } },
+          { name: 'color', keypath: 'color', options: { unique: false } },
+          { name: 'imageUrl', keypath: 'imageUrl', options: { unique: false } },
         ]
       },
     ]

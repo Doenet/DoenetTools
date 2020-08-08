@@ -29,8 +29,7 @@ const Image = Styled.div`
   background-position: center;
 `;
 const Info = Styled.div`
-  border-radius: 0px 0px 5px 5px;
-  //width: 100%
+  //border-radius: 0px 0px 3px 3px;
   position: absolute;
   z-index: 1;
   // height: 45px;
@@ -38,7 +37,20 @@ const Info = Styled.div`
   background: rgba(240, 240, 240, 0.8);
 `;
 
-const TextContainer = Styled.p`
+const LongNameContainer = Styled.p`
+  text-transform: capitalize;
+  margin: 7px;
+  //width: 100%;
+  color: #282828;
+  font-family: helvetica;
+  font-size: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+`;
+
+const ShortNameContainer = Styled.p`
+  text-transform: uppercase;
   margin: 7px;
   //width: 100%;
   color: #282828;
@@ -52,11 +64,11 @@ const TextContainer = Styled.p`
 
 const Card = props => (
     <Container>
-      <Image url={`/course_pictures/${props.data.imageUrl}.jpg`} color={props.data.color} />
+      <Image url={`/course_pictures/${props.data.image}.jpg`} color={props.data.color} />
       <Info>
-        <TextContainer><b>{props.data.longName}</b></TextContainer>
-        <TextContainer>{props.data.shortName}</TextContainer>
-        <TextContainer>{props.data.term}</TextContainer>
+        <LongNameContainer><b>{props.data.longname}</b></LongNameContainer>
+        <ShortNameContainer>{props.data.shortname}</ShortNameContainer>
+        <ShortNameContainer>{props.data.term}</ShortNameContainer>
       </Info>
     </Container>
 );

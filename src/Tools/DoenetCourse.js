@@ -23,9 +23,9 @@ export default function DoenetCourse(props){
   
   getCourses(updateCourseInfo);
   function updateCourseInfo(courseListArray,selectedCourseObj){
-    // console.log('called back');
-    // console.log("courses",courseListArray);
-    // console.log("selected",selectedCourseObj);
+    console.log('called back');
+    console.log("courses",courseListArray);
+    console.log("selected",selectedCourseObj);
     setSelected("NfzKqYtTgYRyPnmaxc7XB");
   }
 
