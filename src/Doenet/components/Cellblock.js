@@ -3,19 +3,20 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class Cellblock extends BaseComponent {
   static componentType = "cellblock";
+  static rendererType = "container";
 
   static alwaysContinueUpstreamUpdates = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
 
-    properties.rownum = {default: undefined};
-    properties.colnum = {default: undefined};
-    
+    properties.rowNum = { default: null };
+    properties.colNum = { default: null };
+
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     let zeroOrMoreCells = childLogic.newLeaf({
@@ -45,21 +46,53 @@ export default class Cellblock extends BaseComponent {
       comparison: 'atLeast',
       number: 0,
     });
-    
+
     childLogic.newOperator({
       name: "cellsRowsColumnsBlocks",
       operator: 'and',
-      propositions: [zeroOrMoreCells,zeroOrMoreRows,zeroOrMoreColumns,zeroOrMoreCellblocks],
+      propositions: [zeroOrMoreCells, zeroOrMoreRows, zeroOrMoreColumns, zeroOrMoreCellblocks],
       setAsBase: true,
     });
 
     return childLogic;
   }
 
-  updateState(args={}) {
+  static returnStateVariableDefinitions() {
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.prescribedCellsRowsColumnsBlocks = {
+      returnDependencies: () => ({
+        cellRelatedChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "cellsRowsColumnsBlocks",
+          variableNames: [
+            "rowNum",
+            "colNum",
+            "prescribedCellsWithColNum",
+            "prescribedCellsWithRowNum",
+            "prescribedCellsRowsColumnsBlocks"
+          ],
+          variablesOptional: true,
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            prescribedCellsRowsColumnsBlocks: dependencyValues.cellRelatedChildren
+          }
+        }
+      }
+    }
+
+    return stateVariableDefinitions;
+
+  }
+
+
+  updateState(args = {}) {
     super.updateState(args);
 
-    if(!this.childLogicSatisfied) {
+    if (!this.childLogicSatisfied) {
       this.unresolvedState.cellRelatedChildren = true;
       return;
     }
@@ -67,7 +100,7 @@ export default class Cellblock extends BaseComponent {
     let trackChanges = this.currentTracker.trackChanges;
     let childrenChanged = trackChanges.childrenChanged(this.componentName);
 
-    if(childrenChanged) {
+    if (childrenChanged) {
       delete this.unresolvedState.cellRelatedChildren;
 
       let cellsRowsColumnsBlocks = this.childLogic.returnMatches("cellsRowsColumnsBlocks");
@@ -99,58 +132,58 @@ export default class Cellblock extends BaseComponent {
     // if identity of child or location of cellblock is unresolved
     // we report that we can't determine where cells may be
     // TODO: exploit cases where know one of rownum and colnum?
-    if(this.unresolvedState.cellRelatedChildren || this.unresolvedState.rownum ||
-        this.unresolvedState.colnum) {
-      return {unresolvedLocation: true};
+    if (this.unresolvedState.cellRelatedChildren || this.unresolvedState.rownum ||
+      this.unresolvedState.colnum) {
+      return { unresolvedLocation: true };
     }
 
     let trackChanges = this.currentTracker.trackChanges;
 
     // if children or location has changed
     // cells may have moved around
-    if(trackChanges.childrenChanged(this.componentName) ||
+    if (trackChanges.childrenChanged(this.componentName) ||
       trackChanges.getVariableChanges({
         component: this, variable: "rownum"
-    }) ||
+      }) ||
       trackChanges.getVariableChanges({
         component: this, variable: "colnum"
-    })) {
+      })) {
       possibleCellIdentityChange = true;
     }
 
-    for(let child of this.state.cellRelatedChildren) {
+    for (let child of this.state.cellRelatedChildren) {
 
-      if(child instanceof this.allComponentClasses.cell) {
-        if(child.unresolvedState.rownum || child.unresolvedState.colnum) {
+      if (child instanceof this.allComponentClasses.cell) {
+        if (child.unresolvedState.rownum || child.unresolvedState.colnum) {
           // a particular cell has unresolved row or column
           // mark as completely unresolved location
           // TODO: keep track of cases where only one of rownum/colnum is unresolved
-          return {unresolvedLocation: true};
-        }else if(child.unresolvedState.text) {
+          return { unresolvedLocation: true };
+        } else if (child.unresolvedState.text) {
           // a particular cell has unresolved contents
           unresolvedCells.push(child.componentName);
-        }else if(trackChanges.getVariableChanges({
-            component: child, variable: "rownum"
-          }) ||
+        } else if (trackChanges.getVariableChanges({
+          component: child, variable: "rownum"
+        }) ||
           trackChanges.getVariableChanges({
             component: child, variable: "colnum"
-        })) {
+          })) {
           // cell could have changed columns
-          possibleCellIdentityChange =  true;
+          possibleCellIdentityChange = true;
         }
-      }else {
+      } else {
 
         let result = child.checkForChangesOrUnresolved();
 
-        if(result.unresolvedLocation) {
-          return {unresolvedLocation: true};
+        if (result.unresolvedLocation) {
+          return { unresolvedLocation: true };
         }
-        if(result.possibleCellIdentityChange) {
+        if (result.possibleCellIdentityChange) {
           possibleCellIdentityChange = true;
         }
 
         unresolvedCells.push(...result.unresolvedCells);
-        
+
       }
 
     }

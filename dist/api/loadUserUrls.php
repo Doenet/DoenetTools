@@ -33,7 +33,7 @@ $urlId_arr = array();
 
 if ($result->num_rows > 0){
     while($row = $result->fetch_assoc()){ 
-      if ($row["parentId"] == "root") array_push($urlId_arr, $row["urlId"]);
+      if ($row["parentId"] == NULL) array_push($urlId_arr, $row["urlId"]);
       $url_info_arr[$row["urlId"]] = array(
         "title" => $row["title"],
         "url" => $row["url"],

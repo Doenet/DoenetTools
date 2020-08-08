@@ -1,9 +1,8 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const webpack = require('webpack');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const { resolve } = require('path');
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const { resolve } = require("path");
+const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 
 module.exports = {
 
@@ -31,9 +30,9 @@ module.exports = {
   },
 
   output: {
-    path: resolve(__dirname, 'dist_local'),
-    filename: '[name]',
-    publicPath: '/',
+    path: resolve(__dirname, "dist_local"),
+    filename: "[name]",
+    publicPath: "/",
   },
 
   module: {
@@ -64,34 +63,34 @@ module.exports = {
         test: /\.(png|jpe?g|gif|svg)$/i,
         use: [
           {
-            loader: 'url-loader',
+            loader: "url-loader",
             options: { 
               limit: 10000, // Convert images < 10kb to base64 strings
-              name: 'media/[hash]-[name].[ext]'
+              name: "media/[hash]-[name].[ext]"
             } 
           },
         ],
       },
       {
         test: /\.ttf$/,
-        use: ['file-loader']
+        use: ["file-loader"]
       }
     ]
   },
   plugins: [
     new MonacoWebpackPlugin(),
     new HtmlWebPackPlugin({
-      chunks: ['index.js'],
+      chunks: ["index.js"],
       template: "./src/index.html",
       filename: "./index.html",
       favicon: "./src/Tools/favicon.ico",
     }),
-    // new HtmlWebPackPlugin({
-    //   chunks: ['admin/index.js'],
-    //   template: "./src/admin/index.html",
-    //   filename: "./admin/index.html",
-    //   favicon: "./src/Tools/favicon.ico",
-    // }),
+    new HtmlWebPackPlugin({
+      chunks: ['admin/index.js'],
+      template: "./src/admin/index.html",
+      filename: "./admin/index.html",
+      favicon: "./src/Tools/favicon.ico",
+    }),
     new HtmlWebPackPlugin({
       chunks: ["chooser/index.js"],
       template: "./src/chooser/index.html",
@@ -111,7 +110,7 @@ module.exports = {
       favicon: "./src/Tools/favicon.ico",
     }),
     new HtmlWebPackPlugin({
-      chunks: ['docs/index.js'],
+      chunks: ["docs/index.js"],
       template: "./src/docs/index.html",
       filename: "./docs/index.html",
       favicon: "./src/Tools/favicon.ico",
@@ -123,7 +122,13 @@ module.exports = {
       // favicon: "",
     }),
     new HtmlWebPackPlugin({
-      chunks: ['editor/index.js'],
+      chunks: ["dragdrop/index.js"],
+      template: "./src/dragdrop/index.html",
+      filename: "./dragdrop/index.html",
+      // favicon: "",
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ["editor/index.js"],
       template: "./src/editor/index.html",
       filename: "./editor/index.html",
       favicon: "./src/Tools/favicon.ico",
@@ -137,26 +142,26 @@ module.exports = {
     // }),
     // Gradebook
     new HtmlWebPackPlugin({
-      chunks: ['gradebook/index.js'],
+      chunks: ["gradebook/index.js"],
       template: "./src/gradebook/index.html",
       filename: "./gradebook/index.html",
       favicon: "./src/Tools/favicon.ico",
     }),
        // Guest Editor
        new HtmlWebPackPlugin({
-        chunks: ['guesteditor/index.js'],
+        chunks: ["guesteditor/index.js"],
         template: "./src/guesteditor/index.html",
         filename: "./guesteditor/index.html",
         favicon: "./src/Tools/favicon.ico",
       }),
     new HtmlWebPackPlugin({
-      chunks: ['gradebook/index.js'],
+      chunks: ["gradebook/index.js"],
       template: "./src/gradebook/assignment/index.html",
       filename: "./gradebook/assignment/index.html",
       favicon: "./src/Tools/favicon.ico",
     }),
     new HtmlWebPackPlugin({
-      chunks: ['gradebook/index.js'],
+      chunks: ["gradebook/index.js"],
       template: "./src/gradebook/attempt/index.html",
       filename: "./gradebook/attempt/index.html",
       favicon: "./src/Tools/favicon.ico",
@@ -212,10 +217,10 @@ module.exports = {
       chunkFilename: "[id].css"
     }),
     new CopyWebpackPlugin([
-      { from: 'cypress_php' }
+      { from: "cypress_php" }
     ]),
     new CopyWebpackPlugin([
-      { from: 'static' }
+      { from: "static" }
     ])
   ],
   devServer: {

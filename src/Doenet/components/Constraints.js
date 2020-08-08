@@ -79,6 +79,18 @@ export default class Constraints extends BaseComponent {
       })
     }
 
+    stateVariableDefinitions.nDimensions = {
+      returnDependencies: () => ({
+        nDimensions: {
+          dependencyType: "parentStateVariable",
+          variableName: "nDimensionsForConstraints"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { newValues: { nDimensions: dependencyValues.nDimensions } }
+      }
+    }
+
     stateVariableDefinitions.constraintResults = {
       additionalStateVariablesDefined: [{
         variableName: "constraintUsedByComponent",
@@ -92,9 +104,21 @@ export default class Constraints extends BaseComponent {
         "arrayEntryPrefixForConstraints",
         "arrayVariableForConstraints",
       ],
-      returnDependencies: function ({ stateValues, arrayKeys }) {
+      returnArraySizeDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nDimensions];
+      },
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
+        // console.log(`return array dependencies of constraintResults`)
+        // console.log(JSON.parse(JSON.stringify(arrayKeys)))
+        // console.log(JSON.parse(JSON.stringify(stateValues)))
 
-        let dependencies = {
+        let globalDependencies = {
           constraintChildren: {
             dependencyType: "childStateVariables",
             childLogicName: "atLeastZeroConstraints",
@@ -109,53 +133,64 @@ export default class Constraints extends BaseComponent {
 
         let arrayEntryPrefix = stateValues.arrayEntryPrefixForConstraints;
 
-        if (stateValues.independentComponentConstraints && arrayKeys) {
-          let arrayKey = Number(arrayKeys[0]);
-          dependencies[`x${arrayKey + 1}`] = {
-            dependencyType: "parentStateVariable",
-            variableName: `${arrayEntryPrefix}${arrayKey + 1}`,
-          };
+        let dependenciesByKey = {};
+        if (stateValues.independentComponentConstraints) {
+          for (let arrayKey of arrayKeys) {
+            dependenciesByKey[arrayKey] = {
+              x: {
+                dependencyType: "parentStateVariable",
+                variableName: arrayEntryPrefix + (Number(arrayKey) + 1),
+              }
+            }
+          }
         } else {
-          dependencies.xs = {
+          globalDependencies.xs = {
             dependencyType: "parentStateVariable",
             variableName: stateValues.arrayVariableForConstraints,
           }
         }
 
-        return dependencies;
-      },
-      definition: function ({ dependencyValues, arrayKeys }) {
+        return { globalDependencies, dependenciesByKey };
 
-        // console.log("constraintResult dependencies")
-        // console.log(dependencyValues);
+      },
+      arrayDefinitionByKey({
+        globalDependencyValues, dependencyValuesByKey, arrayKeys,
+      }) {
+
+        // console.log("array constraintResult definition")
+        // console.log(globalDependencyValues);
+        // console.log(dependencyValuesByKey);
         // console.log(arrayKeys)
 
-        if (dependencyValues.independentComponentConstraints && arrayKeys) {
-          let arrayKey = Number(arrayKeys[0]);
-          let variables = {
-            [`x${arrayKey + 1}`]: dependencyValues[`x${arrayKey + 1}`]
-          }
-          let constraintUsed = false;
+        if (globalDependencyValues.independentComponentConstraints) {
+          let constraintResults = {};
+          let constraintUsedByComponent = {};
+          for (let arrayKey of arrayKeys) {
+            let varEnding = Number(arrayKey) + 1;
+            let variables = {
+              ['x' + varEnding]: dependencyValuesByKey[arrayKey].x
+            }
+            let constraintUsed = false;
 
-          for (let constraintChild of dependencyValues.constraintChildren) {
-            let constraintResult = constraintChild.stateValues.applyComponentConstraint(variables);
+            for (let constraintChild of globalDependencyValues.constraintChildren) {
+              let result = constraintChild.stateValues.applyComponentConstraint(variables);
 
-            if (constraintResult.constrained) {
-              variables[`x${arrayKey + 1}`] = constraintResult.variables[`x${arrayKey + 1}`]
-              constraintUsed = true;
+              if (result.constrained) {
+                variables['x' + varEnding] = result.variables['x' + varEnding]
+                constraintUsed = true;
+              }
+
             }
 
+            constraintResults[arrayKey] = variables['x' + varEnding]
+            constraintUsedByComponent[arrayKey] = constraintUsed;
 
           }
 
           return {
             newValues: {
-              constraintResults: {
-                [arrayKey]: variables[`x${arrayKey + 1}`]
-              },
-              constraintUsedByComponent: {
-                [arrayKey]: constraintUsed
-              }
+              constraintResults,
+              constraintUsedByComponent
             }
           }
 
@@ -165,11 +200,11 @@ export default class Constraints extends BaseComponent {
           let variables = {};
           let constraintUsed = false;
 
-          for (let arrayKey in dependencyValues.xs) {
-            variables[`x${Number(arrayKey) + 1}`] = dependencyValues.xs[arrayKey];
+          for (let arrayKey in globalDependencyValues.xs) {
+            variables[`x${Number(arrayKey) + 1}`] = globalDependencyValues.xs[arrayKey];
           }
 
-          for (let constraintChild of dependencyValues.constraintChildren) {
+          for (let constraintChild of globalDependencyValues.constraintChildren) {
             let constraintResult;
             if (constraintChild.stateValues.applyConstraint) {
               constraintResult = constraintChild.stateValues.applyConstraint(variables);
@@ -186,42 +221,28 @@ export default class Constraints extends BaseComponent {
             }
           }
 
-          let arrayKey;
-          if (arrayKeys) {
-            arrayKey = Number(arrayKeys[0]);
+          let constraintResults = {};
+          let constraintUsedByComponent = {};
+
+          for (let arrayKey in globalDependencyValues.xs) {
+            constraintResults[arrayKey] = variables[`x${Number(arrayKey) + 1}`]
+            constraintUsedByComponent[arrayKey] = constraintUsed;
           }
 
-
-          if (arrayKey === undefined) {
-            // return result as an array to indicate we are returning entire array
-            let constraintResults = [];
-            let constraintUsedByComponent = [];
-            for (let arrayKey in dependencyValues.xs) {
-              constraintResults[arrayKey] = variables[`x${Number(arrayKey) + 1}`];
-              constraintUsedByComponent[arrayKey] = constraintUsed;
-            }
-            return { newValues: { constraintResults, constraintUsedByComponent } }
-          } else {
-            let constraintResults = {
-              [arrayKey]: variables[`x${Number(arrayKey) + 1}`]
-            }
-            let constraintUsedByComponent = {
-              [arrayKey]: constraintUsed
-            }
-            return { newValues: { constraintResults, constraintUsedByComponent } }
-          }
+          return { newValues: { constraintResults, constraintUsedByComponent } }
 
 
         }
 
       },
 
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues,
-        arrayKeys, stateValues, initialChange }) {
+      inverseArrayDefinitionByKey: function ({
+        desiredStateVariableValues, globalDependencyValues,
+        dependencyValuesByKey, dependencyNamesByKey, stateValues, workspace }) {
 
         // console.log('inverse definition of constraints')
         // console.log(desiredStateVariableValues);
-        // console.log(dependencyValues)
+        // console.log(globalDependencyValues)
         // console.log(stateValues)
 
         // Note: the idea is that we want the constrain applied even in the reverse direction
@@ -230,33 +251,39 @@ export default class Constraints extends BaseComponent {
         // To accomplish this, we send the unconstrained value in desiredStateVariableValues.constrainResult
         // and will send the constraint result to the xs (or xs arrayKey) dependency
 
-        if (dependencyValues.independentComponentConstraints && arrayKeys) {
+        if (globalDependencyValues.independentComponentConstraints) {
 
-          // we applied constraint to just one component
+          // we applied constraint to each component separately
 
-          let arrayKey = Number(arrayKeys[0]);
+          let instructions = [];
 
-          // in this case, desiredStateVariableValues.constraintResult
-          // should just contain the value for the one component
-          let variables = {
-            [`x${arrayKey + 1}`]: convertValueToMathExpression(desiredStateVariableValues.constraintResults[arrayKey])
-          }
+          for (let arrayKey in desiredStateVariableValues.constraintResults) {
 
-          for (let constraintChild of dependencyValues.constraintChildren) {
-            let constraintResult = constraintChild.stateValues.applyComponentConstraint(variables);
+            let varEnding = Number(arrayKey) + 1;
 
-            if (constraintResult.constrained) {
-              variables[`x${arrayKey + 1}`] = constraintResult.variables[`x${arrayKey + 1}`]
+            let variables = {
+              ['x' + varEnding]: convertValueToMathExpression(desiredStateVariableValues.constraintResults[arrayKey])
             }
 
+
+            for (let constraintChild of globalDependencyValues.constraintChildren) {
+              let result = constraintChild.stateValues.applyComponentConstraint(variables);
+
+              if (result.constrained) {
+                variables['x' + varEnding] = result.variables['x' + varEnding]
+              }
+
+            }
+
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].x,
+              desiredValue: variables['x' + varEnding],
+            })
           }
 
           return {
             success: true,
-            instructions: [{
-              setDependency: `x${arrayKey + 1}`,
-              desiredValue: variables[`x${arrayKey + 1}`],
-            }]
+            instructions
           }
         } else {
 
@@ -269,15 +296,22 @@ export default class Constraints extends BaseComponent {
           // We start with previous values of constraintResults
           // and then modify any that are in desiredStateVariableValues.constraintResults
 
+          // accumulate different desired results from multiple passes
+          if (!workspace.desiredConstraintResults) {
+            workspace.desiredConstraintResults = {};
+          }
+          Object.assign(workspace.desiredConstraintResults, desiredStateVariableValues.constraintResults);
+
           for (let arrayKey in stateValues.constraintResults) {
-            if (arrayKey in desiredStateVariableValues.constraintResults) {
-              variables[`x${Number(arrayKey) + 1}`] = convertValueToMathExpression(desiredStateVariableValues.constraintResults[arrayKey]);
+            let varEnding = Number(arrayKey) + 1;
+            if (arrayKey in workspace.desiredConstraintResults) {
+              variables['x' + varEnding] = convertValueToMathExpression(workspace.desiredConstraintResults[arrayKey]);
             } else {
-              variables[`x${Number(arrayKey) + 1}`] = stateValues.constraintResults[arrayKey];
+              variables['x' + varEnding] = convertValueToMathExpression(stateValues.constraintResults[arrayKey]);
             }
           }
 
-          for (let constraintChild of dependencyValues.constraintChildren) {
+          for (let constraintChild of globalDependencyValues.constraintChildren) {
             let constraintResult;
             if (constraintChild.stateValues.applyConstraint) {
               constraintResult = constraintChild.stateValues.applyConstraint(variables);
@@ -293,8 +327,8 @@ export default class Constraints extends BaseComponent {
             }
           }
 
-          let constraintResults = [];
-          for (let arrayKey in desiredStateVariableValues.constraintResults) {
+          let constraintResults = {};
+          for (let arrayKey in workspace.desiredConstraintResults) {
             constraintResults[arrayKey] = variables[`x${Number(arrayKey) + 1}`];
           }
 

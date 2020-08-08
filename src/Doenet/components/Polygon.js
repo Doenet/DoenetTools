@@ -50,15 +50,15 @@ export default class Polygon extends Polyline {
             let x2 = variables.x2.evaluate_to_constant();
 
             let prevPtx, prevPty;
-            let nextPtx = dependencyValues.vertices[dependencyValues.nVertices - 1].get_component(0).evaluate_to_constant();
-            let nextPty = dependencyValues.vertices[dependencyValues.nVertices - 1].get_component(1).evaluate_to_constant();
+            let nextPtx = dependencyValues.vertices[dependencyValues.nVertices - 1][0].evaluate_to_constant();
+            let nextPty = dependencyValues.vertices[dependencyValues.nVertices - 1][1].evaluate_to_constant();
 
             for (let i = 0; i < dependencyValues.nVertices; i++) {
               prevPtx = nextPtx;
               prevPty = nextPty;
 
-              nextPtx = dependencyValues.vertices[i].get_component(0).evaluate_to_constant();
-              nextPty = dependencyValues.vertices[i].get_component(1).evaluate_to_constant();
+              nextPtx = dependencyValues.vertices[i][0].evaluate_to_constant();
+              nextPty = dependencyValues.vertices[i][1].evaluate_to_constant();
 
               // only implement for constants
               if (!(Number.isFinite(prevPtx) && Number.isFinite(prevPty) &&

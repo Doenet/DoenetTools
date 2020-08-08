@@ -1,0 +1,50 @@
+name: Lint and CI
+
+# Runs on ubuntu because macOS is not licensed to have docker-compose
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  lint:
+    # Only lints the file differences between the current branch and upstream/master
+    runs-on: ubuntu-latest
+
+    # Can crash if the number of modified files is extremely large
+    # In most cases this is due to the user not merging in upstream/master before committing
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with: 
+        node-version: '10.x'
+    - run: npm install -g eslint && npm install eslint-plugin-react
+    - name: Fetch upstream/master
+      run: git remote add upstream https://github.com/Doenet/DoenetTools.git && git fetch upstream
+    - name: Show File Structure
+      run: ls -a
+    - name: Linting src
+      run: eslint $(git diff --name-only upstream/master | grep -E -- '^src' | xargs ls -d 2>/dev/null)
+    - name: Linting cypress
+      run: eslint $(git diff --name-only upstream/master | grep -E -- '^cypress' | xargs ls -d 2>/dev/null)
+
+  test:
+    # Only runs the tests found in 'tagSpecific'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - name: Install Dependencies
+      run: npm install -g wait-on cypress && npm install
+    - name: Build the Containers
+      run: npm run docker:build
+    - name: Start the Server
+      run: npm run deploy & wait-on http://localhost:3000
+    - name: Run tagSpecific Tests
+      run: cypress run -b 'chrome' --config video=false --spec "cypress/integration/tagSpecific/**"

@@ -63,6 +63,21 @@ export default class Choiceinput extends Input {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+
+    stateVariableDefinitions.numberChoices = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        choiceChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "atLeastZeroChoices",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return { newValues: { numberChoices: dependencyValues.choiceChildren.length } }
+      }
+    }
+
     stateVariableDefinitions.choiceOrder = {
       returnDependencies: ({ sharedParameters }) => ({
         choiceChildren: {
@@ -133,19 +148,34 @@ export default class Choiceinput extends Input {
       isArray: true,
       entryPrefixes: ["choiceText"],
       forRenderer: true,
-      returnDependencies: () => ({
-        choiceOrder: {
+      returnArraySizeDependencies: () => ({
+        numberChoices: {
           dependencyType: "stateVariable",
-          variableName: "choiceOrder"
-        },
-        choiceChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroChoices",
-          variableNames: ["text"]
+          variableName: "numberChoices",
         },
       }),
-      definition: function ({ dependencyValues }) {
-        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.numberChoices];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          choiceOrder: {
+            dependencyType: "stateVariable",
+            variableName: "choiceOrder"
+          },
+          choiceChildren: {
+            dependencyType: "childStateVariables",
+            childLogicName: "atLeastZeroChoices",
+            variableNames: ["text"]
+          },
+        };
+
+        return { globalDependencies }
+      },
+      arrayDefinitionByKey({ globalDependencyValues }) {
+        let choiceChildrenOrdered = globalDependencyValues.choiceOrder.map(
+          i => globalDependencyValues.choiceChildren[i]
+        );
 
         return {
           newValues: {
@@ -168,18 +198,22 @@ export default class Choiceinput extends Input {
       isArray: true,
       entryPrefixes: ["selectedIndex"],
       forRenderer: true,
-      returnDependencies: () => ({
-        choiceOrder: {
-          dependencyType: "stateVariable",
-          variableName: "choiceOrder"
-        },
-        choiceChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroChoices",
-          variableNames: ["selected"]
-        },
-      }),
-      definition: function ({ dependencyValues }) {
+      entireArrayAtOnce: true,
+      returnDependencies() {
+        return {
+          choiceOrder: {
+            dependencyType: "stateVariable",
+            variableName: "choiceOrder"
+          },
+          choiceChildren: {
+            dependencyType: "childStateVariables",
+            childLogicName: "atLeastZeroChoices",
+            variableNames: ["selected"]
+          },
+        };
+      },
+      entireArrayDefinition({ dependencyValues }) {
+
         let selectedIndices = [];
         let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
 
@@ -190,8 +224,8 @@ export default class Choiceinput extends Input {
         }
         return { newValues: { selectedIndices } }
       },
-      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-
+      inverseDefinition({ desiredStateVariableValues, dependencyValues,
+      }) {
         let instructions = [];
         for (let [ind, choiceChild] of dependencyValues.choiceChildren.entries()) {
 
@@ -226,22 +260,32 @@ export default class Choiceinput extends Input {
       componentType: "text",
       isArray: true,
       entryPrefixes: ["selectedValue"],
-      returnDependencies: () => ({
-        selectedIndices: {
-          dependencyType: "stateVariable",
-          variableName: "selectedIndices"
-        },
-        choiceTexts: {
-          dependencyType: "stateVariable",
-          variableName: "choiceTexts"
+      entireArrayAtOnce: true,
+      returnDependencies() {
+        return {
+          selectedIndices: {
+            dependencyType: "stateVariable",
+            variableName: "selectedIndices"
+          },
+          choiceTexts: {
+            dependencyType: "stateVariable",
+            variableName: "choiceTexts"
+          }
+        };
+      },
+      entireArrayDefinition({ dependencyValues }) {
+        console.log(`definition of selected values`)
+        console.log(dependencyValues)
+        console.log(dependencyValues.selectedIndices
+          .map(i => dependencyValues.choiceTexts[i - 1])
+        )
+        return {
+          newValues: {
+            selectedValues: dependencyValues.selectedIndices
+              .map(i => dependencyValues.choiceTexts[i - 1])
+          }
         }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          selectedValues: dependencyValues.selectedIndices
-            .map(i => dependencyValues.choiceTexts[i - 1])
-        }
-      })
+      }
     }
 
     stateVariableDefinitions.selectedValue = {
@@ -254,94 +298,17 @@ export default class Choiceinput extends Input {
       targetVariableName: "selectedValues"
     };
 
-
-    // stateVariableDefinitions.submittedIndices = {
-    //   public: true,
-    //   componentType: "number",
-    //   isArray: true,
-    //   entryPrefixes: ["submittedIndex"],
-    //   returnDependencies: () => ({
-    //     choiceOrder: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "choiceOrder"
-    //     },
-    //     choiceChildren: {
-    //       dependencyType: "childStateVariables",
-    //       childLogicName: "atLeastZeroChoices",
-    //       variableNames: ["submitted"]
-    //     },
-    //   }),
-    //   definition: function ({ dependencyValues }) {
-    //     let submittedIndices = [];
-    //     let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
-
-    //     for (let [ind, choiceChild] of choiceChildrenOrdered.entries()) {
-    //       if (choiceChild.stateValues.submitted) {
-    //         submittedIndices.push(ind + 1)
-    //       }
-    //     }
-    //     return { newValues: { submittedIndices } }
-    //   },
-    //   inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-
-    //     let instructions = [];
-    //     for (let [ind, choiceChild] of dependencyValues.choiceChildren.entries()) {
-
-    //       let indexInOrder = dependencyValues.choiceOrder.indexOf(ind) + 1;
-    //       let choiceSubmitted = desiredStateVariableValues.submittedIndices.includes(indexInOrder);
-    //       if (choiceChild.stateValues.submitted !== choiceSubmitted) {
-    //         instructions.push({
-    //           setDependency: "choiceChildren",
-    //           desiredValue: choiceSubmitted,
-    //           childIndex: ind,
-    //           variableIndex: 0,
-    //         });
-    //       }
-    //     }
-
-    //     return {
-    //       success: true,
-    //       instructions,
-    //     };
-
-    //   }
-    // }
-
-    // stateVariableDefinitions.submittedIndex = {
-    //   isAlias: true,
-    //   targetVariableName: "submittedIndex1"
-    // };
-
-
-    // stateVariableDefinitions.submittedValues = {
-    //   public: true,
-    //   componentType: "text",
-    //   isArray: true,
-    //   entryPrefixes: ["submittedValue"],
-    //   returnDependencies: () => ({
-    //     submittedIndices: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "submittedIndices"
-    //     },
-    //     choiceTexts: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "choiceTexts"
-    //     }
-    //   }),
-    //   definition: ({ dependencyValues }) => ({
-    //     newValues: {
-    //       submittedValues: dependencyValues.submittedIndices
-    //         .map(i => dependencyValues.choiceTexts[i - 1])
-    //     }
-    //   })
-
-    // }
-
-    // stateVariableDefinitions.submittedValue = {
-    //   isAlias: true,
-    //   targetVariableName: "submittedValue1"
-    // };
-
+    stateVariableDefinitions.nValues = {
+      returnDependencies: () => ({
+        values: {
+          dependencyType: "stateVariable",
+          variableName: "values"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { nValues: dependencyValues.values.length }
+      })
+    }
 
     stateVariableDefinitions.creditAchievedIfSubmit = {
       returnDependencies: () => ({
@@ -409,19 +376,31 @@ export default class Choiceinput extends Input {
       componentType: "feedbacktext",
       isArray: true,
       entryPrefixes: ["feedback"],
-      returnDependencies: () => ({
-        choiceOrder: {
+      returnArraySizeDependencies: () => ({
+        numberChoices: {
           dependencyType: "stateVariable",
-          variableName: "choiceOrder"
-        },
-        choiceChildren: {
-          dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroChoices",
-          variableNames: ["feedbacks"]
+          variableName: "numberChoices",
         },
       }),
-      definition: function ({ dependencyValues }) {
-        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.numberChoices];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          choiceOrder: {
+            dependencyType: "stateVariable",
+            variableName: "choiceOrder"
+          },
+          choiceChildren: {
+            dependencyType: "childStateVariables",
+            childLogicName: "atLeastZeroChoices",
+            variableNames: ["feedbacks"]
+          },
+        };
+        return { globalDependencies }
+      },
+      arrayDefinitionByKey({ globalDependencyValues }) {
+        let choiceChildrenOrdered = globalDependencyValues.choiceOrder.map(i => globalDependencyValues.choiceChildren[i]);
 
         let feedbacks = [];
 
