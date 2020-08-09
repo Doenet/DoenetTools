@@ -7,7 +7,8 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
-$folderId =  mysqli_real_escape_string($conn,$_REQUEST["folderId"]);  // root or folderId
+$jwtArray = include "jwtArray.php";
+$userId = $jwtArray['userId'];
 
 $sql="
 SELECT   -- get personal content
@@ -19,13 +20,51 @@ SELECT   -- get personal content
   c.draft as draft,
   fc.rootId as rootId, 
   fc.folderId as parentId,
-  c.public as isPublic
+  c.public as isPublic,
+  cb.isPinned as isPinned
 FROM content AS c
 LEFT JOIN user_content uc ON uc.branchId = c.branchId
 LEFT JOIN folder_content fc ON fc.childId = c.branchId AND fc.childType='content'
-WHERE uc.username='$remoteuser' AND c.removedFlag=0
+LEFT JOIN content_branch cb ON c.branchId = cb.branchId
+WHERE uc.username='$remoteuser' AND c.removedFlag=0 AND cb.isPinned='0'
 ORDER BY branchId, publishDate DESC;
 ";
+
+if (!$userId) {
+  $sql="
+  SELECT   -- get pinned content
+    c.branchId as branchId,
+    c.title as title,
+    c.contentId as contentId,
+    c.timestamp as publishDate,
+    c.removedFlag as removedFlag,
+    c.draft as draft,
+    fc.rootId as rootId, 
+    fc.folderId as parentId,
+    c.public as isPublic,
+    cb.isPinned as isPinned
+  FROM content AS c
+  LEFT JOIN folder_content fc ON fc.childId = c.branchId AND fc.childType='content'
+  LEFT JOIN content_branch cb ON c.branchId = cb.branchId
+  WHERE cb.isPinned='1' AND c.removedFlag=0
+  UNION
+  SELECT
+    c.branchId as branchId,
+    c.title as title,
+    c.contentId as contentId,
+    c.timestamp as publishDate,
+    c.removedFlag as removedFlag,
+    c.draft as draft,
+    fc.rootId as rootId, 
+    fc.folderId as parentId,
+    c.public as isPublic,
+    cb.isPinned as isPinned
+  FROM folder_content AS fc, folder AS f, content AS c
+  LEFT JOIN content_branch cb ON c.branchId = cb.branchId
+  WHERE (f.folderId = fc.rootId OR f.folderId = fc.folderId) AND f.isPinned='1' AND fc.childId = c.branchId
+  ORDER BY branchId, publishDate DESC;
+  ";
+}
 
 
 $result = $conn->query($sql); 
@@ -62,7 +101,8 @@ if ($result->num_rows > 0){
                 "type" => "content",
                 "parentId" => $row["parentId"] == NULL ? "root" : $row["parentId"],
                 "rootId" => $row["rootId"] == NULL ? "root" : $row["rootId"],
-                "isPublic" => ($row["isPublic"] == 1)
+                "isPublic" => ($row["isPublic"] == 1),
+                "isPinned" => ($row["isPinned"] == 1), 
                 );
                 array_push($sort_order_arr,$bi);
         }

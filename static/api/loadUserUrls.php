@@ -7,6 +7,9 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
+$jwtArray = include "jwtArray.php";
+$userId = $jwtArray['userId'];
+
 $sql="
 SELECT   -- get personal urls
   u.urlId as urlId,
@@ -22,9 +25,46 @@ SELECT   -- get personal urls
 FROM url AS u
 LEFT JOIN user_urls uu ON uu.urlId = u.urlId
 LEFT JOIN folder_content fc ON fc.childId = u.urlId AND fc.childType='url'
-WHERE uu.username='$remoteuser' AND u.removedFlag=0
+WHERE uu.username='$remoteuser' AND u.removedFlag=0 AND u.isPinned='0'
 ORDER BY title
 ";
+
+if (!$userId) {
+  $sql="
+  SELECT   -- get pinned urls
+    u.urlId as urlId,
+    u.title as title,
+    u.url as url,
+    u.description as description,
+    u.timestamp as publishDate,
+    u.removedFlag as removedFlag,
+    u.usesDoenetAPI as usesDoenetAPI,
+    fc.rootId as rootId, 
+    fc.folderId as parentId,
+    u.public as isPublic,
+    u.isPinned as isPinned
+  FROM url AS u
+  LEFT JOIN user_urls uu ON uu.urlId = u.urlId
+  LEFT JOIN folder_content fc ON fc.childId = u.urlId AND fc.childType='url'
+  WHERE u.removedFlag=0 AND u.isPinned='1'
+  UNION
+  SELECT
+    u.urlId as urlId,
+    u.title as title,
+    u.url as url,
+    u.description as description,
+    u.timestamp as publishDate,
+    u.removedFlag as removedFlag,
+    u.usesDoenetAPI as usesDoenetAPI,
+    fc.rootId as rootId, 
+    fc.folderId as parentId,
+    u.public as isPublic,
+    u.isPinned as isPinned
+  FROM folder_content AS fc, folder AS f, url AS u
+  WHERE (f.folderId = fc.rootId OR f.folderId = fc.folderId) AND f.isPinned='1' AND fc.childId = u.urlId
+  ORDER BY title;
+  ";
+}
 
 $result = $conn->query($sql); 
 $response_arr = array();
@@ -43,7 +83,8 @@ if ($result->num_rows > 0){
         "usesDoenetAPI" => ($row["usesDoenetAPI"] == 1),
         "parentId" => $row["parentId"] == NULL ? "root" : $row["parentId"],
         "rootId" => $row["rootId"] == NULL ? "root" : $row["rootId"],
-        "isPublic" => ($row["isPublic"] == 1)
+        "isPublic" => ($row["isPublic"] == 1),
+        "isPinned" => ($row["isPinned"] == 1), 
       );
     }
 }
