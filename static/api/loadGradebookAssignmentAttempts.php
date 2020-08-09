@@ -7,6 +7,11 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
+$jwtArray = include "jwtArray.php";
+$userId = $jwtArray['userId'];
+
+//TODO: Check if $userId is an Instructor who has access
+
 if (!isset($_GET["assignmentId"])) {
     http_response_code(400);
     echo "Database Retrieval Error: No assignment specified!";
@@ -24,12 +29,13 @@ if (!isset($_GET["assignmentId"])) {
     if ($result->num_rows == 1) {
         // do the actual query
         $sql = "
-            SELECT ua.credit AS assignmentCredit, ua.username, uaa.credit AS attemptCredit, uaa.attemptNumber
-            FROM user_assignment AS ua
-            LEFT JOIN user_assignment_attempt AS uaa
-            ON ua.assignmentId = uaa.assignmentId
-            WHERE ua.assignmentId = '$assignmentId'
-            ORDER BY uaa.finished
+        SELECT credit AS assignmentCredit, 
+        userId, 
+        attemptCredit, 
+        attemptNumber
+        FROM content_interactions
+        WHERE assignmentId = '$assignmentId'
+        ORDER BY attemptNumber
         ";
     
         $result = $conn->query($sql);
@@ -39,7 +45,7 @@ if (!isset($_GET["assignmentId"])) {
             array_push($response_arr,
                 array(
                     $row['assignmentCredit'],
-                    $row['username'],
+                    $row['userId'],
                     $row['attemptCredit'],
                     $row['attemptNumber']
                 )

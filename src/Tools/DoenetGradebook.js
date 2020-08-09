@@ -7,6 +7,7 @@ import {
     Switch,
     Route,
     Link,
+    useLocation,
     useHistory
 } from "react-router-dom";
 import query from '../queryParamFuncs';
@@ -204,15 +205,22 @@ class GradebookOverview extends Component {
     }
 }
 
+
+
 class GradebookAssignmentView extends Component {
     constructor(props) {
         super(props)
 
-        this.courseId = "aI8sK4vmEhC5sdeSP3vNW"; // FIXME: value used for testing, this needs to be read from the url query
+        this.courseIdPayload = { params: { courseId:props.courseId } };
+
+        const url = new URL(window.location.href);
+        this.assignmentId = url.searchParams.get("assignmentId");
+        this.assignmentIdPayload = { params: { assignmentId:this.assignmentId } };
 
         this.state = {
             assignmentLoaded: false,
-            assignmentId: query.getURLSearchParam(this.props.location.search, "assignmentId"),
+            // assignmentId: query.getURLSearchParam(this.props.location.search, "assignmentId"),
+            assignmentId: this.assignmentId,
         }
 
         this.assignmentsLoaded = false;
@@ -223,8 +231,9 @@ class GradebookAssignmentView extends Component {
         this._attemptsTable = null;
     }
 
+    //TODO: FIX THIS AND USE assignment data from parent
     componentDidMount() {
-        axios.get("/api/loadGradebookEnrollment.php?courseId=" + this.courseId).then(resp => {
+        axios.get("/api/loadGradebookEnrollment.php",this.courseIdPayload).then(resp => {
             let data = resp.data
             // From API:
             // array_push($response_arr,
@@ -253,10 +262,7 @@ class GradebookAssignmentView extends Component {
             }
         }).catch(err => console.log((err.response).toString()));
 
-        phpUrl = '/api/loadAssignments.php';
-        const data = { courseId:this.courseId }
-        const payload = { params: data }
-        axios.get(phpUrl, payload)
+        axios.get('/api/loadAssignments.php', this.courseIdPayload)
         .then(resp => {
             let data = resp.data
             console.log('loadAssignements',data)
@@ -290,23 +296,13 @@ class GradebookAssignmentView extends Component {
     }
 
     getAssignmentData() {
-        axios.get(`/api/loadGradebookAssignmentAttempts.php?assignmentId=${this.state.assignmentId}`).then(resp => {
+        axios.get('/api/loadGradebookAssignmentAttempts.php',this.assignmentIdPayload)
+        .then(resp => {
             let data = resp.data
-            // From API:
-            // array_push($response_arr,
-            //     array(
-            //         $row['assignmentCredit'],
-            //         $row['username'],
-            //         $row['attemptCredit'],
-            //         $row['attemptNumber']
-            //     )
-            // );
-
-            console.log(data)
 
             this.assignmentData = {}
-            for (let username in this.students) { // initialize object
-                this.assignmentData[username] = {
+            for (let userId in this.students) { // initialize object
+                this.assignmentData[userId] = {
                     credit: null,
                     attempts: {}
                 }
@@ -314,18 +310,17 @@ class GradebookAssignmentView extends Component {
 
             for (let row of data) {
                 let [assignmentCredit,
-                    username,
+                    userId,
                     attemptCredit,
                     attemptNumber] = row;
 
-                this.assignmentData[username].grade = assignmentCredit // we need to do this in this block so that username is defined
-                this.assignmentData[username].attempts[attemptNumber] = attemptCredit
+                this.assignmentData[userId].grade = assignmentCredit // we need to do this in this block so that userId is defined
+                this.assignmentData[userId].attempts[attemptNumber] = attemptCredit
             }
 
-            console.log(this.assignmentData)
 
             this.setState({ assignmentLoaded: true });
-        }).catch(err => console.log((err.response).toString()));
+        }).catch(err => console.log(("error: ",err)));
     }
 
     get attemptsTable() {
@@ -349,22 +344,22 @@ class GradebookAssignmentView extends Component {
         }
 
         this._attemptsTable.rows = [];
-        for (let username in this.students) {
+        for (let userId in this.students) {
             let { firstName,
-                lastName } = this.students[username];
+                lastName } = this.students[userId];
 
             this._attemptsTable.rows.push(
                 <tr>
-                    <td className="DTable_header-column" key={"studentName_" + username}>{firstName + " " + lastName} (<span className="studentUsername">{username}</span>)</td>
+                    <td className="DTable_header-column" key={"studentName_" + userId}>{firstName + " " + lastName}</td>
                     {(() => { // immediate invocation
                         let arr = [];
 
                         for (let i = 1; i <= maxAttempts; i++) {
-                            let attemptCredit = this.assignmentData[username].attempts[i];
+                            let attemptCredit = this.assignmentData[userId].attempts[i];
 
                             arr.push(
                                 <td>
-                                    <Link to={`/attempt/?assignmentId=${this.state.assignmentId}&username=${username}&attemptNumber=${i}`}>
+                                    <Link to={`/attempt/?assignmentId=${this.assignmentId}&userId=${userId}&attemptNumber=${i}`}>
                                         {
                                             attemptCredit ? attemptCredit * 100 + "%" : "" // if attemptCredit is `undefined`, we still want a table cell so that the footer column still shows up right.
                                         }
@@ -375,8 +370,8 @@ class GradebookAssignmentView extends Component {
 
                         return arr;
                     })()}
-                    <td className="DTable_footer-column" key={"assignmentGrade_" + username}>
-                        {this.assignmentData[username].grade ? this.assignmentData[username].grade : "" /* we only need to display a grade if there is one */}
+                    <td className="DTable_footer-column" key={"assignmentGrade_" + userId}>
+                        {this.assignmentData[userId].grade ? this.assignmentData[userId].grade : "" /* we only need to display a grade if there is one */}
                     </td>
                 </tr>
             );
@@ -393,7 +388,10 @@ class GradebookAssignmentView extends Component {
             </div>);
         }
 
-        let newAssignmentId = query.getURLSearchParam(this.props.location.search, "assignmentId");
+        // let newAssignmentId = query.getURLSearchParam(this.props.location.search, "assignmentId");
+        const url = new URL(window.location.href);
+        let newAssignmentId = url.searchParams.get("assignmentId");
+
         if (this.state.assignmentId !== newAssignmentId) {
             this.assignmentData = null;
             this._attemptsTable = null;
@@ -426,6 +424,7 @@ class GradebookAttemptView extends Component {
     constructor(props) {
         super(props)
 
+        console.log('GradebookAttemptView')
         this.state = {
             attemptLoaded: false,
             assignmentId: query.getURLSearchParam(this.props.location.search, "assignmentId"),
@@ -819,7 +818,7 @@ export default class DoenetGradebook extends Component {
                         <div style={{ padding: "5px" }}>
                             <Switch>
                                 <Route sensitive exact path="/" render={(props) => (<GradebookOverview  courseId={this.courseId} assignment_data={this.assignment_data} />)} />
-                                <Route sensitive exact path="/assignment/" render={(props) => (<GradebookAssignmentView />)} />
+                                <Route sensitive exact path="/assignment/" render={(props) => (<GradebookAssignmentView  courseId={this.courseId} />)} />
                                 <Route sensitive exact path="/attempt/" render={(props) => (<GradebookAttemptView />)} />
                             </Switch>
                         </div>
