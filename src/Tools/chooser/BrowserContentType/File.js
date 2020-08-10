@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt } from '@fortawesome/free-solid-svg-icons';
 import DragItem from "../../TreeView/components/drag-item";
+import PropTypes from 'prop-types';
 
 const File = ({ branchId, classes, onClick, onDoubleClick, title, publishDate,
-  draftDate, isShared, isPublic, tableIndex, handleRemoveContent,
+  draftDate, isShared, isPublic, tableIndex, 
   onDragStart, onDragOver, onDragEnd }) => {
 
   const onDraggableDragOverCb = (listId) => {
@@ -43,5 +44,20 @@ const File = ({ branchId, classes, onClick, onDoubleClick, title, publishDate,
   );
 }
 
+File.propTypes = {
+  branchId: PropTypes.string,
+  classes: PropTypes.string,
+  onClick: PropTypes.func,
+  onDoubleClick: PropTypes.func,
+  title: PropTypes.string,
+  publishDate: PropTypes.string,
+  draftDate: PropTypes.string,
+  isShared: PropTypes.bool,
+  isPublic: PropTypes.bool,
+  tableIndex: PropTypes.number,
+  onDragStart: PropTypes.func,
+  onDragOver: PropTypes.func,
+  onDragEnd: PropTypes.func
+}
 
 export default File;

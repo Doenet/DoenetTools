@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLink} from '@fortawesome/free-solid-svg-icons';
 import DragItem from "../../TreeView/components/drag-item";
+import PropTypes from 'prop-types';
 
 const Url = ({ urlId, classes, onClick, onDoubleClick, title, publishDate,
-  isShared, isPublic, tableIndex, handleRemoveContent,
+  isShared, isPublic, tableIndex,
   onDragStart, onDragOver, onDragEnd }) => {
 
     const onDraggableDragOverCb = (listId) => {
@@ -39,7 +40,22 @@ const Url = ({ urlId, classes, onClick, onDoubleClick, title, publishDate,
       </tr>
       </DragItem>
     );
-   
+}
+
+Url.propTypes = {
+  urlId: PropTypes.string,
+  classes: PropTypes.string,
+  onClick: PropTypes.func,
+  onDoubleClick: PropTypes.func,
+  title: PropTypes.string,
+  publishDate: PropTypes.string,
+  draftDate: PropTypes.string,
+  isShared: PropTypes.bool,
+  isPublic: PropTypes.bool,
+  tableIndex: PropTypes.number,
+  onDragStart: PropTypes.func,
+  onDragOver: PropTypes.func,
+  onDragEnd: PropTypes.func
 }
 
 export default Url;
