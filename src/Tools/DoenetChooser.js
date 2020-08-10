@@ -41,8 +41,15 @@ import {
   Link,
   useParams
 } from "react-router-dom";
+import { instanceOf } from 'prop-types';
+import { withCookies, Cookies } from 'react-cookie';
 
 class DoenetChooser extends Component {
+
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+  };
+
   constructor(props) {
     super(props);
 
@@ -68,6 +75,7 @@ class DoenetChooser extends Component {
       contentActiveChild: false,
       userFolderInfo: {}
     };
+
 
     this.containerCache = {};
     this.cachedCurrentDraggedObject = null;
@@ -247,6 +255,12 @@ class DoenetChooser extends Component {
   }
 
   handleNewDocument = () => {
+
+    if (!Object.keys(this.props.cookies).includes("JWT_JS")) {
+      this.displayToast("Please sign in to create new content");
+      return;
+    }
+
     let newBranchId = nanoid();
     let num = 1;
     let title = "Untitled Document " + num;
@@ -305,6 +319,10 @@ class DoenetChooser extends Component {
   }
 
   handleNewCourseCreated = ({courseId, courseName, courseCode, term, description, department, section}, callback=(()=>{})) => {
+    if (!Object.keys(this.props.cookies).includes("JWT_JS")) {
+      this.displayToast("Please sign in to create new course");
+      return;
+    }
     // create new documents for overview and syllabus, get branchIds
     let overviewId = nanoid();
     let overviewDocumentName = courseName + " Overview";
@@ -357,6 +375,10 @@ class DoenetChooser extends Component {
   }
 
   handleNewUrlCreated = ({urlId, title, url, description, usesDoenetAPI}, callback=(()=>{})) => {
+    if (!Object.keys(this.props.cookies).includes("JWT_JS")) {
+      this.displayToast("Please sign in to create new content");
+      return;
+    }
     const currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
     Promise.all([
       new Promise(resolve => this.saveUrl({
@@ -1016,6 +1038,12 @@ class DoenetChooser extends Component {
   }
 
   handleNewFolder = () => {
+    
+    if (!Object.keys(this.props.cookies).includes("JWT_JS")) {
+      this.displayToast("Please sign in to create new folder");
+      return;
+    }
+
     // TODO: let user input folder title
     let num = 1;
     let title = "New Folder " + num;
@@ -1029,6 +1057,10 @@ class DoenetChooser extends Component {
   }
 
   handleNewRepo = () => {
+    if (!Object.keys(this.props.cookies).includes("JWT_JS")) {
+      this.displayToast("Please sign in to create new repository");
+      return;
+    }
     // TODO: let user input repo title
     let title = "New Repository"
     this.addNewRepo(title);
@@ -4116,4 +4148,4 @@ class InfoPanel extends Component {
 }
 
 
-export default DoenetChooser;
+export default withCookies(DoenetChooser);
