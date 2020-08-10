@@ -357,7 +357,6 @@ class GradebookAssignmentView extends Component {
             </div>);
         }
 
-        // let newAssignmentId = query.getURLSearchParam(this.props.location.search, "assignmentId");
         const url = new URL(window.location.href);
         let newAssignmentId = url.searchParams.get("assignmentId");
 
@@ -393,95 +392,55 @@ class GradebookAttemptView extends Component {
     constructor(props) {
         super(props)
 
-        console.log('GradebookAttemptView')
+        const url = new URL(window.location.href);
+   
         this.state = {
             attemptLoaded: false,
-            assignmentId: query.getURLSearchParam(this.props.location.search, "assignmentId"),
-            username: query.getURLSearchParam(this.props.location.search, "username"),
-            attemptNumber: query.getURLSearchParam(this.props.location.search, "attemptNumber"),
+            assignmentId: url.searchParams.get("assignmentId"),
+            userId: url.searchParams.get("userId"),
+            attemptNumber: url.searchParams.get("attemptNumber"),
         }
 
-        this.courseId = "aI8sK4vmEhC5sdeSP3vNW"; // FIXME: value used for testing, this needs to be read from the url query
 
         this.assignmentsLoaded = false;
         this.assignments = null;
         this.studentsLoaded = false;
         this.students = null;
-        this.dml = null;
+        this.doenetML = null;
+        this.stateVariables = null;
+        this.variant = null;
+        this.credit = null;
+        this.attemptCredit = null;
+        this.timestamp = null;
+
+        this.getDoenetML();
     }
 
-    componentDidMount() {
-        axios.get("/api/loadGradebookEnrollment.php?courseId=" + this.courseId).then(resp => {
-            let data = resp.data
-            // From API:
-            // array_push($response_arr,
-            //     array(
-            //         $row['username'],
-            //         $row['firstName'],
-            //         $row['lastName']
-            //     )
-            // );
 
-            this.students = {}
-            for (let row of data) {
-                let [username,
-                    firstName,
-                    lastName] = row;
-
-                this.students[username] = {
-                    firstName: firstName,
-                    lastName: lastName,
-                };
-            }
-
-            this.studentsLoaded = true;
-            if (this.assignmentsLoaded) {
-                this.getDML();
-            }
-        }).catch(err => console.log((err.response).toString()));
-
-        axios.get("/api/loadAssignments.php?courseId=" + this.courseId).then(resp => {
-            let data = resp.data
-            // From API:
-            // array_push($response_arr,
-            //     array(
-            //         $row['assignmentId'],
-            //         $row['assignmentName']
-            //     )
-            // );
-
-            this.assignments = {}
-            for (let row of data) {
-                let [assignmentId,
-                    assignmentName] = row;
-
-                this.assignments[assignmentId] = assignmentName; // note: this is in a different format than it is in overview
-            }
-            this.setState({assignmentList: this.assignments});
-
-            this.assignmentsLoaded = true;
-            if (this.studentsLoaded) {
-                this.getDML();
-            }
-        }).catch(err => console.log((err.response).toString()));
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (!this.state.attemptLoaded) {
-            this.getDML();
-        }
-    }
-
-    getDML() {
-        axios.get(`/api/loadAssignmentAttempt.php?assignmentId=${this.state.assignmentId}&username=${this.state.username}&attemptNumber=${this.state.attemptNumber}`).then(resp => {
-            // data = JSON.parse(data);
-            // From API:
-            // array_push($response_arr,
-            //     $row['latestDocumentState']
+    getDoenetML() {
+        let assignmentAttemptPayload = { params: { 
+            assignmentId:this.state.assignmentId,
+            userId:this.state.userId,
+            attemptNumber:this.state.attemptNumber,
+         } };
+        axios.get('/api/loadAssignmentAttempt.php',assignmentAttemptPayload)
+        .then(resp => {
+            // $response_arr = array(
+            //     "doenetML"=>$row['doenetML'],
+            //     "stateVariables"=>$row['stateVariables'],
+            //     "variant"=>$row['variant'],
+            //     "credit"=>$row['credit'],
+            //     "attemptCredit"=>$row['attemptCredit'],
+            //     "timestamp"=>$row['timestamp'],
             // );
             let data = resp.data;
 
-            this.dml = data[0]; // this endpoint can only return an array with one element or an error code
+            this.doenetML = data.doenetML;
+            this.stateVariables = data.stateVariables;
+            this.variant = data.variant;
+            this.credit = data.credit;
+            this.attemptCredit = data.attemptCredit;
+            this.timestamp = data.timestamp;
 
             this.setState({ attemptLoaded: true });
         }).catch(err => console.log((err.response).toString()));
@@ -494,22 +453,24 @@ class GradebookAttemptView extends Component {
                 <p>If this takes too long you can try refreshing the page.</p>
             </div>);
         }
+        const url = new URL(window.location.href);
+        url.searchParams.get("attemptNumber")
 
-        let newAssignmentId = query.getURLSearchParam(this.props.location.search, "assignmentId");
+        let newAssignmentId = url.searchParams.get("assignmentId");
         let assignmentChanged = (newAssignmentId !== this.state.assignmentId);
 
-        let newUsername = query.getURLSearchParam(this.props.location.search, "username");
-        let usernameChanged = (newUsername !== this.state.username);
+        let newUserId = url.searchParams.get("userId");
+        let userIdChanged = (newUserId !== this.state.userId);
 
-        let newAttemptNumber = query.getURLSearchParam(this.props.location.search, "attemptNumber");
+        let newAttemptNumber = url.searchParams.get("attemptNumber");
         let attemptNumberChanged = (newAttemptNumber !== this.state.attemptNumber);
 
-        if (assignmentChanged || usernameChanged || attemptNumberChanged) {
-            this.dml = null;
+        if (assignmentChanged || userIdChanged || attemptNumberChanged) {
+            this.doenetML = null;
             this.setState({
                 assignmentId: newAssignmentId,
-                username: newUsername,
-                attemptNumebr: newAttemptNumber,
+                userId: newUserId,
+                attemptNumber: newAttemptNumber,
                 attemptLoaded: false
             });
             return (<div>
@@ -518,7 +479,17 @@ class GradebookAttemptView extends Component {
             </div>);
         }
 
-        return (<DoenetViewer free={{ doenetState: this.dml }} />)
+        return(<p>
+            Doenet Viewer Here
+
+        </p>)
+
+        //Read Only Assignment Attempt View
+        // return (<DoenetViewer
+        //     key={"doenetviewer"}
+        //     doenetML={this.doenetML}
+        //     flags={{ }}
+        //      />)
     }
 }
 
