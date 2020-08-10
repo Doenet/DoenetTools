@@ -4,7 +4,7 @@ name: Lint and CI
 
 on:
   push:
-    branches: [ master]
+    branches: [ master, CI-Lint-Editor]
   pull_request:
     branches: [ master ]
 
@@ -23,7 +23,7 @@ jobs:
         node-version: '10.x'
     - run: npm install
     - name: Linting
-      run: npm run lint
+      run: prettier-eslint "$(pwd)/src/**/*.js" && prettier-eslint "$(pwd)/cypress/**/*.js"
 
   test:
     # Only runs the tests found in 'tagSpecific'

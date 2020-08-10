@@ -45,7 +45,7 @@
     "docker:webpack": "cd doenet_docker_webpack_only && docker-compose up",
     "webpack": "webpack --mode development --config webpack.local.config.js --watch",
     "build": "webpack --mode production --config webpack.deployment.config.js",
-    "lint": "prettier-eslint \"$(pwd)/src/**/*.js\" && prettier-eslint \"$(pwd)/cypress/**/*.js\"",
+    "lint": "prettier-eslint --write true \"$(pwd)/src/**/*.js\" && prettier-eslint --write true \"$(pwd)/cypress/**/*.js\"",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false",
     "generate-docs:components": "babel-node generate-components-json.js",
