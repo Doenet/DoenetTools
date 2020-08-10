@@ -29,8 +29,6 @@ function sortArraysByElementI(arrarr, i) {
     arrarr.sort()
 }
 
-
-
 class GradebookOverview extends Component {
     constructor(props) {
         super(props);
@@ -205,8 +203,6 @@ class GradebookOverview extends Component {
     }
 }
 
-
-
 class GradebookAssignmentView extends Component {
     constructor(props) {
         super(props)
@@ -217,32 +213,32 @@ class GradebookAssignmentView extends Component {
         this.assignmentId = url.searchParams.get("assignmentId");
         this.assignmentIdPayload = { params: { assignmentId:this.assignmentId } };
 
-        this.state = {
-            assignmentLoaded: false,
-            // assignmentId: query.getURLSearchParam(this.props.location.search, "assignmentId"),
-            assignmentId: this.assignmentId,
-        }
+        
 
         this.assignmentsLoaded = false;
-        this.assignments = null;
-        this.studentsLoaded = false;
         this.students = null;
         this.assignmentData = null;
         this._attemptsTable = null;
+
+        this.assignments = {}
+        for (let row of props.assignment_data) {
+            let [assignmentId,
+                assignmentName] = row;
+
+            this.assignments[assignmentId] = assignmentName; // note: this is in a different format than it is in overview
+        }
+        this.state = {
+            assignmentLoaded: false,
+            assignmentId: this.assignmentId,
+            assignmentList: this.assignments
+        }
+        this.loadGradebookEnrollment();
     }
 
     //TODO: FIX THIS AND USE assignment data from parent
-    componentDidMount() {
+    loadGradebookEnrollment() {
         axios.get("/api/loadGradebookEnrollment.php",this.courseIdPayload).then(resp => {
             let data = resp.data
-            // From API:
-            // array_push($response_arr,
-            //     array(
-            //         $row['username'],
-            //         $row['firstName'],
-            //         $row['lastName']
-            //     )
-            // );
 
             this.students = {}
             for (let row of data) {
@@ -256,37 +252,10 @@ class GradebookAssignmentView extends Component {
                 };
             }
 
-            this.studentsLoaded = true;
-            if (this.assignmentsLoaded) {
                 this.getAssignmentData();
-            }
         }).catch(err => console.log((err.response).toString()));
 
-        axios.get('/api/loadAssignments.php', this.courseIdPayload)
-        .then(resp => {
-            let data = resp.data
-            console.log('loadAssignements',data)
-            // From API:
-            // array_push($response_arr,
-            //     array(
-            //         $row['assignmentId'],
-            //         $row['assignmentName']
-            //     )
-            // );
-
-            this.assignments = {}
-            for (let row of data) {
-                let [assignmentId,
-                    assignmentName] = row;
-
-                this.assignments[assignmentId] = assignmentName; // note: this is in a different format than it is in overview
-            }
-            this.setState({assignmentList: this.assignments});
-            this.assignmentsLoaded = true;
-            if (this.studentsLoaded) {
-                this.getAssignmentData();
-            }
-        }).catch(err => console.log((err.response).toString()));
+       
     }
 
     componentDidUpdate() {
@@ -817,8 +786,8 @@ export default class DoenetGradebook extends Component {
                     <ToolLayoutPanel key="two" panelName="Grades Panel">
                         <div style={{ padding: "5px" }}>
                             <Switch>
-                                <Route sensitive exact path="/" render={(props) => (<GradebookOverview  courseId={this.courseId} assignment_data={this.assignment_data} />)} />
-                                <Route sensitive exact path="/assignment/" render={(props) => (<GradebookAssignmentView  courseId={this.courseId} />)} />
+                                <Route sensitive exact path="/" render={(props) => (<GradebookOverview courseId={this.courseId} assignment_data={this.assignment_data} />)} />
+                                <Route sensitive exact path="/assignment/" render={(props) => (<GradebookAssignmentView courseId={this.courseId} assignment_data={this.assignment_data} />)} />
                                 <Route sensitive exact path="/attempt/" render={(props) => (<GradebookAttemptView />)} />
                             </Switch>
                         </div>
