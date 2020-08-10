@@ -4,32 +4,26 @@ name: Lint and CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master]
   pull_request:
     branches: [ master ]
 
 jobs:
   lint:
-    # Only lints the file differences between the current branch and upstream/master
-    runs-on: ubuntu-latest
+    # Lints files in the cypress and src directories, autofixing errors when it can
 
-    # Can crash if the number of modified files is extremely large
-    # In most cases this is due to the user not merging in upstream/master before committing
+    # If prettier-eslint fails to fix a file, ctrl+f for "prettier-eslint [ERROR]"
+    # in order to find the file that failed
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
       with: 
         node-version: '10.x'
-    - run: npm install -g eslint && npm install eslint-plugin-react
-    - name: Fetch upstream/master
-      run: git remote add upstream https://github.com/Doenet/DoenetTools.git && git fetch upstream
-    - name: Show File Structure
-      run: ls -a
-    - name: Linting src
-      run: eslint $(git diff --name-only upstream/master | grep -E -- '^src' | xargs ls -d 2>/dev/null)
-    - name: Linting cypress
-      run: eslint $(git diff --name-only upstream/master | grep -E -- '^cypress' | xargs ls -d 2>/dev/null)
+    - run: npm install
+    - name: Linting
+      run: npm run lint
 
   test:
     # Only runs the tests found in 'tagSpecific'
@@ -44,7 +38,14 @@ jobs:
       run: npm install -g wait-on cypress && npm install
     - name: Build the Containers
       run: npm run docker:build
+    - name: Make dist_local
+      # We aren't given full access to the runner's file system
+      # This step is necessary to ensure webpack is allowed to write files to dist_local
+      run: mkdir -m 777 dist_local
+    - name: Touch defaultCode.doenet
+      # The tests require the mere existence of this gitignored file
+      run: touch src/defaultCode.doenet
     - name: Start the Server
-      run: npm run deploy & wait-on http://localhost:3000
+      run: npm start & npx wait-on http://localhost:80
     - name: Run tagSpecific Tests
-      run: cypress run -b 'chrome' --config video=false --spec "cypress/integration/tagSpecific/**"
+      run: cypress run -b 'chrome' --config video=false,screenshotOnRunFailure=false --spec "cypress/integration/tagSpecific/**"
