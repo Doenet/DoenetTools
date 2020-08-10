@@ -513,20 +513,12 @@ export default class DoenetGradebook extends Component {
     //this.assignments
     loadAssignments = (courseListArray,selectedCourseObj) => {
         this.courseId = selectedCourseObj.courseId;
-        console.log(selectedCourseObj);
         this.courseLongName = selectedCourseObj.longname;
         const courseIdPayload = { params: { courseId:this.courseId } }
         axios.get('/api/loadAssignments.php', courseIdPayload)
         .then(resp => {
             let data = resp.data;
             this.assignment_data = data;
-            // From API:
-            // array_push($response_arr,
-            //     array(
-            //         $row['assignmentId'],
-            //         $row['assignmentName']
-            //     )
-            // );
 
             this.assignments = {};
             for (let row of data) {
