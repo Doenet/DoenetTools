@@ -1,4 +1,4 @@
-import { useIndexedDB, initDB } from 'react-indexed-db';
+import { useIndexedDB, initDB} from 'react-indexed-db';
 import axios from 'axios';
 
 
@@ -36,7 +36,8 @@ export function updateCourses(courseArray,callback=()=>{}){
     const url = '/api/saveUserCourseModifications.php';;
 
     axios.post(url, courseArray)
-      .then(() => {
+      .then((resp) => {
+        console.log(resp.data); //var_dump shows here
         callback(true);
       })
       .catch(function (error) {
