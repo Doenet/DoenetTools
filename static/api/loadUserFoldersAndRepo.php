@@ -7,6 +7,9 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
+$jwtArray = include "jwtArray.php";
+$userId = $jwtArray['userId'];
+
 $sql="
 SELECT   -- get all repos user has access to
   f.folderId as folderId,
@@ -15,6 +18,7 @@ SELECT   -- get all repos user has access to
   f.creationDate as creationDate,
   f.isRepo as isRepo,
   f.public as isPublic,
+  f.isPinned as isPinned,
   f.folderId as rootId
 FROM repo_access AS ra
 LEFT JOIN folder f ON ra.repoId = f.folderId
@@ -27,35 +31,30 @@ SELECT  -- get all personal folders
   f.creationDate as creationDate,
   f.isRepo as isRepo,
   f.public as isPublic,
-  f.folderId as rootId
+  f.isPinned as isPinned,
+  fc.rootId as rootId
 FROM user_folders AS uf
 LEFT JOIN folder f ON uf.folderId = f.folderId
+LEFT JOIN folder_content fc ON uf.folderId = fc.childId
 WHERE uf.username='$remoteuser'
-UNION
-SELECT  -- get all nested folders
-  f.folderId as folderId,
-  f.title as title,
-  f.parentId as parentId,
-  f.creationDate as creationDate,
-  f.isRepo as isRepo,
-  f.public as isPublic,
-  fc.rootId as rootId
-FROM folder_content AS fc
-LEFT JOIN folder f ON fc.childId = f.folderId
-WHERE fc.removedFlag=0 AND rootId IN (
-  SELECT 
-    f.folderId as folderId
-    FROM repo_access AS ra
-    LEFT JOIN folder f ON ra.repoId = f.folderId
-    WHERE ra.username='$remoteuser' AND ra.removedFlag=0
-    UNION
-    SELECT 
-    f.folderId as folderId
-    FROM user_folders AS uf
-    LEFT JOIN folder f ON uf.folderId = f.folderId
-    WHERE uf.username='$remoteuser'
-) AND fc.childType='folder'
+ORDER BY isPinned DESC
 ";
+
+if (!$userId) {
+  $sql="
+  SELECT   -- get all pinned repos
+    f.folderId as folderId,
+    f.title as title,
+    f.parentId as parentId,
+    f.creationDate as creationDate,
+    f.isRepo as isRepo,
+    f.public as isPublic,
+    f.isPinned as isPinned,
+    f.folderId as rootId
+    FROM folder AS f
+  WHERE f.isPinned='1'
+  ";
+}
 
 $result = $conn->query($sql); 
 $response_arr = array();
@@ -72,16 +71,34 @@ if ($result->num_rows > 0){
           "title" => $row["title"],
           "publishDate" => $row["creationDate"],
           "parentId" => $row["parentId"],
-          "rootId" => $row["rootId"],
+          "rootId" => $row["rootId"] == NULL ? $row["folderId"] : $row["rootId"],
+          "type" => "folder",
           "childContent" => array(),
           "childUrls" => array(),
           "childFolders" => array(),
           "isRepo" => ($row["isRepo"] == 1),
-          "isPublic" => ($row["isPublic"] == 1)
+          "isPublic" => ($row["isPublic"] == 1),
+          "isPinned" => ($row["isPinned"] == 1), 
+          "numChild" => 0
     );
   }
 }
 
+// insert root object into folderInfo
+$folder_info_arr["root"] = array(
+  "title" => "root",
+  "publishDate" => "",
+  "parentId" => "root",
+  "rootId" => "root",
+  "type" => "folder",
+  "childContent" => array(),
+  "childUrls" => array(),
+  "childFolders" => array(),
+  "isRepo" => FALSE,
+  "isPublic" => TRUE,
+  "isPinned" => FALSE,
+  "numChild" => 0
+);
 
 // get children content and folders
 $sql="
@@ -106,23 +123,24 @@ if ($result->num_rows > 0){
     } else if ($row["childType"] == "url"){
       array_push($folder_info_arr[$row["folderId"]]["childUrls"], $row["childId"]);
     }
+    $folder_info_arr[$row["folderId"]]["numChild"]++;
   }
 }
 
 //Collect users who can access repos
-foreach ($repos_arr as $repoId){
+foreach ($repos_arr as $repoId) {
   $sql = "
   SELECT 
-u.firstName AS firstName,
-u.lastName AS lastName,
-u.username AS username,
-u.email AS email,
-ra.owner AS owner
-FROM repo_access AS ra
-LEFT JOIN user AS u
-ON u.username = ra.username
-WHERE ra.repoId = '$repoId'
-";
+    u.firstName AS firstName,
+    u.lastName AS lastName,
+    u.username AS username,
+    u.email AS email,
+    ra.owner AS owner
+    FROM repo_access AS ra
+    LEFT JOIN user AS u
+    ON u.username = ra.username
+    WHERE ra.repoId = '$repoId'
+  ";
 $result = $conn->query($sql); 
 $users = array();
 while($row = $result->fetch_assoc()){ 

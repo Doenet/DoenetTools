@@ -1,17 +1,42 @@
 import Input from './abstract/Input';
 
 export default class Booleaninput extends Input {
+  constructor(args) {
+    super(args);
+    this.updateBoolean = this.updateBoolean.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    );
+
+    this.actions = {
+      updateBoolean: this.updateBoolean
+    };
+
+    //Complex because the stateValues isn't defined until later
+    Object.defineProperty(this.actions, 'submitAnswer', {
+      get: function () {
+        if (this.stateValues.answerAncestor !== null) {
+          return () => this.requestAction({
+            componentName: this.stateValues.answerAncestor.componentName,
+            actionName: "submitAnswer"
+          })
+        } else {
+          return () => null
+        }
+      }.bind(this)
+    });
+
+  }
   static componentType = "booleaninput";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.prefill = {default: ""};
-    properties.label = {default: ""};
+    properties.prefill = { default: "false" };
+    properties.label = { default: "", forRenderer: true };
     return properties;
   }
 
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
@@ -26,251 +51,122 @@ export default class Booleaninput extends Input {
   }
 
 
-  updateState(args = {}) {
-    super.updateState(args);
+  static returnStateVariableDefinitions() {
 
-    if(args.init) {
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-      this.makePublicStateVariable({
-        variableName: "value",
-        componentType: "boolean"
-      });
-      this.makePublicStateVariable({
-        variableName: "submittedvalue",
-        componentType: "boolean"
-      });
-      this.makePublicStateVariable({
-        variableName: "creditAchieved",
-        componentType: "number"
-      });
-      this.makePublicStateVariable({
-        variableName: "numberTimesSubmitted",
-        componentType: "number"
-      });
-  
-      // if not essential, initialize submittedvalue to false
-      if(this._state.submittedvalue.essential !== true) {
-        this.state.submittedvalue = false;
-      }
-      if(this._state.numberTimesSubmitted.essential !== true) {
-        this.state.numberTimesSubmitted = 0
-      }
-      if(this._state.creditAchieved.essential !== true) {
-        this.state.creditAchieved = 0;
-      }
-      // make value, submittedvalue, creditAchieved, numberTimesSubmitted essential
-      // as they are used to store changed quantities
-      this._state.value.essential = true;
-      this._state.submittedvalue.essential = true;
-      this._state.creditAchieved.essential = true;
-      this._state.numberTimesSubmitted.essential = true;
-
-      this.updateBoolean = this.updateBoolean.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      );
-      this.setRendererValueAsSubmitted = this.setRendererValueAsSubmitted.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      );
-
-      if(this._state.rendererValueAsSubmitted === undefined) {
-        this._state.rendererValueAsSubmitted = {essential: true};
-      }
-    }
-
-    if(!this.childLogicSatisfied) {
-      this.unresolvedState.value = true;
-      this.unresolvedState.submittedvalue = true;
-      return;
-    }
-
-    let trackChanges = this.currentTracker.trackChanges;
-    let childrenChanged = trackChanges.childrenChanged(this.componentName);
-
-    if(childrenChanged) {
-      let atMostOneBoolean = this.childLogic.returnMatches("atMostOneBoolean");
-      if(atMostOneBoolean.length === 1) {
-        this.state.booleanChild = this.activeChildren[atMostOneBoolean[0]];
-      }else {
-        delete this.state.booleanChild;
-      }
-    }
-
-    delete this.unresolvedState.value;
-    delete this.unresolvedState.submittedvalue;
-
-    if(this.state.booleanChild !== undefined) {
-      if(this.state.booleanChild.unresolvedState.value) {
-        this.unresolvedState.value = true;
-        this.unresolvedState.submittedvalue = true;
-      }else {
-        // we could update this only if children changed or value of booleanchild changed
-        // but this step is quick
-        this.state.value = this.state.booleanChild.state.value;
-      }
-    }else {
-      if(this.state.value === undefined) {
-        if(this.unresolvedState.prefill) {
-          this.unresolvedState.value = true;
-          this.unresolvedState.submittedvalue = true;
-        }else {
-          if(["true","t"].includes(this.state.prefill.trim().toLowerCase())) {
-            this.state.value = true;
-          }else {
-            this.state.value = false;
+    stateVariableDefinitions.value = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      returnDependencies: () => ({
+        booleanChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneBoolean",
+          variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
+        },
+        prefill: {
+          dependencyType: "stateVariable",
+          variableName: "prefill"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.booleanChild.length === 0) {
+          return {
+            useEssentialOrDefaultValue: {
+              value: { 
+                variablesToCheck: "value", 
+                get defaultValue() {
+                  return ["true", "t"].includes(dependencyValues.prefill.trim().toLowerCase());
+                }
+              }
+            }
           }
         }
+        return { newValues: { value: dependencyValues.booleanChild[0].stateValues.value } };
+      },
+      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
+
+        if (dependencyValues.booleanChild.length === 1) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "booleanChild",
+              desiredValue: desiredStateVariableValues.value,
+              childIndex: 0,
+              variableIndex: 0,
+            }]
+          };
+        }
+        // no children, so value is essential and give it the desired value
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "value",
+            value: desiredStateVariableValues.value
+          }]
+        };
+      }
+    }
+
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { text: dependencyValues.value ? "true" : "false" } }
+      }
+    }
+
+    stateVariableDefinitions.componentType = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { componentType: "boolean" } })
+    }
+
+
+    stateVariableDefinitions.submittedValue = {
+      defaultValue: null,
+      public: true,
+      componentType: "boolean",
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          submittedValue: {
+            variablesToCheck: ["submittedValue"]
+          }
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "submittedValue",
+            value: desiredStateVariableValues.submittedValue
+          }]
+        };
       }
     }
 
 
-    if (this.ancestors === undefined){
-      this.unresolvedState.includeCheckWork = true;
-      this.unresolvedDependencies = {[this.state.includeCheckWork]: true};
-    }else{
-      delete this.unresolvedState.includeCheckWork;
-      delete this.unresolvedDependencies;
-
-      // if (this.ancestorsWhoGathered === undefined){
-        //booleaninput not inside an answer component
-        this.state.includeCheckWork = false;
-      // }else{
-      //   this.state.answerAncestor = undefined;
-      //   for (let componentName of this.ancestorsWhoGathered){
-      //     if (this.components[componentName].componentType === "answer"){
-      //       this.state.answerAncestor = this.components[componentName];
-      //       break;
-      //     }
-      //   }
-      //   if (this.state.answerAncestor === undefined){
-      //     //booleaninput not inside an answer component
-      //     this.state.includeCheckWork = false;
-      //   }else{
-      //     this.state.allAwardsJustSubmitted = this.state.answerAncestor.state.allAwardsJustSubmitted;
-      //     if (this.state.answerAncestor.state.delegateCheckWork){
-      //       this.state.includeCheckWork = true;
-      //     }else{
-      //       this.state.includeCheckWork = false;
-      //     }
-      //   }
-      // }
-    }
-    this.state.valueHasBeenValidated = false;
-
-    if (this.state.allAwardsJustSubmitted && this.state.numberTimesSubmitted > 0 && this.state.value === this.state.submittedvalue) {
-      this.state.valueHasBeenValidated = true;
-    }
-
-    if(this.state.rendererValueAsSubmitted === undefined) {
-      // first time through, use valueHasBeenValidated
-      this.state.rendererValueAsSubmitted = this.state.valueHasBeenValidated;
-    }
+    return stateVariableDefinitions;
 
   }
 
-  updateBoolean({boolean}){
-    console.log('updateBoolean')
-    console.log(boolean)
+  updateBoolean({ boolean }) {
     this.requestUpdate({
-      updateType: "updateValue",
       updateInstructions: [{
+        updateType: "updateValue",
         componentName: this.componentName,
-        variableUpdates: {
-          value: {changes: boolean},
-        }
+        stateVariable: "value",
+        value: boolean,
       }]
     })
   }
 
-  setRendererValueAsSubmitted(val) {
-    this.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
-        componentName: this.componentName,
-        variableUpdates: {
-          rendererValueAsSubmitted: {changes: val},
-        }
-      }]
-    })
-  }
-
-  allowDownstreamUpdates(status) {
-    // since can't change via parents, 
-    // only non-initial change can be due to reference
-    return(status.initialChange === true || this.state.modifyIndirectly === true);
-  }
-
-  get variablesUpdatableDownstream() {
-    // for now, only know how to change value and submittedvalue
-    return ["value", "submittedvalue", "creditAchieved", "numberTimesSubmitted",
-      "rendererValueAsSubmitted"
-    ];
-  }
-
-  calculateDownstreamChanges({stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate}) {
-
-    if("value" in stateVariablesToUpdate && this.state.booleanChild) {
-      let booleanName = this.state.booleanChild.componentName;
-      dependenciesToUpdate[booleanName] = {value: stateVariablesToUpdate.value};
-    }
-  
-    let shadowedResult = this.updateShadowSources({
-      newStateVariables: stateVariablesToUpdate,
-      dependenciesToUpdate: dependenciesToUpdate,
-    });
-    let shadowedStateVariables = shadowedResult.shadowedStateVariables;
-    let isReplacement = shadowedResult.isReplacement;
-
-    // if didn't update a downstream referenceShadow and didn't have booleanChild
-    // then this booleaninput is at the bottom
-    // and we need to give core instructions to update its state variables explicitly
-    // if the the update is successful
-    if(Object.keys(shadowedStateVariables).length === 0 &&
-        // !isReplacement && 
-        !this.state.booleanChild) {
-      Object.assign(stateVariableChangesToSave, stateVariablesToUpdate);
-    }
-
-    return true;
-    
-  }
-
-  initializeRenderer({}){
-    if(this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-    
-    const actions = {
-      updateBoolean: this.updateBoolean,
-      setRendererValueAsSubmitted: this.setRendererValueAsSubmitted,
-    }
-    if (this.state.answerAncestor !== undefined){
-      actions.submitAnswer = this.state.answerAncestor.submitAnswer;
-    }
-
-    this.renderer = new this.availableRenderers.booleaninput({
-      actions: actions,
-      boolean: this.state.value,
-      key: this.componentName,
-      label: this.state.label,
-      includeCheckWork: this.state.includeCheckWork,
-      creditAchieved: this.state.creditAchieved,
-      valueHasBeenValidated: this.state.valueHasBeenValidated,
-      numberTimesSubmitted: this.state.numberTimesSubmitted,
-      showCorrectness: this.flags.showCorrectness,
-    });
-  }
-
-  updateRenderer(){
-    this.renderer.updateBoolean({
-      boolean: this.state.value,
-      label: this.state.label,
-      creditAchieved: this.state.creditAchieved,
-      valueHasBeenValidated: this.state.valueHasBeenValidated,
-      numberTimesSubmitted: this.state.numberTimesSubmitted,
-    });
-    
-  }
- 
 }

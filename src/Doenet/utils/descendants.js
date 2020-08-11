@@ -11,11 +11,9 @@ export function gatherDescendants({ ancestor, descendantClasses,
   if (useReplacementsForComposites && ancestor instanceof compositeClass) {
     if (init) {
       // if not init, parent will also be checked.
-      // since replacements will be children of parent
-      // so don't need to gather them here
-      if (ancestor.replacements) {
-        childrenToCheck.push(...ancestor.replacements);
-      }
+      // Since replacements will be children of parent,
+      // don't need to gather them here
+      childrenToCheck.push(...replacementsForComposites({ composite: ancestor, compositeClass }))
     }
 
   } else {
@@ -78,4 +76,32 @@ export function gatherDescendants({ ancestor, descendantClasses,
   }
 
   return descendants;
+}
+
+
+function replacementsForComposites({ composite, compositeClass }) {
+
+  let replacements = [];
+
+  if (composite.replacements) {
+    let originalReplacements;
+    if (composite.replacementsToWithhold) {
+      let numReplacements = composite.replacements.length - composite.replacementsToWithhold;
+      originalReplacements = composite.replacements.slice(0, numReplacements);
+    } else {
+      originalReplacements = composite.replacements;
+    }
+
+    for (let replacement of originalReplacements) {
+      if (replacement instanceof compositeClass) {
+        replacements.push(...replacementsForComposites({ composite: replacement, compositeClass }))
+      } else {
+        replacements.push(replacement)
+      }
+    }
+
+  }
+
+  return replacements;
+
 }

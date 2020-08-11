@@ -2,6 +2,11 @@ import BaseComponent from './BaseComponent';
 
 export default class ComponentWithSelectableType extends BaseComponent {
   static componentType = "_componentwithselectabletype";
+  static rendererType = undefined;
+
+  // used when referencing this component without prop
+  static useChildrenForReference = false;
+  static get stateVariablesShadowedForReference() { return ["value", "selectedType"] };
 
   static modifySharedParameters({ sharedParameters }) {
     // since sequence turns defaultToPrescribedParameters on,
@@ -11,22 +16,22 @@ export default class ComponentWithSelectableType extends BaseComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.type = { default: undefined };
+    properties.type = { default: null };
     return properties;
   }
 
-  static returnChildLogic (args) {
+  static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
     let standardComponentClasses = args.standardComponentClasses;
 
     function addType({ activeChildrenMatched, dependencyValues }) {
 
       let selectedType = dependencyValues.type;
-      if (selectedType === undefined) {
+      if (selectedType === null) {
         if (activeChildrenMatched.length === 1) {
           let child = activeChildrenMatched[0];
           if (child.componentType === "string") {
-            let s = child.stateValues.value.trim();
+            let s = dependencyValues.stringChildren[0].stateValues.value.trim();
             if (/^[a-zA-Z]+$/.test(s)) {
               selectedType = "letters";
             } else if (Number.isFinite(Number(s))) {
@@ -80,20 +85,38 @@ export default class ComponentWithSelectableType extends BaseComponent {
       }
     }
 
-    let anythingAsSugar = childLogic.newLeaf({
+    let atLeastOneString = childLogic.newLeaf({
+      name: "atLeastOneString",
+      componentType: "string",
+      comparison: "atLeast",
+      number: 1
+    });
+
+    let atLeastOneNonString = childLogic.newLeaf({
+      name: "atLeastOneNonStrings",
+      componentType: "_base",
+      comparison: "atLeast",
+      excludeComponentTypes: ["_composite", "string"],
+      number: 1
+    });
+
+    let anythingAsSugar = childLogic.newOperator({
       name: 'anythingAsSugar',
-      componentType: '_base',
-      excludeComponentTypes: ["_composite"],
-      comparison: 'atLeast',
-      number: 1,
+      operator: "or",
+      propositions: [atLeastOneString, atLeastOneNonString],
       isSugar: true,
-      sugarDependencies: {
+      returnSugarDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
           variableName: "type",
+        },
+        stringChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atLeastOneString",
+          variableNames: ["value"],
         }
-      },
-      affectedBySugar: ["atMostOneChild"],
+      }),
+      logicToWaitOnSugar: ["atMostOneChild"],
       replacementFunction: addType,
     });
 
@@ -117,7 +140,7 @@ export default class ComponentWithSelectableType extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.value = {
       public: true,
@@ -126,17 +149,18 @@ export default class ComponentWithSelectableType extends BaseComponent {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneChild",
           variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
         },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.atMostOneChild.length === 0) {
           return {
-            newValues: { value: undefined }
+            newValues: { value: null }
           }
         }
         return {
           newValues: { value: dependencyValues.atMostOneChild[0].stateValues.value },
-          setComponentType: dependencyValues.atMostOneChild[0].componentType,
+          setComponentType: { value: dependencyValues.atMostOneChild[0].componentType },
         };
       }
     }
@@ -149,11 +173,12 @@ export default class ComponentWithSelectableType extends BaseComponent {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneChild",
           variableNames: ["value"],
+          requireChildLogicInitiallySatisfied: true,
         },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.atMostOneChild.length === 0) {
-          return { newValues: { selectedType: undefined } }
+          return { newValues: { selectedType: null } }
         }
         return {
           newValues: { selectedType: dependencyValues.atMostOneChild[0].componentType }
@@ -164,10 +189,5 @@ export default class ComponentWithSelectableType extends BaseComponent {
     return stateVariableDefinitions;
   }
 
-  useChildrenForReference = false;
-
-  get stateVariablesForReference() {
-    return ["value", "selectedType"];
-  }
 
 }

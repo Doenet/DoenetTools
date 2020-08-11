@@ -9,7 +9,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify first variant index")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>1</text>
       Selected number: 
@@ -33,7 +33,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>a</text>
       Selected number: 
@@ -52,7 +52,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>b</text>
       Selected number: 
@@ -71,7 +71,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>c</text>
       Selected number: 
@@ -90,7 +90,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>d</text>
       Selected number: 
@@ -110,7 +110,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("Number changes for index 1");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>e</text>
       Selected number: 
@@ -134,7 +134,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>f</text>
       Selected number: 
@@ -153,7 +153,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>g</text>
       Selected number: 
@@ -173,7 +173,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("Index 101 same as index 1");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>g</text>
       Selected number: 
@@ -192,7 +192,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>h</text>
       Selected number: 
@@ -212,7 +212,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("Index -299 same as index 1");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>i</text>
       Selected number: 
@@ -231,7 +231,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>j</text>
       Selected number: 
@@ -251,7 +251,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("Index 83057200 same as index 0");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>k</text>
       Selected number: 
@@ -270,7 +270,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>l</text>
       Selected number: 
@@ -290,7 +290,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("Variant 'a' same as index 0");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>m</text>
       Selected number: 
@@ -309,7 +309,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>n</text>
       Selected number: 
@@ -329,7 +329,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("Variant 'b' same as index 1");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>o</text>
       Selected number: 
@@ -348,7 +348,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>q</text>
       Selected number: 
@@ -368,7 +368,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("Index '300' same as index 0");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>r</text>
       Selected number: 
@@ -388,7 +388,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("Variant 'cQ' and index '94' are the same");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>s</text>
       Selected number: 
@@ -412,7 +412,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>t</text>
       Selected number: 
@@ -432,7 +432,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("Variant 'nonexistent one' doesn't change");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>u</text>
       Selected number: 
@@ -454,7 +454,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>v</text>
       Selected number: 
@@ -473,7 +473,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>w</text>
       Selected number: 
@@ -494,7 +494,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("Object as variant doesn't change");
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>x</text>
       Selected number: 
@@ -516,7 +516,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>y</text>
       Selected number: 
@@ -535,7 +535,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p>
       <text>z</text>
       Selected number: 
@@ -560,7 +560,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify first variant index")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>1</text>
     <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
     <p>Selected variable:
@@ -598,7 +598,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify third variant index")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>2</text>
     <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
     <p>Selected variable:
@@ -637,7 +637,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify variant bRoccoli")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>3</text>
     <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
     <p>Selected variable:
@@ -676,7 +676,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify variant dill")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>4</text>
     <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
     <p>Selected variable:
@@ -715,7 +715,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify large variant index")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>5</text>
     <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
     <p>Selected variable:
@@ -754,7 +754,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify negative variant index as string")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>6</text>
     <variantControl nvariants="5" variants="avocado, broccoli , cArrot ,dill,Eggplant"/>
     <p>Selected variable:
@@ -796,7 +796,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify first variant index")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>a</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -819,7 +819,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>b</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -841,7 +841,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify second variant index")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>c</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -865,7 +865,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>d</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -886,7 +886,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify third variant by name")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>e</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -911,7 +911,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>f</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -932,7 +932,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify fourth variant as string")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>g</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -964,7 +964,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify fourth variant as string")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>h</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -986,7 +986,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify fifth variant as negative")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>i</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -1018,7 +1018,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>j</text>
     <variantControl nvariants="5" seeds="50283, 25018, 52018, 2917392, 603962"/>
     <p>
@@ -1041,7 +1041,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>k</text>
     <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
     <p>
@@ -1062,7 +1062,7 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>l</text>
     <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
     <p>
@@ -1083,7 +1083,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify second variant index")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>m</text>
     <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
     <p>
@@ -1106,7 +1106,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify third variant by name")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>n</text>
     <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
     <p>
@@ -1128,7 +1128,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify fourth variant as string")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>o</text>
     <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
     <p>
@@ -1150,7 +1150,7 @@ describe('Specifying single variant document tests', function () {
     cy.log("specify fifth variant as negative")
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <text>p</text>
     <variantControl nvariants="5" seeds="2917392, 52018, 603962, 50283, 25018"/>
     <p>
@@ -1190,7 +1190,7 @@ describe('Specifying single variant document tests', function () {
       for (let ind2 = 0; ind2 < 3; ind2++) {
         cy.window().then((win) => {
           win.postMessage({
-            doenetCode: `
+            doenetML: `
         <text>${ind}</text>
         <text>${ind2}</text>
         <variantControl nvariants="100"/>
@@ -1280,7 +1280,7 @@ describe('Specifying single variant document tests', function () {
       for (let ind2 = 0; ind2 < 3; ind2++) {
         cy.window().then((win) => {
           win.postMessage({
-            doenetCode: `
+            doenetML: `
         <text>${ind}</text>
         <text>${ind2}</text>
         <variantControl nvariants="100"/>

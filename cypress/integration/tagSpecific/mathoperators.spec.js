@@ -9,21 +9,21 @@ describe('Math Operator Tag Tests', function () {
   it('sum', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <sum name="numbers"><math>3</math><number>17</number><number>5-4</number></sum>
       <sum name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></sum>
-      <ref>numbers</ref>
-      <ref>vars</ref>
+      <copy tname="numbers" />
+      <copy tname="vars" />
       `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let replacement1 = components['/_ref1'].replacements[0];
+      let replacement1 = components['/_copy1'].replacements[0];
       let replacement1Anchor = '#' + replacement1.componentName;
-      let replacement2 = components['/_ref2'].replacements[0];
+      let replacement2 = components['/_copy2'].replacements[0];
       let replacement2Anchor = '#' + replacement2.componentName;
 
       cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -50,13 +50,13 @@ describe('Math Operator Tag Tests', function () {
   it('product', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
 
       <product name="numbers"><math>3</math><number>17</number><number>5-4</number></product>
       <product name="vars"><math>x</math><math>x+y</math><math>x+y+z</math></product>
-      <ref>numbers</ref>
-      <ref>vars</ref>
+      <copy tname="numbers" />
+      <copy tname="vars" />
       `}, "*");
     });
 
@@ -64,9 +64,9 @@ describe('Math Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let replacement1 = components['/_ref1'].replacements[0];
+      let replacement1 = components['/_copy1'].replacements[0];
       let replacement1Anchor = '#' + replacement1.componentName;
-      let replacement2 = components['/_ref2'].replacements[0];
+      let replacement2 = components['/_copy2'].replacements[0];
       let replacement2Anchor = '#' + replacement2.componentName;
 
       cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -93,7 +93,7 @@ describe('Math Operator Tag Tests', function () {
   it('clamp number', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
 
       <clampNumber>55.3</clampNumber>
@@ -111,9 +111,9 @@ describe('Math Operator Tag Tests', function () {
       <clampNumber lowervalue="10" uppervalue="40">x+y</clampNumber>
       <clampNumber lowervalue="10" uppervalue="40"><math>x+y</math></clampNumber>
 
-      <ref>_clampnumber1</ref>
-      <ref>_clampnumber5</ref>
-      <ref>_clampnumber9</ref>
+      <copy tname="_clampnumber1" />
+      <copy tname="_clampnumber5" />
+      <copy tname="_clampnumber9" />
 
       `}, "*");
     });
@@ -122,11 +122,11 @@ describe('Math Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let replacement1 = components['/_ref1'].replacements[0];
+      let replacement1 = components['/_copy1'].replacements[0];
       let replacement1Anchor = '#' + replacement1.componentName;
-      let replacement2 = components['/_ref2'].replacements[0];
+      let replacement2 = components['/_copy2'].replacements[0];
       let replacement2Anchor = '#' + replacement2.componentName;
-      let replacement3 = components['/_ref3'].replacements[0];
+      let replacement3 = components['/_copy3'].replacements[0];
       let replacement3Anchor = '#' + replacement3.componentName;
 
       cy.get('#\\/_clampnumber1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -195,7 +195,7 @@ describe('Math Operator Tag Tests', function () {
   it('wrap number periodic', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
 
       <wrapnumberperiodic>55.3</wrapnumberperiodic>
@@ -213,9 +213,9 @@ describe('Math Operator Tag Tests', function () {
       <wrapnumberperiodic lowervalue="10" uppervalue="40">x+y</wrapnumberperiodic>
       <wrapnumberperiodic lowervalue="10" uppervalue="40"><math>x+y</math></wrapnumberperiodic>
 
-      <ref>_wrapnumberperiodic1</ref>
-      <ref>_wrapnumberperiodic5</ref>
-      <ref>_wrapnumberperiodic9</ref>
+      <copy tname="_wrapnumberperiodic1" />
+      <copy tname="_wrapnumberperiodic5" />
+      <copy tname="_wrapnumberperiodic9" />
 
       `}, "*");
     });
@@ -225,11 +225,11 @@ describe('Math Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let replacement1 = components['/_ref1'].replacements[0];
+      let replacement1 = components['/_copy1'].replacements[0];
       let replacement1Anchor = '#' + replacement1.componentName;
-      let replacement2 = components['/_ref2'].replacements[0];
+      let replacement2 = components['/_copy2'].replacements[0];
       let replacement2Anchor = '#' + replacement2.componentName;
-      let replacement3 = components['/_ref3'].replacements[0];
+      let replacement3 = components['/_copy3'].replacements[0];
       let replacement3Anchor = '#' + replacement3.componentName;
 
       cy.get('#\\/_wrapnumberperiodic1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -297,26 +297,26 @@ describe('Math Operator Tag Tests', function () {
   it('clamp and wrap number updatable', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <graph>
         <point layer="1">(6,7)</point>
         <point>
           <x>
           <clampnumber lowervalue="-2" uppervalue="5">
-            <ref prop="x">_point1</ref>
+            <copy prop="x" tname="_point1" />
           </clampnumber>
           </x>
           <y>
           <wrapnumberperiodic lowervalue="-2" uppervalue="5">
-            <ref prop="y">_point1</ref>
+            <copy prop="y" tname="_point1" />
           </wrapnumberperiodic>
           </y>
         </point>
-        <point>(<ref prop="y">_point2</ref>, <ref prop="x">_point2</ref>)</point>
+        <point>(<copy prop="y" tname="_point2" />, <copy prop="x" tname="_point2" />)</point>
       </graph>
 
-      <ref name="g2">_graph1</ref>
+      <copy name="g2" tname="_graph1" />
       `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
@@ -489,7 +489,7 @@ describe('Math Operator Tag Tests', function () {
   it('round expressions', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <round>55.3252326</round>
       <round>log(31)</round>
@@ -508,9 +508,9 @@ describe('Math Operator Tag Tests', function () {
 
       <round numberdecimals="-6"><math>exp(20) pi</math></round>
 
-      <ref>_round1</ref>
-      <ref>_round5</ref>
-      <ref>_round11</ref>
+      <copy tname="_round1" />
+      <copy tname="_round5" />
+      <copy tname="_round11" />
   
       `}, "*");
     });
@@ -519,11 +519,11 @@ describe('Math Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let replacement1 = components['/_ref1'].replacements[0];
+      let replacement1 = components['/_copy1'].replacements[0];
       let replacement1Anchor = '#' + replacement1.componentName;
-      let replacement2 = components['/_ref2'].replacements[0];
+      let replacement2 = components['/_copy2'].replacements[0];
       let replacement2Anchor = '#' + replacement2.componentName;
-      let replacement3 = components['/_ref3'].replacements[0];
+      let replacement3 = components['/_copy3'].replacements[0];
       let replacement3Anchor = '#' + replacement3.componentName;
 
       cy.get('#\\/_round1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -596,20 +596,20 @@ describe('Math Operator Tag Tests', function () {
   it('convert set to list', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
 
       <p><text>a</text></p>
       <p><math>{1,2,3,2,1}</math></p>
       <p><math>(1,2,3,2,1)</math></p>
       <p><math>1,2,3,2,1</math></p>
 
-      <p><convertSetToList><ref>_math1</ref></convertSetToList></p>
-      <p><convertSetToList><ref>_math2</ref></convertSetToList></p>
-      <p><convertSetToList><ref>_math3</ref></convertSetToList></p>
+      <p><convertSetToList><copy tname="_math1" /></convertSetToList></p>
+      <p><convertSetToList><copy tname="_math2" /></convertSetToList></p>
+      <p><convertSetToList><copy tname="_math3" /></convertSetToList></p>
 
-      <p><ref name="r1">_convertSetToList1</ref></p>
-      <p><ref name="r2">_convertSetToList2</ref></p>
-      <p><ref name="r3">_convertSetToList3</ref></p>
+      <p><copy name="r1" tname="_convertsettolist1" /></p>
+      <p><copy name="r2" tname="_convertsettolist2" /></p>
+      <p><copy name="r3" tname="_convertsettolist3" /></p>
 
 
       `}, "*");
@@ -679,26 +679,26 @@ describe('Math Operator Tag Tests', function () {
   it('convert set to list, initially unresolved', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
 
       <p><text>a</text></p>
 
       <p><math name="m">7</math>
       <selectFromSequence assignNames='p' hide='true'>
-        <exclude><ref>m</ref></exclude>
-        <exclude><ref>n</ref></exclude>
+        <exclude><copy tname="m" /></exclude>
+        <exclude><copy tname="n" /></exclude>
         -10, 10
       </selectFromSequence>
       </p>
 
-      <p><convertSetToList><math>{<ref>m</ref>,<ref>n</ref>,<ref>p</ref>, <ref>m</ref>}</math></convertSetToList></p>
-      <p><ref name="csl2">_convertSetToList1</ref></p>
+      <p><convertSetToList><math>{<copy tname="m" />,<copy tname="n" />,<copy tname="p" />, <copy tname="m" />}</math></convertSetToList></p>
+      <p><copy name="csl2" tname="_convertsettolist1" /></p>
 
-      <p><ref name="n2">n3</ref>
-      <ref name="n">num1</ref>
-      <math name="num1" simplify><ref>n2</ref>+<ref>num2</ref></math>
-      <math name="num2" simplify><ref>n3</ref>+<ref>num3</ref></math>
-      <ref name="n3">num3</ref>
+      <p><copy name="n2" tname="n3" />
+      <copy name="n" tname="num1" />
+      <math name="num1" simplify><copy tname="n2" />+<copy tname="num2" /></math>
+      <math name="num2" simplify><copy tname="n3" />+<copy tname="num3" /></math>
+      <copy name="n3" tname="num3" />
       <number name="num3">1</number></p>
       `}, "*");
     });
@@ -719,21 +719,21 @@ describe('Math Operator Tag Tests', function () {
   it('floor and ceil', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <floor>55.3252326</floor>
       <ceil>log(31)</ceil>
 
-      <floor><ref>_floor1</ref>/<ref>_ceil1</ref></floor>
-      <ceil><ref>_ceil1</ref>/<ref>_floor1</ref></ceil>
+      <floor><copy tname="_floor1" />/<copy tname="_ceil1" /></floor>
+      <ceil><copy tname="_ceil1" />/<copy tname="_floor1" /></ceil>
 
       <p>Allow for slight roundoff error:
       <floor>3.999999999999999</floor>
       <ceil>-6999.999999999999</ceil>
       </p>
 
-      <ref name="f2a">_floor2</ref>
-      <ref name="c2a">_ceil2</ref>
+      <copy name="f2a" tname="_floor2" />
+      <copy name="c2a" tname="_ceil2" />
 
       <floor>2.1x</floor>
       <ceil>-3.2y</ceil>
@@ -799,7 +799,7 @@ describe('Math Operator Tag Tests', function () {
   it('abs', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <text>a</text>
       <abs>-5.3</abs>
       <abs>-x</abs>

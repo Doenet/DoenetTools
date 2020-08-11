@@ -4,12 +4,30 @@ import me from 'math-expressions';
 export default class Mathinput extends Input {
   constructor(args) {
     super(args);
-    this.updateMathExpression = this.updateMathExpression.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    );
-    this.setRendererValueAsSubmitted = this.setRendererValueAsSubmitted.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    );
+
+    this.actions = {
+      updateImmediateValue: this.updateImmediateValue.bind(
+        new Proxy(this, this.readOnlyProxyHandler)
+      ),
+      updateValue: this.updateValue.bind(
+        new Proxy(this, this.readOnlyProxyHandler)
+      )
+    };
+
+    //Complex because the stateValues isn't defined until later
+    Object.defineProperty(this.actions, 'submitAnswer', {
+      get: function () {
+        if (this.stateValues.answerAncestor !== null) {
+          return () => this.requestAction({
+            componentName: this.stateValues.answerAncestor.componentName,
+            actionName: "submitAnswer"
+          })
+        } else {
+          return () => null
+        }
+      }.bind(this)
+    });
+
   }
   static componentType = "mathinput";
 
@@ -17,8 +35,7 @@ export default class Mathinput extends Input {
     let properties = super.createPropertiesObject(args);
     properties.prefill = { default: "" };
     properties.format = { default: "text" };
-    properties.size = { default: 10 };
-    properties.collaborateGroups = { default: undefined };
+    properties.size = { default: 10, forRenderer: true };
     return properties;
   }
 
@@ -39,16 +56,18 @@ export default class Mathinput extends Input {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.value = {
       public: true,
       componentType: "math",
+      forRenderer: true,
       returnDependencies: () => ({
         mathChild: {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneMath",
           variableNames: ["value", "valueForDisplay"],
+          requireChildLogicInitiallySatisfied: true,
         },
         prefill: {
           dependencyType: "stateVariable",
@@ -103,286 +122,150 @@ export default class Mathinput extends Input {
       }
     }
 
-    stateVariableDefinitions.componentTypes = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { componentTypes: ["math"] } })
-    }
-
-
-
-    stateVariableDefinitions.numberTimesSubmitted = {
-      public: true,
-      componentType: "number",
-      defaultValue: 0,
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          numberTimesSubmitted: {
-            variablesToCheck: ["numberTimesSubmitted"]
-          }
-        }
-      }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "numberTimesSubmitted",
-            value: desiredStateVariableValues.numberTimesSubmitted
-          }]
-        };
-      }
-    }
-
-
-    stateVariableDefinitions.creditAchieved = {
-      defaultValue: 0,
-      public: true,
-      componentType: "number",
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          creditAchieved: {
-            variablesToCheck: ["creditAchieved"]
-          }
-        }
-      }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "creditAchieved",
-            value: desiredStateVariableValues.creditAchieved
-          }]
-        };
-      }
-    }
-
-
-
-    stateVariableDefinitions.submittedValue = {
-      defaultValue: me.fromAst('\uFF3F'),
+    stateVariableDefinitions.immediateValue = {
       public: true,
       componentType: "math",
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          submittedValue: {
-            variablesToCheck: ["submittedValue"]
-          }
-        }
-      }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "submittedValue",
-            value: desiredStateVariableValues.submittedValue
-          }]
-        };
-      }
-    }
-
-    stateVariableDefinitions.answerAncestor = {
+      forRenderer: true,
       returnDependencies: () => ({
-        answerAncestor: {
-          dependencyType: "ancestorStateVariables",
-          componentType: "answer",
-          variableNames: ["delegateCheckWork", "justSubmitted"]
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        let answerAncestor = null;
-
-        if (dependencyValues.answerAncestor.length === 1) {
-          answerAncestor = dependencyValues.answerAncestor[0];
-        }
-        return {
-          newValues: { answerAncestor }
-        }
-      }
-    }
-
-    stateVariableDefinitions.includeCheckWork = {
-      returnDependencies: () => ({
-        answerAncestor: {
-          dependencyType: "stateVariable",
-          variableName: "answerAncestor"
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        let includeCheckWork = false;
-        if (dependencyValues.answerAncestor) {
-          includeCheckWork = dependencyValues.answerAncestor.stateValues.delegateCheckWork;
-        }
-        return {
-          newValues: { includeCheckWork }
-        }
-      }
-
-    }
-
-
-    stateVariableDefinitions.valueHasBeenValidated = {
-      returnDependencies: () => ({
-        answerAncestor: {
-          dependencyType: "stateVariable",
-          variableName: "answerAncestor"
-        },
-        numberTimesSubmitted: {
-          dependencyType: "stateVariable",
-          variableName: "numberTimesSubmitted"
-        },
         value: {
           dependencyType: "stateVariable",
           variableName: "value"
-        },
-        submittedValue: {
-          dependencyType: "stateVariable",
-          variableName: "submittedValue"
-        },
-
-      }),
-      definition: function ({ dependencyValues }) {
-
-        let valueHasBeenValidated = false;
-
-        if (dependencyValues.answerAncestor &&
-          dependencyValues.answerAncestor.stateValues.justSubmitted //&&
-          // dependencyValues.numberTimesSubmitted > 0 &&
-          // dependencyValues.value.equalsViaSyntax(dependencyValues.submittedValue)
-        ) {
-          valueHasBeenValidated = true;
-        }
-        return {
-          newValues: { valueHasBeenValidated }
-        }
-      }
-    }
-
-
-    stateVariableDefinitions.rendererValueAsSubmitted = {
-      returnDependencies: () => ({
-        valueHasBeenValidated: {
-          dependencyType: "stateVariable",
-          variableName: "valueHasBeenValidated"
         }
       }),
-      definition: function ({ dependencyValues }) {
-        return {
-          useEssentialOrDefaultValue: {
-            rendererValueAsSubmitted: {
-              variablesToCheck: "rendererValueAsSubmitted",
-              defaultValue: dependencyValues.valueHasBeenValidated
+      definition: function ({ dependencyValues, changes }) {
+        // console.log(`definition of immediateValue`)
+        // console.log(dependencyValues)
+        // console.log(changes);
+
+        if (changes.value) {
+          // only update to value when it changes
+          // (otherwise, let its essential value change)
+          return {
+            newValues: { immediateValue: dependencyValues.value },
+            makeEssential: ["immediateValue"]
+          };
+
+
+        } else {
+          return {
+            useEssentialOrDefaultValue: {
+              immediateValue: {
+                variablesToCheck: "immediateValue",
+                defaultValue: dependencyValues.value
+              }
             }
           }
         }
+
       },
-      inverseDefinition: function ({ desiredStateVariableValues }) {
+      inverseDefinition: function ({ desiredStateVariableValues, initialChange, shadowedVariable }) {
+
+        // value is essential; give it the desired value
+        let instructions = [{
+          setStateVariable: "immediateValue",
+          value: desiredStateVariableValues.immediateValue
+        }]
+
+
+        // if from outside sources, also set value
+        if (!(initialChange || shadowedVariable)) {
+          instructions.push({
+            setDependency: "value",
+            desiredValue: desiredStateVariableValues.immediateValue
+          })
+        }
+
         return {
           success: true,
-          instructions: [{
-            setStateVariable: "rendererValueAsSubmitted",
-            value: desiredStateVariableValues.rendererValueAsSubmitted
-          }]
+          instructions
         };
       }
     }
 
-
-    stateVariableDefinitions.disabled = {
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
       returnDependencies: () => ({
-        collaborateGroups: {
+        value: {
           dependencyType: "stateVariable",
-          variableName: "collaborateGroups"
-        },
-        collaboration: {
-          dependencyType: "flag",
-          flagName: "collaboration"
+          variableName: "value"
         }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          disabled: !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
-        }
-      })
+      definition: function ({ dependencyValues }) {
+        return { newValues: { text: dependencyValues.value.toString() } }
+      }
     }
+
+    stateVariableDefinitions.componentType = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { componentType: "math" } })
+    }
+
+
+    // stateVariableDefinitions.submittedValue = {
+    //   defaultValue: me.fromAst('\uFF3F'),
+    //   public: true,
+    //   componentType: "math",
+    //   returnDependencies: () => ({}),
+    //   definition: () => ({
+    //     useEssentialOrDefaultValue: {
+    //       submittedValue: {
+    //         variablesToCheck: ["submittedValue"]
+    //       }
+    //     }
+    //   }),
+    //   inverseDefinition: function ({ desiredStateVariableValues }) {
+    //     return {
+    //       success: true,
+    //       instructions: [{
+    //         setStateVariable: "submittedValue",
+    //         value: desiredStateVariableValues.submittedValue
+    //       }]
+    //     };
+    //   }
+    // }
+
 
     return stateVariableDefinitions;
 
   }
 
 
-  updateMathExpression({ mathExpression }) {
+  updateImmediateValue({ mathExpression }) {
     if (!this.stateValues.disabled) {
       this.requestUpdate({
-        updateType: "updateValue",
         updateInstructions: [{
+          updateType: "updateValue",
           componentName: this.componentName,
-          stateVariable: "value",
+          stateVariable: "immediateValue",
           value: mathExpression,
         }]
       })
     }
   }
 
-  setRendererValueAsSubmitted(val) {
-    console.log('set renderer value as submitted')
-    console.log(val)
-    this.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
-        componentName: this.componentName,
-        stateVariable: "rendererValueAsSubmitted",
-        value: val,
-      }]
-    })
-  }
+  updateValue() {
+    if (!this.stateValues.disabled) {
+      this.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "value",
+          value: this.stateValues.immediateValue,
+        }]
+      })
 
-
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    this.actions = {
-      updateMathExpression: this.updateMathExpression,
-      setRendererValueAsSubmitted: this.setRendererValueAsSubmitted,
-    }
-    if (this.stateValues.answerAncestor !== undefined) {
-      this.actions.submitAnswer = () => this.requestAction({
-        componentName: this.stateValues.answerAncestor.componentName,
-        actionName: "submitAnswer"
+      // in case value ended up being a different value than requested
+      // we set immediate value to whatever was the result
+      this.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "immediateValue",
+          value: this.stateValues.value,
+        }]
       })
     }
-
-    this.renderer = new this.availableRenderers.mathinput({
-      actions: this.actions,
-      mathExpression: new Proxy(this.stateValues.value, this.readOnlyProxyHandler),
-      key: this.componentName,
-      includeCheckWork: this.stateValues.includeCheckWork,
-      creditAchieved: this.stateValues.creditAchieved,
-      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      numberTimesSubmitted: this.stateValues.numberTimesSubmitted,
-      size: this.stateValues.size,
-      showCorrectness: this.flags.showCorrectness,
-      disabled: this.stateValues.disabled,
-    });
-  }
-
-
-  updateRenderer() {
-
-
-    this.renderer.updateMathinputRenderer({
-      mathExpression: new Proxy(this.stateValues.value, this.readOnlyProxyHandler),
-      creditAchieved: this.stateValues.creditAchieved,
-      valueHasBeenValidated: this.stateValues.valueHasBeenValidated,
-      numberTimesSubmitted: this.stateValues.numberTimesSubmitted,
-      disabled: this.stateValues.disabled,
-    });
-
   }
 
 }

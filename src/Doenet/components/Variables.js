@@ -1,8 +1,15 @@
 import MathList from './MathList';
+import me from 'math-expressions';
 
 export default class Variables extends MathList {
   static componentType = "variables";
 
+  // TODO: how to add this feature?
+  static additionalStateVariablesForProperties = ["validVariables"];
+
+  // when another component has a property that is a mathlist,
+  // use the maths state variable to populate that property
+  static stateVariableForPropertyValue = "variables";
 
 
   static returnStateVariableDefinitions() {
@@ -14,17 +21,36 @@ export default class Variables extends MathList {
       componentType: "variable",
       isArray: true,
       entryPrefixes: ["var"],
-      returnDependencies: () => ({
-        maths: {
+      returnArraySizeDependencies: () => ({
+        nComponents: {
           dependencyType: "stateVariable",
-          variableName: "maths"
+          variableName: "nComponents",
         },
       }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            variables: dependencyValues.maths
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nComponents];
+      },
+
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {}
+
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            math: {
+              dependencyType: "stateVariable",
+              variableName: "math" + (Number(arrayKey) + 1),
+            },
           }
+        }
+        return { dependenciesByKey }
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+        let variables = {};
+        for (let arrayKey of arrayKeys) {
+          variables[arrayKey] = dependencyValuesByKey[arrayKey].math;
+        }
+        return {
+          newValues: { variables }
         }
       }
     }
@@ -71,6 +97,7 @@ export default class Variables extends MathList {
       }
 
     }
+
     return stateVariableDefinitions;
   }
 

@@ -1,0 +1,51 @@
+name: Lint and CI
+
+# Runs on ubuntu because macOS is not licensed to have docker-compose
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  lint:
+    # Lints files in the cypress and src directories, autofixing errors when it can
+
+    # If prettier-eslint fails to fix a file, ctrl+f for "prettier-eslint [ERROR]"
+    # in order to find the file that failed
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with: 
+        node-version: '10.x'
+    - run: npm install
+    - name: Linting
+      run: npx prettier-eslint "$(pwd)/src/**/*.js" && npx prettier-eslint "$(pwd)/cypress/**/*.js"
+
+  test:
+    # Only runs the tests found in 'tagSpecific'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - name: Install Dependencies
+      run: npm install -g wait-on cypress && npm install
+    - name: Build the Containers
+      run: npm run docker:build
+    - name: Make dist_local
+      # We aren't given full access to the runner's file system
+      # This step is necessary to ensure webpack is allowed to write files to dist_local
+      run: mkdir -m 777 dist_local
+    - name: Touch defaultCode.doenet
+      # The tests require the mere existence of this gitignored file
+      run: touch src/defaultCode.doenet
+    - name: Start the Server
+      run: npm start & npx wait-on http://localhost:80
+    - name: Run tagSpecific Tests
+      run: cypress run -b 'chrome' --config video=false,screenshotOnRunFailure=false --spec "cypress/integration/tagSpecific/**"

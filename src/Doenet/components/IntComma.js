@@ -1,26 +1,51 @@
 import Text from './Text';
+import { renameStateVariable } from '../utils/stateVariables';
 
 
 // convert number to number separated by commas, a la django humanize's intcomma 
 
 export default class IntComma extends Text {
   static componentType = "intcomma";
+  static rendererType = "text";
 
-  updateState(args = {}) {
+  static returnStateVariableDefinitions() {
 
-    super.updateState(args);
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    if (!this.childLogicSatisfied || this.unresolvedState.value) {
-      return;
+    stateVariableDefinitions.originalValue = stateVariableDefinitions.value;
+
+    // rename value to originalValue
+    renameStateVariable({
+      stateVariableDefinitions,
+      oldName: "value",
+      newName: "originalValue"
+    });
+
+    stateVariableDefinitions.value = {
+      public: true,
+      componentType: this.componentType,
+      forRenderer: true,
+      returnDependencies: () => ({
+        originalValue: {
+          dependencyType: "stateVariable",
+          variableName: "originalValue"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        let value = dependencyValues.originalValue;
+
+        let startAtLeastFourNumRegex = /^(-?\d+)(\d{3})/
+        let matchObj = value.match(startAtLeastFourNumRegex);
+        while (matchObj !== null) {
+          value = value.replace(startAtLeastFourNumRegex, `$1,$2`)
+          matchObj = value.match(startAtLeastFourNumRegex);
+        }
+
+        return { newValues: { value } }
+      }
     }
 
-    let startAtLeastFourNumRegex = /^(-?\d+)(\d{3})/
-    let matchObj = this.state.value.match(startAtLeastFourNumRegex);
-    while (matchObj !== null) {
-      this.state.value = this.state.value.replace(startAtLeastFourNumRegex, `$1,$2`)
-      matchObj = this.state.value.match(startAtLeastFourNumRegex);
-    }
-
+    return stateVariableDefinitions;
   }
 
 }

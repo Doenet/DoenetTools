@@ -41,7 +41,7 @@ export default class Map extends CompositeComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.nSubstitutions = {
       additionalStateVariablesDefined: ["substitutionsNames"],
@@ -136,7 +136,7 @@ export default class Map extends CompositeComponent {
       }
     }
 
-    stateVariableDefinitions.readyToExpandWhenResolved = {
+    stateVariableDefinitions.readyToExpand = {
 
       returnDependencies: () => ({
         validBehavior: {
@@ -144,10 +144,15 @@ export default class Map extends CompositeComponent {
           variableName: "validBehavior",
         }
       }),
+      // when this state variable is marked stale
+      // it indicates we should update replacement
+      // For this to work, must get value in replacement functions
+      // so that the variable is marked fresh
+      markStale: () => ({ updateReplacements: true }),
       definition: function () {
         // even with invalid behavior, still ready to expand
         // (it will just expand with zero replacements)
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { newValues: { readyToExpand: true } };
       },
     };
 
@@ -156,6 +161,10 @@ export default class Map extends CompositeComponent {
   }
 
   static createSerializedReplacements({ component, workspace }) {
+
+    // evaluate readyToExpand so that it is marked fresh,
+    // as it being marked stale triggers replacement update
+    component.stateValues.readyToExpand;
 
     if (!component.stateValues.validBehavior) {
       workspace.lastReplacementParameters = {
@@ -291,6 +300,12 @@ export default class Map extends CompositeComponent {
 
   static calculateReplacementChanges({ component, components, workspace }) {
 
+    // console.log(`calculate replacement changes for ${component.componentName}`)
+
+    // evaluate readyToExpand so that it is marked fresh,
+    // as it being marked stale triggers replacement update
+    component.stateValues.readyToExpand;
+
     let replacementChanges = [];
 
     // if invalid behavior, have no replacements
@@ -423,6 +438,9 @@ export default class Map extends CompositeComponent {
     let prevMinNIterates = lrp.minNIterates;
     let newReplacementsToWithhold = 0;
     let currentReplacementsToWithhold = component.replacementsToWithhold;
+    if(!currentReplacementsToWithhold) {
+      currentReplacementsToWithhold = 0;
+    }
     let withheldSubstitutionChildNames = lrp.withheldSubstitutionChildNames;
 
     // Check if any previous substitution child names 
@@ -478,7 +496,7 @@ export default class Map extends CompositeComponent {
     if (currentMinNIterates < prevMinNIterates) {
 
       if (!foundDeletedSubstitutionsChild) {
-        newReplacementsToWithhold = component.replacementsToWithhold +
+        newReplacementsToWithhold = currentReplacementsToWithhold +
           (prevMinNIterates - currentMinNIterates) * component.stateValues.numberTemplateComponents;
 
         let replacementInstruction = {
@@ -568,4 +586,35 @@ export default class Map extends CompositeComponent {
     // could treat as a normal component
     return { success: false };
   }
+
+  get allPotentialRendererTypes() {
+
+    let allPotentialRendererTypes = this.potentialRendererTypesFromSerializedComponents(
+      this.stateValues.template
+    );
+
+    for (let childName in this.allChildren) {
+      let child = this.allChildren[childName].component;
+      for (let rendererType of child.allPotentialRendererTypes) {
+        if (!allPotentialRendererTypes.includes(rendererType)) {
+          allPotentialRendererTypes.push(rendererType);
+        }
+      }
+    }
+
+    if(this.replacements) {
+      for(let replacement of this.replacements) {
+        for(let rendererType of replacement.allPotentialRendererTypes) {
+          if(!allPotentialRendererTypes.includes(rendererType)) {
+            allPotentialRendererTypes.push(rendererType);
+          }
+        }
+
+      }
+    }
+
+    return allPotentialRendererTypes;
+
+  }
+
 }

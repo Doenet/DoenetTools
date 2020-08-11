@@ -8,7 +8,7 @@ beforeEach(() => {
 
 
 it('youtube video',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <p>An introduction to Doenet.</p>
   <video width="560 px" height="315px" youtube="tJ4ypc5L6uU" />
 
@@ -21,7 +21,7 @@ it('youtube video',() => {
 })
 
 it('video from external source',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <video width="560 px" height="315px" source="https://flowergarden.noaa.gov/image_library/video/seaharew.mp4" />
   `},"*");
   });
@@ -31,8 +31,8 @@ it('video from external source',() => {
   cy.get('#\\/_video1 source').invoke('attr', 'type').then((type) => expect(type).eq("video/mp4"));
 })
 
-it('video from multiple sources',() => {
-  cy.window().then((win) => { win.postMessage({doenetCode: `
+it.skip('video from multiple sources',() => {
+  cy.window().then((win) => { win.postMessage({doenetML: `
   <video width="560 px" height="315px">
    <source>https://flowergarden.noaa.gov/image_library/video/seaharew.mp4</source>
    <source>https://flowergarden.noaa.gov/image_library/video/seaharew.ogg</source>

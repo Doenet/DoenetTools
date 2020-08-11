@@ -1,0 +1,669 @@
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[33,40],{
+
+/***/ 732:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return useDoenetRenderer; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+ //Renderers will need to set doenetPropsForChildren locally and pass it along. 
+//Renderer can change it later and values will be here
+
+function useDoenetRenderer(props) {
+  var initializeChildrenOnConstruction = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+  var doenetPropsForChildren = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0),
+      _useState2 = _slicedToArray(_useState, 2),
+      updateCount = _useState2[0],
+      setUpdateCount = _useState2[1];
+
+  var stateValues = props.componentInstructions.stateValues;
+  var actions = props.componentInstructions.actions;
+  var children = [];
+  var name = props.componentInstructions.componentName; // console.log("updateCount",updateCount)
+
+  props.rendererUpdateMethods[name] = {
+    update: function update() {
+      setUpdateCount(updateCount + 1);
+    },
+    addChildren: addChildren,
+    removeChildren: removeChildren,
+    swapChildren: swapChildren
+  };
+
+  function addChildren(instruction) {
+    var childInstructions = childrenToCreate[instruction.indexForParent];
+    var child = createChildFromInstructions(childInstructions);
+    children.splice(instruction.indexForParent, 0, child);
+    children = _toConsumableArray(children); // needed for React to recognize it's different
+
+    setUpdateCount(updateCount + 1);
+  }
+
+  function removeChildren(instruction) {
+    children.splice(instruction.firstIndexInParent, instruction.numberChildrenDeleted);
+    children = _toConsumableArray(children); // needed for React to recognize it's different
+
+    var _iterator = _createForOfIteratorHelper(instruction.deletedComponentNames),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var componentName = _step.value;
+        delete props.rendererUpdateMethods[componentName];
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    setUpdateCount(updateCount + 1);
+  }
+
+  function swapChildren(instruction) {
+    var _ref = [children[instruction.index2], children[instruction.index1]];
+    children[instruction.index1] = _ref[0];
+    children[instruction.index2] = _ref[1];
+    children = _toConsumableArray(children); // needed for React to recognize it's different
+
+    setUpdateCount(updateCount + 1);
+  }
+
+  if (initializeChildrenOnConstruction) {
+    initializeChildren();
+  }
+
+  function initializeChildren() {
+    var _iterator2 = _createForOfIteratorHelper(props.componentInstructions.children),
+        _step2;
+
+    try {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var childInstructions = _step2.value;
+        var child = createChildFromInstructions(childInstructions);
+        children.push(child);
+      }
+    } catch (err) {
+      _iterator2.e(err);
+    } finally {
+      _iterator2.f();
+    }
+
+    return children;
+  }
+
+  function createChildFromInstructions(childInstructions) {
+    var propsForChild = {
+      key: childInstructions.componentName,
+      componentInstructions: childInstructions,
+      rendererClasses: props.rendererClasses,
+      rendererUpdateMethods: props.rendererUpdateMethods,
+      flags: props.flags
+    };
+    Object.assign(propsForChild, doenetPropsForChildren);
+    var child = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(props.rendererClasses[childInstructions.rendererType], propsForChild);
+    return child;
+  }
+
+  function updatesetDoenetPropsForChildren(props) {
+    setDoenetPropsForChildren(props);
+  }
+
+  return [name, stateValues, actions, children, initializeChildren, updatesetDoenetPropsForChildren];
+}
+
+/***/ }),
+
+/***/ 765:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Slider; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var styled_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(20);
+/* harmony import */ var react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1347);
+/* harmony import */ var react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _useDoenetRenderer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(732);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _templateObject7() {
+  var data = _taggedTemplateLiteral(["\n    position: absolute;\n    left: ", ";\n    color: #888888;\n    font-size: 15px;\n    user-select: none;\n"]);
+
+  _templateObject7 = function _templateObject7() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject6() {
+  var data = _taggedTemplateLiteral(["\n    position: absolute;\n    border-left: solid #888888;\n    height: 10px;\n    width: 1px;\n    left: ", ";\n"]);
+
+  _templateObject6 = function _templateObject6() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject5() {
+  var data = _taggedTemplateLiteral(["\n  width: 10px;\n  height: 15px;\n  border-radius: 3px;\n  position: relative;\n  top: -5px;\n  opacity: 0.8;\n  background: ", ";\n  cursor: pointer;\n"]);
+
+  _templateObject5 = function _templateObject5() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject4() {
+  var data = _taggedTemplateLiteral(["\n    display: inline;\n    user-select: none;\n"]);
+
+  _templateObject4 = function _templateObject4() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject3() {
+  var data = _taggedTemplateLiteral(["\n  position: relative;\n  border-radius: 3px;\n  background: #dddddd;\n  height: 5px;\n  width: ", ";\n"]);
+
+  _templateObject3 = function _templateObject3() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject2() {
+  var data = _taggedTemplateLiteral(["\n    padding-top: 10px;\n    height: 50px;\n"]);
+
+  _templateObject2 = function _templateObject2() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject() {
+  var data = _taggedTemplateLiteral(["\n    width: fit-content;\n    height: ", ";\n"]);
+
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+
+
+
+
+var SliderContainer = styled_components__WEBPACK_IMPORTED_MODULE_1__[/* default */ "b"].div(_templateObject(), function (props) {
+  return props.labeled && props.noTicked ? "60px" : props.labeled ? "80px" : props.noTicked ? "40px" : "60px";
+});
+var SubContainer2 = styled_components__WEBPACK_IMPORTED_MODULE_1__[/* default */ "b"].div(_templateObject2());
+var StyledSlider = styled_components__WEBPACK_IMPORTED_MODULE_1__[/* default */ "b"].div(_templateObject3(), function (props) {
+  return props.width;
+});
+var StyledValueLabel = styled_components__WEBPACK_IMPORTED_MODULE_1__[/* default */ "b"].p(_templateObject4());
+var StyledThumb = styled_components__WEBPACK_IMPORTED_MODULE_1__[/* default */ "b"].div(_templateObject5(), function (props) {
+  return props.disabled ? "#404040" : "#002266";
+});
+var Tick = styled_components__WEBPACK_IMPORTED_MODULE_1__[/* default */ "b"].div(_templateObject6(), function (props) {
+  return props.x;
+});
+var Label = styled_components__WEBPACK_IMPORTED_MODULE_1__[/* default */ "b"].p(_templateObject7(), function (props) {
+  return props.x;
+});
+
+function generateNumericLabels(points, div_width, point_start_val) {
+  return [points.map(function (point) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Tick, {
+      key: point,
+      x: "".concat((point - point_start_val) * div_width, "px")
+    });
+  }), points.map(function (point) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Label, {
+      key: point,
+      x: "".concat((point - point_start_val) * div_width - 3, "px")
+    }, point);
+  })];
+}
+
+function generateTextLabels(points, div_width) {
+  return [points.map(function (point, index) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Tick, {
+      key: point,
+      x: "".concat(index * div_width, "px")
+    });
+  }), points.map(function (point, index) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Label, {
+      key: point,
+      x: "".concat(index * div_width - 3, "px")
+    }, point);
+  })];
+}
+
+function xPositionToValue(ref, div_width, start_val) {
+  return start_val + ref / div_width;
+}
+
+function nearestValue(refval, points) {
+  var min = Infinity,
+      val = null,
+      index = 0;
+  var i = 0;
+
+  var _iterator = _createForOfIteratorHelper(points),
+      _step;
+
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var point = _step.value;
+      var diff = Math.abs(point - refval);
+
+      if (diff < min) {
+        min = diff;
+        val = point;
+        index = i;
+      }
+
+      i = i + 1;
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+
+  return [val, index];
+}
+
+function Slider(props) {
+  var _useDoenetRender = Object(_useDoenetRenderer__WEBPACK_IMPORTED_MODULE_3__["default"])(props),
+      _useDoenetRender2 = _slicedToArray(_useDoenetRender, 3),
+      name = _useDoenetRender2[0],
+      SVs = _useDoenetRender2[1],
+      actions = _useDoenetRender2[2]; //console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
+
+
+  var containerRef = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(null);
+
+  var sorted_points = _toConsumableArray(SVs.items).sort(function (p1, p2) {
+    return p1 - p2;
+  });
+
+  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0),
+      _useState2 = _slicedToArray(_useState, 2),
+      thumbXPos = _useState2[0],
+      setThumbXPos = _useState2[1];
+
+  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(SVs.sliderType === "text" ? SVs.items[0] : sorted_points[0]),
+      _useState4 = _slicedToArray(_useState3, 2),
+      thumbValue = _useState4[0],
+      setThumbValue = _useState4[1];
+
+  var _useState5 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0),
+      _useState6 = _slicedToArray(_useState5, 2),
+      isMouseDown = _useState6[0],
+      setIsMouseDown = _useState6[1];
+
+  var _useState7 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0),
+      _useState8 = _slicedToArray(_useState7, 2),
+      offsetLeft = _useState8[0],
+      setOffsetLeft = _useState8[1];
+
+  var _useState9 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(SVs.sliderType === "text" ? 0 : sorted_points[0]),
+      _useState10 = _slicedToArray(_useState9, 2),
+      startValue = _useState10[0],
+      setStartValue = _useState10[1];
+
+  var _useState11 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(SVs.sliderType === "text" ? 0 : sorted_points[sorted_points.length - 1]),
+      _useState12 = _slicedToArray(_useState11, 2),
+      endValue = _useState12[0],
+      setEndValue = _useState12[1];
+
+  var _useState13 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(SVs.sliderType === "text" ? 500 / (SVs.items.length - 1) : 500 / (endValue - startValue)),
+      _useState14 = _slicedToArray(_useState13, 2),
+      divisionWidth = _useState14[0],
+      setDivisionWidth = _useState14[1];
+
+  var _useState15 = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(0),
+      _useState16 = _slicedToArray(_useState15, 2),
+      index = _useState16[0],
+      setIndex = _useState16[1];
+
+  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
+    if (containerRef.current) {
+      var rect = containerRef.current.getBoundingClientRect();
+      setOffsetLeft(rect.left);
+    }
+  }, []);
+  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
+    //console.log("ran");
+    if (!isMouseDown) {
+      setThumbValue(SVs.value);
+      setIndex(SVs.index);
+
+      if (!(SVs.sliderType === "text")) {
+        setThumbXPos((SVs.value - startValue) * divisionWidth);
+      } else {
+        setThumbXPos(SVs.index * divisionWidth);
+      }
+    }
+  }, [SVs.index]);
+
+  if (SVs.hide) {
+    return null;
+  }
+
+  if (SVs.disabled) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(SliderContainer, {
+      labeled: SVs.showControls || SVs.label,
+      noTicked: SVs.showTicks === false,
+      ref: containerRef
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      style: {
+        height: SVs.showControls || SVs.label ? "20px" : "0px"
+      }
+    }, SVs.label ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledValueLabel, null, SVs.label) : null, SVs.showControls ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+      style: {
+        "float": "right",
+        userSelect: "none"
+      },
+      onClick: handleNext,
+      disabled: true
+    }, "Next"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+      style: {
+        "float": "right",
+        userSelect: "none"
+      },
+      onClick: handlePrevious,
+      disabled: true
+    }, "Prev")) : null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(SubContainer2, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledSlider, {
+      width: "".concat(500, "px")
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledThumb, {
+      disabled: true,
+      style: {
+        left: "".concat(-3, "px")
+      }
+    }), SVs.showTicks === false ? null : SVs.sliderType === "text" ? generateTextLabels(SVs.items, divisionWidth) : generateNumericLabels(SVs.items, divisionWidth, startValue))));
+  }
+
+  function handleDragEnter(e) {
+    setIsMouseDown(true);
+    setThumbXPos(e.nativeEvent.clientX - offsetLeft);
+
+    if (!(SVs.sliderType === "text")) {
+      var refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
+      var valindexpair = nearestValue(refval, SVs.items);
+      setThumbValue(valindexpair[0]);
+      setIndex(valindexpair[1]);
+      actions.changeValue({
+        value: SVs.items[valindexpair[1]]
+      });
+    } else {
+      var i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
+      setIndex(i);
+      setThumbValue(SVs.items[i]);
+      actions.changeValue({
+        value: SVs.items[i]
+      });
+    }
+  }
+
+  function handleDragExit(e) {
+    if (!isMouseDown) {
+      return;
+    }
+
+    setIsMouseDown(false);
+
+    if (!(SVs.sliderType === "text")) {
+      var refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
+      var valindexpair = nearestValue(refval, SVs.items);
+      setThumbValue(valindexpair[0]);
+      setThumbXPos((valindexpair[0] - startValue) * divisionWidth);
+      setIndex(valindexpair[1]);
+      actions.changeValue({
+        value: SVs.items[valindexpair[1]]
+      });
+    } else {
+      var i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
+      setIndex(i);
+      setThumbValue(SVs.items[i]);
+      setThumbXPos(i * divisionWidth);
+      actions.changeValue({
+        value: SVs.items[i]
+      });
+    }
+  }
+
+  function handleDragThrough(e) {
+    if (isMouseDown) {
+      setThumbXPos(e.nativeEvent.clientX - offsetLeft);
+
+      if (!(SVs.sliderType === "text")) {
+        var refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
+        var valindexpair = nearestValue(refval, SVs.items);
+        setThumbValue(valindexpair[0]);
+        setIndex(valindexpair[1]);
+        actions.changeValue({
+          value: SVs.items[valindexpair[1]]
+        });
+      } else {
+        var i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
+        setIndex(i);
+        setThumbValue(SVs.items[i]);
+        actions.changeValue({
+          value: SVs.items[i]
+        });
+      }
+    }
+  }
+
+  function handleNext(e) {
+    if (index === SVs.items.length - 1) {
+      return;
+    }
+
+    if (!(SVs.sliderType === "text")) {
+      setThumbXPos((SVs.items[index + 1] - startValue) * divisionWidth);
+    } else {
+      setThumbXPos((index + 1) * divisionWidth);
+    }
+
+    actions.changeValue({
+      value: SVs.items[index + 1]
+    });
+    setThumbValue(SVs.items[index + 1]);
+    setIndex(index + 1);
+  }
+
+  function handlePrevious(e) {
+    if (index === 0) {
+      return;
+    }
+
+    if (!(SVs.sliderType === "text")) {
+      setThumbXPos((SVs.items[index - 1] - startValue) * divisionWidth);
+    } else {
+      setThumbXPos((index - 1) * divisionWidth);
+    }
+
+    actions.changeValue({
+      value: SVs.items[index - 1]
+    });
+    setThumbValue(SVs.items[index - 1]);
+    setIndex(index - 1);
+  }
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(SliderContainer, {
+    ref: containerRef,
+    labeled: SVs.showControls || SVs.label,
+    noTicked: SVs.showTicks === false
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    style: {
+      height: SVs.showControls || SVs.label ? "20px" : "0px"
+    }
+  }, SVs.label ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledValueLabel, null, SVs.label) : null, SVs.showControls ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    style: {
+      "float": "right",
+      userSelect: "none"
+    },
+    onClick: handleNext
+  }, "Next"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    style: {
+      "float": "right",
+      userSelect: "none"
+    },
+    onClick: handlePrevious
+  }, "Prev")) : null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(SubContainer2, {
+    onMouseDown: handleDragEnter,
+    onMouseUp: handleDragExit,
+    onMouseMove: handleDragThrough,
+    onMouseLeave: handleDragExit
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledSlider, {
+    width: "".concat(500, "px")
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_spring_renderprops__WEBPACK_IMPORTED_MODULE_2__["Spring"], {
+    to: {
+      x: thumbXPos
+    }
+  }, function (props) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(StyledThumb, {
+      style: {
+        left: "".concat(props.x - 3, "px")
+      }
+    });
+  }), SVs.showTicks === false ? null : SVs.sliderType === "text" ? generateTextLabels(SVs.items, divisionWidth) : generateNumericLabels(SVs.items, divisionWidth, startValue))));
+} // let [name, SVs, actions] = useDoenetRender(props);
+//   // let [handlePos,setHandlePos] = useState(100);
+//   if (SVs.hide) {
+//     return null;
+//   }
+//   return (
+//     <StyledSlider width = {`${500}px`} >
+//       <Spring
+//           to={{ x: 0 }}>
+//           {props => <StyledThumb style={{left: `${props.x - 3}px`}}/>}
+//       </Spring>
+//       {/* {(props.showTicks === false) ? null : (props.isText ? generateTextLabels(props.points, divisionWidth) : generateNumericLabels(props.points, divisionWidth, startValue))} */}
+//     </StyledSlider>
+//   )
+
+{
+  /* <>
+       <div> {name}'s Slider Value {SVs.items[SVs.index]} </div>
+       <button onClick={() => actions.changeValue({ value: SVs.items[SVs.index - 1] })}>Prev</button>
+       <button onClick={() => actions.changeValue({ value: SVs.items[SVs.index + 1] })}>Next</button>
+     </> */
+}
+{
+  /* 
+  <slider>
+  <number>1</number>
+  <number>2</number>
+  <number>3</number>
+  </slider>
+  
+  <slider>
+  <text>cat</text>
+  <text>dog</text>
+  <text>mouse</text>
+  </slider>
+  <slider>
+  <sequence>
+  <from>-10</from>
+  <to>10</to>
+  <step>2</step>
+  </sequence>
+  </slider> 
+  */
+} // export default class Slider extends DoenetRenderer {
+//   constructor(props) {
+//     super(props);
+//     this.handleInput = this.handleInput.bind(this);
+//     this.state = {
+//     }
+//     console.log("this.doenetSvData");
+//     console.log(this.doenetSvData);
+//     // console.log(this.doenetSvData.items)
+//     // console.log(this.doenetSvData.index)
+//     // console.log(this.doenetSvData.sliderType);
+//     // console.log(this.actions);
+//     // console.log(props.rendererUpdateMethods[this.componentName])
+//   }
+//   handleInput(e, inputState) {
+//   }
+//   render() {
+//     console.log('RENDER')
+//     if (this.doenetSvData.hide) {
+//       return null;
+//     }
+//     console.log("Current Value")
+//     console.log(this.doenetSvData.items[this.doenetSvData.index]);
+//     return (
+//       <>
+//         <div> {this.componentName}'s Slider Value {this.doenetSvData.items[this.doenetSvData.index]} </div>
+//         <button onClick={() => this.actions.changeValue({ value: this.doenetSvData.items[this.doenetSvData.index - 1] })}>Prev</button>
+//         <button onClick={() => this.actions.changeValue({ value: this.doenetSvData.items[this.doenetSvData.index + 1] })}>Next</button>
+//       </>
+//     );
+//   }
+// }
+
+/***/ })
+
+}]);

@@ -1,0 +1,185 @@
+import React from 'react';
+import DoenetRenderer from './DoenetRenderer';
+
+export default class Graph extends DoenetRenderer {
+
+  constructor(props) {
+    super(props);
+
+    this.setAllBoardsToStayLowQuality = this.setAllBoardsToStayLowQuality.bind(this);
+    this.setAllBoardsToHighQualityAndUpdate = this.setAllBoardsToHighQualityAndUpdate.bind(this);
+  }
+
+  static initializeChildrenOnConstruction = false;
+
+  componentDidMount() {
+    this.drawBoard();
+    this.forceUpdate();
+    // this.drawGraphicalComponents();
+  }
+
+  drawBoard() {
+
+    window.JXG.Options.axis.ticks.majorHeight = 20;
+
+    let boundingbox = [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin];
+
+    this.board = window.JXG.JSXGraph.initBoard(this.componentName,
+      {
+        boundingbox,
+        axis: false,
+        showCopyright: false,
+      });
+
+    if (this.doenetSvData.displayAxes) {
+      let xaxisOptions = {};
+      if (this.doenetSvData.xlabel) {
+        xaxisOptions.name = this.doenetSvData.xlabel;
+        xaxisOptions.withLabel = true;
+        xaxisOptions.label = {
+          position: 'rt',
+          offset: [-10, 15]
+        };
+      }
+      xaxisOptions.ticks = {
+        ticksDistance: 2,
+        label: {
+          offset: [-5, -15]
+        },
+        minorTicks: 5,
+        precision: 4,
+      }
+      let xaxis = this.board.create('axis', [[0, 0], [1, 0]], xaxisOptions)
+
+      let yaxisOptions = {};
+      if (this.doenetSvData.ylabel) {
+        yaxisOptions.name = this.doenetSvData.ylabel;
+        yaxisOptions.withLabel = true;
+        yaxisOptions.label = {
+          position: 'rt',
+          offset: [-25, -5],
+        }
+      }
+      yaxisOptions.ticks = {
+        ticksDistance: 2,
+        label: {
+          offset: [12, -2]
+        },
+        minorTicks: 4,
+        precision: 4,
+      }
+      let yaxis = this.board.create('axis', [[0, 0], [0, 1]], yaxisOptions)
+    }
+
+    this.board.itemsRenderedLowQuality = {};
+
+    // this.board.on('up', this.setAllBoardsToHighQualityAndUpdate);
+    // this.board.on('down', this.setAllBoardsToStayLowQuality);
+
+    this.doenetPropsForChildren = { board: this.board };
+    this.initializeChildren();
+
+    this.previousBoundingbox = boundingbox;
+  }
+
+  update() {
+
+    let boundingbox = [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin];
+
+    if (boundingbox.some((v, i) => v !== this.previousBoundingbox[i])) {
+      this.board.setBoundingBox(boundingbox);
+      // seem to need to call this again to get the ticks correct
+      this.board.fullUpdate();
+
+      if (this.board.updateQuality === this.board.BOARD_QUALITY_LOW) {
+        this.board.itemsRenderedLowQuality[this.componentName] = this.board;
+      }
+
+      this.previousBoundingbox = boundingbox;
+
+    }
+
+    super.update();
+
+  }
+
+  setToLowQualityRender({ stayLowQuality } = {}) {
+    if (this.board !== undefined) {
+      this.board.updateQuality = this.board.BOARD_QUALITY_LOW;
+      if (stayLowQuality !== undefined) {
+        this.stayLowQuality = stayLowQuality;
+      }
+    }
+  }
+
+  setToHighQualityRenderAndUpdate({ overrideStayLowQuality = false } = {}) {
+    if (this.stayLowQuality && !overrideStayLowQuality) {
+      return;
+    }
+
+    if (this.board === undefined) {
+      return;
+    }
+    this.stayLowQuality = false;
+    this.board.updateQuality = this.board.BOARD_QUALITY_HIGH;
+    let updatedItem = false;
+    for (let key in this.board.itemsRenderedLowQuality) {
+      let item = this.board.itemsRenderedLowQuality[key];
+      item.needsUpdate = true;
+      item.update();
+      updatedItem = true;
+    }
+    if (updatedItem) {
+      this.board.updateRenderer();
+    }
+    this.board.itemsRenderedLowQuality = {};
+  }
+
+  setAllBoardsToStayLowQuality() {
+    for (let renderer of this.graphRenderComponents) {
+      renderer.setToLowQualityRender({ stayLowQuality: true });
+    }
+  }
+
+  setAllBoardsToHighQualityAndUpdate() {
+    for (let renderer of this.graphRenderComponents) {
+      renderer.setToHighQualityRenderAndUpdate({ overrideStayLowQuality: true });
+    }
+  }
+
+
+  componentWillUnmount() {
+    // let allRenderers = this.renderers;
+    // for(let componentName in allRenderers) {
+    //   let componentRenderer = allRenderers[componentName];
+    //   if(componentRenderer.deleteGraphicalObject !== undefined) {
+    //     componentRenderer.deleteGraphicalObject();
+    //   }
+    // }
+  }
+
+
+  componentDidUpdate() {
+    // this.updateGraphicalComponents();
+    //window.MathJax.Hub.Queue(["Typeset",window.MathJax.Hub, "#"+this.component.componentName]);
+  }
+
+  render() {
+
+    const divStyle = {
+      width: this.doenetSvData.numericalWidth,
+      height: this.doenetSvData.numericalHeight,
+    }
+
+    if(this.doenetSvData.hide) {
+      divStyle.display = "none";
+    }
+
+    return <React.Fragment>
+      <a name={this.componentName} />
+      <div id={this.componentName} className="jxgbox" style={divStyle} />
+      {this.children}
+    </React.Fragment>;
+  }
+
+}

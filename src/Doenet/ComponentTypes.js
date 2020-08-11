@@ -13,23 +13,27 @@ import * as SingleCharacterComponents from './components/SingleCharacterComponen
 import * as Sectioning from './components/Sectioning';
 import * as Lists from './components/Lists';
 import * as DynamicalSystems from './components/dynamicalSystems';
+import * as FeedbackDefinition from './components/FeedbackDefinition';
+import * as StyleDefinition from './components/StyleDefinition';
+import * as StyleDefinitionComponents from './components/StyleDefinitionComponents';
 import Document from './components/Document';
 import StringComponent from './components/StringComponent';
 import Text from './components/Text';
 import Letters from './components/Letters';
 import TextList from './components/TextList';
+import RandomizedTextList from './components/RandomizedTextList';
 import MathList from './components/MathList';
 import NumberList from './components/NumberList';
 import P from './components/P';
 import BooleanComponent from './components/Boolean';
 import BooleanList from './components/BooleanList';
 import MathComponent from './components/Math';
-import Ref from './components/Ref';
-import RefTarget from './components/RefTarget';
+import Copy from './components/Copy';
+import Tname from './components/Tname';
 import Prop from './components/Prop';
 import Extract from './components/Extract';
 import Collect from './components/Collect';
-import Xref from './components/Xref';
+import Ref from './components/Ref';
 import Point from './components/Point';
 import Coords from './components/Coords';
 import Line from './components/Line';
@@ -40,7 +44,11 @@ import Triangle from './components/Triangle';
 import Circle from './components/Circle';
 import Parabola from './components/Parabola';
 import Curve from './components/Curve';
+import FunctionCurve from './components/FunctionCurve';
+import ParametrizedCurve from './components/ParametrizedCurve';
+import BezierCurve from './components/BezierCurve';
 import BezierControls from './components/BezierControls';
+import ControlVectors from './components/ControlVectors';
 import PointListComponent from './components/abstract/PointListComponent';
 import VectorListComponent from './components/abstract/VectorListComponent';
 import AngleListComponent from './components/abstract/AngleListComponent';
@@ -49,7 +57,7 @@ import Angle from './components/Angle';
 import Equation from './components/Equation';
 import Answer from './components/Answer';
 import Award from './components/Award';
-import IfComponent from './components/If';
+import When from './components/When';
 import Mathinput from './components/Mathinput';
 import Textinput from './components/Textinput';
 import Booleaninput from './components/Booleaninput';
@@ -61,15 +69,16 @@ import Graph from './components/Graph';
 import Variables from './components/Variables';
 import Variable from './components/Variable';
 import Function from './components/Function';
+import InterpolatedFunction from './components/InterpolatedFunction';
 import Template from './components/Template';
 import Sequence from './components/Sequence';
 import Map from './components/Map';
 import Substitutions from './components/Substitutions';
-import Subsref from './components/Subsref';
-import Subsindex from './components/Subsindex';
-import FromMapAncestor from './components/FromMapAncestor';
+import CopyFromSubs from './components/CopyFromSubs';
+import IndexFromSubs from './components/IndexFromSubs';
 import Slider from './components/Slider';
 import Markers from './components/Markers';
+import Constraints from './components/Constraints';
 import ConstrainToGrid from './components/ConstrainToGrid';
 import AttractToGrid from './components/AttractToGrid';
 import ConstrainTo from './components/ConstrainTo';
@@ -110,7 +119,7 @@ import Offsets from './components/Offsets';
 import DiscreteInfiniteSet from './components/DiscreteInfiniteSet';
 import Image from './components/Image';
 import Video from './components/Video';
-import Url from './components/Url';
+import Embed from './components/Embed';
 import Meta from './components/Meta';
 import Hint from './components/Hint';
 import Solution from './components/Solution';
@@ -164,30 +173,34 @@ const componentTypeArray = [
   ...Object.values(Sectioning),
   ...Object.values(Lists),
   ...Object.values(DynamicalSystems),
+  ...Object.values(FeedbackDefinition),
+  ...Object.values(StyleDefinition),
+  ...Object.values(StyleDefinitionComponents),
   Document,
   StringComponent,
   Text, Letters, TextList,
+  RandomizedTextList,
   P,
   BooleanComponent, BooleanList,
   MathComponent, MathList,
   NumberList,
-  Ref, RefTarget,
+  Copy, Tname,
   Prop,
   Extract,
   Collect,
-  Xref,
+  Ref,
   Point, Coords,
   Line, LineSegment, Polyline,
   Polygon,
   Triangle,
   Circle,
   Parabola,
-  Curve,
-  BezierControls,
+  Curve, FunctionCurve, ParametrizedCurve, BezierCurve,
+  BezierControls, ControlVectors,
   Vector,
   Angle,
   Equation,
-  Answer, Award, IfComponent,
+  Answer, Award, When,
   Mathinput, Textinput, Booleaninput, Choiceinput,
   Choice,
   NumberComponent, Integer,
@@ -195,6 +208,7 @@ const componentTypeArray = [
   Variables,
   Variable,
   Function,
+  InterpolatedFunction,
   Template,
   Sequence,
   Slider,
@@ -206,7 +220,8 @@ const componentTypeArray = [
   Table,
   Markers,
   Panel,
-  Map, Substitutions, Subsref, Subsindex, FromMapAncestor,
+  Map, Substitutions, CopyFromSubs, IndexFromSubs,
+  Constraints,
   ConstrainToGrid,
   AttractToGrid,
   ConstrainTo,
@@ -234,7 +249,7 @@ const componentTypeArray = [
   DiscreteInfiniteSet,
   Image,
   Video,
-  Url,
+  Embed,
   Meta,
   Hint, Solution,
   IntComma,

@@ -56,7 +56,7 @@ export default class Markers extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.markerType = {
       public: true,
@@ -118,8 +118,8 @@ export default class Markers extends BaseComponent {
         }
 
         return {
-          newValues: {markers},
-          setComponentType: componentType,
+          newValues: { markers },
+          setComponentType: { markers: componentType },
         }
       }
     }

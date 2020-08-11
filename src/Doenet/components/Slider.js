@@ -4,19 +4,23 @@ export default class Slider extends BaseComponent {
   constructor(args) {
     super(args);
     this.changeValue = this.changeValue.bind(this);
+
+    this.actions = {
+      changeValue: this.changeValue
+    };
   }
   static componentType = "slider";
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.width = { default: 300 };
-    properties.height = { default: 50 };
+    properties.width = { default: 300, forRenderer: true };
+    properties.height = { default: 50, forRenderer: true };
     properties.initialNumber = { default: undefined };
     properties.initialText = { default: undefined };
-    properties.label = { default: undefined };
-    properties.showControls = { default: false };
-    properties.showTicks = { default: true };
-    properties.collaborateGroups = { default: undefined };
+    properties.label = { default: undefined, forRenderer: true };
+    properties.showControls = { default: false, forRenderer: true };
+    properties.showTicks = { default: true, forRenderer: true };
+    // properties.collaborateGroups = { default: undefined }; //???
 
     return properties;
   }
@@ -24,11 +28,11 @@ export default class Slider extends BaseComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let atLeastOneNumbers = childLogic.newLeaf({
-      name: "atLeastOneNumbers",
+    let atLeastZeroNumbers = childLogic.newLeaf({
+      name: "atLeastZeroNumbers",
       componentType: 'number',
       comparison: 'atLeast',
-      number: 1,
+      number: 0,
     });
     let atLeastOneTexts = childLogic.newLeaf({
       name: "atLeastOneTexts",
@@ -46,7 +50,7 @@ export default class Slider extends BaseComponent {
     let numbersXorTextsXorSequence = childLogic.newOperator({
       name: "numbersXorTextsXorSequence",
       operator: 'xor',
-      propositions: [atLeastOneNumbers, atLeastOneTexts, /*exactlyOneSequence*/],
+      propositions: [atLeastOneTexts, atLeastZeroNumbers, /*exactlyOneSequence*/],
     });
 
     let atMostOneMarkers = childLogic.newLeaf({
@@ -70,9 +74,10 @@ export default class Slider extends BaseComponent {
 
   static returnStateVariableDefinitions() {
 
-    let stateVariableDefinitions = {};
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.sliderType = {
+      forRenderer: true,
       returnDependencies: () => ({
         textChildren: {
           dependencyType: "childIdentity",
@@ -80,7 +85,7 @@ export default class Slider extends BaseComponent {
         },
         numberChildren: {
           dependencyType: "childIdentity",
-          childLogicName: "atLeastOneNumbers",
+          childLogicName: "atLeastZeroNumbers",
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -95,6 +100,7 @@ export default class Slider extends BaseComponent {
     }
 
     stateVariableDefinitions.items = {
+      forRenderer: true,
       public: true,
       isArray: true,
       entryPrefixes: ["item"],
@@ -106,7 +112,7 @@ export default class Slider extends BaseComponent {
         },
         numberChildren: {
           dependencyType: "childStateVariables",
-          childLogicName: "atLeastOneNumbers",
+          childLogicName: "atLeastZeroNumbers",
           variableNames: ["value"]
         },
         sliderType: {
@@ -120,19 +126,23 @@ export default class Slider extends BaseComponent {
 
         if (dependencyValues.sliderType === "text") {
           items = dependencyValues.textChildren.map(x => x.stateValues.value);
-        } else {
+        } else if(dependencyValues.numberChildren.length > 0) {
           items = dependencyValues.numberChildren.map(x => x.stateValues.value);
           items.sort((a, b) => { return a - b; }); //sort in number order
+        } else {
+          // if no children, make items be integers from 0 to 10
+          items = [...Array(11).keys()];
         }
 
         return {
           newValues: { items },
-          setComponentType: dependencyValues.sliderType,
+          setComponentType: { items: dependencyValues.sliderType },
         };
       }
     }
 
     stateVariableDefinitions.valueToIndex = {
+      forRenderer: true,
       returnDependencies: () => ({
         items: {
           dependencyType: "stateVariable",
@@ -183,6 +193,7 @@ export default class Slider extends BaseComponent {
     }
 
     stateVariableDefinitions.index = {
+      forRenderer: true,
       returnDependencies: () => ({
         sliderType: {
           dependencyType: "stateVariable",
@@ -219,7 +230,9 @@ export default class Slider extends BaseComponent {
     }
 
     stateVariableDefinitions.value = {
+      forRenderer: true,
       public: true,
+      essential: true,
       returnDependencies: () => ({
         sliderType: {
           dependencyType: "stateVariable",
@@ -237,14 +250,14 @@ export default class Slider extends BaseComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues: { value: dependencyValues.items[dependencyValues.index] },
-          makeEssential: ["value"],
-          setComponentType: dependencyValues.sliderType,
+          setComponentType: { value: dependencyValues.sliderType },
         }
       },
       inverseDefinition: invertSliderValue,
     }
 
     stateVariableDefinitions.markers = {
+      forRenderer: true,
       returnDependencies: () => ({
         markersChild: {
           dependencyType: "childStateVariables",
@@ -284,23 +297,25 @@ export default class Slider extends BaseComponent {
       }
     }
 
-    stateVariableDefinitions.disabled = {
-      returnDependencies: () => ({
-        collaborateGroups: {
-          dependencyType: "stateVariable",
-          variableName: "collaborateGroups"
-        },
-        collaboration: {
-          dependencyType: "flag",
-          flagName: "collaboration"
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          disabled: !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
-        }
-      })
-    }
+    // stateVariableDefinitions.disabled = {
+    //   forRenderer: true,
+    //   returnDependencies: () => ({
+    //     // collaborateGroups: {
+    //     //   dependencyType: "stateVariable",
+    //     //   variableName: "collaborateGroups"
+    //     // },
+    //     // collaboration: {
+    //     //   dependencyType: "flag",
+    //     //   flagName: "collaboration"
+    //     // }
+    //   }),
+    //   definition: ({ dependencyValues }) => ({
+    //     newValues: {
+    //       // disabled: !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
+    //       disabled: false
+    //     }
+    //   })
+    // }
 
     return stateVariableDefinitions;
   }
@@ -309,8 +324,8 @@ export default class Slider extends BaseComponent {
   changeValue({ value }) {
     if (!this.stateValues.disabled) {
       this.requestUpdate({
-        updateType: "updateValue",
         updateInstructions: [{
+          updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "value",
           value
@@ -319,50 +334,7 @@ export default class Slider extends BaseComponent {
     }
   }
 
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
 
-    const actions = {
-      changeValue: this.changeValue,
-    }
-
-    this.renderer = new this.availableRenderers.slider({
-      actions: actions,
-      key: this.componentName,
-      index: this.stateValues.index,
-      items: this.stateValues.items,
-      sliderType: this.stateValues.sliderType,
-      width: this.stateValues.width,
-      height: this.stateValues.height,
-      valueToIndex: this.stateValues.valueToIndex,
-      markers: this.stateValues.markers,
-      label: this.stateValues.label,
-      showControls: this.stateValues.showControls,
-      showTicks: this.stateValues.showTicks,
-      disabled: this.stateValues.disabled,
-    });
-  }
-
-  updateRenderer() {
-
-    this.renderer.updateSlider({
-      index: this.stateValues.index,
-      items: this.stateValues.items,
-      sliderType: this.stateValues.sliderType,
-      width: this.stateValues.width,
-      height: this.stateValues.height,
-      valueToIndex: this.stateValues.valueToIndex,
-      markers: this.stateValues.markers,
-      label: this.stateValues.label,
-      showControls: this.stateValues.showControls,
-      showTicks: this.stateValues.showTicks,
-      disabled: this.stateValues.disabled,
-    })
-
-  }
 
 }
 

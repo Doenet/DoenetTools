@@ -8,7 +8,7 @@ describe('SelectFromSequence Tag Tests',function() {
   })
 
   it('no parameters, select single number from 1 to 10',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence name="sample1"/>
@@ -60,7 +60,7 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it('select single number from 1 to 6',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence name="sample1">6</selectfromsequence>
@@ -112,7 +112,7 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it('select single number from -3 to 5',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence name="sample1">-3,5</selectfromsequence>
@@ -164,7 +164,7 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it('select single number from -3 to 5, excluding 0',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence exclude="0" name="sample1">-3,5</selectfromsequence>
@@ -216,7 +216,7 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it('select single odd number from -3 to 5',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence step="2" name="sample1">-3,5</selectfromsequence>
@@ -268,7 +268,7 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it('select single letter from c to h',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence name="sample1">c,h</selectfromsequence>
@@ -320,7 +320,7 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it('select two even numbers from -4 to 4, excluding 0',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample1">-4,4</selectfromsequence>
@@ -365,7 +365,7 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it('select two even numbers from -4 to 2, excluding 0 and combinations',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample1" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample2" excludecombination="-4,-2"><excludecombination>-2,2</excludecombination><excludecombination>2,-4</excludecombination>-4,2</selectfromsequence></aslist></p>
@@ -406,7 +406,7 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it('select five even numbers with replacement from -4 to 4, excluding 0',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
     <selectfromsequence step="2" exclude="0" numbertoselect="5" withReplacement name="sample1">-4,4</selectfromsequence>
@@ -456,35 +456,35 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it('select five (number initially unresolved) even numbers with replacement from -4 to 4, excluding 0',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <aslist>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample1"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample2"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample3"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample4"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample5"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample6"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample7"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample8"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample9"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample10"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample11"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample12"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample13"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample14"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample15"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample16"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample17"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample18"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample19"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
-    <selectfromsequence step="2" exclude="0" withReplacement name="sample20"><numbertoselect><ref>n</ref></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample1"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample2"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample3"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample4"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample5"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample6"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample7"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample8"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample9"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample10"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample11"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample12"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample13"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample14"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample15"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample16"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample17"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample18"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample19"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
+    <selectfromsequence step="2" exclude="0" withReplacement name="sample20"><numbertoselect><copy tname="n" /></numbertoselect>-4,4</selectfromsequence>
     </aslist>
-    <ref name="n2">n3</ref>
-    <ref name="n">num1</ref>
-    <math name="num1"><ref>n2</ref>+<ref>num2</ref>+2</math>
-    <math name="num2"><ref>n3</ref>+<ref>num3</ref></math>
-    <ref name="n3">num3</ref>
+    <copy name="n2" tname="n3" />
+    <copy name="n" tname="num1" />
+    <math name="num1"><copy tname="n2" />+<copy tname="num2" />+2</math>
+    <math name="num2"><copy tname="n3" />+<copy tname="num3" /></math>
+    <copy name="n3" tname="num3" />
     <number name="num3">1</number>
     `},"*");
     });
@@ -513,7 +513,7 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it("refs don't resample",() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <p><aslist>
     <selectfromsequence name="sample1">100</selectfromsequence>
@@ -521,18 +521,18 @@ describe('SelectFromSequence Tag Tests',function() {
     </aslist></p>
 
     <p><aslist>
-    <ref name="noresample1">sample1</ref>
-    <ref name="noresample2">sample2</ref>
-    <ref name="noreresample1">noresample1</ref>
-    <ref name="noreresample2">noresample2</ref>
+    <copy name="noresample1" tname="sample1" />
+    <copy name="noresample2" tname="sample2" />
+    <copy name="noreresample1" tname="noresample1" />
+    <copy name="noreresample2" tname="noresample2" />
     </aslist></p>
 
-    <p><ref name="noresamplelist">_aslist1</ref></p>
+    <p><copy name="noresamplelist" tname="_aslist1" /></p>
 
-    <p><ref name="noreresamplelist">noresamplelist</ref></p>
+    <p><copy name="noreresamplelist" tname="noresamplelist" /></p>
 
-    <ref name="noresamplep">_p1</ref>
-    <ref name="noreresamplep">noresamplep</ref>
+    <copy name="noresamplep" tname="_p1" />
+    <copy name="noreresamplep" tname="noresamplep" />
     `},"*");
     });
 
@@ -566,14 +566,14 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it("select doesn't change dynamically",() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <mathinput prefill="5" name="numbertoselect"/>
     <mathinput prefill="3" name="maxnum"/>
     <p><aslist>
     <selectfromsequence name="sample1" withReplacement>
-      <count><ref prop="value">maxnum</ref></count>
-      <numbertoselect><ref prop="value">numbertoselect</ref></numbertoselect>
+      <count><copy prop="value" tname="maxnum" /></count>
+      <numbertoselect><copy prop="value" tname="numbertoselect" /></numbertoselect>
     </selectfromsequence>
     </aslist></p>
 
@@ -581,8 +581,8 @@ describe('SelectFromSequence Tag Tests',function() {
     <mathinput prefill="10" name="maxnum2"/>
     <p><aslist>
     <selectfromsequence name="sample2" withReplacement>
-      <count><ref prop="value">maxnum2</ref></count>
-      <numbertoselect><ref prop="value">numbertoselect2</ref></numbertoselect>
+      <count><copy prop="value" tname="maxnum2" /></count>
+      <numbertoselect><copy prop="value" tname="numbertoselect2" /></numbertoselect>
     </selectfromsequence>
     </aslist></p>
     `},"*");
@@ -632,7 +632,7 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it("select doesn't resample in dynamic map",() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     How many numbers do you want? <mathinput />
     <p name="p1"><aslist>
@@ -642,22 +642,22 @@ describe('SelectFromSequence Tag Tests',function() {
       </template>
       <substitutions>
       <sequence>
-        <count><ref prop="value">_mathinput1</ref></count>
+        <count><copy prop="value" tname="_mathinput1" /></count>
       </sequence>
       </substitutions>
     </map>
     </aslist></p>
     
-    <p name="p2"><aslist><ref>_map1</ref></aslist></p>
-    <p name="p3"><ref>_aslist1</ref></p>
+    <p name="p2"><aslist><copy tname="_map1" /></aslist></p>
+    <p name="p3"><copy tname="_aslist1" /></p>
 
-    <ref name="p4">p1</ref>
-    <ref name="p5">p2</ref>
-    <ref name="p6">p3</ref>
+    <copy name="p4" tname="p1" />
+    <copy name="p5" tname="p2" />
+    <copy name="p6" tname="p3" />
 
-    <ref name="p7">p4</ref>
-    <ref name="p8">p5</ref>
-    <ref name="p9">p6</ref>
+    <copy name="p7" tname="p4" />
+    <copy name="p8" tname="p5" />
+    <copy name="p9" tname="p6" />
     `},"*");
     });
 
@@ -926,14 +926,14 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it('select single math, assign name',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <p><selectfromsequence type="math" from="x" step="y" count="3" assignnames="u"/></p>
     <p><selectfromsequence type="math" from="x" step="y" count="3" assignnames="v"/></p>
     <p><selectfromsequence type="math" from="x" step="y" count="3" assignnames="w"/></p>
-    <p><ref name="u2">u</ref></p>
-    <p><ref name="v2">v</ref></p>
-    <p><ref name="w2">w</ref></p>
+    <p><copy name="u2" tname="u" /></p>
+    <p><copy name="v2" tname="v" /></p>
+    <p><copy name="w2" tname="w" /></p>
     `},"*");
     });
 
@@ -974,14 +974,14 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it('select multiple maths, assign names',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <p><aslist>
       <selectfromsequence name="s" type="math" from="x" step="y" count="3" assignnames="u,v,w" numbertoselect="6" withReplacement />
     </aslist></p>
-    <p><ref name="u2">u</ref></p>
-    <p><ref name="v2">v</ref></p>
-    <p><ref name="w2">w</ref></p>
+    <p><copy name="u2" tname="u" /></p>
+    <p><copy name="v2" tname="v" /></p>
+    <p><copy name="w2" tname="w" /></p>
     `},"*");
     });
 
@@ -1028,14 +1028,14 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it('select multiple maths, assign names, new namespace',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <p><aslist>
       <selectfromsequence name="s" newnamespace type="math" from="x" step="y" count="3" assignnames="u,v,w" numbertoselect="6" withReplacement />
     </aslist></p>
-    <p><ref name="u2">s/u</ref></p>
-    <p><ref name="v2">s/v</ref></p>
-    <p><ref name="w2">s/w</ref></p>
+    <p><copy name="u2" tname="s/u" /></p>
+    <p><copy name="v2" tname="s/v" /></p>
+    <p><copy name="w2" tname="s/w" /></p>
     `},"*");
     });
 
@@ -1082,31 +1082,31 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it('two selects with mutual dependence, numbertoselect initially unresolved',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
   <p><aslist>
-    <selectfromsequence name="s1" assignnames="X1, y1, z1" withReplacement>
-      <numberToSelect><ref prop="numberToSelect">s2</ref></numberToSelect>
+    <selectfromsequence name="s1" assignnames="x1, y1, z1" withReplacement>
+      <numberToSelect><copy prop="numberToSelect" tname="s2" /></numberToSelect>
       1,5
     </selectfromsequence>
   </aslist></p>
   
   <p><aslist>
-    <selectfromsequence name="s2" assignnames="X2, y2, z2">
-      <numberToSelect><ref>n</ref></numberToSelect>
-      <withReplacement><ref prop="withReplacement">s1</ref></withReplacement>
+    <selectfromsequence name="s2" assignnames="x2, y2, z2">
+      <numberToSelect><copy tname="n" /></numberToSelect>
+      <withReplacement><copy prop="withReplacement" tname="s1" /></withReplacement>
       6,10
     </selectfromsequence>
   </aslist></p>
   
-  <p><ref name="x1a">x1</ref>, <ref name="y1a">y1</ref>, <ref name="z1a">z1</ref></p>
-  <p><ref name="x2a">X2</ref>, <ref name="y2a">Y2</ref>, <ref name="z2a">Z2</ref></p>
+  <p><copy name="x1a" tname="x1" />, <copy name="y1a" tname="y1" />, <copy name="z1a" tname="z1" /></p>
+  <p><copy name="x2a" tname="x2" />, <copy name="y2a" tname="y2" />, <copy name="z2a" tname="z2" /></p>
   
   <p> 
-    <ref name="n2">n3</ref>
-    <ref name="n">num1</ref>
-    <math name="num1" simplify><ref>n2</ref>+<ref>num2</ref></math>
-    <math name="num2"><ref>n3</ref>+<ref>num3</ref></math>
-    <ref name="n3">num3</ref>
+    <copy name="n2" tname="n3" />
+    <copy name="n" tname="num1" />
+    <math name="num1" simplify><copy tname="n2" />+<copy tname="num2" /></math>
+    <math name="num2"><copy tname="n3" />+<copy tname="num3" /></math>
+    <copy name="n3" tname="num3" />
     <number name="num3">1</number>
   </p>  
     `},"*");
@@ -1153,14 +1153,14 @@ describe('SelectFromSequence Tag Tests',function() {
   it('selectfromsequence with hide will hide replacements', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
       <p>Selectfromsequences and hide</p>
       <p><selectfromsequence assignnames="c">
         a,e
       </selectfromsequence>, <selectfromsequence assignnames="d" hide>
         a,e
       </selectfromsequence></p>
-      <p><ref>c</ref>, <ref hide="false">d</ref></p>
+      <p><copy tname="c" />, <copy hide="false" tname="d" /></p>
     `}, "*");
     });
 
@@ -1180,8 +1180,8 @@ describe('SelectFromSequence Tag Tests',function() {
     })
   });
 
-  it('select multiple maths with excludes and excludecombiations',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+  it('select multiple maths with excludes and excludecombinations',() => {
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample1" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
     <p><aslist><selectfromsequence type="math" from="x" step="y" count="4" exclude="x+2y" numbertoselect="2" name="sample2" excludecombination="x,x+y"><excludecombination>x+y,x+3y</excludecombination><excludecombination>x+3y,x</excludecombination></selectfromsequence></aslist></p>
@@ -1221,8 +1221,8 @@ describe('SelectFromSequence Tag Tests',function() {
     })
   });
 
-  it('select multiple letters with excludes and excludecombiations',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+  it('select multiple letters with excludes and excludecombinations',() => {
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample1" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
     <p><aslist><selectfromsequence from="m" step="3" count="4" exclude="p" numbertoselect="2" name="sample2" excludecombination="m,v"><excludecombination>s,m</excludecombination><excludecombination>v,s</excludecombination></selectfromsequence></aslist></p>
@@ -1263,12 +1263,12 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it('select numbers and sort',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <p><aslist><selectfromsequence numbertoselect="20" sortresults="true" withreplacement="true">-20,20</selectfromsequence></aslist></p>
 
-    <p><ref>_aslist1</ref></p>
-    <ref>_p1</ref>
+    <p><copy tname="_aslist1" /></p>
+    <copy tname="_p1" />
     `},"*");
     });
 
@@ -1281,8 +1281,8 @@ describe('SelectFromSequence Tag Tests',function() {
 
       let lastnumber = -20;
       let originalnumbers = components['/_selectfromsequence1'].replacements;
-      let secondnumbers = components['/_ref1'].replacements[0].activeChildren;
-      let thirdnumbers = components['/_ref2'].replacements[0].activeChildren[0].activeChildren;
+      let secondnumbers = components['/_copy1'].replacements[0].activeChildren;
+      let thirdnumbers = components['/_copy2'].replacements[0].activeChildren[0].activeChildren;
       for(let i=0; i<20; i++) {
         let newnumber = originalnumbers[i].stateValues.value;
         expect(newnumber).gte(lastnumber);
@@ -1295,12 +1295,12 @@ describe('SelectFromSequence Tag Tests',function() {
   });
 
   it('select letters and sort',() => {
-    cy.window().then((win) => { win.postMessage({doenetCode: `
+    cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <p><aslist><selectfromsequence numbertoselect="40" sortresults="true" withreplacement="true">a,bz</selectfromsequence></aslist></p>
 
-    <p><ref>_aslist1</ref></p>
-    <ref>_p1</ref>
+    <p><copy tname="_aslist1" /></p>
+    <copy tname="_p1" />
     `},"*");
     });
 
@@ -1313,8 +1313,8 @@ describe('SelectFromSequence Tag Tests',function() {
 
       let lastletter = 'a';
       let originalletters = components['/_selectfromsequence1'].replacements;
-      let secondletters = components['/_ref1'].replacements[0].activeChildren;
-      let thirdletters = components['/_ref2'].replacements[0].activeChildren[0].activeChildren;
+      let secondletters = components['/_copy1'].replacements[0].activeChildren;
+      let thirdletters = components['/_copy2'].replacements[0].activeChildren[0].activeChildren;
       for(let i=0; i<20; i++) {
         let newletter = originalletters[i].stateValues.value;
         expect(newletter.length).gte(lastletter.length);

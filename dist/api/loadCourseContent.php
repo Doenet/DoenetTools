@@ -57,6 +57,7 @@ if ($result->num_rows > 0){
       "publishDate" => $row["creationDate"],
       "parentId" => $row["parentId"],
       "rootId" => $row["rootId"],
+      "type" => "folder",
       "childContent" => array(),
       "childFolders" => array(),
       "childUrls" => array(),
@@ -157,10 +158,13 @@ if ($result->num_rows > 0){
                         $ci_array = array();
                 }
                 $branchId_info_arr[$bi] = array(
-                "title"=>$row["title"],
-                "publishDate" => "",
-                "draftDate" => "",
-                "parentId" => null
+                  "title"=>$row["title"],
+                  "publishDate" => "",
+                  "draftDate" => "",
+                  "type" => "content",
+                  "parentId" => $row["parentId"],
+                  "rootId" => $row["rootId"],
+                  "isPublic" => ($row["isPublic"] == 1)
                 );
                 array_push($sort_order_arr,$bi);
         }
@@ -226,6 +230,7 @@ if ($result->num_rows > 0){
       $url_info_arr[$row["urlId"]] = array(
         "title" => $row["title"],
         "url" => $row["url"],
+        "type" => "url",
         "description" => $row["description"],
         "publishDate" => $row["publishDate"],
         "usesDoenetAPI" => ($row["usesDoenetAPI"] == 1),

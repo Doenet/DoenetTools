@@ -137,8 +137,8 @@ export default class SelectFromSequence extends Sequence {
       definition: makeSelection,
     }
 
-    let originalReturnDependencies = stateVariableDefinitions.readyToExpandWhenResolved.returnDependencies;
-    stateVariableDefinitions.readyToExpandWhenResolved.returnDependencies = function () {
+    let originalReturnDependencies = stateVariableDefinitions.readyToExpand.returnDependencies;
+    stateVariableDefinitions.readyToExpand.returnDependencies = function () {
       let deps = originalReturnDependencies();
 
       deps.selectedValues = {
@@ -490,8 +490,10 @@ export default class SelectFromSequence extends Sequence {
 
 
 function makeSelection({ dependencyValues }) {
+  // console.log(`make selection`)
+  // console.log(dependencyValues)
 
-  if (dependencyValues.essentialSelectedValues !== undefined) {
+  if (dependencyValues.essentialSelectedValues !== null) {
     return {
       makeEssential: ["selectedValues"],
       newValues: {

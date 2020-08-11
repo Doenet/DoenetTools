@@ -7,7 +7,7 @@ describe('Math Display Tag Tests', function () {
   it('inline and display', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <m>sin(x)</m>
     <me>cos(x)</me>
     `}, "*");
@@ -27,7 +27,7 @@ describe('Math Display Tag Tests', function () {
   it('numbered equations', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <men>sin(x)</men>
     <men>cos(x)</men>
     <men>tan(x)</men>
@@ -68,7 +68,7 @@ describe('Math Display Tag Tests', function () {
   it('math inside', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <m><math simplify>x+x</math></m>
     <me><math simplify>y+y</math></me>
     <men><math simplify>z+z</math></men>
@@ -90,7 +90,7 @@ describe('Math Display Tag Tests', function () {
   it('align equations', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <md>
       <mrow>q \\amp = sin(x)</mrow>
       <mrow>cos(x) \\amp = z</mrow>
@@ -127,7 +127,7 @@ describe('Math Display Tag Tests', function () {
   it('add commas to large integers', () => {
     cy.window().then((win) => {
       win.postMessage({
-        doenetCode: `
+        doenetML: `
     <p><intcomma>25236501.35</intcomma></p>
     <p><intcomma><math>25236501.35</math></intcomma></p>
     <p><m><intcomma>25236501.35</intcomma></m></p>

@@ -8,8 +8,8 @@ header('Content-Type: application/json');
 include "db_connection.php";
 
 $sql = "
-SELECT username,accessAllowed,adminAccessAllowed,courseId FROM `user_permissions_on_courses` 
-WHERE username='devuser' AND accessAllowed='1';
+SELECT username,courseId,roleInstructor,roleStudent FROM `user_permissions_on_courses` 
+WHERE username='devuser' AND roleInstructor='1' OR roleStudent='1';
 ";
 $courseId_info_arr = array();
 $result = $conn->query($sql); 
@@ -20,8 +20,10 @@ if ($result->num_rows > 0){
       "user" => $remoteuser,
       "access" => $access,
       "courseId"=>$row["courseId"],
-      "accessAllowed"=>$row["accessAllowed"],
-      "adminAccess"=>$row["adminAccessAllowed"]);
+    
+      "roleInstructor"=>$row["roleInstructor"],
+      "roleStudent"=>$row["roleStudent"],
+    );
   }
 } 
 // $row = $result->fetch_assoc();
