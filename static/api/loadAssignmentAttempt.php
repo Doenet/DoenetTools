@@ -27,16 +27,25 @@ if (!isset($_REQUEST["assignmentId"])) {
     $userId = mysqli_real_escape_string($conn, $_REQUEST["userId"]);
 
     $sql = "
-    SELECT 
+	SELECT 
+	ua.credit as assignmentCredit,
+	ua.creditOverride as assignmentCreditOverride,
+	uaa.credit as attemptCredit,
+	uaa.creditOverride AS attemptCreditOverride,
     ci.stateVariables AS stateVariables,
     ci.variant AS variant,
-    ci.credit AS credit,
-    ci.attemptCredit AS attemptCredit,
     ci.timestamp AS timestamp,
     c.doenetML AS doenetML
     FROM content_interactions AS ci
     LEFT JOIN content AS c
     ON c.contentId = ci.contentId
+    LEFT JOIN user_assignment AS ua
+    ON ua.assignmentId = '$assignmentId'
+    AND ua.userId = '$userId'
+    LEFT JOIN user_assignment_attempt AS uaa
+    ON uaa.attemptNumber = '$attemptNumber'
+    AND uaa.assignmentId = '$assignmentId'
+    AND uaa.userId = '$userId'
     WHERE ci.attemptNumber = '$attemptNumber'
     AND ci.assignmentId = '$assignmentId'
     AND ci.userId = '$userId'
@@ -52,8 +61,10 @@ if (!isset($_REQUEST["assignmentId"])) {
             "doenetML"=>$row['doenetML'],
             "stateVariables"=>$row['stateVariables'],
             "variant"=>$row['variant'],
-            "credit"=>$row['credit'],
+            "assignmentCredit"=>$row['assignmentCredit'],
+            "assignmentCreditOverride"=>$row['assignmentCreditOverride'],
             "attemptCredit"=>$row['attemptCredit'],
+            "attemptCreditOverride"=>$row['attemptCreditOverride'],
             "timestamp"=>$row['timestamp'],
         );
 

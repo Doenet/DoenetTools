@@ -29,13 +29,19 @@ if (!isset($_GET["assignmentId"])) {
     if ($result->num_rows == 1) {
         // do the actual query
         $sql = "
-        SELECT credit AS assignmentCredit, 
-        userId, 
-        attemptCredit, 
-        attemptNumber
-        FROM content_interactions
-        WHERE assignmentId = '$assignmentId'
-        ORDER BY attemptNumber
+        SELECT 
+		ua.userId as userId,
+		ua.credit as assignmentCredit,
+		ua.creditOverride as assignmentCreditOverride,
+		uaa.attemptNumber as attemptNumber,
+		uaa.credit as attemptCredit,
+		uaa.creditOverride AS attemptCreditOverride
+        FROM user_assignment_attempt AS uaa
+        LEFT JOIN user_assignment AS ua
+        ON ua.assignmentId = uaa.assignmentId 
+        AND ua.userId = uaa.userId
+        WHERE uaa.assignmentId = '$assignmentId'
+        ORDER BY uaa.attemptNumber
         ";
     
         $result = $conn->query($sql);
@@ -44,10 +50,12 @@ if (!isset($_GET["assignmentId"])) {
         while ($row = $result->fetch_assoc()) {
             array_push($response_arr,
                 array(
-                    $row['assignmentCredit'],
                     $row['userId'],
+                    $row['attemptNumber'],
+                    $row['assignmentCredit'],
+                    $row['assignmentCreditOverride'],
                     $row['attemptCredit'],
-                    $row['attemptNumber']
+                    $row['attemptCreditOverride']
                 )
             );
         }

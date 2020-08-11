@@ -214,7 +214,6 @@ class GradebookAssignmentView extends Component {
         this.assignmentIdPayload = { params: { assignmentId:this.assignmentId } };
 
         
-
         this.assignmentsLoaded = false;
         this.students = null;
         this.assignmentData = null;
@@ -268,6 +267,7 @@ class GradebookAssignmentView extends Component {
         axios.get('/api/loadGradebookAssignmentAttempts.php',this.assignmentIdPayload)
         .then(resp => {
             let data = resp.data
+console.log('data',data)
 
             this.assignmentData = {}
             for (let userId in this.students) { // initialize object
@@ -278,10 +278,13 @@ class GradebookAssignmentView extends Component {
             }
 
             for (let row of data) {
-                let [assignmentCredit,
-                    userId,
+                let [userId,
+                    attemptNumber,
+                    assignmentCredit,
+                    assignmentCreditOverride,
                     attemptCredit,
-                    attemptNumber] = row;
+                    attemptCreditOverride
+                    ] = row;
 
                 this.assignmentData[userId].grade = assignmentCredit // we need to do this in this block so that userId is defined
                 this.assignmentData[userId].attempts[attemptNumber] = attemptCredit
@@ -425,21 +428,16 @@ class GradebookAttemptView extends Component {
          } };
         axios.get('/api/loadAssignmentAttempt.php',assignmentAttemptPayload)
         .then(resp => {
-            // $response_arr = array(
-            //     "doenetML"=>$row['doenetML'],
-            //     "stateVariables"=>$row['stateVariables'],
-            //     "variant"=>$row['variant'],
-            //     "credit"=>$row['credit'],
-            //     "attemptCredit"=>$row['attemptCredit'],
-            //     "timestamp"=>$row['timestamp'],
-            // );
+
             let data = resp.data;
 
             this.doenetML = data.doenetML;
             this.stateVariables = data.stateVariables;
             this.variant = data.variant;
-            this.credit = data.credit;
+            this.assignmentCredit = data.assignmentCredit;
+            this.assignmentCreditOverride = data.assignmentCreditOverride;
             this.attemptCredit = data.attemptCredit;
+            this.attemptCreditOverride = data.attemptCreditOverride;
             this.timestamp = data.timestamp;
 
             this.setState({ attemptLoaded: true });
