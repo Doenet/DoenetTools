@@ -75,6 +75,7 @@ class DoenetEditor extends Component {
               viewerDoenetML:resp.data.doenetML,
               version:version,
             }) ;
+            this.props.headerTitleChange(resp.data.title);
           }
           
         })
@@ -283,6 +284,7 @@ class DoenetEditor extends Component {
       documentTitle: documentTitle,
       version: version,
      });
+     this.props.headerTitleChange(documentTitle);
   };
 
   editorDidMount = (editor,monaco) => {
