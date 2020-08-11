@@ -256,7 +256,7 @@ CREATE TABLE `course` (
   `color` char(6) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `courseId` (`courseId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -265,7 +265,7 @@ CREATE TABLE `course` (
 
 LOCK TABLES `course` WRITE;
 /*!40000 ALTER TABLE `course` DISABLE KEYS */;
-INSERT INTO `course` VALUES (1,'aI8sK4vmEhC5sdeSP3vNW','Fall 2019','Calculus and Dynamical Systems in Biology','math1241','Calculus and Dynamical Systems in Biology',_binary '\0','4f0ccaf3d65a89d6e80e1c204fffb88e3138a31964a8b2b87a580dd9b5c7e9e1\n',1,0,1,1,'_jO08ui8XmzjAt8GSwLNE','7lg9CxZ4jqYMoEylrtkU8',NULL,NULL,'a',NULL,NULL),(2,'uTMfKhSmcNtLDaK8oJ3U','Fal 2019','Calculus 2','math XXXX','Calculus 2 description',_binary '\0',NULL,1,1,1,1,'Hj4NperLUm_UxLWtV7xTq','v3G1SMhFBSsherZfSlEwG',NULL,NULL,'a',NULL,NULL),(3,'NfzKqYtTgYRyPnmaxc7XB','Fall 2019','Calculus','MATH ','Calculus',_binary '\0',NULL,1,1,1,1,'r5zYs7dMiDYYaiq8nYKPF','MVHoKTLwjEvuZPNm3x90S',NULL,NULL,'a',NULL,NULL);
+INSERT INTO `course` VALUES (1,'aI8sK4vmEhC5sdeSP3vNW','Fall 2019','Calculus and Dynamical Systems in Biology','math1241','Calculus and Dynamical Systems in Biology',_binary '\0','4f0ccaf3d65a89d6e80e1c204fffb88e3138a31964a8b2b87a580dd9b5c7e9e1\n',1,0,1,1,'_jO08ui8XmzjAt8GSwLNE','7lg9CxZ4jqYMoEylrtkU8',NULL,NULL,'a','math1241','aa7734'),(2,'uTMfKhSmcNtLDaK8oJ3U','Fall 2019','Calculus 2','math1242','Calculus 2 description',_binary '\0',NULL,1,1,1,1,'Hj4NperLUm_UxLWtV7xTq','v3G1SMhFBSsherZfSlEwG',NULL,NULL,'a','math1242','24bb1f'),(3,'NfzKqYtTgYRyPnmaxc7XB','Fall 2019','Calculus','math1271','Calculus',_binary '\0',NULL,1,1,1,1,'r5zYs7dMiDYYaiq8nYKPF','MVHoKTLwjEvuZPNm3x90S',NULL,NULL,'a',NULL,'5e3baa'),(4,'test1','Fall 2019','Test 1','test1',NULL,_binary '\0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'test1','857620'),(5,'test2','Fall 2019','Test 2','test2',NULL,_binary '\0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'b34acf');
 /*!40000 ALTER TABLE `course` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -324,7 +324,7 @@ CREATE TABLE `course_enrollment` (
   `overrideCourseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username_courseId` (`username`,`courseId`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -333,7 +333,7 @@ CREATE TABLE `course_enrollment` (
 
 LOCK TABLES `course_enrollment` WRITE;
 /*!40000 ALTER TABLE `course_enrollment` DISABLE KEYS */;
-INSERT INTO `course_enrollment` VALUES (1,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa8','generic','user','devuser',NULL,1234567,'2019-09-03 20:29:41','15',_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(2,'fsa4214fasgag1512525f','aaaaaaaaaaaaaaaaaaa19','SHOULD NOT','BE LOADED','invalid',NULL,5254243,'2019-09-03 20:29:41','2',_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(4,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa2','Anatole','Wickrath','awickrath0',NULL,60,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(5,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa3','Antony','Aylett','aaylett1',NULL,7,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(6,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa11','Lindi','Rash','lrash2',NULL,5,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(7,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa13','Nicholas','Peteri','npeteri3',NULL,119,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(8,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa18','Savina','Michin','smichin4',NULL,852,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(9,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa9','Gerry','Sallan','gsallan5',NULL,89,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(10,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa21','Wakefield','Bengle','wbengle6',NULL,4786,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(11,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa14','Patrice','Bavin','pbavin8',NULL,75024,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(12,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa12','Merrile','McGee','mmcgee9',NULL,9240,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(13,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa4','Ardath','Celler','acellera',NULL,4522,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(14,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa6','Ashleigh','Lothean','alotheanb',NULL,259,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(15,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa17','Salomon','Scorah','sscorahd',NULL,2,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(16,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa22','Xaviera','Kupec','xkupece',NULL,4,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(17,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa15','Pennie','Badder','pbadderg',NULL,3931,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(18,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa20','Travis','Sarrell','tsarrellh',NULL,7947,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(19,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa7','Eldin','Crosser','ecrosserj',NULL,96895,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(20,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa10','Ginger','Nijs','gnijsl',NULL,60,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(21,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa16','Petronille','Pidcock','ppidcockm',NULL,381,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(22,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa5','Arlee','Duggleby','adugglebyn',NULL,5,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(23,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa1','Ambur','Viant','avianto',NULL,34,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(24,'uTMfKhSmcNtLDaK8oJ3U','4VYp5dOrVWGz0OKB2hkLW',NULL,NULL,NULL,NULL,NULL,'2020-08-04 00:02:51',NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(25,'NfzKqYtTgYRyPnmaxc7XB','4VYp5dOrVWGz0OKB2hkLW',NULL,NULL,NULL,NULL,NULL,'2020-08-04 00:02:56',NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL);
+INSERT INTO `course_enrollment` VALUES (1,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa8','generic','user','devuser',NULL,1234567,'2019-09-03 20:29:41','15',_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(2,'fsa4214fasgag1512525f','aaaaaaaaaaaaaaaaaaa19','SHOULD NOT','BE LOADED','invalid',NULL,5254243,'2019-09-03 20:29:41','2',_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(4,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa2','Anatole','Wickrath','awickrath0',NULL,60,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(5,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa3','Antony','Aylett','aaylett1',NULL,7,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(6,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa11','Lindi','Rash','lrash2',NULL,5,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(7,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa13','Nicholas','Peteri','npeteri3',NULL,119,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(8,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa18','Savina','Michin','smichin4',NULL,852,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(9,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa9','Gerry','Sallan','gsallan5',NULL,89,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(10,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa21','Wakefield','Bengle','wbengle6',NULL,4786,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(11,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa14','Patrice','Bavin','pbavin8',NULL,75024,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(12,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa12','Merrile','McGee','mmcgee9',NULL,9240,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(13,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa4','Ardath','Celler','acellera',NULL,4522,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(14,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa6','Ashleigh','Lothean','alotheanb',NULL,259,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(15,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa17','Salomon','Scorah','sscorahd',NULL,2,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(16,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa22','Xaviera','Kupec','xkupece',NULL,4,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(17,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa15','Pennie','Badder','pbadderg',NULL,3931,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(18,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa20','Travis','Sarrell','tsarrellh',NULL,7947,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(19,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa7','Eldin','Crosser','ecrosserj',NULL,96895,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(20,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa10','Ginger','Nijs','gnijsl',NULL,60,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(21,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaa16','Petronille','Pidcock','ppidcockm',NULL,381,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(22,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa5','Arlee','Duggleby','adugglebyn',NULL,5,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(23,'aI8sK4vmEhC5sdeSP3vNW','aaaaaaaaaaaaaaaaaaaa1','Ambur','Viant','avianto',NULL,34,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(24,'uTMfKhSmcNtLDaK8oJ3U','4VYp5dOrVWGz0OKB2hkLW',NULL,NULL,NULL,NULL,NULL,'2020-08-04 00:02:51',NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(25,'NfzKqYtTgYRyPnmaxc7XB','4VYp5dOrVWGz0OKB2hkLW',NULL,NULL,NULL,NULL,NULL,'2020-08-04 00:02:56',NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(26,'test1','4VYp5dOrVWGz0OKB2hkLW',NULL,NULL,NULL,NULL,NULL,'2020-08-04 00:02:56',NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(27,'test2','4VYp5dOrVWGz0OKB2hkLW',NULL,NULL,NULL,NULL,NULL,'2020-08-04 00:02:56',NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `course_enrollment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -867,11 +867,11 @@ CREATE TABLE `user_dashboard_modification` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) DEFAULT NULL,
   `courseId` char(21) DEFAULT NULL,
-  `order` int(11) DEFAULT NULL,
+  `position` int(11) DEFAULT NULL,
   `color` char(21) DEFAULT NULL,
   `image` varchar(2000) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -880,7 +880,7 @@ CREATE TABLE `user_dashboard_modification` (
 
 LOCK TABLES `user_dashboard_modification` WRITE;
 /*!40000 ALTER TABLE `user_dashboard_modification` DISABLE KEYS */;
-INSERT INTO `user_dashboard_modification` VALUES (1,'4VYp5dOrVWGz0OKB2hkLW','aI8sK4vmEhC5sdeSP3vNW',3,'red',NULL),(2,'4VYp5dOrVWGz0OKB2hkLW','test2',2,'crimson',NULL),(3,'4VYp5dOrVWGz0OKB2hkLW','uTMfKhSmcNtLDaK8oJ3U',1,'green',NULL);
+INSERT INTO `user_dashboard_modification` VALUES (1,'4VYp5dOrVWGz0OKB2hkLW','aI8sK4vmEhC5sdeSP3vNW',3,NULL,NULL),(2,'4VYp5dOrVWGz0OKB2hkLW','uTMfKhSmcNtLDaK8oJ3U',4,NULL,NULL),(4,'4VYp5dOrVWGz0OKB2hkLW','NfzKqYtTgYRyPnmaxc7XB',5,NULL,NULL),(5,'4VYp5dOrVWGz0OKB2hkLW','test1',1,NULL,NULL),(6,'4VYp5dOrVWGz0OKB2hkLW','test2',2,'ff3477',NULL);
 /*!40000 ALTER TABLE `user_dashboard_modification` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1002,4 +1002,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-08-11 18:31:57
+-- Dump completed on 2020-08-11 20:44:46
