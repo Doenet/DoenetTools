@@ -2625,19 +2625,12 @@ class DoenetChooser extends Component {
       }
 
 
-      // //console.log('treeParentsInfo', treeParentsInfo);
-      //console.log('treeChildrenInfo', JSON.stringify(treeChildrenInfo));
+
       const TreeNodeItem = ({title, icon}) => {
         return <div>
           {icon}
-          {/* <span style={{
-            verticalAlign: 'middle',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-          }}
-          >{title}</span> */}
-          <Link to={`/go/?path=${title}`}>{title}</Link>
+
+          <Link to={`/go/?path=${title}`} style={{textDecoration:"none",paddingLeft:"5px"}}>{title}</Link>
         </div>
       };
 
@@ -3148,9 +3141,7 @@ const customizedTreeNodeItem = ({title, icon}) => {
       </div>
     </div>
 
-    // const switchPanelButton = <button style={{background: "none", border: "none", cursor: "pointer", outline: "none"}}>
-    //     <FontAwesomeIcon onClick={() => this.switchPanelContainer("first")} icon={faRedoAlt} style={{fontSize:"17px"}}/>
-    //   </button>;
+
     let buttonGroupData = [{
       label: '',
       icon: faAlignJustify,
@@ -3265,9 +3256,6 @@ const customizedTreeNodeItem = ({title, icon}) => {
         </SplitLayoutPanel>
       </ToolLayoutPanel>)
     };
-
-    // let title_text = `${this.state.documentTitle} (version ${this.state.version})`;
-
     
 
     return (<React.Fragment>
@@ -3360,18 +3348,6 @@ const SplitPanelMainContent = ({ panelId, initialContainer, activeContainer, con
   </div>;
 }
 
-const TreeNodeItem = ({title, icon}) => {
-  return <div>
-    {icon}
-    <span style={{
-      verticalAlign: "middle",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap",
-      overflow: "hidden",
-    }}
-    >{title}</span>
-  </div>;
-}
 
 const TreeIcons = ({iconName, isPublic}) => {
   const FolderIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
