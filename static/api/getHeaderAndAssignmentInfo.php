@@ -45,12 +45,13 @@ while ($row = $result->fetch_assoc()){
     $response_arr->$id = new stdClass();
     $response_arr->$id->title=$row["title"];
     $response_arr->$id->type="content";
-    $response_arr->$id->contentId=$row["contentId"];
+    $response_arr->$id->contentIds=array($row["contentId"]);
     $response_arr->$id->branchId=$row["sourceBranchId"];
     $response_arr->$id->assignedDate=$row["assignedDate"];
     $response_arr->$id->dueDate=$row["dueDate"];
     $response_arr->$id->numberOfAttemptsAllowed=$row["numberOfAttemptsAllowed"];
     $response_arr->$id->parentId=$row["parentId"];
+    $response_arr->$id->rootId="root";
     // $object = [ $row["assignmentId"]=> [
     // "name"=>$row["assignmentName"],
     // "attr"=>"assignment",
@@ -76,11 +77,13 @@ while ($row = $result->fetch_assoc()){
     $response_arr->$id = new stdClass();
     $response_arr->$id->title=$row["title"];
     $response_arr->$id->type="folder";
+    $response_arr->$id->isRepo=false;
     $response_arr->$id->childrenId=[$row["childrenId"]];
     $response_arr->$id->childFolders=array();
     $response_arr->$id->childContent=array();
     $response_arr->$id->childUrls=array();
     $response_arr->$id->parentId=$row["parentId"];
+    $response_arr->$id->rootId="root";
   }else {
     array_push($response_arr->$id->childrenId,$row["childrenId"]);    
   } 
