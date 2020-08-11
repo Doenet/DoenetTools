@@ -53,6 +53,7 @@ class DoenetChooser extends Component {
       errorInfo: null,
       modalOpen: false,
       selectedDrive: "Content",
+      modalHeaderTitle: "Untitled",
       selectedCourse: null,
       selectedItems: [],
       selectedItemsType: [],
@@ -2518,6 +2519,10 @@ class DoenetChooser extends Component {
     this.loadUserUrls();
   }
 
+  headerTitleChange(title) {
+    this.setState({modalHeaderTitle: title});
+  }
+
   render() {
     if (!this.courses_loaded || !this.assignments_and_headings_loaded) {
       return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
@@ -2685,7 +2690,8 @@ class DoenetChooser extends Component {
             this.tempSet.add(id);
             this.customizedTempSet.clear();
             this.customizedTempSet.add(itemParentId);
-            this.forceUpdate()
+            this.handleContentItemDoubleClick([id]);
+            this.forceUpdate();
           }}
           onParentNodeClick={(id, type) => {
             // get path to item
@@ -3225,7 +3231,8 @@ const customizedTreeNodeItem = ({title, icon}) => {
     const rightPanelMenuControls = [dropDownSelectButton, splitSwitchPanelButton];
     const createMiddlePanelContent = (match) => {
       ////console.log('match', match);
-      return (<ToolLayoutPanel
+      return (
+      <ToolLayoutPanel
         panelName="Main Panel"
         splitPanel={this.state.splitPanelLayout}
         panelHeaderControls={[mainPanelMenuControls, navigationPanelMenuControls, middlePanelMenuControls]}
@@ -3258,18 +3265,22 @@ const customizedTreeNodeItem = ({title, icon}) => {
         </SplitLayoutPanel>
       </ToolLayoutPanel>)
     };
+
+    // let title_text = `${this.state.documentTitle} (version ${this.state.version})`;
+
+    
+
     return (<React.Fragment>
       <ToastProvider>
         <this.ToastWrapper />
         <Overlay 
              open={this.state.modalOpen} 
-             body={
-            this.state.modalOpen && <DoenetEditor hideHeader={true} branchId={this.selectedBranchId}
-              contentId={this.selectedContentId} />
-            // <DoenetEditor hideHeader={true} branchId={'GJqovNClEobHRxhtj4YCX'}
-            // contentId={'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'} />
-            // <DoenetEditor hideHeader={true} branchId={'U3_GUY9poJdTs-nABsmJB'}
-            // contentId={'a22a2e97e1d853d385319e6cf24992eb2598cd2c597c68f249f0efa2c437dce7'} />
+             name="Editor"
+             header= {this.state.modalHeaderTitle}
+             body={ this.state.modalOpen && <DoenetEditor hideHeader={true} 
+                                                           branchId={this.selectedBranchId}
+                                                           contentId={this.selectedContentId}
+                                                           headerTitleChange={this.headerTitleChange.bind(this)}/>
           }
           onClose={this.overlayOnClose.bind(this)} />
         <Router>
@@ -3280,13 +3291,13 @@ const customizedTreeNodeItem = ({title, icon}) => {
           >
 
             <ToolLayoutPanel panelName="Navigation Panel" key={'left'}>
-              <div>
+              <div style={{width:"100%"}}>
                 <div style={{ padding: "10px", marginBottom: "30px" }}>
                   <input
                     className="search-input"
                     onChange={this.handleLeftNavSearch.bind(this)}
                     placeholder="Search..."
-                    style={{ width: "200px", minHeight: "40px", padding: "10px" }}
+                    style={{ minHeight: "40px", padding: "10px" , width:"100%"}}
                   />
                 </div>
 
@@ -4213,11 +4224,21 @@ class InfoPanel extends Component {
       // build content versions
       let versions = [];
 
-      let versionNumber = this.props.allContentInfo[selectedItemId].contentIds.length;
+      let versionNumber = 1;
       // get and format versions
-      this.props.allContentInfo[selectedItemId].contentIds.forEach(contentIdObj => {
+      let contentIds = this.props.allContentInfo[selectedItemId].contentIds;
+
+      contentIds.sort(function(a, b) {
+        var keyA = new Date(a.publishDate),
+          keyB = new Date(b.publishDate);
+        if (keyA < keyB) return -1;
+        if (keyA > keyB) return 1;
+        return 0;
+      });
+
+      contentIds.forEach(contentIdObj => {
         if (contentIdObj.draft !== "1") {
-          let versionTitle = "Version " + versionNumber--;
+          let versionTitle = "Version " + versionNumber;
           versions.push(
             <div style={{ "display": "block" }} key={"version" + versionNumber}>
               <FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "14px", "color": "#3D6EC9", "marginRight": "10px" }} />
@@ -4228,6 +4249,7 @@ class InfoPanel extends Component {
               }}>{versionTitle}</a>
             </div>
           );
+          versionNumber++;
         }
       });
 
@@ -4261,7 +4283,16 @@ class InfoPanel extends Component {
         </table>
         <div id="editContentButtonContainer">
           <div id="editContentButton" data-cy="editContentButton"
-            onClick={() => { window.location.href = `/editor?branchId=${selectedItemId}` }}>
+            onClick=
+            // {() => { window.location.href = `/editor?branchId=${selectedItemId}` }}
+
+            {(e)=>
+              {
+                this.props.versionCallback(e, selectedItemId);
+            }}
+            >
+         
+              
             <FontAwesomeIcon icon={faEdit} style={{ "fontSize": "20px", "color": "#43aa90" }} />
             <span>Edit Draft</span>
           </div>
