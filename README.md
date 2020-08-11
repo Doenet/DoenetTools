@@ -2,11 +2,11 @@
 The core libraries underlying the Distributed Open Education Network (Doenet)
 
 ## Local Development Setup
-### 1. `fork` and `clone` this project
+### 1. `fork` this repository and `clone` your fork.
 - [_Fork the project on Github_](https://help.github.com/en/github/getting-started-with-github/fork-a-repo)
 - `$ cd /path/to/desired/location`
-- `$ git clone git@github.com:<your_github_username>/DoenetCourse`
-- `$ cd DoenetCourse`
+- `$ git clone git@github.com:<your_github_username>/DoenetTools`
+- `$ cd DoenetTools`
 
 ### 2. Install Docker
 #### If you have a Desktop Environment (If you don't know what that is, you probably do):
@@ -33,9 +33,9 @@ Hopefully you are now done installing docker.
 `$ sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose`
 
 ### 3. Install dependencies
-- Go to the DoenetCourse folder
+- Go to the DoenetTools folder
 ```bash
-$ cd /path/to/desired/location/DoenetCourse
+$ cd /path/to/desired/location/DoenetTools
 ```
 - Use NPM to install the build utilities. (Dependencies)
 ```bash
@@ -65,7 +65,7 @@ The first time it is run, this does a few things.
 When you are not using them, you can stop the docker containers by going to the terminal you started them with and using `ctrl+c`. Let the containers stop gracefully. Keep in mind that Webpack takes a while to get going, so you probably don't want to stop the containers until you are done for the day. Or you can leave them running indefinitely.
 
 ## Usage
-Visit `localhost` in your browser to test the project. When you make changes to the code in the code in `/static` or `/src`, the Docker containers will automatically build the changes and serve the new files. There will be no output to the terminal and you must refresh manually.
+Visit `localhost` in your browser to test the project. When you make changes to the code in the code in `/static` or `/src`, the Docker containers will automatically build the changes and serve the new files. There may be no output to the terminal and you must reload pages manually.
 
 ### Run the containers
 To run the containers, you can just run `$ npm start` in the project's root directory. This command will only build the containers if they are not already built.
@@ -75,13 +75,13 @@ Note: You must have docker running before you can start the containers.
 ### Stop the containers
 Option 1: Use `ctrl+c` in the terminal that you started them with.
 
-Option 2: Stop all four containers using whatever docker interface you have. The containers are "node", "apache", "mysql", and "php".
+Option 2: Stop all four containers using whatever docker interface you have. The containers are "doenet_docker_node", "doenet_docker_apache", "doenet_docker_mysql", and "doenet_docker_php".
 
 ### Re-build the containers.
 If you need to re-build the containers for whatever reason, run `$ npm run docker:build`. Not to be confused with `$ npm run build` which will build the website for production.
 
 ### Directly access the database
-The database is exposed to your local machine by port 3306. You can use a program such as Sequel Pro (Mac), MySQLWorkbench (Most OS), or the MySQL CLI. to interact with the database directly.
+The database is exposed to your local machine by port 3306. You can use a program such as Sequel Pro (Mac), MySQLWorkbench (Most OS), or the MySQL CLI to interact with the database directly.
 
 If port 3306 is in use, you can change the port in the `docker-compose.yml` file:
 ```yaml
