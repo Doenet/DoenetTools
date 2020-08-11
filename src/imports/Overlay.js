@@ -7,10 +7,10 @@ import { faTimesCircle }
 const OverlayWrapper = styled.div`
   z-index: 6;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   position:absolute;
-  overflow-y: hidden;
+  overflow: hidden;
 	transition-property: all;
   transition: all .2s ease-in-out;
   &.on {
@@ -18,9 +18,9 @@ const OverlayWrapper = styled.div`
   }
    
   &.off {
-    margin-top: 100%;
+    margin-top: 200%;
   }
-  @media (max-width: 768px){
+  @media (max-width: 767px){
     z-index: 6;
     left: 0;
     width: 100%;
@@ -45,6 +45,7 @@ const OverlayContent = styled.div`
 const OverlayHeaderWrapper = styled.div`
   display: flex;
   background-color: #288ae9;
+  height:40px;
 
 `;
 const OverlayContainer = styled.div`
@@ -52,7 +53,7 @@ const OverlayContainer = styled.div`
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  height: calc(100vh + 10px);
+  height: calc(100vh - 40px);
   overflow: scroll;
   background-color:white;
 `;
@@ -72,7 +73,6 @@ const OverlayHeader = styled.span`
   display: inline-flex;
   font-size:20px;
   font-weight: 700;
-
   width: 33%;
   align-items: center;
   justify-content: center;
@@ -109,13 +109,4 @@ export default function Overlay(props) {
       </OverlayContent>
     </OverlayWrapper>
   );
-}
-
-function OverlayWrappingContainer(props) {
-  return (
-    <OverlayContentContainer style={{ backgroundColor: "pink", width: "100%", height: "100%" }}>
-      {Overlay()}
-    </OverlayContentContainer>
-  )
-
 }

@@ -14,7 +14,7 @@ import axios from "axios";
 const Container = styled.div`
   display: flex;
   position: fixed;
-  height:calc(100vh - 50px);
+  height: ${props => props.hideHeader ? "calc(100vh - 40px)" : "calc(100vh - 50px)" };
   overflow:hidden;
   z-index:0;
   width:100%;

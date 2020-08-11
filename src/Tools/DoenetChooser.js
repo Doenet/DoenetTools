@@ -5,7 +5,6 @@ import crypto from 'crypto';
 import nanoid from 'nanoid';
 import "./chooser.css";
 import "../imports/doenet.css";
-import DoenetHeader from './DoenetHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus, faDotCircle, faFileAlt, faEdit, faCaretRight, faCaretDown,
@@ -102,54 +101,10 @@ class DoenetChooser extends Component {
     this.browser = React.createRef();
     this.browserSec = React.createRef();
 
-    // this.handleNewDocument = this.handleNewDocument.bind(this);
-    // this.saveContentToServer = this.saveContentToServer.bind(this);
-    // this.getContentId = this.getContentId.bind(this);
-    // this.toggleManageCourseForm = this.toggleManageCourseForm.bind(this);
-    // this.saveCourse = this.saveCourse.bind(this);
-    // this.selectDrive = this.selectDrive.bind(this);
-    // this.handleNewCourseCreated = this.handleNewCourseCreated.bind(this);
-    // this.handleNewFolder = this.handleNewFolder.bind(this);
-    // this.addNewFolder = this.addNewFolder.bind(this);
-    // this.handleNewRepo = this.handleNewRepo.bind(this);
-    // this.addNewRepo = this.addNewRepo.bind(this);
-    // this.addContentToFolder = this.addContentToFolder.bind(this);
-    // this.removeContentFromFolder = this.removeContentFromFolder.bind(this);
-    // this.addContentToCourse = this.addContentToCourse.bind(this);
-    // this.removeContentFromCourse = this.removeContentFromCourse.bind(this);
-    // this.updateSelectedItems = this.updateSelectedItems.bind(this);
-    // this.updateDirectoryStack = this.updateDirectoryStack.bind(this);
-    // this.jumpToDirectory = this.jumpToDirectory.bind(this);
-    // this.saveUserContent = this.saveUserContent.bind(this);
-    // this.modifyRepoAccess = this.modifyRepoAccess.bind(this);
-    // this.modifyFolderChildrenRoot = this.modifyFolderChildrenRoot.bind(this);
-    // this.flattenFolder = this.flattenFolder.bind(this);
-    // this.renameFolder = this.renameFolder.bind(this);
-    // this.modifyPublicState = this.modifyPublicState.bind(this);
-    // this.addContentToRepo = this.addContentToRepo.bind(this);
-    // this.loadFilteredContent = this.loadFilteredContent.bind(this);
-    // this.publicizeRepo = this.publicizeRepo.bind(this);
-    // this.toggleManageUrlForm = this.toggleManageUrlForm.bind(this);
-    // this.saveUrl = this.saveUrl.bind(this);
-    // this.handleNewUrlCreated = this.handleNewUrlCreated.bind(this);
-    // this.updateHeadingsAndAssignments = this.updateHeadingsAndAssignments.bind(this);
-    // this.saveAssignmentsTree = this.saveAssignmentsTree.bind(this);
-    // this.ToastWrapper = this.ToastWrapper.bind(this);
-    // this.displayToast = this.displayToast.bind(this);
-    // this.onTreeDragStart = this.onTreeDragStart.bind(this);
-    // this.onTreeDragEnd = this.onTreeDragEnd.bind(this);
-    // this.onTreeDraggableDragOver = this.onTreeDraggableDragOver.bind(this);
-    // this.onTreeDropEnter = this.onTreeDropEnter.bind(this);
-    // this.onTreeDropLeave = this.onTreeDropLeave.bind(this);
-    // this.onTreeDrop = this.onTreeDrop.bind(this);
+
+
     this.onBrowserDragStart = this.onBrowserDragStart.bind(this);
-    // this.onBrowserDragEnd = this.onBrowserDragEnd.bind(this);
-    // this.onBrowserDropEnter = this.onBrowserDropEnter.bind(this);
-    // this.onBrowserDrop = this.onBrowserDrop.bind(this);
-    // this.onBrowserFolderDrop = this.onBrowserFolderDrop.bind(this);
     this.onSplitPanelBrowserFolderDrop = this.onSplitPanelBrowserFolderDrop.bind(this);
-    // this.getDataSource = this.getDataSource.bind(this);
-    // this.switchPanelContainer = this.switchPanelContainer.bind(this);
     this.toggleSplitPanel = this.toggleSplitPanel.bind(this);
     this.goToFolder = this.goToFolder.bind(this);
     this.splitPanelGoToFolder = this.splitPanelGoToFolder.bind(this);
@@ -159,8 +114,6 @@ class DoenetChooser extends Component {
     this.onSplitPanelBrowserDragStart = this.onSplitPanelBrowserDragStart.bind(this);
     this.onSplitPanelBrowserDragEnd = this.onSplitPanelBrowserDragEnd.bind(this);
     this.handleContentItemDoubleClick = this.handleContentItemDoubleClick.bind(this);
-    // this.onSplitPanelBrowserDropEnter = this.onSplitPanelBrowserDropEnter.bind(this);
-    this.onSplitPanelBrowserDrop = this.onSplitPanelBrowserDrop.bind(this);
     this.tempSet = new Set();
     this.customizedTempSet = new Set();
   }
@@ -2374,26 +2327,6 @@ class DoenetChooser extends Component {
     ////console.log("onBrowserDrop")
 
   }
-  onSplitPanelBrowserDrop(containerId, parentsInfo, leavesInfo) {
-    ////console.log("onBrowserDrop")
-
-  }
-
-  // switchPanelContainer(panelId) {
-  //   const values = this.state.panelsCollection[panelId].values;
-  //   const currentActiveContainer = this.state.panelsCollection[panelId].activeContainer;
-  //   const nextActiveContainer = values[(values.indexOf(currentActiveContainer) + 1) % values.length];
-  //   const newPanelData = {
-  //     values: values,
-  //     activeContainer: nextActiveContainer
-  //   }
-  //   this.setState({
-  //     panelsCollection: {
-  //       ...this.state.panelsCollection,
-  //       [panelId]: newPanelData
-  //     }
-  //   })
-  // }
 
 
   switchPanelContainer = (view) => {
@@ -2630,7 +2563,7 @@ class DoenetChooser extends Component {
         return <div>
           {icon}
 
-          <Link to={`/go/?path=${title}`} style={{textDecoration:"none",paddingLeft:"5px"}}>{title}</Link>
+          <Link to={`/content/?path=${title}`} style={{textDecoration:"none", marginLeft:"5px", color: "rgba(0, 0, 0, 0.8)", border: "0px", background: "none", padding: "0px"}}>{title}</Link>
         </div>
       };
 
@@ -2833,7 +2766,8 @@ const TreeNodeItemSplit = ({title, icon}) => {
 const customizedTreeNodeItem = ({title, icon}) => {
   return <div>
     {icon}
-    <Link to={`/go/?path=${title}`} style={{textDecoration:"none",color:"white",paddingLeft:"5px"}}>{title}</Link>
+    <Link to={`/content/?path=${title}`} style={{ color: 'white', textDecoration: 'none', paddingLeft: "5px", fontSize: "16px" , fontWeight:"700"}}>{title}</Link>
+    
   </div>
 };
       this.customizedTree = <div className="tree-column">
@@ -3101,7 +3035,7 @@ const customizedTreeNodeItem = ({title, icon}) => {
           onDragEnd={this.onSplitPanelBrowserDragEnd}
           onDraggableDragOver={() => { }}
           // onDropEnter={this.onSplitPanelBrowserDropEnter}
-          onDrop={this.onSplitPanelBrowserDrop}
+          // onDrop={this.onSplitPanelBrowserDrop}
           onFolderDrop={this.onSplitPanelBrowserFolderDrop}
         />
       </React.Fragment>
@@ -3296,7 +3230,7 @@ const customizedTreeNodeItem = ({title, icon}) => {
 
             <Switch>
               <Route exact path="/" render={({ match }) => createMiddlePanelContent(match)} />
-              <Route path="/go/" render={({ match }) => createMiddlePanelContent(match)} />
+              <Route path="/content/" render={({ match }) => createMiddlePanelContent(match)} />
             </Switch>
 
           <ToolLayoutPanel panelName="Info Panel" key={'right'}>
