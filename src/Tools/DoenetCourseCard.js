@@ -24,7 +24,7 @@ const Image = Styled.div`
   //width: 100%;
   color: red;
   background-image: url(${props => props.url});
-  background-color: ${props => props.color};
+  background-color: ${props => `#${props.color}`};
   background-size: cover;
   background-position: center;
 `;

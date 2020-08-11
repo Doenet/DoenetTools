@@ -121,8 +121,9 @@ ORDER BY c.shortName
 $result = $conn->query($sql); 
 
 
-         
+    
 if ($result->num_rows > 0){
+  
   while($row = $result->fetch_assoc()){ 
     $course = array(
           "courseId" => $row["courseId"],
@@ -140,6 +141,8 @@ if ($result->num_rows > 0){
   }
 }
 
+//echo json_encode($courseInfo);
+
 $sql = "SELECT udm.courseId, udm.color, udm.order, udm.image
          FROM user_dashboard_modification as udm
          WHERE udm.userId = '$userId'
@@ -152,8 +155,8 @@ while ($row = $result->fetch_assoc()) {
     if($row['color'] != null){
         $courseInfo[$courseIdToIndexHash[$row['courseId']]]['color'] = $row['color'];
     }
-    if($row['order'] != null){
-        $courseInfo[$courseIdToIndexHash[$row['courseId']]]['order'] = intval($row['order']);
+    if($row['position'] != null){
+        $courseInfo[$courseIdToIndexHash[$row['courseId']]]['position'] = intval($row['position']);
     }
     if($row['imageUrl'] != null){
         $courseInfo[$courseIdToIndexHash[$row['courseId']]]['imageUrl'] = $row['imageUrl'];

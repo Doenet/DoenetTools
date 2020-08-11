@@ -31,18 +31,18 @@ const alphabet =
   "a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z a b c d e f g h i j k l m n o p q r s t u v w x y z ";
 
   function compare (x, y) {
-    console.log("XY: ", x, y);
-    if(x.order != null && y.order != null){
-      return x.order - y.order
-    }else if(x.order != null){
+    //console.log("XY: ", x, y);
+    if(x.position != null && y.position != null){
+      return x.position - y.position
+    }else if(x.position != null){
       return -1
-    }else if(y.order != null){
+    }else if(y.position != null){
       return 1
     }else{
-      return x.shortName.localeCompare(y.shortName)
+      return x.shortname.localeCompare(y.shortname)
     }
   }
-
+  
   export default function DoenetDashboard(props){
 
     const [items, setItems] = useState(null);
@@ -91,7 +91,7 @@ const alphabet =
     const bind = { ref }
     //console.log(bind);
     
-    const [width, setWidth] = useState(window.innerWidth - 200)
+    const [width, setWidth] = useState(window.innerWidth < 767 ? window.innerWidth : window.innerWidth - 206)
     
 
     // const updateWidth = () => {
@@ -141,7 +141,7 @@ const alphabet =
 
     return (
       <Router basename = "/">
-        <ToolLayout toolName="Dashboard" toolPanelsWidth = {toolPanelsWidthResize}>
+        <ToolLayout toolName="Dashboard" toolPanelsWidth = {toolPanelsWidthResize} leftPanelClose = {true}>
 
        <ToolLayoutPanel
             // menuControls={menuControls}
@@ -158,7 +158,7 @@ const alphabet =
             // menuControls={menuControlsEditor}
             panelName="Editor">
 
-            <div>
+            <div className = "dashboardcontainer">
 
             {isLoaded ? 
             <div {...bind} className="list" style={{ height: Math.max(...heights) }}>

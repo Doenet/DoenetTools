@@ -25,6 +25,31 @@ export function setSelected(selectCourseId,callback=()=>{}){
   }
 }
 
+//callback(success) true or false
+export function updateCourses(courseArray,callback=()=>{}){
+
+    const courseListDB = useIndexedDB('CourseList');
+    
+    for (let courseObj of courseArray){
+      courseListDB.update(courseObj);
+    }
+
+    const url = '/api/saveUserCourseModifications.php';;
+
+    axios.post(url, courseArray)
+      .then(() => {
+        callback(true);
+      })
+      .catch(function (error) {
+        callback(false)
+        console.log(error);
+      })
+    //needs to save to db post
+
+    callback(true)
+}
+
+
 //callback(courseListArray,selectedCourseObj)
 export function getCourses(callback){
 
