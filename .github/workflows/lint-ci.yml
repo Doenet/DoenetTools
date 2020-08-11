@@ -23,7 +23,7 @@ jobs:
         node-version: '10.x'
     - run: npm install
     - name: Linting
-      run: prettier-eslint "$(pwd)/src/**/*.js" && prettier-eslint "$(pwd)/cypress/**/*.js"
+      run: npx prettier-eslint "$(pwd)/src/**/*.js" && npx prettier-eslint "$(pwd)/cypress/**/*.js"
 
   test:
     # Only runs the tests found in 'tagSpecific'
