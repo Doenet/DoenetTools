@@ -18,7 +18,7 @@ class DoenetHome extends Component {
 
 
 
-    this.username = "";
+    this.userId = "";
 
     this.courseId = "aI8sK4vmEhC5sdeSP3vNW"; //Temporary TODO: Choose courses
     this.courseName = "Calculus and Dynamical Systems in Biology";
@@ -34,7 +34,7 @@ class DoenetHome extends Component {
       const envUrl='/api/env.php';
       axios.get(envUrl)
         .then(resp=>{
-            this.username = resp.data.user;
+            this.userId = resp.data.user;
             this.access = resp.data.access;
             this.forceUpdate();
         });
@@ -423,9 +423,9 @@ class DoenetHome extends Component {
           <p>Home Page</p>
         </div>
 
-        <div className="homeUsername">
+        <div className="homeUserId">
         <div style={{textAlign:"center",marginTop:"6px",borderStyle: "solid",borderWidth: "1px", borderColor:"rgb(99, 154, 181)",width:"130px",borderRadius:"4px",cursor: "pointer"}} onClick={()=>alert('User Setting Feature Not Yet Available')}>
-            <div style={{display:"inline-block"}}>{this.username}</div>
+            <div style={{display:"inline-block"}}>{this.userId}</div>
             </div>
             
         </div>
