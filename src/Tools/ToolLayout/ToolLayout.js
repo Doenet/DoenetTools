@@ -396,7 +396,7 @@ export default function ToolLayout(props) {
         headerChangesFromLayout={props.headerChangesFromLayout}
         guestUser={props.guestUser}
         onChange={showCollapseMenu} />}
-      {deviceType === "phone" ? <div ref={container}>
+      {deviceType === "phone" ? <div ref={container} style={{width: '100%'}}>
         <div className={footerClass}>
           {(phoneVisiblePanel === "left" || allParts.length === 1) &&
             <div key="part1" id="leftpanel" className="leftpanel" >{leftNav}</div>}
@@ -420,7 +420,7 @@ export default function ToolLayout(props) {
         </div>}
       </div>
         :
-        <Container ref={container}>{allParts}</Container>
+        <Container ref={container} hideHeader={props.hideHeader}>{allParts}</Container>
       }
     </>
   );
