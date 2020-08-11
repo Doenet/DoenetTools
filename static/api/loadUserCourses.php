@@ -143,7 +143,7 @@ if ($result->num_rows > 0){
 
 //echo json_encode($courseInfo);
 
-$sql = "SELECT udm.courseId, udm.color, udm.order, udm.image
+$sql = "SELECT udm.courseId, udm.color, udm.position, udm.image
          FROM user_dashboard_modification as udm
          WHERE udm.userId = '$userId'
 ";
