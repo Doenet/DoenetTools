@@ -1,6 +1,5 @@
-import { useIndexedDB } from 'react-indexed-db';
+import { useIndexedDB, initDB } from 'react-indexed-db';
 import axios from 'axios';
-import { initDB } from 'react-indexed-db';
 
 
 //callback(success) true or false
