@@ -249,22 +249,14 @@ CREATE TABLE `course` (
   `assignmentEnabled` int(1) DEFAULT NULL,
   `overview_branchId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `syllabus_branchId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-<<<<<<< HEAD
-  `section` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `department` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `authPasscode` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `imageUrl` varchar(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `color` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-=======
   `section` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `department` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `authPasscode` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `color` char(6) COLLATE utf8_unicode_ci DEFAULT NULL,
->>>>>>> upstream/master
   PRIMARY KEY (`id`),
   UNIQUE KEY `courseId` (`courseId`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -273,11 +265,7 @@ CREATE TABLE `course` (
 
 LOCK TABLES `course` WRITE;
 /*!40000 ALTER TABLE `course` DISABLE KEYS */;
-<<<<<<< HEAD
-INSERT INTO `course` VALUES (1,'aI8sK4vmEhC5sdeSP3vNW','Fall 2019','Calculus and Dynamical Systems in Biology','math1241','Calculus and Dynamical Systems in Biology',_binary '\0','4f0ccaf3d65a89d6e80e1c204fffb88e3138a31964a8b2b87a580dd9b5c7e9e1\n',1,0,1,1,'_jO08ui8XmzjAt8GSwLNE','7lg9CxZ4jqYMoEylrtkU8',NULL,NULL,'a','math1241','coral'),(2,'uTMfKhSmcNtLDaK8oJ3U','Fal 2019','Calculus 2','math1242','Calculus 2 description',_binary '\0',NULL,1,1,1,1,'Hj4NperLUm_UxLWtV7xTq','v3G1SMhFBSsherZfSlEwG',NULL,NULL,'a','math1242','crimson'),(3,'NfzKqYtTgYRyPnmaxc7XB','Fall 2019','Calculus','math1000','Calculus',_binary '\0',NULL,1,1,1,1,'r5zYs7dMiDYYaiq8nYKPF','MVHoKTLwjEvuZPNm3x90S',NULL,NULL,'a',NULL,'lightgreen'),(4,'test1','Fall 2019','test1','test1',NULL,_binary '\0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'test1','aqua'),(5,'test2','Fall 2019','test2','test2',NULL,_binary '\0',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'purple');
-=======
 INSERT INTO `course` VALUES (1,'aI8sK4vmEhC5sdeSP3vNW','Fall 2019','Calculus and Dynamical Systems in Biology','math1241','Calculus and Dynamical Systems in Biology',_binary '\0','4f0ccaf3d65a89d6e80e1c204fffb88e3138a31964a8b2b87a580dd9b5c7e9e1\n',1,0,1,1,'_jO08ui8XmzjAt8GSwLNE','7lg9CxZ4jqYMoEylrtkU8',NULL,NULL,'a',NULL,NULL),(2,'uTMfKhSmcNtLDaK8oJ3U','Fal 2019','Calculus 2','math XXXX','Calculus 2 description',_binary '\0',NULL,1,1,1,1,'Hj4NperLUm_UxLWtV7xTq','v3G1SMhFBSsherZfSlEwG',NULL,NULL,'a',NULL,NULL),(3,'NfzKqYtTgYRyPnmaxc7XB','Fall 2019','Calculus','MATH ','Calculus',_binary '\0',NULL,1,1,1,1,'r5zYs7dMiDYYaiq8nYKPF','MVHoKTLwjEvuZPNm3x90S',NULL,NULL,'a',NULL,NULL);
->>>>>>> upstream/master
 /*!40000 ALTER TABLE `course` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -881,11 +869,7 @@ CREATE TABLE `user_dashboard_modification` (
   `courseId` char(21) DEFAULT NULL,
   `order` int(11) DEFAULT NULL,
   `color` char(21) DEFAULT NULL,
-<<<<<<< HEAD
-  `imageUrl` varchar(2000) DEFAULT NULL,
-=======
   `image` varchar(2000) DEFAULT NULL,
->>>>>>> upstream/master
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -896,11 +880,7 @@ CREATE TABLE `user_dashboard_modification` (
 
 LOCK TABLES `user_dashboard_modification` WRITE;
 /*!40000 ALTER TABLE `user_dashboard_modification` DISABLE KEYS */;
-<<<<<<< HEAD
-INSERT INTO `user_dashboard_modification` VALUES (1,'4VYp5dOrVWGz0OKB2hkLW','aI8sK4vmEhC5sdeSP3vNW',1,'red',NULL),(2,'4VYp5dOrVWGz0OKB2hkLW','uTMfKhSmcNtLDaK8oJ3U',3,'blue',NULL),(3,'4VYp5dOrVWGz0OKB2hkLW','test1',2,'green',NULL);
-=======
 INSERT INTO `user_dashboard_modification` VALUES (1,'4VYp5dOrVWGz0OKB2hkLW','aI8sK4vmEhC5sdeSP3vNW',3,'red',NULL),(2,'4VYp5dOrVWGz0OKB2hkLW','test2',2,'crimson',NULL),(3,'4VYp5dOrVWGz0OKB2hkLW','uTMfKhSmcNtLDaK8oJ3U',1,'green',NULL);
->>>>>>> upstream/master
 /*!40000 ALTER TABLE `user_dashboard_modification` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1022,8 +1002,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
-<<<<<<< HEAD
--- Dump completed on 2020-08-04 20:45:33
-=======
 -- Dump completed on 2020-08-11 18:31:57
->>>>>>> upstream/master
