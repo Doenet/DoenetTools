@@ -4,7 +4,7 @@ import { getVariantsForDescendants } from '../../utils/variants';
 export default class SectioningComponent extends BlockComponent {
   static componentType = "_sectioningcomponent";
 
-  setUpVariantIfVariantControlChild = true;
+  static setUpVariantIfVariantControlChild = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -21,13 +21,27 @@ export default class SectioningComponent extends BlockComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
+    let atMostOneVariantControl = childLogic.newLeaf({
+      name: "atMostOneVariantControl",
+      componentType: "variantcontrol",
+      comparison: "atMost",
+      number: 1,
+      allowSpillover: false,
+    })
+
+    let anything = childLogic.newLeaf({
       name: 'anything',
       componentType: '_base',
       comparison: 'atLeast',
       number: 0,
-      setAsBase: true,
     });
+
+    childLogic.newOperator({
+      name: "variantAndAnything",
+      operator: "and",
+      propositions: [atMostOneVariantControl, anything],
+      setAsBase: true,
+    })
 
     return childLogic;
   }
@@ -162,6 +176,55 @@ export default class SectioningComponent extends BlockComponent {
           newValues:
             { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
         };
+      }
+    }
+
+
+    stateVariableDefinitions.selectedVariantInfo = {
+      additionalStateVariablesDefined: ["isVariantComponent"],
+      returnDependencies: ({ componentInfoObjects }) => ({
+        variantControlChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneVariantControl",
+          variableNames: ["selectedVariantNumber"]
+        },
+        variantDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          variableNames: [
+            "isVariantComponent",
+            "selectedVariantInfo",
+          ],
+          recurseToMatchedChildren: false,
+          variablesOptional: true,
+          includeNonActiveChildren: true,
+          ignoreReplacementsOfMatchedComposites: true,
+          definingChildrenFirst: true,
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        let isVariantComponent;
+        let selectedVariantInfo = {};
+        if (dependencyValues.variantControlChild.length === 1) {
+          isVariantComponent = true;
+          selectedVariantInfo.index = dependencyValues.variantControlChild[0].stateValues.selectedVariantNumber;
+        } else {
+          isVariantComponent = false;
+        }
+
+        let subvariants = selectedVariantInfo.subvariants = [];
+
+        for (let descendant of dependencyValues.variantDescendants) {
+          if (descendant.stateValues.isVariantComponent) {
+            subvariants.push(descendant.stateValues.selectedVariantInfo)
+          } else if (descendant.stateValues.selectedVariantInfo) {
+            subvariants.push(...descendant.stateValues.selectedVariantInfo.subvariants)
+          }
+
+        }
+        return { newValues: { selectedVariantInfo, isVariantComponent } }
+
       }
     }
 

@@ -30,6 +30,8 @@ export default class Choiceinput extends Input {
 
   static componentType = "choiceinput";
 
+  static createsVariants = true;
+
   // used when referencing this component without prop
   static get stateVariablesShadowedForReference() { return ["choiceOrder"] };
 
@@ -93,7 +95,10 @@ export default class Choiceinput extends Input {
           dependencyType: "value",
           value: sharedParameters.selectRng,
           doNotProxy: true,
-        }
+        },
+        variants: {
+          dependencyType: "variants",
+        },
       }),
       definition: function ({ dependencyValues }) {
         let numberChoices = dependencyValues.choiceChildren.length;
@@ -101,6 +106,34 @@ export default class Choiceinput extends Input {
         if (dependencyValues.fixedOrder) {
           choiceOrder = [...Array(numberChoices).keys()]
         } else {
+
+          // if desiredIndices is specfied, use those
+          if (dependencyValues.variants && dependencyValues.variants.desiredVariant !== undefined) {
+            let desiredChoiceOrder = dependencyValues.variants.desiredVariant.indices;
+            if (desiredChoiceOrder !== undefined) {
+              if (desiredChoiceOrder.length !== numberChoices) {
+                console.warn("Ignoring indices specified for choiceinput as number of indices doesn't match number of choice children.")
+              } else {
+                desiredChoiceOrder = desiredChoiceOrder.map(Number);
+                if (!desiredChoiceOrder.every(Number.isInteger)) {
+                  throw Error("All indices specified for choiceinput must be integers");
+                }
+                if (!desiredChoiceOrder.every(x => x >= 0 && x < numberChoices)) {
+                  console.warn("Ignoring indices specified for choiceinput as some indices out of range.")
+                } else {
+
+                  return {
+                    // makeEssential: ["choiceOrder"],
+                    newValues: {
+                      choiceOrder: desiredChoiceOrder,
+                    },
+                  }
+                }
+              }
+            }
+          }
+
+
           // shuffle order every time get new children
           // https://stackoverflow.com/a/12646864
           choiceOrder = [...Array(numberChoices).keys()]
@@ -113,6 +146,66 @@ export default class Choiceinput extends Input {
         return { newValues: { choiceOrder } }
       }
     }
+
+
+    stateVariableDefinitions.selectedVariantInfo = {
+      additionalStateVariablesDefined: ["isVariantComponent"],
+      returnDependencies: ({ componentInfoObjects }) => ({
+        choiceOrder: {
+          dependencyType: "stateVariable",
+          variableName: "choiceOrder"
+        },
+        fixedOrder: {
+          dependencyType: "stateVariable",
+          variableName: "fixedOrder"
+        },
+        variantDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          variableNames: [
+            "isVariantComponent",
+            "selectedVariantInfo",
+          ],
+          useReplacementsForComposites: true,
+          recurseToMatchedChildren: false,
+          variablesOptional: true,
+          includeNonActiveChildren: true,
+          ignoreReplacementsOfMatchedComposites: true,
+          definingChildrenFirst: true,
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        if (dependencyValues.fixedOrder) {
+          return {
+            newValues: {
+              isVariantComponent: false,
+              selectedVariantInfo: null
+            }
+          }
+        }
+
+        let selectedVariantInfo = {
+          indices: dependencyValues.choiceOrder
+        };
+
+        let subvariants = selectedVariantInfo.subvariants = [];
+
+        for (let descendant of dependencyValues.variantDescendants) {
+          if (descendant.stateValues.isVariantComponent) {
+            subvariants.push(descendant.stateValues.selectedVariantInfo)
+          } else if (descendant.stateValues.selectedVariantInfo) {
+            subvariants.push(...descendant.stateValues.selectedVariantInfo.subvariants)
+          }
+
+        }
+        return { newValues: { selectedVariantInfo, isVariantComponent: true } }
+
+      }
+    }
+
+
+
 
     stateVariableDefinitions.choiceChildrenOrdered = {
       additionalStateVariablesDefined: [

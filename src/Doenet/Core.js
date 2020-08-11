@@ -47,6 +47,7 @@ export default class Core {
     this._allComponentClasses = ComponentTypes.allComponentClasses();
     this._componentTypesTakingComponentNames = ComponentTypes.componentTypesTakingComponentNames();
     this._componentTypesCreatingVariants = ComponentTypes.componentTypesCreatingVariants();
+    this._componentTypeWithPotentialVariants = ComponentTypes.componentTypeWithPotentialVariants();
 
     this._allPossibleProperties = this.createAllPossibleProperties();
 
@@ -71,6 +72,7 @@ export default class Core {
       allComponentClasses: this.allComponentClasses,
       componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
       componentTypesCreatingVariants: this.componentTypesCreatingVariants,
+      componentTypeWithPotentialVariants: this.componentTypeWithPotentialVariants,
       allPossibleProperties: this.allPossibleProperties,
       isInheritedComponentType: this.isInheritedComponentType,
       stateVariableInfo: this.stateVariableInfo,
@@ -836,7 +838,7 @@ export default class Core {
           }
         }
 
-        if (variantControlInd || componentClass.alwaysSetUpVariant) {
+        if (variantControlInd !== undefined || componentClass.alwaysSetUpVariant) {
           setUpVariant = true;
         }
       }
@@ -1357,7 +1359,12 @@ export default class Core {
         compositesBeingExpanded,
       });
 
-      this.updateReplacementDependencies(component, updatesNeeded);
+      this.updateReplacementDependencies(component, updatesNeeded, compositesBeingExpanded);
+
+      // TODO: make this more specific so just updates descendants
+      // of direct parent of composite, as that's the only one that would see
+      // replacements as a descendant?
+      this.updateDescendantDependencies(component, updatesNeeded, compositesBeingExpanded);
 
       // record that are finished expanding the composite
       let targetInd = compositesBeingExpanded.indexOf(component.componentName);
@@ -1419,7 +1426,12 @@ export default class Core {
       throw Error(`Invalid createSerializedReplacements of ${component.componentName}`);
     }
 
-    this.updateReplacementDependencies(component, updatesNeeded);
+    this.updateReplacementDependencies(component, updatesNeeded, compositesBeingExpanded);
+
+    // TODO: make this more specific so just updates descendants
+    // of direct parent of composite, as that's the only one that would see
+    // replacements as a descendant?
+    this.updateDescendantDependencies(component, updatesNeeded, compositesBeingExpanded);
 
     // record that are finished expanding the composite
     let targetInd = compositesBeingExpanded.indexOf(component.componentName);
@@ -1544,9 +1556,6 @@ export default class Core {
           //   continue;
           // }
 
-          // make a deep copy to get rid of the readonly proxy
-          // TODO: test if deepClone is faster
-          replacementsToAdd = JSON.parse(JSON.stringify(replacementsToAdd), me.reviver);
           let namespace = instruction.namespace;
 
           if (namespace === undefined) {
@@ -1603,11 +1612,7 @@ export default class Core {
             throw Error(`Cannot assign name to replacements when not exactly one replacement`)
           }
 
-          // make a deep copy to get rid of the readonly proxy
-          // TODO: test if deepClone is faster
-          replacementsToAdd = JSON.parse(JSON.stringify(replacementsToAdd), me.reviver);
           let name = instruction.name;
-
 
           if (name === undefined) {
             let longNameId = component.ancestors[0].componentName + "|"
@@ -5507,6 +5512,8 @@ export default class Core {
         useReplacementsForComposites: dependencyDefinition.useReplacementsForComposites,
         includeNonActiveChildren: dependencyDefinition.includeNonActiveChildren,
         includePropertyChildren: dependencyDefinition.includePropertyChildren,
+        ignoreReplacementsOfMatchedComposites: dependencyDefinition.ignoreReplacementsOfMatchedComposites,
+        definingChildrenFirst: dependencyDefinition.definingChildrenFirst,
         compositeClass: this.allComponentClasses._composite,
       });
 
@@ -5515,6 +5522,8 @@ export default class Core {
       newDep.useReplacementsForComposites = dependencyDefinition.useReplacementsForComposites;
       newDep.includeNonActiveChildren = dependencyDefinition.includeNonActiveChildren;
       newDep.includePropertyChildren = dependencyDefinition.includePropertyChildren;
+      newDep.ignoreReplacementsOfMatchedComposites = dependencyDefinition.ignoreReplacementsOfMatchedComposites;
+      newDep.definingChildrenFirst = dependencyDefinition.definingChildrenFirst;
 
       let requestStateVariables = newDep.dependencyType === "descendantStateVariables";
 
@@ -7573,7 +7582,7 @@ export default class Core {
 
     let newVariables = [];
 
-    let stateVarInfo = this.componentInfoObjects.stateVariableInfo[componentClass.componentType]
+    let stateVarInfo = this.componentInfoObjects.stateVariableInfo[componentClass.componentType.toLowerCase()]
 
     // let stateVarInfo = componentClass.returnStateVariableInfo({
     //   standardComponentClasses: this.standardComponentClasses,
@@ -8453,6 +8462,8 @@ export default class Core {
             useReplacementsForComposites: currentDep.useReplacementsForComposites,
             includeNonActiveChildren: currentDep.includeNonActiveChildren,
             includePropertyChildren: currentDep.includePropertyChildren,
+            ignoreReplacementsOfMatchedComposites: currentDep.ignoreReplacementsOfMatchedComposites,
+            definingChildrenFirst: currentDep.definingChildrenFirst,
             compositeClass: this.allComponentClasses._composite,
           });
 
@@ -10724,6 +10735,14 @@ export default class Core {
         this.updateReplacementDependencies(
           this._components[compositeName], updatesNeeded, compositesBeingExpanded
         );
+
+        // TODO: make this more specific so just updates descendants
+        // of direct parent of composite, as that's the only one that would see
+        // replacements as a descendant?
+        this.updateDescendantDependencies(
+          this._components[compositeName], updatesNeeded, compositesBeingExpanded
+        );
+
       }
     }
 
@@ -11564,6 +11583,14 @@ export default class Core {
   }
 
   set componentTypesCreatingVariants(value) {
+    return null;
+  }
+
+  get componentTypeWithPotentialVariants() {
+    return new Proxy(this._componentTypeWithPotentialVariants, readOnlyProxyHandler);
+  }
+
+  set componentTypeWithPotentialVariants(value) {
     return null;
   }
 

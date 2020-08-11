@@ -354,3 +354,25 @@ export function componentTypesCreatingVariants() {
   return componentClasses;
 }
 
+
+export function componentTypeWithPotentialVariants() {
+  const componentClasses = {};
+  for (let ct of componentTypeArray) {
+    if (ct.createsVariants ||
+      ct.setUpVariantIfVariantControlChild ||
+      ct.alwaysSetUpVariant
+    ) {
+      let newComponentType = ct.componentType;
+      if (newComponentType === undefined) {
+        throw Error("Cannot create component as componentType is undefined for class " + ct)
+      }
+      newComponentType = newComponentType.toLowerCase();
+      if (newComponentType in componentClasses) {
+        throw Error("component type " + newComponentType + " defined in two classes");
+      }
+      componentClasses[newComponentType] = ct;
+    }
+  }
+  return componentClasses;
+}
+

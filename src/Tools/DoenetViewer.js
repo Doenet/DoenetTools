@@ -98,6 +98,8 @@ class DoenetViewer extends Component {
 
   coreReady() {
 
+    this.resultingVariant = this.core.document.state.selectedVariantInfo.value;
+
     if (this.cumulativeStateVariableChanges) {
       this.core.executeUpdateStateVariables({
         newStateVariableValues: this.cumulativeStateVariableChanges
@@ -146,7 +148,7 @@ class DoenetViewer extends Component {
   }) {
 
     // TODO: what should we do with transient updates?
-    if (transient) {
+    if (transient || this.props.ignoreDatabase) {
       return;
     }
 
@@ -161,9 +163,7 @@ class DoenetViewer extends Component {
     let changeString = JSON.stringify(this.cumulativeStateVariableChanges, serializedStateReplacer);
 
 
-    // TODO: determine actual variant selected in core
-    // for now, we're using requestedVariant
-    let variantString = JSON.stringify(this.requestedVariant, serializedStateReplacer);
+    let variantString = JSON.stringify(this.resultingVariant, serializedStateReplacer);
 
     // save to database
     // check the cookie to see if allowed to record
@@ -217,6 +217,13 @@ class DoenetViewer extends Component {
 
 
   loadState(callback) {
+
+    if (this.props.ignoreDatabase) {
+      callback({
+        stateVariables: null,
+        variant: null
+      })
+    }
 
     const phpUrl = '/api/loadContentInteractions.php';
     const data = {

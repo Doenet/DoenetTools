@@ -141,6 +141,48 @@ export default class Document extends BaseComponent {
       }
     }
 
+    stateVariableDefinitions.selectedVariantInfo = {
+      returnDependencies: ({ sharedParameters, componentInfoObjects }) => ({
+        variantNumber: {
+          dependencyType: "value",
+          value: sharedParameters.variantNumber,
+        },
+        variantDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          variableNames: [
+            "isVariantComponent",
+            "selectedVariantInfo",
+          ],
+          recurseToMatchedChildren: false,
+          variablesOptional: true,
+          includeNonActiveChildren: true,
+          ignoreReplacementsOfMatchedComposites: true,
+          definingChildrenFirst: true,
+        }
+      }),
+      definition({ dependencyValues }) {
+        console.log(dependencyValues);
+
+        let selectedVariantInfo = {
+          index: dependencyValues.variantNumber
+        }
+        let subvariants = selectedVariantInfo.subvariants = [];
+
+        for (let descendant of dependencyValues.variantDescendants) {
+          if (descendant.stateValues.isVariantComponent) {
+            subvariants.push(descendant.stateValues.selectedVariantInfo)
+          } else if(descendant.stateValues.selectedVariantInfo) {
+            subvariants.push(...descendant.stateValues.selectedVariantInfo.subvariants)
+          }
+
+        }
+        return { newValues: { selectedVariantInfo } }
+
+      }
+    }
+
+
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
         activeChildren: {

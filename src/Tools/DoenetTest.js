@@ -28,9 +28,11 @@ class DoenetTest extends Component {
       window.MathJax.Hub.Queue(
         ["resetEquationNumbers", window.MathJax.InputJax.TeX],
       );
-      this.setState({ doenetML: e.data.doenetML, error: null, errorInfo: null });
-      // this.setState({doenetML:e.data.doenetML,error:null,errorInfo:null,
-      //   requestedVariant: e.data.requestedVariant});
+      // this.setState({ doenetML: e.data.doenetML, error: null, errorInfo: null });
+      this.setState({
+        doenetML: e.data.doenetML, error: null, errorInfo: null,
+        requestedVariant: e.data.requestedVariant
+      });
     }
   }
 
@@ -58,7 +60,9 @@ class DoenetTest extends Component {
         // contentId={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
         flags={{ showCorrectness: this.state.showCorrectness }}
         attemptNumber={attemptNumber}
-        assignmentId = {"myassignmentid"}
+        assignmentId={"myassignmentid"}
+        ignoreDatabase={true}
+        requestedVariant={this.state.requestedVariant}
       // collaborate={true}
       // free={{doenetCode: this.state.code, requestedVariant: this.state.requestedVariant}} 
       // mode={{

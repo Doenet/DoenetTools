@@ -1,4 +1,5 @@
 import CompositeComponent from './abstract/CompositeComponent';
+import { deepClone } from '../utils/deepFunctions';
 
 export default class Map extends CompositeComponent {
   static componentType = "map";
@@ -242,7 +243,7 @@ export default class Map extends CompositeComponent {
     }
     return {
       instructions: [instruction1, instruction2, instruction3],
-      replacements: component.stateValues.template
+      replacements: deepClone(component.stateValues.template)
     }
   }
 
@@ -285,7 +286,7 @@ export default class Map extends CompositeComponent {
 
         replacementsWithInstructions.push({
           instructions: [instruction1, instruction2, instruction3],
-          replacements: component.stateValues.template
+          replacements: deepClone(component.stateValues.template)
         });
       } else {
         let results = this.recurseThroughCombinations({
