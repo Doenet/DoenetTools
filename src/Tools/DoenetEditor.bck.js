@@ -521,7 +521,7 @@ class DoenetEditor extends Component {
       doenetML: code,
       branchId: branchId,
       contentId:contenIdForSaving, 
-      author: this.props.username,
+      author: this.props.userId,
       publish: publish,
     }
   
