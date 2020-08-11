@@ -15,7 +15,9 @@ export function setSelected(selectCourseId,callback=()=>{}){
         break;
       }
     }
+    
     select.id = 1;
+
     update(select).then(
       event => { callback(true);  },
       error => { callback(false); console.log(error); }
