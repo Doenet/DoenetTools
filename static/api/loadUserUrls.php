@@ -25,7 +25,7 @@ SELECT   -- get personal urls
 FROM url AS u
 LEFT JOIN user_urls uu ON uu.urlId = u.urlId
 LEFT JOIN folder_content fc ON fc.childId = u.urlId AND fc.childType='url'
-WHERE uu.username='$remoteuser' AND u.removedFlag=0 AND u.isPinned='0'
+WHERE uu.userId='$userId' AND u.removedFlag=0 AND u.isPinned='0'
 ORDER BY title
 ";
 

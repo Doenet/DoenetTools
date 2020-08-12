@@ -22,7 +22,7 @@ SELECT   -- get all repos user has access to
   f.folderId as rootId
 FROM repo_access AS ra
 LEFT JOIN folder f ON ra.repoId = f.folderId
-WHERE ra.username='$remoteuser' AND ra.removedFlag=0 AND f.isPinned='0'
+WHERE ra.userId='$userId' AND ra.removedFlag=0 AND f.isPinned='0'
 UNION
 SELECT  -- get all personal folders 
   f.folderId as folderId,
@@ -36,7 +36,7 @@ SELECT  -- get all personal folders
 FROM user_folders AS uf
 LEFT JOIN folder f ON uf.folderId = f.folderId
 LEFT JOIN folder_content fc ON uf.folderId = fc.childId
-WHERE uf.username='$remoteuser' AND f.isPinned='0'
+WHERE uf.userId='$userId' AND f.isPinned='0'
 ORDER BY isPinned DESC
 ";
 
