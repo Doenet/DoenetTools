@@ -29,24 +29,7 @@ const widthToDevice = () => {
 };
 
 export default function ToolLayout(props) {
-  let anonymousUserProfile = {
-    accessAllowed: "0",
-    adminAccessAllowed: "0",
-    email: "",
-    firstName: "",
-    lastName: "",
-    profilePicture: "anonymous",
-    roleCommunityTA: "0",
-    roleCourseDesigner: "0",
-    roleInstructor: "0",
-    roleLiveDataCommunity: "0",
-    roleStudent: "1",
-    roleWatchdog: "0",
-    studentId: null,
-    toolAccess: ["Chooser", "Documentation"],
-    trackingConsent: "1",
-    username: "anonymous",
-  }
+ 
   const [jwt, setjwt] = useCookies('JWT_JS');
 
   let isSignedIn = false;
@@ -73,33 +56,7 @@ export default function ToolLayout(props) {
           .catch(error => { this.setState({ error: error }) });
         }, []); 
    
-      //Start Signed In when local host development
-      //To Start Signed Out Clear the Cookies and comment the next line out
-      // let devUserProfile = {
-      //   accessAllowed: "1",
-      //   adminAccessAllowed: "1",
-      //   email: "devuser@example.com",
-      //   firstName: "Dev",
-      //   lastName: "User",
-      //   profilePicture: "emu",
-      //   roleCommunityTA: "0",
-      //   roleCourseDesigner: "0",
-      //   roleInstructor: "1",
-      //   roleLiveDataCommunity: "0",
-      //   roleStudent: "1",
-      //   roleWatchdog: "0",
-      //   studentId: null,
-      //   toolAccess: ["Chooser", "Course", "Profile", "Documentation", "Gradebook"],
-      //   trackingConsent: "1",
-      //   username: "devuser",
-      // }
-      // setProfile(devUserProfile);
-
-    
-
- 
-
-
+  
  
 
   var w = window.innerWidth;
