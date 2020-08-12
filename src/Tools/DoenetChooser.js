@@ -1392,7 +1392,7 @@ class DoenetChooser extends Component {
       "content": "childContent",
       "url": "childUrls",
     }
-
+  
     // determine data type and its corresponding data source
     let data = this.getDataSource(containerId, containerType);
     let draggedOverDataSource = data[type];
@@ -1414,68 +1414,6 @@ class DoenetChooser extends Component {
     const items = draggedOverParentDataSource[draggedOverItemParentListId][headingsChildrenListKey].filter(itemId => itemId != this.state.currentDraggedObject.id);
     // add the dragged item after the dragged over item
     items.splice(draggedOverItemIndex, 0, this.state.currentDraggedObject.id);
-
-    draggedOverParentDataSource[draggedOverItemParentListId][headingsChildrenListKey] = items;
-
-    this.forceUpdate();
-  };
-
-  splitPanelOnTreeDragStart(draggedId, draggedType, sourceContainerId, sourceContainerType) {
-    console.log("onTreeDragStart")
-    console.log(draggedId, draggedType, sourceContainerId, sourceContainerType)
-    // get dataObjectSource
-    let data = this.getDataSource(sourceContainerId, sourceContainerType);
-    let dataObjectSource = data[draggedType];
-    this.containerCache = {
-      ...this.containerCache,
-      [sourceContainerId]: {
-        folders: JSON.parse(JSON.stringify(data["folder"])),
-        content: JSON.parse(JSON.stringify(data["content"])),
-        urls: JSON.parse(JSON.stringify(data["url"])),
-      }
-    }
-
-    const dataObject = dataObjectSource[draggedId];
-    const sourceParentId = dataObjectSource[draggedId].parentId;
-
-    this.setState({
-      splitPanelCurrentDraggedObject: { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId },
-    })
-    this.cachedCurrentDraggedObject = { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId };
-    this.validDrop = false;
-    this.lastDroppedContainerId = null;
-  }
-
-  onTreeDropEnter = (listId, containerId, containerType) => {
-    console.log("onTreeDropEnter5")
-
-    const childrenListKeyMap = {
-      "folder": "childFolders",
-      "content": "childContent",
-      "url": "childUrls",
-    }
-
-    // determine data type and its corresponding data source
-    let data = this.getDataSource(containerId, containerType);
-    let draggedOverDataSource = data[type];
-    let draggedOverParentDataSource = data["folder"];
-    let headingsChildrenListKey = childrenListKeyMap[type];
-
-    const draggedOverItemParentListId = draggedOverDataSource[id]["parentId"];
-    const draggedOverItemIndex = draggedOverParentDataSource[draggedOverItemParentListId][headingsChildrenListKey]
-      .findIndex(itemId => itemId == id);
-
-    const draggedItemParentListId = this.state.splitPanelCurrentDraggedObject.dataObject["parentId"];
-
-    // if the item is dragged over itself, ignore
-    if (this.state.splitPanelCurrentDraggedObject.id == id || draggedItemParentListId != draggedOverItemParentListId) {
-      return;
-    }
-
-    // filter out the currently dragged item
-    const items = draggedOverParentDataSource[draggedOverItemParentListId][headingsChildrenListKey].filter(itemId => itemId != this.state.splitPanelCurrentDraggedObject.id);
-    // add the dragged item after the dragged over item
-    items.splice(draggedOverItemIndex, 0, this.state.splitPanelCurrentDraggedObject.id);
 
     draggedOverParentDataSource[draggedOverItemParentListId][headingsChildrenListKey] = items;
 
@@ -1573,7 +1511,7 @@ class DoenetChooser extends Component {
     return data;
   }
 
-  onTreeDropEnter(listId, containerId, containerType) {
+  onTreeDropEnter = (listId, containerId, containerType) => {
     console.log("onTreeDropEnter5", listId + '----'+containerId + '----'+containerType)
 
     const childrenListKeyMap = {
