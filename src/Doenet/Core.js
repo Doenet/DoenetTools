@@ -11175,15 +11175,10 @@ export default class Core {
             overrideFixed: true
           }
 
-          let additionalChanges = this.requestComponentChanges({
-            instruction, initialChange: false, workspace, updatesNeeded
+          this.requestComponentChanges({
+            instruction, initialChange: false, workspace, updatesNeeded,
+            newStateVariableValues,
           });
-          for (let cName in additionalChanges.newStateVariableValues) {
-            if (!newStateVariableValues[cName]) {
-              newStateVariableValues[cName] = {};
-            }
-            Object.assign(newStateVariableValues[cName], additionalChanges.newStateVariableValues[cName]);
-          }
         }
 
         this.processNewStateVariableValues(newStateVariableValues, updatesNeeded);
@@ -11669,16 +11664,11 @@ export default class Core {
 
       if (instruction.updateType === "updateValue") {
 
-        let additionalChanges = this.requestComponentChanges({
+        this.requestComponentChanges({
           instruction, workspace,
           updatesNeeded,
+          newStateVariableValues
         });
-        for (let cName in additionalChanges.newStateVariableValues) {
-          if (!newStateVariableValues[cName]) {
-            newStateVariableValues[cName] = {};
-          }
-          Object.assign(newStateVariableValues[cName], additionalChanges.newStateVariableValues[cName]);
-        }
 
       } else if (instruction.updateType === "addComponents") {
         console.log("add component")
@@ -11929,132 +11919,127 @@ export default class Core {
 
       for (let vName in newComponentStateVariables) {
 
-        if (vName[0] === "_") {
-          // have an array where set specific keys
-          let newValueInfo = newComponentStateVariables[vName];
-          let arrayVarObj = comp.state[newValueInfo.stateVariable];
-          if (arrayVarObj === undefined) {
-            console.warn(`can't update state variable ${vName} of component ${cName}, as it doesn't exist.`);
-            continue;
-          }
 
-          arrayVarObj.setArrayValue({
-            value: newValueInfo.value,
-            arrayKey: newValueInfo.arrayKey,
-            arraySize: arrayVarObj.arraySize
-          });
+        let compStateObj = comp.state[vName];
+        if (compStateObj === undefined) {
+          console.warn(`can't update state variable ${vName} of component ${cName}, as it doesn't exist.`);
+          continue;
+        }
+        // get value of state variable so it will determine if essential
+        compStateObj.value;
 
-          let varNamesStateVar = arrayVarObj.varNamesIncludingArrayKeyStateVariable;
-          let arrayVarNamesAffected = comp.stateValues[varNamesStateVar][newValueInfo.arrayKey];
-          if (arrayVarNamesAffected) {
-            for (let arrayVarName of arrayVarNamesAffected) {
-              // delete value before assigning new value to remove any getter
-              delete comp.state[arrayVarName].value;
-              Object.defineProperty(comp.state[arrayVarName], 'value', { get: () => getStateVar({ component: comp, stateVariable: arrayVarName }), configurable: true });
-              this.markUpstreamDependentsStale({
-                component: comp, varName: arrayVarName, updatesNeeded
+        compStateObj._previousValue = compStateObj.value;
+
+        if (compStateObj.isArray) {
+
+          let arrayEntryNamesAffected = [];
+
+          if (Array.isArray(newComponentStateVariables[vName])) {
+
+            throw Error(`do we still want to support setting entire array in inverse direction? ${vName}, ${cName}`)
+            // if given an array, then set entire array to that value
+            // Note don't check or change array size here
+            if (compStateObj.set) {
+              compStateObj.value = compStateObj.arrayValues = compStateObj.set(newComponentStateVariables[vName]);
+            } else {
+              compStateObj.value = compStateObj.arrayValues = newComponentStateVariables[vName];
+            }
+
+            // since changed entire array, all entry names are affected
+            if (compStateObj.arrayEntryNames) {
+              arrayEntryNamesAffected = compStateObj.arrayEntryNames;
+            }
+
+          } else {
+            // since were not given array,
+            // newComponentStateVariables[vName] must be an object keyed on arrayKeys
+            // except that it will have mergeObject=true
+            // to tell external functions new attributes of the object
+            // should be merged into the old object
+
+            let varNamesStateVar = compStateObj.varNamesIncludingArrayKeyStateVariable;
+
+            // TODO: what about a .set function here?
+            for (let arrayKey in newComponentStateVariables[vName]) {
+
+              if (arrayKey === "mergeObject") {
+                continue;
+              }
+
+              if (!(
+                compStateObj.essential ||
+                (compStateObj.essentialByArrayKey && compStateObj.essentialByArrayKey[arrayKey])
+              )) {
+                console.warn(`can't update arrayKey ${arrayKey}  of state variable ${vName} of component ${cName}, as it is not an essential state variable.`);
+                continue;
+              }
+
+              compStateObj.setArrayValue({
+                value: newComponentStateVariables[vName][arrayKey],
+                arrayKey,
+                arraySize: compStateObj.arraySize
               });
 
-              this.recordActualChangeInUpstreamDependencies({
-                component: comp, varName: arrayVarName,
-              })
+              // mark any array entry state variables containing arrayKey
+              // as affected
+              let varNamesContainingArrayKey = comp.stateValues[varNamesStateVar][arrayKey];
+              if (varNamesContainingArrayKey) {
+                arrayEntryNamesAffected.push(...varNamesContainingArrayKey);
+              }
+
 
             }
           }
 
-          // don't have to make array state variable itself stale
-          // at its value is set to be arrayValues, which was changed with setArrayValue
-          // Just need to set any variable upstream of the entire
-          // array state variable stale
-          // TODO: should this be more refined to be specific to the fact
-          // that just arrayKey changed?
-          this.markUpstreamDependentsStale({
-            component: comp, varName: newValueInfo.stateVariable, updatesNeeded
-          });
+          for (let arrayEntryName of arrayEntryNamesAffected) {
 
-          this.recordActualChangeInUpstreamDependencies({
-            component: comp, varName: newValueInfo.stateVariable,
-          })
+            let entryStateVarObj = comp.state[arrayEntryName];
 
-        }
-        else {
+            // is array entry was fresh, mark it stale
+            if (!(Object.getOwnPropertyDescriptor(entryStateVarObj, 'value').get || entryStateVarObj.immutable)) {
+              entryStateVarObj._previousValue = entryStateVarObj.value;
+              delete entryStateVarObj.value;
+              Object.defineProperty(entryStateVarObj, 'value', { get: () => getStateVar({ component: comp, stateVariable: arrayEntryName }), configurable: true });
+            }
 
-          let compStateObj = comp.state[vName];
-          if (compStateObj === undefined) {
-            console.warn(`can't update state variable ${vName} of component ${cName}, as it doesn't exist.`);
-            continue;
+            this.markUpstreamDependentsStale({
+              component: comp, varName: arrayEntryName, updatesNeeded
+            });
+            this.recordActualChangeInUpstreamDependencies({
+              component: comp, varName: arrayEntryName,
+            })
           }
-          // get value of state variable so it will determine if essential
-          compStateObj.value;
+        } else {
+
+          // don't have array
+
           if (!compStateObj.essential) {
             console.warn(`can't update state variable ${vName} of component ${cName}, as it is not an essential state variable.`);
             continue;
           }
 
-          compStateObj._previousValue = compStateObj.value;
-
-          if (compStateObj.isArray) {
-            if (Array.isArray(newComponentStateVariables[vName])) {
-              if (compStateObj.set) {
-                compStateObj.value = compStateObj.arrayValues = compStateObj.set(newComponentStateVariables[vName]);
-              } else {
-                compStateObj.value = compStateObj.arrayValues = newComponentStateVariables[vName];
-              }
-            } else {
-              // since were not given array, instead just set the components
-              if (compStateObj.set) {
-                // TODO: use a different .set function here?
-                for (let key in newComponentStateVariables[vName]) {
-                  compStateObj.arrayValues[key] = compStateObj.set(newComponentStateVariables[vName][key]);
-                }
-              } else {
-                for (let key in newComponentStateVariables[vName]) {
-                  compStateObj.arrayValues[key] = newComponentStateVariables[vName][key]
-                }
-              }
-            }
-            if (compStateObj.arrayEntryNames) {
-              for (let arrayEntryName of compStateObj.arrayEntryNames) {
-                let entryStateVarObj = comp.state[arrayEntryName];
-
-                // is array entry was fresh, mark it stale
-                if (!(Object.getOwnPropertyDescriptor(entryStateVarObj, 'value').get || entryStateVarObj.immutable)) {
-                  entryStateVarObj._previousValue = entryStateVarObj.value;
-                  delete entryStateVarObj.value;
-                  let getStateVar = this.getStateVariableValue;
-                  Object.defineProperty(entryStateVarObj, 'value', { get: () => getStateVar({ component: comp, stateVariable: arrayEntryName }), configurable: true });
-                }
-
-                this.markUpstreamDependentsStale({
-                  component: comp, varName: arrayEntryName, updatesNeeded
-                });
-                this.recordActualChangeInUpstreamDependencies({
-                  component: comp, varName: arrayEntryName,
-                })
-              }
-            }
+          if (compStateObj.set) {
+            compStateObj.value = compStateObj.set(newComponentStateVariables[vName]);
           } else {
-            if (compStateObj.set) {
-              compStateObj.value = compStateObj.set(newComponentStateVariables[vName]);
-            } else {
-              compStateObj.value = newComponentStateVariables[vName];
-            }
+            compStateObj.value = newComponentStateVariables[vName];
           }
-          this.markUpstreamDependentsStale({
-            component: comp, varName: vName, updatesNeeded
-          });
-
-          this.recordActualChangeInUpstreamDependencies({
-            component: comp, varName: vName,
-          })
-
         }
+        this.markUpstreamDependentsStale({
+          component: comp, varName: vName, updatesNeeded
+        });
+
+        this.recordActualChangeInUpstreamDependencies({
+          component: comp, varName: vName,
+        })
+
       }
     }
 
   }
 
-  requestComponentChanges({ instruction, initialChange = true, workspace, updatesNeeded }) {
+  requestComponentChanges({ instruction, initialChange = true, workspace, updatesNeeded,
+    newStateVariableValues
+  }) {
 
     // console.log(`request component changes`);
     // console.log(instruction);
@@ -12089,7 +12074,7 @@ export default class Core {
       stateVariableForWorkspace = arrayStateVariable;
 
       if (stateVarObj.entireArrayAtOnce) {
-        // if have entireARrayAtOnce, we didn't add arrayKeys
+        // if have entireArrayAtOnce, we didn't add arrayKeys
         // in getStateVariableDependencyValues
         // because, in the forward direction, we don't know arrayKeys ahead of time
         // So, add then manually now
@@ -12129,7 +12114,6 @@ export default class Core {
         })[0];
         let sObj = component.state[otherStateVariable];
         if (sObj) {
-          console.log(sObj, sObj.value)
           inverseDefinitionArgs.desiredStateVariableValues = { [stateVariable]: sObj.value };
         } else {
           throw Error(`Invalid instruction to change ${instruction.stateVariable} of ${instruction.componentName}, value of state variable ${instruction.valueOfStateVariable} not found.`)
@@ -12178,28 +12162,27 @@ export default class Core {
 
 
     updatesNeeded.componentsTouched.push(component.componentName);
-    let newStateVariableValues = {};
 
     if (!stateVarObj.inverseDefinition) {
       console.warn(`Cannot change state variable ${stateVariable} of ${component.componentName} as it doesn't have an inverse definition`);
-      return { newStateVariableValues };
+      return;
     }
 
     if (component.stateValues.fixed && !instruction.overrideFixed) {
       console.log(`Changing ${stateVariable} of ${component.componentName} did not succeed because fixed is true.`);
-      return { newStateVariableValues };
+      return;
     }
 
     if (!(initialChange || component.stateValues.modifyIndirectly !== false)) {
       console.log(`Changing ${stateVariable} of ${component.componentName} did not succeed because modifyIndirectly is false.`);
-      return { newStateVariableValues };
+      return;
     }
 
     let inverseResult = stateVarObj.inverseDefinition(inverseDefinitionArgs);
 
     if (!inverseResult.success) {
       console.log(`Changing ${stateVariable} of ${component.componentName} did not succeed.`);
-      return { newStateVariableValues };
+      return;
     }
 
     // console.log("inverseResult");
@@ -12220,12 +12203,22 @@ export default class Core {
         if (!newStateVariableValues[component.componentName]) {
           newStateVariableValues[component.componentName] = {};
         }
-        if ("arrayKey" in newInstruction) {
-          newStateVariableValues[component.componentName]['_' + newInstruction.setStateVariable + '_' + newInstruction.arrayKey] = {
-            stateVariable: newInstruction.setStateVariable,
-            arrayKey: newInstruction.arrayKey,
-            value: newInstruction.value
+
+        if (component.state[newInstruction.setStateVariable].isArray) {
+          if (!newStateVariableValues[component.componentName][newInstruction.setStateVariable]) {
+            // include key mergeObject to let external functions
+            // know that new attributes of the object
+            // should be merged into the old object
+            newStateVariableValues[component.componentName][newInstruction.setStateVariable] = {
+              mergeObject: true
+            }
           }
+
+          Object.assign(
+            newStateVariableValues[component.componentName][newInstruction.setStateVariable],
+            newInstruction.value
+          )
+
         } else {
           newStateVariableValues[component.componentName][newInstruction.setStateVariable] = newInstruction.value;
         }
@@ -12251,15 +12244,10 @@ export default class Core {
             overrideFixed: instruction.overrideFixed,
             arrayKey: newInstruction.arrayKey,
           }
-          let additionalChanges = this.requestComponentChanges({
-            instruction: inst, initialChange: false, workspace, updatesNeeded
+          this.requestComponentChanges({
+            instruction: inst, initialChange: false, workspace, updatesNeeded,
+            newStateVariableValues
           });
-          for (let cName in additionalChanges.newStateVariableValues) {
-            if (!newStateVariableValues[cName]) {
-              newStateVariableValues[cName] = {};
-            }
-            Object.assign(newStateVariableValues[cName], additionalChanges.newStateVariableValues[cName]);
-          }
         } else if (["componentStateVariable", "stateVariable", "parentStateVariable"].includes(dep.dependencyType)) {
           let inst = {
             componentName: dep.downstreamComponentName,
@@ -12296,15 +12284,10 @@ export default class Core {
             }
 
           }
-          let additionalChanges = this.requestComponentChanges({
-            instruction: inst, initialChange: false, workspace, updatesNeeded
+          this.requestComponentChanges({
+            instruction: inst, initialChange: false, workspace, updatesNeeded,
+            newStateVariableValues
           });
-          for (let cName in additionalChanges.newStateVariableValues) {
-            if (!newStateVariableValues[cName]) {
-              newStateVariableValues[cName] = {};
-            }
-            Object.assign(newStateVariableValues[cName], additionalChanges.newStateVariableValues[cName]);
-          }
         } else {
           throw Error(`unimplemented dependency type ${dep.dependencyType} in requestComponentChanges`)
         }
@@ -12359,7 +12342,7 @@ export default class Core {
       }
     }
 
-    return { newStateVariableValues };
+    return;
   }
 
   // addComponents({ serializedComponents, parent, updatesNeeded}) {

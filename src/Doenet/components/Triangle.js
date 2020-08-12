@@ -117,8 +117,7 @@ export default class Triangle extends Polygon {
 
           instructions.push({
             setStateVariable: "vertices",
-            value: desiredStateVariableValues.vertices[arrayKey].simplify(),
-            arrayKey,
+            value: { [arrayKey]: desiredStateVariableValues.vertices[arrayKey].simplify() },
           })
         }
 
@@ -203,8 +202,7 @@ export default class Triangle extends Polygon {
 
             instructions.push({
               setStateVariable: "vertices",
-              value: desiredVertex.simplify(),
-              arrayKey: ind
+              value: { [ind]: desiredVertex.simplify() },
             })
           }
         }
@@ -252,8 +250,7 @@ export default class Triangle extends Polygon {
           success: true,
           instructions: [{
             setStateVariable: "vertices",
-            value: desiredVertex.simplify(),
-            arrayKey
+            value: { [arrayKey]: desiredVertex.simplify() },
           }]
         }
 

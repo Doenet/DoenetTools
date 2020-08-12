@@ -627,8 +627,7 @@ export default class Point extends GraphicalComponent {
                 } else {
                   instructions.push({
                     setStateVariable: "unconstrainedXs",
-                    arrayKey,
-                    value: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]),
+                    value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]) },
                   });
                 }
               }
@@ -901,7 +900,7 @@ export default class Point extends GraphicalComponent {
           let x = dependencyValuesByKey[arrayKey].x;
           if (x) {
             x = dependencyValuesByKey[arrayKey].x.evaluate_to_constant();
-            if(Number.isFinite(x)) {
+            if (Number.isFinite(x)) {
               numericalXs[arrayKey] = x;
             } else {
               numericalXs[arrayKey] = NaN;

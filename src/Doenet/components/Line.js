@@ -563,7 +563,7 @@ export default class Line extends GraphicalComponent {
 
           // dependencies are coeffs
 
-          if(!workspace.desiredPoints) {
+          if (!workspace.desiredPoints) {
             workspace.desiredPoints = {};
           }
 
@@ -689,8 +689,7 @@ export default class Line extends GraphicalComponent {
 
               instructions.push({
                 setStateVariable: "points",
-                value: convertValueToMathExpression(desiredStateVariableValues.points[arrayKey]),
-                arrayKey
+                value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.points[arrayKey]) }
               })
             }
           }
@@ -1210,7 +1209,7 @@ export default class Line extends GraphicalComponent {
 
   }
 
-  moveLine({ point1coords, point2coords }) {
+  moveLine({ point1coords, point2coords, transient }) {
 
     let desiredPoints = {
       "0,0": me.fromAst(point1coords[0]),
@@ -1225,7 +1224,8 @@ export default class Line extends GraphicalComponent {
         componentName: this.componentName,
         stateVariable: "points",
         value: desiredPoints
-      }]
+      }],
+      transient
     });
 
   }

@@ -1397,8 +1397,7 @@ export default class Circle extends Curve {
           for (let arrayKey in desiredStateVariableValues.numericalCenter) {
             instructions.push({
               setStateVariable: "numericalCenter",
-              value: desiredStateVariableValues.numericalCenter[arrayKey],
-              arrayKey
+              value: {[arrayKey]: desiredStateVariableValues.numericalCenter[arrayKey]},
             })
           }
           return {
@@ -2088,7 +2087,7 @@ export default class Circle extends Curve {
   }
 
 
-  moveCircle({ center }) {
+  moveCircle({ center, transient }) {
 
     let instructions = [{
       updateType: "updateValue",
@@ -2122,7 +2121,8 @@ export default class Circle extends Curve {
     }
 
     this.requestUpdate({
-      updateInstructions: instructions
+      updateInstructions: instructions,
+      transient
     });
 
   }

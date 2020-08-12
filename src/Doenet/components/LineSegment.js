@@ -309,8 +309,7 @@ export default class LineSegment extends GraphicalComponent {
 
             instructions.push({
               setStateVariable: "endpoints",
-              value: convertValueToMathExpression(desiredStateVariableValues.endpoints[arrayKey]),
-              arrayKey
+              value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.endpoints[arrayKey]) },
             })
           }
         }
@@ -479,7 +478,7 @@ export default class LineSegment extends GraphicalComponent {
   }
 
 
-  moveLineSegment({ point1coords, point2coords }) {
+  moveLineSegment({ point1coords, point2coords, transient }) {
 
     let newComponents = {};
 
@@ -498,7 +497,8 @@ export default class LineSegment extends GraphicalComponent {
         updateType: "updateValue",
         stateVariable: "endpoints",
         value: newComponents
-      }]
+      }],
+      transient
     });
 
   }

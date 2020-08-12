@@ -51,7 +51,7 @@ export default class LineSegment extends DoenetRenderer {
       highlightFillColor: 'lightgray',
       layer: 10 * this.doenetSvData.layer + 8,
     });
-    if(this.doenetSvData.draggable !== true) {
+    if (this.doenetSvData.draggable !== true) {
       jsxPointAttributes.visible = false;
     }
 
@@ -68,9 +68,13 @@ export default class LineSegment extends DoenetRenderer {
 
     this.lineSegmentJXG = this.props.board.create('segment', [this.point1JXG, this.point2JXG], jsxSegmentAttributes);
 
-    this.point1JXG.on('drag', e => this.onDragHandler(1,e));
-    this.point2JXG.on('drag', e => this.onDragHandler(2,e));
-    this.lineSegmentJXG.on('drag', e => this.onDragHandler(0,e));
+    this.point1JXG.on('drag', () => this.onDragHandler(1, true));
+    this.point2JXG.on('drag', () => this.onDragHandler(2, true));
+    this.lineSegmentJXG.on('drag', () => this.onDragHandler(0, true));
+
+    this.point1JXG.on('up', () => this.onDragHandler(1, false));
+    this.point2JXG.on('up', () => this.onDragHandler(2, false));
+    this.lineSegmentJXG.on('up', () => this.onDragHandler(0, false));
 
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
 
@@ -157,20 +161,23 @@ export default class LineSegment extends DoenetRenderer {
 
   }
 
-  onDragHandler(i) {
+  onDragHandler(i, transient) {
 
-    if(i==1) {
+    if (i == 1) {
       this.actions.moveLineSegment({
         point1coords: [this.lineSegmentJXG.point1.X(), this.lineSegmentJXG.point1.Y()],
+        transient
       });
-    }else if(i==2) {
+    } else if (i == 2) {
       this.actions.moveLineSegment({
         point2coords: [this.lineSegmentJXG.point2.X(), this.lineSegmentJXG.point2.Y()],
+        transient
       });
-    }else {
+    } else {
       this.actions.moveLineSegment({
         point1coords: [this.lineSegmentJXG.point1.X(), this.lineSegmentJXG.point1.Y()],
         point2coords: [this.lineSegmentJXG.point2.X(), this.lineSegmentJXG.point2.Y()],
+        transient
       });
     }
   }

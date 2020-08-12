@@ -364,7 +364,7 @@ export default class Polyline extends GraphicalComponent {
 
         for (let arrayKey of arrayKeys) {
           let vert = dependencyValuesByKey[arrayKey].vertex.map(x => x.evaluate_to_constant())
-          if(!vert.every(x => Number.isFinite(x))) {
+          if (!vert.every(x => Number.isFinite(x))) {
             vert = Array(vert.length).fill(NaN)
           }
           numericalVertices[arrayKey] = vert;
@@ -490,7 +490,8 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  movePolyline(pointcoordsObject) {
+  movePolyline(pointcoordsObject, transient) {
+
     let vertexComponents = {};
     for (let ind in pointcoordsObject) {
       vertexComponents[ind + ",0"] = me.fromAst(pointcoordsObject[ind][0]);
@@ -503,7 +504,8 @@ export default class Polyline extends GraphicalComponent {
         componentName: this.componentName,
         stateVariable: "vertices",
         value: vertexComponents
-      }]
+      }],
+      transient,
     });
 
   }

@@ -731,8 +731,7 @@ export default class BezierCurve extends Curve {
               success: true,
               instructions: [{
                 setStateVariable: "vectorControlDirections",
-                value: desiredStateVariableValues.vectorControlDirections[arrayKey],
-                arrayKey: arrayKey,
+                value: { [arrayKey]: desiredStateVariableValues.vectorControlDirections[arrayKey] },
               }]
             };
           }
