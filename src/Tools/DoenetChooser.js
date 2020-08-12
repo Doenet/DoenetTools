@@ -404,6 +404,7 @@ class DoenetChooser extends Component {
 
     axios.get(loadBranchesUrl, payload)
       .then(resp => {
+        console.log(resp)
         this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchId_info);
         this.userContentInfo = resp.data.branchId_info;
         this.sort_order = resp.data.sort_order;
@@ -653,6 +654,8 @@ class DoenetChooser extends Component {
         this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
         this.folderIds = resp.data.folderIds;
         this.userFolderInfo = resp.data.folderInfo;
+        console.log("here")
+        console.log(resp)
         this.folders_loaded = true;
         this.userContentReloaded = true;
         callback();
@@ -2378,6 +2381,7 @@ class DoenetChooser extends Component {
     // process root folder for tree rendering
     if (this.folders_loaded && this.branches_loaded && this.urls_loaded && this.userContentReloaded) {
       this.userContentReloaded = false;
+      console.log(this.userFolderInfo);
       this.userFolderInfo["root"] = {
         title: "User Content Tree",
         childContent: [],

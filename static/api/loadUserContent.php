@@ -26,7 +26,7 @@ FROM content AS c
 LEFT JOIN user_content uc ON uc.branchId = c.branchId
 LEFT JOIN folder_content fc ON fc.childId = c.branchId AND fc.childType='content'
 LEFT JOIN content_branch cb ON c.branchId = cb.branchId
-WHERE uc.username='$remoteuser' AND c.removedFlag=0 AND cb.isPinned='0'
+WHERE uc.userId='$userId' AND c.removedFlag=0 AND cb.isPinned='0'
 ORDER BY branchId, publishDate DESC;
 ";
 
