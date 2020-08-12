@@ -88,7 +88,7 @@ class DoenetExam extends Component {
     const url='/open_api/getExams.php';
       const data={
         courseId: this.courseId,
-        learnerUsername: this.learner.username,
+        learnerUserId: this.learner.userId,
       }
       const payload = {
         params: data
@@ -124,7 +124,7 @@ class DoenetExam extends Component {
           const data={
             assignmentId: this.assignmentId,
             courseId: this.courseId,
-            learnerUsername: this.learner.username,
+            learnerUserId: this.learner.userId,
 
           }
           const payload = {
@@ -165,7 +165,7 @@ class DoenetExam extends Component {
       const data={
         assignmentId: this.assignmentId,
         courseId: this.courseId,
-        learnerUsername: this.learner.username,
+        learnerUserId: this.learner.userId,
       }
       const payload = {
         params: data
@@ -189,7 +189,7 @@ class DoenetExam extends Component {
         assignedVariant:this.assignedVariant,
         attemptNumber:this.attemptNumber,
         contentId:this.contentId,
-        learnerUsername: this.learner.username,
+        learnerUserId: this.learner.userId,
       }
       const payload = {
         params: data
@@ -213,7 +213,7 @@ class DoenetExam extends Component {
   variantNumberFromAttemptNumber(){
     let preseed = this.attemptNumber+this.assignmentId;
     if(Number(this.individualize) === 1){
-      preseed += this.learner.username;
+      preseed += this.learner.userId;
     }
     let seed = hashStringToInteger(preseed);
 
@@ -333,7 +333,7 @@ class DoenetExam extends Component {
         courseId: this.courseId,
         assignmentId: this.assignmentId,
         attemptNumber: this.attemptNumber,
-        learnerUsername: this.learner.username,
+        learnerUserId: this.learner.userId,
       }
       const payload = {
         params: data
@@ -459,10 +459,10 @@ class DoenetExam extends Component {
 
             {filteredLearners.map(
               (learner, index)=>
-              <React.Fragment key={learner.username}>
+              <React.Fragment key={learner.userId}>
                 <tr className="typeDataRow"> 
                   <td>{index + 1}</td>
-                  <td>{learner.username}</td>
+                  <td>{learner.userId}</td>
                   <td>{learner.learnerID}</td>
                   <td>{learner.firstName}</td>
                   <td>{learner.lastName}</td>
@@ -505,7 +505,7 @@ class DoenetExam extends Component {
           <tr><td style={keyStyle}>First Name</td><td style={valueStyle}>{this.learner.firstName}</td></tr>
           <tr><td style={keyStyle}>Last Name</td><td style={valueStyle}>{this.learner.firstName}</td></tr>
           <tr><td style={keyStyle}>Student ID</td><td style={valueStyle}>{this.learner.learnerID}</td></tr>
-          <tr><td style={keyStyle}>Username</td><td style={valueStyle}>{this.learner.username}</td></tr>
+          <tr><td style={keyStyle}>Username</td><td style={valueStyle}>{this.learner.userId}</td></tr>
           </tbody>
         </table>
 
@@ -623,7 +623,7 @@ class DoenetExam extends Component {
         free={{doenetCode: this.doenetML,requestedVariant:{index:this.assignedVariant}}} 
         assignmentId={this.assignmentId}
         attemptNumber={this.attemptNumber}
-        learnerUsername={this.learner.username}
+        learnerUserId={this.learner.userId}
         course={true}
         mode={{showHints:false,showFeedback:false,showCorrectness:false,solutionType:"none"}}
         functionsSuppliedByChild = {this.functionsSuppliedByChild}
