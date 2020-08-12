@@ -207,7 +207,7 @@ class DoenetChooser extends Component {
 
   handleNewDocument = () => {
 
-    if (!Object.keys(this.props.cookies).includes("JWT_JS")) {
+    if (!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")) {
       this.displayToast("Please sign in to create new content");
       return;
     }
@@ -270,7 +270,7 @@ class DoenetChooser extends Component {
   }
 
   handleNewCourseCreated = ({courseId, courseName, courseCode, term, description, department, section}, callback=(()=>{})) => {
-    if (!Object.keys(this.props.cookies).includes("JWT_JS")) {
+    if (!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")) {
       this.displayToast("Please sign in to create new course");
       return;
     }
@@ -326,7 +326,7 @@ class DoenetChooser extends Component {
   }
 
   handleNewUrlCreated = ({urlId, title, url, description, usesDoenetAPI}, callback=(()=>{})) => {
-    if (!Object.keys(this.props.cookies).includes("JWT_JS")) {
+    if (!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")) {
       this.displayToast("Please sign in to create new content");
       return;
     }
@@ -992,7 +992,7 @@ class DoenetChooser extends Component {
 
   handleNewFolder = () => {
     
-    if (!Object.keys(this.props.cookies).includes("JWT_JS")) {
+    if (!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")) {
       this.displayToast("Please sign in to create new folder");
       return;
     }
@@ -1010,7 +1010,7 @@ class DoenetChooser extends Component {
   }
 
   handleNewRepo = () => {
-    if (!Object.keys(this.props.cookies).includes("JWT_JS")) {
+    if (!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")) {
       this.displayToast("Please sign in to create new repository");
       return;
     }
