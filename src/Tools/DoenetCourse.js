@@ -12,16 +12,14 @@ import {
   Route,
   Link,
 } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import styled from "styled-components";
 import { getCourses, setSelected } from "../imports/courseInfo";
 
 export default function DoenetCourse(props){
-
   
-  getCourses(updateCourseInfo);
 
   function updateCourseInfo(courseListArray,selectedCourseObj){
     // console.log('example****> called back');
@@ -29,6 +27,13 @@ export default function DoenetCourse(props){
     // console.log("selected",selectedCourseObj);
     // setSelected("NfzKqYtTgYRyPnmaxc7XB");
   }
+
+  // useEffect()
+
+    const url = new URL(window.location.href);
+    console.log(url)
+    let branchId = url.searchParams.get("branchId");
+    console.log('test',branchId)
 
     return (
       <>
@@ -38,18 +43,24 @@ export default function DoenetCourse(props){
             // menuControls={menuControls}
             panelName="Left Nav"
           >
+              <Router>
+
             <div style={{display:"flex",flexDirection:"column"}}>
-            <button>Overview</button>
-           <button>Syllabus</button>
-           <button>Grades</button>
-           <button>Assignments</button>
+                
+              
+           <Link to="?branchId=overview">Overview</Link>
+           <Link to="?branchId=syllabus">Syllabus</Link>
+           <Link to="?branchId=grades">Grades</Link>
+           <Link to="?branchId=assignments">Assignments</Link>
+           <Link to="?branchId=roster">Roster</Link>
             </div>
-           
+            </Router>
           </ToolLayoutPanel> 
 
-       <ToolLayoutPanel
+          <ToolLayoutPanel
             // menuControls={menuControlsEditor}
             panelName="Content">
+
               <p>Content Here</p>
           </ToolLayoutPanel>
 
