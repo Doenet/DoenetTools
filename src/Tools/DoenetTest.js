@@ -61,7 +61,7 @@ class DoenetTest extends Component {
         flags={{ showCorrectness: this.state.showCorrectness }}
         attemptNumber={attemptNumber}
         assignmentId={"myassignmentid"}
-        ignoreDatabase={true}
+        ignoreDatabase={false}
         requestedVariant={this.state.requestedVariant}
       // collaborate={true}
       // free={{doenetCode: this.state.code, requestedVariant: this.state.requestedVariant}} 

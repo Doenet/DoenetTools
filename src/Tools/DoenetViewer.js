@@ -111,6 +111,12 @@ class DoenetViewer extends Component {
     }
 
 
+    // TODO: look up the items and their weights
+    // save info to user_assignment_attempt and user_assignment_attempt_item
+    // if it is the first time (adds records to database if they don't exist?)
+    // this.core.scoredItemWeights = [ weight1, weight2, weight3 ]
+
+
     let renderPromises = [];
     let rendererClassNames = [];
     console.log('rendererTypesInDocument');
@@ -157,7 +163,16 @@ class DoenetViewer extends Component {
       if (!this.cumulativeStateVariableChanges[componentName]) {
         this.cumulativeStateVariableChanges[componentName] = {}
       }
-      Object.assign(this.cumulativeStateVariableChanges[componentName], newStateVariableValues[componentName])
+      for (let varName in newStateVariableValues[componentName]) {
+        let cumValues = this.cumulativeStateVariableChanges[componentName][varName];
+        // if cumValues is an object with mergeObject = true,
+        // then merge attributes from newStateVariableValues into cumValues
+        if (typeof cumValues === "object" && cumValues !== null && cumValues.mergeObject) {
+          Object.assign(cumValues, newStateVariableValues[componentName][varName])
+        } else {
+          this.cumulativeStateVariableChanges[componentName][varName] = newStateVariableValues[componentName][varName];
+        }
+      }
     }
 
     let changeString = JSON.stringify(this.cumulativeStateVariableChanges, serializedStateReplacer);
@@ -180,7 +195,6 @@ class DoenetViewer extends Component {
 
     const phpUrl = '/api/recordContentInteraction.php';
     const data = {
-      assignmentId: null,
       contentId,
       stateVariables: changeString,
       attemptNumber: this.attemptNumber,
@@ -190,7 +204,7 @@ class DoenetViewer extends Component {
 
     axios.post(phpUrl, data)
       .then(resp => {
-        // console.log('save', resp.data);
+        console.log('save', resp.data);
       });
 
 
@@ -222,7 +236,8 @@ class DoenetViewer extends Component {
       callback({
         stateVariables: null,
         variant: null
-      })
+      });
+      return;
     }
 
     const phpUrl = '/api/loadContentInteractions.php';
