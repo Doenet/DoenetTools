@@ -267,6 +267,7 @@ class DoenetBranchBrowser extends Component {
       let isShared = this.props.allContentInfo[branchId].rootId == "root" ? false :
         this.props.allFolderInfo[this.props.allContentInfo[branchId].rootId].isRepo;
       let isPublic = this.props.allContentInfo[branchId].isPublic;
+      let isPinned = this.props.allContentInfo[branchId].isPinned;
       let classes = this.state.selectedItems.includes(branchId) ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
 
@@ -282,6 +283,7 @@ class DoenetBranchBrowser extends Component {
         draftDate={draftDate}
         isShared={isShared}
         isPublic={isPublic}
+        isPinned={isPinned}
         key={"contentItem" + branchId}
         tableIndex={this.tableIndex++}
         handleRemoveContent={this.props.selectedDrive === "Content" ? 
@@ -313,6 +315,7 @@ class DoenetBranchBrowser extends Component {
       let isShared = this.props.allUrlInfo[urlId].rootId == "root" ? false :
         this.props.allFolderInfo[this.props.allUrlInfo[urlId].rootId].isRepo;
       let isPublic = this.props.allUrlInfo[urlId].isPublic;
+      let isPinned = this.props.allUrlInfo[urlId].isPinned;
       let classes = this.state.selectedItems.includes(urlId) ?
                       "browserDataRow browserSelectedRow": "browserDataRow";
 
@@ -329,6 +332,7 @@ class DoenetBranchBrowser extends Component {
         description={description}
         isShared={isShared}
         isPublic={isPublic}
+        isPinned={isPinned}
         key={"urlItem" + urlId}
         tableIndex={this.tableIndex++}
         handleRemoveContent={this.props.selectedDrive === "Content" ? 

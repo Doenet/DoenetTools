@@ -654,9 +654,8 @@ class DoenetChooser extends Component {
         this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
         this.folderIds = resp.data.folderIds;
         this.userFolderInfo = resp.data.folderInfo;
-        console.log("here")
-        console.log(resp)
         this.folders_loaded = true;
+        console.log("here", this.folderInfo)
         this.userContentReloaded = true;
         callback();
         this.forceUpdate();

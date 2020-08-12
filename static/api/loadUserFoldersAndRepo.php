@@ -53,6 +53,18 @@ if (!$userId) {
     f.folderId as rootId
     FROM folder AS f
   WHERE f.isPinned='1'
+  UNION
+  SELECT
+    f.folderId as folderId,
+    f.title as title,
+    f.parentId as parentId,
+    f.creationDate as creationDate,
+    f.isRepo as isRepo,
+    f.public as isPublic,
+    f.isPinned as isPinned,
+    f.folderId as rootId
+    FROM folder_content AS fc, folder AS f
+  WHERE (f.folderId = fc.rootId OR f.folderId = fc.folderId) AND f.isPinned='1' AND fc.childId = f.folderId
   ";
 }
 
