@@ -912,3 +912,13 @@ export class FromMapAncestor extends NumberComponent {
 export class Condition extends When {
   static componentType = "condition";
 }
+
+export class EncodedGeogebraContent extends TextComponent {
+  static componentType = "encodedGeogebraContent";
+  static rendererType = "text";
+}
+
+export class FromMathInsight extends TextComponent {
+  static componentType = "fromMathInsight";
+  static rendererType = "text";
+}
