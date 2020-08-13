@@ -42,11 +42,12 @@ class DoenetViewer extends Component {
       // calculate contentId from doenetML
       const hash = crypto.createHash('sha256');
       hash.update(doenetML);
-      let contentId = hash.digest('hex');
+      this.contentId = hash.digest('hex');
 
-      this.haveDoenetML({ contentId, doenetML });
+      this.haveDoenetML({ contentId:this.contentId, doenetML });
 
     } else {
+      this.contentId = props.contentId;
       // load doenetML from database using contentId
       this.loadDoenetML(props.contentId, this.haveDoenetML)
     }
@@ -62,7 +63,7 @@ class DoenetViewer extends Component {
 
     this.loadState(this.createCore);
   }
-
+  
 
   createCore({ stateVariables, variant }) {
 
@@ -116,6 +117,21 @@ class DoenetViewer extends Component {
     // if it is the first time (adds records to database if they don't exist?)
     // this.core.scoredItemWeights = [ weight1, weight2, weight3 ]
 
+    this.core.scoredItemWeights = [ 100, 200 ]
+
+    if (this.assignmentId){
+    const payload = { 
+      weights: this.core.scoredItemWeights, 
+      contentId:this.contentId, 
+      assignmentId: this.assignmentId,
+      attemptNumber: this.attemptNumber
+    }
+    axios.post('/api/saveAssignmentWeights.php', payload)
+      .then(resp => {
+        console.log('saveAssignmentWeights-->>',resp.data);
+     
+      });
+    }
 
     let renderPromises = [];
     let rendererClassNames = [];
@@ -287,6 +303,14 @@ class DoenetViewer extends Component {
     }
 
 
+  }
+
+  submitResults({
+    itemNumber,
+    itemCreditAchieved,
+    callBack,
+  }){
+    console.log('CALLED!')
   }
 
   render() {
