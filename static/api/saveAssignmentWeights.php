@@ -23,7 +23,7 @@ $weights = array_map(function($item) use($conn) {
   }, $_POST['weights']);
 
 
-  //TODO: test if weights already are stored
+  //TODO: test if weights already are stored (YES)
 
 
   $sql = "INSERT INTO user_assignment_attempt 
@@ -34,7 +34,6 @@ $weights = array_map(function($item) use($conn) {
 $result = $conn->query($sql);
 
   for ($itemNumber = 1; $itemNumber < count($weights) + 1; $itemNumber++){
-      echo $itemNumber . "\n";
       //Store Item  weights
       $weight = $weights[($itemNumber -1)];
       $sql = "INSERT INTO user_assignment_attempt_item 
@@ -42,7 +41,6 @@ $result = $conn->query($sql);
       values
       ('$userId','$assignmentId','$attemptNumber','$itemNumber','$weight')
       ";
-      echo $sql;
     $result = $conn->query($sql);
 
   }

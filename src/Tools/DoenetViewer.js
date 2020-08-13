@@ -16,6 +16,7 @@ class DoenetViewer extends Component {
     this.loadState = this.loadState.bind(this);
     this.loadDoenetML = this.loadDoenetML.bind(this);
     this.localStateChanged = this.localStateChanged.bind(this);
+    this.submitResponse = this.submitResponse.bind(this);
 
     this.rendererUpdateMethods = {};
 
@@ -49,7 +50,7 @@ class DoenetViewer extends Component {
     } else {
       this.contentId = props.contentId;
       // load doenetML from database using contentId
-      this.loadDoenetML(props.contentId, this.haveDoenetML)
+      this.loadDoenetML(props.contentId, this.haveDoenetML)  //TODO: Does this work?
     }
   }
 
@@ -88,7 +89,7 @@ class DoenetViewer extends Component {
       coreReadyCallback: this.coreReady,
       coreUpdatedCallback: this.update,
       doenetML: this.doenetML,
-      externalFunctions: { localStateChanged: this.localStateChanged },
+      externalFunctions: { localStateChanged: this.localStateChanged, submitResponse:this.submitResponse },
       flags: this.props.flags,
       requestedVariant: this.requestedVariant,
     });
@@ -117,20 +118,21 @@ class DoenetViewer extends Component {
     // if it is the first time (adds records to database if they don't exist?)
     // this.core.scoredItemWeights = [ weight1, weight2, weight3 ]
 
-    this.core.scoredItemWeights = [ 100, 200 ]
+
+    //TODO: Handle if number of items changed. Handle if weights changed
 
     if (this.assignmentId){
-    const payload = { 
-      weights: this.core.scoredItemWeights, 
-      contentId:this.contentId, 
-      assignmentId: this.assignmentId,
-      attemptNumber: this.attemptNumber
-    }
-    axios.post('/api/saveAssignmentWeights.php', payload)
-      .then(resp => {
-        console.log('saveAssignmentWeights-->>',resp.data);
-     
-      });
+      const payload = { 
+        weights: this.core.scoredItemWeights, 
+        contentId:this.contentId, 
+        assignmentId: this.assignmentId,
+        attemptNumber: this.attemptNumber
+      }
+      axios.post('/api/saveAssignmentWeights.php', payload)
+        .then(resp => {
+          // console.log('saveAssignmentWeights-->>',resp.data);
+      
+        });
     }
 
     let renderPromises = [];
@@ -305,12 +307,31 @@ class DoenetViewer extends Component {
 
   }
 
-  submitResults({
+  submitResponse({
     itemNumber,
     itemCreditAchieved,
     callBack,
   }){
-    console.log('CALLED!')
+    // console.log('CALLED!',
+    //   itemNumber,
+    //   itemCreditAchieved
+    // )
+    //
+    if (this.assignmentId){
+      const payload = { 
+        assignmentId: this.assignmentId,
+        attemptNumber: this.attemptNumber,
+        credit:itemCreditAchieved,
+        itemNumber,
+      }
+      axios.post('/api/saveCreditForItem.php', payload)
+        .then(resp => {
+          console.log('saveCreditForItem-->>>',resp.data);
+      
+        });
+    }
+
+    callBack("hello");
   }
 
   render() {
