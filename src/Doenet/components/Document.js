@@ -116,7 +116,7 @@ export default class Document extends BaseComponent {
     }
 
 
-    stateVariableDefinitions.itemScores = {
+    stateVariableDefinitions.itemCreditAchieved = {
       isArray: true,
       returnArraySizeDependencies: () => ({
         nScoredDescendants: {
@@ -146,13 +146,13 @@ export default class Document extends BaseComponent {
         return { dependenciesByKey }
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
-        let itemScores = {};
+        let itemCreditAchieved = {};
 
         for (let arrayKey of arrayKeys) {
-          itemScores[arrayKey] = dependencyValuesByKey[arrayKey].creditAchieved;
+          itemCreditAchieved[arrayKey] = dependencyValuesByKey[arrayKey].creditAchieved;
         }
 
-        return { newValues: { itemScores } }
+        return { newValues: { itemCreditAchieved } }
 
       },
       markStaleByKey({ arrayKeys, changes }) {
@@ -208,6 +208,10 @@ export default class Document extends BaseComponent {
         scoredDescendants: {
           dependencyType: "stateVariable",
           variableName: "scoredDescendants"
+        },
+        itemCreditAchieved: {
+          dependencyType: "stateVariable",
+          variableName: "itemCreditAchieved"
         }
       }),
       definition({ dependencyValues }) {
@@ -215,9 +219,9 @@ export default class Document extends BaseComponent {
         let creditSum = 0;
         let totalWeight = 0;
 
-        for (let component of dependencyValues.scoredDescendants) {
+        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
           let weight = component.stateValues.weight;
-          creditSum += component.stateValues.creditAchieved * weight;
+          creditSum += dependencyValues.itemCreditAchieved[ind] * weight;
           totalWeight += weight;
         }
         let creditAchieved = creditSum / totalWeight;

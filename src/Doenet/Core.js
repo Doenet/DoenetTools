@@ -202,9 +202,9 @@ export default class Core {
     this.rendererTypesInDocument = this.document.allPotentialRendererTypes;
 
 
-    // evalute itemScores so that will be fresh
+    // evalute itemCreditAchieved so that will be fresh
     // and can detect changes when it is marked stale
-    this.document.stateValues.itemScores;
+    this.document.stateValues.itemCreditAchieved;
 
     // console.log(serializedState)
     // console.timeEnd('start up time');
@@ -11756,15 +11756,15 @@ export default class Core {
       for (let itemNumber of updatesNeeded.itemScoreChanges) {
         this.externalFunctions.submitResponse({
           itemNumber,
-          itemCreditAchieved: this.document.stateValues.itemScores[itemNumber],
+          itemCreditAchieved: this.document.stateValues.itemCreditAchieved[itemNumber],
           callBack: this.submitResponseCallBack,
         });
       }
     }
 
-    // evalute itemScores so that will be fresh
+    // evalute itemCreditAchieved so that will be fresh
     // and can detect changes when it is marked stale
-    this.document.stateValues.itemScores;
+    this.document.stateValues.itemCreditAchieved;
 
     return { success: true };
   }
