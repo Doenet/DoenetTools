@@ -76,7 +76,6 @@ export default class SectioningComponent extends BlockComponent {
           variableNames: [
             "scoredDescendants",
             "aggregateScores",
-            "creditAchieved",
             "weight"
           ],
           recurseToMatchedChildren: false,
@@ -120,7 +119,7 @@ export default class SectioningComponent extends BlockComponent {
           displayDigits: "displayDigitsForCreditAchieved",
         }
       }],
-      stateVariablesDeterminingDependencies: ["aggregateScores"],
+      stateVariablesDeterminingDependencies: ["aggregateScores", "scoredDescendants"],
       returnDependencies({ stateValues }) {
         let dependencies = {
           aggregateScores: {
@@ -132,6 +131,13 @@ export default class SectioningComponent extends BlockComponent {
           dependencies.scoredDescendants = {
             dependencyType: "stateVariable",
             variableName: "scoredDescendants"
+          }
+          for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
+            dependencies["creditAchieved" + ind] = {
+              dependencyType: "componentStateVariable",
+              componentIdentity: descendant,
+              variableName: "creditAchieved"
+            }
           }
         }
 
@@ -151,9 +157,9 @@ export default class SectioningComponent extends BlockComponent {
         let creditSum = 0;
         let totalWeight = 0;
 
-        for (let component of dependencyValues.scoredDescendants) {
+        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
           let weight = component.stateValues.weight;
-          creditSum += component.stateValues.creditAchieved * weight;
+          creditSum += dependencyValues["creditAchieved" + ind] * weight;
           totalWeight += weight;
         }
         let creditAchieved = creditSum / totalWeight;

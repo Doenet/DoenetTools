@@ -41,6 +41,7 @@ export default class Core {
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
     this.setUpStateVariableDependencies = this.setUpStateVariableDependencies.bind(this);
+    this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
 
     this.coreUpdatedCallback = coreUpdatedCallback;
     this._standardComponentClasses = ComponentTypes.standardComponentClasses();
@@ -198,7 +199,12 @@ export default class Core {
       applySugar: true,
     })
 
-    this.rendererTypesInDocument = this._components[this.documentName].allPotentialRendererTypes;
+    this.rendererTypesInDocument = this.document.allPotentialRendererTypes;
+
+
+    // evalute itemScores so that will be fresh
+    // and can detect changes when it is marked stale
+    this.document.stateValues.itemScores;
 
     // console.log(serializedState)
     // console.timeEnd('start up time');
@@ -653,6 +659,7 @@ export default class Core {
       unresolvedByDependent: {},
       deletedStateVariables: {},
       deletedComponents: {},
+      itemScoreChanges: new Set(),
     }
 
     let previousUnsatisfiedChildLogic = Object.assign({}, this.unsatisfiedChildLogic);
@@ -4499,8 +4506,15 @@ export default class Core {
         // console.log(changes, arrayKeys, arraySize);
         // console.log(JSON.parse(JSON.stringify(freshnessInfo)))
 
+
+        let result = {};
+
         if (arrayKeys === undefined) {
           arrayKeys = stateVarObj.getAllArrayKeys(arraySize);
+        }
+
+        if (stateVarObj.markStaleByKey) {
+          result = stateVarObj.markStaleByKey({ arrayKeys, changes });
         }
 
         let freshByKey = freshnessInfo.freshByKey;
@@ -4509,7 +4523,8 @@ export default class Core {
           freshnessInfo.freshArraySize = false;
           // everything is stale
           freshnessInfo.freshByKey = {};
-          return { fresh: { [stateVariable]: false } };
+          result.fresh = { [stateVariable]: false };
+          return result;
         }
 
 
@@ -4520,9 +4535,11 @@ export default class Core {
           // be called repeated if size doesn't change, given that it's partially fresh)
           freshnessInfo.freshByKey = {};
           if (freshnessInfo.freshArraySize) {
-            return { partiallyFresh: { [stateVariable]: 1 } }
+            result.partiallyFresh = { [stateVariable]: 1 }
+            return result;
           } else {
-            return { fresh: { [stateVariable]: false } };
+            result.fresh = { [stateVariable]: false };
+            return result;
           }
         }
 
@@ -4532,9 +4549,11 @@ export default class Core {
             // everything is stale, except possible array size
             freshnessInfo.freshByKey = {};
             if (freshnessInfo.freshArraySize) {
-              return { partiallyFresh: { [stateVariable]: 1 } }
+              result.partiallyFresh = { [stateVariable]: 1 };
+              return result;
             } else {
-              return { fresh: { [stateVariable]: false } };
+              result.fresh = { [stateVariable]: false };
+              return result;
             }
           }
 
@@ -4557,12 +4576,15 @@ export default class Core {
 
         if (numberFresh > 0) {
           if (numberFresh === arrayKeys.length + 1) {
-            return { fresh: { [stateVariable]: true } }
+            result.fresh = { [stateVariable]: true };
+            return result;
           } else {
-            return { partiallyFresh: { [stateVariable]: numberFresh } }
+            result.partiallyFresh = { [stateVariable]: numberFresh };
+            return result;
           }
         } else {
-          return { fresh: { [stateVariable]: false } }
+          result.fresh = { [stateVariable]: false };
+          return result;
         }
 
       }
@@ -9620,6 +9642,12 @@ export default class Core {
         })
       }
 
+      if (result.itemScoreChanged) {
+        for (let itemNumber of result.itemScoreChanged.itemNumbers) {
+          updatesNeeded.itemScoreChanges.add(itemNumber)
+        }
+      }
+
     }
 
     for (let vName in varsChanged) {
@@ -10052,6 +10080,12 @@ export default class Core {
                 componentName: upDepComponent.componentName,
                 stateVariables: result.updateDependencies
               })
+            }
+
+            if (result.itemScoreChanged) {
+              for (let itemNumber of result.itemScoreChanged.itemNumbers) {
+                updatesNeeded.itemScoreChanges.add(itemNumber)
+              }
             }
 
           }
@@ -11644,6 +11678,7 @@ export default class Core {
       unresolvedByDependent: {},
       deletedStateVariables: {},
       deletedComponents: {},
+      itemScoreChanges: new Set(),
     }
 
 
@@ -11717,6 +11752,19 @@ export default class Core {
       }
     });
 
+    if (this.externalFunctions.submitResponse) {
+      for (let itemNumber of updatesNeeded.itemScoreChanges) {
+        this.externalFunctions.submitResponse({
+          itemNumber,
+          itemCreditAchieved: this.document.stateValues.itemScores[itemNumber],
+          callBack: this.submitResponseCallBack,
+        });
+      }
+    }
+
+    // evalute itemScores so that will be fresh
+    // and can detect changes when it is marked stale
+    this.document.stateValues.itemScores;
 
     return { success: true };
   }
@@ -11757,6 +11805,7 @@ export default class Core {
         unresolvedByDependent: {},
         deletedStateVariables: {},
         deletedComponents: {},
+        itemScoreChanges: new Set(),
       }
     }
 
@@ -12345,6 +12394,52 @@ export default class Core {
     return;
   }
 
+  submitResponseCallBack(results) {
+
+    console.log(`submit response callback`)
+    console.log(results);
+    return;
+
+    if (!results.success) {
+      let errorMessage = "Answer not saved due to a network error. \nEither you are offline or your authentication has timed out.";
+      this.renderer.updateSection({
+        title: this.state.title,
+        viewedSolution: this.state.viewedSolution,
+        isError: true,
+        errorMessage,
+      });
+      alert(errorMessage);
+
+      this.requestUpdate({
+        updateType: "updateRendererOnly",
+      });
+    } else if (results.viewedSolution) {
+      console.log(`******** Viewed solution for ${scoredComponent.componentName}`);
+      this.requestUpdate({
+        updateType: "updateValue",
+        updateInstructions: [{
+          componentName: scoredComponent.componentName,
+          variableUpdates: {
+            viewedSolution: { changes: true },
+          }
+        }]
+      })
+    }
+
+    // if this.answersToSubmitCounter is a positive number
+    // that means that we have call this.submitAllAnswers and we still have
+    // some answers that haven't been submitted
+    // In this case, we will decrement this.answersToSubmitCounter
+    // If this.answersToSubmitCounter newly becomes zero, 
+    // then we know that we have submitted the last one answer
+    if (this.answersToSubmitCounter > 0) {
+      this.answersToSubmitCounter -= 1;
+      if (this.answersToSubmitCounter === 0) {
+        this.externalFunctions.allAnswersSubmitted();
+      }
+    }
+  }
+
   // addComponents({ serializedComponents, parent, updatesNeeded}) {
   //   //Check if 
   //   //Child logic is violated
@@ -12412,7 +12507,11 @@ export default class Core {
     return null;
   }
 
-
+  get scoredItemWeights() {
+    return this.document.stateValues.scoredDescendants.map(
+      x => x.stateValues.weight
+    );
+  }
 
   requestAnimationFrame(animationFunction, delay) {
     if (!this.preventMoreAnimations) {
