@@ -964,6 +964,7 @@ export default class Core {
       components: this.components,
       allPossibleProperties: this.allPossibleProperties,
       sharedParameters,
+      flags: this.flags,
     });
 
     if (childLogic === undefined || typeof childLogic.applyLogic !== "function") {
@@ -11668,6 +11669,32 @@ export default class Core {
   }
 
   requestUpdate({ updateInstructions, transient = false }) {
+
+    if (this.flags.readOnly) {
+
+      let sourceInformation = {};
+
+      for (let instruction of updateInstructions) {
+
+        let componentSourceInformation = sourceInformation[instruction.componentName];
+        if (!componentSourceInformation) {
+          componentSourceInformation = sourceInformation[instruction.componentName] = {};
+        }
+
+        if (instruction.sourceInformation) {
+          Object.assign(componentSourceInformation, instruction.sourceInformation);
+        }
+      }
+
+      this.updateRendererInstructions({
+        componentNames: updateInstructions.map(x => x.componentName),
+        sourceOfUpdate: { sourceInformation }
+      });
+
+      this.finishUpdate();
+
+      return { success: false };
+    }
 
     let updatesNeeded = {
       componentsTouched: [],

@@ -367,11 +367,6 @@ export default class Choiceinput extends Input {
         };
       },
       entireArrayDefinition({ dependencyValues }) {
-        console.log(`definition of selected values`)
-        console.log(dependencyValues)
-        console.log(dependencyValues.selectedIndices
-          .map(i => dependencyValues.choiceTexts[i - 1])
-        )
         return {
           newValues: {
             selectedValues: dependencyValues.selectedIndices

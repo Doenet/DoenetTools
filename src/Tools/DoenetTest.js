@@ -13,6 +13,8 @@ class DoenetTest extends Component {
       errorInfo: null,
       showCorrectness: true,
       doenetML: doenetDefaultML,
+      readOnly: false,
+      ignoreDatabase: false
     };
 
     this.updateNumber = 1;
@@ -58,10 +60,10 @@ class DoenetTest extends Component {
         key={"doenetviewer" + this.updateNumber}
         doenetML={this.state.doenetML}
         // contentId={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
-        flags={{ showCorrectness: this.state.showCorrectness }}
+        flags={{ showCorrectness: this.state.showCorrectness, readOnly: this.state.readOnly }}
         attemptNumber={attemptNumber}
         assignmentId={"myassignmentid"}
-        ignoreDatabase={false}
+        ignoreDatabase={this.state.ignoreDatabase}
         requestedVariant={this.state.requestedVariant}
       // collaborate={true}
       // free={{doenetCode: this.state.code, requestedVariant: this.state.requestedVariant}} 
