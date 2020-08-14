@@ -130,7 +130,7 @@ class DoenetViewer extends Component {
       }
       axios.post('/api/saveAssignmentWeights.php', payload)
         .then(resp => {
-          // console.log('saveAssignmentWeights-->>',resp.data);
+          console.log('saveAssignmentWeights-->>',resp.data);
       
         });
     }

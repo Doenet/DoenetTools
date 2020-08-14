@@ -20,7 +20,9 @@ $attemptNumber = mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $credit = mysqli_real_escape_string($conn,$_POST["credit"]);
 $itemNumber = mysqli_real_escape_string($conn,$_POST["itemNumber"]);
 $itemNumber = $itemNumber + 1;
-// var_dump($_POST);
+var_dump($_POST);
+
+//TODO: check if this is too many tries
 
 //Find attemptAggregation
 $sql = "SELECT attemptAggregation
@@ -31,7 +33,17 @@ $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 $attemptAggregation = $row['attemptAggregation'];
 
-// *** Update to user_assignment_attempt_item
+
+
+// *** Store credit in user_assignment_attempt_item
+// $sql = "UPDATE user_assignment_attempt_item
+//         SET credit='$saveItemCredit'
+//         WHERE userId = '$userId'
+//         AND assignmentId = '$assignmentId'
+//         AND attemptNumber = '$attemptNumber'
+//         AND itemNumber = '$itemNumber'
+//         ";
+// $result = $conn->query($sql);
 
 //If attemptAggregation = "m"; (char 1 type "m" or "l")
 //Set credit in user_assignment_attempt_item = max credit in table or new param calculated
@@ -39,35 +51,35 @@ $attemptAggregation = $row['attemptAggregation'];
 //Set credit in user_assignment_attempt_item to new param calculated
 
 //*** update user_assignment_attempt_item
-if ($attemptAggregation == 'm'){
-//Find Max Item Credit
-$sql = "SELECT MAX(credit) AS maxCredit,
-        MAX(creditOverride) AS maxCreditOverride
-        FROM user_assignment_attempt_item
-        WHERE userId = '$userId'
-        AND assignmentId = '$assignmentId'
-        AND itemNumber = '$itemNumber'
-";
-$result = $conn->query($sql);
-$row = $result->fetch_assoc();
-$maxCredit = $row['maxCredit'];
-$maxCreditOverride = $row['maxCreditOverride'];
-$saveItemCredit = MAX($maxCredit,$maxCreditOverride,$credit);
-}else if ($attemptAggregation == 'l'){
-    //Use last attempt
-    $saveItemCredit = $credit;
-}else{
-    echo "Error: attempt aggregation not defined\n";
-}
+// if ($attemptAggregation == 'm'){
+// //Find Max Item Credit
+// $sql = "SELECT MAX(credit) AS maxCredit,
+//         MAX(creditOverride) AS maxCreditOverride
+//         FROM user_assignment_attempt_item
+//         WHERE userId = '$userId'
+//         AND assignmentId = '$assignmentId'
+//         AND itemNumber = '$itemNumber'
+// ";
+// $result = $conn->query($sql);
+// $row = $result->fetch_assoc();
+// $maxCredit = $row['maxCredit'];
+// $maxCreditOverride = $row['maxCreditOverride'];
+// $saveItemCredit = MAX($maxCredit,$maxCreditOverride,$credit);
+// }else if ($attemptAggregation == 'l'){
+//     //Use last attempt
+//     $saveItemCredit = $credit;
+// }else{
+//     echo "Error: attempt aggregation not defined\n";
+// }
 
-$sql = "UPDATE user_assignment_attempt_item
-        SET credit='$saveItemCredit'
-        WHERE userId = '$userId'
-        AND assignmentId = '$assignmentId'
-        AND attemptNumber = '$attemptNumber'
-        AND itemNumber = '$itemNumber'
-        ";
-$result = $conn->query($sql);
+// $sql = "UPDATE user_assignment_attempt_item
+//         SET credit='$saveItemCredit'
+//         WHERE userId = '$userId'
+//         AND assignmentId = '$assignmentId'
+//         AND attemptNumber = '$attemptNumber'
+//         AND itemNumber = '$itemNumber'
+//         ";
+// $result = $conn->query($sql);
 
 
 
@@ -76,14 +88,28 @@ $result = $conn->query($sql);
 
 //CreditOveride else credit
 //Weight
-//Sum all credits * weights / sum of weights
+//Sum all attempt credits * weights / sum of weights
+// if ($attemptAggregation == 'm'){
+// //Max credit
+// $sql = "SELECT MAX(credit) AS maxCredit,
+//         MAX(creditOverride) AS maxCreditOverride
+//         FROM user_assignment_attempt_item
+//         WHERE userId = '$userId'
+//         AND assignmentId = '$assignmentId'
+//         AND itemNumber = '$itemNumber'
+// ";
 
 //Use earlier calculation of new credit on the item
-//If attemptAggregation = "m"; (char 1 type "m" or "l")
+//If attemptAggregation = "m"; 
 //Set credit in user_assignment_attempt = max credit in table or new param calculated
 //If attemptAggregation = "l"; 
-////Set credit in user_assignment_attempt to new param calculated
-
+//Set credit in user_assignment_attempt to new param calculated
+// }else if ($attemptAggregation == 'l'){
+//     //Last credit
+//     //Set credit in user_assignment_attempt to new param calculated
+//     }else{
+//         echo "Error: attempt aggregation not defined\n";
+//     }
 
 //TODO: *** Calculate user's score on user_assignment
 //ASSUME "m" for user_assignment

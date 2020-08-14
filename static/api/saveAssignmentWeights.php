@@ -21,7 +21,7 @@ $attemptNumber = mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $weights = array_map(function($item) use($conn) {
     return mysqli_real_escape_string($conn, $item);
   }, $_POST['weights']);
-
+  // var_dump($_POST);
 
   //TODO: Test if weights dynamically changed then store updates
   $sql = "SELECT userId
