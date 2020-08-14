@@ -845,6 +845,7 @@ class DoenetChooser extends Component {
             this.loadUserUrls();
           }
         }
+        this.modifyPublicState(isPublic, allItems.itemIds, allItems.itemType, () => {});
         this.forceUpdate();
         callback();
       });
