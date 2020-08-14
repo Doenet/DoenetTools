@@ -321,7 +321,7 @@ export default class Slider extends BaseComponent {
   }
 
 
-  changeValue({ value }) {
+  changeValue({ value, transient }) {
     if (!this.stateValues.disabled) {
       this.requestUpdate({
         updateInstructions: [{
@@ -329,7 +329,8 @@ export default class Slider extends BaseComponent {
           componentName: this.componentName,
           stateVariable: "value",
           value
-        }]
+        }],
+        transient
       });
     }
   }

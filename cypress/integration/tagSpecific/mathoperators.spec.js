@@ -1,4 +1,13 @@
 import me from 'math-expressions';
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
 
 describe('Math Operator Tag Tests', function () {
 
@@ -22,9 +31,9 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let replacement1 = components['/_copy1'].replacements[0];
-      let replacement1Anchor = '#' + replacement1.componentName;
+      let replacement1Anchor = cesc('#' + replacement1.componentName);
       let replacement2 = components['/_copy2'].replacements[0];
-      let replacement2Anchor = '#' + replacement2.componentName;
+      let replacement2Anchor = cesc('#' + replacement2.componentName);
 
       cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('21')
@@ -65,9 +74,9 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let replacement1 = components['/_copy1'].replacements[0];
-      let replacement1Anchor = '#' + replacement1.componentName;
+      let replacement1Anchor = cesc('#' + replacement1.componentName);
       let replacement2 = components['/_copy2'].replacements[0];
-      let replacement2Anchor = '#' + replacement2.componentName;
+      let replacement2Anchor = cesc('#' + replacement2.componentName);
 
       cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('51')
@@ -123,11 +132,11 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let replacement1 = components['/_copy1'].replacements[0];
-      let replacement1Anchor = '#' + replacement1.componentName;
+      let replacement1Anchor = cesc('#' + replacement1.componentName);
       let replacement2 = components['/_copy2'].replacements[0];
-      let replacement2Anchor = '#' + replacement2.componentName;
+      let replacement2Anchor = cesc('#' + replacement2.componentName);
       let replacement3 = components['/_copy3'].replacements[0];
-      let replacement3Anchor = '#' + replacement3.componentName;
+      let replacement3Anchor = cesc('#' + replacement3.componentName);
 
       cy.get('#\\/_clampnumber1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
@@ -226,11 +235,11 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let replacement1 = components['/_copy1'].replacements[0];
-      let replacement1Anchor = '#' + replacement1.componentName;
+      let replacement1Anchor = cesc('#' + replacement1.componentName);
       let replacement2 = components['/_copy2'].replacements[0];
-      let replacement2Anchor = '#' + replacement2.componentName;
+      let replacement2Anchor = cesc('#' + replacement2.componentName);
       let replacement3 = components['/_copy3'].replacements[0];
-      let replacement3Anchor = '#' + replacement3.componentName;
+      let replacement3Anchor = cesc('#' + replacement3.componentName);
 
       cy.get('#\\/_wrapnumberperiodic1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('0.3')
@@ -520,11 +529,11 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let replacement1 = components['/_copy1'].replacements[0];
-      let replacement1Anchor = '#' + replacement1.componentName;
+      let replacement1Anchor = cesc('#' + replacement1.componentName);
       let replacement2 = components['/_copy2'].replacements[0];
-      let replacement2Anchor = '#' + replacement2.componentName;
+      let replacement2Anchor = cesc('#' + replacement2.componentName);
       let replacement3 = components['/_copy3'].replacements[0];
-      let replacement3Anchor = '#' + replacement3.componentName;
+      let replacement3Anchor = cesc('#' + replacement3.componentName);
 
       cy.get('#\\/_round1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('55')
@@ -621,11 +630,11 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let replacement1 = components['/r1'].replacements[0];
-      let replacement1Anchor = '#' + replacement1.componentName;
+      let replacement1Anchor = cesc('#' + replacement1.componentName);
       let replacement2 = components['/r2'].replacements[0];
-      let replacement2Anchor = '#' + replacement2.componentName;
+      let replacement2Anchor = cesc('#' + replacement2.componentName);
       let replacement3 = components['/r3'].replacements[0];
-      let replacement3Anchor = '#' + replacement3.componentName;
+      let replacement3Anchor = cesc('#' + replacement3.componentName);
 
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('{1,2,3,2,1}')
@@ -746,9 +755,9 @@ describe('Math Operator Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let replacement1 = components['/f2a'].replacements[0];
-      let replacement1Anchor = '#' + replacement1.componentName;
+      let replacement1Anchor = cesc('#' + replacement1.componentName);
       let replacement2 = components['/c2a'].replacements[0];
-      let replacement2Anchor = '#' + replacement2.componentName;
+      let replacement2Anchor = cesc('#' + replacement2.componentName);
 
       cy.get('#\\/_floor1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('55')

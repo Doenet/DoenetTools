@@ -143,7 +143,17 @@ export default class CopyFromSubs extends CompositeComponent {
     serializedCopy = targetChild.serialize({ forCopy: true });
     serializedCopy = [serializedCopy];
 
-    return { replacements: postProcessCopy({ serializedComponents: serializedCopy, componentName: component.componentName }) };
+    if (!workspace.uniqueIdentifiersUsed) {
+      workspace.uniqueIdentifiersUsed = []
+    }
+
+    return {
+      replacements: postProcessCopy({
+        serializedComponents: serializedCopy,
+        componentName: component.componentName,
+        uniqueIdentifiersUsed: workspace.uniqueIdentifiersUsed
+      })
+    };
 
   }
 
@@ -172,7 +182,15 @@ export default class CopyFromSubs extends CompositeComponent {
       serializedCopy = targetChild.serialize({ forCopy: true });
       serializedCopy = [serializedCopy];
 
-      let newSerializedReplacements = postProcessCopy({ serializedComponents: serializedCopy, componentName: component.componentName });
+      if (!workspace.uniqueIdentifiersUsed) {
+        workspace.uniqueIdentifiersUsed = []
+      }
+
+      let newSerializedReplacements = postProcessCopy({
+        serializedComponents: serializedCopy,
+        componentName: component.componentName,
+        uniqueIdentifiersUsed: workspace.uniqueIdentifiersUsed
+      });
 
       let replacementInstruction = {
         changeType: "add",

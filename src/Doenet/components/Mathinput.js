@@ -233,13 +233,16 @@ export default class Mathinput extends Input {
 
   updateImmediateValue({ mathExpression }) {
     if (!this.stateValues.disabled) {
+      // we set transient to true so that each keystroke does not
+      // add a row to the database
       this.requestUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "immediateValue",
           value: mathExpression,
-        }]
+        }],
+        transient: true
       })
     }
   }
@@ -252,19 +255,24 @@ export default class Mathinput extends Input {
           componentName: this.componentName,
           stateVariable: "value",
           value: this.stateValues.immediateValue,
-        }]
-      })
-
-      // in case value ended up being a different value than requested
-      // we set immediate value to whatever was the result
-      this.requestUpdate({
-        updateInstructions: [{
+        },
+        // in case value ended up being a different value than requested
+        // we set immediate value to whatever was the result
+        // (hence the need to execute update first)
+        // Also, this makes sure immediateValue is saved to the database,
+        // since in updateImmediateValue, immediateValue is note saved to database
+        {
+          updateType: "executeUpdate"
+        },
+        {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "immediateValue",
-          value: this.stateValues.value,
+          valueOfStateVariable: "value",
         }]
       })
+
+
     }
   }
 

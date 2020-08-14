@@ -38,7 +38,7 @@ export default class Answer extends InlineComponent {
     let childLogic = super.returnChildLogic(args);
 
 
-    let replaceFromOneString = function ({ activeChildrenMatched, dependencyValues, idRng }) {
+    let replaceFromOneString = function ({ activeChildrenMatched, dependencyValues, parentName, childLogicName }) {
       // answer where only child is a string (other than activeChildren from properties)
       // create two activeChildren for the answer:
       // <[defaultType]input/>
@@ -82,7 +82,8 @@ export default class Answer extends InlineComponent {
         }
       }
 
-      let componentName = createUniqueName(inputType, idRng)
+      let longNameId = parentName + "|sugarReplacement|" + childLogicName;
+      let componentName = createUniqueName(inputType, longNameId)
 
       let whenChildren = [
         {
@@ -165,13 +166,14 @@ export default class Answer extends InlineComponent {
     });
 
 
-    let replaceFromOneMath = function ({ activeChildrenMatched, dependencyValues, idRng }) {
+    let replaceFromOneMath = function ({ activeChildrenMatched, dependencyValues, parentName, childLogicName }) {
       // answer where only child is a math (other than activeChildren from properties)
       // create two activeChildren for the answer:
       // <mathinput/>
       // <award><when><copy prop="value" tname="[themathinput]"/>=[originalMath]</when></award>
 
-      let componentName = createUniqueName("mathinput", idRng)
+      let longNameId = parentName + "|sugarReplacement|" + childLogicName;
+      let componentName = createUniqueName("mathinput", longNameId)
 
       let inputChild = {
         componentType: 'mathinput',
@@ -229,13 +231,14 @@ export default class Answer extends InlineComponent {
     });
 
 
-    let replaceFromOneText = function ({ activeChildrenMatched, dependencyValues, idRng }) {
+    let replaceFromOneText = function ({ activeChildrenMatched, dependencyValues, parentName, childLogicName }) {
       // answer where only child is a text (other than activeChildren from properties)
       // create two activeChildren for the answer:
       // <textinput/>
       // <award><when><copy prop="value" tname="[thetextinput]"/>=[originaltext]</when></award>
 
-      let componentName = createUniqueName("textinput", idRng)
+      let longNameId = parentName + "|sugarReplacement|" + childLogicName;
+      let componentName = createUniqueName("textinput", longNameId)
 
       let inputChild = {
         componentType: 'textinput',
@@ -294,7 +297,7 @@ export default class Answer extends InlineComponent {
     });
 
 
-    let replaceFromJustChoices = function ({ activeChildrenMatched, idRng }) {
+    let replaceFromJustChoices = function ({ activeChildrenMatched, parentName, childLogicName }) {
       // answer where only children are choices (other than activeChildren from properties)
       // wrap choices in a choiceinput
       // and for each choice
@@ -309,7 +312,8 @@ export default class Answer extends InlineComponent {
         componentName: x.componentName
       }));
 
-      let componentName = createUniqueName("choiceinput", idRng)
+      let longNameId = parentName + "|sugarReplacement|" + childLogicName;
+      let componentName = createUniqueName("choiceinput", longNameId)
 
       let choiceinputComponent = {
         componentType: "choiceinput",
@@ -338,7 +342,7 @@ export default class Answer extends InlineComponent {
     });
 
 
-    let replaceFromIncompleteAwards = function ({ activeChildrenMatched, dependencyValues, idRng }) {
+    let replaceFromIncompleteAwards = function ({ activeChildrenMatched, dependencyValues, parentName, childLogicName }) {
       // answer where only activeChildren (other than from properties) are incomplete awards
       // (meaning awards with a <string> child rather than an <when> child)
       // create an input and replace the <string> child of each award with
@@ -384,7 +388,8 @@ export default class Answer extends InlineComponent {
         typeForStrings = dependencyValues.type;
       }
 
-      let componentName = createUniqueName(inputType, idRng)
+      let longNameId = parentName + "|sugarReplacement|" + childLogicName;
+      let componentName = createUniqueName(inputType, longNameId)
 
       let inputChild = {
         componentType: inputType,
@@ -585,8 +590,10 @@ export default class Answer extends InlineComponent {
       forRenderer: true,
       returnDependencies: () => ({
         inputChild: {
-          dependencyType: "childIdentity",
-          childLogicName: "atMostOneInput"
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneInput",
+          variableNames: ["valueToRecordOnSubmit", "valueRecordedAtSubmit"],
+          variablesOptional: true,
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -836,7 +843,8 @@ export default class Answer extends InlineComponent {
     }
 
     stateVariableDefinitions.creditAchievedIfSubmit = {
-      additionalStateVariablesDefined: ["awardUsedIfSubmit", "awardChildren"],
+      additionalStateVariablesDefined: ["awardUsedIfSubmit", "awardChildren",
+        "inputUsedIfSubmit"],
       returnDependencies: () => ({
         awardChildren: {
           dependencyType: "childStateVariables",
@@ -853,28 +861,30 @@ export default class Answer extends InlineComponent {
       definition: function ({ dependencyValues }) {
 
         let creditAchieved = 0;
-        let awardUsed = "";
+        let awardUsed = null;
+        let inputUsed = null;
 
         if (dependencyValues.awardChildren.length === 0) {
           if (dependencyValues.inputChild.length === 1) {
             let inputCredit = dependencyValues.inputChild[0].stateValues.creditAchievedIfSubmit;
             // if input has a state variable creditAchievedIfSubmit
-            // that is a positive number, use that value
-            if (inputCredit > 0) {
+            // that is a non-negative number, use that value
+            if (inputCredit >= 0) {
               creditAchieved = inputCredit;
+              inputUsed = dependencyValues.inputChild[0].componentName;
             }
           }
         } else {
           // awardUsed with be component name of first award
           // that gives the maximum credit (which will be creditAchieved)
-          // Always process awards if creditAchieved is still zero in case want to
+          // Always process awards if haven't matched an award in case want to
           // use an award with credit=0 to trigger feedback
           for (let child of dependencyValues.awardChildren) {
             let childMaxCredit = Math.max(0, Math.min(1, child.stateValues.credit))
-            if (childMaxCredit > creditAchieved || creditAchieved === 0) {
+            if (childMaxCredit > creditAchieved || awardUsed === null) {
               let creditFromChild = child.stateValues.creditAchieved;
               let fractionFromChild = child.stateValues.fractionSatisfied;
-              if (fractionFromChild > 0 && (creditFromChild > creditAchieved || awardUsed === "")) {
+              if (fractionFromChild > 0 && (creditFromChild > creditAchieved || awardUsed === null)) {
                 creditAchieved = creditFromChild;
                 awardUsed = child.componentName;
               }
@@ -885,7 +895,8 @@ export default class Answer extends InlineComponent {
           newValues: {
             creditAchievedIfSubmit: creditAchieved,
             awardUsedIfSubmit: awardUsed,
-            awardChildren: dependencyValues.awardChildren
+            awardChildren: dependencyValues.awardChildren,
+            inputUsedIfSubmit: inputUsed,
           }
         }
       }
@@ -1042,11 +1053,18 @@ export default class Answer extends InlineComponent {
       }
     }
 
-    // placeholder until we determine how to send flags to renderer
     stateVariableDefinitions.showCorrectness = {
       forRenderer: true,
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { showCorrectness: true } })
+      returnDependencies: () => ({
+        showCorrectnessFlag: {
+          dependencyType: "flag",
+          flagName: "showCorrectness"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let showCorrectness = dependencyValues.showCorrectnessFlag !== false;
+        return { newValues: { showCorrectness } }
+      }
     }
 
     stateVariableDefinitions.childrenToRender = {
@@ -1079,6 +1097,7 @@ export default class Answer extends InlineComponent {
 
     let creditAchieved = this.stateValues.creditAchievedIfSubmit;
     let awardUsed = this.stateValues.awardUsedIfSubmit;
+    let inputUsed = this.stateValues.inputUsedIfSubmit;
 
     // request to update credit
     let instructions = [{
@@ -1109,6 +1128,17 @@ export default class Answer extends InlineComponent {
         value: creditAchieved,
       });
 
+      if (inputUsed === this.stateValues.inputChild.componentName
+        && "valueToRecordOnSubmit" in this.stateValues.inputChild.stateValues
+        && "valueRecordedAtSubmit" in this.stateValues.inputChild.stateValues
+      ) {
+        instructions.push({
+          updateType: "updateValue",
+          componentName: this.stateValues.inputChild.componentName,
+          stateVariable: "valueRecordedAtSubmit",
+          value: this.stateValues.inputChild.stateValues.valueToRecordOnSubmit
+        })
+      }
 
       // if (this.stateValues.inputChild.componentType === "choiceinput") {
       //   instructions.push({
