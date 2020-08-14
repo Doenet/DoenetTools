@@ -22,7 +22,7 @@ services:
   mysql:
     build: './mysql'
     ports:
-      - 3307:3306
+      - 3306:3306
     volumes:
       - ./volumes/db:/var/lib/mysql
       - ./volumes/db_init:/docker-entrypoint-initdb.d
