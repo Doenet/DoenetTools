@@ -23,7 +23,17 @@ $weights = array_map(function($item) use($conn) {
   }, $_POST['weights']);
 
 
-  //TODO: test if weights already are stored (YES)
+  //TODO: Test if weights dynamically changed then store updates
+  $sql = "SELECT userId
+          FROM  user_assignment_attempt
+          WHERE userId = '$userId'
+          AND assignmentId = '$assignmentId'
+          AND attemptNumber = '$attemptNumber'
+  ";
+$result = $conn->query($sql);
+
+//If already stored, don't store
+if ($result->num_rows < 1){
 
 
   $sql = "INSERT INTO user_assignment_attempt 
@@ -45,6 +55,7 @@ $result = $conn->query($sql);
 
   }
 
+}
 
 
     // set response code - 200 OK

@@ -247,7 +247,6 @@ class DoenetViewer extends Component {
 
   }
 
-
   loadState(callback) {
 
     if (this.props.ignoreDatabase) {

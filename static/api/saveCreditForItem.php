@@ -19,17 +19,56 @@ $assignmentId = mysqli_real_escape_string($conn,$_POST["assignmentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $credit = mysqli_real_escape_string($conn,$_POST["credit"]);
 $itemNumber = mysqli_real_escape_string($conn,$_POST["itemNumber"]);
+$itemNumber = $itemNumber + 1;
+// var_dump($_POST);
 
+//Find attemptAggregation
+$sql = "SELECT attemptAggregation
+        FROM assignment
+        WHERE assignmentId='$assignmentId'";
 
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
+$attemptAggregation = $row['attemptAggregation'];
 
-
-//TODO: *** Update to user_assignment_attempt_item
-//attemptAggregation (from assignment) 
+// *** Update to user_assignment_attempt_item
 
 //If attemptAggregation = "m"; (char 1 type "m" or "l")
 //Set credit in user_assignment_attempt_item = max credit in table or new param calculated
 //If attemptAggregation = "l"; 
-////Set credit in user_assignment_attempt_item to new param calculated
+//Set credit in user_assignment_attempt_item to new param calculated
+
+//*** update user_assignment_attempt_item
+if ($attemptAggregation == 'm'){
+//Find Max Item Credit
+$sql = "SELECT MAX(credit) AS maxCredit,
+        MAX(creditOverride) AS maxCreditOverride
+        FROM user_assignment_attempt_item
+        WHERE userId = '$userId'
+        AND assignmentId = '$assignmentId'
+        AND itemNumber = '$itemNumber'
+";
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
+$maxCredit = $row['maxCredit'];
+$maxCreditOverride = $row['maxCreditOverride'];
+$saveItemCredit = MAX($maxCredit,$maxCreditOverride,$credit);
+}else if ($attemptAggregation == 'l'){
+    //Use last attempt
+    $saveItemCredit = $credit;
+}else{
+    echo "Error: attempt aggregation not defined\n";
+}
+
+$sql = "UPDATE user_assignment_attempt_item
+        SET credit='$saveItemCredit'
+        WHERE userId = '$userId'
+        AND assignmentId = '$assignmentId'
+        AND attemptNumber = '$attemptNumber'
+        AND itemNumber = '$itemNumber'
+        ";
+$result = $conn->query($sql);
+
 
 
 
