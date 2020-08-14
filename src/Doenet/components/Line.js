@@ -452,8 +452,8 @@ export default class Line extends GraphicalComponent {
         if (stateValues.equationChild === null) {
           let dependenciesByKey = {};
           for (let arrayKey of arrayKeys) {
-            let [pointInd, dimInd] = arrayKey.split(",");
-            let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+            let [pointInd, dim] = arrayKey.split(",");
+            let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
             dependenciesByKey[arrayKey] = {
               throughChild: {
@@ -515,8 +515,8 @@ export default class Line extends GraphicalComponent {
 
           for (let arrayKey of arrayKeys) {
 
-            let [pointInd, dimInd] = arrayKey.split(",");
-            let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+            let [pointInd, dim] = arrayKey.split(",");
+            let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
             if (dependencyValuesByKey[arrayKey].throughChild.length === 1
               && dependencyValuesByKey[arrayKey].throughChild[0].stateValues["pointX" + varEnding]
@@ -543,7 +543,7 @@ export default class Line extends GraphicalComponent {
         }
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
-        dependencyValuesByKey, dependencyNamesByKey, initialChange, stateValues,
+        dependencyValuesByKey, dependencyNamesByKey, initialChange, stateValues, workspace
       }) {
 
         // console.log(`inverse array definition of points of line`);
@@ -563,28 +563,32 @@ export default class Line extends GraphicalComponent {
 
           // dependencies are coeffs
 
-          let desiredPoints = desiredStateVariableValues.points;
+          if (!workspace.desiredPoints) {
+            workspace.desiredPoints = {};
+          }
+
+          Object.assign(workspace.desiredPoints, desiredStateVariableValues.points)
 
           let point1x, point1y, point2x, point2y;
-          if (desiredPoints["0,0"]) {
-            point1x = desiredPoints["0,0"]
+          if (workspace.desiredPoints["0,0"]) {
+            point1x = workspace.desiredPoints["0,0"]
           } else {
-            point1x = stateValues.points["0,0"];
+            point1x = stateValues.points[0][0];
           }
-          if (desiredPoints["0,1"]) {
-            point1y = desiredPoints["0,1"]
+          if (workspace.desiredPoints["0,1"]) {
+            point1y = workspace.desiredPoints["0,1"]
           } else {
-            point1y = stateValues.points["0,1"];
+            point1y = stateValues.points[0][1];
           }
-          if (desiredPoints["1,0"]) {
-            point2x = desiredPoints["1,0"]
+          if (workspace.desiredPoints["1,0"]) {
+            point2x = workspace.desiredPoints["1,0"]
           } else {
-            point2x = stateValues.points["1,0"];
+            point2x = stateValues.points[1][0];
           }
-          if (desiredPoints["1,1"]) {
-            point2y = desiredPoints["1,1"]
+          if (workspace.desiredPoints["1,1"]) {
+            point2y = workspace.desiredPoints["1,1"]
           } else {
-            point2y = stateValues.points["1,1"];
+            point2y = stateValues.points[1][1];
           }
 
 
@@ -668,8 +672,8 @@ export default class Line extends GraphicalComponent {
 
           for (let arrayKey in desiredStateVariableValues.points) {
 
-            let [pointInd, dimInd] = arrayKey.split(",");
-            let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+            let [pointInd, dim] = arrayKey.split(",");
+            let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
             if (dependencyValuesByKey[arrayKey].throughChild.length === 1
               && dependencyValuesByKey[arrayKey].throughChild[0].stateValues["pointX" + varEnding]
@@ -685,8 +689,7 @@ export default class Line extends GraphicalComponent {
 
               instructions.push({
                 setStateVariable: "points",
-                value: convertValueToMathExpression(desiredStateVariableValues.points[arrayKey]),
-                arrayKey
+                value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.points[arrayKey]) }
               })
             }
           }
@@ -1206,13 +1209,13 @@ export default class Line extends GraphicalComponent {
 
   }
 
-  moveLine({ point1coords, point2coords }) {
+  moveLine({ point1coords, point2coords, transient }) {
 
     let desiredPoints = {
-      "0,0": point1coords[0],
-      "0,1": point1coords[1],
-      "1,0": point2coords[0],
-      "1,1": point2coords[1],
+      "0,0": me.fromAst(point1coords[0]),
+      "0,1": me.fromAst(point1coords[1]),
+      "1,0": me.fromAst(point2coords[0]),
+      "1,1": me.fromAst(point2coords[1]),
     }
 
     this.requestUpdate({
@@ -1221,7 +1224,8 @@ export default class Line extends GraphicalComponent {
         componentName: this.componentName,
         stateVariable: "points",
         value: desiredPoints
-      }]
+      }],
+      transient
     });
 
   }

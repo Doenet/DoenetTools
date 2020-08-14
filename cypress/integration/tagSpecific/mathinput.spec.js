@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Mathinput Tag Tests', function () {
 
   beforeEach(() => {
@@ -29,11 +39,11 @@ describe('Mathinput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinput1a = components['/_copy1'].replacements[0];
-      let mathinput1aAnchor = '#' + mathinput1a.componentName + '_input';
+      let mathinput1aAnchor = cesc('#' + mathinput1a.componentName + '_input');
       let math1 = components['/_copy2'].replacements[0];
-      let math1Anchor = '#' + math1.componentName;
+      let math1Anchor = cesc('#' + math1.componentName);
       let math2 = components['/_copy3'].replacements[0];
-      let math2Anchor = '#' + math2.componentName;
+      let math2Anchor = cesc('#' + math2.componentName);
 
 
       cy.log('Test values displayed in browser')
@@ -587,11 +597,11 @@ describe('Mathinput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinput2 = components['/mathinput2'].replacements[0];
-      let mathinput2Anchor = '#' + mathinput2.componentName + '_input';
-      let value1Anchor = '#' + components['/value1'].replacements[0].componentName;
-      let immedateValue1Anchor = '#' + components['/immediate1'].replacements[0].componentName;
-      let value2Anchor = '#' + components['/value2'].replacements[0].componentName;
-      let immediateValue2Anchor = '#' + components['/immediate2'].replacements[0].componentName;
+      let mathinput2Anchor = cesc('#' + mathinput2.componentName + '_input');
+      let value1Anchor = cesc('#' + components['/value1'].replacements[0].componentName);
+      let immedateValue1Anchor = cesc('#' + components['/immediate1'].replacements[0].componentName);
+      let value2Anchor = cesc('#' + components['/value2'].replacements[0].componentName);
+      let immediateValue2Anchor = cesc('#' + components['/immediate2'].replacements[0].componentName);
 
       cy.get('#\\/_mathinput1_input').should('have.value', '1 + 2 x');
       cy.get(mathinput2Anchor).should('have.value', '1 + 2 x');
@@ -742,11 +752,11 @@ describe('Mathinput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinput2 = components['/mathinput2'].replacements[0];
-      let mathinput2Anchor = '#' + mathinput2.componentName + '_input';
-      let value1Anchor = '#' + components['/value1'].replacements[0].componentName;
-      let immedateValue1Anchor = '#' + components['/immediate1'].replacements[0].componentName;
-      let value2Anchor = '#' + components['/value2'].replacements[0].componentName;
-      let immediateValue2Anchor = '#' + components['/immediate2'].replacements[0].componentName;
+      let mathinput2Anchor = cesc('#' + mathinput2.componentName + '_input');
+      let value1Anchor = cesc('#' + components['/value1'].replacements[0].componentName);
+      let immedateValue1Anchor = cesc('#' + components['/immediate1'].replacements[0].componentName);
+      let value2Anchor = cesc('#' + components['/value2'].replacements[0].componentName);
+      let immediateValue2Anchor = cesc('#' + components['/immediate2'].replacements[0].componentName);
 
 
       cy.get('#\\/_mathinput1_input').should('have.value', '1 + 2 x');
@@ -800,11 +810,11 @@ describe('Mathinput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinput2 = components['/mathinput2'].replacements[0];
-      let mathinput2Anchor = '#' + mathinput2.componentName + '_input';
-      let value1Anchor = '#' + components['/value1'].replacements[0].componentName;
-      let immedateValue1Anchor = '#' + components['/immediate1'].replacements[0].componentName;
-      let value2Anchor = '#' + components['/value2'].replacements[0].componentName;
-      let immediateValue2Anchor = '#' + components['/immediate2'].replacements[0].componentName;
+      let mathinput2Anchor = cesc('#' + mathinput2.componentName + '_input');
+      let value1Anchor = cesc('#' + components['/value1'].replacements[0].componentName);
+      let immedateValue1Anchor = cesc('#' + components['/immediate1'].replacements[0].componentName);
+      let value2Anchor = cesc('#' + components['/value2'].replacements[0].componentName);
+      let immediateValue2Anchor = cesc('#' + components['/immediate2'].replacements[0].componentName);
 
 
       cy.get('#\\/_mathinput1_input').should('have.value', '3 x + 1');
@@ -927,11 +937,11 @@ describe('Mathinput Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let mathinput2 = components['/mathinput2'].replacements[0];
-      let mathinput2Anchor = '#' + mathinput2.componentName + '_input';
-      let value1Anchor = '#' + components['/value1'].replacements[0].componentName;
-      let immedateValue1Anchor = '#' + components['/immediate1'].replacements[0].componentName;
-      let value2Anchor = '#' + components['/value2'].replacements[0].componentName;
-      let immediateValue2Anchor = '#' + components['/immediate2'].replacements[0].componentName;
+      let mathinput2Anchor = cesc('#' + mathinput2.componentName + '_input');
+      let value1Anchor = cesc('#' + components['/value1'].replacements[0].componentName);
+      let immedateValue1Anchor = cesc('#' + components['/immediate1'].replacements[0].componentName);
+      let value2Anchor = cesc('#' + components['/value2'].replacements[0].componentName);
+      let immediateValue2Anchor = cesc('#' + components['/immediate2'].replacements[0].componentName);
 
       cy.get('#\\/_mathinput1_input').should('have.value', '1 + 2 x z');
       cy.get(mathinput2Anchor).should('have.value', '1 + 2 x z');

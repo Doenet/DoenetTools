@@ -512,7 +512,7 @@ describe('SelectFromSequence Tag Tests',function() {
     })
   });
 
-  it("refs don't resample",() => {
+  it("copies don't resample",() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <math>1</math>
     <p><aslist>
