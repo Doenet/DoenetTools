@@ -95,6 +95,8 @@ class DoenetViewer extends Component {
     });
 
 
+    // this.databaseItemsToReload = props.databaseItemsToReload;
+
   }
 
 

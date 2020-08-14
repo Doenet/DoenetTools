@@ -77,11 +77,11 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 #newContentButtonMenu {
-  position: fixed;
+  position: absolute;
   width: 225px;
   height: auto;
-  top: 54px;
-  left: 5px;
+  top: 17px;
+  left: 64px;
   background: #fff;
   border: 1px solid #ccc;
   border-color: rgba(0,0,0,.2);
@@ -153,6 +153,12 @@ input[type=number]::-webkit-outer-spin-button {
   font-size: 17px;
   color: #8c8c8c;
   margin-right: 15px;
+  margin-left: 6px;
+}
+.menuCustomTwirlIcon{
+  font-size: 15px;
+  color: #03a1fc;
+  margin-right: 8px;
   margin-left: 6px;
 }
 
@@ -561,6 +567,20 @@ input[type=number]::-webkit-outer-spin-button {
   margin-top: 15px;
 }
 
+.tree-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  align-items: left;
+  text-align: left;
+  overflow-x: hidden;
+  grid-row: 2 / 3;
+  grid-column: 3 / 4;
+  transform: scale(1.2);
+  transform-origin: top left;
+  margin-top: 15px;
+}
+
 .mainPanel {
   width:100%;
   display: block;
@@ -584,6 +604,31 @@ input[type=number]::-webkit-outer-spin-button {
     justify-content: center;
   }
 }
+body {
+    font-size: 14px;
+    background-color: rgb(246, 248, 255);
+    font-family: "Lato", "Open Sans", sans-serif;
+    font-weight: normal;
+    line-height: 1.6em;
+    overflow: hidden;
+}
+
+a {
+    text-decoration:none;
+}
+
+a:hover {
+    text-decoration:underline;
+}
+button{
+    height:20px;
+    text-decoration:none;
+    outline-style: hidden;
+
+}
+select{
+    height:20px;
+}
 .headingContainer{
   display: flex;
   /* position: fixed; */
@@ -592,7 +637,7 @@ input[type=number]::-webkit-outer-spin-button {
   background-color: white;
   border-bottom: 1px solid #E3E2E2;
   justify-content: space-between;
-  padding: 6px;
+  /* padding: 6px; */
   width: 100%;
   height: 50px;
   z-index: 5;
@@ -658,7 +703,7 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 #doenetLogo {
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 /* #previousPageButton {
@@ -896,7 +941,7 @@ input[type=number]::-webkit-outer-spin-button {
 
   #doenetLogo {
     height: 35px;
-    cursor: pointer;
+    /* cursor: pointer; */
     vertical-align: middle;
   }
 
@@ -1449,6 +1494,18 @@ code {
   background: #f5f6f7;
 }
 
+.menuCustomTwirlIcon{
+  font-size: 12px;
+  color: #03a1fc;
+  margin-right: 8px;
+  margin-left: 6px;
+  border:1px solid #03a1fc;
+  border-radius: 2px;
+  /* padding-left: 2px;
+  padding-right:2px; */
+  width: 15px !important;
+  height: 15px !important;
+}
 .switchable-containers {
   display: flex;
   flex-direction: column;
@@ -1495,7 +1552,10 @@ button{
   flex-direction: column;
   min-height: 1vh;
   overflow: hidden;
-
+  width:100%;
+  background-color: #288ae9;
+  /* background-repeat: repeat-y; */
+  /* background-image: url('../../media/doenet_bg.png'); */
 }
 
 .middlepanel{
@@ -1504,6 +1564,7 @@ button{
   flex-direction: column;
   min-height: 1vh;
   overflow: hidden;
+  background-color: white;
 }
 
 .rightpanel{
@@ -1512,6 +1573,7 @@ button{
   flex-direction: column;
   min-height: 1vh; 
   overflow: hidden;
+  background-color: white;
 }
 
 .column-resizer{
@@ -1579,7 +1641,7 @@ button{
   order:1;
 }
 .custom{
-  color: rgb(67, 170, 144);
+  color: #288ae9;
   border-radius: 20px 0px 0px 20px;
  height:40px;
  width:28px;
@@ -1667,28 +1729,6 @@ display: none;
 }
  
 
-body {
-    font-size: 14px;
-    background-color: rgb(246, 248, 255);
-    font-family: "Lato", "Open Sans", sans-serif;
-    font-weight: normal;
-    line-height: 1.6em;
-    overflow: hidden;
-}
-
-a {
-    text-decoration:none;
-}
-
-a:hover {
-    text-decoration:underline;
-}
-button{
-    height:20px;
-}
-select{
-    height:20px;
-}
 .select-box-container {
   height: 30px;
   border: 1px solid #aaa;
@@ -1700,12 +1740,11 @@ select{
 * {
   box-sizing: border-box;
 }
+
 .drop-down-select{
-  /* position: absolute;
-  top:2%;
-  z-index:1; */
   position: relative;
   height: 30px;
+  left:-150px;
 }
 .select-box-box {
   width: 120px;
@@ -1716,7 +1755,7 @@ select{
   display: inline-block;
   height: 100%;
   width: 100%;
-  /* padding: 4px 12px; */
+  margin-bottom: 2px;
   vertical-align: middle;
   
 }
@@ -1729,15 +1768,39 @@ select{
 
 .select-box-items{
   z-index:1000;
-    position: absolute;
-    width: 100%;
+  position: fixed;
+  width: 200px;
+  background-color: #ffffff;
+  border: 1px solid #aaa;
+
+  box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
 }
+
 .select-box-items div {
-  border-bottom: 1px solid #ddd;
-  border-left: 1px solid #ddd;
-  border-right: 1px solid #ddd;
-  padding: 2px;
-  padding-left: 20px;
+  border: none;
+  line-height: 2em;
+  height: 3em;
+  display: flex;
+  align-items: center;
+}
+
+.select-box-items .parent {
+  color: rgba(0,0,0,.54);
+  padding: 0px 16px;
+}
+
+.child-container {
+  padding: 5px 16px;
+  cursor: pointer;
+}
+
+.child-container:hover {
+  background-color: lightgray;
+}
+
+.child-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .select-box-arrow {
@@ -1773,4 +1836,5 @@ select{
   border-right: 8px solid transparent;
   border-bottom: 10px solid black;
 }
+
 

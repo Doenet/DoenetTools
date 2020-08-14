@@ -200,25 +200,6 @@ export default function DoenetProfile(props) {
   //Load profile from database if only email and nine code
   if (Object.keys(profile).length < 1) {
 
-    let anonymousUserProfile = {
-      accessAllowed: "0",
-      adminAccessAllowed: "0",
-      email: "",
-      firstName: "",
-      lastName: "",
-      profilePicture: "anonymous",
-      roleCommunityTA: "0",
-      roleCourseDesigner: "0",
-      roleInstructor: "0",
-      roleLiveDataCommunity: "0",
-      roleStudent: "1",
-      roleWatchdog: "0",
-      studentId: null,
-      toolAccess: ["Chooser", "Documentation"],
-      trackingConsent: "1",
-      username: "anonymous",
-    }
-
     //Need to load profile from database 
     //Ask Server for data which matches email address
     const phpUrl = '/api/loadProfile.php';

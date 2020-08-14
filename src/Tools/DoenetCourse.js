@@ -16,11 +16,19 @@ import React, { useState } from "react";
 import ToolLayout from "./ToolLayout/ToolLayout";
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import styled from "styled-components";
-
+import { getCourses, setSelected } from "../imports/courseInfo";
 
 export default function DoenetCourse(props){
- 
 
+  
+  getCourses(updateCourseInfo);
+
+  function updateCourseInfo(courseListArray,selectedCourseObj){
+    // console.log('example****> called back');
+    // console.log("courses",courseListArray);
+    // console.log("selected",selectedCourseObj);
+    // setSelected("NfzKqYtTgYRyPnmaxc7XB");
+  }
 
     return (
       <>

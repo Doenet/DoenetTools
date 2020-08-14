@@ -25,13 +25,13 @@ RUN apt-get install -y p7zip \
     cabextract \
     file-roller \
     && rm -rf /var/lib/apt/lists/*
-RUN composer require firebase/php-jwt
+
+WORKDIR /usr/local/apache2/htdocs/api/
 
 #Test for php-jwt
 # COPY example.php /var/www/html/example.php
 
-# Alternative install of php-jwt
-# COPY composer.json /var/www/html/composer.json
-# RUN composer install --no-dev
+COPY composer.json /composer.json
+RUN cd / && composer install
 
 EXPOSE 9000

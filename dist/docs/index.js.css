@@ -44,14 +44,14 @@ body{
 
 .search {
   text-align: left;
-  margin: 1.5em 0 0 1em;
+  margin: 1.5em 0 1em 0.5em;
 }
 
 .search-input {
   width: 90%;
   height: 1.5rem;
-  margin: 1rem auto;
-  padding: 1rem;
+  /* margin: 1rem auto; */
+  /* padding: 1rem; */
   color: #333333;
   border: 1px solid #c1c1c1; 
   font-size: 1.2rem;
@@ -78,12 +78,12 @@ body{
   text-align: left;
   color: #2e3138;
   text-decoration: none;
-  padding: 10px 25px;
+  /* padding: 10px 25px; */
   border: none;
   position: relative;
   width: 100%;
   font-weight: 400;
-  overflow: hidden;
+  overflow-x: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   outline: none;
@@ -103,12 +103,12 @@ body{
   font-size: 1.2em;
   text-align: left;
   text-decoration: none;
-  padding: 10px 25px;
+  /* padding: 10px 25px; */
   border: none;
   position: relative;
   width: 100%;
   font-weight: 400;
-  overflow: hidden;
+  overflow-x: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   outline: none;
@@ -119,10 +119,10 @@ body{
 .docs-content {
   position: absolute;
   width: 70%;
-  left: 30%;
+  /* left: 30%; */
   /* margin-left: 30%; */
   padding: 0em 3em 1em 3em;
-  z-index: -1;
+  /* z-index: -1; */
 }
 
 .docs-content-heading {
@@ -151,11 +151,11 @@ body{
   text-align: left;
   color: #2e3138;
   text-decoration: none;
-  padding: 10px 25px;
+  /* padding: 10px 25px; */
   border: none;
   position: relative;
   font-weight: 400;
-  overflow: auto;
+  /* overflow: auto; */
   white-space: normal;
   outline: none;
 }
@@ -180,7 +180,7 @@ body{
   background-color: white;
   border-bottom: 1px solid #E3E2E2;
   justify-content: space-between;
-  padding: 6px;
+  /* padding: 6px; */
   width: 100%;
   height: 50px;
   z-index: 5;
@@ -246,7 +246,7 @@ body{
 }
 
 #doenetLogo {
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 /* #previousPageButton {
@@ -484,7 +484,7 @@ body{
 
   #doenetLogo {
     height: 35px;
-    cursor: pointer;
+    /* cursor: pointer; */
     vertical-align: middle;
   }
 
@@ -562,3 +562,324 @@ body{
 
 
 
+body{
+  background-color: rgb(246, 248, 255);
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+button{
+  outline:none;
+}
+
+.leftpanel{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 1vh;
+  overflow: hidden;
+  width:100%;
+  background-color: #288ae9;
+  /* background-repeat: repeat-y; */
+  /* background-image: url('../../media/doenet_bg.png'); */
+}
+
+.middlepanel{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 1vh;
+  overflow: hidden;
+  background-color: white;
+}
+
+.rightpanel{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 1vh; 
+  overflow: hidden;
+  background-color: white;
+}
+
+.column-resizer{
+  cursor: col-resize;
+}
+
+.left-resizer{
+  cursor: e-resize;
+
+}
+
+.right-resizer{
+  cursor: w-resize;
+}
+
+.resizer{
+  width: 3px;
+  /* padding-left: 1px;
+  padding-right: 1px; */
+  position:relative;
+  flex-shrink: 0;
+  background-color: #E3E3E3;
+  opacity:0.5;
+
+}
+
+
+.panels-header-content{
+
+    min-height: 60px;
+    max-height: 60px;
+    margin: 0px;
+    /* z-index: 3; */
+    background-color: white;
+    border-bottom: 1px solid #E3E2E2;
+  /* min-height: 60px;
+  max-height: 60px;
+  margin:0px;
+  background-color: white;
+  border-bottom: 1px solid #E3E2E2; */
+  
+}
+.panels-header-controls{
+  display: flex;
+  height: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  /* margin: 10px 10px;
+  display: inline-block; */
+}
+
+.leftCloseButton{
+  width: 28px;
+  height:40px;
+  background-color: white;
+  border-radius: 20px 0 0 20px;
+  margin: 10px 0 10px 0;
+  float: right;
+  border: 1px solid #E3E2E2;
+  padding: 2px 4px;
+  font-size: 16px;
+  cursor: pointer;
+  order:1;
+}
+.custom{
+  color: #288ae9;
+  border-radius: 20px 0px 0px 20px;
+ height:40px;
+ width:28px;
+}
+.rightCloseButton{
+  width: 28px;
+  height:40px;
+  background-color: white;
+  border-radius: 0 20px 20px 0;
+  margin: 10px 0 10px 0;
+
+  border: 1px solid #E3E2E2;
+  padding: 2px 4px;
+  font-size: 16px;
+  cursor: pointer;
+
+}
+.middleLeftButton{
+  width: 28px;
+  height:40px;
+  background-color: white;
+  border-radius: 0 20px 20px 0;
+  margin: 10px 0 10px 0;
+  border: 1px solid #E3E2E2;
+  padding: 11px 8px;
+  font-size: 16px;
+  cursor: pointer;
+
+}
+.middleRightButton{
+  width: 28px;
+  height:40px;
+  background-color: white;
+  border-radius: 20px 0 0 20px;
+  margin: 10px 0 10px 0;
+  float: right;
+  border: 1px solid #E3E2E2;
+  padding: 2px 8px;
+  font-size: 16px;
+  cursor: pointer;
+  order: 1;
+}
+
+
+@media only screen and (max-width: 767px) {
+  .footer-on {
+    margin-bottom: 30px;
+  }
+
+ .phonebuttoncontainer{
+  display : flex;
+  width: 100%;
+  bottom: 0.1px;
+  left: 0px;
+  position: fixed;
+  z-index:5;
+  text-align: center;
+}
+
+.phonebutton{
+    color: white;
+    background-color: black;
+    width: 100%;
+} 
+.tool-footer{
+  height:60px;
+  ;
+}
+
+.leftCloseButton{
+  display:none;
+}
+.rightCloseButton{
+  display: none;
+}
+.middleLeftButton{
+display: none;
+
+}
+.middleRightButton{
+  display: none;
+
+}
+
+}
+ 
+
+body {
+    font-size: 14px;
+    background-color: rgb(246, 248, 255);
+    font-family: "Lato", "Open Sans", sans-serif;
+    font-weight: normal;
+    line-height: 1.6em;
+    overflow: hidden;
+}
+
+a {
+    text-decoration:none;
+}
+
+a:hover {
+    text-decoration:underline;
+}
+button{
+    height:20px;
+    text-decoration:none;
+    outline-style: hidden;
+
+}
+select{
+    height:20px;
+}
+.container {
+  width: 50%;
+  height: 100%;
+  position: relative;
+  background: #dfe3e6;
+  border-radius: 5px;
+  margin-right: 40px;
+  padding: 10px;
+  min-height: 30px;
+}
+
+h3 {
+  text-align: left;
+  padding-left: 10px;
+  margin: 10px 0;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.App {
+  font-family: sans-serif;
+  text-align: center;
+  overflow-y: scroll;
+}
+
+.elem {
+  height: 50px;
+  width: 50px;
+  border: 1px solid magenta;
+}
+.box {
+  display: flex;
+  width: 100%;
+}
+
+.area {
+  width: 70%;
+  margin-left: 100px;
+  border: 1px dotted;
+}
+
+.item {
+  background: white;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 10px;
+  text-align: left;
+  box-shadow: 0 1px 0 rgba(9, 45, 66, 0.25);
+}
+
+.item:hover {
+  cursor: pointer;
+  background: #f5f6f7;
+}
+
+.container {
+  width: 50%;
+  height: 100%;
+  position: relative;
+  background: #dfe3e6;
+  border-radius: 5px;
+  margin-right: 40px;
+  padding: 10px;
+  min-height: 30px;
+}
+.item {
+  background: white;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 10px;
+  text-align: left;
+  box-shadow: 0 1px 0 rgba(9, 45, 66, 0.25);
+}
+
+.item:hover {
+  cursor: pointer;
+  background: #f5f6f7;
+}
+
+@keyframes spin {
+  from {transform:rotate(0deg);}
+  to {transform:rotate(360deg);}
+}
+
+@keyframes spinnerColor {
+  0% { color: #40ebbe; }
+  25% { color: #2fb390; }
+  50% { color: #2a9b7d; }
+  75% { color: #3ddab0; }
+  100% { color: #40ebbe; }
+}
