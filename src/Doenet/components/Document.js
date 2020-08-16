@@ -50,6 +50,13 @@ export default class Document extends BaseComponent {
       number: 1,
     })
 
+    let atMostOneDescription = childLogic.newLeaf({
+      name: "atMostOneDescription",
+      componentType: "description",
+      comparison: "atMost",
+      number: 1,
+    })
+
     let anything = childLogic.newLeaf({
       name: 'anything',
       componentType: '_base',
@@ -58,9 +65,9 @@ export default class Document extends BaseComponent {
     });
 
     childLogic.newOperator({
-      name: "variantTitleMetaAnything",
+      name: "variantTitleDescriptionMetaAnything",
       operator: "and",
-      propositions: [atMostOneVariantControl, atMostOneTitle, atMostOneMeta, anything],
+      propositions: [atMostOneVariantControl, atMostOneTitle, atMostOneDescription, atMostOneMeta, anything],
       setAsBase: true,
     })
 
@@ -71,6 +78,24 @@ export default class Document extends BaseComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+
+    stateVariableDefinitions.titleDefinedByChildren = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        titleChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "atMostOneTitle",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            titleDefinedByChildren: dependencyValues.titleChild.length === 1
+          }
+        }
+      }
+    }
 
     stateVariableDefinitions.title = {
       public: true,
@@ -88,6 +113,27 @@ export default class Document extends BaseComponent {
           return { newValues: { title: "" } };
         } else {
           return { newValues: { title: dependencyValues.titleChild[0].stateValues.text } };
+        }
+      }
+    }
+
+
+    stateVariableDefinitions.description = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      returnDependencies: () => ({
+        descriptionChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneDescription",
+          variableNames: ["text"],
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.descriptionChild.length === 0) {
+          return { newValues: { description: "" } };
+        } else {
+          return { newValues: { description: dependencyValues.descriptionChild[0].stateValues.text } };
         }
       }
     }
@@ -305,7 +351,6 @@ export default class Document extends BaseComponent {
         }
       }),
       definition({ dependencyValues }) {
-        console.log(dependencyValues);
 
         let selectedVariantInfo = {
           index: dependencyValues.variantNumber

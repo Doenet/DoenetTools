@@ -5988,6 +5988,24 @@ export default class Core {
       if (dependencyDefinition.variableOptional) {
         newDep.variableOptional = true;
       }
+    } else if (dependencyDefinition.dependencyType === "countAmongSiblingsOfSameType") {
+      if (!component.parentName) {
+        throw Error(`cannot have state variable ${stateVariable} of ${component.componentName} depend on countAmongSiblingsOfSameType when parent isn't defined.`);
+      }
+      newDep.downstreamComponentName = component.parentName;
+      newDep.valuesChanged = { __activeChildren: { changed: true } };
+
+      let depUp = this.upstreamDependencies[component.parentName];
+      if (!depUp) {
+        depUp = this.upstreamDependencies[component.parentName] = {};
+      }
+
+      if (depUp["__activeChildren"] === undefined) {
+        depUp["__activeChildren"] = [];
+      }
+      depUp["__activeChildren"].push(newDep);
+
+
     } else if (dependencyDefinition.dependencyType === "doenetAttribute") {
       newDep.attributeName = dependencyDefinition.attributeName;
     } else if (dependencyDefinition.dependencyType === "flag") {
@@ -7120,6 +7138,18 @@ export default class Core {
           changes[dep.dependencyName] = { valuesChanged: dep.valuesChanged };
           delete dep.valuesChanged;
         }
+      } else if (dep.dependencyType === "countAmongSiblingsOfSameType") {
+
+        let childComponentType = this.components[dep.upstreamComponentName].componentType;
+        let childrenOfSameType = this.components[dep.downstreamComponentName].activeChildren
+          .filter(x => x.componentType === childComponentType);
+        value = childrenOfSameType.map(x => x.componentName).indexOf(dep.upstreamComponentName) + 1;
+
+        if (dep.valuesChanged && dep.valuesChanged.__activeChildren.changed) {
+          changes[dep.dependencyName] = { valuesChanged: dep.valuesChanged };
+          delete dep.valuesChanged;
+        }
+
       } else if (dep.dependencyType === "doenetAttribute") {
         value = component.doenetAttributes[dep.attributeName];
       } else if (dep.dependencyType === "flag") {
@@ -8162,6 +8192,21 @@ export default class Core {
     }
 
     let componentName = component.componentName;
+
+    if (this.upstreamDependencies[componentName].__activeChildren) {
+
+      this.markUpstreamDependentsStale({
+        component,
+        varName: "__activeChildren",
+        updatesNeeded,
+      })
+
+      this.recordActualChangeInUpstreamDependencies({
+        component,
+        varName: "__activeChildren",
+        updatesNeeded
+      })
+    }
 
     if (componentName in this.downstreamDependencies) {
       // only need to change child dependencies if the component already has dependencies
@@ -9910,7 +9955,11 @@ export default class Core {
 
     let upstream = this.upstreamDependencies[componentName][varName];
 
-    let freshnessInfo = component.state[varName].freshnessInfo;
+    let freshnessInfo;
+    
+    if(component.state[varName]) {
+      freshnessInfo = component.state[varName].freshnessInfo;
+    }
 
     if (upstream) {
       for (let upDep of upstream) {
@@ -9985,6 +10034,17 @@ export default class Core {
               upDep.valuesChanged[upDep.originalDownstreamVariableName].freshnessInfo
                 = new Proxy(freshnessInfo, readOnlyProxyHandler);
             }
+
+            foundVarChange = true;
+
+          } else if(varName === "__activeChildren") {
+            // for __activeChildren, we just mark upDep as changed
+
+            if (!upDep.valuesChanged) {
+              upDep.valuesChanged = { "__activeChildren": {} };
+            }
+
+            upDep.valuesChanged.__activeChildren.potentialChange = true;
 
             foundVarChange = true;
 

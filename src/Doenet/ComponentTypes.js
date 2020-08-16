@@ -100,7 +100,6 @@ import Row from './components/Row';
 import Column from './components/Column';
 import Cellblock from './components/Cellblock';
 import Table from './components/Table';
-import Problem from './components/Problem';
 import Variants from './components/Variants';
 import Seeds from './components/Seeds';
 import VariantControl from './components/VariantControl';
@@ -231,7 +230,6 @@ const componentTypeArray = [
   ConstrainToAngles, AttractToAngles,
   ConditionalContent,
   AsList,
-  Problem,
   Seeds, Variants, VariantControl,
   SelectFromSequence, Select,
   Group,

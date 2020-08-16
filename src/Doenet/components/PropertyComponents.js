@@ -665,9 +665,9 @@ export class Source extends TextComponent {
   static rendererType = "text";
 }
 
-export class Description extends TextComponent {
+export class Description extends TextOrInline {
   static componentType = "description";
-  static rendererType = "text";
+  static rendererType = "textorinline";
 }
 
 export class SelectMultiple extends BooleanComponent {

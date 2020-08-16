@@ -57,6 +57,54 @@ export default class SectioningComponent extends BlockComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.enumeration = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        countAmongSiblings: {
+          dependencyType: "countAmongSiblingsOfSameType"
+        },
+        sectionAncestor: {
+          dependencyType: "ancestorStateVariables",
+          componentType: "_sectioningcomponent",
+          variableNames: ["enumeration"]
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        let enumeration = [];
+        if (dependencyValues.sectionAncestor) {
+          enumeration.push(...dependencyValues.sectionAncestor.stateValues.enumeration)
+        }
+
+        enumeration.push(dependencyValues.countAmongSiblings)
+        return { newValues: { enumeration } }
+
+      }
+    }
+
+    stateVariableDefinitions.sectionName = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { sectionName: "Section" } })
+    }
+
+
+    stateVariableDefinitions.titleDefinedByChildren = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        titleChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "atMostOneTitle",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            titleDefinedByChildren: dependencyValues.titleChild.length === 1
+          }
+        }
+      }
+    }
+
     stateVariableDefinitions.title = {
       public: true,
       componentType: "text",
@@ -66,11 +114,23 @@ export default class SectioningComponent extends BlockComponent {
           dependencyType: "childStateVariables",
           childLogicName: "atMostOneTitle",
           variableNames: ["text"],
+        },
+        sectionName: {
+          dependencyType: "stateVariable",
+          variableName: "sectionName",
+        },
+        enumeration: {
+          dependencyType: "stateVariable",
+          variableName: "enumeration"
         }
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.titleChild.length === 0) {
-          return { newValues: { title: "" } };
+
+          let title = dependencyValues.sectionName + " "
+            + dependencyValues.enumeration.join(".")
+
+          return { newValues: { title } };
         } else {
           return { newValues: { title: dependencyValues.titleChild[0].stateValues.text } };
         }
@@ -286,8 +346,10 @@ export default class SectioningComponent extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  static setUpVariant({ serializedComponent, sharedParameters, definingChildrenSoFar,
-    allComponentClasses }) {
+  static setUpVariant({
+    serializedComponent, sharedParameters, definingChildrenSoFar,
+    allComponentClasses
+  }) {
     let variantcontrolChild;
     for (let child of definingChildrenSoFar) {
       if (child !== undefined && child.componentType === "variantcontrol") {
