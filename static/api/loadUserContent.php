@@ -6,6 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+include "getRepoData.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
@@ -27,6 +28,22 @@ LEFT JOIN user_content uc ON uc.branchId = c.branchId
 LEFT JOIN folder_content fc ON fc.childId = c.branchId AND fc.childType='content'
 LEFT JOIN content_branch cb ON c.branchId = cb.branchId
 WHERE uc.userId='$userId' AND c.removedFlag=0 AND cb.isPinned='0'
+UNION
+SELECT   -- get shared content
+  c.branchId as branchId,
+  c.title as title,
+  c.contentId as contentId,
+  c.timestamp as publishDate,
+  c.removedFlag as removedFlag,
+  c.draft as draft,
+  fc.rootId as rootId, 
+  fc.folderId as parentId,
+  c.public as isPublic,
+  cb.isPinned as isPinned
+FROM content AS c
+LEFT JOIN content_branch cb ON c.branchId = cb.branchId
+LEFT JOIN folder_content fc ON fc.childId = c.branchId
+WHERE c.branchId IN ('".implode("','",$childContentArray)."') AND c.removedFlag=0 AND cb.isPinned='0'
 ORDER BY branchId, publishDate DESC;
 ";
 

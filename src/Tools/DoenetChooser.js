@@ -651,6 +651,7 @@ class DoenetChooser extends Component {
 
     axios.get(loadUserFoldersAndRepoUrl, payload)
       .then(resp => {
+        console.log(resp)
         this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
         this.folderIds = resp.data.folderIds;
         this.userFolderInfo = resp.data.folderInfo;
