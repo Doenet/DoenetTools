@@ -20,9 +20,9 @@ $attemptNumber = mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $credit = mysqli_real_escape_string($conn,$_POST["credit"]);
 $itemNumber = mysqli_real_escape_string($conn,$_POST["itemNumber"]);
 $itemNumber = $itemNumber + 1;
-var_dump($_POST);
 
-//TODO: check if this is too many tries
+//TODO: check if this is too many tries 
+//TODO: check if attempt is older than given attempt
 
 //Find attemptAggregation
 $sql = "SELECT attemptAggregation
@@ -33,24 +33,110 @@ $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 $attemptAggregation = $row['attemptAggregation'];
 
+if ($attemptAggregation == 'm'){
+// Find previous credit if maximizing scores
+// Update credit in the database if it's larger
+$sql = "SELECT credit
+        FROM user_assignment_attempt_item
+        WHERE userId = '$userId'
+        AND assignmentId = '$assignmentId'
+        AND attemptNumber = '$attemptNumber'
+        AND itemNumber = '$itemNumber'
+        ";
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
+$previousCredit = $row['credit'];
+$credit_to_store = MAX($previousCredit,$credit);
+}else if ($attemptAggregation == 'l'){
+    $credit_to_store = $credit;
+}
 
 
-// *** Store credit in user_assignment_attempt_item
-// $sql = "UPDATE user_assignment_attempt_item
-//         SET credit='$saveItemCredit'
+// Store credit in user_assignment_attempt_item
+$sql = "UPDATE user_assignment_attempt_item
+        SET credit='$credit_to_store'
+        WHERE userId = '$userId'
+        AND assignmentId = '$assignmentId'
+        AND attemptNumber = '$attemptNumber'
+        AND itemNumber = '$itemNumber'
+        ";
+$result = $conn->query($sql);
+
+
+//**update user_assignment_attempt for the content
+
+// Get the attempt's defined weights and credits
+$sql = "SELECT credit,itemNumber,weight
+        FROM user_assignment_attempt_item
+        WHERE userId = '$userId'
+        AND assignmentId = '$assignmentId'
+        AND attemptNumber = '$attemptNumber'
+        ORDER BY itemNumber
+        ";
+$result = $conn->query($sql);
+$credit_for_attempt = 0;
+
+while($row = $result->fetch_assoc()){ 
+    $loopItemNumber = $row['itemNumber'];
+    $item_weight = $row['weight'];
+    //Not guaranteed for credit to be stored due to async communication with db
+    //So use value given here to be careful
+    if ($loopItemNumber == $itemNumber){
+        $item_credit = $credit_to_store;
+    }else{
+        $item_credit = $row['credit'];
+    }
+    $credit_for_attempt = $credit_for_attempt + ($item_credit * $item_weight);
+
+    // echo "\$loopItemNumber $loopItemNumber\n";
+    // echo "\$item_credit $item_credit\n";
+    // echo "\$item_weight $item_weight\n";
+    // echo "\$credit_for_attempt $credit_for_attempt\n\n";
+}
+
+// Store credit in user_assignment_attempt
+$sql = "UPDATE user_assignment_attempt
+        SET credit='$credit_for_attempt'
+        WHERE userId = '$userId'
+        AND assignmentId = '$assignmentId'
+        AND attemptNumber = '$attemptNumber'
+        ";
+$result = $conn->query($sql);
+
+
+
+//update user_assignment_attempt with new score
+// if ($attemptAggregation == 'm'){
+// //Use Max Item Credit
+// echo "Max Item Credit\n";
+// $sql = "SELECT itemNumber,weight
+//         FROM user_assignment_attempt_item
 //         WHERE userId = '$userId'
 //         AND assignmentId = '$assignmentId'
-//         AND attemptNumber = '$attemptNumber'
-//         AND itemNumber = '$itemNumber'
+//         ORDER BY attemptNumber,itemNumber
 //         ";
 // $result = $conn->query($sql);
+// $weights = array();  //Set to this attempt's weights
+// $credits = array();  //Initialize to zeros
+
+// while($row = $result->fetch_assoc()){ 
+//     $loopItemNumber = $row['itemNumber'];
+//     $weights[$loopItemNumber] = $row['weight'];
+//     $credits[$loopItemNumber] = 0;
+// }
+
+
+// }else if ($attemptAggregation == 'l'){
+// //Use last attempt
+// }else{
+//     echo "Error: attempt aggregation not defined\n";
+// }
 
 //If attemptAggregation = "m"; (char 1 type "m" or "l")
 //Set credit in user_assignment_attempt_item = max credit in table or new param calculated
 //If attemptAggregation = "l"; 
 //Set credit in user_assignment_attempt_item to new param calculated
 
-//*** update user_assignment_attempt_item
 // if ($attemptAggregation == 'm'){
 // //Find Max Item Credit
 // $sql = "SELECT MAX(credit) AS maxCredit,

@@ -67,7 +67,7 @@ class DoenetViewer extends Component {
   
 
   createCore({ stateVariables, variant }) {
-
+console.log("stateVariables",stateVariables)
     this.cumulativeStateVariableChanges = JSON.parse(stateVariables, serializedStateReviver)
 
     // if loaded variant from database,
@@ -271,6 +271,7 @@ class DoenetViewer extends Component {
 
     axios.get(phpUrl, payload)
       .then(resp => {
+        console.log("load ci",resp.data)
         if (callback) {
           callback({
             stateVariables: resp.data.stateVariables,
