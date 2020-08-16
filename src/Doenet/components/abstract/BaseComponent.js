@@ -165,11 +165,11 @@ export default class BaseComponent {
     return this.childLogic.logicResult.success;
   }
 
-  static createPropertiesObject() {
+  static createPropertiesObject({ flags = {} } = {}) {
 
     return {
       hide: { default: false, forRenderer: true },
-      disabled: { default: false, forRenderer: true, propagateToDescendants: true },
+      disabled: { default: flags.readOnly ? true : false, forRenderer: true, propagateToDescendants: true },
       modifyIndirectly: { default: true, propagateToProps: true },
       fixed: { default: false },
       styleNumber: { default: 1, propagateToDescendants: true },
@@ -177,11 +177,11 @@ export default class BaseComponent {
     };
   }
 
-  static returnChildLogic({ standardComponentClasses, allComponentClasses, components, allPossibleProperties }) {
+  static returnChildLogic({ standardComponentClasses, allComponentClasses, components, allPossibleProperties, flags }) {
     let childLogic = new ChildLogicClass({
       parentComponentType: this.componentType,
       properties: this.createPropertiesObject({
-        standardComponentClasses, allPossibleProperties,
+        standardComponentClasses, allPossibleProperties, flags
       }),
       allComponentClasses,
       standardComponentClasses,

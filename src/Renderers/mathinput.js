@@ -138,7 +138,25 @@ export default class MathInput extends DoenetRenderer {
       this.valueToRevertTo = this.doenetSvData.value;
       this.textValueToRevertTo = this.textValue;
 
-    }
+    } 
+
+    // TODO: how to fix case where have readyonly?
+    // need to revert mathExpression in that case
+
+    // else if(!this.mathExpression.equalsViaSyntax(this.doenetSvData.immediateValue)) {
+    //   console.log(`for ${this.componentName}`)
+    //   console.log(`math expression: ${this.mathExpression.toString()}`)
+    //   console.log(`immediateValue: ${this.doenetSvData.immediateValue.toString()}`)
+  
+    //   this.mathExpression = this.doenetSvData.value;
+    //   this.textValue = this.mathExpression.toString();
+    //   if (this.textValue === '\uFF3F') {
+    //     this.textValue = "";
+    //   }
+    //   this.valueToRevertTo = this.doenetSvData.value;
+    //   this.textValueToRevertTo = this.textValue;
+
+    // }
 
 
     let checkWorkStyle = {

@@ -137,8 +137,8 @@ export default class VariantControl extends BaseComponent {
       arrayDefinitionByKey: function ({ dependencyValuesByKey, arrayKeys }) {
         let seeds = {};
         for (let arrayKey of arrayKeys) {
-          if (dependencyValuesByKey[arrayKey].seedChild.length === 1) {
-            seeds[arrayKey] = dependencyValuesByKey[arrayKey].seedChild[0]
+          if (dependencyValuesByKey[arrayKey].seedsChild.length === 1) {
+            seeds[arrayKey] = dependencyValuesByKey[arrayKey].seedsChild[0]
               .stateValues["seed" + (Number(arrayKey) + 1)]
           }
         }

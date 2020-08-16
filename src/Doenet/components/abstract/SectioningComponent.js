@@ -4,7 +4,7 @@ import { getVariantsForDescendants } from '../../utils/variants';
 export default class SectioningComponent extends BlockComponent {
   static componentType = "_sectioningcomponent";
 
-  setUpVariantIfVariantControlChild = true;
+  static setUpVariantIfVariantControlChild = true;
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
@@ -21,13 +21,27 @@ export default class SectioningComponent extends BlockComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
+    let atMostOneVariantControl = childLogic.newLeaf({
+      name: "atMostOneVariantControl",
+      componentType: "variantcontrol",
+      comparison: "atMost",
+      number: 1,
+      allowSpillover: false,
+    })
+
+    let anything = childLogic.newLeaf({
       name: 'anything',
       componentType: '_base',
       comparison: 'atLeast',
       number: 0,
-      setAsBase: true,
     });
+
+    childLogic.newOperator({
+      name: "variantAndAnything",
+      operator: "and",
+      propositions: [atMostOneVariantControl, anything],
+      setAsBase: true,
+    })
 
     return childLogic;
   }
@@ -62,7 +76,6 @@ export default class SectioningComponent extends BlockComponent {
           variableNames: [
             "scoredDescendants",
             "aggregateScores",
-            "creditAchieved",
             "weight"
           ],
           recurseToMatchedChildren: false,
@@ -106,7 +119,7 @@ export default class SectioningComponent extends BlockComponent {
           displayDigits: "displayDigitsForCreditAchieved",
         }
       }],
-      stateVariablesDeterminingDependencies: ["aggregateScores"],
+      stateVariablesDeterminingDependencies: ["aggregateScores", "scoredDescendants"],
       returnDependencies({ stateValues }) {
         let dependencies = {
           aggregateScores: {
@@ -118,6 +131,13 @@ export default class SectioningComponent extends BlockComponent {
           dependencies.scoredDescendants = {
             dependencyType: "stateVariable",
             variableName: "scoredDescendants"
+          }
+          for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
+            dependencies["creditAchieved" + ind] = {
+              dependencyType: "componentStateVariable",
+              componentIdentity: descendant,
+              variableName: "creditAchieved"
+            }
           }
         }
 
@@ -137,9 +157,9 @@ export default class SectioningComponent extends BlockComponent {
         let creditSum = 0;
         let totalWeight = 0;
 
-        for (let component of dependencyValues.scoredDescendants) {
+        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
           let weight = component.stateValues.weight;
-          creditSum += component.stateValues.creditAchieved * weight;
+          creditSum += dependencyValues["creditAchieved" + ind] * weight;
           totalWeight += weight;
         }
         let creditAchieved = creditSum / totalWeight;
@@ -162,6 +182,55 @@ export default class SectioningComponent extends BlockComponent {
           newValues:
             { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
         };
+      }
+    }
+
+
+    stateVariableDefinitions.selectedVariantInfo = {
+      additionalStateVariablesDefined: ["isVariantComponent"],
+      returnDependencies: ({ componentInfoObjects }) => ({
+        variantControlChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneVariantControl",
+          variableNames: ["selectedVariantNumber"]
+        },
+        variantDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          variableNames: [
+            "isVariantComponent",
+            "selectedVariantInfo",
+          ],
+          recurseToMatchedChildren: false,
+          variablesOptional: true,
+          includeNonActiveChildren: true,
+          ignoreReplacementsOfMatchedComposites: true,
+          definingChildrenFirst: true,
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        let isVariantComponent;
+        let selectedVariantInfo = {};
+        if (dependencyValues.variantControlChild.length === 1) {
+          isVariantComponent = true;
+          selectedVariantInfo.index = dependencyValues.variantControlChild[0].stateValues.selectedVariantNumber;
+        } else {
+          isVariantComponent = false;
+        }
+
+        let subvariants = selectedVariantInfo.subvariants = [];
+
+        for (let descendant of dependencyValues.variantDescendants) {
+          if (descendant.stateValues.isVariantComponent) {
+            subvariants.push(descendant.stateValues.selectedVariantInfo)
+          } else if (descendant.stateValues.selectedVariantInfo) {
+            subvariants.push(...descendant.stateValues.selectedVariantInfo.subvariants)
+          }
+
+        }
+        return { newValues: { selectedVariantInfo, isVariantComponent } }
+
       }
     }
 

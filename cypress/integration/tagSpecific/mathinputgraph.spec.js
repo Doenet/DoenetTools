@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Mathinput Graph Tests', function () {
 
   beforeEach(() => {
@@ -26,7 +36,7 @@ describe('Mathinput Graph Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let coordsAnchor = '#' + components["/coords"].replacements[0].componentName;
+      let coordsAnchor = cesc('#' + components["/coords"].replacements[0].componentName);
 
       cy.log('Test values displayed in browser')
       cy.get('#\\/x_input').should('have.value', '1');
@@ -132,7 +142,7 @@ describe('Mathinput Graph Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let coordsAnchor = '#' + components["/coords"].replacements[0].componentName;
+      let coordsAnchor = cesc('#' + components["/coords"].replacements[0].componentName);
 
       cy.log('Test values displayed in browser')
       cy.get('#\\/x_input').should('have.value', '3');
@@ -217,7 +227,7 @@ describe('Mathinput Graph Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let coordsAnchor = '#' + components["/coords"].replacements[0].componentName;
+      let coordsAnchor = cesc('#' + components["/coords"].replacements[0].componentName);
 
       cy.log('Test values displayed in browser')
       cy.get('#\\/a_input').should('have.value', '- 3');
@@ -302,7 +312,7 @@ describe('Mathinput Graph Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let coordsAnchor = '#' + components["/coords"].replacements[0].componentName;
+      let coordsAnchor = cesc('#' + components["/coords"].replacements[0].componentName);
 
       cy.log('Test values displayed in browser')
       cy.get('#\\/a_input').should('have.value', '- 3');

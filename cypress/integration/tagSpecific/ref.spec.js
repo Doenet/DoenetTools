@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('ref Tag Tests', function () {
 
   beforeEach(() => {
@@ -176,7 +186,7 @@ describe('ref Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      cy.get('#' + components["/_copy1"].replacements[0].componentName)
+      cy.get(cesc('#' + components["/_copy1"].replacements[0].componentName))
         .should('have.text', 'Doenet').invoke('attr', 'href')
         .then((href) => expect(href).eq("http://doenet.org"));
     })

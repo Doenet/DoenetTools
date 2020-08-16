@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Choiceinput Tag Tests', function () {
 
   beforeEach(() => {
@@ -240,9 +250,9 @@ describe('Choiceinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let choice2Anchor = '#' + components["/copy"].replacements[0].componentName;
-      let choice3Anchor = '#' + components["/copy2"].replacements[0].componentName;
-      let choice4Anchor = '#' + components["/copy3"].replacements[0].replacements[0].componentName;
+      let choice2Anchor = cesc('#' + components["/copy"].replacements[0].componentName);
+      let choice3Anchor = cesc('#' + components["/copy2"].replacements[0].componentName);
+      let choice4Anchor = cesc('#' + components["/copy3"].replacements[0].replacements[0].componentName);
 
       let choices;
       cy.window().then((win) => {
@@ -472,7 +482,7 @@ describe('Choiceinput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let choice2Anchor = '#' + components["/copy"].replacements[0].componentName;
+      let choice2Anchor = cesc('#' + components["/copy"].replacements[0].componentName);
 
 
       let choices;

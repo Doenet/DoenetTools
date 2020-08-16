@@ -10,8 +10,6 @@ export default class Select extends CompositeComponent {
 
   static createsVariants = true;
 
-  // static selectedVariantVariable = "selectedIndices";
-
   // used when referencing this component without prop
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["selectedIndices"] };
@@ -70,16 +68,6 @@ export default class Select extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.serializedChildren = {
-      returnDependencies: () => ({
-        serializedChildren: {
-          dependencyType: "serializedChildren",
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        return { newValues: { serializedChildren: dependencyValues.serializedChildren } };
-      },
-    };
 
     stateVariableDefinitions.variants = {
       returnDependencies: () => ({
@@ -120,8 +108,8 @@ export default class Select extends CompositeComponent {
       additionalStateVariablesDefined: ["availableVariants", "selectWeightByChild"],
       returnDependencies: () => ({
         serializedChildren: {
-          dependencyType: "stateVariable",
-          variableName: "serializedChildren"
+          dependencyType: "serializedChildren",
+          doNotProxy: true
         },
         numberToSelect: {
           dependencyType: "stateVariable",
@@ -218,10 +206,10 @@ export default class Select extends CompositeComponent {
 
     stateVariableDefinitions.selectedIndices = {
       returnDependencies: ({ sharedParameters }) => ({
-        essentialSelectedIndices: {
-          dependencyType: "potentialEssentialVariable",
-          variableName: "selectedIndex",
-        },
+        // essentialSelectedIndices: {
+        //   dependencyType: "potentialEssentialVariable",
+        //   variableName: "selectedIndex",
+        // },
         numberToSelect: {
           dependencyType: "stateVariable",
           variableName: "numberToSelect",
@@ -260,15 +248,16 @@ export default class Select extends CompositeComponent {
         // console.log(`definition of selected Indices`)
         // console.log(dependencyValues);
 
-        if (dependencyValues.essentialSelectedIndices !== null) {
-          return {
-            makeEssential: ["selectedIndices"],
-            newValues: {
-              selectedIndices: dependencyValues.essentialSelectedIndices
-            },
-            makeImmutable: ["selectedIndices"]
-          }
-        }
+        // if (dependencyValues.essentialSelectedIndices !== null) {
+        //   return {
+        //     makeEssential: ["selectedIndices"],
+        //     newValues: {
+        //       selectedIndices: dependencyValues.essentialSelectedIndices
+        //     },
+        //     makeImmutable: ["selectedIndices"]
+        //   }
+        // }
+        
 
         if (dependencyValues.numberToSelect < 1 || dependencyValues.numberOfChildren === 0) {
           return {
@@ -401,6 +390,54 @@ export default class Select extends CompositeComponent {
       }
     }
 
+    stateVariableDefinitions.isVariantComponent = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { isVariantComponent: true } })
+    }
+
+    stateVariableDefinitions.selectedVariantInfo = {
+      returnDependencies: ({ componentInfoObjects }) => ({
+        selectedIndices: {
+          dependencyType: "stateVariable",
+          variableName: "selectedIndices"
+        },
+        variantDescendants: {
+          dependencyType: "descendantStateVariables",
+          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          variableNames: [
+            "isVariantComponent",
+            "selectedVariantInfo",
+          ],
+          useReplacementsForComposites: true,
+          recurseToMatchedChildren: false,
+          variablesOptional: true,
+          includeNonActiveChildren: true,
+          ignoreReplacementsOfMatchedComposites: true,
+          definingChildrenFirst: true,
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        let selectedVariantInfo = {
+          indices: dependencyValues.selectedIndices
+        };
+
+        let subvariants = selectedVariantInfo.subvariants = [];
+
+        for (let descendant of dependencyValues.variantDescendants) {
+          if (descendant.stateValues.isVariantComponent) {
+            subvariants.push(descendant.stateValues.selectedVariantInfo)
+          } else if (descendant.stateValues.selectedVariantInfo) {
+            subvariants.push(...descendant.stateValues.selectedVariantInfo.subvariants)
+          }
+
+        }
+        return { newValues: { selectedVariantInfo } }
+
+      }
+    }
+
+
     stateVariableDefinitions.readyToExpand = {
       returnDependencies: () => ({
         selectedIndices: {
@@ -463,19 +500,19 @@ export default class Select extends CompositeComponent {
       }
       let instruction = {
         operation: "assignName",
-        name
+        name,
+        uniqueIdentifier: replacementNumber.toString()
       }
 
-      let serializedChild = component.stateValues.childrenToSelect[childIndex];
+
+      // use state, not stateValues, as read only proxy messes up internal
+      // links between descendant variant components and the components themselves
+      let serializedChild = deepClone(component.state.childrenToSelect.value[childIndex]);
 
       if (component.stateValues.hide) {
         // if select is hidden, then make each of its replacements hidden
 
-        // shallow copy of child and then its state so that can modify state
-        serializedChild = Object.assign({}, serializedChild);
-        if (serializedChild.state) {
-          serializedChild.state = Object.assign({}, serializedChild.state);
-        } else {
+        if (!serializedChild.state) {
           serializedChild.state = {};
         }
 
@@ -483,19 +520,13 @@ export default class Select extends CompositeComponent {
 
         // if assigning names to grandchild, then hide those as well
         // so that refs of those will be hidden, for consistency
-        // Make shallow copies as necessary so that can modify
         if (Array.isArray(name)) {
           if (serializedChild.children) {
-            serializedChild.children = [...serializedChild.children];
-            for (let [ind, grandchild] of serializedChild.children.entries()) {
-              grandchild = Object.assign({}, grandchild);
-              if (grandchild.state) {
-                grandchild.state = Object.assign({}, grandchild.state);
-              } else {
+            for (let grandchild of serializedChild.children) {
+              if (!grandchild.state) {
                 grandchild.state = {};
               }
               grandchild.state.hide = true;
-              serializedChild.children[ind] = grandchild;
             }
           }
         }

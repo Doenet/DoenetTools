@@ -93,9 +93,6 @@ import Panel from './components/Panel';
 import ConstrainToAngles from './components/ConstrainToAngles';
 import AttractToAngles from './components/AttractToAngles';
 import ConditionalContent from './components/ConditionalContent';
-import ConditionalInlineContent from './components/ConditionalInlineContent';
-import ConditionalText from './components/ConditionalText';
-import ConditionalMath from './components/ConditionalMath';
 import AsList from './components/AsList';
 import Spreadsheet from './components/Spreadsheet';
 import Cell from './components/Cell';
@@ -232,9 +229,6 @@ const componentTypeArray = [
   UpdateValue, MathTarget, NewMathValue,
   ConstrainToAngles, AttractToAngles,
   ConditionalContent,
-  ConditionalInlineContent,
-  ConditionalText,
-  ConditionalMath,
   AsList,
   Problem,
   Seeds, Variants, VariantControl,
@@ -346,6 +340,28 @@ export function componentTypesCreatingVariants() {
   const componentClasses = {};
   for (let ct of componentTypeArray) {
     if (ct.createsVariants) {
+      let newComponentType = ct.componentType;
+      if (newComponentType === undefined) {
+        throw Error("Cannot create component as componentType is undefined for class " + ct)
+      }
+      newComponentType = newComponentType.toLowerCase();
+      if (newComponentType in componentClasses) {
+        throw Error("component type " + newComponentType + " defined in two classes");
+      }
+      componentClasses[newComponentType] = ct;
+    }
+  }
+  return componentClasses;
+}
+
+
+export function componentTypeWithPotentialVariants() {
+  const componentClasses = {};
+  for (let ct of componentTypeArray) {
+    if (ct.createsVariants ||
+      ct.setUpVariantIfVariantControlChild ||
+      ct.alwaysSetUpVariant
+    ) {
       let newComponentType = ct.componentType;
       if (newComponentType === undefined) {
         throw Error("Cannot create component as componentType is undefined for class " + ct)

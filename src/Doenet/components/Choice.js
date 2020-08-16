@@ -175,6 +175,6 @@ export default class Choice extends InlineComponent {
 
   static includeBlankStringChildren = true;
 
-  // adapters = ["submittedChoice"];
+  adapters = ["submitted"];
 
 }
