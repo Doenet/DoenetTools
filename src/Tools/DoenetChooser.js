@@ -2291,6 +2291,49 @@ class DoenetChooser extends Component {
     this.setState({ userFolderInfo: filteredUserFolderInfo });
   }
 
+  grantRepoAccess = ({repoId, email, callback=()=>{}}) => {
+    const loadCoursesUrl = '/api/addRepoUser.php';
+    const data = {
+      repoId: repoId,
+      email: email,
+    }
+    const payload = {
+      params: data
+    }
+
+    axios.get(loadCoursesUrl, payload)
+    .then(resp => {
+      console.log("HERE", resp);
+      if (resp.data.success === "1") {
+        this.folderInfo[repoId].user_access_info = resp.data.users;
+      }
+      this.userContentReloaded = true;
+      callback(resp);
+      this.forceUpdate();
+    });
+  }
+
+  revokeRepoAccess = ({repoId, email, callback=()=>{}}) => {
+    const loadCoursesUrl = '/api/removeRepoUser.php';
+    const data = {
+      repoId: repoId,
+      email: email,
+    }
+    const payload = {
+      params: data
+    }
+
+    axios.get(loadCoursesUrl, payload)
+      .then(resp => {
+        if (resp.data.success === "1") {
+          this.folderInfo[repoId].user_access_info = resp.data.users;
+        }
+        this.userContentReloaded = true;
+        callback(resp);
+        this.forceUpdate();
+      });
+  }
+
 
 
   render() {
@@ -3092,6 +3135,8 @@ const customizedTreeNodeItem = ({title, icon}) => {
               allUrlInfo={browserUrlInfo}
               allCourseInfo={this.courseInfo}
               publicizeRepo={this.publicizeRepo}
+              grantRepoAccess={this.grantRepoAccess}
+              revokeRepoAccess={this.revokeRepoAccess}
               openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
               openEditUrlForm={() => this.toggleManageUrlForm("edit_url")}
             />

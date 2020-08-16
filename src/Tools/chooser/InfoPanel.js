@@ -11,7 +11,7 @@ import { withCookies, Cookies } from 'react-cookie';
 class InfoPanel extends Component {
   constructor(props) {
     super(props);
-    this.addUsername = {};
+    this.addUserEmail = {};
 
     this.buildInfoPanelItemDetails = this.buildInfoPanelItemDetails.bind(this);
   }
@@ -176,25 +176,9 @@ class InfoPanel extends Component {
           if (userInfo.owner === "0") {
             removeAccess = <button 
               disabled={!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")}
-              onClick={() => {
-              const loadCoursesUrl = '/api/removeRepoUser.php';
-              const data = {
-                repoId: selectedItemId,
-                username: userInfo.username,
-              }
-              const payload = {
-                params: data
-              }
-
-              axios.get(loadCoursesUrl, payload)
-                .then(resp => {
-                  if (resp.data.success === "1") {
-                    this.props.allFolderInfo[selectedItemId].user_access_info = resp.data.users;
-                  }
-                  this.forceUpdate();
-                });
-
-            }}>X</button>
+              onClick={() => { this.props.revokeRepoAccess({repoId: selectedItemId, email: userInfo.email, callback: (resp) => {
+                
+              }})}}>X</button>
           }
           users.push(<UserPanel key={`userpanel${userInfo.username}`}>
             {userInfo.firstName} {userInfo.lastName} - {userInfo.email} - {removeAccess}
@@ -209,35 +193,20 @@ class InfoPanel extends Component {
           <p className="itemDetailsKey">Sharing Settings</p>
           <SharedUsersContainer>{users}</SharedUsersContainer>
           <AddWrapper>Add Username
-          <input type="text" value={this.addUsername[selectedItemId]} 
+          <input type="text" value={this.addUserEmail[selectedItemId]} 
             disabled={!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")}
             onChange={(e) => {
               e.preventDefault();
 
-              this.addUsername[selectedItemId] = e.target.value;
+              this.addUserEmail[selectedItemId] = e.target.value;
 
             }}></input>
             <button 
               disabled={!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")}
               onClick={() => {
-              const loadCoursesUrl = '/api/addRepoUser.php';
-              const data = {
-                repoId: selectedItemId,
-                username: this.addUsername[selectedItemId],
-              }
-              const payload = {
-                params: data
-              }
-
-              axios.get(loadCoursesUrl, payload)
-                .then(resp => {
-                  if (resp.data.success === "1") {
-                    this.props.allFolderInfo[selectedItemId].user_access_info = resp.data.users;
-                  }
-                  this.addUsername = {};
-                  this.forceUpdate();
-                });
-
+                this.props.grantRepoAccess({repoId: selectedItemId, email: this.addUserEmail[selectedItemId], callback: (resp) => {
+                  this.addUserEmail = {};
+                }})
             }}>Add</button>
           </AddWrapper>
         </>
@@ -395,6 +364,8 @@ InfoPanel.propTypes = {
   allUrlInfo: PropTypes.object,
   allCourseInfo: PropTypes.object,
   publicizeRepo: PropTypes.func,
+  grantRepoAccess: PropTypes.func,
+  revokeRepoAccess: PropTypes.func,
   openEditCourseForm: PropTypes.func,
   openEditUrlForm: PropTypes.func,
 }

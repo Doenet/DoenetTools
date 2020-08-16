@@ -116,7 +116,7 @@ foreach ($repos_arr as $repoId) {
     ra.owner AS owner
     FROM repo_access AS ra
     LEFT JOIN user AS u
-    ON u.username = ra.username
+    ON u.email = ra.email
     WHERE ra.repoId = '$repoId'
   ";
 $result = $conn->query($sql); 

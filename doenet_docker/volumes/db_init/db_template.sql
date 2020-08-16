@@ -601,12 +601,12 @@ CREATE TABLE `repo_access` (
   `repoId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `teamId` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `username` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `timestamp` datetime DEFAULT NULL,
   `removedFlag` int(1) NOT NULL DEFAULT '0',
   `owner` int(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -615,7 +615,7 @@ CREATE TABLE `repo_access` (
 
 LOCK TABLES `repo_access` WRITE;
 /*!40000 ALTER TABLE `repo_access` DISABLE KEYS */;
-INSERT INTO `repo_access` VALUES (1,'DJ_Drx_aRY-EHOhv-5fU1','4VYp5dOrVWGz0OKB2hkLW','1','devuser','2020-01-29 13:57:48',0,1),(2,'IYBInj5bFTUDxBCEdLKED','4VYp5dOrVWGz0OKB2hkLW','1','devuser','2020-05-28 17:05:02',0,1),(3,'WjFvT03knOGtbmbic7YNH','4VYp5dOrVWGz0OKB2hkLW','1','devuser','2020-07-20 01:02:42',0,1),(4,'WjFvT03knOGtbmbic7YNH','lqU5UNaNdsAE0thLXHNZd','1','char0042@umn.edu','2020-07-20 02:19:41',0,0),(5,'etEtUxi0YdOCmi-V8vXft',NULL,'1','devuser','2020-07-30 12:56:07',0,1);
+INSERT INTO `repo_access` VALUES (1,'DJ_Drx_aRY-EHOhv-5fU1','4VYp5dOrVWGz0OKB2hkLW','1','devuser@example.com','2020-01-29 13:57:48',0,1),(2,'IYBInj5bFTUDxBCEdLKED','4VYp5dOrVWGz0OKB2hkLW','1','devuser@example.com','2020-05-28 17:05:02',0,1),(3,'WjFvT03knOGtbmbic7YNH','4VYp5dOrVWGz0OKB2hkLW','1','devuser@example.com','2020-07-20 01:02:42',0,1),(4,'WjFvT03knOGtbmbic7YNH','lqU5UNaNdsAE0thLXHNZd','1','char0042@umn.edu','2020-07-20 02:19:41',0,0);
 /*!40000 ALTER TABLE `repo_access` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -686,7 +686,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'','4VYp5dOrVWGz0OKB2hkLW','DEV','devuser@example.com',NULL,'User','Dev','quokka',1,1,1,0,0,0,0),(3,NULL,'aaaaaaaaaaaaaaaaaaaa8',NULL,NULL,'1234567','user','generic',NULL,0,1,0,0,0,0,0),(4,NULL,'aaaaaaaaaaaaaaaaaaaa2',NULL,NULL,'60','Wickrath','Anatole',NULL,0,1,0,0,0,0,0),(5,NULL,'aaaaaaaaaaaaaaaaaaaa3',NULL,NULL,'7','Aylett','Antony',NULL,0,1,0,0,0,0,0),(6,NULL,'aaaaaaaaaaaaaaaaaaa11',NULL,NULL,'5','Rash','Lindi',NULL,0,1,0,0,0,0,0),(7,NULL,'aaaaaaaaaaaaaaaaaaa13',NULL,NULL,'119','Peteri','Nicholas',NULL,0,1,0,0,0,0,0),(8,NULL,'aaaaaaaaaaaaaaaaaaa18',NULL,NULL,'852','Michin','Savina',NULL,0,1,0,0,0,0,0),(9,NULL,'aaaaaaaaaaaaaaaaaaaa9',NULL,NULL,'89','Sallan','Gerry',NULL,0,1,0,0,0,0,0),(10,NULL,'aaaaaaaaaaaaaaaaaaa21',NULL,NULL,'4786','Bengle','Wakefield',NULL,0,1,0,0,0,0,0),(11,NULL,'aaaaaaaaaaaaaaaaaaa14',NULL,NULL,'75024','Bavin','Patrice',NULL,0,1,0,0,0,0,0),(12,NULL,'aaaaaaaaaaaaaaaaaaa12',NULL,NULL,'9240','McGee','Merrile',NULL,0,1,0,0,0,0,0),(13,NULL,'aaaaaaaaaaaaaaaaaaaa4',NULL,NULL,'4522','Celler','Ardath',NULL,0,1,0,0,0,0,0),(14,NULL,'aaaaaaaaaaaaaaaaaaaa6',NULL,NULL,'259','Lothean','Ashleigh',NULL,0,1,0,0,0,0,0),(15,NULL,'aaaaaaaaaaaaaaaaaaa17',NULL,NULL,'2','Scorah','Salomon',NULL,0,1,0,0,0,0,0),(16,NULL,'aaaaaaaaaaaaaaaaaaa22',NULL,NULL,'4','Kupec','Xaviera',NULL,0,1,0,0,0,0,0),(17,NULL,'aaaaaaaaaaaaaaaaaaa15',NULL,NULL,'3931','Badder','Pennie',NULL,0,1,0,0,0,0,0),(18,NULL,'aaaaaaaaaaaaaaaaaaa20',NULL,NULL,'7947','Sarrell','Travis',NULL,0,1,0,0,0,0,0),(19,NULL,'aaaaaaaaaaaaaaaaaaaa7',NULL,NULL,'96895','Crosser','Eldin',NULL,0,1,0,0,0,0,0),(20,NULL,'aaaaaaaaaaaaaaaaaaa10',NULL,NULL,'60','Nijs','Ginger',NULL,0,1,0,0,0,0,0),(21,NULL,'aaaaaaaaaaaaaaaaaaa16',NULL,NULL,'381','Pidcock','Petronille',NULL,0,1,0,0,0,0,0),(22,NULL,'aaaaaaaaaaaaaaaaaaaa5',NULL,NULL,'5','Duggleby','Arlee',NULL,0,1,0,0,0,0,0),(23,NULL,'aaaaaaaaaaaaaaaaaaaa1',NULL,NULL,'34','Viant','Ambur',NULL,0,1,0,0,0,0,0);
+INSERT INTO `user` VALUES (1,'','4VYp5dOrVWGz0OKB2hkLW','DEV','devuser@example.com',NULL,'User','Dev','quokka',1,1,1,0,0,0,0),(3,NULL,'aaaaaaaaaaaaaaaaaaaa8',NULL,'test@gmail.com','1234567','user','generic',NULL,0,1,0,0,0,0,0),(4,NULL,'aaaaaaaaaaaaaaaaaaaa2',NULL,NULL,'60','Wickrath','Anatole',NULL,0,1,0,0,0,0,0),(5,NULL,'aaaaaaaaaaaaaaaaaaaa3',NULL,NULL,'7','Aylett','Antony',NULL,0,1,0,0,0,0,0),(6,NULL,'aaaaaaaaaaaaaaaaaaa11',NULL,NULL,'5','Rash','Lindi',NULL,0,1,0,0,0,0,0),(7,NULL,'aaaaaaaaaaaaaaaaaaa13',NULL,NULL,'119','Peteri','Nicholas',NULL,0,1,0,0,0,0,0),(8,NULL,'aaaaaaaaaaaaaaaaaaa18',NULL,NULL,'852','Michin','Savina',NULL,0,1,0,0,0,0,0),(9,NULL,'aaaaaaaaaaaaaaaaaaaa9',NULL,NULL,'89','Sallan','Gerry',NULL,0,1,0,0,0,0,0),(10,NULL,'aaaaaaaaaaaaaaaaaaa21',NULL,NULL,'4786','Bengle','Wakefield',NULL,0,1,0,0,0,0,0),(11,NULL,'aaaaaaaaaaaaaaaaaaa14',NULL,NULL,'75024','Bavin','Patrice',NULL,0,1,0,0,0,0,0),(12,NULL,'aaaaaaaaaaaaaaaaaaa12',NULL,NULL,'9240','McGee','Merrile',NULL,0,1,0,0,0,0,0),(13,NULL,'aaaaaaaaaaaaaaaaaaaa4',NULL,NULL,'4522','Celler','Ardath',NULL,0,1,0,0,0,0,0),(14,NULL,'aaaaaaaaaaaaaaaaaaaa6',NULL,NULL,'259','Lothean','Ashleigh',NULL,0,1,0,0,0,0,0),(15,NULL,'aaaaaaaaaaaaaaaaaaa17',NULL,NULL,'2','Scorah','Salomon',NULL,0,1,0,0,0,0,0),(16,NULL,'aaaaaaaaaaaaaaaaaaa22',NULL,NULL,'4','Kupec','Xaviera',NULL,0,1,0,0,0,0,0),(17,NULL,'aaaaaaaaaaaaaaaaaaa15',NULL,NULL,'3931','Badder','Pennie',NULL,0,1,0,0,0,0,0),(18,NULL,'aaaaaaaaaaaaaaaaaaa20',NULL,NULL,'7947','Sarrell','Travis',NULL,0,1,0,0,0,0,0),(19,NULL,'aaaaaaaaaaaaaaaaaaaa7',NULL,NULL,'96895','Crosser','Eldin',NULL,0,1,0,0,0,0,0),(20,NULL,'aaaaaaaaaaaaaaaaaaa10',NULL,NULL,'60','Nijs','Ginger',NULL,0,1,0,0,0,0,0),(21,NULL,'aaaaaaaaaaaaaaaaaaa16',NULL,NULL,'381','Pidcock','Petronille',NULL,0,1,0,0,0,0,0),(22,NULL,'aaaaaaaaaaaaaaaaaaaa5',NULL,NULL,'5','Duggleby','Arlee',NULL,0,1,0,0,0,0,0),(23,NULL,'aaaaaaaaaaaaaaaaaaaa1',NULL,NULL,'34','Viant','Ambur',NULL,0,1,0,0,0,0,0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1002,4 +1002,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-08-12 12:57:14
+-- Dump completed on 2020-08-16 17:02:14
