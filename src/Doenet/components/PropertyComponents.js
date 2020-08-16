@@ -19,6 +19,7 @@ import TextList from './TextList';
 import NumberList from './NumberList';
 import MathList from './MathList';
 import When from './When';
+import TextOrInline from './abstract/TextOrInline';
 
 export class Hide extends BooleanComponent {
   static componentType = "hide";
@@ -424,9 +425,9 @@ export class AggregateScores extends BooleanComponent {
 //   static componentType = "aggregatebypoints";
 // }
 
-export class Title extends TextComponent {
+export class Title extends TextOrInline {
   static componentType = "title";
-  static rendererType = "text";
+  static rendererType = "textorinline";
 }
 
 export class Level extends NumberComponent {

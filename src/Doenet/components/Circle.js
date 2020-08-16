@@ -2120,7 +2120,7 @@ export default class Circle extends Curve {
 
     }
 
-    this.requestUpdate({
+    this.coreFunctions.requestUpdate({
       updateInstructions: instructions,
       transient
     });

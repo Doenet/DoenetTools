@@ -152,6 +152,7 @@ import TextFromSingleStringChild from './components/abstract/TextFromSingleStrin
 import MathWithVariable from './components/abstract/MathWithVariable';
 import NumberBaseOperatorOrNumber from './components/abstract/NumberBaseOperatorOrNumber';
 import InlineRenderInlineChildren from './components/abstract/InlineRenderInlineChildren';
+import TextOrInline from './components/abstract/TextOrInline';
 
 
 const componentTypeArray = [
@@ -281,6 +282,7 @@ const componentTypeArrayExtended = [
   MathWithVariable,
   NumberBaseOperatorOrNumber,
   InlineRenderInlineChildren,
+  TextOrInline,
 ];
 
 export function standardComponentClasses() {

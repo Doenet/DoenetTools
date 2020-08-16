@@ -1619,7 +1619,7 @@ export default class Vector extends GraphicalComponent {
     }
 
 
-    this.requestUpdate({
+    this.coreFunctions.requestUpdate({
       updateInstructions,
       transient
     });

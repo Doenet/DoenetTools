@@ -18,7 +18,7 @@ export default class Mathinput extends Input {
     Object.defineProperty(this.actions, 'submitAnswer', {
       get: function () {
         if (this.stateValues.answerAncestor !== null) {
-          return () => this.requestAction({
+          return () => this.coreFunctions.requestAction({
             componentName: this.stateValues.answerAncestor.componentName,
             actionName: "submitAnswer"
           })
@@ -235,7 +235,7 @@ export default class Mathinput extends Input {
     if (!this.stateValues.disabled) {
       // we set transient to true so that each keystroke does not
       // add a row to the database
-      this.requestUpdate({
+      this.coreFunctions.requestUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -249,7 +249,7 @@ export default class Mathinput extends Input {
 
   updateValue() {
     if (!this.stateValues.disabled) {
-      this.requestUpdate({
+      this.coreFunctions.requestUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,

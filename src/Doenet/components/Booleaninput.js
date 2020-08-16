@@ -15,7 +15,7 @@ export default class Booleaninput extends Input {
     Object.defineProperty(this.actions, 'submitAnswer', {
       get: function () {
         if (this.stateValues.answerAncestor !== null) {
-          return () => this.requestAction({
+          return () => this.coreFunctions.requestAction({
             componentName: this.stateValues.answerAncestor.componentName,
             actionName: "submitAnswer"
           })
@@ -159,7 +159,7 @@ export default class Booleaninput extends Input {
   }
 
   updateBoolean({ boolean }) {
-    this.requestUpdate({
+    this.coreFunctions.requestUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,

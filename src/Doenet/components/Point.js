@@ -5,13 +5,6 @@ import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { deepClone } from '../utils/deepFunctions';
 
 export default class Point extends GraphicalComponent {
-  constructor(args) {
-    super(args);
-    this.movePoint = this.movePoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    );
-    this.actions = { movePoint: this.movePoint };
-  }
   static componentType = "point";
 
   // used when referencing this component without prop
@@ -989,7 +982,7 @@ export default class Point extends GraphicalComponent {
     if (y !== undefined) {
       components[1] = me.fromAst(y);
     }
-    this.requestUpdate({
+    this.coreFunctions.requestUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -1000,5 +993,11 @@ export default class Point extends GraphicalComponent {
     })
 
   }
+
+  actions = {
+    movePoint: this.movePoint.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    )
+  };
 
 }

@@ -498,7 +498,7 @@ export default class Polyline extends GraphicalComponent {
       vertexComponents[ind + ",1"] = me.fromAst(pointcoordsObject[ind][1]);
     }
 
-    this.requestUpdate({
+    this.coreFunctions.requestUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,

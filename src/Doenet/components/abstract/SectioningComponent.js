@@ -8,7 +8,6 @@ export default class SectioningComponent extends BlockComponent {
 
   static createPropertiesObject(args) {
     let properties = super.createPropertiesObject(args);
-    properties.title = { default: "", componentType: "text", forRenderer: true };
     properties.aggregateScores = { default: false };
     properties.weight = { default: 1 };
     // properties.possiblepoints = {default: undefined};
@@ -29,6 +28,13 @@ export default class SectioningComponent extends BlockComponent {
       allowSpillover: false,
     })
 
+    let atMostOneTitle = childLogic.newLeaf({
+      name: "atMostOneTitle",
+      componentType: "title",
+      comparison: "atMost",
+      number: 1,
+    })
+
     let anything = childLogic.newLeaf({
       name: 'anything',
       componentType: '_base',
@@ -37,9 +43,9 @@ export default class SectioningComponent extends BlockComponent {
     });
 
     childLogic.newOperator({
-      name: "variantAndAnything",
+      name: "variantTitleAndAnything",
       operator: "and",
-      propositions: [atMostOneVariantControl, anything],
+      propositions: [atMostOneVariantControl, atMostOneTitle, anything],
       setAsBase: true,
     })
 
@@ -50,6 +56,26 @@ export default class SectioningComponent extends BlockComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.title = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      returnDependencies: () => ({
+        titleChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneTitle",
+          variableNames: ["text"],
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.titleChild.length === 0) {
+          return { newValues: { title: "" } };
+        } else {
+          return { newValues: { title: dependencyValues.titleChild[0].stateValues.text } };
+        }
+      }
+    }
 
     stateVariableDefinitions.containerTag = {
       forRenderer: true,
@@ -64,8 +90,22 @@ export default class SectioningComponent extends BlockComponent {
     }
 
     stateVariableDefinitions.viewedSolution = {
+      defaultValue: false,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { viewedSolution: false } })
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          viewedSolution: { variablesToCheck: ["viewedSolution"] }
+        }
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "viewedSolution",
+            value: desiredStateVariableValues.viewedSolution
+          }]
+        }
+      }
     }
 
     stateVariableDefinitions.scoredDescendants = {
@@ -170,22 +210,6 @@ export default class SectioningComponent extends BlockComponent {
       }
     }
 
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        activeChildren: {
-          dependencyType: "childIdentity",
-          childLogicName: "anything"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues:
-            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
-        };
-      }
-    }
-
-
     stateVariableDefinitions.selectedVariantInfo = {
       additionalStateVariablesDefined: ["isVariantComponent"],
       returnDependencies: ({ componentInfoObjects }) => ({
@@ -234,61 +258,33 @@ export default class SectioningComponent extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.childrenToRender = {
+      returnDependencies: () => ({
+        titleChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "atMostOneTitle"
+        },
+        activeChildren: {
+          dependencyType: "childIdentity",
+          childLogicName: "anything"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+        return {
+          newValues:
+          {
+            childrenToRender:
+              [...dependencyValues.titleChild, ...dependencyValues.activeChildren]
+                .map(x => x.componentName)
+          }
+        };
+      }
+    }
+
+
 
     return stateVariableDefinitions;
   }
-
-  updateState(args = {}) {
-    if (args.init) {
-
-      if (!this._state.creditAchieved.essential) {
-        this.state.creditAchieved = 0;
-        this._state.creditAchieved.essential = true;
-      }
-      this.state.percentcreditachieved = this.state.creditAchieved * 100;
-
-      if (this.doenetAttributes.isVariantComponent) {
-        this.state.selectedVariant = this.sharedParameters.selectedVariant;
-        this._state.selectedVariant.essential = true;
-      }
-
-      if (this._state.viewedSolution === undefined) {
-        this.state.viewedSolution = false;
-      }
-      this._state.viewedSolution.essential = true;
-
-    }
-  }
-
-  initializeRenderer() {
-    if (this.renderer === undefined) {
-      this.renderer = new this.availableRenderers.section({
-        key: this.componentName,
-        title: this.stateValues.title,
-        level: this.stateValues.level,
-        containerTag: this.stateValues.containerTag,
-        viewedSolution: this.stateValues.viewedSolution,
-      });
-    }
-  }
-
-  updateRenderer() {
-    this.renderer.updateSection({
-      title: this.stateValues.title,
-      viewedSolution: this.stateValues.viewedSolution,
-    });
-  }
-
-  get descendantSearchClasses() {
-    return [{
-      classNames: ["_sectioningcomponent", "answer"],
-      recurseToMatchedChildren: false,
-      key: "scoredComponents",
-      childCondition: child => child.componentType === "answer" || child.state.aggregatescores,
-      skip: !this.state.aggregatescores,
-    }];
-  }
-
 
   static setUpVariant({ serializedComponent, sharedParameters, definingChildrenSoFar,
     allComponentClasses }) {
@@ -458,27 +454,5 @@ export default class SectioningComponent extends BlockComponent {
   }
 
   static includeBlankStringChildren = true;
-
-
-  allowDownstreamUpdates(status) {
-    // only allow initial change 
-    return (status.initialChange === true);
-  }
-
-  get variablesUpdatableDownstream() {
-    // only allowed to change these state variables
-    return [
-      "viewedSolution",
-    ];
-  }
-
-  calculateDownstreamChanges({ stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate }) {
-
-    Object.assign(stateVariableChangesToSave, stateVariablesToUpdate);
-
-    return true;
-  }
-
 
 }

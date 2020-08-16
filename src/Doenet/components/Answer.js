@@ -1182,7 +1182,7 @@ export default class Answer extends InlineComponent {
       });
     }
 
-    this.requestUpdate({
+    this.coreFunctions.requestUpdate({
       updateInstructions: instructions
     })
 
@@ -1190,7 +1190,7 @@ export default class Answer extends InlineComponent {
 
     // // NOTE: if change this so don't have a request update with just document
     // // need to change code that triggers an immediate at the end of requestUpdate in core
-    // this.requestUpdate({
+    // this.coreFunctions.requestUpdate({
     //   updateType: "updateValue",
     //   updateInstructions: [{
     //     componentName: documentComponentName,

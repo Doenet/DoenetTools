@@ -3,6 +3,11 @@ import Core from '../Doenet/Core';
 import axios from 'axios';
 import crypto from 'crypto';
 
+// TODO: dynamic loading of renderers fails if we don't load HotTable
+// even though we don't use HotTable anywhere
+// What is the cause of this dependency?
+import { HotTable } from '@handsontable/react';
+
 import { serializedStateReplacer, serializedStateReviver } from '../Doenet/utils/serializedStateProcessing';
 
 
@@ -17,6 +22,7 @@ class DoenetViewer extends Component {
     this.loadDoenetML = this.loadDoenetML.bind(this);
     this.localStateChanged = this.localStateChanged.bind(this);
     this.submitResponse = this.submitResponse.bind(this);
+    this.recordSolutionView = this.recordSolutionView.bind(this);
 
     this.rendererUpdateMethods = {};
 
@@ -45,7 +51,7 @@ class DoenetViewer extends Component {
       hash.update(doenetML);
       this.contentId = hash.digest('hex');
 
-      this.haveDoenetML({ contentId:this.contentId, doenetML });
+      this.haveDoenetML({ contentId: this.contentId, doenetML });
 
     } else {
       this.contentId = props.contentId;
@@ -67,8 +73,14 @@ class DoenetViewer extends Component {
   
 
   createCore({ stateVariables, variant }) {
-console.log("stateVariables",stateVariables)
+
+    if (stateVariables === undefined) {
+      console.error(`error loading state variables`);
+      this.cumulativeStateVariableChanges = null;
+      variant = null;
+    } else {
     this.cumulativeStateVariableChanges = JSON.parse(stateVariables, serializedStateReviver)
+    }
 
     // if loaded variant from database,
     // then use that variant rather than requestedVariant from props
@@ -89,7 +101,11 @@ console.log("stateVariables",stateVariables)
       coreReadyCallback: this.coreReady,
       coreUpdatedCallback: this.update,
       doenetML: this.doenetML,
-      externalFunctions: { localStateChanged: this.localStateChanged, submitResponse:this.submitResponse },
+      externalFunctions: {
+        localStateChanged: this.localStateChanged,
+        submitResponse: this.submitResponse,
+        recordSolutionView: this.recordSolutionView,
+      },
       flags: this.props.flags,
       requestedVariant: this.requestedVariant,
     });
@@ -335,6 +351,32 @@ console.log("stateVariables",stateVariables)
     }
 
     callBack("submitResponse callback parameter");
+  }
+
+
+  // TODO: if assignmentId, then need to record fact that student
+  // viewed solution in user_assignment_attempt_item
+  recordSolutionView({ itemNumber, scoredComponent, callBack }) {
+
+    console.log(`reveal solution, ${itemNumber}`)
+
+    if (this.assignmentId) {
+      console.warn(`Need to record solution view in the database!!`);
+
+      // TODO: is there a condition where we don't allow solution view?
+      // Presumably some setting from course
+      // But, should the condition be checked on the server?
+
+      // TODO: call callBack as callBack from php call
+      callBack({ allowView: true, message: "", scoredComponent })
+
+    } else {
+
+      // if not an assignment, immediately show solution
+      callBack({ allowView: true, message: "", scoredComponent })
+
+    }
+
   }
 
   render() {

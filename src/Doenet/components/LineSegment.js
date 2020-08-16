@@ -491,7 +491,7 @@ export default class LineSegment extends GraphicalComponent {
       newComponents["1,1"] = me.fromAst(point2coords[1]);
     }
 
-    this.requestUpdate({
+    this.coreFunctions.requestUpdate({
       updateInstructions: [{
         componentName: this.componentName,
         updateType: "updateValue",

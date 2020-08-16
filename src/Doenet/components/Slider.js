@@ -323,7 +323,7 @@ export default class Slider extends BaseComponent {
 
   changeValue({ value, transient }) {
     if (!this.stateValues.disabled) {
-      this.requestUpdate({
+      this.coreFunctions.requestUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,

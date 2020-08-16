@@ -1218,7 +1218,7 @@ export default class Line extends GraphicalComponent {
       "1,1": me.fromAst(point2coords[1]),
     }
 
-    this.requestUpdate({
+    this.coreFunctions.requestUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,

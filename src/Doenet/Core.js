@@ -1,7 +1,6 @@
 import * as ComponentTypes from './ComponentTypes'
 import readOnlyProxyHandler from './ReadOnlyProxyHandler';
 import ParameterStack from './ParameterStack';
-import availableRenderers from './AvailableRenderers';
 import Numerics from './Numerics';
 import MersenneTwister from 'mersenne-twister';
 import me from 'math-expressions';
@@ -37,6 +36,8 @@ export default class Core {
     this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
     this._requestAnimationFrame = this._requestAnimationFrame.bind(this);
     this.cancelAnimationFrame = this.cancelAnimationFrame.bind(this);
+    this.calculateScoredItemNumberOfContainer = this.calculateScoredItemNumberOfContainer.bind(this);
+
     this.expandDoenetMLsToFullSerializedState = this.expandDoenetMLsToFullSerializedState.bind(this);
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
@@ -78,6 +79,14 @@ export default class Core {
       isInheritedComponentType: this.isInheritedComponentType,
       stateVariableInfo: this.stateVariableInfo,
     };
+
+    this.coreFunctions = {
+      requestUpdate: this.requestUpdate,
+      requestAction: this.requestAction,
+      requestAnimationFrame: this.requestAnimationFrame,
+      cancelAnimationFrame: this.cancelAnimationFrame,
+      calculateScoredItemNumberOfContainer: this.calculateScoredItemNumberOfContainer,
+    }
 
     this.animationIDs = {};
     this.lastAnimationID = 0;
@@ -1013,25 +1022,14 @@ export default class Core {
       stateVariableDefinitions,
       serializedChildren: childrenToRemainSerialized,
       serializedState: serializedComponent,
-      standardComponentClasses: this.standardComponentClasses,
-      allComponentClasses: this.allComponentClasses,
-      allPossibleProperties: this.allPossibleProperties,
-      isInheritedComponentType: this.isInheritedComponentType,
-      componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
-      componentTypesCreatingVariants: this.componentTypesCreatingVariants,
+      componentInfoObjects: this.componentInfoObjects,
+      coreFunctions: this.coreFunctions,
+      externalFunctions: this.externalFunctions,
+      flags: this.flags,
       shadow: shadow,
-      requestUpdate: this.requestUpdate,
-      requestAction: this.requestAction,
-      availableRenderers: availableRenderers,
-      allRenderComponents: this._renderComponentsByName,
-      graphRenderComponents: this._graphRenderComponents,
       numerics: this.numerics,
       sharedParameters: sharedParameters,
-      requestAnimationFrame: this.requestAnimationFrame,
-      cancelAnimationFrame: this.cancelAnimationFrame,
-      externalFunctions: this.externalFunctions,
       allowSugarForChildren: applySugar,
-      flags: this.flags,
     });
 
     this.registerComponent(newComponent);
@@ -6010,7 +6008,7 @@ export default class Core {
     } else if (dependencyDefinition.dependencyType !== "serializedChildren"
       && dependencyDefinition.dependencyType !== "variants"
     ) {
-      throw Error(`Unrecognized dependency type ${dependencyDefinition.dependencyType}`);
+      throw Error(`Unrecognized dependency type ${dependencyDefinition.dependencyType} for ${dependencyName} of ${component.componentName}`);
     }
 
     newStateVariableDependencies[dependencyName] = newDep;
@@ -12437,12 +12435,12 @@ export default class Core {
       });
       alert(errorMessage);
 
-      this.requestUpdate({
+      this.coreFunctions.requestUpdate({
         updateType: "updateRendererOnly",
       });
     } else if (results.viewedSolution) {
       console.log(`******** Viewed solution for ${scoredComponent.componentName}`);
-      this.requestUpdate({
+      this.coreFunctions.requestUpdate({
         updateType: "updateValue",
         updateInstructions: [{
           componentName: scoredComponent.componentName,
@@ -12526,6 +12524,39 @@ export default class Core {
 
   }
 
+  calculateScoredItemNumberOfContainer(componentName) {
+
+    let component = this._components[componentName];
+    let ancestorNames = [
+      ...component.ancestors.slice(0, -1).reverse().map(x => x.componentName),
+      componentName
+    ];
+    let scoredComponent;
+    let scoredItemNumber;
+    for (let [index, scored] of this.document.stateValues.scoredDescendants.entries()) {
+      for (let ancestorName of ancestorNames) {
+        if (scored.componentName === ancestorName) {
+          scoredComponent = ancestorName;
+          scoredItemNumber = index + 1;
+          break;
+        }
+      }
+      if (scoredComponent !== undefined) {
+        break;
+      }
+    }
+
+    // if component wasn't inside a scoredComponent and isn't a scoredComponent itself
+    // then let the scoredComponent be the document itself
+    if (scoredComponent === undefined) {
+      scoredComponent = this.document.componentName;
+      scoredItemNumber = this.document.stateValues.scoredDescendants.length;
+    }
+
+    return { scoredItemNumber, scoredComponent };
+  }
+
+
   get doenetState() {
     return this._renderComponents;
   }
@@ -12587,7 +12618,7 @@ export default class Core {
   componentWillUnmount() {
     this.preventMoreAnimations = true;
     for (let id in this.animationIDs) {
-      this.cancelAnimationFrame(id);
+      this.coreFunctions.cancelAnimationFrame(id);
     }
     this.animationIDs = {};
   }
