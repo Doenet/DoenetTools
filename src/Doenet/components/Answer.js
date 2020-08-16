@@ -331,15 +331,20 @@ export default class Answer extends InlineComponent {
 
     }
 
-    let atLeastOneChoice = childLogic.newLeaf({
-      name: "atLeastOneChoice",
-      componentType: 'choice',
-      comparison: 'atLeast',
-      number: 1,
-      isSugar: true,
-      logicToWaitOnSugar: ["anyInlineComponents"],
-      replacementFunction: replaceFromJustChoices,
-    });
+    // TODO: removing this option for now,
+    // as it lets sugar change the variant structure
+    // Possible solutions: have variants determined
+    // after components are constructed rather than with serialized state?
+
+    // let atLeastOneChoice = childLogic.newLeaf({
+    //   name: "atLeastOneChoice",
+    //   componentType: 'choice',
+    //   comparison: 'atLeast',
+    //   number: 1,
+    //   isSugar: true,
+    //   logicToWaitOnSugar: ["anyInlineComponents"],
+    //   replacementFunction: replaceFromJustChoices,
+    // });
 
 
     let replaceFromIncompleteAwards = function ({ activeChildrenMatched, dependencyValues, parentName, childLogicName }) {
@@ -574,7 +579,7 @@ export default class Answer extends InlineComponent {
         exactlyOneString,
         exactlyOneMath,
         exactlyOneText,
-        atLeastOneChoice,
+        // atLeastOneChoice,
       ],
       setAsBase: true,
     });
