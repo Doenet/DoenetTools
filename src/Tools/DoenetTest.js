@@ -24,7 +24,7 @@ class DoenetTest extends Component {
         .then(resp => {
           console.log('processAttemptNumber-->>>',resp.data);
           this.attemptNumber = resp.data;
-          this.setState({attemptNumberIsReady:true})
+          this.setState({attemptNumberIsReady:true,requestedVariant:{ index: this.attemptNumber }})
         });
     }else{
       attemptNumberIsReady = true;
@@ -38,6 +38,7 @@ class DoenetTest extends Component {
       readOnly: false,
       ignoreDatabase: false,
       attemptNumberIsReady,
+      requestedVariant:undefined,
     };
 
     window.onmessage = this.updateAfterMessage;
@@ -73,7 +74,7 @@ class DoenetTest extends Component {
         console.log('processAttemptNumber NEW ATTEMPT-->>>',resp.data);
         this.attemptNumber = resp.data;
       this.updateNumber++; //Need to run core again
-        this.setState({attemptNumberIsReady:true})
+        this.setState({attemptNumberIsReady:true,requestedVariant:{ index: this.attemptNumber }})
       });
   }
 

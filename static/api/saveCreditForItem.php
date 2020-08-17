@@ -102,7 +102,7 @@ $result = $conn->query($sql);
 
 
 //**update user_assignment with new score
-if ($attemptAggregation == 'm'){
+// if ($attemptAggregation == 'm'){
 
 //Find maximum credit and maximum creditOverrides on each attempt
 $sql = "SELECT MAX(credit) AS maxCredit,
@@ -123,16 +123,16 @@ $sql = "
 ";
 $result = $conn->query($sql);
 
-}else if ($attemptAggregation == 'l'){
-    //Use last attempt
-    $sql = "
-    UPDATE user_assignment
-    SET credit='$credit_for_attempt'
-    WHERE userId = '$userId'
-    AND assignmentId = '$assignmentId'
-";
-$result = $conn->query($sql);
-}
+// }else if ($attemptAggregation == 'l'){
+//     //Use last attempt
+//     $sql = "
+//     UPDATE user_assignment
+//     SET credit='$credit_for_attempt'
+//     WHERE userId = '$userId'
+//     AND assignmentId = '$assignmentId'
+// ";
+// $result = $conn->query($sql);
+// }
 
 
 
