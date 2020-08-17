@@ -45,6 +45,28 @@ export default class Core {
     this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
 
     this.coreUpdatedCallback = coreUpdatedCallback;
+    this.coreReadyCallback = function() {
+      coreReadyCallback();
+
+      if(this.externalFunctions.recordEvent) {
+
+        let event = {
+          verb: "experienced",
+          object: {
+            componentName: this.document.componentName,
+            componentType: "document",
+            documentTitle : this.document.stateValues.title
+          },
+          timestamp : new Date().toISOString().slice(0, 19).replace('T', ' '),
+          result: {},
+          context: {}
+        }
+  
+        this.externalFunctions.recordEvent(event);
+      }
+    }.bind(this);
+
+
     this._standardComponentClasses = ComponentTypes.standardComponentClasses();
     this._allComponentClasses = ComponentTypes.allComponentClasses();
     this._componentTypesTakingComponentNames = ComponentTypes.componentTypesTakingComponentNames();
@@ -91,7 +113,6 @@ export default class Core {
     this.animationIDs = {};
     this.lastAnimationID = 0;
     this.requestedVariant = requestedVariant;
-    this.coreReadyCallback = coreReadyCallback;
 
     // console.time('serialize doenetML');
 
@@ -221,13 +242,9 @@ export default class Core {
     console.log(this._components);
 
     if (calledAsynchronously) {
-      this.coreReadyCallback({
-        doenetTags: this.doenetState,
-      })
+      this.coreReadyCallback()
     } else {
-      setTimeout(() => this.coreReadyCallback({
-        doenetTags: this.doenetState,
-      }), 0)
+      setTimeout(() => this.coreReadyCallback(), 0)
     }
 
   }
