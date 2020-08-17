@@ -75,11 +75,13 @@ $sql = "SELECT credit,itemNumber,weight
         ORDER BY itemNumber
         ";
 $result = $conn->query($sql);
-$credit_for_attempt = 0;
+$total_credits = 0;
+$total_weights = 0;
 
 while($row = $result->fetch_assoc()){ 
     $loopItemNumber = $row['itemNumber'];
     $item_weight = $row['weight'];
+    $total_weights = $total_weights + $item_weight;
     //Not guaranteed for credit to be stored due to async communication with db
     //So use value given here to be careful
     if ($loopItemNumber == $itemNumber){
@@ -87,8 +89,9 @@ while($row = $result->fetch_assoc()){
     }else{
         $item_credit = $row['credit'];
     }
-    $credit_for_attempt = $credit_for_attempt + ($item_credit * $item_weight);
+    $total_credits = $total_credits + ($item_credit * $item_weight);
 }
+$credit_for_attempt = $total_credits / $total_weights;
 
 // Store credit in user_assignment_attempt
 $sql = "UPDATE user_assignment_attempt
