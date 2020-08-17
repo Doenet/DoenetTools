@@ -46,16 +46,25 @@ export default class Core {
     this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
 
     this.coreUpdatedCallback = coreUpdatedCallback;
-    this.coreReadyCallback = function () {
+    this.coreReadyCallback = function() {
       coreReadyCallback();
 
-      this.recordEvent({
-        verb: "experienced",
-        object: {
-          componentName: this.document.componentName,
-          componentType: "document",
-        },
-      })
+      if(this.externalFunctions.recordEvent) {
+
+        let event = {
+          verb: "experienced",
+          object: {
+            componentName: this.document.componentName,
+            componentType: "document",
+            documentTitle : this.document.stateValues.title
+          },
+          timestamp : new Date().toISOString().slice(0, 19).replace('T', ' '),
+          result: {},
+          context: {}
+        }
+  
+        this.externalFunctions.recordEvent(event);
+      }
     }.bind(this);
 
 
