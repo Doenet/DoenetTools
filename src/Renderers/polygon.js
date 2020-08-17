@@ -101,11 +101,11 @@ export default class Line extends DoenetRenderer {
 
     let polygonJXG = this.polygonJXG;
     let newPointcoords;
-          
+
     function onDragBorder(i) {
 
       // create update instructions for moving entire polygon
-      newPointcoords = [];
+      newPointcoords = {};
       let border = polygonJXG.borders[i];
 
       for (let j = 0; j < renderer.doenetSvData.nVertices; j++) {
@@ -113,15 +113,15 @@ export default class Line extends DoenetRenderer {
         let item = offsets.find(x => x.id === point.id);
         if (item === undefined) {
           // vertex is on border segment dragged, so records its position
-          newPointcoords.push([point.X(), point.Y()]);
+          newPointcoords[j] = [point.X(), point.Y()];
         }
         else {
           // for remaining vertices, set to offset from
           // first point of segment dragged
-          newPointcoords.push([
+          newPointcoords[j] = [
             border.point1.X() + item.offset[0],
             border.point1.Y() + item.offset[1]
-          ]);
+          ];
         }
       }
 
@@ -130,7 +130,7 @@ export default class Line extends DoenetRenderer {
 
     function onUpBorder() {
 
-      if(newPointcoords) {
+      if (newPointcoords) {
         renderer.actions.movePolygon(newPointcoords, false);
       }
     }

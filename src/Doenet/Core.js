@@ -11726,7 +11726,7 @@ export default class Core {
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
   }
 
-  requestUpdate({ updateInstructions, transient = false }) {
+  requestUpdate({ updateInstructions, transient = false, event }) {
 
     if (this.flags.readOnly) {
 
@@ -11850,6 +11850,21 @@ export default class Core {
     // evalute itemCreditAchieved so that will be fresh
     // and can detect changes when it is marked stale
     this.document.stateValues.itemCreditAchieved;
+
+    if(event && this.externalFunctions.recordEvent) {
+
+      event.object.documentTitle = this.document.stateValues.title;
+      event.timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+      if(!event.result) {
+        event.result = {};
+      }
+      if(!event.context) {
+        event.context = {};
+      }
+
+      this.externalFunctions.recordEvent(event);
+    }
 
     return { success: true };
   }

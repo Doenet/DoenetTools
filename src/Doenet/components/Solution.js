@@ -237,17 +237,28 @@ export default class Solution extends BlockComponent {
       value: message
     }];
 
+    let event;
+
     if (allowView) {
       updateInstructions.push({
         updateType: "updateValue",
         componentName: scoredComponent,
         stateVariable: "viewedSolution",
         value: true
-      })
+      });
+
+      event = {
+        verb: "viewed",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+      }
     }
 
     this.coreFunctions.requestUpdate({
-      updateInstructions: updateInstructions
+      updateInstructions,
+      event
     })
 
   }

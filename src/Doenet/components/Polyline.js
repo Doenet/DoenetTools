@@ -498,15 +498,37 @@ export default class Polyline extends GraphicalComponent {
       vertexComponents[ind + ",1"] = me.fromAst(pointcoordsObject[ind][1]);
     }
 
-    this.coreFunctions.requestUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "vertices",
-        value: vertexComponents
-      }],
-      transient,
-    });
+    if (transient) {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "vertices",
+          value: vertexComponents
+        }],
+        transient,
+      });
+    } else {
+
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "vertices",
+          value: vertexComponents
+        }],
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            pointCoordinates: pointcoordsObject
+          }
+        }
+      });
+    }
 
   }
 

@@ -165,7 +165,18 @@ export default class Booleaninput extends Input {
         componentName: this.componentName,
         stateVariable: "value",
         value: boolean,
-      }]
+      }],
+      event: {
+        verb: "selected",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+        result: {
+          response: boolean,
+          responseText: boolean.toString(),
+        }
+      }
     })
   }
 

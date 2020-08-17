@@ -1187,8 +1187,31 @@ export default class Answer extends InlineComponent {
       });
     }
 
+    let responseText = [];
+    for(let response of this.stateValues.currentResponses) {
+      if(response.toString) {
+        responseText.push(response.toString())
+      } else {
+        responseText.push(response)
+      }
+    }
+
     this.coreFunctions.requestUpdate({
-      updateInstructions: instructions
+      updateInstructions: instructions,
+      event: {
+        verb: "submitted",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+          scoredItemNumber: this.coreFunctions.calculateScoredItemNumberOfContainer(this.componentName).scoredItemNumber
+        },
+        result: {
+          response: this.stateValues.currentResponses,
+          responseText,
+          credit: creditAchieved
+        }
+        
+      }
     })
 
     // let documentComponentName = this.ancestors[this.ancestors.length - 1].componentName;

@@ -23,6 +23,7 @@ class DoenetViewer extends Component {
     this.localStateChanged = this.localStateChanged.bind(this);
     this.submitResponse = this.submitResponse.bind(this);
     this.recordSolutionView = this.recordSolutionView.bind(this);
+    this.recordEvent = this.recordEvent.bind(this);
 
     this.rendererUpdateMethods = {};
 
@@ -105,6 +106,7 @@ class DoenetViewer extends Component {
         localStateChanged: this.localStateChanged,
         submitResponse: this.submitResponse,
         recordSolutionView: this.recordSolutionView,
+        recordEvent: this.recordEvent,
       },
       flags: this.props.flags,
       requestedVariant: this.requestedVariant,
@@ -376,6 +378,32 @@ class DoenetViewer extends Component {
       callBack({ allowView: true, message: "", scoredComponent })
 
     }
+
+  }
+
+
+  recordEvent(event) {
+
+    if (this.props.ignoreDatabase) {
+      return;
+    }
+
+    const payload = {
+      assignmentId: this.assignmentId,
+      contentId: this.contentId,
+      attemptNumber: this.attemptNumber,
+      verb: event.verb,
+      object: JSON.stringify(event.object, serializedStateReplacer),
+      result: JSON.stringify(event.result, serializedStateReplacer),
+      context: JSON.stringify(event.context, serializedStateReplacer),
+      timestamp: event.timestamp,
+      version: "0.1.0",
+    }
+
+    axios.post('/api/recordEvent.php', payload)
+      .then(resp => {
+        // console.log('recordEvent-->>>',resp.data);
+      });
 
   }
 

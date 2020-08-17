@@ -104,6 +104,7 @@ export default class Slider extends BaseComponent {
       public: true,
       isArray: true,
       entryPrefixes: ["item"],
+      entireArrayAtOnce: true,
       returnDependencies: () => ({
         textChildren: {
           dependencyType: "childStateVariables",
@@ -120,13 +121,13 @@ export default class Slider extends BaseComponent {
           variableName: "sliderType"
         }
       }),
-      definition: function ({ dependencyValues }) {
+      entireArrayDefinition: function ({ dependencyValues }) {
 
         let items;
 
         if (dependencyValues.sliderType === "text") {
           items = dependencyValues.textChildren.map(x => x.stateValues.value);
-        } else if(dependencyValues.numberChildren.length > 0) {
+        } else if (dependencyValues.numberChildren.length > 0) {
           items = dependencyValues.numberChildren.map(x => x.stateValues.value);
           items.sort((a, b) => { return a - b; }); //sort in number order
         } else {
@@ -323,15 +324,37 @@ export default class Slider extends BaseComponent {
 
   changeValue({ value, transient }) {
     if (!this.stateValues.disabled) {
-      this.coreFunctions.requestUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
-          componentName: this.componentName,
-          stateVariable: "value",
-          value
-        }],
-        transient
-      });
+      if (transient) {
+        this.coreFunctions.requestUpdate({
+          updateInstructions: [{
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "value",
+            value
+          }],
+          transient
+        });
+      } else { 
+        this.coreFunctions.requestUpdate({
+          updateInstructions: [{
+            updateType: "updateValue",
+            componentName: this.componentName,
+            stateVariable: "value",
+            value
+          }],
+          event: {
+            verb: "selected",
+            object: {
+              componentName: this.componentName,
+              componentType: this.componentType,
+            },
+            result: {
+              response: value,
+              responseText: value.toString()
+            }
+          }
+        });
+      }
     }
   }
 

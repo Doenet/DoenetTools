@@ -982,15 +982,36 @@ export default class Point extends GraphicalComponent {
     if (y !== undefined) {
       components[1] = me.fromAst(y);
     }
-    this.coreFunctions.requestUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "xs",
-        value: components,
-      }],
-      transient
-    })
+    if (transient) {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "xs",
+          value: components,
+        }],
+        transient
+      })
+    } else {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "xs",
+          value: components,
+        }],
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            x, y
+          }
+        }
+      })
+    }
 
   }
 

@@ -252,7 +252,18 @@ export default class Textinput extends Input {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           valueOfStateVariable: "value",
-        }]
+        }],
+        event: {
+          verb: "answered",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            response: this.stateValues.immediateValue,
+            responseText: this.stateValues.immediateValue,
+          }
+        }
       })
 
     }

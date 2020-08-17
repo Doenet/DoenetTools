@@ -586,7 +586,19 @@ export default class Choiceinput extends Input {
           componentName: this.componentName,
           stateVariable: "selectedIndices",
           value: selectedIndices
-        }]
+        }],
+        event: {
+          verb: "selected",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            response: selectedIndices,
+            responseText: selectedIndices
+              .map(i => this.stateValues.choiceTexts[i - 1])
+          }
+        }
       })
     }
   }
