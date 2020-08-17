@@ -328,12 +328,12 @@ console.log("stateVariables",stateVariables)
       }
       axios.post('/api/saveCreditForItem.php', payload)
         .then(resp => {
-          console.log('saveCreditForItem-->>>',resp.data);
+          // console.log('saveCreditForItem-->>>',resp.data);
       
         });
     }
 
-    callBack("hello");
+    callBack("submitResponse callback parameter");
   }
 
   render() {

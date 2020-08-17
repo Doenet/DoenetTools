@@ -24,7 +24,7 @@ $itemNumber = $itemNumber + 1;
 //TODO: check if this is too many tries 
 //TODO: check if attempt is older than given attempt
 
-//Find attemptAggregation
+//**Find attemptAggregation
 $sql = "SELECT attemptAggregation
         FROM assignment
         WHERE assignmentId='$assignmentId'";
@@ -33,6 +33,7 @@ $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 $attemptAggregation = $row['attemptAggregation'];
 
+//**Update user_assignment_attempt_item
 if ($attemptAggregation == 'm'){
 // Find previous credit if maximizing scores
 // Update credit in the database if it's larger
@@ -87,11 +88,6 @@ while($row = $result->fetch_assoc()){
         $item_credit = $row['credit'];
     }
     $credit_for_attempt = $credit_for_attempt + ($item_credit * $item_weight);
-
-    // echo "\$loopItemNumber $loopItemNumber\n";
-    // echo "\$item_credit $item_credit\n";
-    // echo "\$item_weight $item_weight\n";
-    // echo "\$credit_for_attempt $credit_for_attempt\n\n";
 }
 
 // Store credit in user_assignment_attempt
@@ -105,125 +101,39 @@ $result = $conn->query($sql);
 
 
 
-//update user_assignment_attempt with new score
-// if ($attemptAggregation == 'm'){
-// //Use Max Item Credit
-// echo "Max Item Credit\n";
-// $sql = "SELECT itemNumber,weight
-//         FROM user_assignment_attempt_item
-//         WHERE userId = '$userId'
-//         AND assignmentId = '$assignmentId'
-//         ORDER BY attemptNumber,itemNumber
-//         ";
-// $result = $conn->query($sql);
-// $weights = array();  //Set to this attempt's weights
-// $credits = array();  //Initialize to zeros
+//**update user_assignment with new score
+if ($attemptAggregation == 'm'){
 
-// while($row = $result->fetch_assoc()){ 
-//     $loopItemNumber = $row['itemNumber'];
-//     $weights[$loopItemNumber] = $row['weight'];
-//     $credits[$loopItemNumber] = 0;
-// }
+//Find maximum credit and maximum creditOverrides on each attempt
+$sql = "SELECT MAX(credit) AS maxCredit,
+        MAX(creditOverride) AS maxCreditOverride
+        FROM user_assignment_attempt
+        WHERE userId = '$userId'
+        AND assignmentId = '$assignmentId'
+";
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
 
+$max_credit_for_assignment = MAX($credit_for_attempt,$row['maxCredit'], $row['maxCreditOverride']);
+$sql = "
+    UPDATE user_assignment
+    SET credit='$max_credit_for_assignment'
+    WHERE userId = '$userId'
+    AND assignmentId = '$assignmentId'
+";
+$result = $conn->query($sql);
 
-// }else if ($attemptAggregation == 'l'){
-// //Use last attempt
-// }else{
-//     echo "Error: attempt aggregation not defined\n";
-// }
+}else if ($attemptAggregation == 'l'){
+    //Use last attempt
+    $sql = "
+    UPDATE user_assignment
+    SET credit='$credit_for_attempt'
+    WHERE userId = '$userId'
+    AND assignmentId = '$assignmentId'
+";
+$result = $conn->query($sql);
+}
 
-//If attemptAggregation = "m"; (char 1 type "m" or "l")
-//Set credit in user_assignment_attempt_item = max credit in table or new param calculated
-//If attemptAggregation = "l"; 
-//Set credit in user_assignment_attempt_item to new param calculated
-
-// if ($attemptAggregation == 'm'){
-// //Find Max Item Credit
-// $sql = "SELECT MAX(credit) AS maxCredit,
-//         MAX(creditOverride) AS maxCreditOverride
-//         FROM user_assignment_attempt_item
-//         WHERE userId = '$userId'
-//         AND assignmentId = '$assignmentId'
-//         AND itemNumber = '$itemNumber'
-// ";
-// $result = $conn->query($sql);
-// $row = $result->fetch_assoc();
-// $maxCredit = $row['maxCredit'];
-// $maxCreditOverride = $row['maxCreditOverride'];
-// $saveItemCredit = MAX($maxCredit,$maxCreditOverride,$credit);
-// }else if ($attemptAggregation == 'l'){
-//     //Use last attempt
-//     $saveItemCredit = $credit;
-// }else{
-//     echo "Error: attempt aggregation not defined\n";
-// }
-
-// $sql = "UPDATE user_assignment_attempt_item
-//         SET credit='$saveItemCredit'
-//         WHERE userId = '$userId'
-//         AND assignmentId = '$assignmentId'
-//         AND attemptNumber = '$attemptNumber'
-//         AND itemNumber = '$itemNumber'
-//         ";
-// $result = $conn->query($sql);
-
-
-
-
-//TODO: *** Calculate credit achieved for user_assignment_attempt
-
-//CreditOveride else credit
-//Weight
-//Sum all attempt credits * weights / sum of weights
-// if ($attemptAggregation == 'm'){
-// //Max credit
-// $sql = "SELECT MAX(credit) AS maxCredit,
-//         MAX(creditOverride) AS maxCreditOverride
-//         FROM user_assignment_attempt_item
-//         WHERE userId = '$userId'
-//         AND assignmentId = '$assignmentId'
-//         AND itemNumber = '$itemNumber'
-// ";
-
-//Use earlier calculation of new credit on the item
-//If attemptAggregation = "m"; 
-//Set credit in user_assignment_attempt = max credit in table or new param calculated
-//If attemptAggregation = "l"; 
-//Set credit in user_assignment_attempt to new param calculated
-// }else if ($attemptAggregation == 'l'){
-//     //Last credit
-//     //Set credit in user_assignment_attempt to new param calculated
-//     }else{
-//         echo "Error: attempt aggregation not defined\n";
-//     }
-
-//TODO: *** Calculate user's score on user_assignment
-//ASSUME "m" for user_assignment
-//No weights
-//max of all attempts 
-//Credit or credit override (undefined vs zero)
-
-
-//   $sql = "INSERT INTO user_assignment_attempt 
-//       (userId,assignmentId,attemptNumber,contentId)
-//       values
-//       ('$userId','$assignmentId','$attemptNumber','$contentId')
-//       ";
-// $result = $conn->query($sql);
-
-//   for ($itemNumber = 1; $itemNumber < count($weights) + 1; $itemNumber++){
-//       echo $itemNumber . "\n";
-//       //Store Item  weights
-//       $weight = $weights[($itemNumber -1)];
-//       $sql = "INSERT INTO user_assignment_attempt_item 
-//       (userId,assignmentId,attemptNumber,itemNumber,weight)
-//       values
-//       ('$userId','$assignmentId','$attemptNumber','$itemNumber','$weight')
-//       ";
-//       echo $sql;
-//     $result = $conn->query($sql);
-
-//   }
 
 
 
