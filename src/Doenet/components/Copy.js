@@ -955,7 +955,7 @@ export default class Copy extends CompositeComponent {
 
       let result = this.state.propChild.validateProp({
         component: targetComponent,
-        standardComponentClasses: this.standardComponentClasses,
+        standardComponentClasses: this.componentInfoObjects.standardComponentClasses,
       })
 
       if (result.success !== true) {
@@ -1018,7 +1018,7 @@ export default class Copy extends CompositeComponent {
       // except that, if it is a composite with at least one replacement
       // we get properties from the class of the first replacement
       let rtForProperties = targetComponent;
-      while (rtForProperties instanceof this.allComponentClasses._composite) {
+      while (rtForProperties instanceof this.componentInfoObjects.allComponentClasses._composite) {
         if (rtForProperties.replacements.length === 0) {
           break;
         }
@@ -1029,16 +1029,16 @@ export default class Copy extends CompositeComponent {
         rtForProperties = rtForProperties.replacements[0];
       }
 
-      if (rtForProperties instanceof this.allComponentClasses.string) {
+      if (rtForProperties instanceof this.componentInfoObjects.allComponentClasses.string) {
         // if string (which doesn't have properties), use base component
-        this.state.availableClassProperties = this.allComponentClasses._base.createPropertiesObject({
-          standardComponentClasses: this.standardComponentClasses
+        this.state.availableClassProperties = this.componentInfoObjects.allComponentClasses._base.createPropertiesObject({
+          standardComponentClasses: this.componentInfoObjects.standardComponentClasses
         });
       } else {
-        let replacementClassForProperties = this.standardComponentClasses[rtForProperties.componentType];
+        let replacementClassForProperties = this.componentInfoObjects.standardComponentClasses[rtForProperties.componentType];
 
         this.state.availableClassProperties = replacementClassForProperties.createPropertiesObject({
-          standardComponentClasses: this.standardComponentClasses
+          standardComponentClasses: this.componentInfoObjects.standardComponentClasses
         });
       }
     }
@@ -1105,24 +1105,24 @@ export default class Copy extends CompositeComponent {
       return;
     }
 
-    let serializedState = serializeFunctions.doenetMLToSerializedState({ doenetML: newDoenetMLs[0], standardComponentClasses: this.standardComponentClasses, allComponentClasses: this.allComponentClasses });
+    let serializedState = serializeFunctions.doenetMLToSerializedState({ doenetML: newDoenetMLs[0], standardComponentClasses: this.componentInfoObjects.standardComponentClasses, allComponentClasses: this.componentInfoObjects.allComponentClasses });
 
     serializedState = serializeFunctions.scrapeOffAllDoumentRelated(serializedState);
 
-    serializeFunctions.createComponentsFromProps(serializedState, this.standardComponentClasses);
+    serializeFunctions.createComponentsFromProps(serializedState, this.componentInfoObjects.standardComponentClasses);
 
     // need to redo to include parentDoenetAttributes
-    serializeFunctions.createComponentNames({ serializedState, componentTypesTakingComponentNames: this.componentTypesTakingComponentNames, allComponentClasses: this.allComponentClasses });
+    serializeFunctions.createComponentNames({ serializedState, componentTypesTakingComponentNames: this.componentInfoObjects.componentTypesTakingComponentNames, allComponentClasses: this.componentInfoObjects.allComponentClasses });
 
-    this.componentNameToPreserializedName(serializedState, this.componentTypesTakingComponentNames);
+    this.componentNameToPreserializedName(serializedState, this.componentInfoObjects.componentTypesTakingComponentNames);
 
     serializeFunctions.gatherVariantComponents({
       serializedState,
-      componentTypesCreatingVariants: this.componentTypesCreatingVariants,
-      allComponentClasses: this.allComponentClasses,
+      componentTypesCreatingVariants: this.componentInfoObjects.componentTypesCreatingVariants,
+      allComponentClasses: this.componentInfoObjects.allComponentClasses,
     });
 
-    this.requestUpdate({
+    this.coreFunctions.requestUpdate({
       updateType: "updateValue",
       updateInstructions: [{
         componentName: this.componentName,

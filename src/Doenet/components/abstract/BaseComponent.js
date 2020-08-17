@@ -10,41 +10,30 @@ export default class BaseComponent {
     definingChildren,
     serializedChildren, childLogic,
     stateVariableDefinitions,
-    standardComponentClasses, allComponentClasses, isInheritedComponentType,
-    componentTypesTakingComponentNames, componentTypesCreatingVariants,
-    shadow, requestUpdate, requestAction, availableRenderers,
-    allRenderComponents, graphRenderComponents,
-    numerics, sharedParameters,
-    requestAnimationFrame, cancelAnimationFrame,
+    componentInfoObjects,
+    coreFunctions,
     externalFunctions,
-    allowSugarForChildren,
     flags,
+    shadow,
+    numerics, sharedParameters,
+    allowSugarForChildren,
   }) {
 
     this.numerics = numerics;
     this.sharedParameters = sharedParameters;
-    this.requestAnimationFrame = requestAnimationFrame;
-    this.cancelAnimationFrame = cancelAnimationFrame;
 
     this.readOnlyProxyHandler = readOnlyProxyHandler;
-    this.availableRenderers = availableRenderers;
-    this.allRenderComponents = allRenderComponents;
-    this.graphRenderComponents = graphRenderComponents;
 
     this.componentName = componentName;
     this.ancestors = ancestors;
 
-    this.standardComponentClasses = standardComponentClasses;
-    this.allComponentClasses = allComponentClasses;
-    this.isInheritedComponentType = isInheritedComponentType;
-    this.componentTypesTakingComponentNames = componentTypesTakingComponentNames;
-    this.componentTypesCreatingVariants = componentTypesCreatingVariants;
-    this.componentIsAProperty = false;
-    this.requestUpdate = requestUpdate;
-    this.requestAction = requestAction;
+    this.componentInfoObjects = componentInfoObjects;
+    this.coreFunctions = coreFunctions;
     this.externalFunctions = externalFunctions;
-    this.allowSugarForChildren = allowSugarForChildren;
     this.flags = flags;
+
+    this.componentIsAProperty = false;
+    this.allowSugarForChildren = allowSugarForChildren;
 
     if (shadow === true) {
       this.isShadow = true;
@@ -112,7 +101,7 @@ export default class BaseComponent {
           componentTypes = [componentTypes]
         }
         for (let componentType of componentTypes) {
-          let componentClass = this.allComponentClasses[componentType];
+          let componentClass = this.componentInfoObjects.allComponentClasses[componentType];
           if (componentClass) {
             let rendererType = componentClass.rendererType;
             if (rendererType && !allPotentialRendererTypes.includes(rendererType)) {
@@ -141,7 +130,7 @@ export default class BaseComponent {
     let potentialRendererTypes = [];
 
     for (let comp of serializedComponents) {
-      let compClass = this.allComponentClasses[comp.componentType];
+      let compClass = this.componentInfoObjects.allComponentClasses[comp.componentType];
       let rendererType = compClass.rendererType;
       if (rendererType && !potentialRendererTypes.includes(rendererType)) {
         potentialRendererTypes.push(rendererType);

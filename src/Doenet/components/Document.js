@@ -11,7 +11,6 @@ export default class Document extends BaseComponent {
 
   static createPropertiesObject() {
     return {
-      title: { default: "", componentType: "text", forRenderer: true },
       feedbackDefinitions: {
         get default() { return returnDefaultFeedbackDefinitions() },
         propagateToDescendants: true,
@@ -36,6 +35,28 @@ export default class Document extends BaseComponent {
       allowSpillover: false,
     })
 
+    let atMostOneVariantControl = childLogic.newLeaf({
+      name: "atMostOneVariantControl",
+      componentType: "variantcontrol",
+      comparison: "atMost",
+      number: 1,
+      allowSpillover: false,
+    })
+
+    let atMostOneTitle = childLogic.newLeaf({
+      name: "atMostOneTitle",
+      componentType: "title",
+      comparison: "atMost",
+      number: 1,
+    })
+
+    let atMostOneDescription = childLogic.newLeaf({
+      name: "atMostOneDescription",
+      componentType: "description",
+      comparison: "atMost",
+      number: 1,
+    })
+
     let anything = childLogic.newLeaf({
       name: 'anything',
       componentType: '_base',
@@ -44,9 +65,9 @@ export default class Document extends BaseComponent {
     });
 
     childLogic.newOperator({
-      name: "metaAndAnything",
+      name: "variantTitleDescriptionMetaAnything",
       operator: "and",
-      propositions: [atMostOneMeta, anything],
+      propositions: [atMostOneVariantControl, atMostOneTitle, atMostOneDescription, atMostOneMeta, anything],
       setAsBase: true,
     })
 
@@ -58,12 +79,89 @@ export default class Document extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+
+    stateVariableDefinitions.titleDefinedByChildren = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        titleChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "atMostOneTitle",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            titleDefinedByChildren: dependencyValues.titleChild.length === 1
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.title = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      returnDependencies: () => ({
+        titleChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneTitle",
+          variableNames: ["text"],
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.titleChild.length === 0) {
+          return { newValues: { title: "" } };
+        } else {
+          return { newValues: { title: dependencyValues.titleChild[0].stateValues.text } };
+        }
+      }
+    }
+
+
+    stateVariableDefinitions.description = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      returnDependencies: () => ({
+        descriptionChild: {
+          dependencyType: "childStateVariables",
+          childLogicName: "atMostOneDescription",
+          variableNames: ["text"],
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.descriptionChild.length === 0) {
+          return { newValues: { description: "" } };
+        } else {
+          return { newValues: { description: dependencyValues.descriptionChild[0].stateValues.text } };
+        }
+      }
+    }
+
     stateVariableDefinitions.level = {
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { level: 0 } })
     }
 
+    stateVariableDefinitions.viewedSolution = {
+      defaultValue: false,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          viewedSolution: { variablesToCheck: ["viewedSolution"] }
+        }
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "viewedSolution",
+            value: desiredStateVariableValues.viewedSolution
+          }]
+        }
+      }
+    }
 
     stateVariableDefinitions.scoredDescendants = {
       returnDependencies: () => ({
@@ -253,7 +351,6 @@ export default class Document extends BaseComponent {
         }
       }),
       definition({ dependencyValues }) {
-        console.log(dependencyValues);
 
         let selectedVariantInfo = {
           index: dependencyValues.variantNumber
@@ -276,6 +373,10 @@ export default class Document extends BaseComponent {
 
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({
+        titleChild: {
+          dependencyType: "childIdentity",
+          childLogicName: "atMostOneTitle"
+        },
         activeChildren: {
           dependencyType: "childIdentity",
           childLogicName: "anything"
@@ -284,45 +385,16 @@ export default class Document extends BaseComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues:
-            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
+          {
+            childrenToRender:
+              [...dependencyValues.titleChild, ...dependencyValues.activeChildren]
+                .map(x => x.componentName)
+          }
         };
       }
     }
 
     return stateVariableDefinitions;
-  }
-
-  updateState(args = {}) {
-    if (args.init) {
- 
-      this.makePublicStateVariableArray({
-        variableName: "keywords",
-        componentType: "keyword",
-        emptyForOutOfBounds: true,
-      });
-
-      this.makePublicStateVariableArrayEntry({
-        entryName: "keyword",
-        arrayVariableName: "keywords"
-      });
-      this.makePublicStateVariableAlias({
-        variableName: "keyword",
-        targetName: "keyword",
-        arrayIndex: 1
-      })
-
-      this.submitResultsCallBack = this.submitResultsCallBack.bind(this);
-      this.submitAllAnswers = this.submitAllAnswers.bind(this);
-
-      // state variable viewedSolution is used only if there is a solution
-      // that isn't inside another scored component
-      if (this._state.viewedSolution === undefined) {
-        this.state.viewedSolution = false;
-      }
-      this._state.viewedSolution.essential = true;
-
-    }
-
   }
 
 
@@ -347,37 +419,6 @@ export default class Document extends BaseComponent {
         answer.submitAnswer();
       }
     }
-  }
-
-  get descendantSearchClasses() {
-    return [{
-      classNames: ["_sectioningcomponent", "answer"],
-      recurseToMatchedChildren: false,
-      key: "scoredComponents",
-      childCondition: child => child.componentType === "answer" || child.state.aggregatescores,
-    },
-      "answer"
-    ];
-  }
-
-  allowDownstreamUpdates(status) {
-    // only allow initial change 
-    return (status.initialChange === true);
-  }
-
-  get variablesUpdatableDownstream() {
-    // only allowed to change these state variables
-    return [
-      "submissionNumber", "submittedAnswerComponentName", "viewedSolution",
-    ];
-  }
-
-  calculateDownstreamChanges({ stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate }) {
-
-    Object.assign(stateVariableChangesToSave, stateVariablesToUpdate);
-
-    return true;
   }
 
 

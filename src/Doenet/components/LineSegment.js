@@ -491,15 +491,38 @@ export default class LineSegment extends GraphicalComponent {
       newComponents["1,1"] = me.fromAst(point2coords[1]);
     }
 
-    this.requestUpdate({
-      updateInstructions: [{
-        componentName: this.componentName,
-        updateType: "updateValue",
-        stateVariable: "endpoints",
-        value: newComponents
-      }],
-      transient
-    });
+    if (transient) {
+
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          componentName: this.componentName,
+          updateType: "updateValue",
+          stateVariable: "endpoints",
+          value: newComponents
+        }],
+        transient
+      });
+    } else {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          componentName: this.componentName,
+          updateType: "updateValue",
+          stateVariable: "endpoints",
+          value: newComponents
+        }],
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            point1: point1coords,
+            point2: point2coords,
+          }
+        }
+      });
+    }
 
   }
 

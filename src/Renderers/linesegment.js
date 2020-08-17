@@ -76,6 +76,10 @@ export default class LineSegment extends DoenetRenderer {
     this.point2JXG.on('up', () => this.onDragHandler(2, false));
     this.lineSegmentJXG.on('up', () => this.onDragHandler(0, false));
 
+    this.point1JXG.on('down', () => this.draggedPoint = null);
+    this.point2JXG.on('down', () => this.draggedPoint = null);
+    this.lineSegmentJXG.on('down', () => this.draggedPoint = null);
+
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
 
     return this.lineSegmentJXG;
@@ -162,6 +166,12 @@ export default class LineSegment extends DoenetRenderer {
   }
 
   onDragHandler(i, transient) {
+
+    if (transient) {
+      this.draggedPoint = i;
+    } else if (this.draggedPoint !== i) {
+      return;
+    }
 
     if (i == 1) {
       this.actions.moveLineSegment({

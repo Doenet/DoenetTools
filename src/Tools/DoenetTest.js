@@ -24,7 +24,7 @@ class DoenetTest extends Component {
         .then(resp => {
           console.log('processAttemptNumber-->>>',resp.data);
           this.attemptNumber = resp.data;
-          this.setState({attemptNumberIsReady:true})
+          this.setState({attemptNumberIsReady:true,requestedVariant:{ index: this.attemptNumber }})
         });
     }else{
       attemptNumberIsReady = true;
@@ -38,6 +38,8 @@ class DoenetTest extends Component {
       readOnly: false,
       ignoreDatabase: false,
       attemptNumberIsReady,
+      requestedVariant:undefined,
+      solutionDisplayMode: "button"
     };
 
     window.onmessage = this.updateAfterMessage;
@@ -73,7 +75,7 @@ class DoenetTest extends Component {
         console.log('processAttemptNumber NEW ATTEMPT-->>>',resp.data);
         this.attemptNumber = resp.data;
       this.updateNumber++; //Need to run core again
-        this.setState({attemptNumberIsReady:true})
+        this.setState({attemptNumberIsReady:true,requestedVariant:{ index: this.attemptNumber }})
       });
   }
 
@@ -100,7 +102,11 @@ class DoenetTest extends Component {
         key={"doenetviewer" + this.updateNumber}
         doenetML={this.state.doenetML}
         // contentId={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
-        flags={{ showCorrectness: this.state.showCorrectness, readOnly: this.state.readOnly }}
+        flags={{
+          showCorrectness: this.state.showCorrectness,
+          readOnly: this.state.readOnly,
+          solutionDisplayMode: this.state.solutionDisplayMode,
+        }}
         attemptNumber={this.attemptNumber}
         assignmentId={this.assignmentId}
         ignoreDatabase={this.state.ignoreDatabase}

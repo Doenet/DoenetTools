@@ -17,7 +17,7 @@ export default class Textinput extends Input {
     Object.defineProperty(this.actions, 'submitAnswer', {
       get: function () {
         if (this.stateValues.answerAncestor !== null) {
-          return () => this.requestAction({
+          return () => this.coreFunctions.requestAction({
             componentName: this.stateValues.answerAncestor.componentName,
             actionName: "submitAnswer"
           })
@@ -219,7 +219,7 @@ export default class Textinput extends Input {
 
   updateImmediateValue({ text }) {
     if (!this.stateValues.disabled) {
-      this.requestUpdate({
+      this.coreFunctions.requestUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -232,7 +232,7 @@ export default class Textinput extends Input {
 
   updateValue() {
     if (!this.stateValues.disabled) {
-      this.requestUpdate({
+      this.coreFunctions.requestUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -252,7 +252,18 @@ export default class Textinput extends Input {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           valueOfStateVariable: "value",
-        }]
+        }],
+        event: {
+          verb: "answered",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            response: this.stateValues.immediateValue,
+            responseText: this.stateValues.immediateValue,
+          }
+        }
       })
 
     }

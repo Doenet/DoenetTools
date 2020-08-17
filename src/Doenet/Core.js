@@ -1,7 +1,6 @@
 import * as ComponentTypes from './ComponentTypes'
 import readOnlyProxyHandler from './ReadOnlyProxyHandler';
 import ParameterStack from './ParameterStack';
-import availableRenderers from './AvailableRenderers';
 import Numerics from './Numerics';
 import MersenneTwister from 'mersenne-twister';
 import me from 'math-expressions';
@@ -37,6 +36,8 @@ export default class Core {
     this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
     this._requestAnimationFrame = this._requestAnimationFrame.bind(this);
     this.cancelAnimationFrame = this.cancelAnimationFrame.bind(this);
+    this.calculateScoredItemNumberOfContainer = this.calculateScoredItemNumberOfContainer.bind(this);
+
     this.expandDoenetMLsToFullSerializedState = this.expandDoenetMLsToFullSerializedState.bind(this);
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
@@ -78,6 +79,14 @@ export default class Core {
       isInheritedComponentType: this.isInheritedComponentType,
       stateVariableInfo: this.stateVariableInfo,
     };
+
+    this.coreFunctions = {
+      requestUpdate: this.requestUpdate,
+      requestAction: this.requestAction,
+      requestAnimationFrame: this.requestAnimationFrame,
+      cancelAnimationFrame: this.cancelAnimationFrame,
+      calculateScoredItemNumberOfContainer: this.calculateScoredItemNumberOfContainer,
+    }
 
     this.animationIDs = {};
     this.lastAnimationID = 0;
@@ -1013,25 +1022,14 @@ export default class Core {
       stateVariableDefinitions,
       serializedChildren: childrenToRemainSerialized,
       serializedState: serializedComponent,
-      standardComponentClasses: this.standardComponentClasses,
-      allComponentClasses: this.allComponentClasses,
-      allPossibleProperties: this.allPossibleProperties,
-      isInheritedComponentType: this.isInheritedComponentType,
-      componentTypesTakingComponentNames: this.componentTypesTakingComponentNames,
-      componentTypesCreatingVariants: this.componentTypesCreatingVariants,
+      componentInfoObjects: this.componentInfoObjects,
+      coreFunctions: this.coreFunctions,
+      externalFunctions: this.externalFunctions,
+      flags: this.flags,
       shadow: shadow,
-      requestUpdate: this.requestUpdate,
-      requestAction: this.requestAction,
-      availableRenderers: availableRenderers,
-      allRenderComponents: this._renderComponentsByName,
-      graphRenderComponents: this._graphRenderComponents,
       numerics: this.numerics,
       sharedParameters: sharedParameters,
-      requestAnimationFrame: this.requestAnimationFrame,
-      cancelAnimationFrame: this.cancelAnimationFrame,
-      externalFunctions: this.externalFunctions,
       allowSugarForChildren: applySugar,
-      flags: this.flags,
     });
 
     this.registerComponent(newComponent);
@@ -5990,6 +5988,24 @@ export default class Core {
       if (dependencyDefinition.variableOptional) {
         newDep.variableOptional = true;
       }
+    } else if (dependencyDefinition.dependencyType === "countAmongSiblingsOfSameType") {
+      if (!component.parentName) {
+        throw Error(`cannot have state variable ${stateVariable} of ${component.componentName} depend on countAmongSiblingsOfSameType when parent isn't defined.`);
+      }
+      newDep.downstreamComponentName = component.parentName;
+      newDep.valuesChanged = { __activeChildren: { changed: true } };
+
+      let depUp = this.upstreamDependencies[component.parentName];
+      if (!depUp) {
+        depUp = this.upstreamDependencies[component.parentName] = {};
+      }
+
+      if (depUp["__activeChildren"] === undefined) {
+        depUp["__activeChildren"] = [];
+      }
+      depUp["__activeChildren"].push(newDep);
+
+
     } else if (dependencyDefinition.dependencyType === "doenetAttribute") {
       newDep.attributeName = dependencyDefinition.attributeName;
     } else if (dependencyDefinition.dependencyType === "flag") {
@@ -6010,7 +6026,7 @@ export default class Core {
     } else if (dependencyDefinition.dependencyType !== "serializedChildren"
       && dependencyDefinition.dependencyType !== "variants"
     ) {
-      throw Error(`Unrecognized dependency type ${dependencyDefinition.dependencyType}`);
+      throw Error(`Unrecognized dependency type ${dependencyDefinition.dependencyType} for ${dependencyName} of ${component.componentName}`);
     }
 
     newStateVariableDependencies[dependencyName] = newDep;
@@ -7122,6 +7138,18 @@ export default class Core {
           changes[dep.dependencyName] = { valuesChanged: dep.valuesChanged };
           delete dep.valuesChanged;
         }
+      } else if (dep.dependencyType === "countAmongSiblingsOfSameType") {
+
+        let childComponentType = this.components[dep.upstreamComponentName].componentType;
+        let childrenOfSameType = this.components[dep.downstreamComponentName].activeChildren
+          .filter(x => x.componentType === childComponentType);
+        value = childrenOfSameType.map(x => x.componentName).indexOf(dep.upstreamComponentName) + 1;
+
+        if (dep.valuesChanged && dep.valuesChanged.__activeChildren.changed) {
+          changes[dep.dependencyName] = { valuesChanged: dep.valuesChanged };
+          delete dep.valuesChanged;
+        }
+
       } else if (dep.dependencyType === "doenetAttribute") {
         value = component.doenetAttributes[dep.attributeName];
       } else if (dep.dependencyType === "flag") {
@@ -8164,6 +8192,21 @@ export default class Core {
     }
 
     let componentName = component.componentName;
+
+    if (this.upstreamDependencies[componentName].__activeChildren) {
+
+      this.markUpstreamDependentsStale({
+        component,
+        varName: "__activeChildren",
+        updatesNeeded,
+      })
+
+      this.recordActualChangeInUpstreamDependencies({
+        component,
+        varName: "__activeChildren",
+        updatesNeeded
+      })
+    }
 
     if (componentName in this.downstreamDependencies) {
       // only need to change child dependencies if the component already has dependencies
@@ -9912,7 +9955,11 @@ export default class Core {
 
     let upstream = this.upstreamDependencies[componentName][varName];
 
-    let freshnessInfo = component.state[varName].freshnessInfo;
+    let freshnessInfo;
+    
+    if(component.state[varName]) {
+      freshnessInfo = component.state[varName].freshnessInfo;
+    }
 
     if (upstream) {
       for (let upDep of upstream) {
@@ -9987,6 +10034,17 @@ export default class Core {
               upDep.valuesChanged[upDep.originalDownstreamVariableName].freshnessInfo
                 = new Proxy(freshnessInfo, readOnlyProxyHandler);
             }
+
+            foundVarChange = true;
+
+          } else if(varName === "__activeChildren") {
+            // for __activeChildren, we just mark upDep as changed
+
+            if (!upDep.valuesChanged) {
+              upDep.valuesChanged = { "__activeChildren": {} };
+            }
+
+            upDep.valuesChanged.__activeChildren.potentialChange = true;
 
             foundVarChange = true;
 
@@ -11668,7 +11726,7 @@ export default class Core {
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
   }
 
-  requestUpdate({ updateInstructions, transient = false }) {
+  requestUpdate({ updateInstructions, transient = false, event }) {
 
     if (this.flags.readOnly) {
 
@@ -11792,6 +11850,21 @@ export default class Core {
     // evalute itemCreditAchieved so that will be fresh
     // and can detect changes when it is marked stale
     this.document.stateValues.itemCreditAchieved;
+
+    if(event && this.externalFunctions.recordEvent) {
+
+      event.object.documentTitle = this.document.stateValues.title;
+      event.timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+      if(!event.result) {
+        event.result = {};
+      }
+      if(!event.context) {
+        event.context = {};
+      }
+
+      this.externalFunctions.recordEvent(event);
+    }
 
     return { success: true };
   }
@@ -12437,12 +12510,12 @@ export default class Core {
       });
       alert(errorMessage);
 
-      this.requestUpdate({
+      this.coreFunctions.requestUpdate({
         updateType: "updateRendererOnly",
       });
     } else if (results.viewedSolution) {
       console.log(`******** Viewed solution for ${scoredComponent.componentName}`);
-      this.requestUpdate({
+      this.coreFunctions.requestUpdate({
         updateType: "updateValue",
         updateInstructions: [{
           componentName: scoredComponent.componentName,
@@ -12526,6 +12599,39 @@ export default class Core {
 
   }
 
+  calculateScoredItemNumberOfContainer(componentName) {
+
+    let component = this._components[componentName];
+    let ancestorNames = [
+      ...component.ancestors.slice(0, -1).reverse().map(x => x.componentName),
+      componentName
+    ];
+    let scoredComponent;
+    let scoredItemNumber;
+    for (let [index, scored] of this.document.stateValues.scoredDescendants.entries()) {
+      for (let ancestorName of ancestorNames) {
+        if (scored.componentName === ancestorName) {
+          scoredComponent = ancestorName;
+          scoredItemNumber = index + 1;
+          break;
+        }
+      }
+      if (scoredComponent !== undefined) {
+        break;
+      }
+    }
+
+    // if component wasn't inside a scoredComponent and isn't a scoredComponent itself
+    // then let the scoredComponent be the document itself
+    if (scoredComponent === undefined) {
+      scoredComponent = this.document.componentName;
+      scoredItemNumber = this.document.stateValues.scoredDescendants.length;
+    }
+
+    return { scoredItemNumber, scoredComponent };
+  }
+
+
   get doenetState() {
     return this._renderComponents;
   }
@@ -12587,7 +12693,7 @@ export default class Core {
   componentWillUnmount() {
     this.preventMoreAnimations = true;
     for (let id in this.animationIDs) {
-      this.cancelAnimationFrame(id);
+      this.coreFunctions.cancelAnimationFrame(id);
     }
     this.animationIDs = {};
   }
