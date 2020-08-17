@@ -39,6 +39,7 @@ class DoenetTest extends Component {
       ignoreDatabase: false,
       attemptNumberIsReady,
       requestedVariant:undefined,
+      solutionDisplayMode: "button"
     };
 
     window.onmessage = this.updateAfterMessage;
@@ -101,7 +102,11 @@ class DoenetTest extends Component {
         key={"doenetviewer" + this.updateNumber}
         doenetML={this.state.doenetML}
         // contentId={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
-        flags={{ showCorrectness: this.state.showCorrectness, readOnly: this.state.readOnly }}
+        flags={{
+          showCorrectness: this.state.showCorrectness,
+          readOnly: this.state.readOnly,
+          solutionDisplayMode: this.state.solutionDisplayMode,
+        }}
         attemptNumber={this.attemptNumber}
         assignmentId={this.assignmentId}
         ignoreDatabase={this.state.ignoreDatabase}

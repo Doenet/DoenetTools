@@ -331,15 +331,20 @@ export default class Answer extends InlineComponent {
 
     }
 
-    let atLeastOneChoice = childLogic.newLeaf({
-      name: "atLeastOneChoice",
-      componentType: 'choice',
-      comparison: 'atLeast',
-      number: 1,
-      isSugar: true,
-      logicToWaitOnSugar: ["anyInlineComponents"],
-      replacementFunction: replaceFromJustChoices,
-    });
+    // TODO: removing this option for now,
+    // as it lets sugar change the variant structure
+    // Possible solutions: have variants determined
+    // after components are constructed rather than with serialized state?
+
+    // let atLeastOneChoice = childLogic.newLeaf({
+    //   name: "atLeastOneChoice",
+    //   componentType: 'choice',
+    //   comparison: 'atLeast',
+    //   number: 1,
+    //   isSugar: true,
+    //   logicToWaitOnSugar: ["anyInlineComponents"],
+    //   replacementFunction: replaceFromJustChoices,
+    // });
 
 
     let replaceFromIncompleteAwards = function ({ activeChildrenMatched, dependencyValues, parentName, childLogicName }) {
@@ -574,7 +579,7 @@ export default class Answer extends InlineComponent {
         exactlyOneString,
         exactlyOneMath,
         exactlyOneText,
-        atLeastOneChoice,
+        // atLeastOneChoice,
       ],
       setAsBase: true,
     });
@@ -1182,15 +1187,38 @@ export default class Answer extends InlineComponent {
       });
     }
 
-    this.requestUpdate({
-      updateInstructions: instructions
+    let responseText = [];
+    for(let response of this.stateValues.currentResponses) {
+      if(response.toString) {
+        responseText.push(response.toString())
+      } else {
+        responseText.push(response)
+      }
+    }
+
+    this.coreFunctions.requestUpdate({
+      updateInstructions: instructions,
+      event: {
+        verb: "submitted",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+          scoredItemNumber: this.coreFunctions.calculateScoredItemNumberOfContainer(this.componentName).scoredItemNumber
+        },
+        result: {
+          response: this.stateValues.currentResponses,
+          responseText,
+          credit: creditAchieved
+        }
+        
+      }
     })
 
     // let documentComponentName = this.ancestors[this.ancestors.length - 1].componentName;
 
     // // NOTE: if change this so don't have a request update with just document
     // // need to change code that triggers an immediate at the end of requestUpdate in core
-    // this.requestUpdate({
+    // this.coreFunctions.requestUpdate({
     //   updateType: "updateValue",
     //   updateInstructions: [{
     //     componentName: documentComponentName,

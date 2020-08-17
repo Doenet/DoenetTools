@@ -100,7 +100,6 @@ import Row from './components/Row';
 import Column from './components/Column';
 import Cellblock from './components/Cellblock';
 import Table from './components/Table';
-import Problem from './components/Problem';
 import Variants from './components/Variants';
 import Seeds from './components/Seeds';
 import VariantControl from './components/VariantControl';
@@ -152,6 +151,7 @@ import TextFromSingleStringChild from './components/abstract/TextFromSingleStrin
 import MathWithVariable from './components/abstract/MathWithVariable';
 import NumberBaseOperatorOrNumber from './components/abstract/NumberBaseOperatorOrNumber';
 import InlineRenderInlineChildren from './components/abstract/InlineRenderInlineChildren';
+import TextOrInline from './components/abstract/TextOrInline';
 
 
 const componentTypeArray = [
@@ -230,7 +230,6 @@ const componentTypeArray = [
   ConstrainToAngles, AttractToAngles,
   ConditionalContent,
   AsList,
-  Problem,
   Seeds, Variants, VariantControl,
   SelectFromSequence, Select,
   Group,
@@ -281,6 +280,7 @@ const componentTypeArrayExtended = [
   MathWithVariable,
   NumberBaseOperatorOrNumber,
   InlineRenderInlineChildren,
+  TextOrInline,
 ];
 
 export function standardComponentClasses() {

@@ -1218,15 +1218,36 @@ export default class Line extends GraphicalComponent {
       "1,1": me.fromAst(point2coords[1]),
     }
 
-    this.requestUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "points",
-        value: desiredPoints
-      }],
-      transient
-    });
+    if (transient) {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "points",
+          value: desiredPoints
+        }],
+        transient
+      });
+    } else {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "points",
+          value: desiredPoints
+        }],
+        event: {
+          verb: "interacted",
+          object: {
+            componentId: this.componentName,
+          },
+          result: {
+            point1: point1coords,
+            point2: point2coords,
+          }
+        }
+      });
+    }
 
   }
 
