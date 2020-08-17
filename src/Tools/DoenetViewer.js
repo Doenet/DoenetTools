@@ -392,6 +392,7 @@ class DoenetViewer extends Component {
       assignmentId: this.assignmentId,
       contentId: this.contentId,
       attemptNumber: this.attemptNumber,
+      variant: JSON.stringify(this.resultingVariant, serializedStateReplacer),
       verb: event.verb,
       object: JSON.stringify(event.object, serializedStateReplacer),
       result: JSON.stringify(event.result, serializedStateReplacer),

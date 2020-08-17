@@ -213,7 +213,7 @@ CREATE TABLE `content_interactions` (
   `interactionSource` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=227 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -222,7 +222,7 @@ CREATE TABLE `content_interactions` (
 
 LOCK TABLES `content_interactions` WRITE;
 /*!40000 ALTER TABLE `content_interactions` DISABLE KEYS */;
-INSERT INTO `content_interactions` VALUES (18,'aaaaaaaaaaaaaaaaaaaa1','Maple','4P7WK6V4HvxS9fIT8IY4i','268edfaf6999ea0182e6ac360854c7d739e35eccbb6384dd193b301de845b707',NULL,'',1,NULL,'2020-08-09 04:04:51'),(19,'aaaaaaaaaaaaaaaaaaaa1','Maple','4P7WK6V4HvxS9fIT8IY4i','268edfaf6999ea0182e6ac360854c7d739e35eccbb6384dd193b301de845b707',NULL,'',2,NULL,'2020-08-09 04:04:51');
+INSERT INTO `content_interactions` VALUES (18,'aaaaaaaaaaaaaaaaaaaa1','Maple','4P7WK6V4HvxS9fIT8IY4i','268edfaf6999ea0182e6ac360854c7d739e35eccbb6384dd193b301de845b707',NULL,'',1,NULL,'2020-08-09 04:04:51'),(19,'aaaaaaaaaaaaaaaaaaaa1','Maple','4P7WK6V4HvxS9fIT8IY4i','268edfaf6999ea0182e6ac360854c7d739e35eccbb6384dd193b301de845b707',NULL,'',2,NULL,'2020-08-09 04:04:51'),(20,'4VYp5dOrVWGz0OKB2hkLW','Cacao tree','myassignmentid','7e1a6a3c502b852e250892930e6cae998784537d6a76bbd0cacda135b150d238',_binary '{\"__mathinput_NlM5FvW-dL\":{\"value\":{\"objectType\":\"math-expression\",\"tree\":10},\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":10}}}','{\"index\":1,\"subvariants\":[{\"index\":4,\"subvariants\":[{\"indices\":[8]}]},{\"indices\":[1,2,3,4,0],\"subvariants\":[]}]}',1,NULL,'2020-08-17 22:34:06'),(21,'4VYp5dOrVWGz0OKB2hkLW','Cacao tree','myassignmentid','7e1a6a3c502b852e250892930e6cae998784537d6a76bbd0cacda135b150d238',_binary '{\"__mathinput_NlM5FvW-dL\":{\"value\":{\"objectType\":\"math-expression\",\"tree\":10},\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":10},\"creditAchieved\":1},\"/_answer1\":{\"creditAchieved\":1,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":1,\"submittedResponses\":{\"0\":{\"objectType\":\"math-expression\",\"tree\":10},\"mergeObject\":true},\"creditAchievedDependenciesAtSubmit\":{\"__mathinput_NlM5FvW-dL\":{\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":10},\"value\":{\"objectType\":\"math-expression\",\"tree\":10}}}},\"__award_YT-Z7CzTdu\":{\"awarded\":true}}','{\"index\":1,\"subvariants\":[{\"index\":4,\"subvariants\":[{\"indices\":[8]}]},{\"indices\":[1,2,3,4,0],\"subvariants\":[]}]}',1,NULL,'2020-08-17 22:34:06'),(22,'4VYp5dOrVWGz0OKB2hkLW','Cacao tree','myassignmentid','7e1a6a3c502b852e250892930e6cae998784537d6a76bbd0cacda135b150d238',_binary '{\"__mathinput_NlM5FvW-dL\":{\"value\":{\"objectType\":\"math-expression\",\"tree\":10},\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":10},\"creditAchieved\":1},\"/_answer1\":{\"creditAchieved\":1,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":1,\"submittedResponses\":{\"0\":{\"objectType\":\"math-expression\",\"tree\":10},\"mergeObject\":true},\"creditAchievedDependenciesAtSubmit\":{\"__mathinput_NlM5FvW-dL\":{\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":10},\"value\":{\"objectType\":\"math-expression\",\"tree\":10}}}},\"__award_YT-Z7CzTdu\":{\"awarded\":true},\"/_choice1\":{\"selected\":true}}','{\"index\":1,\"subvariants\":[{\"index\":4,\"subvariants\":[{\"indices\":[8]}]},{\"indices\":[1,2,3,4,0],\"subvariants\":[]}]}',1,NULL,'2020-08-17 22:34:09'),(23,'4VYp5dOrVWGz0OKB2hkLW','Cacao tree','myassignmentid','7e1a6a3c502b852e250892930e6cae998784537d6a76bbd0cacda135b150d238',_binary '{\"__mathinput_NlM5FvW-dL\":{\"value\":{\"objectType\":\"math-expression\",\"tree\":10},\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":10},\"creditAchieved\":1},\"/_answer1\":{\"creditAchieved\":1,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":1,\"submittedResponses\":{\"0\":{\"objectType\":\"math-expression\",\"tree\":10},\"mergeObject\":true},\"creditAchievedDependenciesAtSubmit\":{\"__mathinput_NlM5FvW-dL\":{\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":10},\"value\":{\"objectType\":\"math-expression\",\"tree\":10}}}},\"__award_YT-Z7CzTdu\":{\"awarded\":true},\"/_choice1\":{\"selected\":true,\"submitted\":true},\"/_answer2\":{\"creditAchieved\":0,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":1,\"submittedResponses\":{\"0\":\"0\",\"mergeObject\":true},\"creditAchievedDependenciesAtSubmit\":{\"/_choice1\":{\"selected\":true}}},\"/_choiceinput1\":{\"creditAchieved\":0},\"/_choice5\":{\"submitted\":false},\"/_choice4\":{\"submitted\":false},\"/_choice3\":{\"submitted\":false},\"/_choice2\":{\"submitted\":false}}','{\"index\":1,\"subvariants\":[{\"index\":4,\"subvariants\":[{\"indices\":[8]}]},{\"indices\":[1,2,3,4,0],\"subvariants\":[]}]}',1,NULL,'2020-08-17 22:34:09'),(24,'4VYp5dOrVWGz0OKB2hkLW','Cacao tree','myassignmentid','7e1a6a3c502b852e250892930e6cae998784537d6a76bbd0cacda135b150d238',_binary '{\"__mathinput_NlM5FvW-dL\":{\"value\":{\"objectType\":\"math-expression\",\"tree\":2},\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":2}}}','{\"index\":2,\"subvariants\":[{\"index\":6,\"subvariants\":[{\"indices\":[0]}]},{\"indices\":[2,3,4,0,1],\"subvariants\":[]}]}',2,NULL,'2020-08-17 22:34:30'),(25,'4VYp5dOrVWGz0OKB2hkLW','Cacao tree','myassignmentid','7e1a6a3c502b852e250892930e6cae998784537d6a76bbd0cacda135b150d238',_binary '{\"__mathinput_NlM5FvW-dL\":{\"value\":{\"objectType\":\"math-expression\",\"tree\":2},\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":2},\"creditAchieved\":1},\"/_answer1\":{\"creditAchieved\":1,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":1,\"submittedResponses\":{\"0\":{\"objectType\":\"math-expression\",\"tree\":2},\"mergeObject\":true},\"creditAchievedDependenciesAtSubmit\":{\"__mathinput_NlM5FvW-dL\":{\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":2},\"value\":{\"objectType\":\"math-expression\",\"tree\":2}}}},\"__award_YT-Z7CzTdu\":{\"awarded\":true}}','{\"index\":2,\"subvariants\":[{\"index\":6,\"subvariants\":[{\"indices\":[0]}]},{\"indices\":[2,3,4,0,1],\"subvariants\":[]}]}',2,NULL,'2020-08-17 22:34:30'),(26,'4VYp5dOrVWGz0OKB2hkLW','Cacao tree','myassignmentid','7e1a6a3c502b852e250892930e6cae998784537d6a76bbd0cacda135b150d238',_binary '{\"__mathinput_NlM5FvW-dL\":{\"value\":{\"objectType\":\"math-expression\",\"tree\":2},\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":2},\"creditAchieved\":1},\"/_answer1\":{\"creditAchieved\":1,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":1,\"submittedResponses\":{\"0\":{\"objectType\":\"math-expression\",\"tree\":2},\"mergeObject\":true},\"creditAchievedDependenciesAtSubmit\":{\"__mathinput_NlM5FvW-dL\":{\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":2},\"value\":{\"objectType\":\"math-expression\",\"tree\":2}}}},\"__award_YT-Z7CzTdu\":{\"awarded\":true},\"/_choice3\":{\"selected\":true}}','{\"index\":2,\"subvariants\":[{\"index\":6,\"subvariants\":[{\"indices\":[0]}]},{\"indices\":[2,3,4,0,1],\"subvariants\":[]}]}',2,NULL,'2020-08-17 22:34:32'),(27,'4VYp5dOrVWGz0OKB2hkLW','Cacao tree','myassignmentid','7e1a6a3c502b852e250892930e6cae998784537d6a76bbd0cacda135b150d238',_binary '{\"__mathinput_NlM5FvW-dL\":{\"value\":{\"objectType\":\"math-expression\",\"tree\":2},\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":2},\"creditAchieved\":1},\"/_answer1\":{\"creditAchieved\":1,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":1,\"submittedResponses\":{\"0\":{\"objectType\":\"math-expression\",\"tree\":2},\"mergeObject\":true},\"creditAchievedDependenciesAtSubmit\":{\"__mathinput_NlM5FvW-dL\":{\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":2},\"value\":{\"objectType\":\"math-expression\",\"tree\":2}}}},\"__award_YT-Z7CzTdu\":{\"awarded\":true},\"/_choice3\":{\"selected\":true,\"submitted\":true},\"/_answer2\":{\"creditAchieved\":1,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":1,\"submittedResponses\":{\"0\":\"2\",\"mergeObject\":true},\"creditAchievedDependenciesAtSubmit\":{\"/_choice3\":{\"selected\":true}}},\"/_choiceinput1\":{\"creditAchieved\":1},\"/_choice2\":{\"submitted\":false},\"/_choice1\":{\"submitted\":false},\"/_choice5\":{\"submitted\":false},\"/_choice4\":{\"submitted\":false}}','{\"index\":2,\"subvariants\":[{\"index\":6,\"subvariants\":[{\"indices\":[0]}]},{\"indices\":[2,3,4,0,1],\"subvariants\":[]}]}',2,NULL,'2020-08-17 22:34:32');
 /*!40000 ALTER TABLE `content_interactions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -449,6 +449,41 @@ CREATE TABLE `course_section_instructor` (
 LOCK TABLES `course_section_instructor` WRITE;
 /*!40000 ALTER TABLE `course_section_instructor` DISABLE KEYS */;
 /*!40000 ALTER TABLE `course_section_instructor` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `event`
+--
+
+DROP TABLE IF EXISTS `event`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `event` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
+  `verb` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL,
+  `assignmentId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `attemptNumber` int(11) DEFAULT NULL,
+  `variant` text COLLATE utf8_unicode_ci NOT NULL,
+  `object` mediumblob,
+  `context` mediumblob,
+  `result` mediumblob,
+  `timestamp` timestamp NULL DEFAULT NULL,
+  `timestored` timestamp NULL DEFAULT NULL,
+  `version` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `event`
+--
+
+LOCK TABLES `event` WRITE;
+/*!40000 ALTER TABLE `event` DISABLE KEYS */;
+/*!40000 ALTER TABLE `event` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -721,7 +756,7 @@ CREATE TABLE `user_assignment` (
 
 LOCK TABLES `user_assignment` WRITE;
 /*!40000 ALTER TABLE `user_assignment` DISABLE KEYS */;
-INSERT INTO `user_assignment` VALUES (1,'4P7WK6V4HvxS9fIT8IY4i','aaaaaaaaaaaaaaaaaaaa1','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL),(4,'myassignmentid','4VYp5dOrVWGz0OKB2hkLW','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL);
+INSERT INTO `user_assignment` VALUES (1,'4P7WK6V4HvxS9fIT8IY4i','aaaaaaaaaaaaaaaaaaaa1','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL),(4,'myassignmentid','4VYp5dOrVWGz0OKB2hkLW','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,NULL);
 /*!40000 ALTER TABLE `user_assignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -747,7 +782,7 @@ CREATE TABLE `user_assignment_attempt` (
   `finished` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username_assignmentId_attemptNumber` (`username`,`assignmentId`,`attemptNumber`)
-) ENGINE=InnoDB AUTO_INCREMENT=597 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -782,7 +817,7 @@ CREATE TABLE `user_assignment_attempt_item` (
   `viewedSolutionDate` datetime DEFAULT NULL COMMENT 'Datetime when they first viewed the solution',
   PRIMARY KEY (`id`),
   KEY `userId` (`userId`,`assignmentId`,`attemptNumber`,`itemNumber`)
-) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1000,4 +1035,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-08-17 16:08:35
+-- Dump completed on 2020-08-17 22:36:02

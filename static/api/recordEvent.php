@@ -22,11 +22,12 @@ $object =  mysqli_real_escape_string($conn,$_POST["object"]);
 $result =  mysqli_real_escape_string($conn,$_POST["result"]);
 $context =  mysqli_real_escape_string($conn,$_POST["context"]);
 $version =  mysqli_real_escape_string($conn,$_POST["version"]);
+$variant =  mysqli_real_escape_string($conn,$_POST["variant"]);
 $timestamp =  mysqli_real_escape_string($conn,$_POST["timestamp"]);
 
 
-$sql = "INSERT INTO event (agent,deviceName,assignmentId,contentId,attemptNumber,verb,object,result,context,version,timestamp,timestored)
-VALUES ('$userId','$device','$assignmentId','$contentId','$attemptNumber','$verb','$object','$result','$context','$version','$timestamp',NOW())";
+$sql = "INSERT INTO event (userId,deviceName,assignmentId,contentId,attemptNumber,variant,verb,object,result,context,version,timestamp,timestored)
+VALUES ('$userId','$device','$assignmentId','$contentId','$attemptNumber','$variant','$verb','$object','$result','$context','$version','$timestamp',NOW())";
 
 $result = $conn->query($sql);
 
