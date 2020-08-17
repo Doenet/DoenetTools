@@ -24,8 +24,10 @@ $weights = array_map(function($item) use($conn) {
   // var_dump($_POST);
 
   //TODO: Test if weights dynamically changed then store updates
+
+
   $sql = "SELECT userId
-          FROM  user_assignment_attempt
+          FROM  user_assignment_attempt_item
           WHERE userId = '$userId'
           AND assignmentId = '$assignmentId'
           AND attemptNumber = '$attemptNumber'
@@ -36,10 +38,11 @@ $result = $conn->query($sql);
 if ($result->num_rows < 1){
 
 
-  $sql = "INSERT INTO user_assignment_attempt 
-      (userId,assignmentId,attemptNumber,contentId)
-      values
-      ('$userId','$assignmentId','$attemptNumber','$contentId')
+  $sql = "UPDATE user_assignment_attempt 
+      SET contentId='$contentId'
+      WHERE userId = '$userId'
+      AND assignmentId = '$assignmentId'
+      AND attemptNumber = '$attemptNumber'
       ";
 $result = $conn->query($sql);
 

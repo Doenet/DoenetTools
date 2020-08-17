@@ -130,6 +130,7 @@ console.log("stateVariables",stateVariables)
         assignmentId: this.assignmentId,
         attemptNumber: this.attemptNumber
       }
+      console.log("core ready payload:",payload)
       axios.post('/api/saveAssignmentWeights.php', payload)
         .then(resp => {
           console.log('saveAssignmentWeights-->>',resp.data);
