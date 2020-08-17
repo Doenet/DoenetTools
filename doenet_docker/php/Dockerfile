@@ -34,4 +34,6 @@ WORKDIR /usr/local/apache2/htdocs/api/
 COPY composer.json /composer.json
 RUN cd / && composer install
 
+RUN composer require firebase/php-jwt
+
 EXPOSE 9000
