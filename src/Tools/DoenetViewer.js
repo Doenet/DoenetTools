@@ -67,7 +67,7 @@ class DoenetViewer extends Component {
   
 
   createCore({ stateVariables, variant }) {
-
+console.log("stateVariables",stateVariables)
     this.cumulativeStateVariableChanges = JSON.parse(stateVariables, serializedStateReviver)
 
     // if loaded variant from database,
@@ -130,6 +130,7 @@ class DoenetViewer extends Component {
         assignmentId: this.assignmentId,
         attemptNumber: this.attemptNumber
       }
+      console.log("core ready payload:",payload)
       axios.post('/api/saveAssignmentWeights.php', payload)
         .then(resp => {
           console.log('saveAssignmentWeights-->>',resp.data);
@@ -271,6 +272,7 @@ class DoenetViewer extends Component {
 
     axios.get(phpUrl, payload)
       .then(resp => {
+        console.log("load ci",resp.data)
         if (callback) {
           callback({
             stateVariables: resp.data.stateVariables,
@@ -327,12 +329,12 @@ class DoenetViewer extends Component {
       }
       axios.post('/api/saveCreditForItem.php', payload)
         .then(resp => {
-          console.log('saveCreditForItem-->>>',resp.data);
+          // console.log('saveCreditForItem-->>>',resp.data);
       
         });
     }
 
-    callBack("hello");
+    callBack("submitResponse callback parameter");
   }
 
   render() {
