@@ -9,11 +9,7 @@ include "db_connection.php";
 
 $potentialRoles = ["roleStudent", "roleInstructor", "roleCourseDesigner", "roleWatchdog", "roleCommunityTA", "roleLiveDataCommunity"];
 
-<<<<<<< HEAD
-$sql = "SELECT username, email, accessAllowed, adminAccessAllowed, studentId, lastName, firstName, profilePicture, bio, trackingConsent, roleStudent, roleInstructor, roleCourseDesigner, roleWatchdog, roleCommunityTA, roleLiveDataCommunity
-=======
 $sql = "SELECT username, email, accessAllowed, adminAccessAllowed, studentId, lastName, firstName, profilePicture, trackingConsent, roleStudent, roleInstructor, roleCourseDesigner, roleWatchdog, roleCommunityTA, roleLiveDataCommunity
->>>>>>> 6f992728a5868febd5f9fb4ebb8c506e442c0610
         FROM user
         WHERE username = '$remoteuser'";
 
