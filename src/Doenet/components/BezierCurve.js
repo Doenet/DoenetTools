@@ -731,8 +731,7 @@ export default class BezierCurve extends Curve {
               success: true,
               instructions: [{
                 setStateVariable: "vectorControlDirections",
-                value: desiredStateVariableValues.vectorControlDirections[arrayKey],
-                arrayKey: arrayKey,
+                value: { [arrayKey]: desiredStateVariableValues.vectorControlDirections[arrayKey] },
               }]
             };
           }
@@ -3119,7 +3118,7 @@ export default class BezierCurve extends Curve {
   }
 
   moveControlVector({ controlVector, controlVectorInds }) {
-    this.requestUpdate({
+    this.coreFunctions.requestUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -3131,7 +3130,7 @@ export default class BezierCurve extends Curve {
   }
 
   moveThroughPoint({ throughPoint, throughPointInd }) {
-    this.requestUpdate({
+    this.coreFunctions.requestUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -3143,7 +3142,7 @@ export default class BezierCurve extends Curve {
   }
 
   changeVectorControlDirection({ direction, throughPointInd }) {
-    this.requestUpdate({
+    this.coreFunctions.requestUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,

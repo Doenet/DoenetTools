@@ -353,7 +353,7 @@ function evaluateLogic({ dependencyValues, usedDefault }) {
 
   // evaluate logic in parsedExpression and return fraction correct
 
-  if (dependencyValues.parsedExpression === undefined) {
+  if (dependencyValues.parsedExpression === null) {
     // if don't have parsed expression
     // (which could occur if have no children or if have invalid form)
     // return false

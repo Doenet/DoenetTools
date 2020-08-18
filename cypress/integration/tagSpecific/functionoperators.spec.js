@@ -8,6 +8,7 @@ function cesc(s) {
   }
   return s;
 }
+
 describe('Function Operator Tag Tests', function () {
 
   beforeEach(() => {
@@ -62,38 +63,38 @@ describe('Function Operator Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let map1Replacements = components["/_map1"].replacements;
-      let map1ReplacementAnchors = map1Replacements.map(x => '#' + x.componentName)
+      let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
       let map2Replacements = components["/_map2"].replacements;
-      let map2ReplacementAnchors = map2Replacements.map(x => '#' + x.componentName)
+      let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
       let map3Replacements = components["/_map3"].replacements;
-      let map3ReplacementAnchors = map3Replacements.map(x => '#' + x.componentName)
+      let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
       let map4Replacements = components["/m4"].replacements[0].replacements;
-      let map4ReplacementAnchors = map4Replacements.map(x => '#' + x.componentName)
+      let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
       let map5Replacements = components["/m5"].replacements[0].replacements;
-      let map5ReplacementAnchors = map5Replacements.map(x => '#' + x.componentName)
+      let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
 
       let clamp01 = x => Math.min(1, Math.max(0, x));
       let clampn35 = x => Math.min(5, Math.max(-3, x));
       let indToVal = ind => me.math.round((0.2 * (ind - 11)) ** 3, 8);
 
       for (let i = 1; i <= 21; i++) {
-        cy.get(cesc(map1ReplacementAnchors[i - 1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(map1ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim().replace('−', '-')).equal(indToVal(i).toString())
         });
 
-        cy.get(cesc(map2ReplacementAnchors[i - 1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(map2ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim().replace('−', '-')).equal(clamp01(indToVal(i)).toString())
         });
 
-        cy.get(cesc(map3ReplacementAnchors[i - 1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(map3ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim().replace('−', '-')).equal(clampn35(indToVal(i)).toString())
         });
 
-        cy.get(cesc(map4ReplacementAnchors[i - 1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(map4ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim().replace('−', '-')).equal(clamp01(indToVal(i)).toString())
         });
 
-        cy.get(cesc(map5ReplacementAnchors[i - 1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(map5ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim().replace('−', '-')).equal(clampn35(indToVal(i)).toString())
         });
       }
@@ -158,38 +159,38 @@ describe('Function Operator Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let map1Replacements = components["/_map1"].replacements;
-      let map1ReplacementAnchors = map1Replacements.map(x => '#' + x.componentName)
+      let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
       let map2Replacements = components["/_map2"].replacements;
-      let map2ReplacementAnchors = map2Replacements.map(x => '#' + x.componentName)
+      let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
       let map3Replacements = components["/_map3"].replacements;
-      let map3ReplacementAnchors = map3Replacements.map(x => '#' + x.componentName)
+      let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
       let map4Replacements = components["/m4"].replacements[0].replacements;
-      let map4ReplacementAnchors = map4Replacements.map(x => '#' + x.componentName)
+      let map4ReplacementAnchors = map4Replacements.map(x => cesc('#' + x.componentName))
       let map5Replacements = components["/m5"].replacements[0].replacements;
-      let map5ReplacementAnchors = map5Replacements.map(x => '#' + x.componentName)
+      let map5ReplacementAnchors = map5Replacements.map(x => cesc('#' + x.componentName))
 
       let wrap01 = x => me.math.round(me.math.mod(x, 1), 8);
       let wrapn23 = x => me.math.round(-2 + me.math.mod(x + 2, 5), 8);
       let indToVal = ind => me.math.round((0.2 * (ind - 11)) ** 3, 8);
 
       for (let i = 1; i <= 21; i++) {
-        cy.get(cesc(map1ReplacementAnchors[i - 1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(map1ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim().replace('−', '-')).equal(indToVal(i).toString())
         });
 
-        cy.get(cesc(map2ReplacementAnchors[i - 1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(map2ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim().replace('−', '-')).equal(wrap01(indToVal(i)).toString())
         });
 
-        cy.get(cesc(map3ReplacementAnchors[i - 1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(map3ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim().replace('−', '-')).equal(wrapn23(indToVal(i)).toString())
         });
 
-        cy.get(cesc(map4ReplacementAnchors[i - 1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(map4ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim().replace('−', '-')).equal(wrap01(indToVal(i)).toString())
         });
 
-        cy.get(cesc(map5ReplacementAnchors[i - 1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(map5ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim().replace('−', '-')).equal(wrapn23(indToVal(i)).toString())
         });
       }

@@ -150,7 +150,6 @@ $response_arr = array(
         "branchId_info"=>$branchId_info_arr,
         "sort_order"=>$filtered_sort_order_arr,
 );
-    
  // set response code - 200 OK
  http_response_code(200);
      

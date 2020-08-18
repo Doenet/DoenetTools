@@ -296,7 +296,7 @@ export default class childLogic {
   }
 
   calculateSugarReplacements({ childMatches, activeChildren, allChildren, definingChildren,
-    separateSugarInputs, replacementFunction, dependencyValues, idRng }
+    separateSugarInputs, replacementFunction, dependencyValues, parentName, childLogicName }
   ) {
 
     let flattenedMatches = flattenDeep(childMatches);
@@ -325,7 +325,7 @@ export default class childLogic {
         components: this.components,
         dependencyValues,
         allComponentClasses: this.allComponentClasses,
-        idRng,
+        parentName, childLogicName
       });
       if (result.success !== true) {
         return { success: false, message: "Sugar for " + this.parentComponentType + " did not succeed." }
@@ -358,7 +358,7 @@ export default class childLogic {
         components: this.components,
         dependencyValues,
         allComponentClasses: this.allComponentClasses,
-        idRng
+        parentName, childLogicName
       });
       if (result.success !== true) {
         return { success: false, message: "Sugar for " + this.parentComponentType + " did not succeed." }

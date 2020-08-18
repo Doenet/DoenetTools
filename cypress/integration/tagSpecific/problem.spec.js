@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Problem Tag Tests', function () {
 
   beforeEach(() => {
@@ -84,15 +94,15 @@ describe('Problem Tag Tests', function () {
       let p221PcaAnchor = "#" + components["/p221Pca"].replacements[0].componentName;
       let p222CaAnchor = "#" + components["/p222Ca"].replacements[0].componentName;
       let p222PcaAnchor = "#" + components["/p222Pca"].replacements[0].componentName;
-      let mathinput1Anchor = '#' + components['/_answer1'].stateValues.inputChild.componentName + "_input";
-      let mathinput2Anchor = '#' + components['/_answer2'].stateValues.inputChild.componentName + "_input";
-      let mathinput3Anchor = '#' + components['/_answer3'].stateValues.inputChild.componentName + "_input";
-      let mathinput4Anchor = '#' + components['/_answer4'].stateValues.inputChild.componentName + "_input";
-      let mathinput5Anchor = '#' + components['/_answer5'].stateValues.inputChild.componentName + "_input";
-      let mathinput6Anchor = '#' + components['/_answer6'].stateValues.inputChild.componentName + "_input";
-      let mathinput7Anchor = '#' + components['/_answer7'].stateValues.inputChild.componentName + "_input";
-      let mathinput8Anchor = '#' + components['/_answer8'].stateValues.inputChild.componentName + "_input";
-      let mathinput9Anchor = '#' + components['/_answer9'].stateValues.inputChild.componentName + "_input";
+      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChild.componentName + "_input");
+      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChild.componentName + "_input");
+      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChild.componentName + "_input");
+      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChild.componentName + "_input");
+      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChild.componentName + "_input");
+      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChild.componentName + "_input");
+      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChild.componentName + "_input");
+      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChild.componentName + "_input");
+      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChild.componentName + "_input");
 
       cy.get(docCaAnchor).should('have.text', '0')
       cy.get(docPcaAnchor).should('have.text', '0')
@@ -502,15 +512,15 @@ describe('Problem Tag Tests', function () {
       let p221PcaAnchor = "#" + components["/p221Pca"].replacements[0].componentName;
       let p222CaAnchor = "#" + components["/p222Ca"].replacements[0].componentName;
       let p222PcaAnchor = "#" + components["/p222Pca"].replacements[0].componentName;
-      let mathinput1Anchor = '#' + components['/_answer1'].stateValues.inputChild.componentName + "_input";
-      let mathinput2Anchor = '#' + components['/_answer2'].stateValues.inputChild.componentName + "_input";
-      let mathinput3Anchor = '#' + components['/_answer3'].stateValues.inputChild.componentName + "_input";
-      let mathinput4Anchor = '#' + components['/_answer4'].stateValues.inputChild.componentName + "_input";
-      let mathinput5Anchor = '#' + components['/_answer5'].stateValues.inputChild.componentName + "_input";
-      let mathinput6Anchor = '#' + components['/_answer6'].stateValues.inputChild.componentName + "_input";
-      let mathinput7Anchor = '#' + components['/_answer7'].stateValues.inputChild.componentName + "_input";
-      let mathinput8Anchor = '#' + components['/_answer8'].stateValues.inputChild.componentName + "_input";
-      let mathinput9Anchor = '#' + components['/_answer9'].stateValues.inputChild.componentName + "_input";
+      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChild.componentName + "_input");
+      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChild.componentName + "_input");
+      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChild.componentName + "_input");
+      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChild.componentName + "_input");
+      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChild.componentName + "_input");
+      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChild.componentName + "_input");
+      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChild.componentName + "_input");
+      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChild.componentName + "_input");
+      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChild.componentName + "_input");
 
       cy.get(docCaAnchor).should('have.text','0')
       cy.get(docPcaAnchor).should('have.text','0')

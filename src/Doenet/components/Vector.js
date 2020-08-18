@@ -1090,8 +1090,7 @@ export default class Vector extends GraphicalComponent {
 
               instructions.push({
                 setStateVariable: "head",
-                value: desiredStateVariableValues.head[arrayKey],
-                arrayKey
+                value: { [arrayKey]: desiredStateVariableValues.head[arrayKey] },
               })
 
             }
@@ -1300,8 +1299,7 @@ export default class Vector extends GraphicalComponent {
 
               instructions.push({
                 setStateVariable: "tail",
-                value: desiredStateVariableValues.tail[arrayKey],
-                arrayKey
+                value: { [arrayKey]: desiredStateVariableValues.tail[arrayKey] },
               })
 
             }
@@ -1522,7 +1520,7 @@ export default class Vector extends GraphicalComponent {
     stateVariableForNewComponent: "value",
   }];
 
-  moveVector({ tailcoords, headcoords }) {
+  moveVector({ tailcoords, headcoords, transient }) {
 
     let updateInstructions = [];
 
@@ -1621,9 +1619,27 @@ export default class Vector extends GraphicalComponent {
     }
 
 
-    this.requestUpdate({
-      updateInstructions
-    });
+    if (transient) {
+      this.coreFunctions.requestUpdate({
+        updateInstructions,
+        transient
+      });
+    } else {
+      this.coreFunctions.requestUpdate({
+        updateInstructions,
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            head: headcoords,
+            tail: tailcoords,
+          }
+        }
+      });
+    }
 
   }
 

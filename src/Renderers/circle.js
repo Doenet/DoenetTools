@@ -49,7 +49,8 @@ export default class Circle extends DoenetRenderer {
     );
 
 
-    this.circleJXG.on('drag', this.onDragHandler);
+    this.circleJXG.on('drag', () => this.onDragHandler(true));
+    this.circleJXG.on('up', () => this.onDragHandler(false));
 
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
 
@@ -136,10 +137,11 @@ export default class Circle extends DoenetRenderer {
 
   }
 
-  onDragHandler() {
+  onDragHandler(transient) {
     if(this.circleJXG !== undefined) {
       this.actions.moveCircle({
         center: [this.circleJXG.center.X(), this.circleJXG.center.Y()],
+        transient
       });
     }
   }

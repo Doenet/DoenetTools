@@ -246,7 +246,7 @@ export default class GenerateRandomNumbers extends CompositeComponent {
 
       if(numberToWithhold !== component.replacementsToWithhold)  {
         let replacementInstruction = {
-          changeType: "changedReplacementsToWithhold",
+          changeType: "changeReplacementsToWithhold",
           replacementsToWithhold: numberToWithhold,
         };
         replacementChanges.push(replacementInstruction);   
@@ -263,7 +263,7 @@ export default class GenerateRandomNumbers extends CompositeComponent {
 
       if(numberToWithhold !== component.replacementsToWithhold) {
         let replacementInstruction = {
-          changeType: "changedReplacementsToWithhold",
+          changeType: "changeReplacementsToWithhold",
           replacementsToWithhold: numberToWithhold,
         };
         replacementChanges.push(replacementInstruction);   

@@ -71,7 +71,7 @@ export default class Curve extends GraphicalComponent {
       return false;
     }
 
-    let createParametrizationFunctionOrThrough = function ({ dependencyValues, allComponentClasses, idRng }) {
+    let createParametrizationFunctionOrThrough = function ({ dependencyValues, allComponentClasses, parentName, childLogicName }) {
 
       let results = breakEmbeddedStringByCommas({
         childrenList: dependencyValues.stringsAndMaths,
@@ -182,9 +182,9 @@ export default class Curve extends GraphicalComponent {
           }
         }
 
-        let functionCurveName = createUniqueName("functioncurve", idRng);
-
-
+        let longNameId = parentName + "|sugarReplacement|" + childLogicName;
+        let functionCurveName = createUniqueName("functioncurve", longNameId);
+  
         let functionCurveChildren = [];
         let variableName = "var1";
         if (flip) {
@@ -223,8 +223,9 @@ export default class Curve extends GraphicalComponent {
 
       } else {
 
-        let parametrizedCurveName = createUniqueName("parametrizedcurve", idRng);
-
+        let longNameId = parentName + "|sugarReplacement|" + childLogicName;
+        let parametrizedCurveName = createUniqueName("parametrizedcurve", longNameId);
+ 
         let variableForParameterFunctions = {
           componentType: "variable",
           children: [{

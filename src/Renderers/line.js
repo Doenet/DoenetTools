@@ -50,8 +50,12 @@ export default class Line extends DoenetRenderer {
 
     this.lineJXG.on('drag', function () {
       //board.suspendUpdate();
-      this.onDragHandler();
+      this.onDragHandler(true);
       //board.unsuspendUpdate();
+    }.bind(this));
+
+    this.lineJXG.on('up', function () {
+      this.onDragHandler(false);
     }.bind(this));
 
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
@@ -135,10 +139,11 @@ export default class Line extends DoenetRenderer {
 
   }
 
-  onDragHandler() {
+  onDragHandler(transient) {
     this.actions.moveLine({
       point1coords: [this.lineJXG.point1.X(), this.lineJXG.point1.Y()],
       point2coords: [this.lineJXG.point2.X(), this.lineJXG.point2.Y()],
+      transient
     });
   }
 
