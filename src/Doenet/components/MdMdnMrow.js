@@ -1,8 +1,8 @@
-import BlockComponent from './abstract/BlockComponent';
+import InlineComponent from './abstract/InlineComponent';
 import { M } from './MMeMen';
 import me from 'math-expressions';
 
-export class Md extends BlockComponent {
+export class Md extends InlineComponent {
   static componentType = "md";
   static rendererType = "math";
 

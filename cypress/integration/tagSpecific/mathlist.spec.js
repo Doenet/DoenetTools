@@ -29,13 +29,13 @@ describe('Mathlist Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let child1Name = components['/_mathlist1'].stateValues.childrenToRender[0];
-      let child1Anchor = '#' + child1Name;
+      let child1Anchor = cesc('#' + child1Name);
       let child2Name = components['/_mathlist1'].stateValues.childrenToRender[1];
-      let child2Anchor = '#' + child2Name;
+      let child2Anchor = cesc('#' + child2Name);
       let child3Name = components['/_mathlist2'].stateValues.childrenToRender[0];
-      let child3Anchor = '#' + child3Name;
+      let child3Anchor = cesc('#' + child3Name);
       let child4Name = components['/_mathlist2'].stateValues.childrenToRender[1];
-      let child4Anchor = '#' + child4Name;
+      let child4Anchor = cesc('#' + child4Name);
 
 
       cy.log('Test value displayed in browser')
@@ -81,11 +81,11 @@ describe('Mathlist Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let child1Name = components['/_mathlist1'].stateValues.childrenToRender[0];
-      let child1Anchor = '#' + child1Name;
+      let child1Anchor = cesc('#' + child1Name);
       let child2Name = components['/_mathlist1'].stateValues.childrenToRender[1];
-      let child2Anchor = '#' + child2Name;
+      let child2Anchor = cesc('#' + child2Name);
       let child3Name = components['/_mathlist1'].stateValues.childrenToRender[2];
-      let child3Anchor = '#' + child3Name;
+      let child3Anchor = cesc('#' + child3Name);
 
       cy.log('Test value displayed in browser')
       cy.get(child1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -159,7 +159,7 @@ describe('Mathlist Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let numberAdapterName = components['/_number1'].adapterUsed.componentName;
-      let numberAdapterAnchor = '#' + numberAdapterName;
+      let numberAdapterAnchor = cesc('#' + numberAdapterName);
 
       cy.log('Test value displayed in browser')
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -198,9 +198,9 @@ describe('Mathlist Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let child1Name = components['/_mathlist1'].stateValues.childrenToRender[0];
-      let child1Anchor = '#' + child1Name;
+      let child1Anchor = cesc('#' + child1Name);
       let child2Name = components['/_mathlist1'].stateValues.childrenToRender[1];
-      let child2Anchor = '#' + child2Name;
+      let child2Anchor = cesc('#' + child2Name);
 
       cy.log('Test value displayed in browser')
       cy.get(child1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -256,17 +256,17 @@ describe('Mathlist Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let child1Name = components['/_mathlist1'].stateValues.childrenToRender[1];
-      let child1Anchor = '#' + child1Name;
+      let child1Anchor = cesc('#' + child1Name);
       let child2Name = components['/_mathlist1'].stateValues.childrenToRender[2];
-      let child2Anchor = '#' + child2Name;
+      let child2Anchor = cesc('#' + child2Name);
       let child5Name = components['/_mathlist1'].stateValues.childrenToRender[5];
-      let child5Anchor = '#' + child5Name;
+      let child5Anchor = cesc('#' + child5Name);
       let child6Name = components['/_mathlist1'].stateValues.childrenToRender[6];
-      let child6Anchor = '#' + child6Name;
+      let child6Anchor = cesc('#' + child6Name);
       let child7Name = components['/_mathlist1'].stateValues.childrenToRender[7];
-      let child7Anchor = '#' + child7Name;
+      let child7Anchor = cesc('#' + child7Name);
       let child8Name = components['/_mathlist1'].stateValues.childrenToRender[8];
-      let child8Anchor = '#' + child8Name;
+      let child8Anchor = cesc('#' + child8Name);
 
       cy.log('Test value displayed in browser')
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -573,13 +573,13 @@ describe('Mathlist Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let child1Name = components['/_mathlist1'].stateValues.childrenToRender[1];
-      let child1Anchor = '#' + child1Name;
+      let child1Anchor = cesc('#' + child1Name);
       let child2Name = components['/_mathlist1'].stateValues.childrenToRender[2];
-      let child2Anchor = '#' + child2Name;
+      let child2Anchor = cesc('#' + child2Name);
       let child5Name = components['/_mathlist1'].stateValues.childrenToRender[5];
-      let child5Anchor = '#' + child5Name;
+      let child5Anchor = cesc('#' + child5Name);
       let child6Name = components['/_mathlist1'].stateValues.childrenToRender[6];
-      let child6Anchor = '#' + child6Name;
+      let child6Anchor = cesc('#' + child6Name);
 
       cy.log('Test value displayed in browser')
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {

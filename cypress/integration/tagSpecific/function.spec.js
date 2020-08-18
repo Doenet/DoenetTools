@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Function Tag Tests', function () {
 
   beforeEach(() => {
@@ -1291,9 +1301,9 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let numberMaximaAnchor = '#' + components["/numbermaxima"].replacements[0].componentName;
-      let numberMinimaAnchor = '#' + components["/numberminima"].replacements[0].componentName;
-      let numberExtremaAnchor = '#' + components["/numberextrema"].replacements[0].componentName;
+      let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
+      let numberMinimaAnchor = cesc('#' + components["/numberminima"].replacements[0].componentName);
+      let numberExtremaAnchor = cesc('#' + components["/numberextrema"].replacements[0].componentName);
 
       cy.get(numberMaximaAnchor).should('have.text', '2');
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1498,21 +1508,21 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let numberMaximaAnchor = '#' + components["/numbermaxima"].replacements[0].componentName;
-      let numberMinimaAnchor = '#' + components["/numberminima"].replacements[0].componentName;
-      let numberExtremaAnchor = '#' + components["/numberextrema"].replacements[0].componentName;
-      let maximumLocation1Anchor = '#' + components["/maximumlocation1"].replacements[0].componentName;
-      let maximumLocation2Anchor = '#' + components["/maximumlocation2"].replacements[0].componentName;
-      let maximumValue1Anchor = '#' + components["/maximumvalue1"].replacements[0].componentName;
-      let maximumValue2Anchor = '#' + components["/maximumvalue2"].replacements[0].componentName;
-      let minimumLocation1Anchor = '#' + components["/minimumlocation1"].replacements[0].componentName;
-      let minimumValue1Anchor = '#' + components["/minimumvalue1"].replacements[0].componentName;
-      let extremumLocation1Anchor = '#' + components["/extremumlocation1"].replacements[0].componentName;
-      let extremumLocation2Anchor = '#' + components["/extremumlocation2"].replacements[0].componentName;
-      let extremumLocation3Anchor = '#' + components["/extremumlocation3"].replacements[0].componentName;
-      let extremumValue1Anchor = '#' + components["/extremumvalue1"].replacements[0].componentName;
-      let extremumValue2Anchor = '#' + components["/extremumvalue2"].replacements[0].componentName;
-      let extremumValue3Anchor = '#' + components["/extremumvalue3"].replacements[0].componentName;
+      let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
+      let numberMinimaAnchor = cesc('#' + components["/numberminima"].replacements[0].componentName);
+      let numberExtremaAnchor = cesc('#' + components["/numberextrema"].replacements[0].componentName);
+      let maximumLocation1Anchor = cesc('#' + components["/maximumlocation1"].replacements[0].componentName);
+      let maximumLocation2Anchor = cesc('#' + components["/maximumlocation2"].replacements[0].componentName);
+      let maximumValue1Anchor = cesc('#' + components["/maximumvalue1"].replacements[0].componentName);
+      let maximumValue2Anchor = cesc('#' + components["/maximumvalue2"].replacements[0].componentName);
+      let minimumLocation1Anchor = cesc('#' + components["/minimumlocation1"].replacements[0].componentName);
+      let minimumValue1Anchor = cesc('#' + components["/minimumvalue1"].replacements[0].componentName);
+      let extremumLocation1Anchor = cesc('#' + components["/extremumlocation1"].replacements[0].componentName);
+      let extremumLocation2Anchor = cesc('#' + components["/extremumlocation2"].replacements[0].componentName);
+      let extremumLocation3Anchor = cesc('#' + components["/extremumlocation3"].replacements[0].componentName);
+      let extremumValue1Anchor = cesc('#' + components["/extremumvalue1"].replacements[0].componentName);
+      let extremumValue2Anchor = cesc('#' + components["/extremumvalue2"].replacements[0].componentName);
+      let extremumValue3Anchor = cesc('#' + components["/extremumvalue3"].replacements[0].componentName);
 
       cy.get(numberMaximaAnchor).should('have.text', '2');
       cy.get(maximumLocation1Anchor).invoke('text').then((text) => {
@@ -1607,13 +1617,13 @@ describe('Function Tag Tests', function () {
 
         components['/_point1'].movePoint({ x: 0, y: -1 });
 
-        let minimumLocation2Anchor = '#' + components["/minimumlocation2"].replacements[0].componentName;
-        let minimumValue2Anchor = '#' + components["/minimumvalue2"].replacements[0].componentName;
+        let minimumLocation2Anchor = cesc('#' + components["/minimumlocation2"].replacements[0].componentName);
+        let minimumValue2Anchor = cesc('#' + components["/minimumvalue2"].replacements[0].componentName);
 
         let extremumLocation3AnchorOld = extremumLocation3Anchor;
-        let extremumLocation3Anchor = '#' + components["/extremumlocation3"].replacements[0].componentName;
+        let extremumLocation3Anchor = cesc('#' + components["/extremumlocation3"].replacements[0].componentName);
         let extremumValue3AnchorOld = extremumValue3Anchor;
-        let extremumValue3Anchor = '#' + components["/extremumvalue3"].replacements[0].componentName;
+        let extremumValue3Anchor = cesc('#' + components["/extremumvalue3"].replacements[0].componentName);
 
 
         cy.get(numberMaximaAnchor).should('have.text', '1');
@@ -2002,8 +2012,8 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let numberMaximaAnchor = '#' + components["/numbermaxima"].replacements[0].componentName;
-      let numberMinimaAnchor = '#' + components["/numberminima"].replacements[0].componentName;
+      let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
+      let numberMinimaAnchor = cesc('#' + components["/numberminima"].replacements[0].componentName);
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -2269,12 +2279,12 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let variable1Anchor = '#' + components["/fv"].replacements[0].componentName;
-      let variable2Anchor = '#' + components["/f2v"].replacements[0].componentName;
-      let variable3Anchor = '#' + components["/f3v"].replacements[0].componentName;
-      let variable4Anchor = '#' + components["/f4v"].replacements[0].componentName;
-      let variable5Anchor = '#' + components["/f5v"].replacements[0].componentName;
-      let variable6Anchor = '#' + components["/f6v"].replacements[0].componentName;
+      let variable1Anchor = cesc('#' + components["/fv"].replacements[0].componentName);
+      let variable2Anchor = cesc('#' + components["/f2v"].replacements[0].componentName);
+      let variable3Anchor = cesc('#' + components["/f3v"].replacements[0].componentName);
+      let variable4Anchor = cesc('#' + components["/f4v"].replacements[0].componentName);
+      let variable5Anchor = cesc('#' + components["/f5v"].replacements[0].componentName);
+      let variable6Anchor = cesc('#' + components["/f6v"].replacements[0].componentName);
 
       cy.get(variable1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('t')

@@ -181,13 +181,13 @@ function handleDragEnter(e) {
         setThumbValue(valindexpair[0]);
         setIndex(valindexpair[1]);
 
-        actions.changeValue({ value: SVs.items[valindexpair[1]]});
+        actions.changeValue({ value: SVs.items[valindexpair[1]], transient: true});
     }else{
         let i = Math.round((e.nativeEvent.clientX - offsetLeft)/divisionWidth);
         setIndex(i);
         setThumbValue(SVs.items[i]);
 
-        actions.changeValue({ value: SVs.items[i]});
+        actions.changeValue({ value: SVs.items[i], transient: true});
     }
 }
 
@@ -229,13 +229,13 @@ function handleDragThrough(e) {
             setThumbValue(valindexpair[0]);
             setIndex(valindexpair[1]);
 
-            actions.changeValue({ value: SVs.items[valindexpair[1]]});
+            actions.changeValue({ value: SVs.items[valindexpair[1]], transient: true});
         }else{
             let i = Math.round((e.nativeEvent.clientX - offsetLeft)/divisionWidth);
             setIndex(i);
             setThumbValue(SVs.items[i]);
 
-            actions.changeValue({ value: SVs.items[i]});
+            actions.changeValue({ value: SVs.items[i], transient: true});
         }
     }
 }

@@ -130,6 +130,7 @@ export default function ToolLayout(props) {
       middleW = w - (!!leftCloseBtn ? leftWidth : 0) - resizerW;
     }
     setMiddleWidth(middleW);
+    toolPanelsWidthHandler(leftW, middleW, rightW);
   };
 
   window.addEventListener("resize", windowResizeHandler);
@@ -144,6 +145,28 @@ export default function ToolLayout(props) {
     setIsResizing(false);
     setCurrentResizer("");
   };
+
+  const toolPanelsWidthHandler = (leftW, middleW, rightW) => {
+    if(!!props.toolPanelsWidth) {
+      if(deviceType === "phone") {
+        if(props.children.length === 3) {
+          props.toolPanelsWidth(window.innerWidth, window.innerWidth, window.innerWidth);
+        } else if(props.children.length === 2) {
+          props.toolPanelsWidth(window.innerWidth, window.innerWidth, 0);
+        } else {
+          props.toolPanelsWidth(window.innerWidth, 0, 0);
+        }
+      } else {
+        if(props.children.length === 3) {
+          props.toolPanelsWidth(leftW, middleW, rightW);
+        } else if(props.children.length === 2) {
+          props.toolPanelsWidth(leftW, middleW, 0);
+        } else {
+          props.toolPanelsWidth(leftW, 0, 0);
+        }
+      }
+    }
+  }
 
   const resizingResizer = (e) => {
 
@@ -187,6 +210,9 @@ export default function ToolLayout(props) {
         }
         setLeftWidth(leftW);
         setMiddleWidth(middleW);
+
+        toolPanelsWidthHandler(leftW, middleW, rightW);
+
       } else if (currentResizer === "second") {
         const secondResizer = document.querySelector('#second.resizer');
         const leftW = (!!leftCloseBtn ? leftWidth : 0);
@@ -215,6 +241,8 @@ export default function ToolLayout(props) {
         }
         setRightWidth(rightW);
         setMiddleWidth(middleW);
+
+        toolPanelsWidthHandler(leftW, middleW, rightW);
       }
     }
   };

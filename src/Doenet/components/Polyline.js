@@ -246,8 +246,8 @@ export default class Polyline extends GraphicalComponent {
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
-          let [pointInd, dimInd] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           dependenciesByKey[arrayKey] = {
             verticesChild: {
@@ -269,8 +269,8 @@ export default class Polyline extends GraphicalComponent {
 
         for (let arrayKey of arrayKeys) {
 
-          let [pointInd, dimInd] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           let verticesChild = dependencyValuesByKey[arrayKey].verticesChild;
           if (verticesChild.length === 1
@@ -302,8 +302,8 @@ export default class Polyline extends GraphicalComponent {
 
         let instructions = [];
         for (let arrayKey in desiredStateVariableValues.vertices) {
-          let [pointInd, dimInd] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           if (dependencyValuesByKey[arrayKey].verticesChild.length === 1
             && dependencyValuesByKey[arrayKey].verticesChild[0].stateValues["pointX" + varEnding]
@@ -364,7 +364,7 @@ export default class Polyline extends GraphicalComponent {
 
         for (let arrayKey of arrayKeys) {
           let vert = dependencyValuesByKey[arrayKey].vertex.map(x => x.evaluate_to_constant())
-          if(!vert.every(x => Number.isFinite(x))) {
+          if (!vert.every(x => Number.isFinite(x))) {
             vert = Array(vert.length).fill(NaN)
           }
           numericalVertices[arrayKey] = vert;
@@ -490,21 +490,45 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  movePolyline(pointcoordsObject) {
+  movePolyline(pointcoordsObject, transient) {
+
     let vertexComponents = {};
     for (let ind in pointcoordsObject) {
       vertexComponents[ind + ",0"] = me.fromAst(pointcoordsObject[ind][0]);
       vertexComponents[ind + ",1"] = me.fromAst(pointcoordsObject[ind][1]);
     }
 
-    this.requestUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.componentName,
-        stateVariable: "vertices",
-        value: vertexComponents
-      }]
-    });
+    if (transient) {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "vertices",
+          value: vertexComponents
+        }],
+        transient,
+      });
+    } else {
+
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "vertices",
+          value: vertexComponents
+        }],
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            pointCoordinates: pointcoordsObject
+          }
+        }
+      });
+    }
 
   }
 

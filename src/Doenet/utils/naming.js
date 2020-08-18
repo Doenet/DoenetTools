@@ -1,22 +1,49 @@
-import nanoid from 'nanoid';
-import format from 'nanoid/format';
+import crypto from 'crypto';
 
-export function createUniqueName(componentType, rng) {
-  // choose componentIndex randomly using nanoid
-  // for now, make name be as: __componentType_ + componentIndex
-  // but could change this to remove the prefix
+let rePlus = /\+/g;
+let reSlash = /\//g;
 
-  // let componentIndex = nanoid(12);
+export function createUniqueName(componentType, longNameId) {
 
-  function randomArray (size) {
-    const result = []
-    for (let i = 0; i < size; i++) {
-      result.push(rng.random_int31())
-    }
-    return result
-  }
+  const hash = crypto.createHash('sha1');
+  hash.update(longNameId);
 
-  let componentIndex = format(randomArray, "abcdefghijklmnopqrtstuvxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-",12)
-  return `__${componentType}_${componentIndex}`;
+  // use base64 encoding, but replace + with _ and / with -
+  // so that the name is a valid CSS identifier
+  let hashStringShortened = hash.digest('base64').slice(0, 10)
+    .replace(rePlus, '_').replace(reSlash, '-');
+
+  // console.log(`componentType: ${componentType}, longNameID: ${longNameId}, hashString: ${hashStringShortened}`)
+
+  return "__" + componentType + "_" + hashStringShortened;
 
 }
+
+export function getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed) {
+
+  let postfix = 1;
+  let uniqueIdentifier = uniqueIdentifierBase + postfix;
+
+  while (uniqueIdentifiersUsed.includes(uniqueIdentifier)) {
+    postfix += 1;
+    uniqueIdentifier = uniqueIdentifierBase + postfix;
+  }
+
+  uniqueIdentifiersUsed.push(uniqueIdentifier);
+
+  return uniqueIdentifier;
+
+}
+
+// from https://stackoverflow.com/a/7616484
+function hashStringToInteger(s) {
+  var hash = 0, i, chr;
+  if (s.length === 0)
+    return hash;
+  for (i = 0; i < s.length; i++) {
+    chr = s.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
+    hash >>>= 0; // Convert to 32bit unsigned integer
+  }
+  return hash;
+};
