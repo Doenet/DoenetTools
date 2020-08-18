@@ -17,6 +17,7 @@
     "math-expressions": "2.0.0-alpha26",
     "mersenne-twister": "1.1.0",
     "moment": "^2.27.0",
+    "monaco-editor": "^0.20.0",
     "monaco-editor-webpack-plugin": "^1.9.0",
     "nanoid": "^2.1.11",
     "prop-types": "^15.7.2",
