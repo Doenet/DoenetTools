@@ -42,9 +42,9 @@ export default class Ref extends InlineComponent {
       number: 1,
     });
 
-    let atLeastZeroInline = childLogic.newLeaf({
-      name: "atLeastZeroInline",
-      componentType: '_inline',
+    let atLeastZeroAnything = childLogic.newLeaf({
+      name: "atLeastZeroAnything",
+      componentType: '_base',
       comparison: 'atLeast',
       number: 0,
     });
@@ -52,7 +52,7 @@ export default class Ref extends InlineComponent {
     childLogic.newOperator({
       name: "tnameAndText",
       operator: "and",
-      propositions: [atMostOneTname, atLeastZeroInline],
+      propositions: [atMostOneTname, atLeastZeroAnything],
       setAsBase: true
     });
 
@@ -144,7 +144,7 @@ export default class Ref extends InlineComponent {
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "childStateVariables",
-          childLogicName: "atLeastZeroInline",
+          childLogicName: "atLeastZeroAnything",
           variableNames: ["text"],
           variablesOptional: true
         },
@@ -175,7 +175,7 @@ export default class Ref extends InlineComponent {
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "childIdentity",
-          childLogicName: "atLeastZeroInline"
+          childLogicName: "atLeastZeroAnything"
         }
       }),
       definition: function ({ dependencyValues }) {

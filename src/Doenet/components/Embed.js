@@ -8,7 +8,8 @@ export default class Embed extends BlockComponent {
     properties.width = { default: 500, forRenderer: true };
     properties.height = { default: 500, forRenderer: true };
     properties.geogebra = { default: null, forRenderer: true };
-
+    properties.fromMathInsight = { default: null, forRenderer: true };
+    properties.encodedGeogebraContent = { default: null, forRenderer: true };
     return properties;
   }
 

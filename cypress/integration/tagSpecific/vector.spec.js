@@ -1,4 +1,12 @@
-const { faItalic } = require("@fortawesome/free-solid-svg-icons");
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
 
 describe('Vector Tag Tests', function () {
 
@@ -7241,9 +7249,9 @@ describe('Vector Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let x = components['/_copy3'].replacements[0];
-      let xAnchor = '#' + x.componentName;
+      let xAnchor = cesc('#' + x.componentName);
       let y = components['/_copy4'].replacements[0];
-      let yAnchor = '#' + y.componentName;
+      let yAnchor = cesc('#' + y.componentName);
 
 
       let a = 1;

@@ -17,7 +17,7 @@ export default class Textinput extends Input {
     Object.defineProperty(this.actions, 'submitAnswer', {
       get: function () {
         if (this.stateValues.answerAncestor !== null) {
-          return () => this.requestAction({
+          return () => this.coreFunctions.requestAction({
             componentName: this.stateValues.answerAncestor.componentName,
             actionName: "submitAnswer"
           })
@@ -219,7 +219,7 @@ export default class Textinput extends Input {
 
   updateImmediateValue({ text }) {
     if (!this.stateValues.disabled) {
-      this.requestUpdate({
+      this.coreFunctions.requestUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -232,25 +232,40 @@ export default class Textinput extends Input {
 
   updateValue() {
     if (!this.stateValues.disabled) {
-      this.requestUpdate({
+      this.coreFunctions.requestUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "value",
           value: this.stateValues.immediateValue,
-        }]
-      })
-
-      // in case value ended up being a different value than requested
-      // we set immediate value to whatever was the result
-      this.requestUpdate({
-        updateInstructions: [{
+        },
+        // in case value ended up being a different value than requested
+        // we set immediate value to whatever was the result
+        // (hence the need to execute update first)
+        // Also, this makes sure immediateValue is saved to the database,
+        // since in updateImmediateValue, immediateValue is note saved to database
+        {
+          updateType: "executeUpdate"
+        },
+        {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "immediateValue",
-          value: this.stateValues.value,
-        }]
+          valueOfStateVariable: "value",
+        }],
+        event: {
+          verb: "answered",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            response: this.stateValues.immediateValue,
+            responseText: this.stateValues.immediateValue,
+          }
+        }
       })
+
     }
   }
 
