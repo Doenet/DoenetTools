@@ -9,7 +9,7 @@ import nanoid from 'nanoid';
 //Takes an array of contentId's
 //returns contentId->assignment for each
 //Processes all the updates to assignment database tables as well
-function contentToAssignments({branchIds,courseId}={}){
+function contentToAssignments({branchIds,courseId,destinationFolderId="root"}={}){
   let branchToAssignment = {};
   let assignmentIds = [];
   for(let branchId of branchIds){
@@ -17,12 +17,12 @@ function contentToAssignments({branchIds,courseId}={}){
     branchToAssignment[branchId] = assignmentId;
     assignmentIds.push(assignmentId);
   }
-  console.log(branchToAssignment)
   const phpUrl = '/api/createAssignments.php';
       const data = {
         courseId,
         branchIds,
         assignmentIds,
+        destinationFolderId
       }
 
       axios.post(phpUrl, data)
@@ -30,7 +30,7 @@ function contentToAssignments({branchIds,courseId}={}){
           console.log('createAssignments',resp.data);
         });
 
-  return branchToAssignment;
+  return assignmentIds;
 }
 
 function assignmentsToContent({assignmentIds}={}){
