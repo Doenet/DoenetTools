@@ -13,7 +13,6 @@ function contentToAssignments({branchIds,courseId}={}){
   let branchToAssignment = {};
   let assignmentIds = [];
   for(let branchId of branchIds){
-    console.log(branchId);
     let assignmentId = nanoid();
     branchToAssignment[branchId] = assignmentId;
     assignmentIds.push(assignmentId);
@@ -34,13 +33,24 @@ function contentToAssignments({branchIds,courseId}={}){
   return branchToAssignment;
 }
 
+function assignmentsToContent({assignmentIds}={}){
+  let branchIds = [];
+  for(let assignmentId of assignmentIds){
+    let branchId = nanoid();
+    branchIds.push(branchId);
+  }
+  console.log(branchIds)
+  return branchIds;
+}
+
 export default function DoenetTemp(props){
 
 
 
     return (
       <>
-      <button onClick={()=>contentToAssignments({branchIds:['oqUuyupD-SfL3arUpHsvv','Efg9g5jLABCKexVFxK0np'],courseId:"aI8sK4vmEhC5sdeSP3vNW"})}>convert contentIds</button>
+      <button onClick={()=>contentToAssignments({branchIds:['oqUuyupD-SfL3arUpHsvv','Efg9g5jLABCKexVFxK0np'],courseId:"aI8sK4vmEhC5sdeSP3vNW"})}>convert branchIds to assignments</button>
+      <button onClick={()=>assignmentsToContent({assignmentIds:['oqUuyupD-SfL3arUpHsvv','Efg9g5jLABCKexVFxK0np'],courseId:"aI8sK4vmEhC5sdeSP3vNW"})}>convert assignments to branchIds</button>
       </>
     );
   }
