@@ -15,7 +15,7 @@ import {
   Link,
   useHistory
 } from "react-router-dom";
-import { getCourses, setSelected } from "../imports/courseInfo";
+import { getCourses, setSelected, updateCourses } from "../imports/courseInfo";
 
 const Button = styled.button`
   width: 60px;
@@ -64,7 +64,6 @@ const alphabet =
       }
     }
 
-
     // useEffect(() => {
     //   axios.get(`/api/loadUserCourses.php?`).then(resp => {
         
@@ -94,6 +93,19 @@ const alphabet =
     const [width, setWidth] = useState(window.innerWidth < 767 ? window.innerWidth : window.innerWidth - 206)
     
 
+    function updateCourseColor(color, courseId){
+      let mod = [...items]
+      for (var index in mod){
+        if(mod[index].courseId === courseId){
+          mod[index].color = color;
+        }
+      }
+      // console.log(mod);
+      setItems(mod);
+
+      updateCourses(mod);
+      
+    }
     // const updateWidth = () => {
     //   setWidth(window.innerWidth - 209);
     // };
@@ -165,7 +177,7 @@ const alphabet =
               {transitions.map(({ item, props: { xy, ...rest }}, index) => (
                 <a.div key = {index} style={{ transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`), ...rest }}>
                   {/* {console.log(item)} */}
-                  <Link to = {`/${item.courseId}`} style = {{textDecoration: 'none'}}><CourseCard data = {item} /></Link>
+                  <Link to = {`/${item.courseId}`} style = {{textDecoration: 'none'}} onClick = {() => setSelected(item.courseId)}><CourseCard data = {item} updateCourseColor = {updateCourseColor}/></Link>
                   {/* <CourseCard data = {item} /> */}
                 </a.div>
               ))}
