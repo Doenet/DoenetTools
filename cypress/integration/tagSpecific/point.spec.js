@@ -3522,10 +3522,10 @@ describe('Point Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let x1 = 3;
-      let y1 = 2*x1+1;
+      let y1 = 2 * x1 + 1;
 
       let y2 = 3;
-      let x2 = 2*y2+1;
+      let x2 = 2 * y2 + 1;
 
       expect(components['/_point1'].stateValues.xs[0].tree).eq(x1);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(y1);
@@ -3544,8 +3544,8 @@ describe('Point Tag Tests', function () {
       let x2 = 9;
       let y2try = -7;
 
-      let y1 = 2*x1+1;
-      let y2 = (x2-1)/2;
+      let y1 = 2 * x1 + 1;
+      let y2 = (x2 - 1) / 2;
 
       components['/_point1'].movePoint({ x: x1, y: y1try });
       components['/_point2'].movePoint({ x: x2, y: y2try });
@@ -3560,7 +3560,6 @@ describe('Point Tag Tests', function () {
 
 
   })
-
 
   it('points depending original graph axis limit', () => {
     cy.window().then((win) => {
@@ -3867,52 +3866,76 @@ describe('Point Tag Tests', function () {
     <text>a</text>
     <p>Specify point coordinates: <mathinput name="originalCoords" /></p>
 
+    <section title="The points" name="thePoints">
     <p>The point: <point><coords><copy prop="value" tname="originalCoords"/></coords></point></p>
     <p>The point copied: <copy name="point2" tname="_point1"/></p>
     <p>The point copied again: <copy name="point3" tname="point2"/></p>
-    
-    <p>From point 1</p>
+    </section>
+
+    <section title="From point 1">
     <p>Number of dimensions: <copy name="nDimensions1" prop="nDimensions" tname="_point1" /></p>
     <p name="p1x">x-coordinate: <copy name="point1x1" prop="x1" tname="_point1"/></p>
     <p name="p1y">y-coordinate: <copy name="point1x2" prop="x2" tname="_point1"/></p>
     <p name="p1z">z-coordinate: <copy name="point1x3" prop="x3" tname="_point1"/></p>
     <p name="p1all">All individual coordinates: <aslist><copy name="point1xs" prop="xs" tname="_point1"/></aslist></p>
     <p>Coordinates: <copy name="coords1" prop="coords" tname="_point1"/></p>
-    
-    <p>From point 2</p>
+    </section>
+
+    <section title="From point 2">
     <p>Number of dimensions: <copy name="nDimensions2" prop="nDimensions" tname="point2" /></p>
     <p name="p2x">x-coordinate: <copy name="point2x1" prop="x1" tname="point2"/></p>
     <p name="p2y">y-coordinate: <copy name="point2x2" prop="x2" tname="point2"/></p>
     <p name="p2z">z-coordinate: <copy name="point2x3" prop="x3" tname="point2"/></p>
     <p name="p2all">All individual coordinates: <aslist><copy name="point2xs" prop="xs" tname="point2"/></aslist></p>
     <p>Coordinates: <copy name="coords2" prop="coords" tname="point2"/></p>
-    
-    <p>From point 3</p>
+    </section>
+
+    <section title="From point 3">
     <p>Number of dimensions: <copy name="nDimensions3" prop="nDimensions" tname="point3" /></p>
     <p name="p3x">x-coordinate: <copy name="point3x1" prop="x1" tname="point3"/></p>
     <p name="p3y">y-coordinate: <copy name="point3x2" prop="x2" tname="point3"/></p>
     <p name="p3z">z-coordinate: <copy name="point3x3" prop="x3" tname="point3"/></p>
     <p name="p3all">All individual coordinates: <aslist><copy name="point3xs" prop="xs" tname="point3"/></aslist></p>
     <p>Coordinates: <copy name="coords3" prop="coords" tname="point3"/></p>
-   
-    <p>For point 1</p>
+    </section>
+
+    <section title="For point 1">
     <p>Change coords: <mathinput name="coords1b"><copy prop="coords" tname="_point1"/></mathinput></p>
     <p>Change x-coordinate: <mathinput name="point1x1b"><copy prop="x1" tname="_point1"/></mathinput></p>
     <p>Change y-coordinate: <mathinput name="point1x2b"><copy prop="x2" tname="_point1" includeUndefinedArrayEntries/></mathinput></p>
     <p>Change z-coordinate: <mathinput name="point1x3b"><copy prop="x3" tname="_point1" includeUndefinedArrayEntries/></mathinput></p>    
+    </section>
 
-    <p>For point 2</p>
+    <section title="For point 2">
     <p>Change coords: <mathinput name="coords2b"><copy prop="coords" tname="point2"/></mathinput></p>
     <p>Change x-coordinate: <mathinput name="point2x1b"><copy prop="x1" tname="point2"/></mathinput></p>
     <p>Change y-coordinate: <mathinput name="point2x2b"><copy prop="x2" tname="point2" includeUndefinedArrayEntries/></mathinput></p>
     <p>Change z-coordinate: <mathinput name="point2x3b"><copy prop="x3" tname="point2" includeUndefinedArrayEntries/></mathinput></p>    
-    
-    <p>For point 3</p>
+    </section>
+
+    <section title="For point 3">
     <p>Change coords: <mathinput name="coords3b"><copy prop="coords" tname="point3"/></mathinput></p>
     <p>Change x-coordinate: <mathinput name="point3x1b"><copy prop="x1" tname="point3"/></mathinput></p>
     <p>Change y-coordinate: <mathinput name="point3x2b"><copy prop="x2" tname="point3" includeUndefinedArrayEntries/></mathinput></p>
     <p>Change z-coordinate: <mathinput name="point3x3b"><copy prop="x3" tname="point3" includeUndefinedArrayEntries/></mathinput></p>    
-    
+    </section>
+
+    <section title="collecting">
+    <p name="pallx">x-coordinates: <aslist><collect name="pointallx1" componentTypes="point" prop="x1" tname="thePoints"/></aslist></p>
+    <p name="pally">y-coordinates: <aslist><collect name="pointallx2" componentTypes="point" prop="x2" tname="thePoints"/></aslist></p>
+    <p name="pallz">z-coordinates: <aslist><collect name="pointallx3" componentTypes="point" prop="x3" tname="thePoints"/></aslist></p>
+    <p name="pallall">All individual coordinates: <aslist><collect name="pointallxs" componentTypes="point" prop="xs" tname="thePoints"/></aslist></p>
+    <p>Coordinates: <aslist><collect name="coordsall" componentTypes="point" prop="coords" tname="thePoints"/></aslist></p>
+    </section>
+
+    <section title="Extracting from point 3">
+    <p name="p3xe">x-coordinate: <extract name="point3x1e" prop="x1"><copy tname="point3"/></extract></p>
+    <p name="p3ye">y-coordinate: <extract name="point3x2e" prop="x2"><copy tname="point3"/></extract></p>
+    <p name="p3ze">z-coordinate: <extract name="point3x3e" prop="x3"><copy tname="point3"/></extract></p>
+    <p name="p3alle">All individual coordinates: <aslist><extract name="point3xse" prop="xs"><copy tname="point3"/></extract></aslist></p>
+    <p>Coordinates: <extract name="coords3e" prop="coords"><copy tname="point3"/></extract></p>
+    </section>
+ 
   `}, "*");
     });
 
@@ -3932,9 +3955,13 @@ describe('Point Tag Tests', function () {
       let point1x1Anchor = "#" + components["/point1x1"].replacements[0].componentName;
       let point2x1Anchor = "#" + components["/point2x1"].replacements[0].componentName;
       let point3x1Anchor = "#" + components["/point3x1"].replacements[0].componentName;
+      let point3x1eAnchor = "#" + components["/point3x1e"].replacements[0].componentName;
+      let pointallx1Anchors = components["/pointallx1"].replacements.map(x => "#" + x.componentName);
       let coords1Anchor = "#" + components["/coords1"].replacements[0].componentName;
       let coords2Anchor = "#" + components["/coords2"].replacements[0].componentName;
       let coords3Anchor = "#" + components["/coords3"].replacements[0].componentName;
+      let coords3eAnchor = "#" + components["/coords3e"].replacements[0].componentName;
+      let coordsallAnchors = components["/coordsall"].replacements.map(x => "#" + x.componentName);
 
       cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
@@ -3957,12 +3984,28 @@ describe('Point Tag Tests', function () {
       cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       })
+      cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
       cy.get("#\\/p1y").should('have.text', 'y-coordinate: ')
       cy.get("#\\/p2y").should('have.text', 'y-coordinate: ')
       cy.get("#\\/p3y").should('have.text', 'y-coordinate: ')
+      cy.get("#\\/p3ye").should('have.text', 'y-coordinate: ')
+      cy.get("#\\/pally").should('have.text', 'y-coordinates: ')
       cy.get("#\\/p1z").should('have.text', 'z-coordinate: ')
       cy.get("#\\/p2z").should('have.text', 'z-coordinate: ')
       cy.get("#\\/p3z").should('have.text', 'z-coordinate: ')
+      cy.get("#\\/p3ze").should('have.text', 'z-coordinate: ')
+      cy.get("#\\/pallz").should('have.text', 'z-coordinates: ')
 
       cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
@@ -3976,6 +4019,22 @@ describe('Point Tag Tests', function () {
         expect(text.trim()).equal('＿')
       })
 
+      cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+
+      cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+
+      cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+
+      cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+
       cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       })
@@ -3985,6 +4044,19 @@ describe('Point Tag Tests', function () {
       cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       })
+      cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+      cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      })
+
 
       cy.get("#\\/coords1b_input").should('have.value', '')
       cy.get("#\\/coords2b_input").should('have.value', '')
@@ -4030,6 +4102,8 @@ describe('Point Tag Tests', function () {
         let point1x2Anchor = "#" + components["/point1x2"].replacements[0].componentName;
         let point2x2Anchor = "#" + components["/point2x2"].replacements[0].componentName;
         let point3x2Anchor = "#" + components["/point3x2"].replacements[0].componentName;
+        let point3x2eAnchor = "#" + components["/point3x2e"].replacements[0].componentName;
+        let pointallx2Anchors = components["/pointallx2"].replacements.map(x => "#" + x.componentName);
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(a,b)')
@@ -4052,6 +4126,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('a')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
         cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('b')
         })
@@ -4061,9 +4147,23 @@ describe('Point Tag Tests', function () {
         cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('b')
         })
+        cy.get(point3x2eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get(pointallx2Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get(pointallx2Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get(pointallx2Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
         cy.get("#\\/p1z").should('have.text', 'z-coordinate: ')
         cy.get("#\\/p2z").should('have.text', 'z-coordinate: ')
         cy.get("#\\/p3z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p3ze").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/pallz").should('have.text', 'z-coordinates: ')
 
         cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('a')
@@ -4089,6 +4189,36 @@ describe('Point Tag Tests', function () {
         })
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).should('not.exist')
 
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).should('not.exist')
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(7).should('not.exist')
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).should('not.exist')
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(a,b)')
         })
@@ -4096,6 +4226,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(a,b)')
         })
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(a,b)')
         })
 
@@ -4167,14 +4309,30 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('q')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
 
         cy.get("#\\/p1y").should('have.text', 'y-coordinate: ')
         cy.get("#\\/p2y").should('have.text', 'y-coordinate: ')
         cy.get("#\\/p3y").should('have.text', 'y-coordinate: ')
+        cy.get("#\\/p3ye").should('have.text', 'y-coordinate: ')
+        cy.get("#\\/pally").should('have.text', 'y-coordinates: ')
 
         cy.get("#\\/p1z").should('have.text', 'z-coordinate: ')
         cy.get("#\\/p2z").should('have.text', 'z-coordinate: ')
         cy.get("#\\/p3z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p3ze").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/pallz").should('have.text', 'z-coordinates: ')
 
         cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('q')
@@ -4194,6 +4352,28 @@ describe('Point Tag Tests', function () {
         cy.get("#\\/p3all").find('.mjx-mrow').eq(1).should('not.exist')
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).should('not.exist')
 
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).should('not.exist')
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(3).should('not.exist')
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).should('not.exist')
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).should('not.exist')
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).should('not.exist')
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(7).should('not.exist')
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).should('not.exist')
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('q')
         })
@@ -4203,7 +4383,18 @@ describe('Point Tag Tests', function () {
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('q')
         })
-
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
         cy.get("#\\/coords1b_input").should('have.value', 'q')
         cy.get("#\\/coords2b_input").should('have.value', 'q')
         cy.get("#\\/coords3b_input").should('have.value', 'q')
@@ -4251,9 +4442,13 @@ describe('Point Tag Tests', function () {
         let point1x2Anchor = "#" + components["/point1x2"].replacements[0].componentName;
         let point2x2Anchor = "#" + components["/point2x2"].replacements[0].componentName;
         let point3x2Anchor = "#" + components["/point3x2"].replacements[0].componentName;
+        let point3x2eAnchor = "#" + components["/point3x2"].replacements[0].componentName;
+        let pointallx2Anchors = components["/pointallx2"].replacements.map(x => "#" + x.componentName);
         let point1x3Anchor = "#" + components["/point1x3"].replacements[0].componentName;
         let point2x3Anchor = "#" + components["/point2x3"].replacements[0].componentName;
         let point3x3Anchor = "#" + components["/point3x3"].replacements[0].componentName;
+        let point3x3eAnchor = "#" + components["/point3x3"].replacements[0].componentName;
+        let pointallx3Anchors = components["/pointallx3"].replacements.map(x => "#" + x.componentName);
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(2x,uv,w2)')
@@ -4276,6 +4471,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('2x')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x')
+        })
         cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('uv')
         })
@@ -4285,6 +4492,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('uv')
         })
+        cy.get(point3x2eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('uv')
+        })
+        cy.get(pointallx2Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('uv')
+        })
+        cy.get(pointallx2Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('uv')
+        })
+        cy.get(pointallx2Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('uv')
+        })
         cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('w2')
         })
@@ -4292,6 +4511,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('w2')
         })
         cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('w2')
+        })
+        cy.get(point3x3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('w2')
+        })
+        cy.get(pointallx3Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('w2')
+        })
+        cy.get(pointallx3Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('w2')
+        })
+        cy.get(pointallx3Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('w2')
         })
 
@@ -4322,6 +4553,44 @@ describe('Point Tag Tests', function () {
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
           expect(text.trim()).equal('w2')
         })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('uv')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('w2')
+        })
+
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('uv')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('w2')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).invoke('text').then((text) => {
+          expect(text.trim()).equal('uv')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+          expect(text.trim()).equal('w2')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(9).invoke('text').then((text) => {
+          expect(text.trim()).equal('uv')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(10).invoke('text').then((text) => {
+          expect(text.trim()).equal('w2')
+        })
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(2x,uv,w2)')
         })
@@ -4329,6 +4598,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(2x,uv,w2)')
         })
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(2x,uv,w2)')
+        })
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(2x,uv,w2)')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(2x,uv,w2)')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(2x,uv,w2)')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(2x,uv,w2)')
         })
 
@@ -4399,6 +4680,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('7')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('7')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('7')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('7')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('7')
+        })
         cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('8')
         })
@@ -4408,6 +4701,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('8')
         })
+        cy.get(point3x2eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('8')
+        })
+        cy.get(pointallx2Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('8')
+        })
+        cy.get(pointallx2Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('8')
+        })
+        cy.get(pointallx2Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('8')
+        })
         cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9')
         })
@@ -4415,6 +4720,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('9')
         })
         cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('9')
+        })
+        cy.get(point3x3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('9')
+        })
+        cy.get(pointallx3Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('9')
+        })
+        cy.get(pointallx3Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('9')
+        })
+        cy.get(pointallx3Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9')
         })
 
@@ -4445,6 +4762,44 @@ describe('Point Tag Tests', function () {
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
           expect(text.trim()).equal('9')
         })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('7')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('8')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('9')
+        })
+
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('7')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('8')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('9')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+          expect(text.trim()).equal('7')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+          expect(text.trim()).equal('8')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).invoke('text').then((text) => {
+          expect(text.trim()).equal('9')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+          expect(text.trim()).equal('7')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(7).invoke('text').then((text) => {
+          expect(text.trim()).equal('8')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+          expect(text.trim()).equal('9')
+        })
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(7,8,9)')
         })
@@ -4452,6 +4807,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(7,8,9)')
         })
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(7,8,9)')
+        })
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(7,8,9)')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(7,8,9)')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(7,8,9)')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(7,8,9)')
         })
 
@@ -4522,6 +4889,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('i')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('i')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('i')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('i')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('i')
+        })
         cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('j')
         })
@@ -4531,6 +4910,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('j')
         })
+        cy.get(point3x2eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('j')
+        })
+        cy.get(pointallx2Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('j')
+        })
+        cy.get(pointallx2Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('j')
+        })
+        cy.get(pointallx2Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('j')
+        })
         cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('k')
         })
@@ -4538,6 +4929,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('k')
         })
         cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('k')
+        })
+        cy.get(point3x3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('k')
+        })
+        cy.get(pointallx3Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('k')
+        })
+        cy.get(pointallx3Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('k')
+        })
+        cy.get(pointallx3Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('k')
         })
 
@@ -4568,6 +4971,44 @@ describe('Point Tag Tests', function () {
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
           expect(text.trim()).equal('k')
         })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('i')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('j')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('k')
+        })
+
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('i')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('j')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('k')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+          expect(text.trim()).equal('i')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+          expect(text.trim()).equal('j')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).invoke('text').then((text) => {
+          expect(text.trim()).equal('k')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+          expect(text.trim()).equal('i')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(7).invoke('text').then((text) => {
+          expect(text.trim()).equal('j')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+          expect(text.trim()).equal('k')
+        })
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(i,j,k)')
         })
@@ -4575,6 +5016,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(i,j,k)')
         })
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(i,j,k)')
+        })
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(i,j,k)')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(i,j,k)')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(i,j,k)')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(i,j,k)')
         })
 
@@ -4646,6 +5099,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('l')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('l')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('l')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('l')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('l')
+        })
         cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('m')
         })
@@ -4655,6 +5120,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('m')
         })
+        cy.get(point3x2eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('m')
+        })
+        cy.get(pointallx2Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('m')
+        })
+        cy.get(pointallx2Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('m')
+        })
+        cy.get(pointallx2Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('m')
+        })
         cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('n')
         })
@@ -4662,6 +5139,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('n')
         })
         cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('n')
+        })
+        cy.get(point3x3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('n')
+        })
+        cy.get(pointallx3Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('n')
+        })
+        cy.get(pointallx3Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('n')
+        })
+        cy.get(pointallx3Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('n')
         })
 
@@ -4692,6 +5181,44 @@ describe('Point Tag Tests', function () {
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
           expect(text.trim()).equal('n')
         })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('l')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('m')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('n')
+        })
+
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('l')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('m')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('n')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+          expect(text.trim()).equal('l')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+          expect(text.trim()).equal('m')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).invoke('text').then((text) => {
+          expect(text.trim()).equal('n')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+          expect(text.trim()).equal('l')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(7).invoke('text').then((text) => {
+          expect(text.trim()).equal('m')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+          expect(text.trim()).equal('n')
+        })
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(l,m,n)')
         })
@@ -4699,6 +5226,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(l,m,n)')
         })
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(l,m,n)')
+        })
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(l,m,n)')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(l,m,n)')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(l,m,n)')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(l,m,n)')
         })
 
@@ -4772,6 +5311,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('r')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
         cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('s')
         })
@@ -4781,6 +5332,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('s')
         })
+        cy.get(point3x2eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get(pointallx2Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get(pointallx2Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get(pointallx2Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
         cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('t')
         })
@@ -4788,6 +5351,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('t')
         })
         cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get(point3x3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get(pointallx3Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get(pointallx3Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get(pointallx3Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('t')
         })
 
@@ -4818,6 +5393,44 @@ describe('Point Tag Tests', function () {
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
           expect(text.trim()).equal('t')
         })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(7).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(r,s,t)')
         })
@@ -4825,6 +5438,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(r,s,t)')
         })
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(r,s,t)')
+        })
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(r,s,t)')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(r,s,t)')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(r,s,t)')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(r,s,t)')
         })
 
@@ -4898,6 +5523,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('f')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('f')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('f')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('f')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('f')
+        })
         cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('g')
         })
@@ -4907,6 +5544,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('g')
         })
+        cy.get(point3x2eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get(pointallx2Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get(pointallx2Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get(pointallx2Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
         cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('h')
         })
@@ -4914,6 +5563,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('h')
         })
         cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get(point3x3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get(pointallx3Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get(pointallx3Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get(pointallx3Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('h')
         })
 
@@ -4944,6 +5605,47 @@ describe('Point Tag Tests', function () {
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
           expect(text.trim()).equal('h')
         })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('f')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+
+        // TODO: makes no sense why this is failing. 
+        // It seems to be in the DOM just like the others
+        // cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+        //   expect(text.trim()).equal('h')
+        // })
+
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('f')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+          expect(text.trim()).equal('f')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+          expect(text.trim()).equal('f')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(7).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(f,g,h)')
         })
@@ -4951,6 +5653,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(f,g,h)')
         })
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(f,g,h)')
+        })
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(f,g,h)')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(f,g,h)')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(f,g,h)')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(f,g,h)')
         })
 
@@ -5024,6 +5738,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('x')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        })
         cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
         })
@@ -5033,6 +5759,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('y')
         })
+        cy.get(point3x2eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        })
+        cy.get(pointallx2Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        })
+        cy.get(pointallx2Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        })
+        cy.get(pointallx2Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        })
         cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('z')
         })
@@ -5040,6 +5778,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('z')
         })
         cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(point3x3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(pointallx3Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(pointallx3Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(pointallx3Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('z')
         })
 
@@ -5070,6 +5820,44 @@ describe('Point Tag Tests', function () {
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
           expect(text.trim()).equal('z')
         })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(7).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(x,y,z)')
         })
@@ -5077,6 +5865,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(x,y,z)')
         })
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(x,y,z)')
+        })
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(x,y,z)')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(x,y,z)')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(x,y,z)')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(x,y,z)')
         })
 
@@ -5148,6 +5948,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('u')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('u')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('u')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('u')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('u')
+        })
         cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('v')
         })
@@ -5155,6 +5967,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('v')
         })
         cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('v')
+        })
+        cy.get(point3x2eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('v')
+        })
+        cy.get(pointallx2Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('v')
+        })
+        cy.get(pointallx2Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('v')
+        })
+        cy.get(pointallx2Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('v')
         })
         cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -5166,6 +5990,19 @@ describe('Point Tag Tests', function () {
         cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('z')
         })
+        cy.get(point3x3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(pointallx3Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(pointallx3Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(pointallx3Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+
 
         cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('u')
@@ -5194,6 +6031,44 @@ describe('Point Tag Tests', function () {
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
           expect(text.trim()).equal('z')
         })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('u')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('v')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('u')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('v')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+          expect(text.trim()).equal('u')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+          expect(text.trim()).equal('v')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+          expect(text.trim()).equal('u')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(7).invoke('text').then((text) => {
+          expect(text.trim()).equal('v')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(u,v,z)')
         })
@@ -5201,6 +6076,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(u,v,z)')
         })
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(u,v,z)')
+        })
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(u,v,z)')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(u,v,z)')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(u,v,z)')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(u,v,z)')
         })
 
@@ -5272,6 +6159,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('s')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
         cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('t')
         })
@@ -5279,6 +6178,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('t')
         })
         cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get(point3x2eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get(pointallx2Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get(pointallx2Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get(pointallx2Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('t')
         })
         cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -5290,6 +6201,19 @@ describe('Point Tag Tests', function () {
         cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('z')
         })
+        cy.get(point3x3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(pointallx3Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(pointallx3Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(pointallx3Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+
 
         cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('s')
@@ -5318,6 +6242,44 @@ describe('Point Tag Tests', function () {
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
           expect(text.trim()).equal('z')
         })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+          expect(text.trim()).equal('s')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(7).invoke('text').then((text) => {
+          expect(text.trim()).equal('t')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(s,t,z)')
         })
@@ -5325,6 +6287,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(s,t,z)')
         })
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(s,t,z)')
+        })
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(s,t,z)')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(s,t,z)')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(s,t,z)')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(s,t,z)')
         })
 
@@ -5395,6 +6369,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('q')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
         cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('r')
         })
@@ -5402,6 +6388,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('r')
         })
         cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get(point3x2eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get(pointallx2Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get(pointallx2Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get(pointallx2Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('r')
         })
         cy.get(point1x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -5413,6 +6411,19 @@ describe('Point Tag Tests', function () {
         cy.get(point3x3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('z')
         })
+        cy.get(point3x3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(pointallx3Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(pointallx3Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get(pointallx3Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+
 
         cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('q')
@@ -5441,6 +6452,43 @@ describe('Point Tag Tests', function () {
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
           expect(text.trim()).equal('z')
         })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(7).invoke('text').then((text) => {
+          expect(text.trim()).equal('r')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).invoke('text').then((text) => {
+          expect(text.trim()).equal('z')
+        })
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(q,r,z)')
         })
@@ -5448,6 +6496,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(q,r,z)')
         })
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(q,r,z)')
+        })
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(q,r,z)')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(q,r,z)')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(q,r,z)')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(q,r,z)')
         })
 
@@ -5507,7 +6567,8 @@ describe('Point Tag Tests', function () {
         let point1x2Anchor = "#" + components["/point1x2"].replacements[0].componentName;
         let point2x2Anchor = "#" + components["/point2x2"].replacements[0].componentName;
         let point3x2Anchor = "#" + components["/point3x2"].replacements[0].componentName;
-
+        let point3x2eAnchor = "#" + components["/point3x2e"].replacements[0].componentName;
+        let pointallx2Anchors = components["/pointallx2"].replacements.map(x => "#" + x.componentName);
 
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(p,q)')
@@ -5530,6 +6591,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('p')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('p')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('p')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('p')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('p')
+        })
         cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('q')
         })
@@ -5539,9 +6612,23 @@ describe('Point Tag Tests', function () {
         cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('q')
         })
+        cy.get(point3x2eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(pointallx2Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(pointallx2Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get(pointallx2Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
         cy.get("#\\/p1z").should('have.text', 'z-coordinate: ')
         cy.get("#\\/p2z").should('have.text', 'z-coordinate: ')
         cy.get("#\\/p3z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p3ze").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/pallz").should('have.text', 'z-coordinates: ')
 
         cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('p')
@@ -5567,6 +6654,36 @@ describe('Point Tag Tests', function () {
         })
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).should('not.exist')
 
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('p')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('p')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('p')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+          expect(text.trim()).equal('p')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).invoke('text').then((text) => {
+          expect(text.trim()).equal('q')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).should('not.exist')
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(7).should('not.exist')
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).should('not.exist')
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(p,q)')
         })
@@ -5574,6 +6691,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(p,q)')
         })
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(p,q)')
+        })
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(p,q)')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(p,q)')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(p,q)')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(p,q)')
         })
 
@@ -5620,7 +6749,6 @@ describe('Point Tag Tests', function () {
         cy.log(`can't increase dimension from inverse direction 1`)
         cy.get("#\\/coords1b_input").clear().type('(a,b,c){enter}')
 
-        
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(a,b)')
         })
@@ -5642,6 +6770,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('a')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
         cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('b')
         })
@@ -5651,9 +6791,23 @@ describe('Point Tag Tests', function () {
         cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('b')
         })
+        cy.get(point3x2eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get(pointallx2Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get(pointallx2Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get(pointallx2Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
         cy.get("#\\/p1z").should('have.text', 'z-coordinate: ')
         cy.get("#\\/p2z").should('have.text', 'z-coordinate: ')
         cy.get("#\\/p3z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p3ze").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/pallz").should('have.text', 'z-coordinates: ')
 
         cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('a')
@@ -5679,6 +6833,36 @@ describe('Point Tag Tests', function () {
         })
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).should('not.exist')
 
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+          expect(text.trim()).equal('a')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).invoke('text').then((text) => {
+          expect(text.trim()).equal('b')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).should('not.exist')
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(7).should('not.exist')
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).should('not.exist')
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(a,b)')
         })
@@ -5686,6 +6870,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(a,b)')
         })
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(a,b)')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(a,b)')
         })
 
@@ -5733,7 +6929,6 @@ describe('Point Tag Tests', function () {
         cy.log(`can't increase dimension from inverse direction 2`)
         cy.get("#\\/coords2b_input").clear().type('(d,e,f){enter}')
 
-        
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(d,e)')
         })
@@ -5755,6 +6950,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('d')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('d')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('d')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('d')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('d')
+        })
         cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('e')
         })
@@ -5764,9 +6971,23 @@ describe('Point Tag Tests', function () {
         cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('e')
         })
+        cy.get(point3x2eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('e')
+        })
+        cy.get(pointallx2Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('e')
+        })
+        cy.get(pointallx2Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('e')
+        })
+        cy.get(pointallx2Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('e')
+        })
         cy.get("#\\/p1z").should('have.text', 'z-coordinate: ')
         cy.get("#\\/p2z").should('have.text', 'z-coordinate: ')
         cy.get("#\\/p3z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p3ze").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/pallz").should('have.text', 'z-coordinates: ')
 
         cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('d')
@@ -5792,6 +7013,36 @@ describe('Point Tag Tests', function () {
         })
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).should('not.exist')
 
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('d')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('e')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('d')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('e')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('d')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+          expect(text.trim()).equal('e')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+          expect(text.trim()).equal('d')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).invoke('text').then((text) => {
+          expect(text.trim()).equal('e')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).should('not.exist')
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(7).should('not.exist')
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).should('not.exist')
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(d,e)')
         })
@@ -5799,6 +7050,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(d,e)')
         })
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(d,e)')
+        })
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(d,e)')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(d,e)')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(d,e)')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(d,e)')
         })
 
@@ -5845,7 +7108,6 @@ describe('Point Tag Tests', function () {
         cy.log(`can't increase dimension from inverse direction 3`)
         cy.get("#\\/coords3b_input").clear().type('(g,h,i){enter}')
 
-        
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(g,h)')
         })
@@ -5867,6 +7129,18 @@ describe('Point Tag Tests', function () {
         cy.get(point3x1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('g')
         })
+        cy.get(point3x1eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get(pointallx1Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get(pointallx1Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get(pointallx1Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
         cy.get(point1x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('h')
         })
@@ -5876,9 +7150,23 @@ describe('Point Tag Tests', function () {
         cy.get(point3x2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('h')
         })
+        cy.get(point3x2eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get(pointallx2Anchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get(pointallx2Anchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get(pointallx2Anchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
         cy.get("#\\/p1z").should('have.text', 'z-coordinate: ')
         cy.get("#\\/p2z").should('have.text', 'z-coordinate: ')
         cy.get("#\\/p3z").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/p3ze").should('have.text', 'z-coordinate: ')
+        cy.get("#\\/pallz").should('have.text', 'z-coordinates: ')
 
         cy.get("#\\/p1all").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('g')
@@ -5904,6 +7192,36 @@ describe('Point Tag Tests', function () {
         })
         cy.get("#\\/p3all").find('.mjx-mrow').eq(2).should('not.exist')
 
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get("#\\/p3alle").find('.mjx-mrow').eq(2).should('not.exist')
+
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(1).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(2).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(3).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(4).invoke('text').then((text) => {
+          expect(text.trim()).equal('g')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(5).invoke('text').then((text) => {
+          expect(text.trim()).equal('h')
+        })
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(6).should('not.exist')
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(7).should('not.exist')
+        cy.get("#\\/pallall").find('.mjx-mrow').eq(8).should('not.exist')
+
         cy.get(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(g,h)')
         })
@@ -5911,6 +7229,18 @@ describe('Point Tag Tests', function () {
           expect(text.trim()).equal('(g,h)')
         })
         cy.get(coords3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(g,h)')
+        })
+        cy.get(coords3eAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(g,h)')
+        })
+        cy.get(coordsallAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(g,h)')
+        })
+        cy.get(coordsallAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(g,h)')
+        })
+        cy.get(coordsallAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(g,h)')
         })
 

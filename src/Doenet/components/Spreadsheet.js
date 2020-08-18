@@ -27,7 +27,7 @@ export default class Spreadsheet extends Table {
         componentChanges[[row,col]] = value;
       }
 
-      this.requestUpdate({
+      this.coreFunctions.requestUpdate({
         updateType: "updateValue",
         updateInstructions: [{
           componentName: this.componentName,

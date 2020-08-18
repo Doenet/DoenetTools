@@ -13,8 +13,8 @@ export default class Seeds extends InlineComponent {
       number: 0
     });
 
-    let breakStringIntoSeedsByCommas = function ({ activeChildrenMatched }) {
-      let stringChild = activeChildrenMatched[0];
+    let breakStringIntoSeedsByCommas = function ({ dependencyValues }) {
+      let stringChild = dependencyValues.stringChildren[0];
       let newChildren = stringChild.stateValues.value.split(",").map(x => ({
         componentType: "seed",
         state: { value: x.trim() }
@@ -31,6 +31,13 @@ export default class Seeds extends InlineComponent {
       componentType: 'string',
       number: 1,
       isSugar: true,
+      returnSugarDependencies: () => ({
+        stringChildren: {
+          dependencyType: "childStateVariables",
+          childLogicName: "exactlyOneString",
+          variableNames: ["value"]
+        }
+      }),
       logicToWaitOnSugar: ["atLeastZeroSeeds"],
       replacementFunction: breakStringIntoSeedsByCommas,
     });

@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Extract Tag Tests', function () {
 
   beforeEach(() => {
@@ -68,11 +78,11 @@ describe('Extract Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let math1 = components['/_extract1'].replacements[0];
-      let math1Anchor = '#' + math1.componentName;
+      let math1Anchor = cesc('#' + math1.componentName);
       let math2 = components['/_extract1'].replacements[1];
-      let math2Anchor = '#' + math2.componentName;
+      let math2Anchor = cesc('#' + math2.componentName);
       let math3 = components['/_extract1'].replacements[2];
-      let math3Anchor = '#' + math3.componentName;
+      let math3Anchor = cesc('#' + math3.componentName);
 
 
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -388,13 +398,13 @@ describe('Extract Tag Tests', function () {
       cy.get('#\\/n_input').clear().type(`3{enter}`);
       cy.window().then((win) => {
         for (let i = 0; i < 3; i++) {
-          cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist1.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`＿+${i + 1}`)
           });
-          cy.get(`#${aslist2.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist2.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`＿+${i + 1}`)
           });
-          cy.get(`#${aslist3.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist3.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`＿+${i + 1}`)
           });
         }
@@ -416,13 +426,13 @@ describe('Extract Tag Tests', function () {
       cy.get('#\\/m_input').clear().type(`7{enter}`);
       cy.window().then((win) => {
         for (let i = 0; i < 3; i++) {
-          cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist1.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i + 8}`)
           });
-          cy.get(`#${aslist2.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist2.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i + 8}`)
           });
-          cy.get(`#${aslist3.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist3.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i + 8}`)
           });
         }
@@ -444,13 +454,13 @@ describe('Extract Tag Tests', function () {
       cy.get('#\\/n_input').clear().type(`4{enter}`);
       cy.window().then((win) => {
         for (let i = 0; i < 4; i++) {
-          cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist1.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i + 8}`)
           });
-          cy.get(`#${aslist2.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist2.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i + 8}`)
           });
-          cy.get(`#${aslist3.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist3.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i + 8}`)
           });
         }
@@ -472,13 +482,13 @@ describe('Extract Tag Tests', function () {
       cy.get('#\\/m_input').clear().type(`q{enter}`);
       cy.window().then((win) => {
         for (let i = 0; i < 4; i++) {
-          cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist1.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`q+${i + 1}`)
           });
-          cy.get(`#${aslist2.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist2.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`q+${i + 1}`)
           });
-          cy.get(`#${aslist3.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist3.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`q+${i + 1}`)
           });
         }
@@ -502,13 +512,13 @@ describe('Extract Tag Tests', function () {
       cy.get('#\\/n_input').clear().type(`2{enter}`);
       cy.window().then((win) => {
         for (let i = 0; i < 2; i++) {
-          cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist1.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`q+${i + 1}`)
           });
-          cy.get(`#${aslist2.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist2.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`q+${i + 1}`)
           });
-          cy.get(`#${aslist3.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist3.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`q+${i + 1}`)
           });
         }
@@ -531,13 +541,13 @@ describe('Extract Tag Tests', function () {
       cy.get('#\\/m_input').clear().type(`-1{enter}`);
       cy.window().then((win) => {
         for (let i = 0; i < 2; i++) {
-          cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist1.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}`)
           });
-          cy.get(`#${aslist2.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist2.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}`)
           });
-          cy.get(`#${aslist3.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist3.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}`)
           });
         }
@@ -560,13 +570,13 @@ describe('Extract Tag Tests', function () {
       cy.get('#\\/n_input').clear().type(`5{enter}`);
       cy.window().then((win) => {
         for (let i = 0; i < 5; i++) {
-          cy.get(`#${aslist1.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist1.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}`)
           });
-          cy.get(`#${aslist2.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist2.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}`)
           });
-          cy.get(`#${aslist3.activeChildren[i].componentName}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          cy.get(cesc(`#${aslist3.activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}`)
           });
         }

@@ -83,10 +83,14 @@ export default class Line extends DoenetRenderer {
     this.polylineJXG = this.props.board.create('curve', [x, y], this.jsxPolylineAttributes);
 
     for (let i = 0; i < this.doenetSvData.nVertices; i++) {
-      this.pointsJXG[i].on('drag', x => this.onDragHandler(i));
+      this.pointsJXG[i].on('drag', x => this.onDragHandler(i, true));
+      this.pointsJXG[i].on('up', x => this.onDragHandler(i, false));
+      this.pointsJXG[i].on('down', x => this.draggedPoint = null);
     }
 
-    this.polylineJXG.on('drag', x => this.onDragHandler(-1));
+    this.polylineJXG.on('drag', x => this.onDragHandler(-1, true));
+    this.polylineJXG.on('up', x => this.onDragHandler(-1, false));
+    this.polylineJXG.on('down', x => this.draggedPoint = null);
 
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
     this.previousNVertices = this.doenetSvData.nVertices;
@@ -145,7 +149,9 @@ export default class Line extends DoenetRenderer {
         );
         this.polylineJXG.dataX.length = this.doenetSvData.nVertices;
 
-        this.pointsJXG[i].on('drag', x => this.onDragHandler(i));
+        this.pointsJXG[i].on('drag', x => this.onDragHandler(i, true));
+        this.pointsJXG[i].on('up', x => this.onDragHandler(i, false));
+        this.pointsJXG[i].on('down', x => this.draggedPoint = null);
       }
     } else if (this.doenetSvData.nVertices < this.previousNVertices) {
       for (let i = this.doenetSvData.nVertices; i < this.previousNVertices; i++) {
@@ -200,14 +206,21 @@ export default class Line extends DoenetRenderer {
   }
 
 
-  onDragHandler(i) {
+  onDragHandler(i, transient) {
+    if (transient) {
+      this.draggedPoint = i;
+    } else if (this.draggedPoint !== i) {
+      return;
+    }
+
     if (i === -1) {
-      let newPointcoords = this.polylineJXG.points.map(z => [z.usrCoords[1], z.usrCoords[2]]);
-      this.actions.movePolyline(newPointcoords);
+      let newPointcoords = {};
+      this.polylineJXG.points.forEach((z, i) => newPointcoords[i] = [z.usrCoords[1], z.usrCoords[2]]);
+      this.actions.movePolyline(newPointcoords, transient);
     } else {
       let newCoords = {};
       newCoords[i] = [this.pointsJXG[i].X(), this.pointsJXG[i].Y()];
-      this.actions.movePolyline(newCoords);
+      this.actions.movePolyline(newCoords, transient);
     }
   }
 

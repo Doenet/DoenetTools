@@ -1,4 +1,13 @@
 import me from 'math-expressions';
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
 
 describe('Number Tag Tests', function () {
 
@@ -21,7 +30,7 @@ describe('Number Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let number0 = components['/_copy1'].replacements[0];
-      let number0Anchor = '#' + number0.componentName;
+      let number0Anchor = cesc('#' + number0.componentName);
 
       cy.log('Test value displayed in browser')
       cy.get(number0Anchor).should('have.text', '2')
@@ -51,7 +60,7 @@ describe('Number Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let number0 = components['/_copy1'].replacements[0];
-      let number0Anchor = '#' + number0.componentName;
+      let number0Anchor = cesc('#' + number0.componentName);
 
       cy.log('Test value displayed in browser')
       cy.get(number0Anchor).should('have.text', 'NaN')

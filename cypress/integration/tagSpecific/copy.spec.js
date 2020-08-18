@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Copy Tag Tests', function () {
 
   beforeEach(() => {
@@ -421,8 +431,8 @@ describe('Copy Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let p2Anchor = "#" + components["/p2"].replacements[0].componentName;
-      let p3Anchor = "#" + components["/p3"].replacements[0].replacements[0].componentName;
+      let p2Anchor = cesc("#" + components["/p2"].replacements[0].componentName);
+      let p3Anchor = cesc("#" + components["/p3"].replacements[0].replacements[0].componentName);
 
       cy.get('#\\/_p1').invoke('text').then((text) => {
         expect(text.trim()).equal('')
