@@ -197,11 +197,6 @@ module.exports = {
       favicon: "./src/Tools/favicon.ico",
     }),
     // new HtmlWebPackPlugin({
-    //   chunks: ["profile/index.js"],
-    //   template: "./src/profile/index.html",
-    //   filename: "./profile/index.html"
-    // }),
-    // new HtmlWebPackPlugin({
     //   chunks: ["viewer/index.js"],
     //   template: "./src/viewer/index.html",
     //   filename: "./viewer/index.html"
