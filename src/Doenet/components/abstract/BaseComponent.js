@@ -12,7 +12,6 @@ export default class BaseComponent {
     stateVariableDefinitions,
     componentInfoObjects,
     coreFunctions,
-    externalFunctions,
     flags,
     shadow,
     numerics, sharedParameters,
@@ -22,14 +21,11 @@ export default class BaseComponent {
     this.numerics = numerics;
     this.sharedParameters = sharedParameters;
 
-    this.readOnlyProxyHandler = readOnlyProxyHandler;
-
     this.componentName = componentName;
     this.ancestors = ancestors;
 
     this.componentInfoObjects = componentInfoObjects;
     this.coreFunctions = coreFunctions;
-    this.externalFunctions = externalFunctions;
     this.flags = flags;
 
     this.componentIsAProperty = false;
@@ -125,6 +121,8 @@ export default class BaseComponent {
     return allPotentialRendererTypes;
 
   }
+
+  readOnlyProxyHandler = readOnlyProxyHandler;
 
   potentialRendererTypesFromSerializedComponents(serializedComponents) {
     let potentialRendererTypes = [];
