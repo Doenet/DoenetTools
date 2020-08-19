@@ -6,6 +6,13 @@ const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 
 module.exports = {
 
+  stats: {
+    children: false,
+    assets: false,
+    entrypoints: false,
+    modules: false,
+  },
+
   // devtool: 'source-map',
   entry: {
     "index.js": "./src/index.js",
