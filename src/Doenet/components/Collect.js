@@ -1199,7 +1199,7 @@ export default class Collect extends CompositeComponent {
 
   //   collectedDeps[component.componentName] = thisDep;
 
-  //   if (!(component instanceof this.allComponentClasses['_composite'])) {
+  //   if (!(component instanceof this.componentInfoObjects.allComponentClasses['_composite'])) {
   //     for (let child of component.definingChildren) {
   //       Object.assign(collectedDeps, this.getReferenceFromCollected(child));
   //     }

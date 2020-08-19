@@ -16,7 +16,7 @@ export default class Choiceinput extends Input {
     Object.defineProperty(this.actions, 'submitAnswer', {
       get: function () {
         if (this.stateValues.answerAncestor !== null) {
-          return () => this.requestAction({
+          return () => this.coreFunctions.requestAction({
             componentName: this.stateValues.answerAncestor.componentName,
             actionName: "submitAnswer"
           })
@@ -580,13 +580,25 @@ export default class Choiceinput extends Input {
 
   updateSelectedIndices({ selectedIndices }) {
     if (!this.stateValues.disabled) {
-      this.requestUpdate({
+      this.coreFunctions.requestUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "selectedIndices",
           value: selectedIndices
-        }]
+        }],
+        event: {
+          verb: "selected",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            response: selectedIndices,
+            responseText: selectedIndices
+              .map(i => this.stateValues.choiceTexts[i - 1])
+          }
+        }
       })
     }
   }

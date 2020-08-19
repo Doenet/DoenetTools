@@ -17,6 +17,7 @@
     "math-expressions": "2.0.0-alpha26",
     "mersenne-twister": "1.1.0",
     "moment": "^2.27.0",
+    "monaco-editor": "^0.20.0",
     "monaco-editor-webpack-plugin": "^1.9.0",
     "nanoid": "^2.1.11",
     "prop-types": "^15.7.2",
@@ -38,12 +39,12 @@
     "three-text2d": "0.4.1"
   },
   "scripts": {
-    "start": "(npm run healthcheck && cat DoenetLogo.txt) & cd doenet_docker && docker-compose up",
+    "start": "cd doenet_docker && docker-compose up",
     "healthcheck": "npx wait-on http://localhost:80 && docker exec doenet_docker_mysql_1 /bin/sh wait_on_mysql.sh",
     "docker:build": "cd doenet_docker && docker-compose build",
     "docker:lamp": "cd doenet_docker_lamp_only && docker-compose up",
     "docker:webpack": "cd doenet_docker_webpack_only && docker-compose up",
-    "webpack": "webpack --mode development --config webpack.local.config.js --watch",
+    "webpack": "webpack --mode development --config webpack.local.config.js --watch --progress --build-delimiter '                                    ..,,,,,..\n                           ,,,,,,,,,,,,,,,,,,,,,,,,,,,\n                      ,,,,,,,.......................,,,,,,,\n                  .,,,,,.................................,,,,,.\n               .,,,,......................*///,.............,,,,,\n             .,,,,..................%*             %,..........,,,,.\n           .,,,...........&#   &.,/                   &..........,,,,.\n          ,,,,.........#                                %..........,,,,\n        .,,,..........&.            .*(##(*.             ,...........,,,\n       .,,,...........&.        %##############%          %...........,,,\n       ,,,.........(%#,%.     %%#######//#%%%#####        &............,,,\n      ,,,......%....         (%%####*      /%#####/          .##.......,,,,\n      ,,,....#..             /%%%#################*              ,,.....,,,\n     ,,,,....,.               **(%%%###########(**                ,,....,,,.\n     ,,,.....*.                  **************                   ,.....,,,.\n     ,,,,....%.                                                  ,*.....,,,.\n      ,,,...../*..                .............................(/.......,,,\n      ,,,........./###((((///////////****,,,,,............@@@@@@@@.....,,,,\n       ,,,.........@@@@........@@@@....@@@@@.@@....@@.@@@@@..@@........,,,\n        ,,,........@@..@@@...@@@..@@@..@@....@@@...@@.@@.....@@.......,,,\n         ,,,.......@@...@@..@@......@@.@@@@@.@@.@..@@.@@@@@..@@.....,,,,\n          ,,,,.....@@...@@..@@......@@.@@....@@..@.@@.@@.....@@....,,,,\n           .,,,,...@@..@@@...@@@..@@@..@@....@@...@@@.@@.....@@..,,,,\n             .,,,,.@@@@........@@@@....@@@@@.@@....@@.@@@@@..@@,,,,\n                ,,,,,.......................................,,,,,\n                  .,,,,,,...............................,,,,,,\n                      ,,,,,,,......................,,,,,,,.\n                           .,,,,,,,,,,,,,,,,,,,,,,,,,.\n                                     .......'",
     "build": "webpack --mode production --config webpack.deployment.config.js",
     "lint": "prettier-eslint --write true \"$(pwd)/src/**/*.js\" && prettier-eslint --write true \"$(pwd)/cypress/**/*.js\"",
     "test": "cypress open",

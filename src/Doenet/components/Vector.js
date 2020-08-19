@@ -1619,10 +1619,27 @@ export default class Vector extends GraphicalComponent {
     }
 
 
-    this.requestUpdate({
-      updateInstructions,
-      transient
-    });
+    if (transient) {
+      this.coreFunctions.requestUpdate({
+        updateInstructions,
+        transient
+      });
+    } else {
+      this.coreFunctions.requestUpdate({
+        updateInstructions,
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            head: headcoords,
+            tail: tailcoords,
+          }
+        }
+      });
+    }
 
   }
 

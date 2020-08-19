@@ -1397,7 +1397,7 @@ export default class Circle extends Curve {
           for (let arrayKey in desiredStateVariableValues.numericalCenter) {
             instructions.push({
               setStateVariable: "numericalCenter",
-              value: {[arrayKey]: desiredStateVariableValues.numericalCenter[arrayKey]},
+              value: { [arrayKey]: desiredStateVariableValues.numericalCenter[arrayKey] },
             })
           }
           return {
@@ -2120,10 +2120,27 @@ export default class Circle extends Curve {
 
     }
 
-    this.requestUpdate({
-      updateInstructions: instructions,
-      transient
-    });
+    if (transient) {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: instructions,
+        transient
+      });
+    } else {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: instructions,
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            center
+          }
+        }
+      });
+    }
+
 
   }
 
