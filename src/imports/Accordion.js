@@ -46,7 +46,7 @@ export default class Accordion extends Component {
   }
   function AccordionSectionCustom ({onClick, isOpen, label, children, activeChild}) {
 
-    console.log('activeChild', activeChild);
+    // console.log('activeChild', activeChild);
   
     const handleOnClick = () => {
       onClick(label);
