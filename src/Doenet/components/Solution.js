@@ -267,7 +267,7 @@ export default class Solution extends BlockComponent {
   revealSolution() {
     let { scoredItemNumber, scoredComponent } = this.coreFunctions.calculateScoredItemNumberOfContainer(this.componentName);
 
-    this.externalFunctions.recordSolutionView({
+    this.coreFunctions.recordSolutionView({
       itemNumber: scoredItemNumber,
       scoredComponent: scoredComponent,
       callBack: this.revealSolutionCallBack

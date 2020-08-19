@@ -33,6 +33,7 @@ export default class Core {
 
     this.requestUpdate = this.requestUpdate.bind(this);
     this.requestAction = this.requestAction.bind(this);
+    this.requestRecordEvent = this.requestRecordEvent.bind(this);
     this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
     this._requestAnimationFrame = this._requestAnimationFrame.bind(this);
     this.cancelAnimationFrame = this.cancelAnimationFrame.bind(this);
@@ -45,6 +46,19 @@ export default class Core {
     this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
 
     this.coreUpdatedCallback = coreUpdatedCallback;
+    this.coreReadyCallback = function () {
+      coreReadyCallback();
+
+      this.recordEvent({
+        verb: "experienced",
+        object: {
+          componentName: this.document.componentName,
+          componentType: "document",
+        },
+      })
+    }.bind(this);
+
+
     this._standardComponentClasses = ComponentTypes.standardComponentClasses();
     this._allComponentClasses = ComponentTypes.allComponentClasses();
     this._componentTypesTakingComponentNames = ComponentTypes.componentTypesTakingComponentNames();
@@ -83,15 +97,16 @@ export default class Core {
     this.coreFunctions = {
       requestUpdate: this.requestUpdate,
       requestAction: this.requestAction,
+      requestRecordEvent: this.requestRecordEvent,
       requestAnimationFrame: this.requestAnimationFrame,
       cancelAnimationFrame: this.cancelAnimationFrame,
       calculateScoredItemNumberOfContainer: this.calculateScoredItemNumberOfContainer,
+      recordSolutionView: this.externalFunctions.recordSolutionView,
     }
 
     this.animationIDs = {};
     this.lastAnimationID = 0;
     this.requestedVariant = requestedVariant;
-    this.coreReadyCallback = coreReadyCallback;
 
     // console.time('serialize doenetML');
 
@@ -221,13 +236,9 @@ export default class Core {
     console.log(this._components);
 
     if (calledAsynchronously) {
-      this.coreReadyCallback({
-        doenetTags: this.doenetState,
-      })
+      this.coreReadyCallback()
     } else {
-      setTimeout(() => this.coreReadyCallback({
-        doenetTags: this.doenetState,
-      }), 0)
+      setTimeout(() => this.coreReadyCallback(), 0)
     }
 
   }
@@ -1024,7 +1035,6 @@ export default class Core {
       serializedState: serializedComponent,
       componentInfoObjects: this.componentInfoObjects,
       coreFunctions: this.coreFunctions,
-      externalFunctions: this.externalFunctions,
       flags: this.flags,
       shadow: shadow,
       numerics: this.numerics,
@@ -9956,8 +9966,8 @@ export default class Core {
     let upstream = this.upstreamDependencies[componentName][varName];
 
     let freshnessInfo;
-    
-    if(component.state[varName]) {
+
+    if (component.state[varName]) {
       freshnessInfo = component.state[varName].freshnessInfo;
     }
 
@@ -10037,7 +10047,7 @@ export default class Core {
 
             foundVarChange = true;
 
-          } else if(varName === "__activeChildren") {
+          } else if (varName === "__activeChildren") {
             // for __activeChildren, we just mark upDep as changed
 
             if (!upDep.valuesChanged) {
@@ -11851,22 +11861,28 @@ export default class Core {
     // and can detect changes when it is marked stale
     this.document.stateValues.itemCreditAchieved;
 
-    if(event && this.externalFunctions.recordEvent) {
+    if (event) {
+      this.requestRecordEvent(event);
+    }
 
-      event.object.documentTitle = this.document.stateValues.title;
+    return { success: true };
+  }
+
+  requestRecordEvent(event) {
+    if (this.externalFunctions.recordEvent) {
+
+      // event.object.documentTitle = this.document.stateValues.title;
       event.timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
-      if(!event.result) {
+      if (!event.result) {
         event.result = {};
       }
-      if(!event.context) {
+      if (!event.context) {
         event.context = {};
       }
 
       this.externalFunctions.recordEvent(event);
     }
-
-    return { success: true };
   }
 
   executeUpdateStateVariables({
