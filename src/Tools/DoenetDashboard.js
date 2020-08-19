@@ -32,13 +32,17 @@ const alphabet =
 
   function compare (x, y) {
     //console.log("XY: ", x, y);
+    // console.log("yoooooooooooo");
+    
     if(x.position != null && y.position != null){
+      console.log("not nullll");
       return x.position - y.position
     }else if(x.position != null){
       return -1
     }else if(y.position != null){
       return 1
     }else{
+      // console.log(x.shortname, y.shortname);////////////////////////////
       return x.shortname.localeCompare(y.shortname)
     }
   }
@@ -58,6 +62,8 @@ const alphabet =
       console.log("courses",courseListArray);
       //console.log("selected",selectedCourseObj);
       //setSelected("NfzKqYtTgYRyPnmaxc7XB");
+      // console.log("hereeeeeee");////////////////////////////
+      
       setItems(courseListArray.sort(compare))
       if(courseListArray.length > 0){
         setIsLoaded(true)

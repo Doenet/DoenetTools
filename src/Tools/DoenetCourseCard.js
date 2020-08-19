@@ -69,7 +69,7 @@ const ShortNameContainer = Styled.p`
 const Card = props => (
     <Container url={`/course_pictures/${props.data.image}.jpg`} color={props.data.color}>
       <Menu
-      data={["334423", "fa3c29", "00234f", "8f8f4c", "aabbcc", "5bc403"]} courseId = {props.data.courseId} updateCourseColor = {props.updateCourseColor}/>
+      data={["000000", "334423", "fa3c29", "00234f", "8f8f4c", "aabbcc", "5bc403"]} courseId = {props.data.courseId} updateCourseColor = {props.updateCourseColor}/>
       {/* <Image url={`/course_pictures/${props.data.image}.jpg`} color={props.data.color} /> */}
       <Info>
         <LongNameContainer><b>{props.data.longname}</b></LongNameContainer>

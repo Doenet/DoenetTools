@@ -880,7 +880,7 @@ CREATE TABLE `user_dashboard_modification` (
 
 LOCK TABLES `user_dashboard_modification` WRITE;
 /*!40000 ALTER TABLE `user_dashboard_modification` DISABLE KEYS */;
-INSERT INTO `user_dashboard_modification` VALUES (1,'4VYp5dOrVWGz0OKB2hkLW','aI8sK4vmEhC5sdeSP3vNW',3,NULL,NULL),(2,'4VYp5dOrVWGz0OKB2hkLW','uTMfKhSmcNtLDaK8oJ3U',4,NULL,NULL),(4,'4VYp5dOrVWGz0OKB2hkLW','NfzKqYtTgYRyPnmaxc7XB',5,NULL,NULL),(5,'4VYp5dOrVWGz0OKB2hkLW','test1',1,NULL,NULL),(6,'4VYp5dOrVWGz0OKB2hkLW','test2',2,'ff3477',NULL);
+INSERT INTO `user_dashboard_modification` VALUES (1,'4VYp5dOrVWGz0OKB2hkLW','aI8sK4vmEhC5sdeSP3vNW',3,NULL,NULL),(2,'4VYp5dOrVWGz0OKB2hkLW','uTMfKhSmcNtLDaK8oJ3U',2,'aaaaaa',''),(4,'4VYp5dOrVWGz0OKB2hkLW','NfzKqYtTgYRyPnmaxc7XB',1,'bbbbbb',''),(5,'4VYp5dOrVWGz0OKB2hkLW','test1',1,NULL,NULL),(6,'4VYp5dOrVWGz0OKB2hkLW','test2',2,'ff3477',NULL);
 /*!40000 ALTER TABLE `user_dashboard_modification` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1002,4 +1002,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-08-11 20:44:46
+-- Dump completed on 2020-08-18 18:02:07

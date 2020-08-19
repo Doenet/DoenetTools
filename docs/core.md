@@ -28,7 +28,7 @@ component to core
 ### updateTypes
 * updateValue
 
-        this.requestUpdate({
+        this.coreFunctions.requestUpdate({
           updateType: "updateValue",
           updateInstructions: [{
             componentName: this.componentName,
@@ -39,7 +39,7 @@ component to core
 
 * updateRendererOnly
 
-      this.requestUpdate({
+      this.coreFunctions.requestUpdate({
         updateType: "updateRendererOnly",
       });
 

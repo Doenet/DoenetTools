@@ -14,6 +14,9 @@ export default class Ref extends DoenetRenderer {
       linkContent = this.doenetSvData.linkText;
     }
     if (this.doenetSvData.uri) {
+      // if(this is a doenet content id) {
+      //   return <a id={this.componentName} name={this.componentName} href={}>{linkContent}</a>
+      // }
       return <a id={this.componentName} name={this.componentName} href={this.doenetSvData.uri}>{linkContent}</a>
     } else {
       return <a id={this.componentName} name={this.componentName} href={"#" + this.doenetSvData.targetName}>{linkContent}</a>

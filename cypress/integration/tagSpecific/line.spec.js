@@ -1,4 +1,13 @@
 import me from 'math-expressions';
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
 
 describe('Line Tag Tests', function () {
 
@@ -450,9 +459,9 @@ describe('Line Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let math1 = components['/_copy1'].replacements[0];
-      let math1Anchor = '#' + math1.componentName;
+      let math1Anchor = cesc('#' + math1.componentName);
       let math2 = components['/_copy2'].replacements[0];
-      let math2Anchor = '#' + math2.componentName;
+      let math2Anchor = cesc('#' + math2.componentName);
 
       cy.log('equation and line variable are what they should be')
       cy.get(math1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -758,6 +767,111 @@ describe('Line Tag Tests', function () {
 
         expect(line2.stateValues.slope.evaluate_to_constant()).closeTo(-0.5, 1E-12);
         expect(line2.stateValues.yintercept.evaluate_to_constant()).closeTo(-3, 1E-12);
+
+      });
+
+    })
+  })
+
+  it('copied line based on equation', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <line>
+  y = 2x+1
+  </line>
+  </graph>
+  
+  <graph>
+  <copy tname="_line1" />
+  </graph>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let line2 = components['/_copy1'].replacements[0];
+
+      cy.log('line starts off correctly')
+      cy.window().then((win) => {
+        expect(components["/_line1"].stateValues.slope.evaluate_to_constant()).closeTo(2, 1E-12);
+        expect(components["/_line1"].stateValues.yintercept.evaluate_to_constant()).closeTo(1, 1E-12);
+        expect(line2.stateValues.slope.evaluate_to_constant()).closeTo(2, 1E-12);
+        expect(line2.stateValues.yintercept.evaluate_to_constant()).closeTo(1, 1E-12);
+
+      });
+
+
+      cy.log('move line1')
+      cy.window().then((win) => {
+
+        let point1coords = [
+          components['/_line1'].stateValues.points[0][0],
+          components['/_line1'].stateValues.points[0][1],
+        ];
+        let point2coords = [
+          components['/_line1'].stateValues.points[1][0],
+          components['/_line1'].stateValues.points[1][1],
+        ];
+
+        let moveX = -2;
+        let moveY = -1;
+
+        // 2(x+2)+1-1 = 2x+4
+
+        point1coords[0] = point1coords[0].add(moveX);
+        point1coords[1] = point1coords[1].add(moveY);
+        point2coords[0] = point2coords[0].add(moveX);
+        point2coords[1] = point2coords[1].add(moveY);
+
+        components['/_line1'].moveLine({
+          point1coords: point1coords,
+          point2coords: point2coords
+        });
+
+        expect(components["/_line1"].stateValues.slope.evaluate_to_constant()).closeTo(2, 1E-12);
+        expect(components["/_line1"].stateValues.yintercept.evaluate_to_constant()).closeTo(4, 1E-12);
+        expect(line2.stateValues.slope.evaluate_to_constant()).closeTo(2, 1E-12);
+        expect(line2.stateValues.yintercept.evaluate_to_constant()).closeTo(4, 1E-12);
+
+      });
+
+      cy.log('move line2')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let point1coords = [
+          components['/_line1'].stateValues.points[0][0],
+          components['/_line1'].stateValues.points[0][1],
+        ];
+        let point2coords = [
+          components['/_line1'].stateValues.points[1][0],
+          components['/_line1'].stateValues.points[1][1],
+        ];
+
+        let moveX = -5;
+        let moveY = -2;
+
+        // 2(x+5)+4-2 = 2x + 12
+
+        point1coords[0] = point1coords[0].add(moveX);
+        point1coords[1] = point1coords[1].add(moveY);
+        point2coords[0] = point2coords[0].add(moveX);
+        point2coords[1] = point2coords[1].add(moveY);
+
+        line2.moveLine({
+          point1coords: point1coords,
+          point2coords: point2coords
+        });
+
+        expect(components["/_line1"].stateValues.slope.evaluate_to_constant()).closeTo(2, 1E-12);
+        expect(components["/_line1"].stateValues.yintercept.evaluate_to_constant()).closeTo(12, 1E-12);
+        expect(line2.stateValues.slope.evaluate_to_constant()).closeTo(2, 1E-12);
+        expect(line2.stateValues.yintercept.evaluate_to_constant()).closeTo(12, 1E-12);
 
       });
 
@@ -1221,15 +1335,15 @@ describe('Line Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let var1 = components['/_copy1'].replacements[0];
-      let var1Anchor = '#' + var1.componentName;
+      let var1Anchor = cesc('#' + var1.componentName);
       let var2 = components['/_copy2'].replacements[0];
-      let var2Anchor = '#' + var2.componentName;
+      let var2Anchor = cesc('#' + var2.componentName);
       let xintercept = components['/_copy3'].replacements[0];
-      let xinterceptAnchor = '#' + xintercept.componentName;
+      let xinterceptAnchor = cesc('#' + xintercept.componentName);
       let yintercept = components['/_copy4'].replacements[0];
-      let yinterceptAnchor = '#' + yintercept.componentName;
+      let yinterceptAnchor = cesc('#' + yintercept.componentName);
       let slope = components['/_copy5'].replacements[0];
-      let slopeAnchor = '#' + slope.componentName;
+      let slopeAnchor = cesc('#' + slope.componentName);
       let equation = components['/_copy6'].replacements[0];
 
       cy.get(var1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
