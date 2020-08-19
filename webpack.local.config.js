@@ -33,6 +33,7 @@ module.exports = {
     "test/index.js": "./src/test/index.js",
     "viewer/index.js": "./src/viewer/index.js",
     "exampletool/index.js": "./src/exampletool/index.js",
+    "temp/index.js": "./src/temp/index.js",
 
   },
 
@@ -184,6 +185,12 @@ module.exports = {
       chunks: ["accountsettings/index.js"],
       template: "./src/accountsettings/index.html",
       filename: "./accountsettings/index.html",
+      favicon: "./src/Tools/favicon.ico",
+    }),
+    new HtmlWebPackPlugin({
+      chunks: ["temp/index.js"],
+      template: "./src/temp/index.html",
+      filename: "./temp/index.html",
       favicon: "./src/Tools/favicon.ico",
     }),
     new HtmlWebPackPlugin({
