@@ -325,23 +325,19 @@ class InfoPanel extends Component {
       this.infoPanelDetails = <React.Fragment>
         <table id="infoPanelDetailsTable">
           <tbody>
-            {this.
-              Details}
+            {this.infoPanelDetails}
           </tbody>
         </table>
         <div id="editContentButtonContainer">
           <div id="editContentButton" data-cy="editContentButton"
-            onClick=
+            onClick= {(e) => { this.props.versionCallback(e, selectedItemId); }}
             // {() => { window.location.href = `/editor?branchId=${selectedItemId}` }}
 
-            {(e) => {
-              this.props.versionCallback(e, selectedItemId);
-            }}
           >
 
 
             <FontAwesomeIcon icon={faEdit} style={{ "fontSize": "20px", "color": "#43aa90" }} />
-            <span>Edit Draft1</span>
+            <span>Edit Draft</span>
           </div>
         </div>
       </React.Fragment>
@@ -391,7 +387,6 @@ class InfoPanel extends Component {
   }
 
   render() {
-    console.log('I am here buddy!')
     this.buildInfoPanel();
     return (<React.Fragment>
       {this.infoPanel}
