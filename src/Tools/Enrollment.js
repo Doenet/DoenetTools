@@ -3,19 +3,20 @@ import React, { useState, useEffect, useCallback } from "react";
 import {useDropzone} from 'react-dropzone';
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import parse from 'csv-parse';
+import nanoid from 'nanoid';
 
 
 
 export default function Enrollment(params){
   const [process, setProcess] = useState("Loading");//array containing column names
-  console.log("process",process);
+  // console.log("process",process);
   const [headers, setHeaders] = useState([]);//array containing column names
   const [entries, setEntries] = useState([[]]);//2d array with each row representing a data point
   const onDrop = useCallback( file => {
   const reader = new FileReader();
   
-  reader.onabort = () => console.log('file reading was aborted');
-  reader.onerror = () => console.log('file reading encountered an error');
+  reader.onabort = () => {}
+  reader.onerror = () => {}
   reader.onload = () => {
     parse(reader.result, { comment: '#' }, function(err, data){
       setHeaders(data[0]);
@@ -93,21 +94,18 @@ export default function Enrollment(params){
     };
     for (let [i,head] of headers.entries()){
       const colHead = head.toLowerCase().replace(/\s/g, '').replace(/"/g, '');
-
-      if (colHead === 'empid' ||
+      if (colHead === 'emplid' ||
           colHead === 'id' ||
           colHead === 'studentid' ||
           colHead === 'employeeid'){columnToIndex.empId = i;}
-      else if (colHead === 'emailaddress' ||
+      if (colHead === 'emailaddress' ||
                colHead === 'email'){columnToIndex.email = i;}
-      else if (colHead === 'firstname'){columnToIndex.firstname = i;}
-      else if (colHead === 'lastname'){columnToIndex.lastname = i;}
-      else if (colHead === 'section'){columnToIndex.section = i;}
-      else if (colHead === 'mainsectionstatus'){columnToIndex.dropped = i;}
+      if (colHead === 'firstname'){columnToIndex.firstName = i; }
+      if (colHead === 'lastname'){columnToIndex.lastName = i; }
+      if (colHead === 'section'){columnToIndex.section = i;}
+      if (colHead === 'mainsectionstatus'){columnToIndex.dropped = i;}
     }
     // console.log("columnToIndex",columnToIndex)
-    // console.log("headers",headers)
-    // console.log("first",entries[0])
     if (columnToIndex.empId == null && columnToIndex.email == null){
       foundId = false;
     }
@@ -154,8 +152,11 @@ export default function Enrollment(params){
       let mergeEmail = [];
       let mergeSection = [];
       let mergeDropped = [];
+      let userIds = [];
     for(let [i,rowdata] of entries.entries()){
       let rowcells = [];
+      let userId = nanoid();
+      userIds.push(userId);
       
       if (columnToIndex.empId != null && typeof rowdata[columnToIndex.empId] == "string" ){
         let empId = rowdata[columnToIndex.empId].replace(/"/g, '');
@@ -169,7 +170,7 @@ export default function Enrollment(params){
       }
       if (columnToIndex.lastName != null && typeof rowdata[columnToIndex.lastName] == "string"){
         let lastName = rowdata[columnToIndex.lastName].replace(/"/g, '');
-        rowcells.push(<td key="lastName">{}</td>)
+        rowcells.push(<td key="lastName">{lastName}</td>)
         mergeLastName.push(lastName);
       }
       if (columnToIndex.email != null && typeof rowdata[columnToIndex.email] == "string"){
@@ -200,12 +201,15 @@ export default function Enrollment(params){
         mergeLastName,
         mergeEmail,
         mergeSection,
-        mergeDropped
+        mergeDropped,
+        userIds
       }
       axios.post('/api/mergeEnrollmentData.php', payload)
         .then(resp => {
-          console.log('mergeEnrollmentData-->>>',resp.data);
-          // setEnrollmentTableData(resp.data.enrollmentTable)
+          const enrollmentArray = resp.data.enrollmentArray;
+          if (enrollmentArray){
+            setEnrollmentTableData(enrollmentArray)
+          }
           setProcess("Display Enrollment") 
         });
     }}>Merge</button>,
@@ -221,8 +225,6 @@ export default function Enrollment(params){
       {importRows}
       </tbody>
     </table>
-    
-    {/* {importData} */}
     
     </div>
     </ToolLayoutPanel>)
