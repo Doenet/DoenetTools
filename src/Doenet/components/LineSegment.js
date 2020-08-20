@@ -220,8 +220,8 @@ export default class LineSegment extends GraphicalComponent {
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
-          let [pointInd, dimInd] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           dependenciesByKey[arrayKey] = {
             endpointsChild: {
@@ -245,8 +245,8 @@ export default class LineSegment extends GraphicalComponent {
 
         for (let arrayKey of arrayKeys) {
 
-          let [pointInd, dimInd] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           if (dependencyValuesByKey[arrayKey].endpointsChild.length === 1
             && dependencyValuesByKey[arrayKey].endpointsChild[0].stateValues["pointX" + varEnding]
@@ -292,8 +292,8 @@ export default class LineSegment extends GraphicalComponent {
 
         for (let arrayKey in desiredStateVariableValues.endpoints) {
 
-          let [pointInd, dimInd] = arrayKey.split(",");
-          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+          let [pointInd, dim] = arrayKey.split(",");
+          let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           if (dependencyValuesByKey[arrayKey].endpointsChild.length === 1
             && dependencyValuesByKey[arrayKey].endpointsChild[0].stateValues["pointX" + varEnding]
@@ -309,8 +309,7 @@ export default class LineSegment extends GraphicalComponent {
 
             instructions.push({
               setStateVariable: "endpoints",
-              value: convertValueToMathExpression(desiredStateVariableValues.endpoints[arrayKey]),
-              arrayKey
+              value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.endpoints[arrayKey]) },
             })
           }
         }
@@ -479,7 +478,7 @@ export default class LineSegment extends GraphicalComponent {
   }
 
 
-  moveLineSegment({ point1coords, point2coords }) {
+  moveLineSegment({ point1coords, point2coords, transient }) {
 
     let newComponents = {};
 
@@ -492,14 +491,38 @@ export default class LineSegment extends GraphicalComponent {
       newComponents["1,1"] = me.fromAst(point2coords[1]);
     }
 
-    this.requestUpdate({
-      updateInstructions: [{
-        componentName: this.componentName,
-        updateType: "updateValue",
-        stateVariable: "endpoints",
-        value: newComponents
-      }]
-    });
+    if (transient) {
+
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          componentName: this.componentName,
+          updateType: "updateValue",
+          stateVariable: "endpoints",
+          value: newComponents
+        }],
+        transient
+      });
+    } else {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          componentName: this.componentName,
+          updateType: "updateValue",
+          stateVariable: "endpoints",
+          value: newComponents
+        }],
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            point1: point1coords,
+            point2: point2coords,
+          }
+        }
+      });
+    }
 
   }
 

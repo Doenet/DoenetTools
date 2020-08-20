@@ -10,6 +10,9 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 $number_children = count($_POST["childIds"]);
 $operationType =  mysqli_real_escape_string($conn,$_POST["operationType"]);
 
+$jwtArray = include "jwtArray.php";
+$userId = $jwtArray['userId'];
+
 for ($i = 0; $i < $number_children; $i++) {
   $childId =  mysqli_real_escape_string($conn,$_POST["childIds"][$i]);
   $childType =  mysqli_real_escape_string($conn,$_POST["childType"][$i]);
@@ -17,9 +20,9 @@ for ($i = 0; $i < $number_children; $i++) {
     if ($operationType == "insert") {
       $sql = "
       INSERT INTO user_content
-      (username, branchId)
+      (userId, branchId)
       VALUES
-      ('$remoteuser','$childId')
+      ('$userId','$childId')
       ";
       echo $sql;
       $result = $conn->query($sql);   
@@ -34,7 +37,7 @@ for ($i = 0; $i < $number_children; $i++) {
       if ($result->num_rows > 0){
         $sql = "
         DELETE FROM user_content
-        WHERE username='$remoteuser' 
+        WHERE userId='$userId' 
         AND branchId='$childId'
         ";
         echo $sql;
@@ -45,9 +48,9 @@ for ($i = 0; $i < $number_children; $i++) {
     if ($operationType == "insert") {
       $sql = "
       INSERT INTO user_folders
-      (username, folderId)
+      (userId, folderId)
       VALUES
-      ('$remoteuser','$childId')
+      ('$userId','$childId')
       ";
       echo $sql;
       $result = $conn->query($sql);   
@@ -62,7 +65,7 @@ for ($i = 0; $i < $number_children; $i++) {
       if ($result->num_rows > 0){
         $sql = "
         DELETE FROM user_folders
-        WHERE username='$remoteuser' 
+        WHERE userId='$userId' 
         AND folderId='$childId'
         ";
         echo $sql;
@@ -73,9 +76,9 @@ for ($i = 0; $i < $number_children; $i++) {
     if ($operationType == "insert") {
       $sql = "
       INSERT INTO user_urls
-      (username, urlId)
+      (userId, urlId)
       VALUES
-      ('$remoteuser','$childId')
+      ('$userId','$childId')
       ";
       echo $sql;
       $result = $conn->query($sql);   
@@ -90,7 +93,7 @@ for ($i = 0; $i < $number_children; $i++) {
       if ($result->num_rows > 0){
         $sql = "
         DELETE FROM user_urls
-        WHERE username='$remoteuser' 
+        WHERE userId='$userId' 
         AND urlId='$childId'
         ";
         echo $sql;

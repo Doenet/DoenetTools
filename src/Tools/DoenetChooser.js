@@ -42,6 +42,8 @@ import {
   Link,
   useParams
 } from "react-router-dom";
+import { instanceOf } from 'prop-types';
+import { withCookies, Cookies } from 'react-cookie';
 
 const getUrlVars = () => {
   var vars = {};
@@ -50,6 +52,11 @@ const getUrlVars = () => {
 }
 
 class DoenetChooser extends Component {
+
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+  };
+
   constructor(props) {
     super(props);
 
@@ -78,6 +85,7 @@ class DoenetChooser extends Component {
       contentActiveChild: false,
       userFolderInfo: {}
     };
+
 
     this.containerCache = {};
     this.cachedCurrentDraggedObject = null;
@@ -216,6 +224,12 @@ class DoenetChooser extends Component {
   }
 
   handleNewDocument = () => {
+
+    if (!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")) {
+      this.displayToast("Please sign in to create new content");
+      return;
+    }
+
     let newBranchId = nanoid();
     let num = 1;
     let title = "Untitled Document " + num;
@@ -273,7 +287,11 @@ class DoenetChooser extends Component {
     }
   }
 
-  handleNewCourseCreated = ({ courseId, courseName, courseCode, term, description, department, section }, callback = (() => { })) => {
+  handleNewCourseCreated = ({courseId, courseName, courseCode, term, description, department, section}, callback=(()=>{})) => {
+    if (!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")) {
+      this.displayToast("Please sign in to create new course");
+      return;
+    }
     // create new documents for overview and syllabus, get branchIds
     let overviewId = nanoid();
     let overviewDocumentName = courseName + " Overview";
@@ -325,7 +343,11 @@ class DoenetChooser extends Component {
     }
   }
 
-  handleNewUrlCreated = ({ urlId, title, url, description, usesDoenetAPI }, callback = (() => { })) => {
+  handleNewUrlCreated = ({urlId, title, url, description, usesDoenetAPI}, callback=(()=>{})) => {
+    if (!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")) {
+      this.displayToast("Please sign in to create new content");
+      return;
+    }
     const currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
     Promise.all([
       new Promise(resolve => this.saveUrl({
@@ -400,6 +422,7 @@ class DoenetChooser extends Component {
 
     axios.get(loadBranchesUrl, payload)
       .then(resp => {
+        console.log(resp)
         this.branchId_info = Object.assign({}, this.branchId_info, resp.data.branchId_info);
         this.userContentInfo = resp.data.branchId_info;
         this.sort_order = resp.data.sort_order;
@@ -646,10 +669,12 @@ class DoenetChooser extends Component {
 
     axios.get(loadUserFoldersAndRepoUrl, payload)
       .then(resp => {
+        console.log(resp)
         this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
         this.folderIds = resp.data.folderIds;
         this.userFolderInfo = resp.data.folderInfo;
         this.folders_loaded = true;
+        console.log("here", this.folderInfo)
         this.userContentReloaded = true;
         callback();
         this.forceUpdate();
@@ -839,6 +864,7 @@ class DoenetChooser extends Component {
             this.loadUserUrls();
           }
         }
+        this.modifyPublicState(isPublic, allItems.itemIds, allItems.itemType, () => {});
         this.forceUpdate();
         callback();
       });
@@ -985,6 +1011,12 @@ class DoenetChooser extends Component {
   }
 
   handleNewFolder = () => {
+    
+    if (!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")) {
+      this.displayToast("Please sign in to create new folder");
+      return;
+    }
+
     // TODO: let user input folder title
     let num = 1;
     let title = "New Folder " + num;
@@ -998,6 +1030,10 @@ class DoenetChooser extends Component {
   }
 
   handleNewRepo = () => {
+    if (!Object.keys(this.props.cookies["cookies"]).includes("JWT_JS")) {
+      this.displayToast("Please sign in to create new repository");
+      return;
+    }
     // TODO: let user input repo title
     let title = "New Repository"
     this.addNewRepo(title);
@@ -1396,7 +1432,7 @@ class DoenetChooser extends Component {
       "content": "childContent",
       "url": "childUrls",
     }
-
+  
     // determine data type and its corresponding data source
     let data = this.getDataSource(containerId, containerType);
     let draggedOverDataSource = data[type];
@@ -1427,68 +1463,6 @@ class DoenetChooser extends Component {
   splitPanelOnTreeDragStart(draggedId, draggedType, sourceContainerId, sourceContainerType) {
     ////console.log("onTreeDragStart")
     ////console.log(draggedId, draggedType, sourceContainerId, sourceContainerType)
-    // get dataObjectSource
-    let data = this.getDataSource(sourceContainerId, sourceContainerType);
-    let dataObjectSource = data[draggedType];
-    this.containerCache = {
-      ...this.containerCache,
-      [sourceContainerId]: {
-        folders: JSON.parse(JSON.stringify(data["folder"])),
-        content: JSON.parse(JSON.stringify(data["content"])),
-        urls: JSON.parse(JSON.stringify(data["url"])),
-      }
-    }
-
-    const dataObject = dataObjectSource[draggedId];
-    const sourceParentId = dataObjectSource[draggedId].parentId;
-
-    this.setState({
-      splitPanelCurrentDraggedObject: { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId },
-    })
-    this.cachedCurrentDraggedObject = { id: draggedId, type: draggedType, sourceContainerId: sourceContainerId, dataObject: dataObject, sourceParentId: sourceParentId };
-    this.validDrop = false;
-    this.lastDroppedContainerId = null;
-  }
-
-  onTreeDropEnter = (listId, containerId, containerType) => {
-    ////console.log("onTreeDropEnter5")
-
-    const childrenListKeyMap = {
-      "folder": "childFolders",
-      "content": "childContent",
-      "url": "childUrls",
-    }
-
-    // determine data type and its corresponding data source
-    let data = this.getDataSource(containerId, containerType);
-    let draggedOverDataSource = data[type];
-    let draggedOverParentDataSource = data["folder"];
-    let headingsChildrenListKey = childrenListKeyMap[type];
-
-    const draggedOverItemParentListId = draggedOverDataSource[id]["parentId"];
-    const draggedOverItemIndex = draggedOverParentDataSource[draggedOverItemParentListId][headingsChildrenListKey]
-      .findIndex(itemId => itemId == id);
-
-    const draggedItemParentListId = this.state.splitPanelCurrentDraggedObject.dataObject["parentId"];
-
-    // if the item is dragged over itself, ignore
-    if (this.state.splitPanelCurrentDraggedObject.id == id || draggedItemParentListId != draggedOverItemParentListId) {
-      return;
-    }
-
-    // filter out the currently dragged item
-    const items = draggedOverParentDataSource[draggedOverItemParentListId][headingsChildrenListKey].filter(itemId => itemId != this.state.splitPanelCurrentDraggedObject.id);
-    // add the dragged item after the dragged over item
-    items.splice(draggedOverItemIndex, 0, this.state.splitPanelCurrentDraggedObject.id);
-
-    draggedOverParentDataSource[draggedOverItemParentListId][headingsChildrenListKey] = items;
-
-    this.forceUpdate();
-  };
-
-  splitPanelOnTreeDragStart(draggedId, draggedType, sourceContainerId, sourceContainerType) {
-    //console.log("onTreeDragStart")
-    //console.log(draggedId, draggedType, sourceContainerId, sourceContainerType)
     // get dataObjectSource
     let data = this.getDataSource(sourceContainerId, sourceContainerType);
     let dataObjectSource = data[draggedType];
@@ -1577,8 +1551,8 @@ class DoenetChooser extends Component {
     return data;
   }
 
-  onTreeDropEnter(listId, containerId, containerType) {
-    //console.log("onTreeDropEnter5", listId + '----'+containerId + '----'+containerType)
+  onTreeDropEnter = (listId, containerId, containerType) => {
+    console.log("onTreeDropEnter5", listId + '----'+containerId + '----'+containerType)
 
     const childrenListKeyMap = {
       "folder": "childFolders",
@@ -1736,6 +1710,7 @@ class DoenetChooser extends Component {
     this.validDrop = true;
     this.lastDroppedContainerId = containerId;
   }
+
   splitPanelOnTreeDropEnter(listId, containerId, containerType) {
     //console.log("onTreeDropEnter5", listId + '----' + containerId + '----' + containerType)
 
@@ -2517,6 +2492,49 @@ class DoenetChooser extends Component {
     this.loadUserFoldersAndRepo();
     this.loadUserUrls();
   }
+  grantRepoAccess = ({repoId, email, callback=()=>{}}) => {
+    const loadCoursesUrl = '/api/addRepoUser.php';
+    const data = {
+      repoId: repoId,
+      email: email,
+    }
+    const payload = {
+      params: data
+    }
+
+    axios.get(loadCoursesUrl, payload)
+    .then(resp => {
+      console.log("HERE", resp);
+      if (resp.data.success === "1") {
+        this.folderInfo[repoId].user_access_info = resp.data.users;
+      }
+      this.userContentReloaded = true;
+      callback(resp);
+      this.forceUpdate();
+    });
+  }
+
+  revokeRepoAccess = ({repoId, email, callback=()=>{}}) => {
+    const loadCoursesUrl = '/api/removeRepoUser.php';
+    const data = {
+      repoId: repoId,
+      email: email,
+    }
+    const payload = {
+      params: data
+    }
+
+    axios.get(loadCoursesUrl, payload)
+      .then(resp => {
+        if (resp.data.success === "1") {
+          this.folderInfo[repoId].user_access_info = resp.data.users;
+        }
+        this.userContentReloaded = true;
+        callback(resp);
+        this.forceUpdate();
+      });
+  }
+
 
   headerTitleChange(title) {
     this.setState({modalHeaderTitle: title});
@@ -2549,6 +2567,7 @@ class DoenetChooser extends Component {
     // process root folder for tree rendering
     if (this.folders_loaded && this.branches_loaded && this.urls_loaded && this.userContentReloaded) {
       this.userContentReloaded = false;
+      console.log(this.userFolderInfo);
       this.userFolderInfo["root"] = {
         title: "User Content Tree",
         childContent: [],
@@ -2627,11 +2646,10 @@ class DoenetChooser extends Component {
         treeContainerType = ChooserConstants.USER_CONTENT_TYPE;
         treeParentsInfo = this.userFolderInfo;
         treeChildrenInfo = { ...this.userContentInfo, ...this.userUrlInfo };
-      //  console.log(treeParentsInfo)
+        console.log(treeParentsInfo)
 
       } else if (this.state.selectedDrive == "Courses") {
         loading = !this.assignments_and_headings_loaded;
-
 
 
         // browser data
@@ -2726,9 +2744,29 @@ class DoenetChooser extends Component {
             this.tempSet.add(id);
             this.customizedTempSet.clear();
             this.customizedTempSet.add(itemParentId);
-            this.handleContentItemDoubleClick([id]);
+            // this.handleContentItemDoubleClick([id]);
             this.forceUpdate();
           }}
+          onLeafNodeDoubleClick={(id, type) => {
+            console.log(id)     
+            const dataSource = this.getDataSource(treeContainerId, treeContainerType);
+            const itemParentId = dataSource[type][id]["parentId"];
+            const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId, treeParentsInfo);      
+            // const itemParentId = dataSource[type][id]["parentId"];
+            this.setState({
+              selectedItems: [id],
+              selectedItemsType: [type],
+              directoryStack: pathToSelectedFolder
+            })
+            this.setState({ selectedItems: [id], selectedItemsType: [type] })
+            // this.tempSet.clear()
+            // this.tempSet.add(id);
+            // this.customizedTempSet.clear();
+            // this.customizedTempSet.add(itemParentId);
+            this.handleContentItemDoubleClick([id]);
+            // this.forceUpdate();
+          }}
+
           onParentNodeClick={(id, type) => {
             // get path to item
             let pathToSelectedFolder = this.getPathToFolder(id, treeParentsInfo);
@@ -3117,7 +3155,7 @@ const customizedTreeNodeItem = (nodeItem, item) => {
           folderList={folderList}
           contentList={contentList}
           urlList={urlList}
-          ref={this.browser}                              
+          ref={this.browser}         
           key={"browser" + this.updateNumber}                     
           selectedDrive={this.state.selectedDrive}                
           selectedCourse={this.state.selectedCourse}             
@@ -3399,6 +3437,8 @@ const customizedTreeNodeItem = (nodeItem, item) => {
               allUrlInfo={browserUrlInfo}
               allCourseInfo={this.courseInfo}
               publicizeRepo={this.publicizeRepo}
+              grantRepoAccess={this.grantRepoAccess}
+              revokeRepoAccess={this.revokeRepoAccess}
               openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
               openEditUrlForm={() => this.toggleManageUrlForm("edit_url")}
               versionCallback={this.versionCallback.bind(this)}
@@ -4023,4 +4063,4 @@ class UrlForm extends React.Component {
 }
 
 
-export default DoenetChooser;
+export default withCookies(DoenetChooser);

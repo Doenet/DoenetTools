@@ -33,8 +33,8 @@ export default class Triangle extends Polygon {
 
       for (let arrayKey of arrayKeys) {
 
-        let [pointInd, dimInd] = arrayKey.split(",");
-        let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+        let [pointInd, dim] = arrayKey.split(",");
+        let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
         let verticesChild = dependencyValuesByKey[arrayKey].verticesChild;
         if (verticesChild.length === 1
@@ -46,13 +46,13 @@ export default class Triangle extends Polygon {
           let defaultValue;
 
           if (pointInd === "0") {
-            if (dimInd === "1") {
+            if (dim === "1") {
               defaultValue = me.fromAst(1);
             } else {
               defaultValue = me.fromAst(0);
             }
           } else if (pointInd === "1") {
-            if (dimInd === "0") {
+            if (dim === "0") {
               defaultValue = me.fromAst(1);
             } else {
               defaultValue = me.fromAst(0);
@@ -100,8 +100,8 @@ export default class Triangle extends Polygon {
 
       let instructions = [];
       for (let arrayKey in desiredStateVariableValues.vertices) {
-        let [pointInd, dimInd] = arrayKey.split(",");
-        let varEnding = (Number(pointInd) + 1) + "_" + (Number(dimInd) + 1)
+        let [pointInd, dim] = arrayKey.split(",");
+        let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
         if (dependencyValuesByKey[arrayKey].verticesChild.length === 1
           && dependencyValuesByKey[arrayKey].verticesChild[0].stateValues["pointX" + varEnding]
@@ -117,8 +117,7 @@ export default class Triangle extends Polygon {
 
           instructions.push({
             setStateVariable: "vertices",
-            value: desiredStateVariableValues.vertices[arrayKey].simplify(),
-            arrayKey,
+            value: { [arrayKey]: desiredStateVariableValues.vertices[arrayKey].simplify() },
           })
         }
 
@@ -203,8 +202,7 @@ export default class Triangle extends Polygon {
 
             instructions.push({
               setStateVariable: "vertices",
-              value: desiredVertex.simplify(),
-              arrayKey: ind
+              value: { [ind]: desiredVertex.simplify() },
             })
           }
         }
@@ -252,8 +250,7 @@ export default class Triangle extends Polygon {
           success: true,
           instructions: [{
             setStateVariable: "vertices",
-            value: desiredVertex.simplify(),
-            arrayKey
+            value: { [arrayKey]: desiredVertex.simplify() },
           }]
         }
 

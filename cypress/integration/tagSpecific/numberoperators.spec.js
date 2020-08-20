@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('Number Operator Tag Tests', function () {
 
   beforeEach(() => {
@@ -24,10 +34,10 @@ describe('Number Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mean2Anchor = '#' + components['/_copy1'].replacements[0].componentName;
-      let mean3Anchor = '#' + components['/_copy2'].replacements[0].componentName;
-      let mean5Anchor = '#' + components['/_copy3'].replacements[0].componentName;
-      let mean6Anchor = '#' + components['/_copy4'].replacements[0].componentName;
+      let mean2Anchor = cesc('#' + components['/_copy1'].replacements[0].componentName);
+      let mean3Anchor = cesc('#' + components['/_copy2'].replacements[0].componentName);
+      let mean5Anchor = cesc('#' + components['/_copy3'].replacements[0].componentName);
+      let mean6Anchor = cesc('#' + components['/_copy4'].replacements[0].componentName);
 
       cy.log('Test value displayed in browser')
 
@@ -69,10 +79,10 @@ describe('Number Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let variance2Anchor = '#' + components['/_copy1'].replacements[0].componentName;
-      let variance3Anchor = '#' + components['/_copy2'].replacements[0].componentName;
-      let variance5Anchor = '#' + components['/_copy3'].replacements[0].componentName;
-      let variance6Anchor = '#' + components['/_copy4'].replacements[0].componentName;
+      let variance2Anchor = cesc('#' + components['/_copy1'].replacements[0].componentName);
+      let variance3Anchor = cesc('#' + components['/_copy2'].replacements[0].componentName);
+      let variance5Anchor = cesc('#' + components['/_copy3'].replacements[0].componentName);
+      let variance6Anchor = cesc('#' + components['/_copy4'].replacements[0].componentName);
 
       cy.log('Test value displayed in browser')
 
@@ -115,10 +125,10 @@ describe('Number Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let variance2Anchor = '#' + components['/_copy1'].replacements[0].componentName;
-      let variance3Anchor = '#' + components['/_copy2'].replacements[0].componentName;
-      let variance5Anchor = '#' + components['/_copy3'].replacements[0].componentName;
-      let variance6Anchor = '#' + components['/_copy4'].replacements[0].componentName;
+      let variance2Anchor = cesc('#' + components['/_copy1'].replacements[0].componentName);
+      let variance3Anchor = cesc('#' + components['/_copy2'].replacements[0].componentName);
+      let variance5Anchor = cesc('#' + components['/_copy3'].replacements[0].componentName);
+      let variance6Anchor = cesc('#' + components['/_copy4'].replacements[0].componentName);
 
       cy.log('Test value displayed in browser')
 
@@ -167,10 +177,10 @@ describe('Number Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let standarddeviation2Anchor = '#' + components['/_copy1'].replacements[0].componentName;
-      let standarddeviation3Anchor = '#' + components['/_copy2'].replacements[0].componentName;
-      let standarddeviation5Anchor = '#' + components['/_copy3'].replacements[0].componentName;
-      let standarddeviation6Anchor = '#' + components['/_copy4'].replacements[0].componentName;
+      let standarddeviation2Anchor = cesc('#' + components['/_copy1'].replacements[0].componentName);
+      let standarddeviation3Anchor = cesc('#' + components['/_copy2'].replacements[0].componentName);
+      let standarddeviation5Anchor = cesc('#' + components['/_copy3'].replacements[0].componentName);
+      let standarddeviation6Anchor = cesc('#' + components['/_copy4'].replacements[0].componentName);
 
       cy.log('Test value displayed in browser')
 
@@ -221,10 +231,10 @@ describe('Number Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let standarddeviation2Anchor = '#' + components['/_copy1'].replacements[0].componentName;
-      let standarddeviation3Anchor = '#' + components['/_copy2'].replacements[0].componentName;
-      let standarddeviation5Anchor = '#' + components['/_copy3'].replacements[0].componentName;
-      let standarddeviation6Anchor = '#' + components['/_copy4'].replacements[0].componentName;
+      let standarddeviation2Anchor = cesc('#' + components['/_copy1'].replacements[0].componentName);
+      let standarddeviation3Anchor = cesc('#' + components['/_copy2'].replacements[0].componentName);
+      let standarddeviation5Anchor = cesc('#' + components['/_copy3'].replacements[0].componentName);
+      let standarddeviation6Anchor = cesc('#' + components['/_copy4'].replacements[0].componentName);
 
       cy.log('Test value displayed in browser')
 
@@ -274,10 +284,10 @@ describe('Number Operator Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let count2Anchor = '#' + components['/_copy1'].replacements[0].componentName;
-      let count3Anchor = '#' + components['/_copy2'].replacements[0].componentName;
-      let count5Anchor = '#' + components['/_copy3'].replacements[0].componentName;
-      let count6Anchor = '#' + components['/_copy4'].replacements[0].componentName;
+      let count2Anchor = cesc('#' + components['/_copy1'].replacements[0].componentName);
+      let count3Anchor = cesc('#' + components['/_copy2'].replacements[0].componentName);
+      let count5Anchor = cesc('#' + components['/_copy3'].replacements[0].componentName);
+      let count6Anchor = cesc('#' + components['/_copy4'].replacements[0].componentName);
 
       cy.log('Test value displayed in browser')
 

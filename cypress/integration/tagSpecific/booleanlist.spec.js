@@ -1,3 +1,12 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
 
 describe('Booleanlist Tag Tests', function () {
 
@@ -69,17 +78,17 @@ describe('Booleanlist Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let child1Name = components['/_booleanlist1'].stateValues.childrenToRender[1];
-      let child1Anchor = '#' + child1Name;
+      let child1Anchor = cesc('#' + child1Name);
       let child2Name = components['/_booleanlist1'].stateValues.childrenToRender[2];
-      let child2Anchor = '#' + child2Name;
+      let child2Anchor = cesc('#' + child2Name);
       let child5Name = components['/_booleanlist1'].stateValues.childrenToRender[5];
-      let child5Anchor = '#' + child5Name;
+      let child5Anchor = cesc('#' + child5Name);
       let child6Name = components['/_booleanlist1'].stateValues.childrenToRender[6];
-      let child6Anchor = '#' + child6Name;
+      let child6Anchor = cesc('#' + child6Name);
       let child7Name = components['/_booleanlist1'].stateValues.childrenToRender[7];
-      let child7Anchor = '#' + child7Name;
+      let child7Anchor = cesc('#' + child7Name);
       let child8Name = components['/_booleanlist1'].stateValues.childrenToRender[8];
-      let child8Anchor = '#' + child8Name;
+      let child8Anchor = cesc('#' + child8Name);
 
       cy.log('Test value displayed in browser')
       cy.get('#\\/_boolean1').should('have.text', 'true')

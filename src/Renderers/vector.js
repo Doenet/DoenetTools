@@ -13,6 +13,10 @@ export default class Vector extends DoenetRenderer {
       this.doenetPropsForChildren = { board: this.props.board };
       this.initializeChildren();
     }
+
+    this.vectorBeingDragged = false;
+    this.headBeingDragged = false;
+    this.tailBeingDragged = false;
   }
 
   static initializeChildrenOnConstruction = false;
@@ -56,9 +60,9 @@ export default class Vector extends DoenetRenderer {
       strokeColor: 'none',
       highlightStrokeColor: 'none',
       highlightFillColor: 'lightgray',
-      layer: layer+1,
+      layer: layer + 1,
     });
-    if(this.doenetSvData.draggable !== true) {
+    if (this.doenetSvData.draggable !== true) {
       jsxPointAttributes.visible = false;
     }
 
@@ -69,9 +73,12 @@ export default class Vector extends DoenetRenderer {
 
     this.vectorJXG = this.props.board.create('arrow', [this.point1JXG, this.point2JXG], jsxVectorAttributes);
 
-    this.point1JXG.on('drag', e => this.onDragHandler(1,e));
-    this.point2JXG.on('drag', e => this.onDragHandler(2,e));
-    this.vectorJXG.on('drag', e => this.onDragHandler(0,e));
+    this.point1JXG.on('drag', () => this.onDragHandler(1, true));
+    this.point2JXG.on('drag', () => this.onDragHandler(2, true));
+    this.vectorJXG.on('drag', () => this.onDragHandler(0, true));
+    this.point1JXG.on('up', () => this.onDragHandler(1, false));
+    this.point2JXG.on('up', () => this.onDragHandler(2, false));
+    this.vectorJXG.on('up', () => this.onDragHandler(0, false));
 
     return this.vectorJXG;
 
@@ -163,21 +170,42 @@ export default class Vector extends DoenetRenderer {
   }
 
 
-  onDragHandler(i) {
-    if(i==1) {
-      this.actions.moveVector({
-        tailcoords: [this.vectorJXG.point1.X(), this.vectorJXG.point1.Y()],
-      });
-    }else if(i==2) {
-      this.actions.moveVector({
-        headcoords: [this.vectorJXG.point2.X(), this.vectorJXG.point2.Y()],
-      });
-    }else {
-      this.actions.moveVector({
-        tailcoords: [this.vectorJXG.point1.X(), this.vectorJXG.point1.Y()],
-        headcoords: [this.vectorJXG.point2.X(), this.vectorJXG.point2.Y()],
-      });
+  onDragHandler(i, transient) {
+
+    if (transient) {
+
+      if (i === 1) {
+        this.tailBeingDragged = true;
+      } else if (i === 2) {
+        this.headBeingDragged = true;
+      } else {
+        this.headBeingDragged = true;
+        this.tailBeingDragged = true;
+      }
     }
+
+    let instructions = { transient };
+
+    let performMove = false;
+
+    if (this.headBeingDragged) {
+      performMove = true;
+      instructions.headcoords = [this.vectorJXG.point2.X(), this.vectorJXG.point2.Y()];
+    }
+    if (this.tailBeingDragged) {
+      performMove = true;
+      instructions.tailcoords = [this.vectorJXG.point1.X(), this.vectorJXG.point1.Y()];
+    }
+
+    if (!transient) {
+      this.headBeingDragged = false;
+      this.tailBeingDragged = false;
+    }
+
+    if (performMove) {
+      this.actions.moveVector(instructions);
+    }
+
   }
 
   componentDidMount() {
@@ -200,7 +228,7 @@ export default class Vector extends DoenetRenderer {
       return null;
     }
 
-    if(this.props.board) {
+    if (this.props.board) {
       return <><a name={this.componentName} />{this.children}</>
     }
 
