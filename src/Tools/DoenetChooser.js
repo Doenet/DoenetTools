@@ -1711,6 +1711,135 @@ class DoenetChooser extends Component {
     this.lastDroppedContainerId = containerId;
   }
 
+  onLeftNavDropEnter = (listId, containerId, containerType) => {
+    console.log("HERE")
+    console.log("onTreeDropEnter5", listId + '----'+containerId + '----'+containerType)
+    
+    // const childrenListKeyMap = {
+    //   "folder": "childFolders",
+    //   "content": "childContent",
+    //   "url": "childUrls",
+    // }
+
+    // // get data
+    // let data = this.getDataSource(containerId, containerType);
+    // let parentDataSource = data["folder"];
+    // let itemDataSource = data[this.state.currentDraggedObject.type];
+    // let childrenListKey = childrenListKeyMap[this.state.currentDraggedObject.type];
+
+    // // handle dragged object coming from different container
+    // if (this.state.currentDraggedObject.sourceContainerId != containerId) {
+    //   // create new item, handle type conversion:
+    //   // content -> assignments || create copy of object
+    //   // insert new object into data
+
+    //   // create backup of current tree data
+    //   this.containerCache = {
+    //     ...this.containerCache,
+    //     [sourceContainerId]: {
+    //       folders: JSON.parse(JSON.stringify(data["folder"])),
+    //       content: JSON.parse(JSON.stringify(data["content"])),
+    //       urls: JSON.parse(JSON.stringify(data["url"])),
+    //     }
+    //   }
+
+    //   // insert copy into current container at base level (parentId = listId) 
+    //   const draggedObjectInfo = this.state.currentDraggedObject.dataObject;
+    //   let newObject = draggedObjectInfo;
+    //   let newObjectChildren = [];
+
+    //   if (this.state.currentDraggedObject.type == "content") {
+    //     itemDataSource = Object.assign({}, itemDataSource, { [this.state.currentDraggedObject.id]: newObject });
+    //     parentDataSource[listId]["childrenId"].push(newObject.branchId);
+    //     parentDataSource[listId][childrenListKey].push(newObject.branchId);
+    //     const currentDraggedObject = this.state.currentDraggedObject;
+    //     currentDraggedObject.dataObject = newObject;
+    //     currentDraggedObject.type = "leaf";
+    //     currentDraggedObject.sourceParentId = listId;
+    //     currentDraggedObject.sourceContainerId = containerId;
+    //     this.setState({ currentDraggedObject: currentDraggedObject });
+    //   } else {  // "folder" || "heading"
+    //     // insert new heading into headings
+    //     // if any objectChildren, insert into assignments
+    //   }
+    //   return;
+    // }
+
+    // const currentDraggedObjectInfo = this.state.currentDraggedObject.dataObject;
+    // const previousParentId = currentDraggedObjectInfo.parentId;
+
+    // if (previousParentId == listId || listId == this.state.currentDraggedObject.id) // prevent heading from becoming a child of itself 
+    //   return;
+
+    // const previousList = parentDataSource[previousParentId][childrenListKey];
+    // const currentList = parentDataSource[listId][childrenListKey];
+    // // remove from previous list
+    // if (previousParentId !== this.state.currentDraggedObject.sourceParentId) {
+    //   const indexInList = previousList.findIndex(itemId => itemId == this.state.currentDraggedObject.id);
+    //   if (indexInList > -1) {
+    //     previousList.splice(indexInList, 1);
+    //   }
+    // }
+    // if (listId !== this.state.currentDraggedObject.sourceParentId) {
+    //   // add to current list
+    //   currentList.push(this.state.currentDraggedObject.id);
+    // }
+
+    // parentDataSource[previousParentId][childrenListKey] = previousList;
+    // parentDataSource[listId][childrenListKey] = currentList;
+    // const currentDraggedObject = this.state.currentDraggedObject;
+    // currentDraggedObject.dataObject.parentId = listId;
+    // this.setState({ currentDraggedObject: currentDraggedObject })
+  }
+
+  onLeftNavDrop = (containerId, containerType) => {
+    console.log("onTreeDrop")
+    // update courseHeadingsInfo/courseAssignmentsInfo currentDraggedObject parentId
+    // remove currentDraggedObject from sourceParentId children list
+    // if (this.state.currentDraggedObject.type == "leaf") {
+    //   const newCourseAssignments = this.assignmentsInfo[containerId];
+    //   newCourseAssignments[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
+    //   this.assignmentsInfo[containerId] = newCourseAssignments;
+    // }
+
+    const childrenListKeyMap = {
+      "folder": "childFolders",
+      "content": "childContent",
+      "url": "childUrls",
+    }
+
+    // get data
+    let data = this.getDataSource(containerId, containerType);
+    let parentDataSource = data["folder"];
+    let childrenListKey = childrenListKeyMap[this.state.currentDraggedObject.type];
+
+    const sourceParentChildrenList = parentDataSource[this.state.currentDraggedObject.sourceParentId][childrenListKey];
+
+    if (this.state.currentDraggedObject.dataObject.parentId !== this.state.currentDraggedObject.sourceParentId) {
+      const indexInSourceParentChildrenList = sourceParentChildrenList.findIndex(itemId => itemId == this.state.currentDraggedObject.id);
+      if (indexInSourceParentChildrenList > -1) {
+        sourceParentChildrenList.splice(indexInSourceParentChildrenList, 1);
+      }
+    }
+
+    // this.updateTree({
+    //   containerType: containerType,
+    //   folderInfo: data["folder"],
+    //   contentInfo: data["content"],
+    //   urlInfo: data["url"],
+    //   courseId: containerId
+    // })
+
+    // update headings
+    parentDataSource[this.state.currentDraggedObject.sourceParentId][childrenListKey] = sourceParentChildrenList;
+    if (this.state.currentDraggedObject.type == "header") parentDataSource[this.state.currentDraggedObject.id] = this.state.currentDraggedObject.dataObject;
+    this.setState({
+      currentDraggedObject: { id: null, type: null, sourceContainerId: null },
+    })
+    this.validDrop = true;
+    this.lastDroppedContainerId = containerId;
+  }
+
   splitPanelOnTreeDropEnter(listId, containerId, containerType) {
     //console.log("onTreeDropEnter5", listId + '----' + containerId + '----' + containerType)
 
@@ -3062,7 +3191,6 @@ const customizedTreeNodeItem = (nodeItem, item) => {
                 else this.tempSet.add(nodeId);
                 this.forceUpdate();
               }}
-
               onParentNodeClick={(nodeId) => {
                 this.customizedTempSet.clear();
                 this.customizedTempSet.add(nodeId);
@@ -3075,7 +3203,8 @@ const customizedTreeNodeItem = (nodeItem, item) => {
                 this.setState({ contentActiveChild: true });
                 this.forceUpdate();
               }}
-
+              onDropEnter={this.onLeftNavDropEnter}
+              onDrop={this.onLeftNavDrop}
             />
           </div>
         </Accordion>
