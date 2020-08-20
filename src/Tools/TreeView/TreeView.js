@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { LeafNode, ParentNode } from "./components/tree-node/TreeNode"
 import "./index.css";
 import SpinningLoader from '../SpinningLoader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch} from '@fortawesome/free-solid-svg-icons';
-import ChooserConstants from "../chooser/ChooserConstants";
 import styled from 'styled-components'
 
 /*
@@ -146,6 +145,7 @@ export const TreeView = ({
   leafNodeItem={},
 	treeStyles={},
 	onLeafNodeClick=(()=>{}),
+	onLeafNodeDoubleClick=(()=>{}),
 	onParentNodeClick=(()=>{}),
 	onParentNodeDoubleClick=(()=>{}),
   containerId, 
@@ -276,7 +276,8 @@ export const TreeView = ({
         parentNodeItem: parentNodeItem,
         leafNodeItem: leafNodeItem,
 				treeStyles: treeStyles,
-				onLeafNodeClick: onLeafNodeClick,
+        onLeafNodeClick: onLeafNodeClick,
+        onLeafNodeDoubleClick: onLeafNodeDoubleClick,
 				onParentNodeClick: onParentNodeClick,
         onParentNodeDoubleClick: onParentNodeDoubleClick,
         onDragStart: onDragStartCb, 
@@ -297,10 +298,34 @@ export const TreeView = ({
   );
 }
 
-function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, childrenInfo, hideRoot, treeNodeIcons, treeStyles,
-  specialNodes, onDragStart, onDragEnd, onDraggableDragOver, onDrop, onDropEnter, onDropLeave, currentDraggedObject,
-   currentDraggedOverContainerId, onParentNodeClick, onParentNodeDoubleClick, onLeafNodeClick, currentSearchingFolder, 
-   buildControlButtons, buildSearchComponent, setCurrentHovered, directoryData, parentNodeItem, leafNodeItem }) {
+function buildTreeStructure({
+  parentHeadingId, 
+  parentNodeHeadingId, 
+  parentsInfo, 
+  childrenInfo, 
+  hideRoot, 
+  treeNodeIcons, 
+  treeStyles,
+  specialNodes, 
+  onDragStart, 
+  onDragEnd, 
+  onDraggableDragOver, 
+  onDrop, 
+  onDropEnter, 
+  onDropLeave, 
+  currentDraggedObject,
+  currentDraggedOverContainerId, 
+  onParentNodeClick, 
+  onParentNodeDoubleClick, 
+  onLeafNodeClick, 
+  onLeafNodeDoubleClick, 
+  currentSearchingFolder, 
+  buildControlButtons, 
+  buildSearchComponent, 
+  setCurrentHovered, 
+  directoryData, 
+  parentNodeItem, 
+  leafNodeItem }) {
      
   const getBaseItemStyleAndIcon = (currentDraggedObject, itemType, parentNodeHeadingId, currentItemId) => {
     const isPublic = itemType == "folder" ? parentsInfo[currentItemId].isPublic : parentsInfo[childrenInfo[currentItemId].rootId].isPublic;
@@ -400,7 +425,8 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           treeStyles: treeStyles,
           onParentNodeClick: onParentNodeClick,
           onParentNodeDoubleClick: onParentNodeDoubleClick,
-					onLeafNodeClick: onLeafNodeClick,
+          onLeafNodeClick: onLeafNodeClick,
+          onLeafNodeDoubleClick: onLeafNodeDoubleClick,
           onDragStart: onDragStart, 
           onDragEnd: onDragEnd, 
           onDraggableDragOver: onDraggableDragOver, 
@@ -433,6 +459,7 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
           type={itemType}
           styles={itemStyle}
 					onClick={onLeafNodeClick}
+					onDoubleClick={onLeafNodeDoubleClick}
           onDragStart={onDragStart} 
           onDragEnd={onDragEnd} 
           onDragOver={onDraggableDragOver} />
@@ -442,15 +469,11 @@ function buildTreeStructure({parentHeadingId, parentNodeHeadingId, parentsInfo, 
   return subTree;
 }
 
-export const Search = ({selectOptions=[], selected, onSelectChange, onInputChange}) => {
+export const Search = ({selected, onSelectChange, onInputChange}) => {
 
   const handleInputChange = (e) => {
     onInputChange(e.target.value);
   };
-
-  const handleSelectchange = (e) => {
-    onSelectChange(e.target.value)
-  }
 
   return (
     <form style={{display: "flex", alignItems: "center", textAlign: "left"}}>
@@ -474,18 +497,4 @@ const SearchInput = styled('input')`
   padding: 4px;
   outline: none;
   line-height: 1.3;
-`
-
-const SearchSelect = styled('select')`
-  display: inline-block;
-  color: #fff;
-  height: 27px;
-  line-height: 1.3;
-  max-width: 300px; 
-  box-sizing: border-box;
-  margin: 0;
-  border: 0;
-  box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
-  outline: none;
-  background-color: #00a075;
 `

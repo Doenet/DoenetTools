@@ -2513,6 +2513,7 @@ class DoenetChooser extends Component {
             this.customizedTempSet.add(itemParentId);
             this.forceUpdate()
           }}
+          onLeafNodeDoubleClick={(id, type) => {console.log(id)}}
           onParentNodeClick={(id, type) => {
             // get path to item
             let pathToSelectedFolder = this.getPathToFolder(id, treeParentsInfo);
