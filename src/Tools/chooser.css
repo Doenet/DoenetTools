@@ -576,7 +576,7 @@ input[type=number]::-webkit-outer-spin-button {
   overflow-x: hidden;
   grid-row: 2 / 3;
   grid-column: 3 / 4;
-  transform: scale(1.2);
+  transform: scale(1.1);
   transform-origin: top left;
   margin-top: 15px;
 }
