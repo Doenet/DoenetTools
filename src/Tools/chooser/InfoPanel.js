@@ -243,25 +243,42 @@ class InfoPanel extends Component {
         relatedContent.push(
           <div style={{ "display": "block" }} key={"relatedItem" + relatedItemBranchID}>
             <FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "14px", "color": "#3D6EC9", "marginRight": "10px" }} />
-            <a href={`/editor?branchId=${relatedItemBranchID}`}>{relatedItemTitle}</a>
+            {/* <a href={`/editor?branchId=${relatedItemBranchID}`}>{relatedItemTitle}</a> */}
+            <a onClick={(e) => {
+              this.props.versionCallback(e, selectedItemId, null);
+            }}>{relatedItemTitle}</a>
           </div>
         );
       });
 
       // build content versions
       let versions = [];
+
       let versionNumber = 1;
       // get and format versions
-      console.log(this.props.allContentInfo[selectedItemId])
-      this.props.allContentInfo[selectedItemId].contentIds.reverse().forEach(contentIdObj => {
+      let contentIds = this.props.allContentInfo[selectedItemId].contentIds;
+
+      contentIds.sort(function (a, b) {
+        var keyA = new Date(a.publishDate),
+          keyB = new Date(b.publishDate);
+        if (keyA < keyB) return -1;
+        if (keyA > keyB) return 1;
+        return 0;
+      });
+
+      contentIds.forEach(contentIdObj => {
         if (contentIdObj.draft !== "1") {
-          let versionTitle = "Version " + versionNumber++;
+          let versionTitle = "Version " + versionNumber;
           versions.push(
             <div style={{ "display": "block" }} key={"version" + versionNumber}>
               <FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "14px", "color": "#3D6EC9", "marginRight": "10px" }} />
-              <a href={`/editor?branchId=${selectedItemId}&contentId=${contentIdObj.contentId}`}>{versionTitle}</a>
+              {/* <a href={`/editor?branchId=${selectedItemId}&contentId=${contentIdObj.contentId}`}>{versionTitle}</a> */}
+              <a onClick={(e) => {
+                this.props.versionCallback(e, selectedItemId, contentIdObj.contentId);
+              }}>{versionTitle}</a>
             </div>
           );
+          versionNumber++;
         }
       });
 
@@ -295,7 +312,12 @@ class InfoPanel extends Component {
         </table>
         <div id="editContentButtonContainer">
           <div id="editContentButton" data-cy="editContentButton"
-            onClick={() => { window.location.href = `/editor?branchId=${selectedItemId}` }}>
+            onClick= {(e) => { this.props.versionCallback(e, selectedItemId); }}
+            // {() => { window.location.href = `/editor?branchId=${selectedItemId}` }}
+
+          >
+
+
             <FontAwesomeIcon icon={faEdit} style={{ "fontSize": "20px", "color": "#43aa90" }} />
             <span>Edit Draft</span>
           </div>
