@@ -177,3 +177,31 @@ export class Example extends SectioningComponent {
 
 
 }
+
+
+
+export class StandinForFutureLayoutTag extends SectioningComponent {
+  static componentType = "standinForFutureLayoutTag";
+  static rendererType = "section";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.level = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { level: 3 } })
+    }
+
+    stateVariableDefinitions.containerTag = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { containerTag: "aside" } })
+    }
+
+
+    return stateVariableDefinitions
+  }
+
+}

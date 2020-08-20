@@ -6125,14 +6125,13 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 5;
       let actualHeight = (5 + 2) / 2;
-      let actualHeightAst = ['/', 7, 2]
       // given previous radius is 2, would move through point to 5+2,
       // so that center of circle would be (5+2)/2
       components['/_circle1'].moveCircle({ center: [-3, desiredHeight] });
 
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-3, actualHeightAst]);
+      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-3, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeightAst])
+      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
     })
 
     cy.log("move center point");
@@ -6151,11 +6150,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = -8;
       let actualHeight = (-8 + 7) / 2; // given previous radius is 7
-      let actualHeightAst = ['/', -1, 2]
       components['/_circle1'].moveCircle({ center: [4, desiredHeight] });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([4, actualHeightAst]);
+      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([4, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(-actualHeight);
-      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, actualHeightAst])
+      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, actualHeight])
     })
 
     cy.log("move circle back up with center point");
@@ -6205,14 +6203,13 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 5;
       let actualHeight = (5 + 2) / 2;
-      let actualHeightAst = ['/', 7, 2]
       // given previous radius is 2, would move through point to 5+2,
       // so that center of circle would be (5+2)/2
       components['/_circle1'].moveCircle({ center: [-3, desiredHeight] });
 
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-3, actualHeightAst]);
+      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-3, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeightAst])
+      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
     })
 
     cy.log("move center point");
@@ -6231,11 +6228,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = -8;
       let actualHeight = (-8 + 7) / 2; // given previous radius is 7
-      let actualHeightAst = ['/', -1, 2]
       components['/_circle1'].moveCircle({ center: [4, desiredHeight] });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([4, actualHeightAst]);
+      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([4, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(-actualHeight);
-      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, actualHeightAst])
+      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, actualHeight])
     })
 
     cy.log("move circle back up with center point");
