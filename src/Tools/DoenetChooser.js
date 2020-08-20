@@ -43,14 +43,21 @@ import {
   useParams
 } from "react-router-dom";
 
+const getUrlVars = () => {
+  var vars = {};
+  var params = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, (m, key, val) => vars[key] = val);
+  return vars
+}
+
 class DoenetChooser extends Component {
   constructor(props) {
     super(props);
 
+    const queryParams = getUrlVars()
     this.state = {
       error: null,
       errorInfo: null,
-      modalOpen: false,
+      modalOpen: queryParams['overlay'] === "true",
       selectedDrive: "Content",
       modalHeaderTitle: "Untitled",
       selectedCourse: null,
@@ -76,8 +83,8 @@ class DoenetChooser extends Component {
     this.cachedCurrentDraggedObject = null;
     this.lastDroppedContainerId = null;
     this.validDrop = true;
-    this.selectedBranchId = '';
-    this.selectedContentId = '';
+    this.selectedBranchId = queryParams['branchId'] || '';
+    this.selectedContentId = queryParams['contentId'] || '';;
 
     this.courseFolderInfo = {};
     this.courseContentInfo = {};
@@ -117,6 +124,7 @@ class DoenetChooser extends Component {
     this.handleContentItemDoubleClick = this.handleContentItemDoubleClick.bind(this);
     this.tempSet = new Set();
     this.customizedTempSet = new Set();
+    this.history = null
   }
 
   buildCourseList = () => {
@@ -1089,18 +1097,22 @@ class DoenetChooser extends Component {
   }
 
   handleContentItemDoubleClick([branchId], contentId) {
+    const { location: { pathname = '' } } = this.history
     this.selectedBranchId = branchId;
-    this.selectedContentId = null;
-    this.setState({ modalOpen: true });
+    this.selectedContentId = null;    
+    const contentIdParam = contentId ? `&contentId=${contentId}` : '';
+    this.history.push(`${pathname}?overlay=true&branchId=${branchId}${contentIdParam}`);
+    this.setState({ modalOpen: true });  
   }
 
   versionCallback = (e, branchId, contentId) => {
-    // e.preventDefault();
-    // e.stopPropagation();
-    console.log(branchId, contentId);
-    // this.selectedBranchId = branchId;
-    // this.selectedContentId = contentId;
-    // this.setState({ modalOpen: true });
+    const { location: { pathname = '' } } = this.history
+    // console.log('this.props:', pathname, branchId, contentId)
+    this.selectedBranchId = branchId;
+    this.selectedContentId = contentId;
+    const contentIdParam = contentId ? `&contentId=${contentId}` : ''
+    this.history.push(`${pathname}?overlay=true&branchId=${branchId}${contentIdParam}`)
+    this.setState({ modalOpen: true });
   }
 
   splitPanelUpdateSelectedItems(selectedItems, selectedItemsType) {
@@ -1112,6 +1124,7 @@ class DoenetChooser extends Component {
   }
 
   updateDirectoryStack = (directoryStack) => {
+    // console.log(this.history);
     this.setState({
       directoryStack: directoryStack
     })
@@ -2460,26 +2473,45 @@ class DoenetChooser extends Component {
 
   handleLeftNavSearch(e) {
     const searchTerm = e.target.value || '';
-    let filteredUserFolderInfo = {};
-    let filteredChildFolders = [];
     const copyUserFolderInfo = JSON.parse(JSON.stringify(this.userFolderInfo));
-    for (let key in copyUserFolderInfo) {
-      if (copyUserFolderInfo[key].title.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 && key !== 'root') {
-        filteredUserFolderInfo[key] = copyUserFolderInfo[key];
-        if(copyUserFolderInfo[key].parentId === 'root'){
-        filteredChildFolders.push(key);
-        }
-        copyUserFolderInfo[key].childFolders.forEach((f)=> {
-          filteredUserFolderInfo[f] = copyUserFolderInfo[f];
-        });
-      }
-    }
-    copyUserFolderInfo['root'].childFolders = filteredChildFolders;
-    filteredUserFolderInfo['root'] = copyUserFolderInfo['root'];
-    this.setState({ userFolderInfo: filteredUserFolderInfo });
+
+    const filteredUserFolderInfo = Object.keys(copyUserFolderInfo)
+                                    .filter((key) => {
+                                      const { title } = copyUserFolderInfo[key]
+                                      return title.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 && key !== 'root'
+                                    })
+                                    .reduce((acc, key) => {
+                                      return {
+                                        ...acc,
+                                        [key]: {
+                                          ...copyUserFolderInfo[key],
+                                          childFolders: [],
+                                          childUrls: [],
+                                        },
+                                      }
+                                    }, {})
+
+    const filteredChildFolders = Object.keys(copyUserFolderInfo)
+                                  .filter((key) => {
+                                    const { title } = copyUserFolderInfo[key]
+                                    return title.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 && key !== 'root'
+                                  })
+                                  .map((key) => copyUserFolderInfo[key].parentId === 'root' ? key : '')
+                                  .filter((i) => i)
+    
+    const filteredInfo = { 
+                          ...filteredUserFolderInfo, 
+                          root: { 
+                            ...copyUserFolderInfo['root'],
+                            childFolders: filteredChildFolders,
+                          } 
+                        }
+    this.setState({ userFolderInfo: filteredInfo });
   }
 
   overlayOnClose() {
+    const { location: { pathname = '' } } = this.history
+    this.history.push(`${pathname}`)
     this.setState({ modalOpen: false });
     this.loadUserContentBranches();
     this.loadUserFoldersAndRepo();
@@ -2595,7 +2627,7 @@ class DoenetChooser extends Component {
         treeContainerType = ChooserConstants.USER_CONTENT_TYPE;
         treeParentsInfo = this.userFolderInfo;
         treeChildrenInfo = { ...this.userContentInfo, ...this.userUrlInfo };
-        console.log(treeParentsInfo)
+      //  console.log(treeParentsInfo)
 
       } else if (this.state.selectedDrive == "Courses") {
         loading = !this.assignments_and_headings_loaded;
@@ -2618,10 +2650,32 @@ class DoenetChooser extends Component {
         treeChildrenInfo = this.assignmentsInfo[this.state.selectedCourse];
       }
       const TreeNodeItem = ({title, icon}) => {
+       console.log('this:', this.folderInfo)
+        const contentInfo = this.folderInfo        
+        const currentInfo = Object.keys(contentInfo).filter((i) => contentInfo[i].title === title)   
+        const parentId = contentInfo[currentInfo[0]]?.parentId || ''
+        const parentTitle = currentInfo.length && parentId ? contentInfo[parentId]?.title : 'Content'
+        const path = parentTitle === 'Content' ? currentInfo[0] : `${parentId}/${currentInfo[0]}`
+        /*const currentInfo = Object.keys(folderInfo).filter((i) => folderInfo[i].title === title)
+        const { parentId } = folderInfo[currentInfo[0]]
+        const parentTitle = folderInfo[parentId]?.title
+        // const path = (parentTitle === 'Content' || parentTitle === 'Courses') ? title : `${parentTitle}/${title}`
+        const path = (parentTitle === 'Content' || parentTitle === 'Courses') ? currentInfo[0] : `${parentId}/${currentInfo[0]}`*/
         return <div>
           {icon}
+          <Link 
+            to={`/content/${path}`} 
+            style={{
+              textDecoration:"none", 
+              marginLeft:"5px", 
+              color: "rgba(0, 0, 0, 0.8)", 
+              border: "0px", 
+              background: "none", 
+              padding: "0px"
+            }}>
+              {title}
+          </Link>
 
-          <Link to={`/content/?path=${title}`} style={{textDecoration:"none", marginLeft:"5px", color: "rgba(0, 0, 0, 0.8)", border: "0px", background: "none", padding: "0px"}}>{title}</Link>
         </div>
       };
       this.tree = <div className="tree" style={{ paddingLeft: "1em" }}>
@@ -2829,13 +2883,33 @@ const TreeNodeItemSplit = ({title, icon}) => {
 
 
 
-const customizedTreeNodeItem = ({title, icon}) => {
-  return <div>
-    {icon}
-    <Link to={`/content/?path=${title}`} style={{ color: 'white', textDecoration: 'none', paddingLeft: "5px", fontSize: "16px" , fontWeight:"700"}}>{title}</Link>
-    
-  </div>
-};
+const customizedTreeNodeItem = (nodeItem, item) => {
+        const { title, icon } = nodeItem
+        const contentInfo = customizedContentTreeParentInfo
+        const coursesInfo = { ...customizedCoursesTreeChildrenInfo, ...customizedCoursesTreeParentInfo }
+        const folderInfo = item === 'content' ? contentInfo : coursesInfo
+        const currentInfo = Object.keys(folderInfo).filter((i) => folderInfo[i].title === title)
+        const { parentId } = folderInfo[currentInfo[0]]
+        const parentTitle = folderInfo[parentId]?.title
+        // const path = (parentTitle === 'Content' || parentTitle === 'Courses') ? title : `${parentTitle}/${title}`
+        const path = (parentTitle === 'Content' || parentTitle === 'Courses') ? currentInfo[0] : `${parentId}/${currentInfo[0]}`
+        
+        return <div>
+          {icon}
+          <Link 
+            to={`/${item === 'content' ? 'content' : 'courses'}/${path}`} 
+            style={{ 
+              color: 'white', 
+              textDecoration: 'none', 
+              paddingLeft: "5px", 
+              fontSize: "16px",
+              fontWeight:"700"
+            }}>
+              {title}
+          </Link>
+
+        </div>
+      };
       this.customizedTree = <div className="tree-column">
         <Accordion>
           <div label="CONTENT" activeChild={this.state.contentActiveChild}>
@@ -2847,8 +2921,8 @@ const customizedTreeNodeItem = ({title, icon}) => {
               childrenInfo={{}}
               specialNodes={this.customizedTempSet}
               hideRoot={true}
-              parentNodeItem={customizedTreeNodeItem}
-              leafNodeItem={customizedTreeNodeItem}
+              parentNodeItem={(node) => customizedTreeNodeItem(node, 'content')}
+              leafNodeItem={(node) => customizedTreeNodeItem(node, 'content')}
               treeNodeIcons={(itemType) => {
                 let map = {
                 }
@@ -2976,8 +3050,8 @@ const customizedTreeNodeItem = ({title, icon}) => {
               parentsInfo={customizedCoursesTreeParentInfo}
               childrenInfo={customizedCoursesTreeChildrenInfo}
               hideRoot={true}
-              parentNodeItem={customizedTreeNodeItem}
-              leafNodeItem={customizedTreeNodeItem}
+              parentNodeItem={(node) => customizedTreeNodeItem(node, 'course')}
+              leafNodeItem={(node) => customizedTreeNodeItem(node, 'course')}
               treeNodeIcons={(itemType) => {
                 let map = {
                 }
@@ -3032,8 +3106,8 @@ const customizedTreeNodeItem = ({title, icon}) => {
           </div>
         </Accordion>
       </div>
-      console.log('branch id info', this.branchId_info);
-      this.mainSection = <React.Fragment>
+     // console.log('branch id info', this.branchId_info);
+      this.mainSection = (history) => (<React.Fragment>
         <DoenetBranchBrowser
           loading={loading}
           containerId={browserContainerId}
@@ -3050,7 +3124,6 @@ const customizedTreeNodeItem = ({title, icon}) => {
           allCourseInfo={this.courseInfo}                        
           updateSelectedItems={this.updateSelectedItems}    
           handleContentItemDoubleClick={this.handleContentItemDoubleClick}          // optional
-     
           updateDirectoryStack={this.updateDirectoryStack}       
           addContentToFolder={this.addContentToFolder}           
           addContentToRepo={this.addContentToRepo}               
@@ -3068,10 +3141,11 @@ const customizedTreeNodeItem = ({title, icon}) => {
           onDropEnter={this.onBrowserDropEnter}
           onDrop={this.onBrowserDrop}
           onFolderDrop={this.onBrowserFolderDrop}
+          history={history}
         />
-      </React.Fragment>
+      </React.Fragment>)
 ////console.log('branch id onfo 2 ',this.branchId_info);
-      this.splitPanelMainSection = <React.Fragment>
+      this.splitPanelMainSection = (history) => (<React.Fragment>
         <DoenetBranchBrowser
           loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
           containerId={"browser"}
@@ -3104,8 +3178,9 @@ const customizedTreeNodeItem = ({title, icon}) => {
           // onDropEnter={this.onSplitPanelBrowserDropEnter}
           // onDrop={this.onSplitPanelBrowserDrop}
           onFolderDrop={this.onSplitPanelBrowserFolderDrop}
+          history={history}
         />
-      </React.Fragment>
+      </React.Fragment>)
     }
 
     const newItemButton = <div id="newContentButtonContainer">
@@ -3221,41 +3296,43 @@ const customizedTreeNodeItem = ({title, icon}) => {
     const mainPanelMenuControls = [switchPanelButton];
     const middlePanelMenuControls = [splitPanelButton];
     const rightPanelMenuControls = [dropDownSelectButton, splitSwitchPanelButton];
-    const createMiddlePanelContent = (match) => {
-      ////console.log('match', match);
+    const createMiddlePanelContent = (props) => {
+      // console.log('match', props);
+      const { match, history } = props
+      this.history = history
       return (
-      <ToolLayoutPanel
-        panelName="Main Panel"
-        splitPanel={this.state.splitPanelLayout}
-        panelHeaderControls={[mainPanelMenuControls, navigationPanelMenuControls, middlePanelMenuControls]}
-        disableSplitPanelScroll={[true, false]}
-        key={'middle'}
-      >
-        <MainPanel
-          initialContainer="browser"
-          activeContainer={this.state.panelsCollection["first"].activeContainer}
-          containersData={[
-            { name: "browser", container: this.mainSection },
-            { name: "tree", container: this.tree },
-          ]}
-          path={match.params.leftNavRoute}
-          keyProp={'mainPanel'}
-        />
-        <SplitLayoutPanel
-          defaultVisible={false}
-          keyProp={'splitMainPanel'}
-          panelHeaderControls={[rightPanelMenuControls, <button style={{ height: '24px', padding: '1px' }} onClick={() => this.toggleSplitPanel()}><FontAwesomeIcon icon={faTimesCircle} style={{ fontSize: "20px", height: '20px', padding: '2px' }} /></button>]}>
-          <SplitPanelMainContent
+        <ToolLayoutPanel
+          panelName="Main Panel"
+          splitPanel={this.state.splitPanelLayout}
+          panelHeaderControls={[mainPanelMenuControls, navigationPanelMenuControls, middlePanelMenuControls]}
+          disableSplitPanelScroll={[true, false]}
+          key={'middle'}
+        >
+          <MainPanel
             initialContainer="browser"
-            activeContainer={this.state.splitPanelsCollection["second"].activeContainer}
+            activeContainer={this.state.panelsCollection["first"].activeContainer}
             containersData={[
-              { name: "browser", container: this.splitPanelMainSection },
-              { name: "tree", container: this.splitPanelTree },
+              { name: "browser", container: this.mainSection(history) },
+              { name: "tree", container: this.tree },
             ]}
             path={match.params.leftNavRoute}
+            keyProp={'mainPanel'}
           />
-        </SplitLayoutPanel>
-      </ToolLayoutPanel>)
+          <SplitLayoutPanel
+            defaultVisible={false}
+            keyProp={'splitMainPanel'}
+            panelHeaderControls={[rightPanelMenuControls, <button style={{ height: '24px', padding: '1px' }} onClick={() => this.toggleSplitPanel()}><FontAwesomeIcon icon={faTimesCircle} style={{ fontSize: "20px", height: '20px', padding: '2px' }} /></button>]}>
+            <SplitPanelMainContent
+              initialContainer="browser"
+              activeContainer={this.state.splitPanelsCollection["second"].activeContainer}
+              containersData={[
+                { name: "browser", container: this.splitPanelMainSection(history) },
+                { name: "tree", container: this.splitPanelTree },
+              ]}
+              path={match.params.leftNavRoute}
+            />
+          </SplitLayoutPanel>
+        </ToolLayoutPanel>)
     };
     
 
@@ -3296,8 +3373,19 @@ const customizedTreeNodeItem = ({title, icon}) => {
 
 
             <Switch>
-              <Route exact path="/" render={({ match }) => createMiddlePanelContent(match)} />
-              <Route path="/content/" render={({ match }) => createMiddlePanelContent(match)} />
+              <Route exact path="/" render={(props) => createMiddlePanelContent(props)} />
+              <Route path="/content/" render={(props) => createMiddlePanelContent(props)} />
+              {
+                [ ...Array(10).keys() ].map((i) => {
+                  return <Route path={`/content/${[ ...Array(i).keys() ].map((item) => `:level${item + 1}`).join('/')}`} render={(props) => createMiddlePanelContent(props)} />
+                })
+              }
+              <Route path="/courses/" render={(props) => createMiddlePanelContent(props)} />
+              {
+                [ ...Array(10).keys() ].map((i) => {
+                  return <Route path={`/courses/${[ ...Array(i).keys() ].map((item) => `:level${item + 1}`).join('/')}`} render={(props) => createMiddlePanelContent(props)} />
+                })
+              }
             </Switch>
 
           <ToolLayoutPanel panelName="Info Panel" key={'right'}>
@@ -3313,7 +3401,7 @@ const customizedTreeNodeItem = ({title, icon}) => {
               publicizeRepo={this.publicizeRepo}
               openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
               openEditUrlForm={() => this.toggleManageUrlForm("edit_url")}
-              versionCallback={this.versionCallback}
+              versionCallback={this.versionCallback.bind(this)}
             />
           </ToolLayoutPanel>
         </ToolLayout>
