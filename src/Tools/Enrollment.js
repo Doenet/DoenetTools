@@ -2,40 +2,30 @@ import axios from 'axios';
 import React, { useState, useEffect, useCallback } from "react";
 import {useDropzone} from 'react-dropzone';
 import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
+import parse from 'csv-parse';
 
 
-  function csvToArray(csv) {//converts csv file to a 2d array
-    let textLines = csv.split(/\r\n|\n/);
-    let dataNames = [];
-    let dataEntries = [];
-    for (let i=0; i<textLines.length; i++) {
-        let lineArray = textLines[i].split(',');
-        if (i==0) {
-            dataNames = lineArray;
-        } else {
-            dataEntries.push(lineArray);
-        }
-    }
-    return [dataNames, dataEntries];
-}
 
 export default function Enrollment(params){
   const [process, setProcess] = useState("Loading");//array containing column names
   console.log("process",process);
   const [headers, setHeaders] = useState([]);//array containing column names
   const [entries, setEntries] = useState([[]]);//2d array with each row representing a data point
-      const onDrop = useCallback( file => {
-      const reader = new FileReader();
+  const onDrop = useCallback( file => {
+  const reader = new FileReader();
+  
+  reader.onabort = () => console.log('file reading was aborted');
+  reader.onerror = () => console.log('file reading encountered an error');
+  reader.onload = () => {
+    parse(reader.result, { comment: '#' }, function(err, data){
+      setHeaders(data[0]);
+      data.shift() //Remove head row of data
+      setEntries(data);
+      setProcess("Choose Columns")
+    });
       
-      reader.onabort = () => console.log('file reading was aborted');
-      reader.onerror = () => console.log('file reading encountered an error');
-      reader.onload = () => {
-          let data = csvToArray(reader.result);
-          setHeaders(data[0]);
-          setEntries(data[1]);
-          setProcess("Choose Columns")
-      }
-      reader.readAsText(file[0]);
+  }
+  reader.readAsText(file[0]);
   }, [])
 
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop});
