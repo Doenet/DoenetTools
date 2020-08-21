@@ -18,6 +18,7 @@ import ToolLayoutPanel from "./ToolLayout/ToolLayoutPanel";
 import styled from "styled-components";
 import { getCourses, setSelected } from "../imports/courseInfo";
 import Enrollment from './Enrollment';
+import LearnerGrades from './LearnerGrades';
 
 export default function DoenetCourse(props){
   
@@ -42,15 +43,20 @@ export default function DoenetCourse(props){
             <div style={{display:"flex",flexDirection:"column"}}>
                 
               
-           <Link to="?branchId=overview">Overview</Link>
-           <Link to="?branchId=syllabus">Syllabus</Link>
-           <Link to="?branchId=grades">Grades</Link>
-           <Link to="?branchId=assignments">Assignments</Link>
-           <Link to="?branchId=Enrollment">Enrollment</Link>
+           <Link to="/overview">Overview</Link>
+           <Link to="/syllabus">Syllabus</Link>
+           <Link to="/grades">Grades</Link>
+           <Link to="/assignments">Assignments</Link>
+           <Link to="/enrollment">Enrollment</Link>
             </div>
           </ToolLayoutPanel> 
-
-          <Enrollment selectedCourse={selectedCourse}/>
+          <Switch>
+              <Route sensitive exact path="/enrollment/" render={(props) => (<Enrollment selectedCourse={selectedCourse}/> )} />
+              <Route sensitive exact path="/grades/" render={(props) => (<LearnerGrades selectedCourse={selectedCourse}/>)} />
+              {/* <Route sensitive exact path="/attempt/" render={(props) => (<GradebookAttemptView />)} /> */}
+          </Switch>
+          {/* <Enrollment selectedCourse={selectedCourse}/> */}
+          {/* <LearnerGrades selectedCourse={selectedCourse}/> */}
 
           <ToolLayoutPanel
           // menuControlsViewermenuControls={menuControlsViewer} 
