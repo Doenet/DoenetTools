@@ -6,12 +6,14 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+
+$jwtArray = include "jwtArray.php";
+$userId = $jwtArray['userId'];
+
 $overview =  mysqli_real_escape_string($conn,$_GET["overview"]);
 $grade =  mysqli_real_escape_string($conn,$_GET["grade"]);
 $syllabus =  mysqli_real_escape_string($conn,$_GET["syllabus"]);
 $assignment =  mysqli_real_escape_string($conn,$_GET["assignment"]);
-$overview_branchId;
-$syllabus_branchId;
 
 $sql="
 SELECT 
@@ -22,15 +24,14 @@ SELECT
  c.description as description,
  c.overview_branchId as overviewId,
  c.syllabus_branchId as syllabusId,
-
  c.overviewEnabled as overviewEnabled,
  c.syllabusEnabled as syllabusEnabled,
  c.gradeEnabled as gradeEnabled,
  c.assignmentEnabled as assignmentEnabled,
-
  c.department as department,
  c.section as section
 FROM course AS c
+RIGHT JOIN course_instructor ci ON c.courseId = ci.courseId AND ci.userId='$userId' 
 ORDER BY c.courseId
 ";
 
@@ -53,7 +54,6 @@ if ($result->num_rows > 0){
           "syllabusEnabled" => $row["syllabusEnabled"],
           "gradeEnabled" => $row["gradeEnabled"],
           "assignmentEnabled" => $row["assignmentEnabled"],
-
           "department" => $row["department"],
           "section" => $row["section"],
           "content" => array(),
@@ -63,30 +63,30 @@ if ($result->num_rows > 0){
   }
 }
 
-// get course content
-$sql="
-SELECT 
- cc.courseId as courseId,
- cc.itemId as itemId,
- cc.itemType as itemType
-FROM course_content AS cc
-WHERE removedFlag=0
-ORDER BY cc.courseId
-";
+// // get course content
+// $sql="
+// SELECT 
+//  cc.courseId as courseId,
+//  cc.itemId as itemId,
+//  cc.itemType as itemType
+// FROM course_content AS cc
+// WHERE removedFlag=0
+// ORDER BY cc.courseId
+// ";
 
-$result = $conn->query($sql); 
+// $result = $conn->query($sql); 
 
-if ($result->num_rows > 0){
-  while($row = $result->fetch_assoc()){ 
-    if ($row["itemType"] == "content") {
-      array_push($courseId_info_arr[$row["courseId"]]["content"], $row["itemId"]);
-    } else if ($row["itemType"] == "folder"){
-      array_push($courseId_info_arr[$row["courseId"]]["folders"], $row["itemId"]);
-    } else if ($row["itemType"] == "url"){
-      array_push($courseId_info_arr[$row["courseId"]]["urls"], $row["itemId"]);
-    }
-  }
-}
+// if ($result->num_rows > 0){
+//   while($row = $result->fetch_assoc()){ 
+//     if ($row["itemType"] == "content") {
+//       array_push($courseId_info_arr[$row["courseId"]]["content"], $row["itemId"]);
+//     } else if ($row["itemType"] == "folder"){
+//       array_push($courseId_info_arr[$row["courseId"]]["folders"], $row["itemId"]);
+//     } else if ($row["itemType"] == "url"){
+//       array_push($courseId_info_arr[$row["courseId"]]["urls"], $row["itemId"]);
+//     }
+//   }
+// }
 
 // $defaultCourseId = $courseId_info_arr[$ci_array[0]];
 

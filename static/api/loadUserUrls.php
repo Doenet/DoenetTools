@@ -6,7 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
-
+include "getRepoData.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
@@ -21,11 +21,28 @@ SELECT   -- get personal urls
   u.usesDoenetAPI as usesDoenetAPI,
   fc.rootId as rootId, 
   fc.folderId as parentId,
-  u.public as isPublic
+  u.public as isPublic,
+  u.isPinned as isPinned
 FROM url AS u
 LEFT JOIN user_urls uu ON uu.urlId = u.urlId
 LEFT JOIN folder_content fc ON fc.childId = u.urlId AND fc.childType='url'
 WHERE uu.userId='$userId' AND u.removedFlag=0 AND u.isPinned='0'
+UNION
+SELECT   -- get shared content
+  u.urlId as urlId,
+  u.title as title,
+  u.url as url,
+  u.description as description,
+  u.timestamp as publishDate,
+  u.removedFlag as removedFlag,
+  u.usesDoenetAPI as usesDoenetAPI,
+  fc.rootId as rootId, 
+  fc.folderId as parentId,
+  u.public as isPublic,
+  u.isPinned as isPinned
+FROM url AS u
+LEFT JOIN folder_content fc ON fc.childId = u.urlId
+WHERE u.urlId IN ('".implode("','",$childUrlsArray)."') AND u.removedFlag=0 AND u.isPinned='0'
 ORDER BY title
 ";
 
@@ -73,7 +90,7 @@ $urlId_arr = array();
 
 if ($result->num_rows > 0){
     while($row = $result->fetch_assoc()){ 
-      if ($row["parentId"] == NULL) array_push($urlId_arr, $row["urlId"]);
+      if ($row["parentId"] == NULL || $row["parentId"] == "root") array_push($urlId_arr, $row["urlId"]);
       $url_info_arr[$row["urlId"]] = array(
         "title" => $row["title"],
         "url" => $row["url"],
