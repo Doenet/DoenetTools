@@ -277,12 +277,10 @@ class DoenetChooser extends Component {
     }));
   }
 
-  toggleManageCourseForm = (mode) => {
-    if (this.state.activeSection !== mode) {
-      this.setState({ activeSection: mode });
-    } else {
-      this.setState({ activeSection: "chooser" });
-    }
+  toggleFormModal = (mode) => {
+    const { location: { pathname = '' } } = this.history
+    this.history.push(`${pathname}?overlay=true&${mode}}`);
+    this.setState({ modalOpen: !this.state.modalOpen, activeSection: mode });  
   }
 
   handleNewCourseCreated = ({courseId, courseName, courseCode, term, description, department, section}, callback=(()=>{})) => {
@@ -2667,6 +2665,38 @@ class DoenetChooser extends Component {
     this.setState({modalHeaderTitle: title});
   }
 
+  createModalContent = () => {
+    let modalContent = <React.Fragment></React.Fragment>
+    switch(this.state.activeSection) {
+      case ChooserConstants.CREATE_COURSE_MODE || ChooserConstants.EDIT_COURSE_INFO_MODE:
+        modalContent = <CourseForm
+          mode={this.state.activeSection}
+          handleBack={this.toggleFormModal}
+          handleNewCourseCreated={this.handleNewCourseCreated}
+          saveCourse={this.saveCourse}
+          selectedCourse={this.state.selectedCourse}
+          selectedCourseInfo={this.courseInfo[this.state.selectedCourse]}
+        />;
+        break;
+      case ChooserConstants.CREATE_URL_MODE || ChooserConstants.EDIT_URL_INFO_MODE:
+        modalContent = <UrlForm
+          mode={this.state.activeSection}
+          handleBack={this.toggleFormModal}
+          handleNewUrlCreated={this.handleNewUrlCreated}
+          saveUrl={this.saveUrl}
+          selectedUrl={this.state.selectedItems[this.state.selectedItems.length - 1]}
+          selectedUrlInfo={this.urlInfo[this.state.selectedItems[this.state.selectedItems.length - 1]]}
+        />;
+        break;
+      default:
+        modalContent =  <DoenetEditor hideHeader={true} 
+        branchId={this.selectedBranchId}
+        contentId={this.selectedContentId}
+        headerTitleChange={this.headerTitleChange.bind(this)}/> 
+    }    
+    return modalContent;
+  }
+
   render() {
     if (!this.courses_loaded || !this.assignments_and_headings_loaded) {
       return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
@@ -2736,418 +2766,397 @@ class DoenetChooser extends Component {
     let treeContainerType = "";
     let treeParentsInfo = {};
     let treeChildrenInfo = {};
-    if (this.state.activeSection === "add_course" || this.state.activeSection === "edit_course") {
-      this.mainSection = <CourseForm
-        mode={this.state.activeSection}
-        handleBack={this.toggleManageCourseForm}
-        handleNewCourseCreated={this.handleNewCourseCreated}
-        saveCourse={this.saveCourse}
-        selectedCourse={this.state.selectedCourse}
-        selectedCourseInfo={this.courseInfo[this.state.selectedCourse]}
-      />;
-    } else if (this.state.activeSection === "add_url" || this.state.activeSection === "edit_url") {
-      this.mainSection = <UrlForm
-        mode={this.state.activeSection}
-        handleBack={this.toggleManageUrlForm}
-        handleNewUrlCreated={this.handleNewUrlCreated}
-        saveUrl={this.saveUrl}
-        selectedUrl={this.state.selectedItems[this.state.selectedItems.length - 1]}
-        selectedUrlInfo={this.urlInfo[this.state.selectedItems[this.state.selectedItems.length - 1]]}
-      />;
-    }
-    else {
-      if (this.state.selectedDrive == "Content" || this.state.selectedDrive == "Global") {
-        loading = !this.folders_loaded || !this.branches_loaded || !this.urls_loaded;
+    
+    if (this.state.selectedDrive == "Content" || this.state.selectedDrive == "Global") {
+      loading = !this.folders_loaded || !this.branches_loaded || !this.urls_loaded;
 
-        // browser data
-        browserContainerId = "user";
-        folderList = this.folderIds;
-        contentList = this.sort_order;
-        urlList = this.urlIds;
-        browserFolderInfo = this.folderInfo;
-        browserContentInfo= this.branchId_info;
-        browserUrlInfo = this.urlInfo;
+      // browser data
+      browserContainerId = "user";
+      folderList = this.folderIds;
+      contentList = this.sort_order;
+      urlList = this.urlIds;
+      browserFolderInfo = this.folderInfo;
+      browserContentInfo= this.branchId_info;
+      browserUrlInfo = this.urlInfo;
 
-        // tree data
-        treeContainerId = "user";
-        treeContainerType = ChooserConstants.USER_CONTENT_TYPE;
-        treeParentsInfo = this.userFolderInfo;
-        treeChildrenInfo = { ...this.userContentInfo, ...this.userUrlInfo };
-        console.log(treeParentsInfo)
+      // tree data
+      treeContainerId = "user";
+      treeContainerType = ChooserConstants.USER_CONTENT_TYPE;
+      treeParentsInfo = this.userFolderInfo;
+      treeChildrenInfo = { ...this.userContentInfo, ...this.userUrlInfo };
+      console.log(treeParentsInfo)
 
-      } else if (this.state.selectedDrive == "Courses") {
-        loading = !this.assignments_and_headings_loaded;
+    } else if (this.state.selectedDrive == "Courses") {
+      loading = !this.assignments_and_headings_loaded;
 
 
-        // browser data
-        browserContainerId = this.state.selectedCourse;
-        if (this.headingsInfo[this.state.selectedCourse]["root"]) {
-          folderList = this.headingsInfo[this.state.selectedCourse]["root"]["childFolders"]; 
-          contentList = this.headingsInfo[this.state.selectedCourse]["root"]["childContent"]; 
-        }
-        browserFolderInfo = this.headingsInfo[this.state.selectedCourse]
-        browserContentInfo = this.assignmentsInfo[this.state.selectedCourse]
-
-        // tree data
-        treeContainerId = this.state.selectedCourse;
-        treeContainerType = ChooserConstants.COURSE_ASSIGNMENTS_TYPE;
-        treeParentsInfo = this.headingsInfo[this.state.selectedCourse];
-        treeChildrenInfo = this.assignmentsInfo[this.state.selectedCourse];
+      // browser data
+      browserContainerId = this.state.selectedCourse;
+      if (this.headingsInfo[this.state.selectedCourse]["root"]) {
+        folderList = this.headingsInfo[this.state.selectedCourse]["root"]["childFolders"]; 
+        contentList = this.headingsInfo[this.state.selectedCourse]["root"]["childContent"]; 
       }
-      const TreeNodeItem = ({title, icon}) => {
-       console.log('this:', this.folderInfo)
-        const contentInfo = this.folderInfo        
-        const currentInfo = Object.keys(contentInfo).filter((i) => contentInfo[i].title === title)   
-        const parentId = contentInfo[currentInfo[0]]?.parentId || ''
-        const parentTitle = currentInfo.length && parentId ? contentInfo[parentId]?.title : 'Content'
-        const path = parentTitle === 'Content' ? currentInfo[0] : `${parentId}/${currentInfo[0]}`
-        /*const currentInfo = Object.keys(folderInfo).filter((i) => folderInfo[i].title === title)
-        const { parentId } = folderInfo[currentInfo[0]]
-        const parentTitle = folderInfo[parentId]?.title
-        // const path = (parentTitle === 'Content' || parentTitle === 'Courses') ? title : `${parentTitle}/${title}`
-        const path = (parentTitle === 'Content' || parentTitle === 'Courses') ? currentInfo[0] : `${parentId}/${currentInfo[0]}`*/
-        return <div>
-          {icon}
-          <Link 
-            to={`/content/${path}`} 
-            style={{
-              textDecoration:"none", 
-              marginLeft:"5px", 
-              color: "rgba(0, 0, 0, 0.8)", 
-              border: "0px", 
-              background: "none", 
-              padding: "0px"
-            }}>
-              {title}
-          </Link>
+      browserFolderInfo = this.headingsInfo[this.state.selectedCourse]
+      browserContentInfo = this.assignmentsInfo[this.state.selectedCourse]
 
-        </div>
-      };
-      this.tree = <div className="tree" style={{ paddingLeft: "1em" }}>
-        <TreeView
-          containerId={treeContainerId}
-          containerType={treeContainerType}
-          loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
-          parentsInfo={treeParentsInfo}
-          childrenInfo={treeChildrenInfo}
-          treeNodeIcons={TreeIcons}
-          currentDraggedObject={this.state.currentDraggedObject}
-          onDragStart={this.onTreeDragStart}
-          onDragEnd={this.onTreeDragEnd}
-          onDraggableDragOver={this.onTreeDraggableDragOver}
-          onDropEnter={this.onTreeDropEnter}
-          onDrop={this.onTreeDrop}
-          directoryData={[...this.state.directoryStack]}
-          parentNodeItem={TreeNodeItem}
-          leafNodeItem={TreeNodeItem}
-          specialNodes={this.tempSet}
-          // specialNodes={new Set(this.tempSet).add(selectedItem.parentId)}
-          treeStyles={{
-            specialChildNode: {
-              "title": { color: "#2675ff" },
-              "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
-            },
-            specialParentNode: {
-              "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
-            },
-            // parentNode: {
-            //   "node": { background: "rgba(58,172,144)" },
-            // },
-            emptyParentExpanderIcon: <span></span>,
-          }}
-          onLeafNodeClick={(id, type) => {
-            // get path to item
-            const dataSource = this.getDataSource(treeContainerId, treeContainerType);
-            const itemParentId = dataSource[type][id]["parentId"];
-            const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId, treeParentsInfo);
-            // select item and switch to directory            
-            this.setState({
-              selectedItems: [id],
-              selectedItemsType: [type],
-              directoryStack: pathToSelectedFolder
-            })
-            this.setState({ selectedItems: [id], selectedItemsType: [type] })
-            this.tempSet.clear()
-            this.tempSet.add(id);
-            this.customizedTempSet.clear();
-            this.customizedTempSet.add(itemParentId);
-            // this.handleContentItemDoubleClick([id]);
-            this.forceUpdate();
-          }}
-          onLeafNodeDoubleClick={(id, type) => {
-            console.log(id)     
-            const dataSource = this.getDataSource(treeContainerId, treeContainerType);
-            const itemParentId = dataSource[type][id]["parentId"];
-            const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId, treeParentsInfo);      
-            // const itemParentId = dataSource[type][id]["parentId"];
-            this.setState({
-              selectedItems: [id],
-              selectedItemsType: [type],
-              directoryStack: pathToSelectedFolder
-            })
-            this.setState({ selectedItems: [id], selectedItemsType: [type] })
-            // this.tempSet.clear()
-            // this.tempSet.add(id);
-            // this.customizedTempSet.clear();
-            // this.customizedTempSet.add(itemParentId);
-            this.handleContentItemDoubleClick([id]);
-            // this.forceUpdate();
-          }}
+      // tree data
+      treeContainerId = this.state.selectedCourse;
+      treeContainerType = ChooserConstants.COURSE_ASSIGNMENTS_TYPE;
+      treeParentsInfo = this.headingsInfo[this.state.selectedCourse];
+      treeChildrenInfo = this.assignmentsInfo[this.state.selectedCourse];
+    }
+    const TreeNodeItem = ({title, icon}) => {
+      console.log('this:', this.folderInfo)
+      const contentInfo = this.folderInfo        
+      const currentInfo = Object.keys(contentInfo).filter((i) => contentInfo[i].title === title)   
+      const parentId = contentInfo[currentInfo[0]]?.parentId || ''
+      const parentTitle = currentInfo.length && parentId ? contentInfo[parentId]?.title : 'Content'
+      const path = parentTitle === 'Content' ? currentInfo[0] : `${parentId}/${currentInfo[0]}`
+      /*const currentInfo = Object.keys(folderInfo).filter((i) => folderInfo[i].title === title)
+      const { parentId } = folderInfo[currentInfo[0]]
+      const parentTitle = folderInfo[parentId]?.title
+      // const path = (parentTitle === 'Content' || parentTitle === 'Courses') ? title : `${parentTitle}/${title}`
+      const path = (parentTitle === 'Content' || parentTitle === 'Courses') ? currentInfo[0] : `${parentId}/${currentInfo[0]}`*/
+      return <div>
+        {icon}
+        <Link 
+          to={`/content/${path}`} 
+          style={{
+            textDecoration:"none", 
+            marginLeft:"5px", 
+            color: "rgba(0, 0, 0, 0.8)", 
+            border: "0px", 
+            background: "none", 
+            padding: "0px"
+          }}>
+            {title}
+        </Link>
 
-          onParentNodeClick={(id, type) => {
-            // get path to item
-            let pathToSelectedFolder = this.getPathToFolder(id, treeParentsInfo);
-            // select item and switch to directory            
-            this.setState({
-              selectedItems: [id],
-              selectedItemsType: [type],
-              directoryStack: pathToSelectedFolder
-            })
-            this.customizedTempSet.clear();
-            this.customizedTempSet.add(id);
-            this.tempSet.clear();
-            this.tempSet.add(id);
-            this.setState({});
-            this.forceUpdate();
-          }}
-          onParentNodeDoubleClick={(id) => {
-            // openSubtree
-          }}
-        />
       </div>
+    };
+    this.tree = <div className="tree" style={{ paddingLeft: "1em" }}>
+      <TreeView
+        containerId={treeContainerId}
+        containerType={treeContainerType}
+        loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
+        parentsInfo={treeParentsInfo}
+        childrenInfo={treeChildrenInfo}
+        treeNodeIcons={TreeIcons}
+        currentDraggedObject={this.state.currentDraggedObject}
+        onDragStart={this.onTreeDragStart}
+        onDragEnd={this.onTreeDragEnd}
+        onDraggableDragOver={this.onTreeDraggableDragOver}
+        onDropEnter={this.onTreeDropEnter}
+        onDrop={this.onTreeDrop}
+        directoryData={[...this.state.directoryStack]}
+        parentNodeItem={TreeNodeItem}
+        leafNodeItem={TreeNodeItem}
+        specialNodes={this.tempSet}
+        // specialNodes={new Set(this.tempSet).add(selectedItem.parentId)}
+        treeStyles={{
+          specialChildNode: {
+            "title": { color: "#2675ff" },
+            "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
+          },
+          specialParentNode: {
+            "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
+          },
+          // parentNode: {
+          //   "node": { background: "rgba(58,172,144)" },
+          // },
+          emptyParentExpanderIcon: <span></span>,
+        }}
+        onLeafNodeClick={(id, type) => {
+          // get path to item
+          const dataSource = this.getDataSource(treeContainerId, treeContainerType);
+          const itemParentId = dataSource[type][id]["parentId"];
+          const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId, treeParentsInfo);
+          // select item and switch to directory            
+          this.setState({
+            selectedItems: [id],
+            selectedItemsType: [type],
+            directoryStack: pathToSelectedFolder
+          })
+          this.setState({ selectedItems: [id], selectedItemsType: [type] })
+          this.tempSet.clear()
+          this.tempSet.add(id);
+          this.customizedTempSet.clear();
+          this.customizedTempSet.add(itemParentId);
+          // this.handleContentItemDoubleClick([id]);
+          this.forceUpdate();
+        }}
+        onLeafNodeDoubleClick={(id, type) => {
+          this.handleContentItemDoubleClick([id]);
+        }}
+
+        onParentNodeClick={(id, type) => {
+          // get path to item
+          let pathToSelectedFolder = this.getPathToFolder(id, treeParentsInfo);
+          // select item and switch to directory            
+          this.setState({
+            selectedItems: [id],
+            selectedItemsType: [type],
+            directoryStack: pathToSelectedFolder
+          })
+          this.customizedTempSet.clear();
+          this.customizedTempSet.add(id);
+          this.tempSet.clear();
+          this.tempSet.add(id);
+          this.setState({});
+          this.forceUpdate();
+        }}
+        onParentNodeDoubleClick={(id) => {
+          // openSubtree
+        }}
+      />
+    </div>
 
 const TreeNodeItemSplit = ({title, icon}) => {
-  return <div>
-    {icon}
-    <span style={{
-      verticalAlign: 'middle',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-    }}
-    >{title}</span>
-  </div>
+return <div>
+  {icon}
+  <span style={{
+    verticalAlign: 'middle',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+  }}
+  >{title}</span>
+</div>
 };
-   
-      this.splitPanelTree =  <div className="tree" style={{ paddingLeft: "1em" }}>
-        <TreeView
-          containerId={treeContainerId}
-          containerType={treeContainerType}
-          loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
-          parentsInfo={treeParentsInfo}
-          childrenInfo={treeChildrenInfo}
-          parentNodeItem={TreeNodeItemSplit}
-          leafNodeItem={TreeNodeItemSplit}
-          treeNodeIcons={TreeIcons}
-          currentDraggedObject={this.state.splitPanelCurrentDraggedObject}
-          onDragStart={this.onTreeDragStart}
-          onDragEnd={this.onTreeDragEnd}
-          onDraggableDragOver={this.onTreeDraggableDragOver}
-          onDropEnter={this.onTreeDropEnter}
-          onDrop={this.onTreeDrop}
-          directoryData={[...this.state.splitPanelDirectoryStack]}
-          specialNodes={this.tempSet}
-          treeStyles={{
-            specialChildNode: {
-              "title": { color: "#2675ff" },
-              "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
-            },
-            specialParentNode: {
-              "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
-            },
-            emptyParentExpanderIcon: <span></span>
-          }}
-          onLeafNodeClick={(id, type) => {
-            // get path to item
-            const dataSource = this.getDataSource(treeContainerId, treeContainerType);
-            const itemParentId = dataSource[type][id]["parentId"];
-            const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId);
-            // select item and switch to directory            
-            this.setState({
-              splitPanelSelectedItems: [id],
-              splitPanelSelectedItemsType: [type],
-              splitPanelDirectoryStack: pathToSelectedFolder
-            })
-            this.setState({ splitPanelSelectedItems: [id], splitPanelSelectedItemsType: [type] })
-            this.tempSet = new Set([id]);
-            this.forceUpdate()
-          }}
-          onParentNodeClick={(id, type) => {
-            // get path to item
-            let pathToSelectedFolder = this.getPathToFolder(id);
-            // select item and switch to directory            
-            this.setState({
-              splitPanelSelectedItems: [id],
-              splitPanelSelectedItemsType: [type],
-              splitPanelDirectoryStack: pathToSelectedFolder
-            })
-            this.tempSet = new Set([id]);
-            this.setState({})
-            this.forceUpdate()
-          }}
-          onParentNodeDoubleClick={(id) => {
-            // openSubtree
-          }}
-        />
-      </div>
+  
+    this.splitPanelTree =  <div className="tree" style={{ paddingLeft: "1em" }}>
+      <TreeView
+        containerId={treeContainerId}
+        containerType={treeContainerType}
+        loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
+        parentsInfo={treeParentsInfo}
+        childrenInfo={treeChildrenInfo}
+        parentNodeItem={TreeNodeItemSplit}
+        leafNodeItem={TreeNodeItemSplit}
+        treeNodeIcons={TreeIcons}
+        currentDraggedObject={this.state.splitPanelCurrentDraggedObject}
+        onDragStart={this.onTreeDragStart}
+        onDragEnd={this.onTreeDragEnd}
+        onDraggableDragOver={this.onTreeDraggableDragOver}
+        onDropEnter={this.onTreeDropEnter}
+        onDrop={this.onTreeDrop}
+        directoryData={[...this.state.splitPanelDirectoryStack]}
+        specialNodes={this.tempSet}
+        treeStyles={{
+          specialChildNode: {
+            "title": { color: "#2675ff" },
+            "frame": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
+          },
+          specialParentNode: {
+            "title": { color: "#2675ff", background: "#e6efff", paddingLeft: "5px", borderRadius: "0 50px 50px 0" },
+          },
+          emptyParentExpanderIcon: <span></span>
+        }}
+        onLeafNodeClick={(id, type) => {
+          // get path to item
+          const dataSource = this.getDataSource(treeContainerId, treeContainerType);
+          const itemParentId = dataSource[type][id]["parentId"];
+          const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId);
+          // select item and switch to directory            
+          this.setState({
+            splitPanelSelectedItems: [id],
+            splitPanelSelectedItemsType: [type],
+            splitPanelDirectoryStack: pathToSelectedFolder
+          })
+          this.setState({ splitPanelSelectedItems: [id], splitPanelSelectedItemsType: [type] })
+          this.tempSet = new Set([id]);
+          this.forceUpdate()
+        }}
+        onParentNodeClick={(id, type) => {
+          // get path to item
+          let pathToSelectedFolder = this.getPathToFolder(id);
+          // select item and switch to directory            
+          this.setState({
+            splitPanelSelectedItems: [id],
+            splitPanelSelectedItemsType: [type],
+            splitPanelDirectoryStack: pathToSelectedFolder
+          })
+          this.tempSet = new Set([id]);
+          this.setState({})
+          this.forceUpdate()
+        }}
+        onParentNodeDoubleClick={(id) => {
+          // openSubtree
+        }}
+      />
+    </div>
 
-      // let customizedContentTreeParentInfo = {"root": {}};
-      // let customizedContentTreeChildrenInfo = {};
-      
-      // if (treeParentsInfo && treeChildrenInfo) {
-      //   customizedContentTreeParentInfo = JSON.parse(JSON.stringify({...this.userFolderInfo})),
-      //   customizedContentTreeChildrenInfo = JSON.parse(JSON.stringify({ ...this.userContentInfo, ...this.userUrlInfo }))
-      //   customizedContentTreeParentInfo.root.title = "Content";
-      //   customizedContentTreeParentInfo.root.childContent = [];
-      // }
+    // let customizedContentTreeParentInfo = {"root": {}};
+    // let customizedContentTreeChildrenInfo = {};
+    
+    // if (treeParentsInfo && treeChildrenInfo) {
+    //   customizedContentTreeParentInfo = JSON.parse(JSON.stringify({...this.userFolderInfo})),
+    //   customizedContentTreeChildrenInfo = JSON.parse(JSON.stringify({ ...this.userContentInfo, ...this.userUrlInfo }))
+    //   customizedContentTreeParentInfo.root.title = "Content";
+    //   customizedContentTreeParentInfo.root.childContent = [];
+    // }
 
-      let contentParentInfo = treeParentsInfo || {};
-      if (!!Object.keys(this.state.userFolderInfo).length) {
-        contentParentInfo = this.state.userFolderInfo
+    let contentParentInfo = treeParentsInfo || {};
+    if (!!Object.keys(this.state.userFolderInfo).length) {
+      contentParentInfo = this.state.userFolderInfo
+    }
+    let coursesParentInfo = treeParentsInfo;
+    if (!!Object.keys(this.state.userFolderInfo).length) {
+      coursesParentInfo = this.state.userFolderInfo
+    }
+    let customizedContentTreeParentInfo = JSON.parse(JSON.stringify(contentParentInfo));
+    let customizedContentTreeChildrenInfo = JSON.parse(JSON.stringify(treeChildrenInfo));
+    if (!!Object.keys(customizedContentTreeParentInfo).length) {
+      customizedContentTreeParentInfo["root"]["title"] = "Content";
+      customizedContentTreeParentInfo["root"]["childContent"] = [];
+    }
+    for (let key in customizedContentTreeParentInfo) {
+      if (key !== 'root') {
+        customizedContentTreeParentInfo[key].childContent = [];
+        // customizedContentTreeParentInfo[key].childFolders = [];
+        customizedContentTreeParentInfo[key].childUrls = [];
       }
-      let coursesParentInfo = treeParentsInfo;
-      if (!!Object.keys(this.state.userFolderInfo).length) {
-        coursesParentInfo = this.state.userFolderInfo
-      }
-      let customizedContentTreeParentInfo = JSON.parse(JSON.stringify(contentParentInfo));
-      let customizedContentTreeChildrenInfo = JSON.parse(JSON.stringify(treeChildrenInfo));
-      if (!!Object.keys(customizedContentTreeParentInfo).length) {
-        customizedContentTreeParentInfo["root"]["title"] = "Content";
-        customizedContentTreeParentInfo["root"]["childContent"] = [];
-      }
-      for (let key in customizedContentTreeParentInfo) {
-        if (key !== 'root') {
-          customizedContentTreeParentInfo[key].childContent = [];
-          // customizedContentTreeParentInfo[key].childFolders = [];
-          customizedContentTreeParentInfo[key].childUrls = [];
-        }
-      }
+    }
 
-      let customizedCoursesTreeParentInfo = {
-        root: {
-          title: "Courses",
-          type: "folder",
-          parentId: "root",
-          childFolders: [],
-          childContent: [],
-          childUrls: [],
-        }
-      };
-      let customizedCoursesTreeChildrenInfo = { ...this.courseInfo };
-      for (let key in customizedCoursesTreeChildrenInfo) {
-        customizedCoursesTreeChildrenInfo[key].parentId = 'root';
-        customizedCoursesTreeChildrenInfo[key].rootId = 'root';
-        customizedCoursesTreeChildrenInfo[key].title = customizedCoursesTreeChildrenInfo[key]['courseCode'];
-        customizedCoursesTreeChildrenInfo[key].type = 'content';
-        customizedCoursesTreeParentInfo['root']['childContent'].push(key);
+    let customizedCoursesTreeParentInfo = {
+      root: {
+        title: "Courses",
+        type: "folder",
+        parentId: "root",
+        childFolders: [],
+        childContent: [],
+        childUrls: [],
       }
+    };
+    let customizedCoursesTreeChildrenInfo = { ...this.courseInfo };
+    for (let key in customizedCoursesTreeChildrenInfo) {
+      customizedCoursesTreeChildrenInfo[key].parentId = 'root';
+      customizedCoursesTreeChildrenInfo[key].rootId = 'root';
+      customizedCoursesTreeChildrenInfo[key].title = customizedCoursesTreeChildrenInfo[key]['courseCode'];
+      customizedCoursesTreeChildrenInfo[key].type = 'content';
+      customizedCoursesTreeParentInfo['root']['childContent'].push(key);
+    }
 
-      ////console.log('customizedContentTreeParentInfo', customizedContentTreeParentInfo);
-      // ////console.log('customizedCoursesTreeParentInfo', customizedCoursesTreeParentInfo);
-      // ////console.log('customizedCoursesTreeChildrenInfo', customizedCoursesTreeChildrenInfo);
+    ////console.log('customizedContentTreeParentInfo', customizedContentTreeParentInfo);
+    // ////console.log('customizedCoursesTreeParentInfo', customizedCoursesTreeParentInfo);
+    // ////console.log('customizedCoursesTreeChildrenInfo', customizedCoursesTreeChildrenInfo);
 
 
 
 const customizedTreeNodeItem = (nodeItem, item) => {
-        const { title, icon } = nodeItem
-        const contentInfo = customizedContentTreeParentInfo
-        const coursesInfo = { ...customizedCoursesTreeChildrenInfo, ...customizedCoursesTreeParentInfo }
-        const folderInfo = item === 'content' ? contentInfo : coursesInfo
-        const currentInfo = Object.keys(folderInfo).filter((i) => folderInfo[i].title === title)
-        const { parentId } = folderInfo[currentInfo[0]]
-        const parentTitle = folderInfo[parentId]?.title
-        // const path = (parentTitle === 'Content' || parentTitle === 'Courses') ? title : `${parentTitle}/${title}`
-        const path = (parentTitle === 'Content' || parentTitle === 'Courses') ? currentInfo[0] : `${parentId}/${currentInfo[0]}`
+      const { title, icon } = nodeItem
+      const contentInfo = customizedContentTreeParentInfo
+      const coursesInfo = { ...customizedCoursesTreeChildrenInfo, ...customizedCoursesTreeParentInfo }
+      const folderInfo = item === 'content' ? contentInfo : coursesInfo
+      const currentInfo = Object.keys(folderInfo).filter((i) => folderInfo[i].title === title)
+      const { parentId } = folderInfo[currentInfo[0]]
+      const parentTitle = folderInfo[parentId]?.title
+      // const path = (parentTitle === 'Content' || parentTitle === 'Courses') ? title : `${parentTitle}/${title}`
+      const path = (parentTitle === 'Content' || parentTitle === 'Courses') ? currentInfo[0] : `${parentId}/${currentInfo[0]}`
+      
+      return <div>
+        {icon}
+        <Link 
+          to={`/${item === 'content' ? 'content' : 'courses'}/${path}`} 
+          style={{ 
+            color: 'white', 
+            textDecoration: 'none', 
+            paddingLeft: "5px", 
+            fontSize: "16px",
+            fontWeight:"700"
+          }}>
+            {title}
+        </Link>
+
+      </div>
+    };
+    this.customizedTree = <div className="tree-column">
+      <Accordion>
+        <div label="CONTENT" activeChild={this.state.contentActiveChild}>
+          <TreeView
+            containerId={treeContainerId}
+            containerType={treeContainerType}
+            loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
+            parentsInfo={customizedContentTreeParentInfo}
+            childrenInfo={{}}
+            specialNodes={this.customizedTempSet}
+            hideRoot={true}
+            parentNodeItem={(node) => customizedTreeNodeItem(node, 'content')}
+            leafNodeItem={(node) => customizedTreeNodeItem(node, 'content')}
+            treeNodeIcons={(itemType) => {
+              let map = {
+              }
+              return map[itemType]
+            }}
+
+            treeStyles={{
         
-        return <div>
-          {icon}
-          <Link 
-            to={`/${item === 'content' ? 'content' : 'courses'}/${path}`} 
-            style={{ 
-              color: 'white', 
-              textDecoration: 'none', 
-              paddingLeft: "5px", 
-              fontSize: "16px",
-              fontWeight:"700"
-            }}>
-              {title}
-          </Link>
-
-        </div>
-      };
-      this.customizedTree = <div className="tree-column">
-        <Accordion>
-          <div label="CONTENT" activeChild={this.state.contentActiveChild}>
-            <TreeView
-              containerId={treeContainerId}
-              containerType={treeContainerType}
-              loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
-              parentsInfo={customizedContentTreeParentInfo}
-              childrenInfo={{}}
-              specialNodes={this.customizedTempSet}
-              hideRoot={true}
-              parentNodeItem={(node) => customizedTreeNodeItem(node, 'content')}
-              leafNodeItem={(node) => customizedTreeNodeItem(node, 'content')}
-              treeNodeIcons={(itemType) => {
-                let map = {
+              parentNode: {
+                "title": { color: "white" , paddingLeft:'5px'},
+                "node":{
+                  width:"100%",
+                  height:"2.6em"
+                },
+              },
+              childNode: {
+                "title": {
+                  color:"white",
+                  paddingLeft: "5px"
+                },
+                "node":{
+                  backgroundColor:"rgba(192, 220, 242,0.3)",
+                  color: "white",
+                  // marginRight:"10px",
+                  borderLeft:'8px solid #1b216e',
+                  height:"2.6em",
+                  width:"100%"
                 }
-                return map[itemType]
-              }}
+              },
+              specialChildNode: {
+                "title": { color: "gray" },
+              },
+              specialParentNode: {
+                "title": {
+                  color:"white",
+                  paddingLeft: "5px"
+                },
+                "node":{
+                  backgroundColor:"rgba(192, 220, 242,0.3)",
+                  color: "white",
+                  // marginRight:"10px",
+                  borderLeft:'8px solid #1b216e',
+                  height:"2.6em",
+                  width:"100%"
+                }
+              },
 
-              treeStyles={{
-          
-                parentNode: {
-                  "title": { color: "white" , paddingLeft:'5px'},
-                  "node":{
-                    width:"100%",
-                    height:"2.6em"
-                  },
-                },
-                childNode: {
-                  "title": {
-                    color:"white",
-                    paddingLeft: "5px"
-                  },
-                  "node":{
-                    backgroundColor:"rgba(192, 220, 242,0.3)",
-                    color: "white",
-                    // marginRight:"10px",
-                    borderLeft:'8px solid #1b216e',
-                    height:"2.6em",
-                    width:"100%"
-                  }
-                },
-                specialChildNode: {
-                  "title": { color: "gray" },
-                },
-                specialParentNode: {
-                  "title": {
-                    color:"white",
-                    paddingLeft: "5px"
-                  },
-                  "node":{
-                    backgroundColor:"rgba(192, 220, 242,0.3)",
-                    color: "white",
-                    // marginRight:"10px",
-                    borderLeft:'8px solid #1b216e',
-                    height:"2.6em",
-                    width:"100%"
-                  }
-                },
+              emptyParentExpanderIcon: {
+                opened: <FontAwesomeIcon  
+                style={{
+                  padding: '1px',
+                  width: '1.3em',
+                  height: '1.2em',
+                  border: "1px solid darkblue",
+                  borderRadius: '2px',
+                  marginLeft: "5px"
 
-                emptyParentExpanderIcon: {
-                  opened: <FontAwesomeIcon  
-                  style={{
-                    padding: '1px',
-                    width: '1.3em',
-                    height: '1.2em',
-                    border: "1px solid darkblue",
-                    borderRadius: '2px',
-                    marginLeft: "5px"
+                }} 
+                icon={faChevronDown}/>,
+                closed: <FontAwesomeIcon  
+                style={{
+                  padding: '1px',
+                  width: '1.3em',
+                  height: '1.2em',
+                  border: "1px solid darkblue",
+                  borderRadius: '2px',
+                  marginLeft: "5px"
 
-                  }} 
-                  icon={faChevronDown}/>,
-                  closed: <FontAwesomeIcon  
+                }}
+                icon={faChevronRight}/>,
+              },
+              // <span style={{ padding: '5px' }}></span>,
+              expanderIcons: {
+                opened: <FontAwesomeIcon icon={faChevronDown}
                   style={{
                     padding: '1px',
                     width: '1.3em',
@@ -3157,196 +3166,182 @@ const customizedTreeNodeItem = (nodeItem, item) => {
                     marginLeft: "5px"
 
                   }}
-                  icon={faChevronRight}/>,
-                },
-                // <span style={{ padding: '5px' }}></span>,
-                expanderIcons: {
-                  opened: <FontAwesomeIcon icon={faChevronDown}
-                    style={{
-                      padding: '1px',
-                      width: '1.3em',
-                      height: '1.2em',
-                      border: "1px solid darkblue",
-                      borderRadius: '2px',
-                      marginLeft: "5px"
+                />,
+                closed: <FontAwesomeIcon icon={faChevronRight}
+                  style={{
+                    padding: '1px',
+                    width: '1.3em',
+                    height: '1.2em',
+                    border: "1px solid darkblue",
+                    borderRadius: "2px",
+                    marginLeft: "5px"
+                  }} />,
+              }
 
-                    }}
-                  />,
-                  closed: <FontAwesomeIcon icon={faChevronRight}
-                    style={{
-                      padding: '1px',
-                      width: '1.3em',
-                      height: '1.2em',
-                      border: "1px solid darkblue",
-                      borderRadius: "2px",
-                      marginLeft: "5px"
-                    }} />,
+            }}
+            onLeafNodeClick={(nodeId) => {
+              if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
+              else this.tempSet.add(nodeId);
+              this.forceUpdate();
+            }}
+            onParentNodeClick={(nodeId) => {
+              this.customizedTempSet.clear();
+              this.customizedTempSet.add(nodeId);
+              this.tempSet.clear();
+              this.tempSet.add(nodeId);
+              this.goToFolder(nodeId, customizedContentTreeParentInfo);
+              if (!this.state.splitPanelLayout) {
+                this.splitPanelGoToFolder(nodeId, customizedContentTreeParentInfo);
+              }
+              this.setState({ contentActiveChild: true });
+              this.forceUpdate();
+            }}
+            onDropEnter={this.onLeftNavDropEnter}
+            onDrop={this.onLeftNavDrop}
+          />
+        </div>
+      </Accordion>
+      <Accordion>
+        <div label="COURSES" activeChild={this.state.courseActiveChild}>
+          <TreeView
+            containerId={treeContainerId}
+            containerType={treeContainerType}
+            loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
+            parentsInfo={customizedCoursesTreeParentInfo}
+            childrenInfo={customizedCoursesTreeChildrenInfo}
+            hideRoot={true}
+            parentNodeItem={(node) => customizedTreeNodeItem(node, 'course')}
+            leafNodeItem={(node) => customizedTreeNodeItem(node, 'course')}
+            treeNodeIcons={(itemType) => {
+              let map = {
+              }
+              return map[itemType]
+            }}
+            treeStyles={{
+              parentNode: {
+                "title": { color: "white" , paddingLeft:'5px'},
+                "node":{
+                  width:"100%",
+                  height:"30px"
+                },
+            
+              },
+              childNode: {
+                "title": {
+                  color:"white",
+                  paddingLeft: "5px"
+                },
+                "node":{
+                  backgroundColor:"rgba(192, 220, 242,0.3)",
+                  color: "white",
+                  // marginRight:"10px",
+                  borderLeft:'8px solid #1b216e',
+                  height:"30px",
+                  width:"100%"
                 }
-
-              }}
-              onLeafNodeClick={(nodeId) => {
-                if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
-                else this.tempSet.add(nodeId);
-                this.forceUpdate();
-              }}
-              onParentNodeClick={(nodeId) => {
-                this.customizedTempSet.clear();
-                this.customizedTempSet.add(nodeId);
-                this.tempSet.clear();
-                this.tempSet.add(nodeId);
-                this.goToFolder(nodeId, customizedContentTreeParentInfo);
-                if (!this.state.splitPanelLayout) {
-                  this.splitPanelGoToFolder(nodeId, customizedContentTreeParentInfo);
-                }
-                this.setState({ contentActiveChild: true });
-                this.forceUpdate();
-              }}
-              onDropEnter={this.onLeftNavDropEnter}
-              onDrop={this.onLeftNavDrop}
-            />
-          </div>
-        </Accordion>
-        <Accordion>
-          <div label="COURSES" activeChild={this.state.courseActiveChild}>
-            <TreeView
-              containerId={treeContainerId}
-              containerType={treeContainerType}
-              loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
-              parentsInfo={customizedCoursesTreeParentInfo}
-              childrenInfo={customizedCoursesTreeChildrenInfo}
-              hideRoot={true}
-              parentNodeItem={(node) => customizedTreeNodeItem(node, 'course')}
-              leafNodeItem={(node) => customizedTreeNodeItem(node, 'course')}
-              treeNodeIcons={(itemType) => {
-                let map = {
-                }
-                return map[itemType]
-              }}
-              treeStyles={{
-                parentNode: {
-                  "title": { color: "white" , paddingLeft:'5px'},
-                  "node":{
-                    width:"100%",
-                    height:"30px"
-                  },
-             
-                },
-                childNode: {
-                  "title": {
-                    color:"white",
-                    paddingLeft: "5px"
-                  },
-                  "node":{
-                    backgroundColor:"rgba(192, 220, 242,0.3)",
-                    color: "white",
-                    // marginRight:"10px",
-                    borderLeft:'8px solid #1b216e',
-                    height:"30px",
-                    width:"100%"
-                  }
-                },
-                specialChildNode: {
-                },
-                specialParentNode: {
-                  "title": { color: "#d9eefa", background: "#e6efff", paddingLeft: "5px" },
-                },
-                // expanderIcon: <FontAwesomeIcon icon={faFolderOpen} style={{ paddingRight: "8px" }} />
-              }}
-              onLeafNodeClick={(nodeId) => {
-                this.tempSet.clear();
-                this.tempSet.add(nodeId);
-                this.selectDrive("Courses", nodeId)
-                this.forceUpdate();
-              }}
-              onParentNodeClick={(nodeId, type) => {
-                this.tempSet.clear();
-                this.tempSet.add(nodeId);
-                this.setState({courseActiveChild: true});
-                this.forceUpdate()
-              }}
-              onParentNodeDoubleClick={(nodeId) => {
-                ////console.log(`${nodeId} double clicked!`)
-              }}
-            />
-          </div>
-        </Accordion>
-      </div>
-     // console.log('branch id info', this.branchId_info);
-      this.mainSection = (history) => (<React.Fragment>
-        <DoenetBranchBrowser
-          loading={loading}
-          containerId={browserContainerId}
-          allFolderInfo={browserFolderInfo}
-          allContentInfo={browserContentInfo}
-          allUrlInfo={browserUrlInfo}
-          folderList={folderList}
-          contentList={contentList}
-          urlList={urlList}
-          ref={this.browser}         
-          key={"browser" + this.updateNumber}                     
-          selectedDrive={this.state.selectedDrive}                
-          selectedCourse={this.state.selectedCourse}             
-          allCourseInfo={this.courseInfo}                        
-          updateSelectedItems={this.updateSelectedItems}    
-          handleContentItemDoubleClick={this.handleContentItemDoubleClick}          // optional
-          updateDirectoryStack={this.updateDirectoryStack}       
-          addContentToFolder={this.addContentToFolder}           
-          addContentToRepo={this.addContentToRepo}               
-          removeContentFromCourse={this.removeContentFromCourse} 
-          removeContentFromFolder={this.removeContentFromFolder} 
-          directoryData={this.state.directoryStack}              
-          selectedItems={this.state.selectedItems}               
-          selectedItemsType={this.state.selectedItemsType}       
-          renameFolder={this.renameFolder}                       
-          openEditCourseForm={() => this.toggleManageCourseForm("edit_course")}
-          publicizeRepo={this.publicizeRepo}                     
-          onDragStart={this.onBrowserDragStart}
-          onDragEnd={this.onBrowserDragEnd}
-          onDraggableDragOver={() => { }}
-          onDropEnter={this.onBrowserDropEnter}
-          onDrop={this.onBrowserDrop}
-          onFolderDrop={this.onBrowserFolderDrop}
-          history={history}
-        />
-      </React.Fragment>)
+              },
+              specialChildNode: {
+              },
+              specialParentNode: {
+                "title": { color: "#d9eefa", background: "#e6efff", paddingLeft: "5px" },
+              },
+              // expanderIcon: <FontAwesomeIcon icon={faFolderOpen} style={{ paddingRight: "8px" }} />
+            }}
+            onLeafNodeClick={(nodeId) => {
+              this.tempSet.clear();
+              this.tempSet.add(nodeId);
+              this.selectDrive("Courses", nodeId)
+              this.forceUpdate();
+            }}
+            onParentNodeClick={(nodeId, type) => {
+              this.tempSet.clear();
+              this.tempSet.add(nodeId);
+              this.setState({courseActiveChild: true});
+              this.forceUpdate()
+            }}
+            onParentNodeDoubleClick={(nodeId) => {
+              ////console.log(`${nodeId} double clicked!`)
+            }}
+          />
+        </div>
+      </Accordion>
+    </div>
+    // console.log('branch id info', this.branchId_info);
+    this.mainSection = (history) => (<React.Fragment>
+      <DoenetBranchBrowser
+        loading={loading}
+        containerId={browserContainerId}
+        allFolderInfo={browserFolderInfo}
+        allContentInfo={browserContentInfo}
+        allUrlInfo={browserUrlInfo}
+        folderList={folderList}
+        contentList={contentList}
+        urlList={urlList}
+        ref={this.browser}         
+        key={"browser" + this.updateNumber}                     
+        selectedDrive={this.state.selectedDrive}                
+        selectedCourse={this.state.selectedCourse}             
+        allCourseInfo={this.courseInfo}                        
+        updateSelectedItems={this.updateSelectedItems}    
+        handleContentItemDoubleClick={this.handleContentItemDoubleClick}          // optional
+        updateDirectoryStack={this.updateDirectoryStack}       
+        addContentToFolder={this.addContentToFolder}           
+        addContentToRepo={this.addContentToRepo}               
+        removeContentFromCourse={this.removeContentFromCourse} 
+        removeContentFromFolder={this.removeContentFromFolder} 
+        directoryData={this.state.directoryStack}              
+        selectedItems={this.state.selectedItems}               
+        selectedItemsType={this.state.selectedItemsType}       
+        renameFolder={this.renameFolder}                       
+        openEditCourseForm={() => this.toggleFormModal(ChooserConstants.EDIT_COURSE_INFO_MODE)}
+        publicizeRepo={this.publicizeRepo}                     
+        onDragStart={this.onBrowserDragStart}
+        onDragEnd={this.onBrowserDragEnd}
+        onDraggableDragOver={() => { }}
+        onDropEnter={this.onBrowserDropEnter}
+        onDrop={this.onBrowserDrop}
+        onFolderDrop={this.onBrowserFolderDrop}
+        history={history}
+      />
+    </React.Fragment>)
 ////console.log('branch id onfo 2 ',this.branchId_info);
-      this.splitPanelMainSection = (history) => (<React.Fragment>
-        <DoenetBranchBrowser
-          loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
-          containerId={"browser"}
-          allContentInfo={this.branchId_info}
-          allFolderInfo={this.folderInfo}
-          allUrlInfo={this.urlInfo}
-          folderList={folderList}
-          contentList={contentList}
-          urlList={urlList}
-          ref={this.browserSec}                                      // optional
-          key={"browserSec" + this.updateNumber}                       // optional
-          selectedDrive={this.state.selectedDrive}                // optional
-          selectedCourse={this.state.selectedCourse}              // optional
-          allCourseInfo={this.courseInfo}                         // optional
-          updateSelectedItems={this.splitPanelUpdateSelectedItems}          // optional
-          updateDirectoryStack={this.splitPanelUpdateDirectoryStack}        // optional
-          addContentToFolder={this.addContentToFolder}            // optional
-          addContentToRepo={this.addContentToRepo}               // optional
-          removeContentFromCourse={this.removeContentFromCourse}  // optional
-          removeContentFromFolder={this.removeContentFromFolder}  // optional                  
-          directoryData={this.state.splitPanelDirectoryStack}               // optional
-          selectedItems={this.state.splitPanelSelectedItems}                // optional
-          selectedItemsType={this.state.splitPanelSelectedItemsType}        // optional
-          renameFolder={this.renameFolder}                        // optional
-          openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
-          publicizeRepo={this.publicizeRepo}                      // optional
-          onDragStart={this.onSplitPanelBrowserDragStart}
-          onDragEnd={this.onSplitPanelBrowserDragEnd}
-          onDraggableDragOver={() => { }}
-          // onDropEnter={this.onSplitPanelBrowserDropEnter}
-          // onDrop={this.onSplitPanelBrowserDrop}
-          onFolderDrop={this.onSplitPanelBrowserFolderDrop}
-          history={history}
-        />
-      </React.Fragment>)
-    }
+    this.splitPanelMainSection = (history) => (<React.Fragment>
+      <DoenetBranchBrowser
+        loading={!this.folders_loaded || !this.branches_loaded || !this.urls_loaded}
+        containerId={"browser"}
+        allContentInfo={this.branchId_info}
+        allFolderInfo={this.folderInfo}
+        allUrlInfo={this.urlInfo}
+        folderList={folderList}
+        contentList={contentList}
+        urlList={urlList}
+        ref={this.browserSec}                                      // optional
+        key={"browserSec" + this.updateNumber}                       // optional
+        selectedDrive={this.state.selectedDrive}                // optional
+        selectedCourse={this.state.selectedCourse}              // optional
+        allCourseInfo={this.courseInfo}                         // optional
+        updateSelectedItems={this.splitPanelUpdateSelectedItems}          // optional
+        updateDirectoryStack={this.splitPanelUpdateDirectoryStack}        // optional
+        addContentToFolder={this.addContentToFolder}            // optional
+        addContentToRepo={this.addContentToRepo}               // optional
+        removeContentFromCourse={this.removeContentFromCourse}  // optional
+        removeContentFromFolder={this.removeContentFromFolder}  // optional                  
+        directoryData={this.state.splitPanelDirectoryStack}               // optional
+        selectedItems={this.state.splitPanelSelectedItems}                // optional
+        selectedItemsType={this.state.splitPanelSelectedItemsType}        // optional
+        renameFolder={this.renameFolder}                        // optional
+        openEditCourseForm={() => this.toggleFormModal(ChooserConstants.EDIT_COURSE_INFO_MODE)} // optional
+        publicizeRepo={this.publicizeRepo}                      // optional
+        onDragStart={this.onSplitPanelBrowserDragStart}
+        onDragEnd={this.onSplitPanelBrowserDragEnd}
+        onDraggableDragOver={() => { }}
+        // onDropEnter={this.onSplitPanelBrowserDropEnter}
+        // onDrop={this.onSplitPanelBrowserDrop}
+        onFolderDrop={this.onSplitPanelBrowserFolderDrop}
+        history={history}
+      />
+    </React.Fragment>)
+    
 
     const newItemButton = <div id="newContentButtonContainer">
       <div id="newContentButton" data-cy="newContentButton" onClick={this.toggleNewButtonMenu}>
@@ -3359,7 +3354,7 @@ const customizedTreeNodeItem = (nodeItem, item) => {
                 <FontAwesomeIcon icon={faFileAlt} style={{ "fontSize": "18px", "color": "#a7a7a7", "marginRight": "18px" }} />
                 <span>DoenetML</span>
               </div>
-              <div className="newContentButtonMenuItem" onClick={() => this.toggleManageUrlForm("add_url")} data-cy="newUrlButton">
+              <div className="newContentButtonMenuItem" onClick={() => this.toggleFormModal(ChooserConstants.CREATE_URL_MODE)} data-cy="newUrlButton">
                 <FontAwesomeIcon icon={faLink} style={{ "fontSize": "18px", "color": "#a7a7a7", "marginRight": "18px" }} />
                 <span>URL</span>
               </div>
@@ -3373,7 +3368,7 @@ const customizedTreeNodeItem = (nodeItem, item) => {
               </div>
             </div>
             <div className="newContentButtonMenuSection">
-              <div className="newContentButtonMenuItem" onClick={() => this.toggleManageCourseForm("add_course")} data-cy="newCourseButton">
+              <div className="newContentButtonMenuItem" onClick={() => this.toggleFormModal(ChooserConstants.CREATE_COURSE_MODE)} data-cy="newCourseButton">
                 <FontAwesomeIcon icon={faChalkboard} style={{ "fontSize": "16px", "color": "#a7a7a7", "marginRight": "13px" }} />
                 <span>Course</span>
               </div>
@@ -3508,11 +3503,7 @@ const customizedTreeNodeItem = (nodeItem, item) => {
              open={this.state.modalOpen} 
              name="Editor"
              header= {this.state.modalHeaderTitle}
-             body={ this.state.modalOpen && <DoenetEditor hideHeader={true} 
-                                                           branchId={this.selectedBranchId}
-                                                           contentId={this.selectedContentId}
-                                                           headerTitleChange={this.headerTitleChange.bind(this)}/>
-          }
+             body={ this.state.modalOpen && this.createModalContent() }
           onClose={this.overlayOnClose.bind(this)} />
         <Router>
           <ToolLayout
@@ -3566,8 +3557,8 @@ const customizedTreeNodeItem = (nodeItem, item) => {
               publicizeRepo={this.publicizeRepo}
               grantRepoAccess={this.grantRepoAccess}
               revokeRepoAccess={this.revokeRepoAccess}
-              openEditCourseForm={() => this.toggleManageCourseForm("edit_course")} // optional
-              openEditUrlForm={() => this.toggleManageUrlForm("edit_url")}
+              openEditCourseForm={() => this.toggleFormModal(ChooserConstants.EDIT_COURSE_INFO_MODE)} // optional
+              openEditUrlForm={() => this.toggleFormModal(ChooserConstants.EDIT_URL_INFO_MODE)}
               versionCallback={this.versionCallback.bind(this)}
             />
           </ToolLayoutPanel>
