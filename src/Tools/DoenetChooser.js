@@ -285,9 +285,10 @@ class DoenetChooser extends Component {
       this.displayToast("Please sign in to create new course");
       return;
     }
+    console.log("HERERERERERERREEEEEEEE!!!!!!!!!!!!!!!")
 
     // TODO: add user to course instructor
-    
+
     // // create new documents for overview and syllabus, get branchIds
     // let overviewId = nanoid();
     // let overviewDocumentName = courseName + " Overview";
@@ -318,11 +319,12 @@ class DoenetChooser extends Component {
         description: description,
         department: department,
         section: section,
-        overviewId: overviewId,
-        syllabusId: syllabusId
+        overviewId: "",
+        syllabusId: ""
       }, () => { resolve() })),
     ])
       .then(() => {
+        console.log("HERERERERERERREEEEEEEE!!!!!!!!!!!!!!!")
         this.loadAllCourses(() => {
           this.selectDrive("Courses", courseId);
           this.forceUpdate();

@@ -7,6 +7,9 @@ header("Access-Control-Allow-Credentials: true");
 
 include "db_connection.php";
 
+$jwtArray = include "jwtArray.php";
+$userId = $jwtArray['userId'];
+
 $_POST = json_decode(file_get_contents("php://input"),true);
 $courseId = mysqli_real_escape_string($conn,$_POST["courseId"]);
 $term = mysqli_real_escape_string($conn,$_POST["term"]);
@@ -36,7 +39,14 @@ if ($result->num_rows < 1){
   VALUES
   ('$courseId','$term','$longName', '$shortName', '$description', '$overviewId', '$syllabusId', '$section', '$department')
   ";
-  echo $sql;
+  $result = $conn->query($sql); 
+
+  $sql = "
+  INSERT INTO course_instructor
+  (courseId, userId)
+  VALUES
+  ('$courseId','$userId')
+  ";
   $result = $conn->query($sql); 
 } else {
   $sql = "
