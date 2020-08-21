@@ -27,13 +27,8 @@ class DoenetBranchBrowser extends Component {
   constructor(props) {
     super(props);
     const { history: { location: { pathname = '' } }, allFolderInfo } = props
-    const directory = pathname.split('/').map((item) => {
-      const foldersInfo = Object.keys(allFolderInfo).filter((id) => {
-        return allFolderInfo[id].title === item
-      })
-      return foldersInfo.length ? foldersInfo[0] : ''
-    }).filter((i) => i)
-
+    const directory = pathname.split('/').filter((i) => i && i !== 'content')
+    
     this.state = {
       directoryStack: directory,
       selectedItems: props.selectedItems,
@@ -446,12 +441,11 @@ class DoenetBranchBrowser extends Component {
   handleContentItemDoubleClick(branchId) {
     if (!this.disableEditing) {
       const { history } = this.props
-      const { location: { pathname = '' } } = history
-      // redirect to editor
-      // window.location.href=`/editor?branchId=${branchId}`;
-      history.push(`${pathname}?overlay=true&branchId=${branchId}`)
-      this.props.updateSelectedItems([branchId], ["content"]);
-      this.props.handleContentItemDoubleClick([branchId], ["content"]);      
+      const { directoryStack } = this.state
+      const path = directoryStack.join('/')
+      history.push(`/content/${path}?overlay=true&branchId=${branchId}`)
+      this.props.updateSelectedItems([branchId], ['content']);
+      this.props.handleContentItemDoubleClick([branchId], ['content']);      
     }
   }
 
