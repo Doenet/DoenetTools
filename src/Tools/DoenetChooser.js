@@ -205,15 +205,6 @@ class DoenetChooser extends Component {
           <FilterPanel loadFilteredContent={this.loadFilteredContent} />
         </React.Fragment>
       }
-
-    } else if (this.state.activeSection === "add_course") {
-      toolbarTitle = "Add New Course";
-    } else if (this.state.activeSection === "edit_course") {
-      toolbarTitle = "Edit Course - " + this.courseInfo[this.state.selectedCourse].courseCode;
-    } else if (this.state.activeSection === "add_url") {
-      toolbarTitle = "Add New URL";
-    } else if (this.state.activeSection === "edit_url") {
-      toolbarTitle = "Edit URL - " + this.urlInfo[this.state.selectedItems[0]].title;
     }
 
     this.topToolbar = <React.Fragment>
@@ -278,8 +269,14 @@ class DoenetChooser extends Component {
   }
 
   toggleFormModal = (mode) => {
+    let modeTitleMap = {
+      [ChooserConstants.CREATE_COURSE_MODE]: "Add New Course",
+      [ChooserConstants.EDIT_COURSE_INFO_MODE]: `Edit Course Info}`,
+      [ChooserConstants.CREATE_URL_MODE]: "Add New URL",
+      [ChooserConstants.EDIT_URL_INFO_MODE]: `Edit URL Info`
+    }
     const { location: { pathname = '' } } = this.history
-    this.history.push(`${pathname}?overlay=true&${mode}}`);
+    this.history.push(`${pathname}?overlay=true&${mode}`);
     this.setState({ modalOpen: !this.state.modalOpen, activeSection: mode });  
   }
 
@@ -2667,6 +2664,7 @@ class DoenetChooser extends Component {
 
   createModalContent = () => {
     let modalContent = <React.Fragment></React.Fragment>
+
     switch(this.state.activeSection) {
       case ChooserConstants.CREATE_COURSE_MODE || ChooserConstants.EDIT_COURSE_INFO_MODE:
         modalContent = <CourseForm
