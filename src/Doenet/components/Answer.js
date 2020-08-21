@@ -1188,8 +1188,8 @@ export default class Answer extends InlineComponent {
     }
 
     let responseText = [];
-    for(let response of this.stateValues.currentResponses) {
-      if(response.toString) {
+    for (let response of this.stateValues.currentResponses) {
+      if (response.toString) {
         responseText.push(response.toString())
       } else {
         responseText.push(response)
@@ -1210,7 +1210,7 @@ export default class Answer extends InlineComponent {
           responseText,
           credit: creditAchieved
         }
-        
+
       }
     })
 

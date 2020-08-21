@@ -89,9 +89,6 @@ export default class AttractToGrid extends ConstraintComponent {
     // use the convention of x1, x2, and x3 for variable names
     // so that components can call constraints generically for n-dimensions
     // use x,y,z for properties so that authors can use the more familar tag names
-
-    // Note: this will be called only if includeGridlines,
-    // as that's when constraints for different components are independent
     stateVariableDefinitions.applyComponentConstraint = {
       returnDependencies: () => ({
         constraintInactive: {

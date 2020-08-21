@@ -3230,7 +3230,7 @@ export default class Core {
       }
       if (!stateObj.neverShadow) {
         if (stateObj.essential || stateObj.alwaysShadow || stateObj.isShadow
-          || (stateObj.isArray && stateObj.essentialByArrayKey
+          || (stateObj.isArray
             && targetComponent.state[stateObj.arraySizeStateVariable].isResolved
             && stateObj.getAllArrayKeys(stateObj.arraySize).length > 0
             && stateObj.getAllArrayKeys(stateObj.arraySize).every(x => stateObj.essentialByArrayKey[x])
@@ -3240,8 +3240,7 @@ export default class Core {
             stateVariablesToShadow.push(varName);
           }
         } else if (!stateObj.isResolved ||
-          (stateObj.isArray && stateObj.essentialByArrayKey
-            && !targetComponent.state[stateObj.arraySizeStateVariable].isResolved)
+          (stateObj.isArray && !targetComponent.state[stateObj.arraySizeStateVariable].isResolved)
         ) {
           if (!stateVariablesToShadowIfEssential.includes(varName)) {
 
@@ -3262,7 +3261,7 @@ export default class Core {
               targetComponent,
               foundReadyToExpand
             }
-            if (stateObj.isArray && !stateObj.entireArrayAtOnce && stateObj.essentialByArrayKey
+            if (stateObj.isArray && !stateObj.entireArrayAtOnce
               && !targetComponent.state[stateObj.arraySizeStateVariable].isResolved
             ) {
               determineIfShadowData.arraySizeStateVariableToResolve = stateObj.arraySizeStateVariable;
@@ -4244,6 +4243,14 @@ export default class Core {
 
         resizeSubArray(stateVarObj.arrayValues, stateVarObj.arraySize);
 
+        for (let key of Object.keys(stateVarObj.essentialByArrayKey)) {
+          let index = stateVarObj.keyToIndex(key);
+          if (index.some((v, i) => v >= stateVarObj.arraySize[i])) {
+            delete stateVarObj.essentialByArrayKey[key];
+          }
+
+        }
+
       }
 
     } else {
@@ -4307,6 +4314,13 @@ export default class Core {
       stateVarObj.adjustArrayToNewArraySize = function () {
         // console.log(`adjust array ${stateVariable} of ${component.componentName} to new array size: ${stateVarObj.arraySize[0]}`);
         stateVarObj.arrayValues.length = stateVarObj.arraySize[0];
+
+        for (let key of Object.keys(stateVarObj.essentialByArrayKey)) {
+          let index = stateVarObj.keyToIndex(key);
+          if (index >= stateVarObj.arraySize[0]) {
+            delete stateVarObj.essentialByArrayKey[key];
+          }
+        }
       }
     }
 
@@ -4399,6 +4413,14 @@ export default class Core {
         // always mark as array size having changed,
         // although we'll verify if that's the case for entireArrayAtOnce ccase
         result.arraySizeChanged = [stateVariable];
+        if (stateVarObj.additionalStateVariablesDefined) {
+          for (let varName of stateVarObj.additionalStateVariablesDefined) {
+            // do we have to check if it is array?
+            if (component.state[varName].isArray) {
+              result.arraySizeChanged.push(varName);
+            }
+          }
+        }
 
         return result;
 
@@ -4746,9 +4768,16 @@ export default class Core {
           }
 
           if (!args.freshnessInfo.freshArraySize) {
-            // TODO: add additional state variables defined
             if (args.changes.__array_size) {
               result.arraySizeChanged = [stateVariable];
+              if (stateVarObj.additionalStateVariablesDefined) {
+                for (let varName of stateVarObj.additionalStateVariablesDefined) {
+                  // do we have to check if it is array?
+                  if (component.state[varName].isArray) {
+                    result.arraySizeChanged.push(varName);
+                  }
+                }
+              }
             }
             args.freshnessInfo.freshArraySize = true;
           }
@@ -6284,7 +6313,7 @@ export default class Core {
             stateObj.value;
 
             if (stateObj.essential || stateObj.alwaysShadow || stateObj.isShadow
-              || (stateObj.isArray && stateObj.essentialByArrayKey
+              || (stateObj.isArray
                 && stateObj.getAllArrayKeys(stateObj.arraySize).length > 0
                 && stateObj.getAllArrayKeys(stateObj.arraySize).every(x => stateObj.essentialByArrayKey[x])
               )
@@ -7289,6 +7318,18 @@ export default class Core {
       args.arraySize = stateVarObj.arraySize;
     } else if (stateVarObj.isArray && !stateVarObj.entireArrayAtOnce) {
       args.arraySize = stateVarObj.arraySize;
+    }
+
+    if (stateVarObj.providePreviousValuesInDefinition) {
+      let allStateVariablesDefined = [stateVariable];
+      if (stateVarObj.additionalStateVariablesDefined) {
+        allStateVariablesDefined.push(...stateVarObj.additionalStateVariablesDefined)
+      }
+      let previousValues = {};
+      for (let varName of allStateVariablesDefined) {
+        previousValues[varName] = component.state[varName]._previousValue;
+      }
+      args.previousValues = previousValues;
     }
 
     return args;
@@ -10362,7 +10403,7 @@ export default class Core {
 
           // TODO: should we change the output of returnDependencies
           // to be an object with one key being dependencies?
-          // That wway, we could add another attribute to the return value
+          // That way, we could add another attribute to the return value
           // rather than having returnDependencies add the attribute
           // changedDependency to the arguments
           let returnDepArgs = {
@@ -10449,6 +10490,7 @@ export default class Core {
             componentName: updateObj.componentName,
             varName,
           });
+          this._components[updateObj.componentName].state[varName].forceRecalculation = true;
         }
 
         // note: markStateVariableAndUpstreamDependentsStale includes
@@ -10457,7 +10499,12 @@ export default class Core {
           component: this._components[updateObj.componentName],
           varName: updateObj.stateVariable,
           updatesNeeded,
-          forceRecalculation: true,
+          // forceRecalculation: true,
+        })
+
+        this.recordActualChangeInUpstreamDependencies({
+          component: this._components[updateObj.componentName],
+          varName: updateObj.stateVariable
         })
 
       }
@@ -12212,8 +12259,7 @@ export default class Core {
               }
 
               if (!(
-                compStateObj.essential ||
-                (compStateObj.essentialByArrayKey && compStateObj.essentialByArrayKey[arrayKey])
+                compStateObj.essential || compStateObj.essentialByArrayKey[arrayKey]
               )) {
                 console.warn(`can't update arrayKey ${arrayKey}  of state variable ${vName} of component ${cName}, as it is not an essential state variable.`);
                 continue;
@@ -12587,7 +12633,8 @@ export default class Core {
         }
 
       } else {
-        throw Error(`Unrecognized instruction for deferSettingDependency in inverse definition of ${stateVariable} of ${component.componentName}`)
+        console.log(newInstruction);
+        throw Error(`Unrecognized instruction in inverse definition of ${stateVariable} of ${component.componentName}`)
       }
     }
 
