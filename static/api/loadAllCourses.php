@@ -54,7 +54,6 @@ if ($result->num_rows > 0){
           "syllabusEnabled" => $row["syllabusEnabled"],
           "gradeEnabled" => $row["gradeEnabled"],
           "assignmentEnabled" => $row["assignmentEnabled"],
-
           "department" => $row["department"],
           "section" => $row["section"],
           "content" => array(),
@@ -64,30 +63,30 @@ if ($result->num_rows > 0){
   }
 }
 
-// get course content
-$sql="
-SELECT 
- cc.courseId as courseId,
- cc.itemId as itemId,
- cc.itemType as itemType
-FROM course_content AS cc
-WHERE removedFlag=0
-ORDER BY cc.courseId
-";
+// // get course content
+// $sql="
+// SELECT 
+//  cc.courseId as courseId,
+//  cc.itemId as itemId,
+//  cc.itemType as itemType
+// FROM course_content AS cc
+// WHERE removedFlag=0
+// ORDER BY cc.courseId
+// ";
 
-$result = $conn->query($sql); 
+// $result = $conn->query($sql); 
 
-if ($result->num_rows > 0){
-  while($row = $result->fetch_assoc()){ 
-    if ($row["itemType"] == "content") {
-      array_push($courseId_info_arr[$row["courseId"]]["content"], $row["itemId"]);
-    } else if ($row["itemType"] == "folder"){
-      array_push($courseId_info_arr[$row["courseId"]]["folders"], $row["itemId"]);
-    } else if ($row["itemType"] == "url"){
-      array_push($courseId_info_arr[$row["courseId"]]["urls"], $row["itemId"]);
-    }
-  }
-}
+// if ($result->num_rows > 0){
+//   while($row = $result->fetch_assoc()){ 
+//     if ($row["itemType"] == "content") {
+//       array_push($courseId_info_arr[$row["courseId"]]["content"], $row["itemId"]);
+//     } else if ($row["itemType"] == "folder"){
+//       array_push($courseId_info_arr[$row["courseId"]]["folders"], $row["itemId"]);
+//     } else if ($row["itemType"] == "url"){
+//       array_push($courseId_info_arr[$row["courseId"]]["urls"], $row["itemId"]);
+//     }
+//   }
+// }
 
 // $defaultCourseId = $courseId_info_arr[$ci_array[0]];
 

@@ -285,26 +285,31 @@ class DoenetChooser extends Component {
       this.displayToast("Please sign in to create new course");
       return;
     }
-    // create new documents for overview and syllabus, get branchIds
-    let overviewId = nanoid();
-    let overviewDocumentName = courseName + " Overview";
 
-    let syllabusId = nanoid();
-    let syllabusDocumentName = courseName + " Syllabus";
+    // TODO: add user to course instructor
+    
+    // // create new documents for overview and syllabus, get branchIds
+    // let overviewId = nanoid();
+    // let overviewDocumentName = courseName + " Overview";
+
+    // let syllabusId = nanoid();
+    // let syllabusDocumentName = courseName + " Syllabus";
 
     Promise.all([
-      new Promise(resolve => this.saveContentToServer({
-        documentName: overviewDocumentName,
-        code: "",
-        branchId: overviewId,
-        publish: true
-      }, () => { resolve() })),
-      new Promise(resolve => this.saveContentToServer({
-        documentName: syllabusDocumentName,
-        code: "",
-        branchId: syllabusId,
-        publish: true
-      }, () => { resolve() })),
+      // new Promise(resolve => this.saveContentToServer({
+      //   documentName: overviewDocumentName,
+      //   code: "",
+      //   branchId: overviewId,
+      //   publish: true
+      // }, () => { resolve() })),
+      // new Promise(resolve => this.saveContentToServer({
+      //   documentName: syllabusDocumentName,
+      //   code: "",
+      //   branchId: syllabusId,
+      //   publish: true
+      // }, () => { resolve() })),
+      // new Promise(resolve => this.addContentToCourse(courseId, [overviewId, syllabusId], ["content", "content"], () => { resolve() })),
+      // new Promise(resolve => this.saveUserContent([overviewId, syllabusId], ["content", "content"], "insert", () => { resolve() }))
       new Promise(resolve => this.saveCourse({
         courseName: courseName,
         courseId: courseId,
@@ -316,8 +321,6 @@ class DoenetChooser extends Component {
         overviewId: overviewId,
         syllabusId: syllabusId
       }, () => { resolve() })),
-      new Promise(resolve => this.addContentToCourse(courseId, [overviewId, syllabusId], ["content", "content"], () => { resolve() })),
-      new Promise(resolve => this.saveUserContent([overviewId, syllabusId], ["content", "content"], "insert", () => { resolve() }))
     ])
       .then(() => {
         this.loadAllCourses(() => {
@@ -350,8 +353,8 @@ class DoenetChooser extends Component {
         description: description,
         usesDoenetAPI: usesDoenetAPI
       }, () => { resolve() })),
-      new Promise(resolve => this.addContentToFolder([urlId], ["url"], currentFolderId, () => { resolve() })), // add url to current folder
       new Promise(resolve => this.saveUserContent([urlId], ["url"], "insert", () => { resolve() })), // add to user root
+      new Promise(resolve => this.addContentToFolder([urlId], ["url"], currentFolderId, () => { resolve() })), // add url to current folder
     ])
       .then(() => {
         this.loadUserUrls(() => {
@@ -3721,7 +3724,7 @@ class CourseForm extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.mode == "edit_course" && this.props.selectedCourseInfo !== null) {
+    if (this.props.mode == ChooserConstants.EDIT_COURSE_INFO_MODE && this.props.selectedCourseInfo !== null) {
       let term = this.props.selectedCourseInfo.term.split(" ");
       this.setState({
         courseName: this.props.selectedCourseInfo.courseName,
@@ -3746,7 +3749,7 @@ class CourseForm extends React.Component {
 
   handleSubmit(event) {
     let term = this.state.semester + " " + this.state.year;
-    if (this.props.mode == "add_course") {
+    if (this.props.mode == ChooserConstants.CREATE_COURSE_MODE) {
       let courseId = nanoid();
       this.props.handleNewCourseCreated({
         courseName: this.state.courseName,
@@ -3855,7 +3858,7 @@ class CourseForm extends React.Component {
           <div id="formButtonsContainer">
             <button id="formSubmitButton" type="submit" data-cy="newCourseFormSubmitButton">
               <div className="formButtonWrapper">
-                {this.props.mode == "add_course" ?
+                {this.props.mode == ChooserConstants.CREATE_COURSE_MODE ?
                   <React.Fragment>
                     <span>Create Course</span>
                     <FontAwesomeIcon icon={faPlusCircle} style={{ "fontSize": "20px", "color": "#fff", "cursor": "pointer", "marginLeft": "8px" }} />
@@ -4063,7 +4066,7 @@ class UrlForm extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.mode == "edit_url" && this.props.selectedUrlInfo !== null) {
+    if (this.props.mode == ChooserConstants.EDIT_URL_INFO_MODE && this.props.selectedUrlInfo !== null) {
       this.setState({
         title: this.props.selectedUrlInfo.title,
         url: this.props.selectedUrlInfo.url,
@@ -4085,7 +4088,7 @@ class UrlForm extends React.Component {
   }
 
   handleSubmit(event) {
-    if (this.props.mode == "add_url") {
+    if (this.props.mode == ChooserConstants.CREATE_URL_MODE) {
       let urlId = nanoid();
       event.preventDefault();
       this.props.handleNewUrlCreated({
@@ -4152,7 +4155,7 @@ class UrlForm extends React.Component {
           <div id="formButtonsContainer">
             <button id="formSubmitButton" type="submit" data-cy="urlFormSubmitButton">
               <div className="formButtonWrapper">
-                {this.props.mode == "add_url" ?
+                {this.props.mode == ChooserConstants.CREATE_URL_MODE ?
                   <React.Fragment>
                     <span>Add New URL</span>
                     <FontAwesomeIcon icon={faPlusCircle} style={{ "fontSize": "20px", "color": "#fff", "cursor": "pointer", "marginLeft": "8px" }} />

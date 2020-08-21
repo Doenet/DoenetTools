@@ -24,7 +24,6 @@ for ($i = 0; $i < $number_children; $i++) {
       VALUES
       ('$userId','$childId')
       ";
-      echo $sql;
       $result = $conn->query($sql);   
     } else if($operationType == "remove") {
       //TEST if branch exists
@@ -40,7 +39,6 @@ for ($i = 0; $i < $number_children; $i++) {
         WHERE userId='$userId' 
         AND branchId='$childId'
         ";
-        echo $sql;
         $result = $conn->query($sql);      
       }
     }
@@ -52,7 +50,6 @@ for ($i = 0; $i < $number_children; $i++) {
       VALUES
       ('$userId','$childId')
       ";
-      echo $sql;
       $result = $conn->query($sql);   
     } else if($operationType == "remove") {
       //TEST if folder exists
@@ -68,7 +65,6 @@ for ($i = 0; $i < $number_children; $i++) {
         WHERE userId='$userId' 
         AND folderId='$childId'
         ";
-        echo $sql;
         $result = $conn->query($sql);     
       }
     }
@@ -80,7 +76,6 @@ for ($i = 0; $i < $number_children; $i++) {
       VALUES
       ('$userId','$childId')
       ";
-      echo $sql;
       $result = $conn->query($sql);   
     } else if($operationType == "remove") {
       //TEST if url exists
@@ -96,7 +91,6 @@ for ($i = 0; $i < $number_children; $i++) {
         WHERE userId='$userId' 
         AND urlId='$childId'
         ";
-        echo $sql;
         $result = $conn->query($sql);     
       }
     }

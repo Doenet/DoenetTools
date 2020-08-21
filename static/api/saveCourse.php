@@ -7,7 +7,6 @@ header("Access-Control-Allow-Credentials: true");
 
 include "db_connection.php";
 
-
 $_POST = json_decode(file_get_contents("php://input"),true);
 $courseId = mysqli_real_escape_string($conn,$_POST["courseId"]);
 $term = mysqli_real_escape_string($conn,$_POST["term"]);
