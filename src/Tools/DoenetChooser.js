@@ -92,7 +92,7 @@ class DoenetChooser extends Component {
     this.lastDroppedContainerId = null;
     this.validDrop = true;
     this.selectedBranchId = queryParams['branchId'] || '';
-    this.selectedContentId = queryParams['contentId'] || '';;
+    this.selectedContentId = (queryParams['contentId'] && queryParams['contentId'] !== 'content') ? queryParams['contentId'] : '';
 
     this.courseFolderInfo = {};
     this.courseContentInfo = {};
@@ -1133,11 +1133,13 @@ class DoenetChooser extends Component {
   }
 
   handleContentItemDoubleClick([branchId], contentId) {
-    const { location: { pathname = '' } } = this.history
+    const { directoryStack } = this.state
     this.selectedBranchId = branchId;
     this.selectedContentId = null;    
+    // console.log("branchid", branchId , "contentId" , contentId);
     const contentIdParam = contentId ? `&contentId=${contentId}` : '';
-    this.history.push(`${pathname}?overlay=true&branchId=${branchId}${contentIdParam}`);
+    const path = directoryStack.join('/')
+    this.history.push(`/content/${path}?overlay=true&branchId=${branchId}${contentIdParam}`)
     this.setState({ modalOpen: true });  
   }
 
@@ -2668,21 +2670,17 @@ class DoenetChooser extends Component {
         treeChildrenInfo = this.assignmentsInfo[this.state.selectedCourse];
       }
       const TreeNodeItem = ({title, icon}) => {
-       console.log('this:', this.folderInfo)
         const contentInfo = this.folderInfo        
-        const currentInfo = Object.keys(contentInfo).filter((i) => contentInfo[i].title === title)   
+        const currentInfo = Object.keys(contentInfo).filter((i) => contentInfo[i].title === title)    
         const parentId = contentInfo[currentInfo[0]]?.parentId || ''
         const parentTitle = currentInfo.length && parentId ? contentInfo[parentId]?.title : 'Content'
-        const path = parentTitle === 'Content' ? currentInfo[0] : `${parentId}/${currentInfo[0]}`
-        /*const currentInfo = Object.keys(folderInfo).filter((i) => folderInfo[i].title === title)
-        const { parentId } = folderInfo[currentInfo[0]]
-        const parentTitle = folderInfo[parentId]?.title
-        // const path = (parentTitle === 'Content' || parentTitle === 'Courses') ? title : `${parentTitle}/${title}`
-        const path = (parentTitle === 'Content' || parentTitle === 'Courses') ? currentInfo[0] : `${parentId}/${currentInfo[0]}`*/
+        const path = (parentTitle === 'Content' || parentTitle === 'root') ? currentInfo[0] : `${parentId}/${currentInfo[0]}`
+        
+        
         return <div>
           {icon}
           <Link 
-            to={`/content/${path}`} 
+            to={`/content/${path || ''}`} 
             style={{
               textDecoration:"none", 
               marginLeft:"5px", 
@@ -2744,27 +2742,21 @@ class DoenetChooser extends Component {
             this.tempSet.add(id);
             this.customizedTempSet.clear();
             this.customizedTempSet.add(itemParentId);
-            // this.handleContentItemDoubleClick([id]);
             this.forceUpdate();
           }}
           onLeafNodeDoubleClick={(id, type) => {
-            console.log(id)     
             const dataSource = this.getDataSource(treeContainerId, treeContainerType);
             const itemParentId = dataSource[type][id]["parentId"];
             const pathToSelectedFolder = itemParentId == "root" ? [] : this.getPathToFolder(itemParentId, treeParentsInfo);      
-            // const itemParentId = dataSource[type][id]["parentId"];
             this.setState({
               selectedItems: [id],
               selectedItemsType: [type],
               directoryStack: pathToSelectedFolder
             })
-            this.setState({ selectedItems: [id], selectedItemsType: [type] })
-            // this.tempSet.clear()
-            // this.tempSet.add(id);
-            // this.customizedTempSet.clear();
-            // this.customizedTempSet.add(itemParentId);
+
+            this.customizedTempSet.clear();
+            this.customizedTempSet.add(itemParentId);
             this.handleContentItemDoubleClick([id]);
-            // this.forceUpdate();
           }}
 
           onParentNodeClick={(id, type) => {
@@ -2914,10 +2906,6 @@ const TreeNodeItemSplit = ({title, icon}) => {
         customizedCoursesTreeChildrenInfo[key].type = 'content';
         customizedCoursesTreeParentInfo['root']['childContent'].push(key);
       }
-
-      ////console.log('customizedContentTreeParentInfo', customizedContentTreeParentInfo);
-      // ////console.log('customizedCoursesTreeParentInfo', customizedCoursesTreeParentInfo);
-      // ////console.log('customizedCoursesTreeChildrenInfo', customizedCoursesTreeChildrenInfo);
 
 
 
@@ -3088,6 +3076,7 @@ const customizedTreeNodeItem = (nodeItem, item) => {
               parentsInfo={customizedCoursesTreeParentInfo}
               childrenInfo={customizedCoursesTreeChildrenInfo}
               hideRoot={true}
+              specialNodes={this.customizedTempSet}
               parentNodeItem={(node) => customizedTreeNodeItem(node, 'course')}
               leafNodeItem={(node) => customizedTreeNodeItem(node, 'course')}
               treeNodeIcons={(itemType) => {
@@ -3126,14 +3115,18 @@ const customizedTreeNodeItem = (nodeItem, item) => {
                 // expanderIcon: <FontAwesomeIcon icon={faFolderOpen} style={{ paddingRight: "8px" }} />
               }}
               onLeafNodeClick={(nodeId) => {
-                this.tempSet.clear();
-                this.tempSet.add(nodeId);
-                this.selectDrive("Courses", nodeId)
+                if (this.tempSet.has(nodeId)) this.tempSet.delete(nodeId);
+                else this.tempSet.add(nodeId);
+                // this.selectDrive("Courses", nodeId)
                 this.forceUpdate();
               }}
               onParentNodeClick={(nodeId, type) => {
-                this.tempSet.clear();
-                this.tempSet.add(nodeId);
+                this.customizedTempSet.clear();
+                this.customizedTempSet.add(nodeId);
+                // this.tempSet.clear();
+                // this.tempSet.add(nodeId);
+                this.goToFolder(nodeId, customizedCoursesTreeParentInfo);
+
                 this.setState({courseActiveChild: true});
                 this.forceUpdate()
               }}
@@ -3334,9 +3327,10 @@ const customizedTreeNodeItem = (nodeItem, item) => {
     const mainPanelMenuControls = [switchPanelButton];
     const middlePanelMenuControls = [splitPanelButton];
     const rightPanelMenuControls = [dropDownSelectButton, splitSwitchPanelButton];
-    const createMiddlePanelContent = (props) => {
-      // console.log('match', props);
-      const { match, history } = props
+    const createMiddlePanelContent = (props) => {      
+      const { match, location, history } = props
+      const extURL = location.pathname.replace(match.url, '')
+      // console.log('match', match, location.pathname, extURL, extURL.split('/').map(i => i));
       this.history = history
       return (
         <ToolLayoutPanel
