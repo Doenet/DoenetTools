@@ -4,14 +4,14 @@ header("Access-Control-Allow-Headers: access");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Credentials: true");
 //header('Content-Type: application/json');
+
 include "db_connection.php";
+$jwtArray = include "jwtArray.php";
+$userId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $number_children = count($_POST["childIds"]);
 $operationType =  mysqli_real_escape_string($conn,$_POST["operationType"]);
-
-$jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
 
 for ($i = 0; $i < $number_children; $i++) {
   $childId =  mysqli_real_escape_string($conn,$_POST["childIds"][$i]);

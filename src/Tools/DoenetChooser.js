@@ -237,34 +237,32 @@ class DoenetChooser extends Component {
       num++;
       title = "Untitled Document " + num;
     }
+    
+    let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
 
-    this.saveContentToServer({
-      documentName: title,
-      code: "",
-      branchId: newBranchId,
-      publish: true
-    }, (branchId) => {
-      this.saveUserContent([branchId], ["content"], "insert", () => {
-        this.loadUserContentBranches(() => {
-
-          // add document to current folder
-          let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
-          this.addContentToFolder([branchId], ["content"], currentFolderId);
-
-          // set as selected and redirect to /editor 
-          this.setState({
-            directoryStack: [],
-            selectedItems: [branchId],
-            selectedItemsType: ["content"],
-            activeSection: "chooser",
-            selectedDrive: "Content"
-          }, () => {
-            setTimeout(function () { window.location.href = `/editor?branchId=${branchId}`; }, 500);
-          });
-        })
-      });
-
-    });
+    Promise.all([
+      new Promise(resolve => this.saveContentToServer({
+        documentName: title,
+        code: "",
+        branchId: newBranchId,
+        publish: true
+      }, () => { resolve() })),
+      new Promise(resolve => this.saveUserContent([newBranchId], ["content"], "insert", () => { resolve() })),
+      new Promise(resolve => this.addContentToFolder([newBranchId], ["content"], currentFolderId, () => { resolve() })),
+    ])
+    .then(() => {
+      this.loadUserContentBranches(() => {
+        // set as selected
+        this.setState({
+          directoryStack: [],
+          selectedItems: [newBranchId],
+          selectedItemsType: ["content"],
+          activeSection: "chooser",
+          selectedDrive: "Content"
+        }, () => {
+        });
+      })      
+    })  
   }
 
   toggleNewButtonMenu = () => {
