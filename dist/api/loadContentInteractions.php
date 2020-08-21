@@ -13,24 +13,32 @@ $userId = $jwtArray['userId'];
 $device = $jwtArray['deviceName'];
 
 $contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
+$attemptNumber = mysqli_real_escape_string($conn,$_REQUEST["attemptNumber"]);
+$assignmentId = mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
 
 // contentId='$contentId',
 
-$sql = "SELECT stateVariables
+$sql = "SELECT stateVariables, variant
         FROM content_interactions
         WHERE userId='$userId'
         AND contentId='$contentId'
-        ORDER BY timestamp";
+        AND attemptNumber='$attemptNumber'
+        AND assignmentId='$assignmentId'
+        ORDER BY timestamp DESC, id DESC";
 
 $result = $conn->query($sql);
-$stateVariables = array();
-while ($row = $result->fetch_assoc()){
-        array_push($stateVariables,$row["stateVariables"]);
-}
+// $stateVariables = array();
+// while ($row = $result->fetch_assoc()){
+//         array_push($stateVariables,$row["stateVariables"]);
+// }
+$row = $result->fetch_assoc();
+$stateVariables = $row["stateVariables"];
+$variant = $row["variant"];
 
 $response_arr = array(
         "success" => 0,
         "stateVariables" => $stateVariables,
+        "variant" => $variant,
         );
 
 http_response_code(200);

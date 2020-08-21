@@ -1,6 +1,6 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[10,0],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([[12,2],{
 
-/***/ 731:
+/***/ 645:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -183,7 +183,7 @@ _defineProperty(DoenetRenderer, "initializeChildrenOnConstruction", true);
 
 /***/ }),
 
-/***/ 742:
+/***/ 656:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -191,7 +191,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Circle; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(731);
+/* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -260,6 +260,8 @@ var Circle = /*#__PURE__*/function (_DoenetRenderer) {
   _createClass(Circle, [{
     key: "createGraphicalObject",
     value: function createGraphicalObject() {
+      var _this2 = this;
+
       if (!(Number.isFinite(this.doenetSvData.numericalCenter[0]) && Number.isFinite(this.doenetSvData.numericalCenter[1]) && this.doenetSvData.numericalRadius > 0)) {
         return;
       } //things to be passed to JSXGraph as attributes
@@ -282,7 +284,12 @@ var Circle = /*#__PURE__*/function (_DoenetRenderer) {
       }
 
       this.circleJXG = this.props.board.create('circle', [_toConsumableArray(this.doenetSvData.numericalCenter), this.doenetSvData.numericalRadius], jsxCircleAttributes);
-      this.circleJXG.on('drag', this.onDragHandler);
+      this.circleJXG.on('drag', function () {
+        return _this2.onDragHandler(true);
+      });
+      this.circleJXG.on('up', function () {
+        return _this2.onDragHandler(false);
+      });
       this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
       return this.circleJXG;
     }
@@ -359,10 +366,11 @@ var Circle = /*#__PURE__*/function (_DoenetRenderer) {
     }
   }, {
     key: "onDragHandler",
-    value: function onDragHandler() {
+    value: function onDragHandler(_transient) {
       if (this.circleJXG !== undefined) {
         this.actions.moveCircle({
-          center: [this.circleJXG.center.X(), this.circleJXG.center.Y()]
+          center: [this.circleJXG.center.X(), this.circleJXG.center.Y()],
+          "transient": _transient
         });
       }
     }
