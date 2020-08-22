@@ -1203,12 +1203,11 @@ export default class Answer extends InlineComponent {
         object: {
           componentName: this.componentName,
           componentType: this.componentType,
-          scoredItemNumber: this.coreFunctions.calculateScoredItemNumberOfContainer(this.componentName).scoredItemNumber
         },
         result: {
           response: this.stateValues.currentResponses,
           responseText,
-          credit: creditAchieved
+          creditAchieved
         }
 
       }

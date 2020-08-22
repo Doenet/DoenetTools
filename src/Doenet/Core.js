@@ -11990,12 +11990,24 @@ export default class Core {
     });
 
     if (this.externalFunctions.submitResponse) {
+      if (event) {
+        if (!event.context) {
+          event.context = {};
+        }
+        if (!event.context.itemCreditAchieved) {
+          event.context.itemCreditAchieved = {};
+        }
+        event.context.documentCreditAchieved = this.document.stateValues.creditAchieved;
+      }
       for (let itemNumber of updatesNeeded.itemScoreChanges) {
         this.externalFunctions.submitResponse({
           itemNumber,
           itemCreditAchieved: this.document.stateValues.itemCreditAchieved[itemNumber],
           callBack: this.submitResponseCallBack,
         });
+        if (event) {
+          event.context.itemCreditAchieved[Number(itemNumber) + 1] = this.document.stateValues.itemCreditAchieved[itemNumber]
+        }
       }
     }
 
