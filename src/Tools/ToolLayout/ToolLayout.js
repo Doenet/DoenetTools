@@ -14,7 +14,7 @@ import axios from "axios";
 const Container = styled.div`
   display: flex;
   position: fixed;
-  height:calc(100vh - 50px);
+  height: ${props => props.hideHeader ? "calc(100vh - 40px)" : "calc(100vh - 50px)" };
   overflow:hidden;
   z-index:0;
   width:100%;
@@ -371,7 +371,7 @@ export default function ToolLayout(props) {
 
   return (
     <>
-      <DoenetHeader
+      {!props.hideHeader && <DoenetHeader
         profile={profile}
         cookies={jwt}
         isSignedIn={isSignedIn}
@@ -380,8 +380,8 @@ export default function ToolLayout(props) {
         headerRoleFromLayout={props.headerRoleFromLayout}
         headerChangesFromLayout={props.headerChangesFromLayout}
         guestUser={props.guestUser}
-        onChange={showCollapseMenu} />
-      {deviceType === "phone" ? <div ref={container}>
+        onChange={showCollapseMenu} />}
+      {deviceType === "phone" ? <div ref={container} style={{width: '100%'}}>
         <div className={footerClass}>
           {(phoneVisiblePanel === "left" || allParts.length === 1) &&
             <div key="part1" id="leftpanel" className="leftpanel" >{leftNav}</div>}
@@ -405,7 +405,7 @@ export default function ToolLayout(props) {
         </div>}
       </div>
         :
-        <Container ref={container}>{allParts}</Container>
+        <Container ref={container} hideHeader={props.hideHeader}>{allParts}</Container>
       }
     </>
   );

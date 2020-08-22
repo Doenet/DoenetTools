@@ -26,9 +26,11 @@ class DoenetBranchBrowser extends Component {
   }
   constructor(props) {
     super(props);
-
+    const { history: { location: { pathname = '' } }, allFolderInfo } = props
+    const directory = pathname.split('/').filter((i) => i && i !== 'content')
+    
     this.state = {
-      directoryStack: props.directoryData,
+      directoryStack: directory,
       selectedItems: props.selectedItems,
       selectedItemsType: props.selectedItemsType,
       currentDraggedOverFolder: null,
@@ -68,8 +70,8 @@ class DoenetBranchBrowser extends Component {
     this.onBreadcrumbDropEnterCb = this.onBreadcrumbDropEnterCb.bind(this);
   }
 
-  componentWillReceiveProps(props) {
-    this.setState({directoryStack: props.directoryData}); //watch for directoryData prop and updates directoryStack state variable
+  componentWillReceiveProps(nextProps) {
+    this.setState({directoryStack: nextProps.directoryData}); //watch for directoryData prop and updates directoryStack state variable
   }
   getAllSelectedItems() {
     let allSelectedContent = [];
@@ -438,9 +440,12 @@ class DoenetBranchBrowser extends Component {
 
   handleContentItemDoubleClick(branchId) {
     if (!this.disableEditing) {
-      // redirect to editor
-      window.location.href=`/editor?branchId=${branchId}`;
-      this.props.updateSelectedItems([branchId], ["content"]);
+      const { history } = this.props
+      const { directoryStack } = this.state
+      const path = directoryStack.join('/')
+      history.push(`/content/${path}?overlay=true&branchId=${branchId}`)
+      this.props.updateSelectedItems([branchId], ['content']);
+      this.props.handleContentItemDoubleClick([branchId], ['content']);      
     }
   }
 
@@ -475,15 +480,30 @@ class DoenetBranchBrowser extends Component {
   }
 
   openFolder(folderId) {
+    const { updateDirectoryStack, history, allFolderInfo } = this.props
+    const { directoryStack } = this.state
+    // console.log('folderId:', folderId, directoryStack, allFolderInfo)
+    const path = [ ...directoryStack, folderId ]
+                    //.map((stack) => allFolderInfo[stack])
+                    //.map(({ title }) => title)
+                    .join('/')
+    history.push(`/content/${path}`)
     this.pushDirectoryStack(folderId);
-    this.props.updateDirectoryStack(this.state.directoryStack);
+    updateDirectoryStack(directoryStack);
   }
 
   upOneDirectory() {
+    const { updateDirectoryStack, updateSelectedItems, history, allFolderInfo } = this.props
+    const { directoryStack } = this.state
     this.popDirectoryStack();
     this.setState({selectedItems: [], selectedItemType: []});
-    this.props.updateDirectoryStack(this.state.directoryStack);
-    this.props.updateSelectedItems([], []);
+    const path = directoryStack
+                  // .map((stack) => allFolderInfo[stack])
+                  // .map(({ title }) => title)
+                  .join('/')
+    history.push(`/content/${path}`)
+    updateDirectoryStack(directoryStack);
+    updateSelectedItems([], []);
   }
 
   jumpToDirectory(folderId) {
