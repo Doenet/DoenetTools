@@ -4089,7 +4089,7 @@ export default class Core {
         let nDimensionsInArrayKey = index.length;
         if (!nDimensionsInArrayKey > stateVarObj.nDimensions) {
           console.warn('Cannot set array value.  Number of dimensions is too large.')
-          return;
+          return { nFailures: 1 };
         }
         let arrayValuesDrillDown = stateVarObj.arrayValues;
         let arraySizeDrillDown = arraySize;
@@ -4102,9 +4102,11 @@ export default class Core {
             arraySizeDrillDown = arraySizeDrillDown.slice(1);
           } else {
             console.warn('ignore setting array value out of bounds')
-            return;
+            return { nFailures: 1 };
           }
         }
+
+        let nFailures = 0;
 
         if (nDimensionsInArrayKey < stateVarObj.nDimensions) {
           // if dimensions from arrayKey is less than number of dimensions
@@ -4117,12 +4119,15 @@ export default class Core {
 
             if (!Array.isArray(desiredValue)) {
               console.warn('ignoring array values with insufficient dimensions')
-              return;
+              return { nFailures: 1 };
             }
+
+            let nFailures = 0;
 
             let currentSize = arraySizePiece[0];
             if (desiredValue.length > currentSize) {
               console.warn('ignoring array values of out bounds')
+              nFailures += desiredValue.length - currentSize;
               desiredValue = desiredValue.slice(0, currentSize);
             }
 
@@ -4136,18 +4141,24 @@ export default class Core {
                 if (!arrayValuesPiece[ind]) {
                   arrayValuesPiece = []
                 }
-                setArrayValuesPiece(val, arrayValuesPiece[ind], arraySizePiece[ind])
+                let result = setArrayValuesPiece(val, arrayValuesPiece[ind], arraySizePiece[ind])
+                nFailures += result.nFailures;
               }
             }
+
+            return { nFailures };
           }
 
 
-          setArrayValuesPiece(value, arrayValuesDrillDown, arraySizeDrillDown)
+          let result = setArrayValuesPiece(value, arrayValuesDrillDown, arraySizeDrillDown)
+          nFailures += result.nFailures;
 
         } else {
           arrayValuesDrillDown[index[index.length - 1]] = value;
 
         }
+
+        return { nFailures };
 
       };
       stateVarObj.getArrayValue = function ({ arrayKey, arrayValues = stateVarObj.arrayValues }) {
@@ -4261,8 +4272,10 @@ export default class Core {
         let ind = stateVarObj.keyToIndex(arrayKey);
         if (ind >= 0 && ind < arraySize[0]) {
           stateVarObj.arrayValues[ind] = value;
+          return { nFailures: 0 };
         } else {
           console.warn(`Ignoring setting array values out of bounds: ${arrayKey} of ${stateVariable}`)
+          return { nFailures: 1 };
         }
 
       };
@@ -5021,7 +5034,7 @@ export default class Core {
     stateVarObj.varNamesIncludingArrayKeyStateVariable = varNamesIncludingArrayKeyStateVar;
 
     component.state[varNamesIncludingArrayKeyStateVar] = {
-      never: true,
+      neverShadow: true,
       stateVariablesDeterminingDependencies: [stateVarObj.arrayEntryNamesStateVariable],
       returnDependencies({ stateValues }) {
         let dependencies = {};
@@ -10431,6 +10444,14 @@ export default class Core {
       console.log("dependencyChanges")
       console.log(dependencyChanges)
 
+
+      // look up value of all determine dependencies state variables
+      // in order to freshen them
+      // (needed so that mark stale will be triggered next time they change)
+      for (let stateVarObj of determineDependenciesStateVariablesToFreshen) {
+        stateVarObj.value;
+      }
+
       // initialize componentsToUpdateDependencies with any dependencies
       // that we could not update above
       // We will recurse to update those dependencies, along with any
@@ -10476,12 +10497,6 @@ export default class Core {
         this.resolveAllDependencies(updatesNeeded, compositesBeingExpanded);
       }
 
-      // look up value of all determine dependencies state variables
-      // in order to freshen them
-      // (needed so that mark stale will be triggered next time they change)
-      for (let stateVarObj of determineDependenciesStateVariablesToFreshen) {
-        stateVarObj.value;
-      }
 
       for (let updateObj of dependencyChanges) {
 
@@ -12019,6 +12034,7 @@ export default class Core {
     preliminary = false
   }) {
 
+    let executeResult = {};
 
     let compositesBeingExpanded = [];
 
@@ -12054,7 +12070,9 @@ export default class Core {
 
     let previousUnsatisfiedChildLogic = Object.assign({}, this.unsatisfiedChildLogic);
 
-    this.processNewStateVariableValues(newStateVariableValues, updatesNeeded);
+
+    let processResult = this.processNewStateVariableValues(newStateVariableValues, updatesNeeded);
+    Object.assign(executeResult, processResult);
 
     // calculate any replacement changes on composites touched
     this.replacementChangesFromCompositesToUpdate({ updatesNeeded, compositesBeingExpanded });
@@ -12093,7 +12111,7 @@ export default class Core {
 
     // if preliminary, we don't update renderer instructions or display information
     if (preliminary) {
-      return;
+      return executeResult;
     }
 
     // get unique list of components touched
@@ -12138,6 +12156,8 @@ export default class Core {
     //     })
     //   }
     // }
+
+    return executeResult;
 
   }
 
@@ -12197,6 +12217,8 @@ export default class Core {
     // console.log('process new state variable values')
     // console.log(newStateVariableValues);
 
+    let nFailures = 0;
+
     let getStateVar = this.getStateVariableValue;
 
     for (let cName in newStateVariableValues) {
@@ -12204,6 +12226,7 @@ export default class Core {
 
       if (comp === undefined) {
         console.warn(`can't update state variables of component ${cName}, as it doesn't exist.`);
+        nFailures += 1;
         continue;
       }
 
@@ -12215,6 +12238,7 @@ export default class Core {
         let compStateObj = comp.state[vName];
         if (compStateObj === undefined) {
           console.warn(`can't update state variable ${vName} of component ${cName}, as it doesn't exist.`);
+          nFailures += 1;
           continue;
         }
         // get value of state variable so it will determine if essential
@@ -12262,14 +12286,17 @@ export default class Core {
                 compStateObj.essential || compStateObj.essentialByArrayKey[arrayKey]
               )) {
                 console.warn(`can't update arrayKey ${arrayKey}  of state variable ${vName} of component ${cName}, as it is not an essential state variable.`);
+                nFailures += 1;
                 continue;
               }
 
-              compStateObj.setArrayValue({
+              let setResult = compStateObj.setArrayValue({
                 value: newComponentStateVariables[vName][arrayKey],
                 arrayKey,
                 arraySize: compStateObj.arraySize
               });
+
+              nFailures += setResult.nFailures;
 
               // mark any array entry state variables containing arrayKey
               // as affected
@@ -12306,6 +12333,7 @@ export default class Core {
 
           if (!compStateObj.essential) {
             console.warn(`can't update state variable ${vName} of component ${cName}, as it is not an essential state variable.`);
+            nFailures += 1;
             continue;
           }
 
@@ -12325,6 +12353,8 @@ export default class Core {
 
       }
     }
+
+    return { nFailures };
 
   }
 

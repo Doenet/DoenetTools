@@ -13,7 +13,7 @@ class DoenetTest extends Component {
     this.updateNumber = 1;
     this.assignmentId = "myassignmentid";
 
-    let ignoreDatabase = true;
+    let ignoreDatabase = false;
 
     let attemptNumberIsReady = false;
     if (this.assignmentId && !ignoreDatabase) {
