@@ -16332,11 +16332,7 @@ function isWhitespace(text, offset) {
 }
 
 // EXTERNAL MODULE: ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-uri/index.js
-<<<<<<< HEAD
-var vscode_uri = __webpack_require__(1356);
-=======
 var vscode_uri = __webpack_require__(1357);
->>>>>>> upstream/master
 
 // CONCATENATED MODULE: ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/services/htmlLinks.js
 /*---------------------------------------------------------------------------------------------
@@ -17916,11 +17912,7 @@ function disposeAll(disposables) {
 
 /***/ }),
 
-<<<<<<< HEAD
-/***/ 1356:
-=======
 /***/ 1357:
->>>>>>> upstream/master
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

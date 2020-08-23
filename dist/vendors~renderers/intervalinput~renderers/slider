@@ -894,11 +894,7 @@ var unitlessKeys = {
 
 /***/ }),
 
-<<<<<<< HEAD
-/***/ 27:
-=======
 /***/ 26:
->>>>>>> upstream/master
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

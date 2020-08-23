@@ -193,11 +193,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645);
 /* harmony import */ var _fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(38);
-<<<<<<< HEAD
-/* harmony import */ var _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(35);
-=======
 /* harmony import */ var _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(34);
->>>>>>> upstream/master
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -253,11 +249,7 @@ var Solution = /*#__PURE__*/function (_DoenetRenderer) {
 
       if (this.doenetSvData.open) {
         icon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_2__[/* FontAwesomeIcon */ "a"], {
-<<<<<<< HEAD
-          icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_3__[/* faPuzzlePiece */ "H"]
-=======
           icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_3__[/* faPuzzlePiece */ "I"]
->>>>>>> upstream/master
         });
         childrenToRender = this.children;
         infoBlockStyle = {
@@ -276,11 +268,7 @@ var Solution = /*#__PURE__*/function (_DoenetRenderer) {
         }
       } else {
         icon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_fortawesome_react_fontawesome__WEBPACK_IMPORTED_MODULE_2__[/* FontAwesomeIcon */ "a"], {
-<<<<<<< HEAD
-          icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_3__[/* faPuzzlePiece */ "H"],
-=======
           icon: _fortawesome_free_solid_svg_icons__WEBPACK_IMPORTED_MODULE_3__[/* faPuzzlePiece */ "I"],
->>>>>>> upstream/master
           rotation: 90
         });
         cursorStyle = "pointer";

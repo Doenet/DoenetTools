@@ -5775,11 +5775,7 @@ function toMarkdownCodeBlock(content) {
 }
 
 // EXTERNAL MODULE: ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-uri/index.js
-<<<<<<< HEAD
-var vscode_uri = __webpack_require__(1357);
-=======
 var vscode_uri = __webpack_require__(1358);
->>>>>>> upstream/master
 
 // CONCATENATED MODULE: ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonSchemaService.js
 /*---------------------------------------------------------------------------------------------
@@ -8261,11 +8257,7 @@ var richEditConfiguration = {
 
 /***/ }),
 
-<<<<<<< HEAD
-/***/ 1357:
-=======
 /***/ 1358:
->>>>>>> upstream/master
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
