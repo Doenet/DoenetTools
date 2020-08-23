@@ -33501,7 +33501,11 @@ function getSelectionRanges(document, positions, stylesheet) {
 }
 
 // EXTERNAL MODULE: ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-uri/index.js
+<<<<<<< HEAD
 var vscode_uri = __webpack_require__(1355);
+=======
+var vscode_uri = __webpack_require__(1356);
+>>>>>>> upstream/master
 
 // CONCATENATED MODULE: ./node_modules/monaco-editor/esm/vs/language/css/_deps/vscode-css-languageservice/services/scssNavigation.js
 /*---------------------------------------------------------------------------------------------
@@ -34378,7 +34382,11 @@ function disposeAll(disposables) {
 
 /***/ }),
 
+<<<<<<< HEAD
 /***/ 1355:
+=======
+/***/ 1356:
+>>>>>>> upstream/master
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

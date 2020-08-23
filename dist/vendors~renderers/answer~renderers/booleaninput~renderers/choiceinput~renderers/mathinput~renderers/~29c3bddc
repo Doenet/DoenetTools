@@ -2465,7 +2465,11 @@ var autoReplace = function autoReplace() {
 
 /***/ }),
 
+<<<<<<< HEAD
 /***/ 35:
+=======
+/***/ 34:
+>>>>>>> upstream/master
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2761,7 +2765,11 @@ var autoReplace = function autoReplace() {
 /* unused harmony export faEgg */
 /* unused harmony export faEject */
 /* unused harmony export faEllipsisH */
+<<<<<<< HEAD
 /* unused harmony export faEllipsisV */
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "y", function() { return faEllipsisV; });
+>>>>>>> upstream/master
 /* unused harmony export faEnvelope */
 /* unused harmony export faEnvelopeOpen */
 /* unused harmony export faEnvelopeOpenText */
@@ -2792,7 +2800,11 @@ var autoReplace = function autoReplace() {
 /* unused harmony export faFemale */
 /* unused harmony export faFighterJet */
 /* unused harmony export faFile */
+<<<<<<< HEAD
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "y", function() { return faFileAlt; });
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "z", function() { return faFileAlt; });
+>>>>>>> upstream/master
 /* unused harmony export faFileArchive */
 /* unused harmony export faFileAudio */
 /* unused harmony export faFileCode */
@@ -2830,9 +2842,15 @@ var autoReplace = function autoReplace() {
 /* unused harmony export faFlagUsa */
 /* unused harmony export faFlask */
 /* unused harmony export faFlushed */
+<<<<<<< HEAD
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "z", function() { return faFolder; });
 /* unused harmony export faFolderMinus */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "A", function() { return faFolderOpen; });
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "A", function() { return faFolder; });
+/* unused harmony export faFolderMinus */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "B", function() { return faFolderOpen; });
+>>>>>>> upstream/master
 /* unused harmony export faFolderPlus */
 /* unused harmony export faFont */
 /* unused harmony export faFontAwesomeLogoFull */
@@ -2892,7 +2910,11 @@ var autoReplace = function autoReplace() {
 /* unused harmony export faHandHolding */
 /* unused harmony export faHandHoldingHeart */
 /* unused harmony export faHandHoldingMedical */
+<<<<<<< HEAD
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "B", function() { return faHandHoldingUsd; });
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "C", function() { return faHandHoldingUsd; });
+>>>>>>> upstream/master
 /* unused harmony export faHandHoldingWater */
 /* unused harmony export faHandLizard */
 /* unused harmony export faHandMiddleFinger */
@@ -2970,7 +2992,11 @@ var autoReplace = function autoReplace() {
 /* unused harmony export faIndustry */
 /* unused harmony export faInfinity */
 /* unused harmony export faInfo */
+<<<<<<< HEAD
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "C", function() { return faInfoCircle; });
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "D", function() { return faInfoCircle; });
+>>>>>>> upstream/master
 /* unused harmony export faItalic */
 /* unused harmony export faJedi */
 /* unused harmony export faJoint */
@@ -2998,11 +3024,19 @@ var autoReplace = function autoReplace() {
 /* unused harmony export faLemon */
 /* unused harmony export faLessThan */
 /* unused harmony export faLessThanEqual */
+<<<<<<< HEAD
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "D", function() { return faLevelDownAlt; });
 /* unused harmony export faLevelUpAlt */
 /* unused harmony export faLifeRing */
 /* unused harmony export faLightbulb */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "E", function() { return faLink; });
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "E", function() { return faLevelDownAlt; });
+/* unused harmony export faLevelUpAlt */
+/* unused harmony export faLifeRing */
+/* unused harmony export faLightbulb */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "F", function() { return faLink; });
+>>>>>>> upstream/master
 /* unused harmony export faLiraSign */
 /* unused harmony export faList */
 /* unused harmony export faListAlt */
@@ -3133,8 +3167,13 @@ var autoReplace = function autoReplace() {
 /* unused harmony export faPlay */
 /* unused harmony export faPlayCircle */
 /* unused harmony export faPlug */
+<<<<<<< HEAD
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "F", function() { return faPlus; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "G", function() { return faPlusCircle; });
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "G", function() { return faPlus; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "H", function() { return faPlusCircle; });
+>>>>>>> upstream/master
 /* unused harmony export faPlusSquare */
 /* unused harmony export faPodcast */
 /* unused harmony export faPoll */
@@ -3155,7 +3194,11 @@ var autoReplace = function autoReplace() {
 /* unused harmony export faProjectDiagram */
 /* unused harmony export faPumpMedical */
 /* unused harmony export faPumpSoap */
+<<<<<<< HEAD
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "H", function() { return faPuzzlePiece; });
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "I", function() { return faPuzzlePiece; });
+>>>>>>> upstream/master
 /* unused harmony export faQrcode */
 /* unused harmony export faQuestion */
 /* unused harmony export faQuestionCircle */
@@ -3198,16 +3241,28 @@ var autoReplace = function autoReplace() {
 /* unused harmony export faSadTear */
 /* unused harmony export faSatellite */
 /* unused harmony export faSatelliteDish */
+<<<<<<< HEAD
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "I", function() { return faSave; });
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "J", function() { return faSave; });
+>>>>>>> upstream/master
 /* unused harmony export faSchool */
 /* unused harmony export faScrewdriver */
 /* unused harmony export faScroll */
 /* unused harmony export faSdCard */
+<<<<<<< HEAD
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "J", function() { return faSearch; });
 /* unused harmony export faSearchDollar */
 /* unused harmony export faSearchLocation */
 /* unused harmony export faSearchMinus */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "K", function() { return faSearchPlus; });
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "K", function() { return faSearch; });
+/* unused harmony export faSearchDollar */
+/* unused harmony export faSearchLocation */
+/* unused harmony export faSearchMinus */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "L", function() { return faSearchPlus; });
+>>>>>>> upstream/master
 /* unused harmony export faSeedling */
 /* unused harmony export faServer */
 /* unused harmony export faShapes */
@@ -3227,7 +3282,11 @@ var autoReplace = function autoReplace() {
 /* unused harmony export faShower */
 /* unused harmony export faShuttleVan */
 /* unused harmony export faSign */
+<<<<<<< HEAD
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "L", function() { return faSignInAlt; });
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "M", function() { return faSignInAlt; });
+>>>>>>> upstream/master
 /* unused harmony export faSignLanguage */
 /* unused harmony export faSignOutAlt */
 /* unused harmony export faSignal */
@@ -3276,7 +3335,11 @@ var autoReplace = function autoReplace() {
 /* unused harmony export faSpaceShuttle */
 /* unused harmony export faSpellCheck */
 /* unused harmony export faSpider */
+<<<<<<< HEAD
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "M", function() { return faSpinner; });
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "N", function() { return faSpinner; });
+>>>>>>> upstream/master
 /* unused harmony export faSplotch */
 /* unused harmony export faSprayCan */
 /* unused harmony export faSquare */
@@ -3301,7 +3364,11 @@ var autoReplace = function autoReplace() {
 /* unused harmony export faStoreAlt */
 /* unused harmony export faStoreAltSlash */
 /* unused harmony export faStoreSlash */
+<<<<<<< HEAD
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "N", function() { return faStream; });
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "O", function() { return faStream; });
+>>>>>>> upstream/master
 /* unused harmony export faStreetView */
 /* unused harmony export faStrikethrough */
 /* unused harmony export faStroopwafel */
@@ -3338,7 +3405,11 @@ var autoReplace = function autoReplace() {
 /* unused harmony export faTerminal */
 /* unused harmony export faTextHeight */
 /* unused harmony export faTextWidth */
+<<<<<<< HEAD
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "O", function() { return faTh; });
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "P", function() { return faTh; });
+>>>>>>> upstream/master
 /* unused harmony export faThLarge */
 /* unused harmony export faThList */
 /* unused harmony export faTheaterMasks */
@@ -3350,10 +3421,17 @@ var autoReplace = function autoReplace() {
 /* unused harmony export faThermometerThreeQuarters */
 /* unused harmony export faThumbsDown */
 /* unused harmony export faThumbsUp */
+<<<<<<< HEAD
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "P", function() { return faThumbtack; });
 /* unused harmony export faTicketAlt */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Q", function() { return faTimes; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "R", function() { return faTimesCircle; });
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Q", function() { return faThumbtack; });
+/* unused harmony export faTicketAlt */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "R", function() { return faTimes; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "S", function() { return faTimesCircle; });
+>>>>>>> upstream/master
 /* unused harmony export faTint */
 /* unused harmony export faTintSlash */
 /* unused harmony export faTired */
@@ -3459,7 +3537,11 @@ var autoReplace = function autoReplace() {
 /* unused harmony export faWheelchair */
 /* unused harmony export faWifi */
 /* unused harmony export faWind */
+<<<<<<< HEAD
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "S", function() { return faWindowClose; });
+=======
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "T", function() { return faWindowClose; });
+>>>>>>> upstream/master
 /* unused harmony export faWindowMaximize */
 /* unused harmony export faWindowMinimize */
 /* unused harmony export faWindowRestore */

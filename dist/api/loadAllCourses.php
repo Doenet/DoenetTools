@@ -6,6 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+<<<<<<< HEAD
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
@@ -14,7 +15,13 @@ $overview =  mysqli_real_escape_string($conn,$_GET["overview"]);
 $grade =  mysqli_real_escape_string($conn,$_GET["grade"]);
 $syllabus =  mysqli_real_escape_string($conn,$_GET["syllabus"]);
 $assignment =  mysqli_real_escape_string($conn,$_GET["assignment"]);
+=======
+>>>>>>> upstream/master
 
+$jwtArray = include "jwtArray.php";
+$userId = $jwtArray['userId'];
+
+$userId = "bogus";
 $sql="
 SELECT 
  c.courseId as courseId,
@@ -39,6 +46,7 @@ $result = $conn->query($sql);
 $response_arr = array();
 $courseId_info_arr = array();
 $ci_array = array();
+<<<<<<< HEAD
          
 if ($result->num_rows > 0){
   while($row = $result->fetch_assoc()){ 
@@ -87,44 +95,44 @@ if ($result->num_rows > 0){
 //     }
 //   }
 // }
+=======
+    
+if ($result->num_rows > 0){
+  while($row = $result->fetch_assoc()){ 
+    if ($row['courseId'] != NULL){
+      array_push($ci_array, $row["courseId"]);
+      $courseId_info_arr[$row["courseId"]] = array(
+            "courseName" => $row["courseName"],
+            "courseCode" => $row["courseCode"],
+            "term" => $row["term"],
+            "description" => $row["description"],
+            "overviewId" => $row["overviewId"],
+            "syllabusId" => $row["syllabusId"],
+            "overviewEnabled" => $row["overviewEnabled"],
+            "syllabusEnabled" => $row["syllabusEnabled"],
+            "gradeEnabled" => $row["gradeEnabled"],
+            "assignmentEnabled" => $row["assignmentEnabled"],
+            "department" => $row["department"],
+            "section" => $row["section"],
+            "content" => array(),
+            "folders" => array(),
+            "urls" => array(),
+      );
+    }
+  }
+}
+>>>>>>> upstream/master
 
-// $defaultCourseId = $courseId_info_arr[$ci_array[0]];
-
-
-// $sql = "
-//   SELECT overviewEnabled, gradeEnabled,syllabusEnabled,assignmentEnabled,overview_branchId,syllabus_branchId
-//   from course
-//   WHERE courseId = '$defaultCourseId'
-// ";
-// $result = $conn->query($sql);
-// if ($result->num_rows > 0){
-//    while ($row = $result->fetch_assoc()){
-//     $overview = $row["overviewEnabled"];
-//     $grade = $row["gradeEnabled"];
-//     $syllabus = $row["syllabusEnabled"];
-//     $assignment = $row["assignmentEnabled"];
-//     $overview_branchId = $row["overview_branchId"];
-//     $syllabus_branchId = $row["syllabus_branchId"];
-//    }
-// }
 $response_arr = array(
   "courseInfo"=>$courseId_info_arr,
   "courseIds"=>$ci_array,
-
-  // "overview" => $overview,
-  // "syllabus"=>$syllabus,
-  // "grade"=>$grade,
-  // "assignment"=>$assignment,
-  // "overview_branchId"=>$overview_branchId,
-  // "syllabus_branchId" =>$syllabus_branchId
 );
-    
+
 // set response code - 200 OK
 http_response_code(200);
 
 // make it json format
 echo json_encode($response_arr);
 $conn->close();
-
 
 ?>

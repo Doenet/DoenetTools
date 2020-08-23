@@ -655,3 +655,50 @@ select{
     box-shadow: 0px 10px 50px -10px rgba(0, 0, 0, 0.2);
   }
   
+<<<<<<< HEAD
+=======
+.color-picker-menu-button {
+    border: none;
+    width: 20px;
+    background: rgba(0, 0, 0, 0);
+    cursor: pointer;
+  }
+  
+  .color-list {
+    padding: 4px;
+    list-style-type: none;
+    /* border: 1px solid #505050; */
+    border-radius: 3px;
+    box-shadow: 3px 3px 7px #888888;
+    background: #ffffff;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .color-box:checked {
+    border: 1px solid yellow;
+  }
+
+  .list-container {
+      margin-right: 0;
+      margin-left: auto;
+      width: 86px;
+  }
+  
+  .color-item {
+    display: inline-block;
+    vertical-align: top;
+  }
+  
+  .dropdown-container {
+    /* vertical-align: top; */
+    width: 100%;
+    /* left: 140px; */
+    text-align: right;
+    /* width: 86px; */
+    /* z-index: 1; */
+    /* position: absolute; */
+    /* height: 50px; */
+  }
+  
+>>>>>>> upstream/master

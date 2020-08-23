@@ -1,6 +1,10 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([[45,2],{
 
+<<<<<<< HEAD
 /***/ 1353:
+=======
+/***/ 1354:
+>>>>>>> upstream/master
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -310,7 +314,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _DoenetRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(645);
+<<<<<<< HEAD
 /* harmony import */ var cssesc__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1353);
+=======
+/* harmony import */ var cssesc__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1354);
+>>>>>>> upstream/master
 /* harmony import */ var cssesc__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(cssesc__WEBPACK_IMPORTED_MODULE_2__);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
