@@ -221,13 +221,15 @@ class DoenetChooser extends Component {
     }
 
     let newBranchId = nanoid();
-    let num = 1;
-    let title = "Untitled Document " + num;
-    while (Object.values(this.branchId_info).filter(content => content.title.includes(title)).length != 0) {
-      num++;
-      title = "Untitled Document " + num;
-    }
-    
+    let title = "Untitled Document";
+    // let num = 1;
+    // let title = "Untitled Document " + num;
+    // console.log('branchId_info',this.branchId_info)
+    //   while ( Object.values(this.branchId_info).filter(content => content.title.includes(title)).length != 0 ) {
+    //     num++;
+    //     title = "Untitled Document " + num;
+    //   }
+
     let currentFolderId = this.state.directoryStack.length == 0 ? "root" : this.state.directoryStack[this.state.directoryStack.length - 1];
 
     Promise.all([
@@ -244,12 +246,11 @@ class DoenetChooser extends Component {
       this.loadUserContentBranches(() => {
         // set as selected
         this.setState({
-          directoryStack: [],
+          // directoryStack: [], //Why go to root?
           selectedItems: [newBranchId],
           selectedItemsType: ["content"],
           activeSection: "chooser",
           selectedDrive: "Content"
-        }, () => {
         });
       })      
     })  
@@ -284,7 +285,6 @@ class DoenetChooser extends Component {
       this.displayToast("Please sign in to create new course");
       return;
     }
-    console.log("HERERERERERERREEEEEEEE!!!!!!!!!!!!!!!")
 
     // TODO: add user to course instructor
 
@@ -495,6 +495,7 @@ class DoenetChooser extends Component {
   }
 
   loadAllCourses = (callback = (() => { })) => {
+
     const loadCoursesUrl = '/api/loadAllCourses.php';
     const data = {
     }
@@ -504,12 +505,20 @@ class DoenetChooser extends Component {
 
     axios.get(loadCoursesUrl, payload)
       .then(resp => {
-        this.courseInfo = resp.data.courseInfo;
-        this.courseIds = resp.data.courseIds;
+        // console.log("loadcourses:",resp.data)
+        // this.courseInfo = resp.data.courseInfo;
+        // this.courseIds = resp.data.courseIds;
+         this.courseInfo = {};
+        this.courseIds = [];
         callback();
         this.courses_loaded = true;
         this.forceUpdate();
       });
+
+    // this.courseInfo = [];
+    // this.courseIds = [];
+      
+    // callback();
   }
 
   loadCourseContent = (courseId, callback = (() => { })) => {
@@ -666,12 +675,12 @@ class DoenetChooser extends Component {
 
     axios.get(loadUserFoldersAndRepoUrl, payload)
       .then(resp => {
-        console.log(resp)
+        // console.log(resp)
         this.folderInfo = Object.assign({}, this.folderInfo, resp.data.folderInfo);
         this.folderIds = resp.data.folderIds;
         this.userFolderInfo = resp.data.folderInfo;
         this.folders_loaded = true;
-        console.log("here", this.folderInfo)
+        // console.log("here", this.folderInfo)
         this.userContentReloaded = true;
         callback();
         this.forceUpdate();
@@ -1014,14 +1023,16 @@ class DoenetChooser extends Component {
       return;
     }
 
+    let title = "New Folder";
+
     // TODO: let user input folder title
-    let num = 1;
-    let title = "New Folder " + num;
-    while (Object.values(this.folderInfo).filter(folder =>
-      folder.title && folder.title.includes(title)).length != 0) {
-      num++;
-      title = "New Folder " + num;
-    }
+    // let num = 1;
+    // let title = "New Folder " + num;
+    // while (Object.values(this.folderInfo).filter(folder =>
+    //   folder.title && folder.title.includes(title)).length != 0) {
+    //   num++;
+    //   title = "New Folder " + num;
+    // }
     this.displayToast("New folder created.");
     this.addNewFolder(title);
   }
@@ -1998,6 +2009,7 @@ class DoenetChooser extends Component {
     this.validDrop = true;
     this.lastDroppedContainerId = containerId;
   }
+
   splitPanelOnTreeDropEnter(listId, containerId, containerType) {
     //console.log("onTreeDropEnter5", listId + '----' + containerId + '----' + containerType)
 
@@ -2157,6 +2169,7 @@ class DoenetChooser extends Component {
     this.validDrop = true;
     this.lastDroppedContainerId = containerId;
   }
+
   splitPanelOnTreeDropEnter(listId, containerId, containerType) {
     //console.log("onTreeDropEnter5", listId + '----' + containerId + '----' + containerType)
 
@@ -2450,7 +2463,6 @@ class DoenetChooser extends Component {
 
   }
 
-
   switchPanelContainer = (view) => {
     const values = this.state.panelsCollection['first'].values;
     const newPanelData = {
@@ -2480,7 +2492,6 @@ class DoenetChooser extends Component {
       }
     })
   }
-
 
   onBrowserFolderDrop = ({ containerId, droppedId }) =>{
     // handle dragging folder onto itself
@@ -2620,6 +2631,7 @@ class DoenetChooser extends Component {
     this.loadUserFoldersAndRepo();
     this.loadUserUrls();
   }
+
   grantRepoAccess = ({repoId, email, callback=()=>{}}) => {
     const loadCoursesUrl = '/api/addRepoUser.php';
     const data = {
@@ -2662,7 +2674,6 @@ class DoenetChooser extends Component {
         this.forceUpdate();
       });
   }
-
 
   headerTitleChange(title) {
     this.setState({modalHeaderTitle: title});
@@ -3618,7 +3629,6 @@ const SplitPanelMainContent = ({ panelId, initialContainer, activeContainer, con
   </div>;
 }
 
-
 const TreeIcons = ({iconName, isPublic}) => {
   const FolderIcon = <FontAwesomeIcon className="treeNodeIcon" icon={faFolder}
     style={{
@@ -4202,6 +4212,5 @@ class UrlForm extends React.Component {
     );
   }
 }
-
 
 export default withCookies(DoenetChooser);
