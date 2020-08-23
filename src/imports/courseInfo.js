@@ -36,11 +36,11 @@ export function updateCourses(courseArray,callback=()=>{}){
       courseListDB.update(courseObj);
     }
 
-    const url = '/api/saveUserCourseModifications.php';;
+    const url = '/api/saveUserCourseModifications.php';
 
     axios.post(url, courseArray)
       .then((resp) => {
-        console.log(resp.data); //var_dump shows here
+        // console.log(resp.data); //var_dump shows here
         callback(true);
       })
       .catch(function (error) {
