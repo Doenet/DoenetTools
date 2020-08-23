@@ -73,6 +73,8 @@ const selectedCourseDB = useIndexedDB('SelectedCourse');
           if (resp.data.success && resp.data.courseInfo.length > 0){
           //Store in IndexedDB
           for (let courseInfo of resp.data.courseInfo){
+            
+            
             courseListDB.add(courseInfo).then(
               event => { //console.log('Add Course Event', event); 
             },
