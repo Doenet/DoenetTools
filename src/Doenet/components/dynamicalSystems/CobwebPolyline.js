@@ -490,7 +490,7 @@ export default class CobwebPolyline extends Polyline {
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nVertices - 1, 2];
+        return [dependencyValues.nVertices - 1];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
@@ -513,6 +513,109 @@ export default class CobwebPolyline extends Polyline {
       }
     }
 
+
+    stateVariableDefinitions.fractionCorrectVertices = {
+      public: true,
+      componentType: "number",
+      additionalStateVariablesDefined: [{
+        variableName: "nGradedVertices",
+        public: true,
+        componentType: "number"
+      },
+      {
+        variableName: "nCorrectVertices",
+        public: true,
+        componentType: "number"
+      }
+      ],
+      returnDependencies: () => ({
+        correctVertices: {
+          dependencyType: "stateVariable",
+          variableName: "correctVertices"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let nGradedVertices = dependencyValues.correctVertices.length
+        let fractionCorrectVertices;
+        let nCorrectVertices;
+
+        if (nGradedVertices === 0) {
+          fractionCorrectVertices = 0;
+          nCorrectVertices = 0;
+        } else {
+          nCorrectVertices = dependencyValues.correctVertices
+            .reduce((a, c) => a + c, 0);
+          fractionCorrectVertices = nCorrectVertices / nGradedVertices;
+        }
+
+        return {
+          newValues: {
+            fractionCorrectVertices, nGradedVertices, nCorrectVertices
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.nIterateValues = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        nVertices: {
+          dependencyType: "stateVariable",
+          variableName: "nVertices"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { nIterateValues: Math.ceil((dependencyValues.nVertices + 1) / 2) }
+      })
+    }
+
+    stateVariableDefinitions.iterateValues = {
+      isArray: true,
+      public: true,
+      componentType: "number",
+      entryPrefixes: ["iterateValue"],
+      returnArraySizeDependencies: () => ({
+        nIterateValues: {
+          dependencyType: "stateVariable",
+          variableName: "nIterateValues"
+        }
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nIterateValues];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+
+        for (let arrayKey of arrayKeys) {
+          if (arrayKey === "0") {
+            dependenciesByKey[arrayKey] = {
+              iterateValue: {
+                dependencyType: "stateVariable",
+                variableName: "vertexX1_1"
+              }
+            }
+          } else {
+            dependenciesByKey[arrayKey] = {
+              iterateValue: {
+                dependencyType: "stateVariable",
+                variableName: "vertexX" + (2 * Number(arrayKey)) + "_2"
+              }
+            }
+          }
+        }
+
+        return { dependenciesByKey };
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+        let iterateValues = {};
+        for (let arrayKey of arrayKeys) {
+          iterateValues[arrayKey] = dependencyValuesByKey[arrayKey].iterateValue;
+        }
+        return { newValues: { iterateValues } };
+      }
+    }
+
     stateVariableDefinitions.childrenToRender = {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { childrenToRender: [] } })
@@ -528,14 +631,6 @@ export default class CobwebPolyline extends Polyline {
 
     if (args.init) {
 
-      this.makePublicStateVariableArray({
-        variableName: "correctvertices",
-        componentType: "boolean",
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "correctvertex",
-        arrayVariableName: "correctvertices",
-      });
 
       this.makePublicStateVariableArray({
         variableName: "iteratevalues",

@@ -39,7 +39,8 @@ class DoenetTest extends Component {
       ignoreDatabase,
       attemptNumberIsReady,
       requestedVariant: undefined,
-      solutionDisplayMode: "button"
+      solutionDisplayMode: "button",
+      showFeedbacK: true,
     };
 
     window.onmessage = this.updateAfterMessage;
@@ -106,6 +107,7 @@ class DoenetTest extends Component {
           showCorrectness: this.state.showCorrectness,
           readOnly: this.state.readOnly,
           solutionDisplayMode: this.state.solutionDisplayMode,
+          showFeedback: this.state.showFeedbacK,
         }}
         attemptNumber={this.attemptNumber}
         assignmentId={this.assignmentId}

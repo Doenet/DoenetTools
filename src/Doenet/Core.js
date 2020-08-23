@@ -5649,6 +5649,7 @@ export default class Core {
         useReplacementsForComposites: dependencyDefinition.useReplacementsForComposites,
         includeNonActiveChildren: dependencyDefinition.includeNonActiveChildren,
         includePropertyChildren: dependencyDefinition.includePropertyChildren,
+        skipOverAdapters: dependencyDefinition.skipOverAdapters,
         ignoreReplacementsOfMatchedComposites: dependencyDefinition.ignoreReplacementsOfMatchedComposites,
         definingChildrenFirst: dependencyDefinition.definingChildrenFirst,
         compositeClass: this.allComponentClasses._composite,
@@ -5659,6 +5660,7 @@ export default class Core {
       newDep.useReplacementsForComposites = dependencyDefinition.useReplacementsForComposites;
       newDep.includeNonActiveChildren = dependencyDefinition.includeNonActiveChildren;
       newDep.includePropertyChildren = dependencyDefinition.includePropertyChildren;
+      newDep.skipOverAdapters = dependencyDefinition.skipOverAdapters;
       newDep.ignoreReplacementsOfMatchedComposites = dependencyDefinition.ignoreReplacementsOfMatchedComposites;
       newDep.definingChildrenFirst = dependencyDefinition.definingChildrenFirst;
 
@@ -6817,6 +6819,27 @@ export default class Core {
 
     if (result.setComponentType) {
       for (let varName in result.setComponentType) {
+        let changedComponentType = false;
+        let originalComponentType = component.state[varName].componentType;
+        let newComponentType = result.setComponentType[varName];
+        if (Array.isArray(originalComponentType)) {
+          if (Array.isArray(newComponentType)) {
+            if (originalComponentType.length !== newComponentType.length) {
+              changedComponentType = true;
+            } else if (originalComponentType.some((v, i) => v != newComponentType[i])) {
+              changedComponentType = true;
+            }
+          } else {
+            changedComponentType = true;
+          }
+        } else if (Array.isArray(newComponentType)) {
+          changedComponentType = true;
+        } else {
+          changedComponentType = originalComponentType !== newComponentType
+        }
+        if (changedComponentType) {
+          valuesChanged[varName] = true;
+        }
         component.state[varName].componentType = result.setComponentType[varName];
         if (component.state[varName].isArray && component.state[varName].arrayEntryNames) {
           let arrayComponentType = result.setComponentType[varName];
@@ -6913,7 +6936,10 @@ export default class Core {
 
       if (component.state[varName].isArray) {
         let arrayVarNamesChanged = [];
-        if (valuesChanged[varName].allArrayKeysChanged || valuesChanged.arraySizeChanged) {
+        if (valuesChanged[varName] === true
+          || valuesChanged[varName].allArrayKeysChanged
+          || valuesChanged.arraySizeChanged
+        ) {
           if (component.state[varName].arrayEntryNames) {
             arrayVarNamesChanged = component.state[varName].arrayEntryNames;
           }
@@ -7412,7 +7438,6 @@ export default class Core {
         }
 
 
-
         for (let vName of vNames) {
           // don't calculate value or recurse if calculated this value before
           if (!(vName in dependencyValuesForCName)) {
@@ -7426,8 +7451,30 @@ export default class Core {
                 value = value[cInd].stateValues[vName];
               }
 
-              if (!changedValuesOnly || changedValuesForCName.has(vName)) {
+              if (!changedValuesOnly) {
                 dependencyValuesForCName[vName] = value;
+              } else {
+                let sVarObj = this._components[cName].state[vName];
+                if (sVarObj.isArray || sVarObj.isArrayEntry) {
+
+                  let arrayKeys, arrayVName;
+                  if (sVarObj.isArray) {
+                    arrayVName = vName;
+                    arrayKeys = sVarObj.getAllArrayKeys(sVarObj.arraySize);
+                  } else {
+                    arrayVName = sVarObj.arrayStateVariable;
+                    arrayKeys = sVarObj.arrayKeys;
+                  }
+                  if (changedValuesForCName[arrayVName] &&
+                    arrayKeys.some(x => changedValuesForCName[arrayVName].has(x))
+                  ) {
+                    dependencyValuesForCName[vName] = value;
+                  }
+                } else if (changedValuesForCName[vName]) {
+                  // found change when not array or array entry
+                  dependencyValuesForCName[vName] = value;
+                }
+
               }
 
             }
@@ -8672,6 +8719,7 @@ export default class Core {
             useReplacementsForComposites: currentDep.useReplacementsForComposites,
             includeNonActiveChildren: currentDep.includeNonActiveChildren,
             includePropertyChildren: currentDep.includePropertyChildren,
+            skipOverAdapters: currentDep.skipOverAdapters,
             ignoreReplacementsOfMatchedComposites: currentDep.ignoreReplacementsOfMatchedComposites,
             definingChildrenFirst: currentDep.definingChildrenFirst,
             compositeClass: this.allComponentClasses._composite,
@@ -10535,9 +10583,17 @@ export default class Core {
       this.resolveAllDependencies(updatesNeeded, compositesBeingExpanded);
     }
 
-    this.replacementChangesFromCompositesToUpdate({ updatesNeeded, compositesBeingExpanded })
+    while (updatesNeeded.compositesToUpdateReplacements.length > 0) {
 
-    if (updatesNeeded.componentsToUpdateDependencies.length > 0) {
+      this.replacementChangesFromCompositesToUpdate({ updatesNeeded, compositesBeingExpanded })
+
+      if (Object.keys(updatesNeeded.unresolvedDependencies).length > 0) {
+        this.resolveAllDependencies(updatesNeeded, compositesBeingExpanded);
+      }
+
+    }
+
+    if (updatesNeeded.componentsToUpdateDependencies.length > 0 && dependencyChanges.length > 0) {
       // TODO: address case where have continued dependencies to update
       // How do we make sure don't have infinite loop?
       console.log(`since found more components to update dependencies, will try to recurse`)
@@ -11802,6 +11858,8 @@ export default class Core {
   }
 
   isInheritedComponentType({ inheritedComponentType, baseComponentType }) {
+    inheritedComponentType = inheritedComponentType.toLowerCase();
+    baseComponentType = baseComponentType.toLowerCase();
     if (inheritedComponentType === baseComponentType) {
       return true;
     }
@@ -12050,15 +12108,28 @@ export default class Core {
 
     let compositesBeingExpanded = [];
 
-    // merge keys of newStateVariableValues into changedStateVariables
+    // merge new variables changed from newStateVariableValues into changedStateVariables
     for (let cName in newStateVariableValues) {
-      if (this.changedStateVariables[cName]) {
-        // add all keys of newStateVariableValues[cName] to this.changedStateVariables[cName]
-        let changedSvs = this.changedStateVariables[cName];
-        Object.keys(newStateVariableValues[cName]).forEach(changedSvs.add, changedSvs);
-      } else {
-        // create new set from scratch if don't have old changed state variables
-        this.changedStateVariables[cName] = new Set(Object.keys(newStateVariableValues[cName]));
+      let changedSvs = this.changedStateVariables[cName];
+      if (!changedSvs) {
+        changedSvs = this.changedStateVariables[cName] = {};
+      }
+      for (let vName in newStateVariableValues[cName]) {
+        let sVarObj = this._components[cName].state[vName];
+        if (sVarObj.isArray) {
+          if (!changedSvs[vName]) {
+            changedSvs[vName] = new Set();
+          }
+          for (let key in newStateVariableValues[cName][vName]) {
+            if (key === "mergeObject") {
+              continue;
+            }
+            changedSvs[vName].add(key);
+          }
+        } else {
+          // shouldn't have arrayEntries, so don't need to check
+          changedSvs[vName] = true;
+        }
       }
 
     }
@@ -12095,6 +12166,8 @@ export default class Core {
     }
 
 
+    this.updateDependencies(updatesNeeded, compositesBeingExpanded);
+
     if (Object.keys(updatesNeeded.unresolvedDependencies).length > 0) {
       console.log("have some unresolved");
       console.log(updatesNeeded.unresolvedDependencies);
@@ -12117,8 +12190,6 @@ export default class Core {
       }
     }
 
-
-    this.updateDependencies(updatesNeeded, compositesBeingExpanded);
 
 
     // if preliminary, we don't update renderer instructions or display information
@@ -12199,7 +12270,16 @@ export default class Core {
             });
 
             for (let componentName in result.addedComponents) {
-              this.changedStateVariables[componentName] = new Set(Object.keys(this._components[componentName].state));
+              this.changedStateVariables[componentName] = {};
+              for (let varName in this._components[componentName].state) {
+                let stateVarObj = this._components[componentName].state[varName];
+                if (stateVarObj.isArray) {
+                  this.changedStateVariables[componentName][varName] =
+                    new Set(stateVarObj.getAllArrayKeys(stateVarObj.arraySize))
+                } else if (!stateVarObj.isArrayEntry) {
+                  this.changedStateVariables[componentName][varName] = true;
+                }
+              }
             }
           } else {
             compositesNotReady.push(cName)
