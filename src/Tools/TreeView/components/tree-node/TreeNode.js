@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react'
+import React, { memo, useState, useEffect } from 'react'
 import { useSpring, a } from 'react-spring'
 import useMeasure from "../../hooks/useMeasure";
 import usePrevious from "../../hooks/usePrevious";
@@ -19,6 +19,7 @@ export const ParentNode = memo(({
   expanderIcon, 
   styles, 
   defaultOpen = false, 
+  markNodeAsOpened,
   onDrop, 
   onDraggableDragOver, 
   onDragStart, 
@@ -44,6 +45,14 @@ export const ParentNode = memo(({
     const Icon = Icons[`${isOpen ? 'ArrowDown0' : 'ArrowRight0'}`];
     expander = <Icon style={{ ...toggle, opacity: 0.4, marginRight: "5px" }}/>;
   }
+
+  useEffect(() => {
+    if (isOpen) {
+      markNodeAsOpened(id, true);
+    } else {
+      markNodeAsOpened(id, false);
+    }
+  }, [isOpen])
 
   const onDraggableDragOverCb = (id) => {
     if (id !== currentDraggedId) {

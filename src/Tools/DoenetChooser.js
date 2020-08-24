@@ -133,6 +133,7 @@ class DoenetChooser extends Component {
     this.onSplitPanelBrowserDragEnd = this.onSplitPanelBrowserDragEnd.bind(this);
     this.handleContentItemDoubleClick = this.handleContentItemDoubleClick.bind(this);
     this.tempSet = new Set();
+    this.treeOpenedNodes = new Set();
     this.customizedTempSet = new Set();
     this.history = null
   }
@@ -2307,10 +2308,15 @@ class DoenetChooser extends Component {
   updateTree = ({ containerType, folderInfo = {}, contentInfo = {}, urlInfo = {}, courseId = "" }) => {
     switch (containerType) {
       case ChooserConstants.COURSE_ASSIGNMENTS_TYPE:
-        this.saveAssignmentsTree({ courseId: courseId, headingsInfo: folderInfo, assignmentsInfo: contentInfo, callback: () => { } });
+        this.saveAssignmentsTree({ courseId: courseId, headingsInfo: folderInfo, assignmentsInfo: contentInfo, callback: () => { 
+        } });
         break;
       case ChooserConstants.USER_CONTENT_TYPE:
-        this.saveContentTree({ folderInfo, callback: () => { } });
+        this.saveContentTree({ folderInfo, callback: () => {
+          this.loadUserContentBranches();
+          this.loadUserFoldersAndRepo();
+          this.loadUserUrls();
+        }});
         break;
       case ChooserConstants.COURSE_CONTENT_TYPE:
         this.saveAssignmentsTree({ courseId: courseId, headingsInfo: folderInfo, assignmentsInfo: contentInfo, callback: () => { } });
@@ -2442,7 +2448,6 @@ class DoenetChooser extends Component {
     const newPanelData = {
       values: values,
       activeContainer: view
-
     }
     this.setState({
       panelsCollection: {
@@ -2860,6 +2865,7 @@ const TreeNodeItem = ({title, icon}) => {
           parentNodeItem={TreeNodeItem}
           leafNodeItem={TreeNodeItem}
           specialNodes={this.tempSet}
+          openedNodes={this.treeOpenedNodes}
           // specialNodes={new Set(this.tempSet).add(selectedItem.parentId)}
           treeStyles={{
             specialChildNode: {
@@ -2925,6 +2931,14 @@ const TreeNodeItem = ({title, icon}) => {
           }}
           onParentNodeDoubleClick={(id) => {
             // openSubtree
+          }}
+          markNodeAsOpened={(id, opened) => {
+            if (!opened && this.treeOpenedNodes.has(id)) {
+              this.treeOpenedNodes.delete(id);
+            }
+            if (opened) {
+              this.treeOpenedNodes.add(id);
+            }
           }}
         />
     </div>
