@@ -60,6 +60,7 @@ class DoenetChooser extends Component {
     super(props);
 
     const queryParams = getUrlVars()
+    const dirStack = window.location.hash.split('?')[0].replace('#/content/', '').split('/').filter(i => i)
     this.state = {
       error: null,
       errorInfo: null,
@@ -71,7 +72,7 @@ class DoenetChooser extends Component {
       selectedItemsType: [],
       showNewButtonMenu: false,
       activeSection: "chooser",
-      directoryStack: [],
+      directoryStack: dirStack.length ? dirStack : [],
       splitPanelDirectoryStack: [],
       splitPanelSelectedItems: [],
       splitPanelSelectedItemsType: [],
@@ -241,10 +242,11 @@ class DoenetChooser extends Component {
       new Promise(resolve => this.addContentToFolder([newBranchId], ["content"], currentFolderId, () => { resolve() })),
     ])
     .then(() => {
-      this.loadUserContentBranches(() => {
-        // set as selected
+      this.loadUserContentBranches(() => {  
+        const { directoryStack } = this.state
+        // set as selected        
         this.setState({
-          directoryStack: [],
+          directoryStack: directoryStack.length ? directoryStack : [],
           selectedItems: [newBranchId],
           selectedItemsType: ["content"],
           activeSection: "chooser",
@@ -3080,9 +3082,18 @@ const customizedTreeNodeItem = (nodeItem, item) => {
 
       </div>
     };
+    const accordionClick = (label) => {
+      if (label === 'CONTENT' && this.state.directoryStack.length) {
+        console.log('label:', label, this.state.directoryStack)
+        this.history.push('/content')
+        this.setState({
+          directoryStack: []
+        })
+      }      
+    }
     this.customizedTree = <div className="tree-column">
       <Accordion>
-        <div label="CONTENT" activeChild={this.state.contentActiveChild}>
+        <div label="CONTENT" activeChild={this.state.contentActiveChild} onClick={accordionClick}>
           <TreeView
             containerId={treeContainerId}
             containerType={treeContainerType}
@@ -3480,8 +3491,13 @@ const customizedTreeNodeItem = (nodeItem, item) => {
     const rightPanelMenuControls = [dropDownSelectButton, splitSwitchPanelButton];
     const createMiddlePanelContent = (props) => {      
       const { match, location, history } = props
-      const extURL = location.pathname.replace(match.url, '')
-      // console.log('match', match, location.pathname, extURL, extURL.split('/').map(i => i));
+      /*const extURL = location.pathname.replace(match.url, '')
+      const directoryStack = extURL.split('/').filter(i => i)
+      directoryStack.length && this.updateDirectoryStack()*/
+      /*this.setState({
+        directoryStack: extURL.split('/').filter(i => i)
+      })*/
+      // console.log('match', this, match, location.pathname, extURL, extURL.split('/').filter(i => i));
       this.history = history
       return (
         <ToolLayoutPanel
