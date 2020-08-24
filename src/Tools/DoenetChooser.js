@@ -43,6 +43,7 @@ import {
 } from "react-router-dom";
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
+import { getCourses, setSelected } from "../imports/courseInfo";
 
 const getUrlVars = () => {
   var vars = {};
@@ -495,30 +496,28 @@ class DoenetChooser extends Component {
   }
 
   loadAllCourses = (callback = (() => { })) => {
-
-    const loadCoursesUrl = '/api/loadAllCourses.php';
-    const data = {
-    }
-    const payload = {
-      params: data
-    }
-
-    axios.get(loadCoursesUrl, payload)
-      .then(resp => {
-        // console.log("loadcourses:",resp.data)
-        // this.courseInfo = resp.data.courseInfo;
-        // this.courseIds = resp.data.courseIds;
-         this.courseInfo = {};
-        this.courseIds = [];
-        callback();
-        this.courses_loaded = true;
-        this.forceUpdate();
-      });
-
-    // this.courseInfo = [];
-    // this.courseIds = [];
-      
-    // callback();
+    getCourses((courseListArray,selectedCourseObj) => {
+      console.log('example****> called back');
+      console.log("courses",courseListArray)
+      this.courseInfo = {};
+      this.courseIds = [];
+      this.studentCourseInfo = {};
+      this.studentCourseIds = [];
+      for (let courseInfo of courseListArray){
+        const courseId = courseInfo.courseId;
+        if (courseInfo.role === "Student"){
+          this.studentCourseInfo[courseId] = courseInfo;
+          this.studentCourseIds.push(courseId);
+        }else{
+          this.courseInfo[courseId] = courseInfo;
+          this.courseIds.push(courseId);
+        }
+        
+      }
+      callback();
+      this.courses_loaded = true;
+      this.forceUpdate();
+    });
   }
 
   loadCourseContent = (courseId, callback = (() => { })) => {
