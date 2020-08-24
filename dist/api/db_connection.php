@@ -1,6 +1,6 @@
 <?php
 
-$env_path = "/var/www/html/dev.doenet.org/etc/env.ini";
+$env_path = "../etc/env.ini";
 $remoteuser = "devuser";
   // $remoteuser = $_SERVER[ 'REMOTE_USER' ];
 // $db_temp = "cse_doenet";
