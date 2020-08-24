@@ -24,6 +24,7 @@ export default class Accordion extends Component {
           [label]: !isOpen
         }
       });
+      this.props.children.props.onClick && this.props.children.props.onClick(label)
     };
   
     render() {
