@@ -514,6 +514,9 @@ class DoenetChooser extends Component {
         }
         
       }
+      //Sort by position
+      console.log("this.studentCourseIds",this.studentCourseIds)
+      console.log("this.studentCourseInfo",this.studentCourseInfo)
       callback();
       this.courses_loaded = true;
       this.forceUpdate();
